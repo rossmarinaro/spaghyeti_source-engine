@@ -842,7 +842,7 @@ void EventListener::GenerateProject()
     web_HTML << "   <!-- MANUAL RESIZE OPTIONS -->" << "\n";
     web_HTML << "   <!-- <span id=controls>" << "\n";
     web_HTML << "   <span>" << "\n";
-    web_HTML << "       <input" << "\n";   
+    web_HTML << "       <input" << "\n";    
     web_HTML << "           type=checkbox"  << "\n";
     web_HTML << "           id=resize>Resize canvas" << "\n";
     web_HTML << "   </span>" << "\n";
