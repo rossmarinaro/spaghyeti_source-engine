@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="64" tileheight="64" infinite="0" backgroundcolor="#ffaa07" nextlayerid="4" nextobjectid="4">
+ <editorsettings>
+  <export target="."/>
+ </editorsettings>
+ <tileset firstgid="1" name="platformer" tilewidth="64" tileheight="64" tilecount="100" columns="10">
+  <image source="../platformer.png" width="640" height="640"/>
+ </tileset>
+ <layer id="1" name="world" width="10" height="10">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,100,100,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,100,100,0,0,
+0,0,0,0,0,0,0,0,0,0,
+100,100,100,100,100,100,100,100,100,100,
+100,100,100,100,100,100,100,100,100,100
+</data>
+ </layer>
+ <objectgroup id="2" name="bounds">
+  <object id="1" x="-4" y="512" width="645.333" height="14.6667"/>
+  <object id="2" x="385.333" y="384" width="125.333" height="62.6667"/>
+  <object id="3" x="193.333" y="255.333" width="125.333" height="62.6667"/>
+ </objectgroup>
+ <imagelayer id="3" name="background"/>
+</map>

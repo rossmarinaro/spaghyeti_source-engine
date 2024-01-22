@@ -1,0 +1,1 @@
+./buildCore.bat && ./buildEditor.bat

@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/*",
+
+                "C:\\Program Files\\MinGW\\x86_64-w64-mingw32\\include",
+                "C:\\libs\\glad\\include",
+                "C:\\libs\\openAL\\include",
+                "C:\\libs\\freetype-windows-binaries-master\\freetype-windows-binaries-master\\include",
+                "C:\\libs\\ft2132\\freetype-2.13.2\\include\\freetype\\internal",
+                "C:\\project_data\\emscripten_standalone\\emsdk",
+                "C:\\project_data\\emscripten_standalone\\emsdk\\upstream\\include",
+                "C:\\project_data\\emscripten_old\\emsdk\\upstream\\emscripten\\system\\include",
+                "C:\\Program Files\\Unity\\Hub\\Editor\\2020.3.16f1\\Editor\\Data\\PlaybackEngines\\WebGLSupport\\BuildTools\\Emscripten\\system\\include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}

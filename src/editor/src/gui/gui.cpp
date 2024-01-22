@@ -1,0 +1,220 @@
+#include "../../../../build/include/app.h"
+#include "./gui.h"
+#include "../editor.h"
+
+#include "../assets/embedded/images/data_src.h"
+#include "../assets/embedded/images/audio_src.h"
+#include "../assets/embedded/images/editor_logo.h"
+#include "../assets/embedded/images/icon_large.h"
+
+using namespace /* SPAGHYETI_CORE */ System;
+
+
+//------------------------------------- launch GUI
+
+void GUI::Launch()
+{
+
+    //Poll and handle events (inputs, window resize, etc.)
+    //You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+    //- When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
+    //- When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
+    //Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+
+    Editor::Log(" IMGui Version: " + (int)IMGUI_CHECKVERSION());
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Load Fonts
+    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+    // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+    // - Read 'docs/FONTS.md' for more instructions and details.
+    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+
+    io.Fonts->AddFontDefault();
+    // io.Fonts->AddFontFromFileTTF("src/assets/fonts/Silkscreen/slkscr.ttf", 10.0f);
+
+    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+    //IM_ASSERT(font != NULL);
+
+    ImGui::StyleColorsDark();
+
+    //setup platform/renderer backends
+
+    ImGui_ImplGlfw_InitForOpenGL(Window::s_instance, true);
+    ImGui_ImplOpenGL3_Init(Window::m_glsl_version);
+
+    //load embedded assets
+
+    System::Resources::Manager::LoadRawImage("editor logo", Assets::Images::editor_logo, 66, 65, 4);
+    System::Resources::Manager::LoadRawImage("icon large", Assets::Images::icon_large, 211, 126, 4);
+    System::Resources::Manager::LoadRawImage("audio src", Assets::Images::audio_src, 75, 70, 3);
+    System::Resources::Manager::LoadRawImage("data src", Assets::Images::data_src, 75, 70, 4);
+
+    System::Resources::Manager::RegisterAssets();
+
+    Editor::Log("GUI launched.");
+
+}
+
+
+//----------------------------------- alignment util
+
+
+void GUI::AlignForWidth(float width, float alignment)
+{
+
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    float avail = ImGui::GetContentRegionAvail().x;
+    float off = (avail - width) * alignment;
+
+    if (off > 0.0f)
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+
+}
+
+
+//----------------------------------- render GUI
+
+
+void GUI::Render()
+{
+
+    if (!m_running)
+        return;
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+
+    ImGui::NewFrame();
+
+    if (show_init)
+        ShowOptionsInit();
+
+    else
+        RenderDockSpace();
+
+    if (show_quit)
+        ShowOptionsQuit();
+
+    ImGui::Render();
+
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    //Renderer::CreateFrameBuffer();
+}
+
+
+
+//---------------------
+
+
+void GUI::Close()
+{
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+
+    ImGui::DestroyContext();
+
+    Editor::Log("GUI exited");
+
+}
+
+
+//---------------------
+
+
+void GUI::ShowOptionsInit()
+{
+
+    #ifdef IMGUI_HAS_VIEWPORT
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+    #else
+        ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+        ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+    #endif
+
+    bool pOpen = true;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::Begin("Welcome", &pOpen, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize);
+
+        // ImGuiStyle& style = ImGui::GetStyle();
+        // float width = 0.0f;
+        // width += ImGui::CalcTextSize("New").x;
+        // width += style.ItemSpacing.x;
+        // width += 150.0f;
+        // width += style.ItemSpacing.x;
+        // width += ImGui::CalcTextSize("Open").x;
+
+        // AlignForWidth(width);
+
+        if (ImGui::Button("New", ImVec2(System::Window::m_width, 0.0f))) {
+            if (Editor::events.NewProject())
+                show_init = false;
+        }
+
+        if (ImGui::Button("Open", ImVec2(System::Window::m_width, 0.0f))) {
+            if (Editor::events.OpenProject())
+                show_init = false;
+        }
+
+        //render backsplash image to framebuffer
+
+        const float window_width = ImGui::GetContentRegionAvail().x;
+        const float window_height = ImGui::GetContentRegionAvail().y;
+
+        Renderer::RescaleFrameBuffer(window_width, window_height);
+
+        ImVec2 pos = ImGui::GetCursorScreenPos();
+
+        ImGui::GetWindowDrawList()->AddImage(
+            (void*)System::Resources::Manager::texture2D->GetTexture("icon large").ID,
+            ImVec2(pos.x, pos.y),
+            ImVec2(pos.x + window_width, pos.y + window_height),
+            ImVec2(0, 1),
+            ImVec2(1, 0)
+        );
+
+        Renderer::BindFrameBuffer();
+
+        Renderer::UnbindFrameBuffer();
+
+        ImGui::SetCursorPos((ImVec2((ImGui::GetWindowSize().x * 0.5f) - 270, (ImGui::GetWindowSize().y * 0.5f) - 230)));
+
+
+    ImGui::End();
+    ImGui::PopStyleVar();
+
+}
+
+
+//---------------------
+
+
+void GUI::ShowOptionsQuit()
+{
+    ImGui::Text("Do You Want To Quit?");
+
+    if (ImGui::MenuItem("Yes"))
+        glfwSetWindowShouldClose(System::Window::s_instance, true);
+
+    if (ImGui::MenuItem("No"))
+        show_quit = false;
+}
+
+
+
+
+
+
+

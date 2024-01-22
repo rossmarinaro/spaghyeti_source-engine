@@ -1,0 +1,15 @@
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Jan 22 10:46:23 2024
+IMGui Version:  @ Mon Jan 22 10:46:24 2024
+GUI launched. @ Mon Jan 22 10:46:24 2024
+nodes deleted. @ Mon Jan 22 10:46:28 2024
+Workspace reset. @ Mon Jan 22 10:46:28 2024
+Tilemap node Untitled created. @ Mon Jan 22 10:46:28 2024
+Project TestGame opened.
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Mon Jan 22 10:46:28 2024
+Project TestGame built successfully. @ Mon Jan 22 10:46:46 2024
+Project TestGame built successfully. @ Mon Jan 22 10:46:56 2024
+Project TestGame built successfully. @ Mon Jan 22 10:47:06 2024
+GUI exited @ Mon Jan 22 10:47:09 2024
+Tilemap node Untitled deleted. @ Mon Jan 22 10:47:09 2024
+nodes deleted. @ Mon Jan 22 10:47:09 2024
+Editor closed. @ Mon Jan 22 10:47:09 2024

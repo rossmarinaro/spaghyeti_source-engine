@@ -1,0 +1,35 @@
+🍝 ::SPAGHYETI SOUЯCE ЭNGINE:: 🍝 
+
+----------------------------------------------------------
+
+Rendering system / content creation tool with audio generation, texturing, and logging. 
+
+Supports loading image, shader, json, and raw byte char files.
+
+Scene heirarchy supports sprites, CSV tilemaps, audio, text, and empty nodes.
+
+Supports native C++ scripting for nodes.
+
+Standalone runtime embedded into application builds, use as core only, or as DLL runtime with editor front end.
+
+Project generation creates base boilerplate and proxy reference to current application, decoupled from core engine source.
+
+Project configurations are saved as a custom ".SPAGHYETI" file which are decrypted into JSON prior to parsing.
+
+For Emscripten WebGL builds, download the latest SDK release, run emsdk install tot, navigate to emscripten install directory, run emcmdprompt.bat and cd to the "web" directory in this tree. compile with that directory's MakeFile.
+
+![image info](./screenshot.png)
+
+---------------------------------------------------------- 
+
+Written by Ross Marinaro - Pastaboss Enterprise 🍝👌
+
+![image info](./icon/icon.ico)  
+
+----------------------------------------------------------
+
+Libraries used: GLFW, GLAD, GLM, GLText, STB_IMAGE, MiniAudio, DearIMGUI, Box2D, nlohmann JSON
+
+Requires install of MingW compiler for Windows
+
+![image info](./stack.jpg)

@@ -1,0 +1,15 @@
+/build/games
+/build/vendors
+/build/spaghyeti_source-engine-full.exe
+/build/spaghyeti_source-engine_runtime-editor.dll
+/build/imgui.ini
+/build/Logs.txt
+
+/games/TestGame/TestGame.exe
+/games/TestGame/spaghyeti_source-engine_runtime-core.dll
+
+/games/swankybubbles.exe
+/games/swankybubbles/dist
+
+/games/meatballmadness.exe
+/games/meatballmadness/dist
