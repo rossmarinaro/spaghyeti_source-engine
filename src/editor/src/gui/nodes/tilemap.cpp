@@ -35,7 +35,7 @@ TilemapNode::~TilemapNode() {
 void TilemapNode::ApplyTilemap()
 {
 
-    MapManager::ClearMap();
+    MapManager::ClearMap(); 
 
     //for every csv, iterate over widths and heights, decrementing height each iteration by 1 until 0
 
@@ -51,7 +51,7 @@ void TilemapNode::ApplyTilemap()
                     if (w == 0)
                         h += 1;
 
-                    if (w < this->map_width)
+                    if (w < this->map_width      /* -1 */)
                         this->offset.push_back({ w, this->map_height - h, this->tile_width, this->tile_height });
 
                     else 

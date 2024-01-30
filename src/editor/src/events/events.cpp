@@ -21,7 +21,9 @@
 #include "../../../../build/include/app.h"
 #include "../../../../games/currentGame.h"
 
-
+// #include <stdio.h>
+// #include <unistd.h>
+// #define MSGSIZE 16
 //--------------------------------- file open callbacks (windows only)
 
 
@@ -398,7 +400,7 @@ void EventListener::OpenFile()
             //copy asset reference to respective project folder
 
             if (!file.good())
-                std::filesystem::copy(asset, Editor::projectPath + "resources\\assets" + folder + asset, options);
+                std::filesystem::copy(result.string(), Editor::projectPath + "resources\\assets" + folder + asset, options);
 
             //register asset into temp cache
 
@@ -448,9 +450,7 @@ void EventListener::InsertTo(const std::string &code, const std::string &directo
 
 
 //-------------------------------- build game from project source
-#include <stdio.h>
-#include <unistd.h>
-#define MSGSIZE 16
+
 void EventListener::BuildAndRun()
 {
 
@@ -665,6 +665,10 @@ void EventListener::BuildAndRun()
     std::string root_path = Editor::rootPath;
     std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
+    std::string name_upper = currentProject;
+
+    transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
+
     game_src << "#ifdef _WIN32\n";
     game_src <<	"#include <windows.h>\n";
     game_src << "#endif\n";
@@ -672,9 +676,9 @@ void EventListener::BuildAndRun()
     game_src << "\n#include \"" + root_path + "/include/app.h\"\n";
     game_src << "#include \"./game.h\"\n\n\n";
 
-    game_src << "void TestGame::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
-    game_src << "void TestGame::Run(Camera *camera) {\n" + commandData + "}\n\n";
-    game_src << "void TestGame::Update(Inputs* inputs, Camera *camera) {\n  for (const auto &sprite : spriteQueue) { \n      sprite->Render();\n      sprite->Update(inputs);\n   }   \n}\n\n\n";
+    game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
+    game_src << "void " + name_upper + "::Run(Camera *camera) {\n" + commandData + "}\n\n";
+    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera *camera) {\n  for (const auto &sprite : spriteQueue) { \n      sprite->Render();\n      sprite->Update(inputs);\n   }   \n}\n\n\n";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";
@@ -703,7 +707,7 @@ void EventListener::BuildAndRun()
     game_src <<	"   #elif _ISMOBILE == 1\n";
     game_src <<	"       System::Application::isMobile = true;\n"; 
     game_src <<	"   #endif\n";
-    game_src <<	"       TestGame game;\n";
+    game_src <<	"       " + name_upper + " game;\n";
     game_src << "       System::Application app { &game };\n"; 
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       emscripten_exit_with_live_runtime();\n";
@@ -718,7 +722,7 @@ void EventListener::BuildAndRun()
     remove(command_file.c_str());
 
     system("cls");
-    
+  
     ShowWindow(GetConsoleWindow(), SW_SHOW);
 
         system(Editor::platform == "Windows" ?
@@ -727,7 +731,7 @@ void EventListener::BuildAndRun()
         );
 
     #if DEVELOPMENT == 0
-        ShowWindow(GetConsoleWindow(), SW_HIDE); 
+       // ShowWindow(GetConsoleWindow(), SW_HIDE); 
     #endif
 
     remove(srcPath.c_str());
@@ -742,6 +746,9 @@ void EventListener::BuildAndRun()
 
 void EventListener::GenerateProject()
 {
+
+    std::string root_path = Editor::rootPath;
+    std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
     std::string name_upper = currentProject;
 
@@ -779,12 +786,13 @@ void EventListener::GenerateProject()
     main_makeFile << "OBJS = \\" << "\n";
     main_makeFile << "  $(wildcard ./src/*.cpp) \\" << "\n";
     main_makeFile << "  $(wildcard ./src/**/*.cpp) \\" << "\n";
-    main_makeFile << "  spaghyeti_source_runtime-core.dll" << "\n";
+    main_makeFile << "  $(wildcard ./resources/scripts/*.cpp) \\" << "\n";
+    main_makeFile << "  spaghyeti_source_runtime-core.dll" << "\n\n";
     main_makeFile << "all : $(OBJS)" << "\n";
     main_makeFile << "      g++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o " << currentProject << ".exe";
 
     main_h << "#pragma once" << "\n";
-    main_h << "#include \"../../src/core/src/game/game.h\"" << "\n";
+    main_h << "\n#include \"" + root_path + "/include/game.h\"\n\n";
     main_h << "class " << name_upper << " : public Game {" << "\n";
     main_h << "     public:" << "\n"; 
 
