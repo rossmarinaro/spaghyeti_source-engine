@@ -45,15 +45,6 @@ void Shader::Update(Camera* camera)
     GetShader("graphics").SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
     GetShader("cursor").SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::m_width * 2), static_cast<float>(System::Window::m_height * 2)), true);
     GetShader("UI").SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::m_width * 2), static_cast<float>(System::Window::m_height * 2)), true);
-
-    GetShader("sprite").SetFloat("zoom", camera->GetZoom(), true);
-    GetShader("graphics").SetFloat("zoom", camera->GetZoom(), true);
-    GetShader("cursor").SetFloat("zoom", camera->GetZoom(), true);
-    GetShader("UI").SetFloat("zoom", camera->GetZoom(), true);
-
-    GetShader("Points").SetFloat("zoom", camera->GetZoom(), true);
-    GetShader("Lines").SetFloat("zoom", camera->GetZoom(), true);
-    GetShader("Triangles").SetFloat("zoom", camera->GetZoom(), true);
 }
 
 
@@ -65,7 +56,7 @@ Shader& Shader::GetShader(const std::string &key) {
 }
 
 
-// -------------------------------
+//-------------------------------
 
 
 Shader &Shader::Use() {
@@ -296,7 +287,6 @@ void Shader::Generate(const char* vertexPath, const char* fragmentPath, const ch
 
 
 
-
 // ---------------------------------------------------------- utility uniform functions
 
 
@@ -305,7 +295,8 @@ void Shader::SetFloat(const char* name, float value, bool useShader)
     if (useShader)
         this->Use();
 
-    glUniform1f(glGetUniformLocation(this->ID, name), value); 
+    if (glGetUniformLocation(this->ID, name) != -1)
+        glUniform1f(glGetUniformLocation(this->ID, name), value); 
 }
 
 // -----------------------------------------------------------------------
@@ -316,7 +307,8 @@ void Shader::SetInt(const char* name, int value, bool useShader)
     if (useShader)
         this->Use();
 
-    glUniform1i(glGetUniformLocation(this->ID, name), value); 
+    if (glGetUniformLocation(this->ID, name) != -1)
+        glUniform1i(glGetUniformLocation(this->ID, name), value); 
 }
 
 // -----------------------------------------------------------------------
@@ -326,7 +318,8 @@ void Shader::SetVec2f(const char* name, float x, float y, bool useShader)
     if (useShader)
         this->Use();
 
-    glUniform2f(glGetUniformLocation(this->ID, name), x, y);
+    if (glGetUniformLocation(this->ID, name) != -1)
+        glUniform2f(glGetUniformLocation(this->ID, name), x, y);
 }
 
 // -----------------------------------------------------------------------
@@ -336,7 +329,8 @@ void Shader::SetVec2f(const char* name, const glm::vec2 &value, bool useShader)
     if (useShader)
         this->Use();
 
-    glUniform2f(glGetUniformLocation(this->ID, name), value.x, value.y);
+    if (glGetUniformLocation(this->ID, name) != -1)
+        glUniform2f(glGetUniformLocation(this->ID, name), value.x, value.y);
 }
 
 // -----------------------------------------------------------------------
@@ -346,7 +340,8 @@ void Shader::SetVec3f(const char* name, float x, float y, float z, bool useShade
     if (useShader)
         this->Use();
 
-    glUniform3f(glGetUniformLocation(this->ID, name), x, y, z);
+    if (glGetUniformLocation(this->ID, name) != -1)
+        glUniform3f(glGetUniformLocation(this->ID, name), x, y, z);
 }
 
 // -----------------------------------------------------------------------
@@ -356,7 +351,8 @@ void Shader::SetVec3f(const char* name, const glm::vec3 &value, bool useShader)
     if (useShader)
         this->Use();
 
-    glUniform3f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z);
+    if (glGetUniformLocation(this->ID, name) != -1)
+        glUniform3f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z);
 }
 
 // -----------------------------------------------------------------------
@@ -367,7 +363,8 @@ void Shader::SetVec4f(const char* name, float x, float y, float z, float w, bool
     if (useShader)
         this->Use();
 
-    glUniform4f(glGetUniformLocation(this->ID, name), x, y, z, w);
+    if (glGetUniformLocation(this->ID, name) != -1)
+        glUniform4f(glGetUniformLocation(this->ID, name), x, y, z, w);
 }
 
 // -----------------------------------------------------------------------
@@ -377,7 +374,8 @@ void Shader::SetVec4f(const char* name, const glm::vec4 &value, bool useShader)
     if (useShader)
         this->Use();
 
-    glUniform4f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z, value.w);
+    if (glGetUniformLocation(this->ID, name) != -1)
+        glUniform4f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z, value.w);
 }
 
 // -----------------------------------------------------------------------
@@ -387,5 +385,6 @@ void Shader::SetMat4(const char* name, const glm::mat4 &matrix, bool useShader)
     if (useShader)
         this->Use();
 
-    glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
+    if (glGetUniformLocation(this->ID, name) != -1)
+        glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
 }

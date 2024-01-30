@@ -16,13 +16,13 @@ using namespace System;
         if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE && (event->movementX != 0 || event->movementY != 0))
             Inputs::cursor_callback(Window::s_instance, event->targetX, event->targetY);
 
-        if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) 
-            Inputs::input_callback(Window::s_instance, 1, 1, 0); 
+        if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
+            Inputs::input_callback(Window::s_instance, 1, 1, 0);
 
-        if (eventType == EMSCRIPTEN_EVENT_MOUSEUP) 
+        if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
             Inputs::input_callback(Window::s_instance, 0, 0, 0);
 
-        if (eventType == EMSCRIPTEN_EVENT_CLICK) 
+        if (eventType == EMSCRIPTEN_EVENT_CLICK)
             Application::inputs->m_left_click = true;
 
         (void)eventType;
@@ -35,30 +35,30 @@ using namespace System;
 
 
     EM_BOOL web_touch_callback(int eventType, const EmscriptenTouchEvent* event, void* pUserData)
-    {  
+    {
 
         if (eventType == EMSCRIPTEN_EVENT_TOUCHSTART)
         {
 
             Application::inputs->m_left_click = true;
-            
+
             Application::inputs->cursorReset = false;
 
             for (int i = 0; i < event->numTouches; ++i)
             {
                 const EmscriptenTouchPoint* touch = &event->touches[i];
 
-                Inputs::cursor_callback(Window::s_instance, touch->targetX, touch->targetY);   
-                Inputs::input_callback(Window::s_instance, 1, 1, 0); 
-            } 
+                Inputs::cursor_callback(Window::s_instance, touch->targetX, touch->targetY);
+                Inputs::input_callback(Window::s_instance, 1, 1, 0);
+            }
         }
 
         else
         {
-            Application::inputs->cursorReset = true; 
-            Inputs::input_callback(Window::s_instance, 0, 0, 0);  
+            Application::inputs->cursorReset = true;
+            Inputs::input_callback(Window::s_instance, 0, 0, 0);
         }
-        
+
         (void)eventType;
         (void)pUserData;
 
@@ -74,7 +74,7 @@ Inputs::Inputs()
 {
 
     ResetControls();
-    
+
     //browser glue input callbacks
 
     #ifdef __EMSCRIPTEN__
@@ -95,7 +95,7 @@ Inputs::Inputs()
 
     #endif
 
-    std::cout << "initialized inputs.\n"; 
+    std::cout << "initialized inputs.\n";
 }
 
 
@@ -140,7 +140,7 @@ void Inputs::processInput(GLFWwindow* window)
                    this->m_SPACE;
 
     //gamepad
-    
+
     int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 
     if (1 == present)
@@ -195,25 +195,25 @@ void Inputs::RenderCursor()
 
         Application::game->cursor->SetPosition(this->cursorX, this->cursorY);
 
-        if (Application::isMobile && cursorReset)
-            cursor_callback(Window::s_instance, -100.0f, -100.0f); 
+        //if (Application::isMobile && cursorReset)
+            //cursor_callback(Window::s_instance, -100.0f, -100.0f);
 
         #if DEVELOPMENT == 1
             if (Application::game->physics->debug->enable)
-                Application::game->cursor->Render();
+                Application::game->cursor->Render();Application::inputs->checkOverlap();
         #endif
-    } 
+    }
 }
 
 
 //----------------------------------------
 
 
-void Inputs::ToggleVirtualButtonVisibility(bool visibility) 
+void Inputs::ToggleVirtualButtonVisibility(bool visibility)
 {
 
-    for (auto &button : Application::game->virtual_buttons) 
-        button->m_alpha = visibility ? 
+    for (auto &button : Application::game->virtual_buttons)
+        button->m_alpha = visibility ?
             1.0f : 0.0f;
 }
 
@@ -231,7 +231,7 @@ void Inputs::setKeyInputs(bool boolean, int key, GLFWwindow* window)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         break;
         case GLFW_KEY_LEFT:
-            this->m_left = boolean; 
+            this->m_left = boolean;
         break;
         case GLFW_KEY_RIGHT:
             this->m_right = boolean;
@@ -276,9 +276,9 @@ void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
 
     //set cursor object to movement
 
-    Application::inputs->cursorX = (float)xPos;   
+    Application::inputs->cursorX = (float)xPos;
     Application::inputs->cursorY = (float)yPos;
-    
+
 }
 
 
@@ -296,7 +296,7 @@ void Inputs::key_callback(GLFWwindow* window, int key, int scancode, int action,
 
 }
 
- 
+
 //----------------------------------------
 
 
@@ -315,13 +315,13 @@ void Inputs::setGamepadInputs(unsigned int joystick)
     const unsigned char* buttons = glfwGetJoystickButtons(joystick, &buttonCount);
 
     if (
-        GLFW_PRESS == buttons[1] ||         
+        GLFW_PRESS == buttons[1] ||
         GLFW_PRESS == buttons[2]
     )
         this->m_SPACE = true;
 
     else if (
-        GLFW_RELEASE == buttons[1] || 
+        GLFW_RELEASE == buttons[1] ||
         GLFW_RELEASE == buttons[2]
     )
         this->m_SPACE = false;
@@ -333,42 +333,42 @@ void Inputs::setGamepadInputs(unsigned int joystick)
         this->m_SHIFT = true;
 
     else if (
-        GLFW_RELEASE == buttons[3] || 
+        GLFW_RELEASE == buttons[3] ||
         GLFW_RELEASE == buttons[4]
     )
         this->m_SHIFT = false;
 
     if (
-        GLFW_PRESS == buttons[5] || 
+        GLFW_PRESS == buttons[5] ||
         GLFW_PRESS == buttons[6]
     )
         this->m_TAB = true;
 
     else if (
-        GLFW_RELEASE == buttons[5] || 
+        GLFW_RELEASE == buttons[5] ||
         GLFW_RELEASE == buttons[6]
     )
         this->m_TAB = false;
 
     if (
-        GLFW_PRESS == buttons[7] || 
-        GLFW_PRESS == buttons[8] || 
+        GLFW_PRESS == buttons[7] ||
+        GLFW_PRESS == buttons[8] ||
         GLFW_PRESS == buttons[9]
     )
         this->m_left_click = true;
 
     else if (
-        GLFW_RELEASE == buttons[7] || 
-        GLFW_PRESS == buttons[8] || 
+        GLFW_RELEASE == buttons[7] ||
+        GLFW_PRESS == buttons[8] ||
         GLFW_PRESS == buttons[9]
     )
-        this->m_left_click = false; 
-        
+        this->m_left_click = false;
+
     if (GLFW_PRESS == buttons[10])
         this->m_down = true;
 
     else if (GLFW_RELEASE == buttons[10])
-        this->m_down = false; 
+        this->m_down = false;
 
     if (GLFW_PRESS == buttons[11])
         this->m_right = true;
@@ -380,13 +380,13 @@ void Inputs::setGamepadInputs(unsigned int joystick)
         this->m_up = true;
 
     else if (GLFW_RELEASE == buttons[12])
-        this->m_up = false;  
+        this->m_up = false;
 
     if (GLFW_PRESS == buttons[13])
         this->m_left = true;
 
     else if (GLFW_RELEASE == buttons[13])
-        this->m_left = false; 
+        this->m_left = false;
 
 
 }
@@ -400,7 +400,7 @@ void Inputs::input_callback(GLFWwindow* window, int input, int action, int mods)
 
     if (input == GLFW_MOUSE_BUTTON_LEFT || input == 1)
     {
-        if (action == GLFW_PRESS || action == 1) 
+        if (action == GLFW_PRESS || action == 1)
             return;
         else
             Application::inputs->ResetControls();
@@ -424,10 +424,9 @@ void Inputs::ShutDown()
     if (Application::isMobile)
     {
         this->initVirtualControls = false;
-        
-        for (auto &button : Application::game->virtual_buttons) 
-            if (button)
-            {
+
+        for (auto &button : Application::game->virtual_buttons)
+            if (button) {
                 button.reset();
                 button = nullptr;
             }
@@ -436,18 +435,18 @@ void Inputs::ShutDown()
     std::cout << "inputs shutdown.\n";
 }
 
-	
+
 //-----------------------------------------
 
 
 void Inputs::ResetControls()
 {
-    
-   if (Application::isMobile)
-    {
-        this->cursorX = -100.0f;   
+
+    if (Application::isMobile) {
+        this->cursorX = -100.0f;
         this->cursorY = -100.0f;
     }
+
     else
         this->m_left_click = false;
 

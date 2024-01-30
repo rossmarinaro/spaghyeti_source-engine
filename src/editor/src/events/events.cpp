@@ -12,6 +12,7 @@
 
 #include <filesystem>
 #include <iterator>
+#include <bitset>
 
 #include "./events.h"
 #include "../editor.h"
@@ -153,7 +154,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             while (getline(ini_file, line))
             {
-
+                        
                 //decode spaghyet file format to json
 
                 for (int i = 0; i < line.length(); i++)
@@ -171,6 +172,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
                         line[i] = ':';
 
                 out_file << line << "\n";
+
             }
 
             ini_file.close();
@@ -277,7 +279,10 @@ bool EventListener::SaveProject(bool saveAs)
                 else if (JSON[i] == ':')
                     JSON[i] = '$';
 
-            src << JSON;
+            //convert to binary
+
+            //for (size_t i = 0; i < JSON.size(); ++i)
+                //src << std::bitset<8>(JSON.c_str()[i]); //JSON;
 
             src.close();
 

@@ -72,8 +72,7 @@ void SwankyBubbles::ScorePoint(int amount)
             if (digit_1 < 9 && currentScore % 100 == 0)
                 digit_1++;
 
-            if (digit_2 < 9 && currentScore % 10 == 0)
-            {
+            if (digit_2 < 9 && currentScore % 10 == 0) {
                 digit_2++;
                 digit_3 = 0;
             }
@@ -101,8 +100,7 @@ void SwankyBubbles::ScorePoint(int amount)
     else 
     {
 
-        if (currentScore % 10 == 0)
-        {
+        if (currentScore % 10 == 0) {
 
             digit_1++;
             digit_2 = 0;

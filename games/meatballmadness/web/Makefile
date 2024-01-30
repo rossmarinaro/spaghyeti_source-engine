@@ -22,6 +22,7 @@ CC = em++ -std=c++20 --pre-js pre-js.js --preload-file assets --use-preload-plug
 COMPILER_FLAGS = \
 	-DSPAGHYETI_CORE \
 	-DDEVELOPMENT=0 \
+	-DSTANDALONE=1 \
 	-DPRINT_LOGS=0 \
 	-D_ISMOBILE=0 \
 	-D_JSON=0

@@ -9,8 +9,10 @@ http
     response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
     response.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
 
-    var filePath = "." + request.url;
-    if (filePath == "./") filePath = "./index.html";
+    var filePath = "." + request.url; 
+
+    if (filePath == "./") 
+      filePath = "./index.html";
 
     var extname = path.extname(filePath);
     var contentType = "text/html";

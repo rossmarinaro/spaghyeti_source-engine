@@ -20,12 +20,11 @@ namespace Shaders {
 
             "uniform mat4 model;\n"
             "uniform mat4 projection;\n"
-            "uniform float zoom;\n"
 
             "void main()\n"
             "{\n"           
                 "uv = UV;\n"
-                "gl_Position = projection * model * vec4(vert.xy * zoom, 0.0, 1.0);\n"
+                "gl_Position = projection * model * vec4(vert.xy, 0.0, 1.0);\n"
             "}\n"; 
 
 
@@ -58,11 +57,10 @@ namespace Shaders {
 
             "uniform mat4 model;\n"
             "uniform mat4 projection;\n"
-            "uniform float zoom;\n"
 
             "void main()\n"
             "{\n"
-            "   gl_Position = projection * model * vec4(pos.xy * zoom, 0.0, 1.0);\n"
+            "   gl_Position = projection * model * vec4(pos.xy, 0.0, 1.0);\n"
             "}\0";
 
         static const char* debugGraphicShader_fragment = 
@@ -93,7 +91,6 @@ namespace Shaders {
 
             "uniform mat4 model;\n"
             "uniform mat4 projection;\n"
-            "uniform float zoom;\n"
 
             "void main()\n"
             "{\n"           
@@ -130,11 +127,10 @@ namespace Shaders {
             
             "uniform mat4 model;\n"
             "uniform mat4 projection;\n"
-            "uniform float zoom;\n"
  
             "void main()\n"
             "{\n"
-            "   gl_Position = projection * model * vec4(pos.xy * zoom, 0.0, 1.0);\n"
+            "   gl_Position = projection * model * vec4(pos.xy, 0.0, 1.0);\n"
             "}\0";
 
         static const char* debugGraphicShader_fragment = 

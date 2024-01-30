@@ -362,9 +362,9 @@ void MeatballMadness::Run(Camera* camera)
 
         virtual_buttons = {
 
-            CreateUI("arrow_button", 30.0f, 200.0f), //left
-            CreateUI("arrow_button", 125.0f, 200.0f), //right
-            CreateUI("circle_button", 720.0f, 200.0f) //action
+            CreateUI("arrow_button", 130.0f, 500.0f), //left
+            CreateUI("arrow_button", 250.0f, 500.0f), //right
+            CreateUI("circle_button", 1400.0f, 500.0f) //action
 
         };
             
@@ -477,7 +477,7 @@ void MeatballMadness::Reset()
 		//TODO: implement fetch data
 
 		console.log('fetching data...');
-	});
+	}); 
 
 
 #endif

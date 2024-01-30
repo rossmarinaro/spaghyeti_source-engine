@@ -87,7 +87,7 @@ void Line::Render(int drawStyle)
 {
 
     this->m_model = glm::mat4(1.0f); 
-    this->m_model = glm::translate(this->m_model, glm::vec3(this->x, this->y, 0.0f));  
+    //this->m_model = glm::translate(this->m_model, glm::vec3(this->x, this->y, 0.0f));  
 
     float vertices[6] = { this->start.x, this->start.y, 0.0f, this->end.x, this->end.y, 0.0f };
 
@@ -140,7 +140,8 @@ void Rectangle::Render(int drawStyle)
 
     this->m_model = glm::mat4(1.0f); 
 
-    //this->m_model = glm::translate(this->m_model, glm::vec3(this->x, this->y, 0.0f));  
+    if (strcmp(this->m_type, "cursor") == 0)
+        this->m_model = glm::translate(this->m_model, glm::vec3(this->x, this->y, 0.0f));  
 
     this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->x, 0.5f * this->height + this->y, 0.0f)); 
 

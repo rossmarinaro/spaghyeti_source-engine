@@ -461,6 +461,6 @@ void EventListener::Serialize(json &data)
         data["nodes"]["audio"] = audio;
         data["nodes"]["empty"] = empty;
         data["nodes"]["text"] = text;
-        
+         
     }
 }
