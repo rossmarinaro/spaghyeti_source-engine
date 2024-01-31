@@ -24,7 +24,7 @@ void MapManager::CreateLayer (
 
         return;
     }
-
+ 
     for (int y = 0; y < mapHeight; ++y)
         for (int x = 0; x < mapWidth; ++x) 
         {

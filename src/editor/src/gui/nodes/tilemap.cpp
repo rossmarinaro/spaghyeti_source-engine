@@ -39,48 +39,47 @@ void TilemapNode::ApplyTilemap()
 
     //for every csv, iterate over widths and heights, decrementing height each iteration by 1 until 0
 
-    if (this->csv.size())
-        for (int i = 0; i < this->csv.size(); i++) 
-        {
+    for (int i = 0; i < this->layer; i++) 
+    {
 
-            int h = 0;
+        int h = 0;
 
-            for (int y = 0; y < this->map_height; ++y)
-                for (int w = 0; w < this->map_width; ++w)
-                { 
-                    if (w == 0)
-                        h += 1;
+        for (int y = 0; y < this->map_height; ++y)
+            for (int w = 0; w < this->map_width; ++w)
+            { 
+                if (w == 0)
+                    h += 1;
 
-                    if (w < this->map_width      /* -1 */)
-                        this->offset.push_back({ w, this->map_height - h, this->tile_width, this->tile_height });
+                if (w < this->map_width)
+                    this->offset.push_back({ w, this->map_height - h, this->tile_width, this->tile_height });
 
-                    else 
-                        w = 0;
-                }
-
-            //load atlas frames from csv offsets
-
-            std::string key = this->csv[i].first; 
-            std::string path = this->csv[i].second;
-
-            System::Resources::Manager::LoadFrames(this->textures[i].first, this->offset);
-            System::Resources::Manager::LoadFile(key.c_str(), path.c_str());
-
-            //parse csv data and load map layer
-
-            std::vector<std::string> data = System::Resources::Manager::ParseCSV(key.c_str());
-
-            if (data.size()) 
-            {
-
-                System::Resources::Manager::LoadTilemap(key, data);
-
-                MapManager::CreateLayer(key.c_str(), this->textures[i].first.c_str(), this->map_width, this->map_height, this->tile_width, this->tile_height);
-            
-                this->layersApplied = true;
+                else 
+                    w = 0;
             }
 
+        //load atlas frames from csv offsets
+
+        std::string key = this->layers[i][0];
+        std::string path = this->layers[i][1];
+
+        System::Resources::Manager::LoadFrames(this->layers[i][2], this->offset);
+        System::Resources::Manager::LoadFile(key.c_str(), path.c_str());
+
+        //parse csv data and load map layer
+
+        std::vector<std::string> data = System::Resources::Manager::ParseCSV(key.c_str());
+
+        if (data.size()) 
+        {
+
+            System::Resources::Manager::LoadTilemap(key, data);
+
+            MapManager::CreateLayer(key.c_str(), this->layers[i][2].c_str(), this->map_width, this->map_height, this->tile_width, this->tile_height);
+        
+            this->layersApplied = true;
         }
+
+    }
 }
 
 
@@ -126,8 +125,8 @@ void TilemapNode::Render()
                         ImGui::Text("layer: %d", i);
                         
                         ImGui::PushID(i);
-
-                        this->textures.push_back({});
+                       
+                        this->layers.push_back({});
 
                         if (ImGui::BeginMenu("CSV: ")) 
                         {
@@ -141,11 +140,15 @@ void TilemapNode::Render()
                                 key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
                                 path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
 
-                                if (System::Utils::str_endsWith(path, ".csv"))
+                                if (System::Utils::str_endsWith(path, ".csv")) {
+
                                     if (ImGui::MenuItem(key.c_str())) {
-                                        this->csv.push_back({ key, path });
+
+                                        this->layers[i][0] = key;
+                                        this->layers[i][1] = path;
                                         this->layersApplied = false;
                                     }
+                                }
                             }
                   
                             ImGui::EndMenu();
@@ -155,15 +158,14 @@ void TilemapNode::Render()
 
                         std::string csv_name = "";
 
-                        if (this->csv.size())
-                            csv_name = this->csv[i].first;  
+                        if (this->layers.size())
+                            csv_name = this->layers[i][0];
 
                         ImGui::Text(csv_name.c_str()); 
 
-                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)this->textures[i].second, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && AssetManager::GetType(Editor::selectedAsset.first) == "image") 
+                        if (ImGui::ImageButton("tex button", (void*)(intptr_t) System::Resources::Manager::texture2D->GetTexture(this->layers[i][2]).ID, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && AssetManager::GetType(Editor::selectedAsset.first) == "image") 
                         {
-                            this->textures[i] = Editor::selectedAsset;
-                            
+                            this->layers[i][2] = Editor::selectedAsset.first;
                             this->layersApplied = false;
                         }
 
@@ -194,8 +196,7 @@ void TilemapNode::Render()
 
                     if (ImGui::Button("remove layer") && this->layer > 1) {
 
-                        this->textures.pop_back();
-                        this->csv.pop_back();
+                        this->layers.pop_back();
 
                         this->layer--;
                     }

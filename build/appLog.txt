@@ -1,9 +1,18 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Tue Jan 30 18:28:26 2024
-IMGui Version:  @ Tue Jan 30 18:28:27 2024
-GUI launched. @ Tue Jan 30 18:28:27 2024
-nodes deleted. @ Tue Jan 30 18:28:31 2024
-Workspace reset. @ Tue Jan 30 18:28:31 2024
-Tilemap node Untitled created. @ Tue Jan 30 18:28:31 2024
-Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Tue Jan 30 18:28:31 2024
-Project TestGame built successfully. @ Tue Jan 30 18:28:40 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Wed Jan 31 14:20:39 2024
+IMGui Version:  @ Wed Jan 31 14:20:40 2024
+GUI launched. @ Wed Jan 31 14:20:40 2024
+nodes deleted. @ Wed Jan 31 14:20:43 2024
+Workspace reset. @ Wed Jan 31 14:20:43 2024
+sprite node Untitled created. @ Wed Jan 31 14:20:43 2024
+Animator component added. @ Wed Jan 31 14:20:43 2024
+Project game opened.
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Wed Jan 31 14:20:43 2024
+Component 784470d1_dbf4_6490_8ab1_36fcd6befcfd removed. @ Wed Jan 31 14:20:48 2024
+Sprite node Untitled deleted. @ Wed Jan 31 14:20:48 2024
+Tilemap node Untitled created. @ Wed Jan 31 14:20:50 2024
+Current asset selected: map.png @ Wed Jan 31 14:20:56 2024
+Current asset selected: platformer.png @ Wed Jan 31 14:20:58 2024
+Current asset selected: map.png @ Wed Jan 31 14:20:59 2024
+Current asset selected: platformer.png @ Wed Jan 31 14:21:01 2024
+_untitled.csv @ Wed Jan 31 14:21:19 2024
+Crash Report Exception Record: 3221225477 @ Wed Jan 31 14:21:19 2024

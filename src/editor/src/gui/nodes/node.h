@@ -162,8 +162,7 @@ class TilemapNode : public Node {
         std::vector<int> spr_sheet_width; 
         std::vector<int> spr_sheet_height;
 
-        std::vector<std::pair<std::string, std::string>> csv;
-        std::vector<std::pair<std::string, GLuint>> textures; 
+        std::vector<std::array<std::string, 3>> layers;
         std::vector<std::array<int, 4>> offset;
 
         TilemapNode(const std::string &id);
@@ -175,6 +174,7 @@ class TilemapNode : public Node {
     private: 
 
         bool layersApplied;
+
 
 };
 

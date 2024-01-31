@@ -124,8 +124,7 @@ void EventListener::Deserialize(std::ifstream &JSON, const std::string &director
 
         for (const auto &layer : tilemap["layers"]) 
         {
-            tmn->csv.push_back({ layer["csv"]["first"], layer["csv"]["second"] });
-            tmn->textures.push_back({ layer["textures"]["first"], layer["textures"]["second"] });
+            tmn->layers.push_back({ layer["layers"]["key"], layer["layers"]["path"], layer["layers"]["texture"] });
             tmn->spr_sheet_width.push_back(layer["frames x"]);
             tmn->spr_sheet_height.push_back(layer["frames y"]);
 
@@ -348,14 +347,10 @@ void EventListener::Serialize(json &data)
                 layers.push_back({
                     { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
                     { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
-                    { "textures", {
-                            { "first", tmn->textures[i].first },
-                            { "second", tmn->textures[i].second }
-                        }  
-                    },
-                    { "csv", {
-                            { "first", tmn->csv[i].first },
-                            { "second", tmn->csv[i].second }
+                    { "layers", {
+                            { "key", tmn->layers[i][0] },
+                            { "path", tmn->layers[i][1] },
+                            { "texture", tmn->layers[i][2] }
                         } 
                     }
                 });

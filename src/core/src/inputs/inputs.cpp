@@ -195,12 +195,14 @@ void Inputs::RenderCursor()
 
         Application::game->cursor->SetPosition(this->cursorX, this->cursorY);
 
-        //if (Application::isMobile && cursorReset)
-            //cursor_callback(Window::s_instance, -100.0f, -100.0f);
+        if (Application::isMobile && cursorReset)
+            cursor_callback(Window::s_instance, -100.0f, -100.0f);
+
+        Application::inputs->checkOverlap();
 
         #if DEVELOPMENT == 1
             if (Application::game->physics->debug->enable)
-                Application::game->cursor->Render();Application::inputs->checkOverlap();
+                Application::game->cursor->Render();
         #endif
     }
 }

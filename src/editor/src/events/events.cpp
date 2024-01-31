@@ -65,7 +65,7 @@ static int CALLBACK BrowseFolderCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LP
 
 
 bool EventListener::NewProject(const char* root_path)
-{  
+{
 
     #ifdef _WIN32
 
@@ -95,7 +95,7 @@ bool EventListener::NewProject(const char* root_path)
 
             Editor::projectPath = (std::string)path;
 
-            std::filesystem::current_path(Editor::projectPath); 
+            std::filesystem::current_path(Editor::projectPath);
 
             if (SaveProject()) {
                 GenerateProject();
@@ -117,7 +117,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
    #ifdef _WIN32
 
-        OPENFILENAME ofn = {0}; 
+        OPENFILENAME ofn = {0};
         TCHAR szFile[260] = {0};
 
         ofn.lStructSize = sizeof (ofn);
@@ -156,7 +156,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             while (getline(ini_file, line))
             {
-                        
+
                 //decode spaghyet file format to json
 
                 for (int i = 0; i < line.length(); i++)
@@ -182,7 +182,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             Editor::Reset();
 
-            //load all assets to menu from root folder 
+            //load all assets to menu from root folder
 
             const std::string asset_folders[] = { "images", "audio", "data" };
 
@@ -201,13 +201,13 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
                     const std::string texture = AssetManager::GetThumbnail(asset);
 
                     const std::string key = "\"" + asset + "\"";
-        
+
                     const std::string productionPath = "\"" +  Editor::projectPath + "resources\\assets" + folder + asset + "\"";
 
                     AssetManager::loadedAssets.insert({ key, productionPath });
-                    
+
                     unsigned int id = System::Resources::Manager::texture2D->GetTexture(texture).ID;
-                    
+
                     AssetManager::images.push_back({ asset, id });
                 }
 
@@ -240,7 +240,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
 
 bool EventListener::SaveProject(bool saveAs)
-{        
+{
 
     try {
 
@@ -254,8 +254,8 @@ bool EventListener::SaveProject(bool saveAs)
             saveAs = true;
 
         file.close();
-        
-        auto saveFile = [&](std::string filename) -> bool { 
+
+        auto saveFile = [&](std::string filename) -> bool {
 
             src.open(filename, std::ofstream::trunc );
 
@@ -320,9 +320,9 @@ bool EventListener::SaveProject(bool saveAs)
                 if (GetSaveFileName(&ofn) == TRUE)
                 {
                     std::filesystem::path result((const char*)ofn.lpstrFile);
-                    
+
                     currentProject = result.filename().string();
-                    
+
                     if (saveFile(result.string() + ".spaghyeti"))
                         return true;
                 }
@@ -337,9 +337,9 @@ bool EventListener::SaveProject(bool saveAs)
 
     }
 
-    catch (std::runtime_error& err) { 
+    catch (std::runtime_error& err) {
 
-        std::cout << "error saving project: " << err.what() << "\n"; 
+        std::cout << "error saving project: " << err.what() << "\n";
 
         return false;
     }
@@ -363,7 +363,7 @@ void EventListener::OpenFile()
         ofn.hwndOwner = NULL;
         ofn.hInstance = NULL;
         ofn.nMaxFile = sizeof(szFile);
-        ofn.lpstrFilter = _T("Supported Files(*.png, *.flac, *.csv)\0*.png;*\0*.flac;*\0*.csv"); 
+        ofn.lpstrFilter = _T("Supported Files(*.png, *.flac, *.csv)\0*.png;*\0*.flac;*\0*.csv");
         ofn.lpstrFile = szFile;
         ofn.nFilterIndex = 1;
         ofn.lpstrFileTitle = NULL;
@@ -409,7 +409,7 @@ void EventListener::OpenFile()
             if (iterator == AssetManager::loadedAssets.end() || Editor::selectedAsset.first.length() < 0) {
 
                 const std::string key = "\"" + asset + "\"";
- 
+
                 const std::string productionPath = "\"" + Editor::projectPath + "resources\\assets" + folder + asset + "\"";
 
                 AssetManager::loadedAssets.insert({ key, productionPath });
@@ -421,12 +421,12 @@ void EventListener::OpenFile()
 
             if (
                 std::find_if(
-                    AssetManager::images.begin(), AssetManager::images.end(), 
+                    AssetManager::images.begin(), AssetManager::images.end(),
                     [&](std::pair<std::string, GLuint> pair) { return pair.first == asset; }
                 ) == AssetManager::images.end()
-            ) 
+            )
                 AssetManager::images.push_back({ asset, id });
-            
+
         }
 
     #endif
@@ -454,11 +454,13 @@ void EventListener::InsertTo(const std::string &code, const std::string &directo
 void EventListener::BuildAndRun()
 {
 
+    #ifdef _WIN32
+
     //temp files: asset and command lists
 
     std::string asset_file = Editor::projectPath + AssetManager::preload_dir;
     std::string command_file = Editor::projectPath + AssetManager::command_dir;
-    
+
     //set game source input file stream
 
     std::string srcPath = Editor::projectPath + "\\src\\game.cpp";
@@ -471,7 +473,7 @@ void EventListener::BuildAndRun()
 
     //asset preload
 
-    for (const auto &asset : AssetManager::loadedAssets) 
+    for (const auto &asset : AssetManager::loadedAssets)
     {
         std::string path = asset.second;
 
@@ -479,7 +481,7 @@ void EventListener::BuildAndRun()
 
         InsertTo("  System::Resources::Manager::LoadFile(" + asset.first + ", " + path + ");\n", asset_file);
     }
-    
+
     //command data, iterate over nodes and create objects
 
     for (const auto &node : Node::nodes)
@@ -516,7 +518,7 @@ void EventListener::BuildAndRun()
             for (const auto &anim : sn->animations)
                 animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
 
-            if (!animsToLoad.empty()) 
+            if (!animsToLoad.empty())
             {
                 std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
                 anim_oss << animsToLoad.back();
@@ -526,14 +528,14 @@ void EventListener::BuildAndRun()
 
             //entity header definitions and scripts. trim extension and compare with instantiated entities.
 
-            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + currentProject + AssetManager::script_dir)) 
+            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + currentProject + AssetManager::script_dir))
                 if (System::Utils::ReplaceFrom(script.path().filename().string(), ".", "") == node->m_ID)
                 {
                     game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
                     InsertTo("   auto sprite_" + node->m_ID + " = CreateCustomSprite<Sprite_" + node->m_ID + ">(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
                 }
 
- 
+
             //if no script present, define base class
 
             if (std::find_if(node->components.begin(), node->components.end(), [](Component* component) { return strcmp(component->m_type, "Script") == 0; }) == node->components.end())
@@ -618,18 +620,18 @@ void EventListener::BuildAndRun()
             for (const auto &offset : tmn->offset)
                 offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + "}");
 
-            for (int i = 0; i < tmn->layer; i++) 
+            for (int i = 0; i < tmn->layer; i++)
             {
 
                 if (!offsetsToLoad.empty()) {
                     std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
                     offset_oss << offsetsToLoad.back();
 
-                    InsertTo("   System::Resources::Manager::LoadFrames(\"" + tmn->textures[i].first + "\", { " + offset_oss.str() + " });\n", command_file);
+                    InsertTo("   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n", command_file);
                 }
 
-                InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->csv[i].first + "\", System::Resources::Manager::ParseCSV(\"" + tmn->csv[i].first + "\"));\n", command_file);
-                InsertTo("   MapManager::CreateLayer(\"" + tmn->csv[i].first + "\", \"" + tmn->textures[i].first + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n", command_file);
+                InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n", command_file);
+                InsertTo("   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n", command_file);
             }
         }
 
@@ -661,7 +663,7 @@ void EventListener::BuildAndRun()
 
     std::string commandData((std::istreambuf_iterator<char>(commandRes)), std::istreambuf_iterator<char>());
     std::string preloadData((std::istreambuf_iterator<char>(preloadRes)), std::istreambuf_iterator<char>());
- 
+
     std::string root_path = Editor::rootPath;
     std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
@@ -703,18 +705,18 @@ void EventListener::BuildAndRun()
     game_src <<	"   #endif\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       System::Application::isMobile = checkMobile();\n";
-    game_src <<	"       fetchData();\n"; 
+    game_src <<	"       fetchData();\n";
     game_src <<	"   #elif _ISMOBILE == 1\n";
-    game_src <<	"       System::Application::isMobile = true;\n"; 
+    game_src <<	"       System::Application::isMobile = true;\n";
     game_src <<	"   #endif\n";
     game_src <<	"       " + name_upper + " game;\n";
-    game_src << "       System::Application app { &game };\n"; 
+    game_src << "       System::Application app { &game };\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       emscripten_exit_with_live_runtime();\n";
     game_src <<	"   #endif\n";
-    game_src << "   return 0;\n"; 
+    game_src << "   return 0;\n";
     game_src <<	"}";
-    
+
     game_src.close();
     commandRes.close();
 
@@ -722,7 +724,7 @@ void EventListener::BuildAndRun()
     remove(command_file.c_str());
 
     system("cls");
-  
+
     ShowWindow(GetConsoleWindow(), SW_SHOW);
 
         system(Editor::platform == "Windows" ?
@@ -730,13 +732,11 @@ void EventListener::BuildAndRun()
             ("buildWebGL.bat " + Editor::projectPath).c_str()
         );
 
-    #if DEVELOPMENT == 0
-       // ShowWindow(GetConsoleWindow(), SW_HIDE); 
-    #endif
-
     remove(srcPath.c_str());
 
     Editor::Log("Project " + currentProject + " built successfully.");
+
+    #endif
 }
 
 
@@ -794,7 +794,7 @@ void EventListener::GenerateProject()
     main_h << "#pragma once" << "\n";
     main_h << "\n#include \"" + root_path + "/include/game.h\"\n\n";
     main_h << "class " << name_upper << " : public Game {" << "\n";
-    main_h << "     public:" << "\n"; 
+    main_h << "     public:" << "\n";
 
     main_h << "         " << name_upper << "() { name = " << name_upper << "; }" << "\n";
     main_h << "         void Preload() override;" << "\n";
@@ -855,7 +855,7 @@ void EventListener::GenerateProject()
     web_HTML << "   <!-- MANUAL RESIZE OPTIONS -->" << "\n";
     web_HTML << "   <!-- <span id=controls>" << "\n";
     web_HTML << "   <span>" << "\n";
-    web_HTML << "       <input" << "\n";    
+    web_HTML << "       <input" << "\n";
     web_HTML << "           type=checkbox"  << "\n";
     web_HTML << "           id=resize>Resize canvas" << "\n";
     web_HTML << "   </span>" << "\n";
