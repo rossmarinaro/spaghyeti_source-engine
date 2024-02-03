@@ -71,6 +71,7 @@ void Window::Init()
     glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
     glfwWindowHint(GLFW_STENCIL_BITS, 8);
+    //glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
 
     //set window dimensions for desktop builds
 
@@ -79,7 +80,15 @@ void Window::Init()
 
     //create window
 
-    s_instance = glfwCreateWindow(m_width, m_height, (Application::game->name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2023 🍝👌").c_str(), NULL, NULL);
+    s_instance = glfwCreateWindow(
+            m_width, 
+            m_height, (Application::game->name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2023 🍝👌").c_str(), 
+            NULL, 
+            NULL
+        );
+
+    //glfwGetPrimaryMonitor()
+    //glfwSetWindowMonitor()
 
     //glfwSetWindowIcon(s_instance, 0, ); 
 

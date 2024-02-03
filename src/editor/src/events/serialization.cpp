@@ -283,7 +283,7 @@ void EventListener::Serialize(json &data)
             //settings
 
             sprites.push_back({
-                { "ID", node->m_ID },
+                { "ID", node->m_ID }, 
                 { "name", node->m_name },
                 { "U1", sn->spriteHandle->m_texture.U1 },
                 { "V1", sn->spriteHandle->m_texture.V1 },

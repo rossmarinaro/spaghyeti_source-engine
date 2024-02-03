@@ -380,22 +380,16 @@ std::vector<std::string> Manager::ParseCSV(const std::string &key)
 
     std::vector<std::string> result;
     std::string line;
-    std::stringstream ss;
 
     std::map<std::string, std::string>::iterator it = System::Application::resources->file_text_assets.find(key);
 
-    if (it != System::Application::resources->file_text_assets.end())
-    {
+    if (it != System::Application::resources->file_text_assets.end()) {
 
-        std::ifstream file(it->second);
         std::ifstream in(it->second);
-        
-        std::string val;
 
-        while(getline(in, line, ','))
-            result.push_back(line);
-        
-        file.close();
+        while(getline(in, line))
+            result.push_back(line + ",");
+
         in.close();
 
     }

@@ -612,7 +612,7 @@ void Game::Run()
 
         Sprite* bubble = CreateSprite("bubbles", System::Utils::intBetween(0, 700), 0.0f, System::Utils::intBetween(0, 9)); 
 
-        bubble->m_velocity.y = System::Utils::intBetween(1.0f, 5.0f);   
+        bubble->SetVelocityY(System::Utils::intBetween(1.0f, 5.0f));   
 
         SwankyBubbles::bubbles.push_back(bubble);
 
@@ -632,7 +632,7 @@ void Game::Run()
 
         Sprite* elf = CreateSprite("elf", 0.0f, System::Utils::intBetween(0.0f, 350.0f));
 
-        elf->m_velocity.x = System::Utils::intBetween(2, 6);   
+        elf->SetVelocityX(System::Utils::intBetween(2, 6));   
 
         SwankyBubbles::elves.push_back(elf);
             

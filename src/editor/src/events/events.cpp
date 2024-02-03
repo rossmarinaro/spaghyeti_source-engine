@@ -257,7 +257,7 @@ bool EventListener::SaveProject(bool saveAs)
 
         auto saveFile = [&](std::string filename) -> bool {
 
-            src.open(filename, std::ofstream::trunc );
+            src.open(filename, std::ofstream::trunc);
 
             json data;
 
@@ -469,7 +469,7 @@ void EventListener::BuildAndRun()
     remove(command_file.c_str());
     remove(srcPath.c_str());
 
-    std::ofstream game_src(srcPath, std::ofstream::app | std::ofstream::out);
+    std::ofstream game_src(srcPath, std::ofstream::trunc);
 
     //asset preload
 
@@ -528,7 +528,7 @@ void EventListener::BuildAndRun()
 
             //entity header definitions and scripts. trim extension and compare with instantiated entities.
 
-            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + currentProject + AssetManager::script_dir))
+            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
                 if (System::Utils::ReplaceFrom(script.path().filename().string(), ".", "") == node->m_ID)
                 {
                     game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
@@ -565,7 +565,7 @@ void EventListener::BuildAndRun()
 
             if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size())
             {
-                InsertTo("   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(" + sn->spriteHandle->m_key + ");\n", command_file);
+                InsertTo("   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n", command_file);
                 InsertTo("   sprite_" + node->m_ID + "->ReadSpritesheetData();\n", command_file);
             }
 
@@ -619,7 +619,7 @@ void EventListener::BuildAndRun()
 
             for (const auto &offset : tmn->offset)
                 offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + "}");
-
+ 
             for (int i = 0; i < tmn->layer; i++)
             {
 

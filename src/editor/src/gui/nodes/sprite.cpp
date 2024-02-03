@@ -190,7 +190,7 @@ void SpriteNode::Render()
                         ImGui::InputInt("start", &this->animBuf2[i]); 
                         ImGui::InputInt("end", &this->animBuf3[i]);
 
-                        if (this->spriteHandle->m_isSpritesheet)
+                        if (this->spriteHandle->IsSpritesheet())
                         {
                             if (ImGui::Button("play") && this->animBuf1[i].s.length()) 
                                 this->do_animate = true;

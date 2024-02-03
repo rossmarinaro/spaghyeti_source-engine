@@ -37,46 +37,50 @@ void TilemapNode::ApplyTilemap()
 
     MapManager::ClearMap(); 
 
-    //for every csv, iterate over widths and heights, decrementing height each iteration by 1 until 0
+    //for every layer, iterate over widths and heights, decrementing height each iteration by 1 until 0
 
     for (int i = 0; i < this->layer; i++) 
-    {
+    { 
 
-        int h = 0;
+        int w = 0, 
+            h = 9;
 
         for (int y = 0; y < this->map_height; ++y)
-            for (int w = 0; w < this->map_width; ++w)
+            for (int x = 0; x < this->map_width; ++x)
             { 
-                if (w == 0)
-                    h += 1;
-
-                if (w < this->map_width)
-                    this->offset.push_back({ w, this->map_height - h, this->tile_width, this->tile_height });
-
-                else 
+                if (w == 10) {
                     w = 0;
+                    h--;   
+                }   
+
+                if (w < this->map_width) {
+
+                    this->offset.push_back({ w, h, this->tile_width, this->tile_height }); 
+                    
+                    w++;
+                }
             }
 
         //load atlas frames from csv offsets
 
         std::string key = this->layers[i][0];
         std::string path = this->layers[i][1];
+        std::string texture = this->layers[i][2];
 
-        System::Resources::Manager::LoadFrames(this->layers[i][2], this->offset);
+        System::Resources::Manager::LoadFrames(texture, this->offset);
         System::Resources::Manager::LoadFile(key.c_str(), path.c_str());
 
         //parse csv data and load map layer
 
-        std::vector<std::string> data = System::Resources::Manager::ParseCSV(key.c_str());
+        std::vector<std::string> data = System::Resources::Manager::ParseCSV(key);
 
-        if (data.size()) 
-        {
+        if (data.size()) {
 
             System::Resources::Manager::LoadTilemap(key, data);
 
-            MapManager::CreateLayer(key.c_str(), this->layers[i][2].c_str(), this->map_width, this->map_height, this->tile_width, this->tile_height);
-        
-            this->layersApplied = true;
+           MapManager::CreateLayer(key.c_str(), texture.c_str(), this->map_width, this->map_height, this->tile_width, this->tile_height);
+
+           this->layersApplied = true;
         }
 
     }
@@ -181,7 +185,7 @@ void TilemapNode::Render()
                         ImGui::PopID();
                     } 
 
-                    if (ImGui::Button("apply"))
+                    if (ImGui::Button("apply") && !this->layersApplied)
                         this->ApplyTilemap();
 
                     if (this->layersApplied) { 

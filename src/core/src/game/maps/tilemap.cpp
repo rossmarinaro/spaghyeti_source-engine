@@ -3,7 +3,9 @@
 #include "../../app/app.h"
 
 
+
 //------------------------------------- load tilemap layer
+
 
 void MapManager::CreateLayer (
 
@@ -16,15 +18,28 @@ void MapManager::CreateLayer (
 )
 {
 
-    const std::vector<std::string> &map = System::Resources::Manager::GetRawTilemapData(data_key);
+    const std::vector<std::string> &data = System::Resources::Manager::GetRawTilemapData(data_key);
+    std::vector<std::string> map;
 
-    if (!map.size()) {
+    std::stringstream ss; 
+    std::string line; 
+
+
+    if (!data.size()) {
 
         std::cout << "Tilemap: layer data not found.\n";
 
         return;
     }
- 
+
+    //remove commas from array before parsing
+
+    for (int i = 0; i < data.size(); i++) 
+        ss << data[i]; 
+
+    while(getline(ss, line, ','))
+        map.push_back(line);  
+
     for (int y = 0; y < mapHeight; ++y)
         for (int x = 0; x < mapWidth; ++x) 
         {
@@ -54,6 +69,7 @@ void MapManager::ClearMap()
 {
 
   for (auto &tile : tilesprites) {
+
     Game::DestroySprite(tile);
 
     tile.reset();
