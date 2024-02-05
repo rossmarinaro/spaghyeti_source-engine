@@ -1,18 +1,13 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sat Feb 03 18:25:37 2024
-IMGui Version:  @ Sat Feb 03 18:25:38 2024
-GUI launched. @ Sat Feb 03 18:25:38 2024
-nodes deleted. @ Sat Feb 03 18:25:43 2024
-Workspace reset. @ Sat Feb 03 18:25:43 2024
-sprite node Untitled created. @ Sat Feb 03 18:25:43 2024
-Animator component added. @ Sat Feb 03 18:25:43 2024
-Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Sat Feb 03 18:25:43 2024
-Project TestGame built successfully. @ Sat Feb 03 18:25:59 2024
-Tilemap node Untitled_1 created. @ Sat Feb 03 18:26:01 2024
-Current asset selected: platformer.png @ Sat Feb 03 18:26:05 2024
-Project TestGame built successfully. @ Sat Feb 03 18:26:31 2024
-GUI exited @ Sat Feb 03 18:26:47 2024
-Sprite node Untitled deleted. @ Sat Feb 03 18:26:47 2024
-Tilemap node Untitled_1 deleted. @ Sat Feb 03 18:26:47 2024
-nodes deleted. @ Sat Feb 03 18:26:47 2024
-Editor closed. @ Sat Feb 03 18:26:47 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sun Feb 04 22:29:32 2024
+IMGui Version:  @ Sun Feb 04 22:29:33 2024
+GUI launched. @ Sun Feb 04 22:29:33 2024
+nodes deleted. @ Sun Feb 04 22:29:39 2024
+Workspace reset. @ Sun Feb 04 22:29:39 2024
+sprite node Untitled created. @ Sun Feb 04 22:29:39 2024
+Animator component added. @ Sun Feb 04 22:29:39 2024
+Project TestGame3 opened.
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Sun Feb 04 22:29:39 2024
+GUI exited @ Sun Feb 04 22:30:08 2024
+Sprite node Untitled deleted. @ Sun Feb 04 22:30:08 2024
+nodes deleted. @ Sun Feb 04 22:30:08 2024
+Editor closed. @ Sun Feb 04 22:30:08 2024

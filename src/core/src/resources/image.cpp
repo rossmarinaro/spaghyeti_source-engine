@@ -69,7 +69,7 @@ Shape::Shape(float x, float y, int numOfVerts, const char* type):
         m_type(type),
         m_graphicsShader(System::Resources::Manager::shader->GetShader(strcmp(type, "cursor") == 0 ? "cursor" : "graphics")),
         m_strokeColor(glm::vec3(0.0f, 1.0f, 0.0f)),
-        m_fillColor(glm::vec3(1.0f, 1.0f, 1.0f)) {}
+        m_fillColor(glm::vec3(1.0f, 1.0f, 1.0f)) {} 
 
 
 //---------------------------------------

@@ -6,5 +6,5 @@ OBJS = \
 	spaghyeti_source_runtime-core.dll 
 
 all : $(OBJS)
-	g++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o TestGame.exe 
+	g++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o $(PROJECT).exe 
 

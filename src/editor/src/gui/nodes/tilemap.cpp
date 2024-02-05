@@ -43,12 +43,12 @@ void TilemapNode::ApplyTilemap()
     { 
 
         int w = 0, 
-            h = 9;
+            h = this->spr_sheet_height[i] - 1; 
 
         for (int y = 0; y < this->map_height; ++y)
             for (int x = 0; x < this->map_width; ++x)
             { 
-                if (w == 10) {
+                if (w == this->spr_sheet_width[i]) { 
                     w = 0;
                     h--;   
                 }   
@@ -78,10 +78,21 @@ void TilemapNode::ApplyTilemap()
 
             System::Resources::Manager::LoadTilemap(key, data);
 
-           MapManager::CreateLayer(key.c_str(), texture.c_str(), this->map_width, this->map_height, this->tile_width, this->tile_height);
+            MapManager::CreateLayer(
+                key.c_str(), 
+                texture.c_str(), 
+                this->map_width, 
+                this->map_height, 
+                this->tile_width, 
+                this->tile_height,
+                this->depth[i]
+            );
 
            this->layersApplied = true;
         }
+  //for (auto &tile : MapManager::tilesprites)  tile->m_texture.Repeat = 2;
+
+  
 
     }
 }
@@ -178,9 +189,14 @@ void TilemapNode::Render()
 
                         this->spr_sheet_width.push_back(i);
                         this->spr_sheet_height.push_back(i);
+                        this->depth.push_back(i);
 
-                        ImGui::InputInt("frames x", &this->spr_sheet_width[i]); 
-                        ImGui::InputInt("frames y", &this->spr_sheet_height[i]);
+                        if (
+                            ImGui::InputInt("frames x", &this->spr_sheet_width[i]) ||
+                            ImGui::InputInt("frames y", &this->spr_sheet_height[i]) ||
+                            ImGui::SliderInt("depth", &this->depth[i], 0, 1000)
+                        )
+                            this->layersApplied = false;
  
                         ImGui::PopID();
                     } 

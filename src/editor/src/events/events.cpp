@@ -137,9 +137,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             std::filesystem::path result((const char*)ofn.lpstrFile);
 
-            const std::string directory = std::filesystem::path{ result.string() }.parent_path().string(); //result path
-
-            Editor::projectPath = directory + "\\";
+            Editor::projectPath =  std::filesystem::path{ result.string() }.parent_path().string() + "\\"; //result path
 
             //trim filename extension
 
@@ -147,7 +145,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             //temporary file for decoding
 
-            std::string tmp = directory + "\\spaghyeti_parse.json";
+            std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
 
             std::string line;
 
@@ -186,8 +184,8 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             const std::string asset_folders[] = { "images", "audio", "data" };
 
-            for (const std::string &folder : asset_folders)
-                for (const auto &entry : std::filesystem::directory_iterator(Editor::projectPath + "resources\\assets\\" + folder))
+            for (const std::string &type : asset_folders)
+                for (const auto &entry : std::filesystem::directory_iterator(Editor::projectPath + "resources\\assets\\" + type))
                 {
 
                     const std::string dir = entry.path().string(); //includes filename
@@ -216,7 +214,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
             std::ifstream JSON(tmp);
 
             if (JSON.good())
-                this->Deserialize(JSON, directory, result);
+                this->Deserialize(JSON, result);
 
             else
                 Editor::Log("Error: project file not found.");
@@ -244,8 +242,6 @@ bool EventListener::SaveProject(bool saveAs)
 
     try {
 
-        std::ofstream src;
-
         std::string project_root = Editor::projectPath + currentProject + ".spaghyeti";
 
         std::ifstream file(project_root);
@@ -257,7 +253,7 @@ bool EventListener::SaveProject(bool saveAs)
 
         auto saveFile = [&](std::string filename) -> bool {
 
-            src.open(filename, std::ofstream::trunc);
+            std::ofstream src(filename);
 
             json data;
 
@@ -285,6 +281,8 @@ bool EventListener::SaveProject(bool saveAs)
 
             //for (size_t i = 0; i < JSON.size(); ++i)
                 //src << std::bitset<8>(JSON.c_str()[i]); //JSON;
+
+            src << JSON;
 
             src.close();
 
@@ -631,9 +629,9 @@ void EventListener::BuildAndRun()
                 }
 
                 InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n", command_file);
-                InsertTo("   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n", command_file);
+                InsertTo("   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n", command_file);
             }
-        }
+        } 
 
         //--------------- audio
 
@@ -671,12 +669,22 @@ void EventListener::BuildAndRun()
 
     transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
+    //project source template
+
+
     game_src << "#ifdef _WIN32\n";
     game_src <<	"#include <windows.h>\n";
     game_src << "#endif\n";
 
     game_src << "\n#include \"" + root_path + "/include/app.h\"\n";
-    game_src << "#include \"./game.h\"\n\n\n";
+
+    game_src << "class " + name_upper + " : public Game {\n\n";
+    game_src << "    public:\n";
+    game_src << "        " + name_upper + "() { name = \"" + name_upper + "\"; }\n";
+    game_src << "        void Preload() override;\n";
+    game_src << "        void Run(Camera* camera) override;\n";
+    game_src << "        void Update(Inputs* inputs, Camera* camera) override;\n";
+    game_src <<"};\n\n\n"; 
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
     game_src << "void " + name_upper + "::Run(Camera *camera) {\n" + commandData + "}\n\n";
@@ -773,15 +781,15 @@ void EventListener::GenerateProject()
     std::filesystem::create_directory(web + "\\assets");
     std::filesystem::create_directory(web + "\\dist");
 
-    std::ofstream main_makeFile(Editor::projectPath + "/Makefile", std::ofstream::app | std::ofstream::out);
-    std::ofstream main_h(src + "/game.h", std::ofstream::app | std::ofstream::out);
+    std::ofstream main_makeFile(Editor::projectPath + "/Makefile");
+    std::ofstream main_h(src + "/game.h");
 
-    std::ofstream icon_rc(resources + "/icon/icon.rc", std::ofstream::app | std::ofstream::out);
-    std::ofstream icon_makeFile(resources + "/icon/Makefile", std::ofstream::app | std::ofstream::out);
+    std::ofstream icon_rc(resources + "/icon/icon.rc");
+    std::ofstream icon_makeFile(resources + "/icon/Makefile");
 
-    std::ofstream web_makeFile(web + "/Makefile", std::ofstream::app | std::ofstream::out);
-    std::ofstream web_preJS(web + "/pre-js.js", std::ofstream::app | std::ofstream::out);
-    std::ofstream web_HTML(web + "/template.html", std::ofstream::app | std::ofstream::out);
+    std::ofstream web_makeFile(web + "/Makefile");
+    std::ofstream web_preJS(web + "/pre-js.js");
+    std::ofstream web_HTML(web + "/template.html");
 
     main_makeFile << "OBJS = \\" << "\n";
     main_makeFile << "  $(wildcard ./src/*.cpp) \\" << "\n";
@@ -789,7 +797,7 @@ void EventListener::GenerateProject()
     main_makeFile << "  $(wildcard ./resources/scripts/*.cpp) \\" << "\n";
     main_makeFile << "  spaghyeti_source_runtime-core.dll" << "\n\n";
     main_makeFile << "all : $(OBJS)" << "\n";
-    main_makeFile << "      g++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o " << currentProject << ".exe";
+    main_makeFile << "      g++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o $(PROJECT).exe";
 
     main_h << "#pragma once" << "\n";
     main_h << "\n#include \"" + root_path + "/include/game.h\"\n\n";

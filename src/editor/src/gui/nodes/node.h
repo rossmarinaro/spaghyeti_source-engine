@@ -161,6 +161,7 @@ class TilemapNode : public Node {
 
         std::vector<int> spr_sheet_width; 
         std::vector<int> spr_sheet_height;
+        std::vector<int> depth;
 
         std::vector<std::array<std::string, 3>> layers;
         std::vector<std::array<int, 4>> offset;

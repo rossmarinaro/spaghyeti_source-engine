@@ -48,6 +48,8 @@ void GUI::Launch()
     ImGui_ImplGlfw_InitForOpenGL(Window::s_instance, true);
     ImGui_ImplOpenGL3_Init(Window::m_glsl_version);
 
+    CreateGrid();
+
     //load embedded assets
 
     System::Resources::Manager::LoadRawImage("editor logo", Assets::Images::editor_logo, 66, 65, 4);
@@ -92,6 +94,8 @@ void GUI::Render()
     ImGui_ImplGlfw_NewFrame();
 
     ImGui::NewFrame();
+    
+    RenderGrid();
 
     if (show_init)
         ShowOptionsInit();

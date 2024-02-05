@@ -10,8 +10,13 @@
 //---------------------------------------
 
 //project de-serialization
-void EventListener::Deserialize(std::ifstream &JSON, const std::string &directory, std::filesystem::path &result)
+void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &result)
 {
+
+    if (!JSON.good()) {
+        Editor::Log("There was a problem reading the file.");
+        return;
+    }
 
     json data = json::parse(JSON);
 
@@ -127,7 +132,7 @@ void EventListener::Deserialize(std::ifstream &JSON, const std::string &director
             tmn->layers.push_back({ layer["layers"]["key"], layer["layers"]["path"], layer["layers"]["texture"] });
             tmn->spr_sheet_width.push_back(layer["frames x"]);
             tmn->spr_sheet_height.push_back(layer["frames y"]);
-
+            tmn->depth.push_back(layer["layers"]["depth"]);
         }
 
         tmn->ApplyTilemap();
@@ -347,6 +352,7 @@ void EventListener::Serialize(json &data)
                 layers.push_back({
                     { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
                     { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
+                    { "depth", tmn->depth.size() ? tmn->depth[i] : 0 },
                     { "layers", {
                             { "key", tmn->layers[i][0] },
                             { "path", tmn->layers[i][1] },

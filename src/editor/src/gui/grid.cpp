@@ -1,9 +1,56 @@
 #include "./gui.h"
+#include "../../../../build/include/app.h"
 
 //using namespace Editor;
 
+void GUI::CreateGrid()
+{
+
+    static const char* checker_vertex = 
+                    
+        "#version 330 core\n"
+
+        "out vec2 uv;\n"
+
+        "void main()\n"
+        "{\n"           
+        "   float size = 10.0;\n"
+        "   vec2 pos = floor(fragColor / size);\n"
+        "   position = pos;\n"
+        "   gl_Position = vec4(1.0, 1.0, 0.0, 1.0);\n" 
+        "}\n"; 
+
+
+    static const char* checker_fragment =  
+
+        "#version 330 core\n"
+
+        "in vec2 position;\n"
+        "out vec4 color;\n"
+
+        "void main()\n"
+        "{\n"    
+        "   float mask = mod(position.x + mod(position.y, 2.0), 2.0);\n"
+        "   color = mask * vec4(1.0, 1.0, 1.0, 1.0);\n" 
+        "}\n"; 
+
+    Shader::Load("checkers", checker_vertex, checker_fragment, nullptr); 
+
+    grid = std::make_unique<Graphics::Rectangle>(0, 0, System::Window::m_width, System::Window::m_height);
+    grid->m_graphicsShader = Shader::GetShader("checkers");
+
+}
+
+
+//----------------------------
+
+
 void GUI::RenderGrid()
 {
+
+    if (grid)
+        grid->Render();
+
     // static ImVector<ImVec2> points;
     // static ImVec2 scrolling(0.0f, 0.0f);
     // static bool opt_enable_grid = true;

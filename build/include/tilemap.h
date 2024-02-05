@@ -15,7 +15,8 @@ class MapManager {
             uint32_t mapWidth, 
             uint32_t mapHeight, 
             uint32_t tileWidth, 
-            uint32_t tileHeight
+            uint32_t tileHeight,
+            uint32_t depth
         );
         
         static void ClearMap();

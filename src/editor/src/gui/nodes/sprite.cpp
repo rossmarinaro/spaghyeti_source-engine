@@ -16,7 +16,7 @@ SpriteNode::SpriteNode(const std::string &id):
         filter_nearest(true),
         frame(1),
         anim(1),
-        depth(0)
+        depth(1)
 
 {
 

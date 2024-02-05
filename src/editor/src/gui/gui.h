@@ -11,6 +11,8 @@
 #include "../../../../vendors/imgui/imgui_internal.h"
 #include "../../../../vendors/imgui/imgui_stdlib.h"
 
+#include "../../../../build/include/manager.h"
+
 
 class GUI { 
 
@@ -31,6 +33,9 @@ class GUI {
 
         static inline ImGuiIO io;
 
+        static inline std::unique_ptr<Graphics::Rectangle> grid;
+
+        static void CreateGrid();
         static void RenderGrid();
         static void RenderNodes();
         static void RenderDockSpace();

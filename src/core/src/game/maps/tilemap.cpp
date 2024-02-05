@@ -14,7 +14,8 @@ void MapManager::CreateLayer (
     uint32_t mapWidth,
     uint32_t mapHeight,
     uint32_t tileWidth,
-    uint32_t tileHeight
+    uint32_t tileHeight,
+    uint32_t depth
 )
 {
 
@@ -50,9 +51,11 @@ void MapManager::CreateLayer (
 
             //skip if no tile
 
-            if (tileType > -1) {
+            if (tileType > -1) 
+            {
                 auto tile = Game::CreateSprite(texture_key, x * tileWidth, y * tileHeight, tileType);
-                tilesprites.push_back(tile);
+                tile->m_depth = depth;
+                tilesprites.push_back(tile); 
             }
 
         }
@@ -68,7 +71,7 @@ void MapManager::CreateLayer (
 void MapManager::ClearMap()
 {
 
-  for (auto &tile : tilesprites) {
+  for (auto &tile : tilesprites) {                
 
     Game::DestroySprite(tile);
 

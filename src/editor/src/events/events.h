@@ -17,7 +17,7 @@ class EventListener {
         void BuildAndRun();
         void OpenFile();
         void Serialize(json &data);
-        void Deserialize(std::ifstream &JSON, const std::string &directory, std::filesystem::path &result);
+        void Deserialize(std::ifstream &JSON, std::filesystem::path &result);
 
     private:
  

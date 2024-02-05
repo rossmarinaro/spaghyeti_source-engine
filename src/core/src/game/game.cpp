@@ -122,7 +122,6 @@ void Game::UpdateFrame()
         if ((graphic.get() && graphic) && graphic.get()->m_debug)
             graphic->Render();
 
-
     //render input cursor
 
     System::Application::inputs->RenderCursor();
@@ -138,9 +137,9 @@ void Game::UpdateFrame()
 
     //depth sort
 
-    std::sort(spriteQueue.begin(), spriteQueue.end(), [](auto a, auto b){ return a->m_depth > b->m_depth; });
-    std::sort(textQueue.begin(), textQueue.end(), [](auto a, auto b){ return a->m_depth > b->m_depth; });
-    std::sort(UIQueue.begin(), UIQueue.end(), [](auto a, auto b){ return a->m_depth > b->m_depth; });
+    std::sort(spriteQueue.begin(), spriteQueue.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
+    std::sort(textQueue.begin(), textQueue.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
+    std::sort(UIQueue.begin(), UIQueue.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
 
 
     //propagate input functionality to game instance
