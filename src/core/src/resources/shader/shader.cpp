@@ -53,7 +53,7 @@ void Shader::Update(Camera* camera)
 
 Shader& Shader::GetShader(const std::string &key) {
     return System::Resources::Manager::shaders[key];
-}
+} 
 
 
 //-------------------------------

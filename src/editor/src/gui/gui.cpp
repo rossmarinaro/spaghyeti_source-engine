@@ -81,6 +81,60 @@ void GUI::AlignForWidth(float width, float alignment)
 }
 
 
+//----------------------------------- background grid
+
+
+void GUI::CreateGrid()
+{
+
+    static const char* checker_vertex = 
+
+        "#version 330 core\n"
+
+        "layout (location = 0) in vec2 vert;\n"
+
+        "out vec2 position;\n"
+
+        "uniform mat4 model;\n"
+
+        "void main()\n"
+        "{\n"    
+            "gl_Position =  model * vec4(vert.xy, 0.0, 1.0);\n" 
+        "}\n"; 
+
+
+    static const char* checker_fragment =  
+
+        "#version 330 core\n"
+
+        "precision mediump float;\n"
+
+        "uniform float alphaVal;\n"
+        "vec2 pitch  = vec2(50., 50.);\n"
+
+        "void main() {\n"    
+
+            "if (mod(gl_FragCoord.x, pitch[0]) < 1. ||\n"
+                "mod(gl_FragCoord.y, pitch[1]) < 1.) {\n"
+                "gl_FragColor = vec4(0.25, 0.25, 0.25, alphaVal);\n"
+            "} else {\n"
+                "gl_FragColor = vec4(0.);\n"
+            "}\n"
+        "}\n";
+
+
+
+    Shader::Load("checkers", checker_vertex, checker_fragment, nullptr); 
+
+    grid = Game::CreateQuad(-10, -10, System::Window::m_scaleWidth, System::Window::m_scaleHeight);
+    //grid->SetDepth(0);
+    //grid->SetDebug(true);
+    grid->m_shader = Shader::GetShader("checkers");
+
+
+}
+
+
 //----------------------------------- render GUI
 
 
@@ -94,8 +148,6 @@ void GUI::Render()
     ImGui_ImplGlfw_NewFrame();
 
     ImGui::NewFrame();
-    
-    RenderGrid();
 
     if (show_init)
         ShowOptionsInit();
@@ -109,6 +161,11 @@ void GUI::Render()
     ImGui::Render();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    if (grid)
+    {
+        //grid->SetScale(System::Window::m_scaleWidth, System::Window::m_scaleHeight);
+    }
 
     //Renderer::CreateFrameBuffer();
 }

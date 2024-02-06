@@ -4521,7 +4521,7 @@ void ImGui::StartMouseMovingWindowOrNode(ImGuiWindow* window, ImGuiDockNode* nod
     const bool clicked = IsMouseClicked(0);
     const bool dragging = IsMouseDragging(0);
     if (can_undock_node && dragging)
-        DockContextQueueUndockNode(&g, node); // Will lead to DockNodeStartMouseMovingWindow() -> StartMouseMovingWindow() being called next frame
+        DockContextUndockNode(&g, node); // Will lead to DockNodeStartMouseMovingWindow() -> StartMouseMovingWindow() being called next frame
     else if (!can_undock_node && (clicked || dragging) && g.MovingWindow != window)
         StartMouseMovingWindow(window);
 }
@@ -15328,7 +15328,7 @@ namespace ImGui
     // ImGuiDockContext
     static ImGuiDockNode*   DockContextAddNode(ImGuiContext* ctx, ImGuiID id);
     static void             DockContextRemoveNode(ImGuiContext* ctx, ImGuiDockNode* node, bool merge_sibling_into_parent_node);
-    static void             DockContextQueueNotifyRemovedNode(ImGuiContext* ctx, ImGuiDockNode* node);
+    static void             DockContextNotifyRemovedNode(ImGuiContext* ctx, ImGuiDockNode* node);
     static void             DockContextProcessDock(ImGuiContext* ctx, ImGuiDockRequest* req);
     static void             DockContextPruneUnusedSettingsNodes(ImGuiContext* ctx);
     static ImGuiDockNode*   DockContextBindNodeToWindow(ImGuiContext* ctx, ImGuiWindow* window);
@@ -15745,17 +15745,17 @@ void ImGui::DockContextBuildAddWindowsToNodes(ImGuiContext* ctx, ImGuiID root_id
 //-----------------------------------------------------------------------------
 // Docking: ImGuiDockContext Docking/Undocking functions
 //-----------------------------------------------------------------------------
-// - DockContextQueueDock()
-// - DockContextQueueUndockWindow()
-// - DockContextQueueUndockNode()
-// - DockContextQueueNotifyRemovedNode()
+// - DockContextDock()
+// - DockContextUndockWindow()
+// - DockContextUndockNode()
+// - DockContextNotifyRemovedNode()
 // - DockContextProcessDock()
 // - DockContextProcessUndockWindow()
 // - DockContextProcessUndockNode()
 // - DockContextCalcDropPosForDocking()
 //-----------------------------------------------------------------------------
 
-void ImGui::DockContextQueueDock(ImGuiContext* ctx, ImGuiWindow* target, ImGuiDockNode* target_node, ImGuiWindow* payload, ImGuiDir split_dir, float split_ratio, bool split_outer)
+void ImGui::DockContextDock(ImGuiContext* ctx, ImGuiWindow* target, ImGuiDockNode* target_node, ImGuiWindow* payload, ImGuiDir split_dir, float split_ratio, bool split_outer)
 {
     IM_ASSERT(target != payload);
     ImGuiDockRequest req;
@@ -15769,7 +15769,7 @@ void ImGui::DockContextQueueDock(ImGuiContext* ctx, ImGuiWindow* target, ImGuiDo
     ctx->DockContext.Requests.push_back(req);
 }
 
-void ImGui::DockContextQueueUndockWindow(ImGuiContext* ctx, ImGuiWindow* window)
+void ImGui::DockContextUndockWindow(ImGuiContext* ctx, ImGuiWindow* window)
 {
     ImGuiDockRequest req;
     req.Type = ImGuiDockRequestType_Undock;
@@ -15777,7 +15777,7 @@ void ImGui::DockContextQueueUndockWindow(ImGuiContext* ctx, ImGuiWindow* window)
     ctx->DockContext.Requests.push_back(req);
 }
 
-void ImGui::DockContextQueueUndockNode(ImGuiContext* ctx, ImGuiDockNode* node)
+void ImGui::DockContextUndockNode(ImGuiContext* ctx, ImGuiDockNode* node)
 {
     ImGuiDockRequest req;
     req.Type = ImGuiDockRequestType_Undock;
@@ -15785,7 +15785,7 @@ void ImGui::DockContextQueueUndockNode(ImGuiContext* ctx, ImGuiDockNode* node)
     ctx->DockContext.Requests.push_back(req);
 }
 
-void ImGui::DockContextQueueNotifyRemovedNode(ImGuiContext* ctx, ImGuiDockNode* node)
+void ImGui::DockContextNotifyRemovedNode(ImGuiContext* ctx, ImGuiDockNode* node)
 {
     ImGuiDockContext* dc  = &ctx->DockContext;
     for (ImGuiDockRequest& req : dc->Requests)
@@ -18312,7 +18312,7 @@ void ImGui::DockBuilderRemoveNodeChildNodes(ImGuiID root_id)
                 if (node->IsCentralNode())
                     has_central_node = true;
                 if (root_id != 0)
-                    DockContextQueueNotifyRemovedNode(ctx, node);
+                    DockContextNotifyRemovedNode(ctx, node);
                 if (root_node)
                 {
                     DockNodeMoveWindows(root_node, node);
@@ -18898,7 +18898,7 @@ void ImGui::BeginDockableDragDropTarget(ImGuiWindow* window)
 
             // Queue docking request
             if (split_data->IsDropAllowed && payload->IsDelivery())
-                DockContextQueueDock(ctx, window, split_data->SplitNode, payload_window, split_data->SplitDir, split_data->SplitRatio, split_data == &split_outer);
+                DockContextDock(ctx, window, split_data->SplitNode, payload_window, split_data->SplitDir, split_data->SplitRatio, split_data == &split_outer);
         }
     }
     EndDragDropTarget();

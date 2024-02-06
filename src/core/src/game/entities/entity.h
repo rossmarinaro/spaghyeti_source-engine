@@ -87,6 +87,50 @@ class Entity {
 		virtual ~Entity() { g_ID--; };
 };
 
+//quad
+
+class Quad : public Entity {
+
+    public:
+
+	  	Shader m_shader;
+
+		glm::vec3 m_strokeColor;
+		glm::vec3 m_fillColor;
+
+        short vertices[12];
+            
+		float width, height;
+
+		inline void SetStroke(const glm::vec3 &stroke) { m_strokeColor = stroke; }
+		inline void SetFill(const glm::vec3 &fill) { m_fillColor = fill; } 
+
+		Quad(
+			const char* type, 
+			float x = 0.0f, 
+			float y = 0.0f, 
+			float width = 20.0f, 
+			float height = 20.0f
+		): 
+			Entity(glm::vec2(x, y)),
+				width(width),
+				height(height)
+					{ std::cout << "Entity: quad created.\n"; }
+
+		Quad(float x, float y, float width, float height): 
+			Entity(glm::vec2(x, y)),
+				width(width),
+				height(height)
+					{ std::cout << "Entity: quad destroyed.\n"; }
+
+
+		~Quad() = default;
+
+		void Render();
+
+
+};
+
 //text
 
 class Text : public Entity {
@@ -121,7 +165,7 @@ class Sprite : public Entity {
 
 	public:  
 
-		Shader &m_shader; 
+		Shader m_shader; 
 			
 		Graphics::Texture2D &m_texture; 
 
@@ -173,7 +217,6 @@ class Sprite : public Entity {
 
 		Sprite(const std::string &key, const glm::vec2 &position = glm::vec2(0.0f, 0.0f), int frame = 0);
 		Sprite(const std::string &key, const glm::vec2 &position, const char* type);
-	
 		~Sprite() { std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; };
 
 
@@ -207,9 +250,6 @@ class Player : public Sprite {
 		~Player() { std::cout << "Sprite: player destroyed.\n"; };
 
 };
-
-
-
 
 
 

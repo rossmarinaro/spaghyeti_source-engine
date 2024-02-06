@@ -21,6 +21,7 @@
 
 class Entity {
 
+
 	public: 
 
 		static inline int DEPTH = 0, g_ID = 0;
@@ -44,7 +45,7 @@ class Entity {
 			m_position.x = x;
 			m_position.y = y; 
 		}
-
+		
 		inline void SetTint(const glm::vec3 &tint) { m_tint = tint; }
 		inline void SetFlipX(bool flipX) { m_flipX = flipX; };
 		inline void SetFlipY(bool flipY) { m_flipY = flipY; };
@@ -86,6 +87,49 @@ class Entity {
 		virtual ~Entity() { g_ID--; };
 };
 
+//quad
+
+class Quad : public Entity {
+
+    public:
+
+	  	Shader m_shader;
+
+		glm::vec3 m_strokeColor;
+		glm::vec3 m_fillColor;
+
+        short vertices[12];
+            
+		float width, height;
+
+		inline void SetStroke(const glm::vec3 &stroke) { m_strokeColor = stroke; }
+		inline void SetFill(const glm::vec3 &fill) { m_fillColor = fill; } 
+
+		Quad(
+			const char* type, 
+			float x = 0.0f, 
+			float y = 0.0f, 
+			float width = 20.0f, 
+			float height = 20.0f
+		): 
+			Entity(glm::vec2(x, y)),
+				width(width),
+				height(height)
+					{ std::cout << "Entity: quad created.\n"; }
+
+		Quad(float x, float y, float width, float height): 
+			Entity(glm::vec2(x, y)),
+				width(width),
+				height(height)
+					{ std::cout << "Entity: quad destroyed.\n"; }
+
+
+		~Quad() = default;
+
+		void Render();
+
+};
+
 //text
 
 class Text : public Entity {
@@ -97,7 +141,7 @@ class Text : public Entity {
 
         static void Init();
         static void ShutDown();
-
+ 
         void Render();
 		void SetText(const std::string &content);
  
@@ -120,7 +164,7 @@ class Sprite : public Entity {
 
 	public:  
 
-		Shader &m_shader; 
+		Shader m_shader; 
 			
 		Graphics::Texture2D &m_texture; 
 
@@ -167,12 +211,11 @@ class Sprite : public Entity {
 		void SetVelocityX(float velX);
 		void SetVelocityY(float velY);
 		
-		void Animate(const std::string &animKey, bool yoyo = false, int rate = 2);   
+		void Animate(const std::string &animKey, bool yoyo = false, int rate = 2); 
 		void Render();
 
 		Sprite(const std::string &key, const glm::vec2 &position = glm::vec2(0.0f, 0.0f), int frame = 0);
 		Sprite(const std::string &key, const glm::vec2 &position, const char* type);
-	
 		~Sprite() { std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; };
 
 

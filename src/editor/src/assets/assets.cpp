@@ -7,13 +7,13 @@ std::string AssetManager::GetFolder(const std::string &asset)
 {
     std::string folder;
 
-    if (GetType(asset) == "image") 
+    if (System::Utils::GetFileType(asset) == "image") 
         folder = "\\images\\";
 
-    if (GetType(asset) == "audio") 
+    if (System::Utils::GetFileType(asset) == "audio") 
         folder = "\\audio\\";
 
-    if (GetType(asset) == "data") 
+    if (System::Utils::GetFileType(asset) == "data") 
         folder = "\\data\\";
 
     return folder;
@@ -27,13 +27,13 @@ std::string AssetManager::GetThumbnail(const std::string &asset)
 {
     std::string texture;
 
-    if (GetType(asset) == "image") 
+    if (System::Utils::GetFileType(asset) == "image") 
         texture = asset; 
     
-    if (GetType(asset) == "audio") 
+    if (System::Utils::GetFileType(asset) == "audio") 
         texture = "audio src";
     
-    if (GetType(asset) == "data") 
+    if (System::Utils::GetFileType(asset) == "data") 
         texture = "data src";
     
 
@@ -41,20 +41,3 @@ std::string AssetManager::GetThumbnail(const std::string &asset)
 }
 
 
-//-----------------------------
-
-
-std::string AssetManager::GetType(const std::string &asset)
-{
-
-    if (System::Utils::str_endsWith(asset, ".png")) 
-        return "image"; 
-    
-    if (System::Utils::str_endsWith(asset, ".flac")) 
-        return "audio";
-    
-    if (System::Utils::str_endsWith(asset, ".csv")) 
-        return "data";
-
-    return "";
-}

@@ -202,8 +202,7 @@ void Sprite::Render()
     if (this->m_body.self != nullptr)
     {
 
-        if (this->m_body.self->IsEnabled())
-        {
+        if (this->m_body.self->IsEnabled()) {
             b2Vec2 position = this->m_body.self->GetPosition();
             this->SetPosition(glm::vec2(position.x + this->m_body.offset.x, position.y + this->m_body.offset.y)); 
         }
@@ -218,7 +217,7 @@ void Sprite::Render()
 }
 
 
-//-------------------------------------- generic sprite
+//-------------------------------------- standard sprite
 
 
 Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
@@ -226,7 +225,7 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
     Entity(position),
         m_key(key),  
         m_currentFrame(frame),
-        m_shader(System::Resources::Manager::shader->GetShader("sprite")), 
+        m_shader(Shader::GetShader("sprite")), 
         m_texture(System::Resources::Manager::texture2D->GetTexture(key)),
         m_anims(System::Resources::Manager::GetAnimations(key)),
         m_isSpritesheet(false)
@@ -247,7 +246,7 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, const char* ty
     Entity(position),
         m_key(key),  
         m_type(type),
-        m_shader(System::Resources::Manager::shader->GetShader(type)), 
+        m_shader(Shader::GetShader(type)), 
         m_texture(System::Resources::Manager::texture2D->GetTexture(key)),
         m_isSpritesheet(false)
 

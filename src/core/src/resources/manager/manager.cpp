@@ -36,6 +36,13 @@ void Manager::Clear()
 
 void Manager::RegisterAssets()
 {
+
+    //load base texture (white 1 x 1)
+
+    static const char data[] = { 0xff, 0xff, 0xff, 0xff };
+
+    LoadRawImage("base", data, 1, 1, 4);
+
     //load textures
 
     for (const auto &texture : System::Application::resources->file_image_assets)
@@ -53,24 +60,20 @@ void Manager::LoadFile(const char* key, const char* path)
 {
 
     if (
-       System::Utils::str_endsWith(path, ".png") ||
-       System::Utils::str_endsWith(path, ".jpg") &&
-       System::Application::resources->file_image_assets.find(key) == System::Application::resources->file_image_assets.end()
+        System::Utils::GetFileType(path) == "image" &&
+        System::Application::resources->file_image_assets.find(key) == System::Application::resources->file_image_assets.end()
     )
         System::Application::resources->file_image_assets.insert({key, path});
 
     else if (
-        System::Utils::str_endsWith(path, ".flac") ||
-        System::Utils::str_endsWith(path, ".ogg") && 
+        System::Utils::GetFileType(path) == "audio" && 
         System::Application::resources->file_audio_assets.find(key) == System::Application::resources->file_audio_assets.end()
 
     )
         System::Application::resources->file_audio_assets.insert({key, path});
 
     else if (
-        System::Utils::str_endsWith(path, ".txt") ||
-        System::Utils::str_endsWith(path, ".json") ||
-        System::Utils::str_endsWith(path, ".csv") &&
+        System::Utils::GetFileType(path) == "data" &&
         System::Application::resources->file_text_assets.find(key) == System::Application::resources->file_text_assets.end()
     )
         System::Application::resources->file_text_assets.insert({key, path});

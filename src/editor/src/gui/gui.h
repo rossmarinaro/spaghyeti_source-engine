@@ -21,7 +21,6 @@ class GUI {
         static inline bool  m_running = true,
                             show_init = true,
                             show_quit = false,
-                            show_toolbar = false,
                             show_grid = false;
     
         static void Launch();
@@ -33,10 +32,9 @@ class GUI {
 
         static inline ImGuiIO io;
 
-        static inline std::unique_ptr<Graphics::Rectangle> grid;
+        static inline std::shared_ptr<Graphics::Rectangle> grid;
 
         static void CreateGrid();
-        static void RenderGrid();
         static void RenderNodes();
         static void RenderDockSpace();
         static void RenderLogs();

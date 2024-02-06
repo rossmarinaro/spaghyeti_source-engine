@@ -53,7 +53,7 @@ class Game {
             {
                 auto e = std::make_shared<T>(key, x, y);
 
-                spriteQueue.push_back(e);
+                sprites.push_back(e);
                 entities.insert(e);
 
                 return e;
@@ -95,7 +95,7 @@ class Game {
                     );
                 }
 
-                spriteQueue.push_back(player);
+                sprites.push_back(player);
 
                 entities.insert(player);
 
@@ -105,6 +105,7 @@ class Game {
         static std::shared_ptr<Sprite> CreateUI(const std::string &key, float x, float y, int frame = 0);
         static std::shared_ptr<Sprite> CreateSprite(const std::string &key, float x, float y, int frame = 0, float scale = 1.0f);
         static std::shared_ptr<Text> CreateText(const std::string &content, float x, float y);
+        static std::shared_ptr<Quad> CreateQuad(float x, float y, float width, float height);
         
         static std::shared_ptr<Graphics::Rectangle> CreateRect(float x, float y, float width, float height);
         static std::shared_ptr<Graphics::Rectangle> CreateRect(auto &sprite);
@@ -117,20 +118,21 @@ class Game {
         static void RemoveFromVector(std::vector<std::shared_ptr<Sprite>>& vector, std::shared_ptr<Sprite> sprite);
         static void RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::shared_ptr<Text> text);
 
-        static inline std::set<std::shared_ptr<Entity>> entities;
+        //render queues
+
+        static inline std::vector<std::shared_ptr<Entity>> entities;
+
+        static inline std::vector<std::shared_ptr<Quad>> quads;
+        static inline std::vector<std::shared_ptr<Sprite>> sprites;
+        static inline std::vector<std::shared_ptr<Sprite>> UIs;
+        static inline std::vector<std::shared_ptr<Text>> texts;
+        static inline std::vector<std::shared_ptr<Graphics::Shape>> debugGraphics;
 
         std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
         std::unique_ptr<Graphics::Rectangle> cursor = nullptr;
 
-    //render queues
-
-        static inline std::vector<std::shared_ptr<Sprite>> spriteQueue;
-        static inline std::vector<std::shared_ptr<Sprite>> UIQueue;
-        static inline std::vector<std::shared_ptr<Text>> textQueue;
-        static inline std::vector<std::shared_ptr<Graphics::Shape>> debugQueue;
 
     private:
-
 
         static inline ma_device music;
         static inline bool gameState = false;

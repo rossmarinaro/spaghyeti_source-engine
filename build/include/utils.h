@@ -51,6 +51,8 @@ namespace System {
 			
 			static bool CoinFlip(void);
 
+			static std::string GetFileType(const std::string &path);
+
 			static std::string ReplaceFrom(const std::string &str, const char* position, const char* replace_str);
 			
 			static inline bool str_includes(const std::string &str, const std::string &sub) { return str.find(sub) != std::string::npos; }

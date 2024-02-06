@@ -6,7 +6,7 @@
 
 #include "../app/app.h"
 #include "./texture.h"
-
+#include "../game/entities/entity.h"
 
 using namespace Graphics;
 
@@ -63,7 +63,8 @@ void Primitive::Draw (int shape, int dimension, int slot, int vertices, int draw
 
 Shape::Shape(float x, float y, int numOfVerts, const char* type): 
     Primitive(numOfVerts), 
-        m_self(this),
+        m_self(this), 
+        m_alpha(1),
         x(x),
         y(y), 
         m_type(type),
@@ -93,6 +94,7 @@ void Line::Render(int drawStyle)
 
     this->m_graphicsShader.SetMat4("model", this->m_model, true);
     this->m_graphicsShader.SetVec3f("tint", this->m_strokeColor, true);
+    this->m_graphicsShader.SetFloat("alphaVal", this->m_alpha, true);
 
     this->Bind_Buffer(vertices, this->VBO, 0, 2, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 2 * sizeof(float));
     
@@ -123,6 +125,7 @@ void Triangle::Render(int drawStyle)
 
     this->m_graphicsShader.SetMat4("model", this->m_model, true);
     this->m_graphicsShader.SetVec3f("tint", this->m_fillColor, true);
+    this->m_graphicsShader.SetFloat("alphaVal", this->m_alpha, true);
 
     this->Bind_Buffer(vertices, this->VBO, 0, 3, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 3 * sizeof(float));
 
@@ -151,7 +154,8 @@ void Rectangle::Render(int drawStyle)
     this->m_model = glm::translate(this->m_model, glm::vec3(-0.5f * this->width - this->x, -0.5f * this->height - this->y, 0.0f));
 
     this->m_graphicsShader.SetVec3f("tint", this->m_strokeColor, true);
-    this->m_graphicsShader.SetMat4("model", this->m_model, true);        
+    this->m_graphicsShader.SetMat4("model", this->m_model, true);  
+    this->m_graphicsShader.SetFloat("alphaVal", this->m_alpha, true);       
 
     //triangle A
 
@@ -180,7 +184,49 @@ void Rectangle::Render(int drawStyle)
     #endif
 }
 
+//quad 
+void Quad::Render() 
+{
 
+    this->m_model = glm::mat4(1.0f); 
+
+    this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->m_position.x, 0.5f * this->height + this->m_position.y, 0.0f)); 
+
+    if (this->m_rotation > 0)
+        this->m_model = glm::rotate(this->m_model, glm::radians(this->m_rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
+
+    this->m_model = glm::translate(this->m_model, glm::vec3(-0.5f * this->width - this->m_position.x, -0.5f * this->height - this->m_position.y, 0.0f));
+
+    this->m_shader.SetVec3f("tint", this->m_strokeColor, true);
+    this->m_shader.SetMat4("model", this->m_model, true);  
+    this->m_shader.SetFloat("alphaVal", this->m_alpha, true);       
+
+    //triangle A
+
+    this->vertices[0] = this->m_position.x + this->width;  
+    this->vertices[1] = this->m_position.y;
+    this->vertices[2] = this->m_position.x + this->width;
+    this->vertices[3] = this->m_position.y + this->height;
+    this->vertices[4] = this->m_position.x;
+    this->vertices[5] = this->m_position.y;
+
+    //triangle B
+
+    this->vertices[6] = this->m_position.x + this->width;
+    this->vertices[7] = this->m_position.y + this->height;
+    this->vertices[8] = this->m_position.x;
+    this->vertices[9] = this->m_position.y + this->height;
+    this->vertices[10] = this->m_position.x;
+    this->vertices[11] = this->m_position.y;
+
+    this->Bind_Buffer(this->vertices, this->VBO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
+
+    #ifdef __EMSCRIPTEN__
+        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
+    #else
+        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, GL_FILL); 
+    #endif
+}
 
 //--------------------------------- Texture 2D
 
@@ -341,7 +387,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, auto &data)
 
     SetFiltering();
 
-    //unbind texture
+    //unbind texture 
 
     glBindTexture(GL_TEXTURE_2D, 0);
 

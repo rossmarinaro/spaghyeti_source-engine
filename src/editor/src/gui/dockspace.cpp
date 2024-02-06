@@ -295,7 +295,7 @@ void GUI::RenderDockSpace()
                 //window ID to split, direction, fraction (between 0 and 1), the final two setting let's us choose which id we want (which ever one we DON'T set as NULL, will be returned by the function)
                                                                   
                 auto dock_id_down_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Down, 0.6f, nullptr, &dockspace_id_ws);
-                auto dock_id_up_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Up, 0.6f, nullptr, &dockspace_id_ws);
+                auto dock_id_up_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Up, 0.8f, nullptr, &dockspace_id_ws);
 
                 //we now dock our windows into the docking node we made above
                 ImGui::DockBuilderDockWindow("Camera", dock_id_up_ws);

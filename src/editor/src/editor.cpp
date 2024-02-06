@@ -28,7 +28,7 @@ void RemoveTempFiles()
 
 void Editor::Update() 
 {
- 
+
     Application::Update(); 
 
     Shader::Update(camera);

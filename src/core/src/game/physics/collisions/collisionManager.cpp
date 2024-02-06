@@ -10,8 +10,8 @@ void CollisionManager::BeginContact(b2Contact* contact)
     b2BodyUserData bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData();
     b2BodyUserData bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
 
-    std::set<std::shared_ptr<Entity>>::iterator it = System::Application::game->entities.begin();
-    std::set<std::shared_ptr<Entity>>::iterator end = System::Application::game->entities.end();
+    std::vector<std::shared_ptr<Entity>>::iterator it = System::Application::game->entities.begin();
+    std::vector<std::shared_ptr<Entity>>::iterator end = System::Application::game->entities.end();
 
     for (; it != end; ++it)
     {
@@ -41,8 +41,8 @@ void CollisionManager::EndContact(b2Contact* contact)
     b2BodyUserData bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData();
     b2BodyUserData bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
 
-    std::set<std::shared_ptr<Entity>>::iterator it = System::Application::game->entities.begin();
-    std::set<std::shared_ptr<Entity>>::iterator end = System::Application::game->entities.end();
+    std::vector<std::shared_ptr<Entity>>::iterator it = System::Application::game->entities.begin();
+    std::vector<std::shared_ptr<Entity>>::iterator end = System::Application::game->entities.end();
 
     for (; it != end; ++it)
     {

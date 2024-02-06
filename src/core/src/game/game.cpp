@@ -51,8 +51,8 @@ void Game::Exit()
 
     gameState = false;
 
-    spriteQueue.clear();
-    debugQueue.clear();
+    sprites.clear();
+    debugGraphics.clear();
 
     #if DEVELOPMENT == 1 
         delete physics->debug;
@@ -98,27 +98,34 @@ void Game::UpdateFrame()
 
     accumulator += time->m_delta;
 
-    while (accumulator >= time->timeStep)
-    {
+    while (accumulator >= time->timeStep) {
         physics->world.Step(time->timeStep, physics->velocityIterations, physics->positionIterations);
         accumulator -= time->timeStep;
     }
 
+    //current entities
+
+    entities.clear();
+
+    for (const auto &sprite : sprites)
+       entities.push_back(sprite);
+
+    for (const auto &UI : UIs)
+        entities.push_back(UI);
+
+    for (const auto &text : texts)
+        entities.push_back(text);
+
+    for (const auto &quad : quads)
+        entities.push_back(quad);
+
     //render queues
- 
-    for (const auto &sprite : spriteQueue)
-        if (sprite.get() && sprite.get()->m_renderable)
-            sprite->Render(); 
 
-    for (const auto &UI : UIQueue)
-        if ((UI.get() && UI) && UI.get()->m_renderable)
-            UI->Render();
+    for (const auto &entity : entities)
+        if ((entity.get() && entity) && entity.get()->m_renderable)
+            entity->Render();
 
-    for (const auto &text : textQueue)
-        if ((text.get() && text) && text.get()->m_renderable)
-            text->Render();
-
-    for (const auto &graphic : debugQueue)
+    for (const auto &graphic : debugGraphics)
         if ((graphic.get() && graphic) && graphic.get()->m_debug)
             graphic->Render();
 
@@ -137,10 +144,7 @@ void Game::UpdateFrame()
 
     //depth sort
 
-    std::sort(spriteQueue.begin(), spriteQueue.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
-    std::sort(textQueue.begin(), textQueue.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
-    std::sort(UIQueue.begin(), UIQueue.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
-
+    std::sort(entities.begin(), entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
 
     //propagate input functionality to game instance
     
@@ -155,12 +159,12 @@ void Game::UpdateFrame()
 void Game::DestroyUI()
 {
 
-    for (const auto &UI : UIQueue)
+    for (const auto &UI : UIs)
     {
-        std::vector<std::shared_ptr<Sprite>>::iterator it = std::find(UIQueue.begin() - 1, UIQueue.end() - 1, UI);
+        std::vector<std::shared_ptr<Sprite>>::iterator it = std::find(UIs.begin() - 1, UIs.end() - 1, UI);
 
-        if (it != UIQueue.end())
-            UIQueue.erase(it);
+        if (it != UIs.end())
+            UIs.erase(it);
 
         DestroySprite(UI);
     }
@@ -206,10 +210,10 @@ void Game::RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::sha
 void Game::DestroySprite(std::shared_ptr<Sprite> sprite)
 {
 
-    std::vector<std::shared_ptr<Sprite>>::iterator it = std::find(spriteQueue.begin() - 1, spriteQueue.end() - 1, sprite);
+    std::vector<std::shared_ptr<Sprite>>::iterator it = std::find(sprites.begin() - 1, sprites.end() - 1, sprite);
 
-    if (it != spriteQueue.end())
-       spriteQueue.erase(it);
+    if (it != sprites.end())
+       sprites.erase(it);
     
     sprite->m_renderable = false;
 
@@ -230,10 +234,10 @@ void Game::DestroySprite(std::shared_ptr<Sprite> sprite)
 void Game::DestroyText(std::shared_ptr<Text> text)
 {
 
-    std::vector<std::shared_ptr<Text>>::iterator it = std::find(textQueue.begin() - 1, textQueue.end() - 1, text);
+    std::vector<std::shared_ptr<Text>>::iterator it = std::find(texts.begin() - 1, texts.end() - 1, text);
 
-    if (it != textQueue.end())
-        textQueue.erase(it);
+    if (it != texts.end())
+        texts.erase(it);
 
     text.reset();
     text = nullptr; 
@@ -247,10 +251,10 @@ void Game::DestroyText(std::shared_ptr<Text> text)
 void Game::DestroyGraphic(std::shared_ptr<Graphics::Rectangle> graphic)
 {
 
-    std::vector<std::shared_ptr<Graphics::Shape>>::iterator g_it = std::find(debugQueue.begin() - 1, debugQueue.end() - 1, graphic);
+    std::vector<std::shared_ptr<Graphics::Shape>>::iterator g_it = std::find(debugGraphics.begin() - 1, debugGraphics.end() - 1, graphic);
 
-    if (g_it != debugQueue.end())
-        debugQueue.erase(g_it);
+    if (g_it != debugGraphics.end())
+        debugGraphics.erase(g_it);
 
     graphic->m_debug = false;
 
@@ -271,9 +275,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, floa
 
     sprite->SetScale(scale);
 
-    spriteQueue.push_back(sprite);
-
-    entities.insert(sprite);
+    sprites.push_back(sprite);
 
     return sprite;
 }
@@ -290,9 +292,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
     
     element->SetFrame(frame);
 
-    UIQueue.push_back(element);
-
-    entities.insert(element);
+    UIs.push_back(element);
 
     return element;
 }
@@ -307,7 +307,7 @@ std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, floa
 
     auto text = std::make_shared<Text>(content, x, y); 
 
-    textQueue.push_back(text);
+    texts.push_back(text);
 
     return text;
 }
@@ -321,9 +321,24 @@ std::shared_ptr<Graphics::Rectangle> Game::CreateRect(float x, float y, float wi
 
     auto rect = std::make_shared<Graphics::Rectangle>(x, y, width, height);
 
-    debugQueue.push_back(rect);
+    debugGraphics.push_back(rect);
 
     return rect;
+}
+
+
+
+//-----------------------------
+
+
+std::shared_ptr<Quad> Game::CreateQuad(float x, float y, float width, float height)
+{
+
+    auto quad = std::make_shared<Quad>(x, y, width, height);
+
+    quads.push_back(quad);
+
+    return quad;
 }
 
 
@@ -335,7 +350,7 @@ std::shared_ptr<Graphics::Rectangle> Game::CreateRect(auto &sprite)
 
     auto rect = std::make_shared<Graphics::Rectangle>(sprite);
 
-    debugQueue.push_back(rect);
+    debugGraphics.push_back(rect);
 
     return rect;
 }

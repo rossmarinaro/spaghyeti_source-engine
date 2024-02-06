@@ -339,10 +339,10 @@ void SpriteNode::Render()
 
                     //texture
         
-                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->currentTexture, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && AssetManager::GetType(Editor::selectedAsset.first) == "image")
+                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->currentTexture, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset.first) == "image")
                         ApplyTexture(Editor::selectedAsset);
 
-                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && AssetManager::GetType(Editor::selectedAsset.first) != "image")
+                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(Editor::selectedAsset.first) != "image")
                         ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
                         
                     if (this->currentTexture)

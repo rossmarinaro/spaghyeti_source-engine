@@ -688,7 +688,7 @@ void EventListener::BuildAndRun()
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
     game_src << "void " + name_upper + "::Run(Camera *camera) {\n" + commandData + "}\n\n";
-    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera *camera) {\n  for (const auto &sprite : spriteQueue) { \n      sprite->Render();\n      sprite->Update(inputs);\n   }   \n}\n\n\n";
+    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera *camera) {\n  for (const auto &sprite : sprites) { \n      sprite->Render();\n      sprite->Update(inputs);\n   }   \n}\n\n\n";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";

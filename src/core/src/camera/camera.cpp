@@ -25,7 +25,7 @@ glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
         height / m_zoom, 
         m_screenTop / m_zoom, 
         -1.0f, 
-        1.0f
+        1.0f 
     );
 }
 

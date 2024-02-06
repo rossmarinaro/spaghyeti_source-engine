@@ -10,7 +10,7 @@ bool System::Utils::CoinFlip(void)
     return randNum >= 6 ? true : false;
 }
 
-
+ 
 //---------------------------------- replace string from specific position
 
 
@@ -24,4 +24,31 @@ std::string System::Utils::ReplaceFrom(const std::string &str, const char* posit
         return new_str.replace(position_at, str.length(), replace_str);
 
     return nullptr;
+}
+
+//---------------------------------------
+
+std::string System::Utils::GetFileType(const std::string &path)
+{
+
+    if (
+        System::Utils::str_endsWith(path, ".png") ||
+        System::Utils::str_endsWith(path, ".jpg")
+    ) 
+        return "image"; 
+    
+    if (
+        System::Utils::str_endsWith(path, ".flac") ||
+        System::Utils::str_endsWith(path, ".ogg")
+    ) 
+        return "audio";
+    
+    if (
+        System::Utils::str_endsWith(path, ".txt") ||
+        System::Utils::str_endsWith(path, ".json") || 
+        System::Utils::str_endsWith(path, ".csv")
+    ) 
+        return "data";
+
+    return "";
 }

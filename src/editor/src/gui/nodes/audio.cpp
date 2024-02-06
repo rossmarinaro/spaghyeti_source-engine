@@ -59,11 +59,11 @@ void AudioNode::Render()
             {
 
                 if (ImGui::ImageButton("audio source", (void*)(intptr_t)this->audioTexture.ID, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0))) {
-                    if (AssetManager::GetType(Editor::selectedAsset.first) == "audio")
+                    if (System::Utils::GetFileType(Editor::selectedAsset.first) == "audio")
                         this->audio_source_name = Editor::selectedAsset.first;
                 }
                     
-                else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && AssetManager::GetType(this->audio_source_name) != "audio") 
+                else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(this->audio_source_name) != "audio") 
                     ImGui::SetTooltip("cannot set texture because selected asset is not of type audio.");
 
                 ImGui::SameLine();
