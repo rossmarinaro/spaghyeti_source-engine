@@ -108,10 +108,7 @@ class Game {
         static std::shared_ptr<Text> CreateText(const std::string &content, float x, float y);
         static std::shared_ptr<Quad> CreateQuad(float x, float y, float width, float height);
         
-        static std::shared_ptr<Graphics::Rectangle> CreateRect(float x, float y, float width, float height);
-        static std::shared_ptr<Graphics::Rectangle> CreateRect(auto &sprite);
-
-        static void DestroyGraphic(std::shared_ptr<Graphics::Rectangle> graphic);
+        static void DestroyGraphic(std::shared_ptr<Graphics::Shape> graphic);
         static void DestroyText(std::shared_ptr<Text> text);
         static void DestroySprite(std::shared_ptr<Sprite> sprite);
         static void DestroyUI();

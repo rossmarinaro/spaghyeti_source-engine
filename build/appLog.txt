@@ -1,13 +1,13 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Tue Feb 06 15:40:18 2024
-IMGui Version:  @ Tue Feb 06 15:40:19 2024
-GUI launched. @ Tue Feb 06 15:40:19 2024
-nodes deleted. @ Tue Feb 06 15:40:22 2024
-Workspace reset. @ Tue Feb 06 15:40:22 2024
-sprite node Untitled created. @ Tue Feb 06 15:40:23 2024
-Animator component added. @ Tue Feb 06 15:40:23 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Wed Feb 07 13:42:55 2024
+IMGui Version:  @ Wed Feb 07 13:42:56 2024
+GUI launched. @ Wed Feb 07 13:42:56 2024
+nodes deleted. @ Wed Feb 07 13:42:59 2024
+Workspace reset. @ Wed Feb 07 13:42:59 2024
+sprite node Untitled created. @ Wed Feb 07 13:43:00 2024
+Animator component added. @ Wed Feb 07 13:43:00 2024
 Project TestGame3 opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Tue Feb 06 15:40:23 2024
-GUI exited @ Tue Feb 06 15:40:32 2024
-Sprite node Untitled deleted. @ Tue Feb 06 15:40:32 2024
-nodes deleted. @ Tue Feb 06 15:40:32 2024
-Editor closed. @ Tue Feb 06 15:40:32 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Wed Feb 07 13:43:00 2024
+GUI exited @ Wed Feb 07 13:43:45 2024
+Sprite node Untitled deleted. @ Wed Feb 07 13:43:45 2024
+nodes deleted. @ Wed Feb 07 13:43:45 2024
+Editor closed. @ Wed Feb 07 13:43:45 2024

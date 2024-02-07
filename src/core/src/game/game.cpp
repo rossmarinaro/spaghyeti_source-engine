@@ -107,17 +107,17 @@ void Game::UpdateFrame()
 
     entities.clear();
 
+    for (const auto &quad : quads)
+        entities.push_back(quad);
+
     for (const auto &sprite : sprites)
-       entities.push_back(sprite);
+        entities.push_back(sprite);
 
     for (const auto &UI : UIs)
         entities.push_back(UI);
 
     for (const auto &text : texts)
         entities.push_back(text);
-
-    for (const auto &quad : quads)
-        entities.push_back(quad);
 
     //render queues
 
@@ -228,6 +228,7 @@ void Game::DestroySprite(std::shared_ptr<Sprite> sprite)
 
 }
 
+
 //-----------------------------
 
  
@@ -248,7 +249,7 @@ void Game::DestroyText(std::shared_ptr<Text> text)
 //-----------------------------
 
  
-void Game::DestroyGraphic(std::shared_ptr<Graphics::Rectangle> graphic)
+void Game::DestroyGraphic(std::shared_ptr<Graphics::Shape> graphic)
 {
 
     std::vector<std::shared_ptr<Graphics::Shape>>::iterator g_it = std::find(debugGraphics.begin() - 1, debugGraphics.end() - 1, graphic);
@@ -313,20 +314,6 @@ std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, floa
 }
 
 
-//-----------------------------
-
-
-std::shared_ptr<Graphics::Rectangle> Game::CreateRect(float x, float y, float width, float height)
-{
-
-    auto rect = std::make_shared<Graphics::Rectangle>(x, y, width, height);
-
-    debugGraphics.push_back(rect);
-
-    return rect;
-}
-
-
 
 //-----------------------------
 
@@ -341,17 +328,4 @@ std::shared_ptr<Quad> Game::CreateQuad(float x, float y, float width, float heig
     return quad;
 }
 
-
-//-----------------------------
-
-
-std::shared_ptr<Graphics::Rectangle> Game::CreateRect(auto &sprite)
-{
-
-    auto rect = std::make_shared<Graphics::Rectangle>(sprite);
-
-    debugGraphics.push_back(rect);
-
-    return rect;
-}
 

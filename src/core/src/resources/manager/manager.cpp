@@ -23,7 +23,7 @@ void Manager::Clear()
     {
        glDeleteTextures(1, &tex.second.ID);
        glBindTexture(GL_TEXTURE_2D, 0);
-       glDeleteVertexArrays(1, &tex.second.quadVAO);
+       glDeleteVertexArrays(1, &tex.second.VAO);
        glDeleteBuffers(1, &tex.second.VBO);
        glDeleteBuffers(1, &tex.second.UVBO);
     }

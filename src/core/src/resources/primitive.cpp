@@ -14,22 +14,23 @@ using namespace Graphics;
 //-------------------------------- base primitive
 
 
-void Primitive::GenBuffer ()
+void Primitive::GenBuffer()
 { 
 
-    glGenVertexArrays(1, &this->quadVAO); 
+    glGenVertexArrays(1, &this->VAO); 
     glGenBuffers(1, &this->VBO);
     glGenBuffers(1, &this->UVBO);
-    glBindVertexArray(this->quadVAO);
+    glBindVertexArray(this->VAO);
 }
 
 
 //--------------------------------
 
 
-void Primitive::Bind_Buffer (
-    auto &data, 
-    GLuint &buffer, 
+void Primitive::Bind_Buffer(
+    const auto &data, 
+    const GLuint &buffer, 
+    const GLuint &VAO,
     GLuint location, 
     GLint vecCount, 
     GLenum type, 
@@ -39,7 +40,7 @@ void Primitive::Bind_Buffer (
 ) 
 {
 
-    glBindVertexArray(this->quadVAO); 
+    glBindVertexArray(VAO); 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);    
     glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, draw);
     glVertexAttribPointer(location, vecCount, type, normal, stride, (void*)0);
@@ -62,8 +63,7 @@ void Primitive::Draw (int shape, int dimension, int slot, int vertices, int draw
 
 
 Shape::Shape(float x, float y, int numOfVerts, const char* type): 
-    Primitive(numOfVerts), 
-        m_self(this), 
+    Primitive(numOfVerts),
         m_alpha(1),
         x(x),
         y(y), 
@@ -72,14 +72,6 @@ Shape::Shape(float x, float y, int numOfVerts, const char* type):
         m_strokeColor(glm::vec3(0.0f, 1.0f, 0.0f)),
         m_fillColor(glm::vec3(1.0f, 1.0f, 1.0f)) {} 
 
-
-//---------------------------------------
-
-
-void Shape::Destroy() {
-    this->m_self = nullptr;
-    delete this->m_self;
-}
 
 
 //--------------------------------- shapes
@@ -96,12 +88,12 @@ void Line::Render(int drawStyle)
     this->m_graphicsShader.SetVec3f("tint", this->m_strokeColor, true);
     this->m_graphicsShader.SetFloat("alphaVal", this->m_alpha, true);
 
-    this->Bind_Buffer(vertices, this->VBO, 0, 2, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 2 * sizeof(float));
+    this->Bind_Buffer(vertices, this->VBO, this->VAO, 0, 2, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 2 * sizeof(float));
     
     #ifdef __EMSCRIPTEN__
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, 0);
+        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, 0);
     #else
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, drawStyle == 0 ? GL_FILL : GL_LINE); 
+        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, drawStyle == 0 ? GL_FILL : GL_LINE); 
     #endif
 } 
 
@@ -127,12 +119,12 @@ void Triangle::Render(int drawStyle)
     this->m_graphicsShader.SetVec3f("tint", this->m_fillColor, true);
     this->m_graphicsShader.SetFloat("alphaVal", this->m_alpha, true);
 
-    this->Bind_Buffer(vertices, this->VBO, 0, 3, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 3 * sizeof(float));
+    this->Bind_Buffer(vertices, this->VBO, this->VAO, 0, 3, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 3 * sizeof(float));
 
     #ifdef __EMSCRIPTEN__
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 3, 0);
+        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 3, 0);
     #else
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 3, drawStyle == 0 ? GL_FILL : GL_LINE); 
+        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 3, drawStyle == 0 ? GL_FILL : GL_LINE); 
     #endif
     
 }
@@ -175,16 +167,19 @@ void Rectangle::Render(int drawStyle)
     this->vertices[10] = this->x;
     this->vertices[11] = this->y;
 
-    this->Bind_Buffer(this->vertices, this->VBO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
+    this->Bind_Buffer(this->vertices, this->VBO, this->VAO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
 
     #ifdef __EMSCRIPTEN__
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
+        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
     #else
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, drawStyle == 0 ? GL_FILL : GL_LINE); 
+        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, drawStyle == 0 ? GL_FILL : GL_LINE); 
     #endif
 }
 
-//quad 
+
+//------------------------------- quad
+
+
 void Quad::Render() 
 {
 
@@ -219,14 +214,15 @@ void Quad::Render()
     this->vertices[10] = this->m_position.x;
     this->vertices[11] = this->m_position.y;
 
-    this->Bind_Buffer(this->vertices, this->VBO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
+    this->prim->Bind_Buffer(this->vertices, this->prim->VBO, this->prim->VAO , 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
 
     #ifdef __EMSCRIPTEN__
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
+        Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
     #else
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, GL_FILL); 
+        Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, GL_FILL); 
     #endif
 }
+
 
 //--------------------------------- Texture 2D
 
@@ -244,8 +240,7 @@ void Texture2D::SetChannels(Texture2D &texture, unsigned int channels)
     
     texture.Channels = channels;
 
-    if (texture.Channels == 4)
-    { 
+    if (texture.Channels == 4) { 
         texture.Internal_Format = GL_RGBA;
         texture.Image_Format = GL_RGBA;
     }
@@ -350,7 +345,7 @@ void Texture2D::UnLoad(const std::string &key)
 
     glDeleteTextures(1, &tex->ID);   
     glBindTexture(GL_TEXTURE_2D, 0); 
-    glDeleteVertexArrays(1, &tex->quadVAO); 
+    glDeleteVertexArrays(1, &tex->VAO); 
     glDeleteBuffers(1, &tex->VBO);
     glDeleteBuffers(1, &tex->UVBO);
 
@@ -392,7 +387,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, auto &data)
     glBindTexture(GL_TEXTURE_2D, 0);
 
     this->Bind();
-    this->GenBuffer();
+
 }
 
 //----------------------------------------
@@ -466,12 +461,12 @@ void Texture2D::Update(const glm::vec2 &position, bool flipX, bool flipY, int dr
 
     this->Bind();
 
-    this->Bind_Buffer(vertices, this->VBO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
-    this->Bind_Buffer(UVs, this->UVBO, 1, 2, GL_FLOAT, GL_TRUE, GL_STATIC_DRAW, 2 * sizeof(GLfloat));
+    this->Bind_Buffer(vertices, this->VBO, this->VAO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
+    this->Bind_Buffer(UVs, this->UVBO, this->VAO, 1, 2, GL_FLOAT, GL_TRUE, GL_STATIC_DRAW, 2 * sizeof(GLfloat));
 
     #ifdef __EMSCRIPTEN__
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
+        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
     #else
-        this->Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, GL_FILL); 
+        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, GL_FILL); 
     #endif
 }

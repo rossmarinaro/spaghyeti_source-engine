@@ -17,7 +17,7 @@ namespace Graphics {
 
         public:
 
-            unsigned int ID, quadVAO;
+            unsigned int ID, VAO;
             GLuint VBO, UVBO;
     
             glm::mat4 m_model; 
@@ -25,8 +25,9 @@ namespace Graphics {
             void GenBuffer ();
             
             void Bind_Buffer (
-                auto &data, 
-                GLuint &buffer, 
+                const auto &data, 
+                const GLuint &buffer, 
+                const GLuint &VAO,
                 GLuint location, 
                 GLint vecCount, 
                 GLenum type, 
@@ -35,7 +36,9 @@ namespace Graphics {
                 unsigned long long stride
             );
 
-            void Draw (int shape, int dimension, int slot, int vertices, int drawStyle);
+            static void Draw (int shape, int dimension, int slot, int vertices, int drawStyle);
+
+            Primitive() { this->GenBuffer(); };
 
             Primitive(int numOfVerts): 
                 m_model(glm::mat4(1.0f)),
@@ -69,21 +72,15 @@ namespace Graphics {
             virtual ~Shape() = default;
 
             virtual void Render(int drawStyle = 1) = 0;
-            void Destroy();
 
             inline void SetStroke(const glm::vec3 &stroke) { m_strokeColor = stroke; }
             inline void SetFill(const glm::vec3 &fill) { m_fillColor = fill; } 
             inline void SetDebug(bool debug = true) { m_debug = debug; }
 
-            inline void SetPosition(float x, float y) 
-            { 
+            inline void SetPosition(float x, float y) { 
                 this->x = x; 
                 this->y = y;
             }
-
-        private:
-            
-            Shape* m_self;
 
     };
 
@@ -151,21 +148,20 @@ namespace Graphics {
                 float height = 20.0f
             ): 
                 Shape(x, y, 12, type),
-                width(width),
-                height(height)
-                    { std::cout << "Primitive: rectangle drawn.\n"; }
+                    width(width),
+                    height(height)
+                        { std::cout << "Primitive: rectangle drawn.\n"; }
 
             Rectangle(float x, float y, float width, float height): 
                 Shape(x, y, 12, "rectangle"),
-                width(width),
-                height(height)
-                    { std::cout << "Primitive: rectangle drawn.\n"; }
+                    width(width),
+                    height(height)
+                        { std::cout << "Primitive: rectangle drawn.\n"; }
 
 
            ~Rectangle() = default;
 
            void Render(int drawStyle = 1);
-           void Render(auto &sprite);
 
     };
 

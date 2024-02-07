@@ -11,7 +11,7 @@
 #include "../../../../vendors/imgui/imgui_internal.h"
 #include "../../../../vendors/imgui/imgui_stdlib.h"
 
-#include "../../../../build/include/manager.h"
+#include "../../../../build/include/entity.h"
 
 
 class GUI { 
@@ -32,7 +32,7 @@ class GUI {
 
         static inline ImGuiIO io;
 
-        static inline std::shared_ptr<Graphics::Rectangle> grid;
+        static inline std::shared_ptr<Quad> grid;
 
         static void CreateGrid();
         static void RenderNodes();

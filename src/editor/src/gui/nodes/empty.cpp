@@ -11,7 +11,7 @@ EmptyNode::EmptyNode(const std::string &id):
         debug_fill(false)
 {
 
-    this->m_debugGraphic = Game::CreateRect(0.0f, 0.0f, 10.0f, 10.0f);    
+    this->m_debugGraphic = std::make_shared<Graphics::Rectangle>(0.0f, 0.0f, 10.0f, 10.0f);    
 
     Editor::Log("Empty node " + this->m_name + " created.");   
 }

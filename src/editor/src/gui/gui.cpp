@@ -127,8 +127,7 @@ void GUI::CreateGrid()
     Shader::Load("checkers", checker_vertex, checker_fragment, nullptr); 
 
     grid = Game::CreateQuad(-10, -10, System::Window::m_scaleWidth, System::Window::m_scaleHeight);
-    //grid->SetDepth(0);
-    //grid->SetDebug(true);
+    grid->m_depth=0;//SetDepth(0);
     grid->m_shader = Shader::GetShader("checkers");
 
 
@@ -163,9 +162,8 @@ void GUI::Render()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     if (grid)
-    {
-        //grid->SetScale(System::Window::m_scaleWidth, System::Window::m_scaleHeight);
-    }
+        grid->SetScale(System::Window::m_scaleWidth, System::Window::m_scaleHeight);
+    
 
     //Renderer::CreateFrameBuffer();
 }

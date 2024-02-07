@@ -22,13 +22,22 @@
 
 class Entity {
 
+
 	public: 
 
 		static inline int DEPTH = 0, g_ID = 0;
 
 		int m_depth;
-		float m_rotation, m_alpha; 
-		bool m_isSpritesheet, m_flipX, m_flipY, m_active, m_renderable, m_alive;
+		float 
+			m_rotation, 
+			m_alpha; 
+		bool 
+			m_isSpritesheet, 
+			m_flipX, 
+			m_flipY, 
+			m_active, 
+			m_renderable, 
+			m_alive;
 
 		glm::vec3 m_tint; 
 		glm::mat4 m_model; 
@@ -36,34 +45,34 @@ class Entity {
 
 		std::string ID;
 
-		inline void SetDepth(int depth) { m_depth = depth; }
-		inline void SetAlpha(float alpha) { m_alpha = alpha; }
-		inline void SetRotation(float rotation) { m_rotation = rotation; }
-		inline void SetPosition(const glm::vec2 &position) { m_position = position; }
+		inline void SetDepth(int depth) { this->m_depth = depth; }
+		inline void SetAlpha(float alpha) { this->m_alpha = alpha; }
+		inline void SetRotation(float rotation) { this->m_rotation = rotation; }
+		inline void SetPosition(const glm::vec2 &position) { this->m_position = position; }
 
 		inline void SetPosition(float x, float y) { 
-			m_position.x = x;
-			m_position.y = y; 
+			this->m_position.x = x;
+			this->m_position.y = y; 
 		}
 		
-		inline void SetTint(const glm::vec3 &tint) { m_tint = tint; }
-		inline void SetFlipX(bool flipX) { m_flipX = flipX; };
-		inline void SetFlipY(bool flipY) { m_flipY = flipY; };
+		inline void SetTint(const glm::vec3 &tint) { this->m_tint = tint; }
+		inline void SetFlipX(bool flipX) { this->m_flipX = flipX; };
+		inline void SetFlipY(bool flipY) { this->m_flipY = flipY; };
 
 		inline void SetFlip(bool flipX, bool flipY) { 
-			m_flipX = flipX; 
-			m_flipY = flipY; 
+			this->m_flipX = flipX; 
+			this->m_flipY = flipY; 
 		}
 		
 		inline void SetScale(float scaleX, float scaleY = 1.0f) { 
-			m_scale.x = scaleX;
-			m_scale.y = scaleY != 1.0f ? 
+			this->m_scale.x = scaleX;
+			this->m_scale.y = scaleY != 1.0f ? 
 				scaleY : scaleX; 
 		}
 
 		inline void SetEnabled(bool isEnabled) {
-			m_active = isEnabled;
-			m_renderable = isEnabled;
+			this->m_active = isEnabled;
+			this->m_renderable = isEnabled;
 		}
 
 		virtual void Render() = 0;
@@ -87,7 +96,7 @@ class Entity {
 		virtual ~Entity() { g_ID--; };
 };
 
-//quad
+//----------------------------- quad
 
 class Quad : public Entity {
 
@@ -102,36 +111,26 @@ class Quad : public Entity {
             
 		float width, height;
 
-		inline void SetStroke(const glm::vec3 &stroke) { m_strokeColor = stroke; }
-		inline void SetFill(const glm::vec3 &fill) { m_fillColor = fill; } 
-
-		Quad(
-			const char* type, 
-			float x = 0.0f, 
-			float y = 0.0f, 
-			float width = 20.0f, 
-			float height = 20.0f
-		): 
-			Entity(glm::vec2(x, y)),
-				width(width),
-				height(height)
-					{ std::cout << "Entity: quad created.\n"; }
+		inline void SetStroke(const glm::vec3 &stroke) { this->m_strokeColor = stroke; }
+		inline void SetFill(const glm::vec3 &fill) { this->m_fillColor = fill; } 
 
 		Quad(float x, float y, float width, float height): 
 			Entity(glm::vec2(x, y)),
+				prim(std::make_shared<Graphics::Primitive>()),
 				width(width),
 				height(height)
-					{ std::cout << "Entity: quad destroyed.\n"; }
-
+					{ std::cout << "Entity: quad created.\n"; }
 
 		~Quad() = default;
 
 		void Render();
 
+	private:
 
+		std::shared_ptr<Graphics::Primitive> prim;
 };
 
-//text
+//----------------------------- text
 
 class Text : public Entity {
 
@@ -159,7 +158,7 @@ class Text : public Entity {
 
 };
 
-//base sprite class
+//----------------------------- base sprite class
 
 class Sprite : public Entity {
 
@@ -197,14 +196,14 @@ class Sprite : public Entity {
 
 		inline void SetData(const std::string &key, const std::any &value) { this->data.insert({key, value}); }
 		inline void SetTexture(unsigned int id) { this->m_texture.ID = id; }
-		inline void SetFrame(int frame) { m_currentFrame = frame; }
-		inline void SetAnimation(const char* key) { currentAnim = key; }
-		inline void StopAnimation() { currentAnim = nullptr; }
+		inline void SetFrame(int frame) { this->m_currentFrame = frame; }
+		inline void SetAnimation(const char* key) { this->currentAnim = key; }
+		inline void StopAnimation() { this->currentAnim = nullptr; }
 
-		inline void BeginContact() { m_contacting = true; }
-		inline void EndContact() { m_contacting = false; }
+		inline void BeginContact() { this->m_contacting = true; }
+		inline void EndContact() { this->m_contacting = false; }
 
-		inline bool IsSpritesheet() { return m_isSpritesheet; }
+		inline bool IsSpritesheet() { return this->m_isSpritesheet; }
 
 		void ReadSpritesheetData();
 
@@ -235,7 +234,7 @@ class Sprite : public Entity {
 		std::vector<std::array<int, 4>> m_resourceData; 
 };
 
-//player
+//----------------------------- player
 
 class Player : public Sprite { 
 
