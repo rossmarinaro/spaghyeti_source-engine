@@ -67,39 +67,20 @@ void CollisionManager::EndContact(b2Contact* contact)
 
 
 
-//--------------------------------- graphics overlaps (not box2d related)
+//----------------------------------- UI related collisions (standard / projection matrix * 2)
 
 
-bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::shared_ptr<Graphics::Rectangle> &rect)
+bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::shared_ptr<Geometry<Graphics::Quad>> &rect, bool factor)
 {
     //x axis
 
-    bool collisionX = sprite->m_position.x + sprite->m_texture.FrameWidth / 2 >= rect->x &&
-                      rect->x + rect->width / 2 <= sprite->m_position.x;
+    bool collisionX = sprite->m_position.x + sprite->m_texture.FrameWidth / 2 >= rect->m_position.x * factor &&
+                      rect->m_position.x * factor + rect->width / 2 >= sprite->m_position.x;
 
     //y axis
 
-    bool collisionY = sprite->m_position.y + sprite->m_texture.FrameHeight / 2 >= rect->y &&
-                      rect->y + rect->height / 2 >= sprite->m_position.y;
-
-    return collisionX && collisionY;
-
-}
-
-//----------------------------------- UI related collisions (projection matrix * 2)
-
-
-bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::unique_ptr<Graphics::Rectangle> &rect)
-{
-    //x axis
-
-    bool collisionX = sprite->m_position.x + sprite->m_texture.FrameWidth / 2 >= rect->x * 2 &&
-                      rect->x * 2 + rect->width / 2 >= sprite->m_position.x;
-
-    //y axis
-
-    bool collisionY = sprite->m_position.y + sprite->m_texture.FrameHeight / 2 >= rect->y * 2 &&
-                      rect->y * 2 + rect->height / 2 >= sprite->m_position.y;
+    bool collisionY = sprite->m_position.y + sprite->m_texture.FrameHeight / 2 >= rect->m_position.y * factor &&
+                      rect->m_position.y * factor + rect->height / 2 >= sprite->m_position.y;
 
     return collisionX && collisionY;
 
@@ -109,22 +90,21 @@ bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, co
 //-----------------------------------
 
 
-bool CollisionManager::CheckCollisions(const Sprite &sprite, const std::unique_ptr<Graphics::Rectangle> &rect)
+bool CollisionManager::CheckCollisions(const Sprite &sprite, const std::shared_ptr<Geometry<Graphics::Quad>> &rect)
 {
     //x axis
 
-    bool collisionX = sprite.m_position.x + sprite.m_texture.FrameWidth / 2 >= rect->x &&
-                      rect->x + rect->width / 2 >= sprite.m_position.x;
+    bool collisionX = sprite.m_position.x + sprite.m_texture.FrameWidth / 2 >= rect->m_position.x &&
+                      rect->m_position.x + rect->width / 2 >= sprite.m_position.x;
 
     //y axis
 
-    bool collisionY = sprite.m_position.y + sprite.m_texture.FrameHeight / 2 >= rect->y &&
-                      rect->y + rect->height / 2 >= sprite.m_position.y;
+    bool collisionY = sprite.m_position.y + sprite.m_texture.FrameHeight / 2 >= rect->m_position.y &&
+                      rect->m_position.y + rect->height / 2 >= sprite.m_position.y;
 
     return collisionX && collisionY;
 
 }
-
 
 
 //-----------------------------------
@@ -145,6 +125,7 @@ bool CollisionManager::CheckCollisions(const Sprite &spriteA, const Sprite &spri
     return collisionX && collisionY;
 
 }
+
 
 //-----------------------------------
 

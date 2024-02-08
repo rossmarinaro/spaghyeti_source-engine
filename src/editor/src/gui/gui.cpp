@@ -126,8 +126,8 @@ void GUI::CreateGrid()
 
     Shader::Load("checkers", checker_vertex, checker_fragment, nullptr); 
 
-    grid = Game::CreateQuad(-10, -10, System::Window::m_scaleWidth, System::Window::m_scaleHeight);
-    grid->m_depth=0;//SetDepth(0);
+    grid = Game::CreateGeom(-10, -10, System::Window::m_scaleWidth, System::Window::m_scaleHeight);
+    grid->SetDepth(0);
     grid->m_shader = Shader::GetShader("checkers");
 
 

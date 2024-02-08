@@ -49,65 +49,65 @@ class Game {
         static void UpdateFrame();
 
         template<typename T>
-            static inline std::shared_ptr<T> CreateCustomSprite(const std::string &key, float x, float y)
-            {
-                auto e = std::make_shared<T>(key, x, y);
+        static inline std::shared_ptr<T> CreateCustomSprite(const std::string &key, float x, float y)
+        {
+            auto e = std::make_shared<T>(key, x, y);
 
-                sprites.push_back(e);
-                entities.insert(e);
+            sprites.push_back(e);
+            entities.insert(e);
 
-                return e;
-            }
+            return e;
+        }
 
         template<typename T>
-            static inline std::shared_ptr<T> CreatePlayer(
-                const std::string &key, 
-                float x, 
-                float y, 
-                float scale = 1.0f,
-                bool hasBody = false, 
-                glm::vec2 bodyDimensions = glm::vec2(1.0f, 1.0f),  
-                glm::vec2 bodyOffset = glm::vec2(0.0f, 0.0f),
-                float density = 0.0f,
-                float friction = 0.0f,
-                float restitution = 0.0f
-            )
+        static inline std::shared_ptr<T> CreatePlayer(
+            const std::string &key, 
+            float x, 
+            float y, 
+            float scale = 1.0f,
+            bool hasBody = false, 
+            glm::vec2 bodyDimensions = glm::vec2(1.0f, 1.0f),  
+            glm::vec2 bodyOffset = glm::vec2(0.0f, 0.0f),
+            float density = 0.0f,
+            float friction = 0.0f,
+            float restitution = 0.0f
+        )
+        {
+
+            auto player = std::make_shared<T>(key, glm::vec2(x, y));
+
+            if (scale)
+                player->SetScale(scale); 
+
+            if (hasBody)
             {
 
-                auto player = std::make_shared<T>(key, glm::vec2(x, y));
+                player->m_body.offset = bodyOffset;
 
-                if (scale)
-                    player->SetScale(scale); 
-
-                if (hasBody)
-                {
-
-                    player->m_body.offset = bodyOffset;
-
-                    player->m_body.self = physics->CreateDynamicBody(
-                        glm::vec2(player->m_position.x, player->m_position.y), 
-                        glm::vec2(bodyDimensions.x * scale, bodyDimensions.y * scale),
-                        false,
-                        2,
-                        density,
-                        friction,
-                        restitution
-                    );
-                }
-
-                sprites.push_back(player);
-
-                entities.insert(player);
-
-                return player;
+                player->m_body.self = physics->CreateDynamicBody(
+                    glm::vec2(player->m_position.x, player->m_position.y), 
+                    glm::vec2(bodyDimensions.x * scale, bodyDimensions.y * scale),
+                    false,
+                    2,
+                    density,
+                    friction,
+                    restitution
+                );
             }
+
+            sprites.push_back(player);
+
+            entities.insert(player);
+
+            return player;
+        }
         
         static std::shared_ptr<Sprite> CreateUI(const std::string &key, float x, float y, int frame = 0);
         static std::shared_ptr<Sprite> CreateSprite(const std::string &key, float x, float y, int frame = 0, float scale = 1.0f);
         static std::shared_ptr<Text> CreateText(const std::string &content, float x, float y);
-        static std::shared_ptr<Quad> CreateQuad(float x, float y, float width, float height);
-
-        static void DestroyGraphic(std::shared_ptr<Graphics::Shape> graphic);
+        static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
+        static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end);
+        
         static void DestroyText(std::shared_ptr<Text> text);
         static void DestroySprite(std::shared_ptr<Sprite> sprite);
         static void DestroyUI();
@@ -119,14 +119,13 @@ class Game {
 
         static inline std::vector<std::shared_ptr<Entity>> entities;
 
-        static inline std::vector<std::shared_ptr<Quad>> quads;
+        static inline std::vector<std::shared_ptr<Geometry>> geometry;
         static inline std::vector<std::shared_ptr<Sprite>> sprites;
         static inline std::vector<std::shared_ptr<Sprite>> UIs;
         static inline std::vector<std::shared_ptr<Text>> texts;
-        static inline std::vector<std::shared_ptr<Graphics::Shape>> debugGraphics;
 
         std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
-        std::unique_ptr<Graphics::Rectangle> cursor = nullptr;
+        std::shared_ptr<Geometry> cursor = nullptr;
 
 
     private:

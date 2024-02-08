@@ -2,10 +2,7 @@
 #include "../../../../vendors/stb/stb_image.h" 
 
 #include "./manager/manager.h"
-#include "./primitive.h"
-
 #include "../app/app.h"
-#include "./texture.h"
 #include "../game/entities/entity.h"
 
 using namespace Graphics;
@@ -59,168 +56,82 @@ void Primitive::Draw (int shape, int dimension, int slot, int vertices, int draw
 }
 
 
-//---------------------------------------- base shape
+//------------------------------- generic shape container
 
 
-Shape::Shape(float x, float y, int numOfVerts, const char* type): 
-    Primitive(numOfVerts),
-        m_alpha(1),
-        x(x),
-        y(y), 
-        m_type(type),
-        m_graphicsShader(System::Resources::Manager::shader->GetShader(strcmp(type, "cursor") == 0 ? "cursor" : "graphics")),
-        m_strokeColor(glm::vec3(0.0f, 1.0f, 0.0f)),
-        m_fillColor(glm::vec3(1.0f, 1.0f, 1.0f)) {} 
-
-
-
-//--------------------------------- shapes
-
-void Line::Render(int drawStyle)
+void Geometry::Render()
 {
 
     this->m_model = glm::mat4(1.0f); 
-    //this->m_model = glm::translate(this->m_model, glm::vec3(this->x, this->y, 0.0f));  
-
-    float vertices[6] = { this->start.x, this->start.y, 0.0f, this->end.x, this->end.y, 0.0f };
-
-    this->m_graphicsShader.SetMat4("model", this->m_model, true);
-    this->m_graphicsShader.SetVec3f("tint", this->m_strokeColor, true);
-    this->m_graphicsShader.SetFloat("alphaVal", this->m_alpha, true);
-
-    this->Bind_Buffer(vertices, this->VBO, this->VAO, 0, 2, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 2 * sizeof(float));
-    
-    #ifdef __EMSCRIPTEN__
-        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, 0);
-    #else
-        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, drawStyle == 0 ? GL_FILL : GL_LINE); 
-    #endif
-} 
-
-
-//------------------------------------- triangle
-
-
-
-void Triangle::Render(int drawStyle)
-{
-
-    //this->m_model = glm::mat4(1.0f); 
-    //this->m_model = glm::translate(this->m_model, glm::vec3(this->x, this->y, 0.0f));  
-
-    float vertices[18] = {
-
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-       -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
-    };
-
-    this->m_graphicsShader.SetMat4("model", this->m_model, true);
-    this->m_graphicsShader.SetVec3f("tint", this->m_fillColor, true);
-    this->m_graphicsShader.SetFloat("alphaVal", this->m_alpha, true);
-
-    this->Bind_Buffer(vertices, this->VBO, this->VAO, 0, 3, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 3 * sizeof(float));
-
-    #ifdef __EMSCRIPTEN__
-        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 3, 0);
-    #else
-        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 3, drawStyle == 0 ? GL_FILL : GL_LINE); 
-    #endif
-    
-}
-
-//basic rectangle 
-void Rectangle::Render(int drawStyle) 
-{
-
-    this->m_model = glm::mat4(1.0f); 
-
-    if (strcmp(this->m_type, "cursor") == 0)
-        this->m_model = glm::translate(this->m_model, glm::vec3(this->x, this->y, 0.0f));  
-
-    this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->x, 0.5f * this->height + this->y, 0.0f)); 
-
-    if (this->rotation > 0)
-        this->m_model = glm::rotate(this->m_model, glm::radians(this->rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
-
-    this->m_model = glm::translate(this->m_model, glm::vec3(-0.5f * this->width - this->x, -0.5f * this->height - this->y, 0.0f));
-
-    this->m_graphicsShader.SetVec3f("tint", this->m_strokeColor, true);
-    this->m_graphicsShader.SetMat4("model", this->m_model, true);  
-    this->m_graphicsShader.SetFloat("alphaVal", this->m_alpha, true);       
-
-    //triangle A
-
-    this->vertices[0] = this->x + this->width;  
-    this->vertices[1] = this->y;
-    this->vertices[2] = this->x + this->width;
-    this->vertices[3] = this->y + this->height;
-    this->vertices[4] = this->x;
-    this->vertices[5] = this->y;
-
-    //triangle B
-
-    this->vertices[6] = this->x + this->width;
-    this->vertices[7] = this->y + this->height;
-    this->vertices[8] = this->x;
-    this->vertices[9] = this->y + this->height;
-    this->vertices[10] = this->x;
-    this->vertices[11] = this->y;
-
-    this->Bind_Buffer(this->vertices, this->VBO, this->VAO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
-
-    #ifdef __EMSCRIPTEN__
-        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
-    #else
-        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, drawStyle == 0 ? GL_FILL : GL_LINE); 
-    #endif
-}
-
-
-//------------------------------- quad
-
-
-void Quad::Render() 
-{
-
-    this->m_model = glm::mat4(1.0f); 
-
-    this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->m_position.x, 0.5f * this->height + this->m_position.y, 0.0f)); 
-
-    if (this->m_rotation > 0)
-        this->m_model = glm::rotate(this->m_model, glm::radians(this->m_rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
-
-    this->m_model = glm::translate(this->m_model, glm::vec3(-0.5f * this->width - this->m_position.x, -0.5f * this->height - this->m_position.y, 0.0f));
 
     this->m_shader.SetVec3f("tint", this->m_strokeColor, true);
     this->m_shader.SetMat4("model", this->m_model, true);  
-    this->m_shader.SetFloat("alphaVal", this->m_alpha, true);       
+    this->m_shader.SetFloat("alphaVal", this->m_alpha, true);
 
-    //triangle A
 
-    this->vertices[0] = this->m_position.x + this->width;  
-    this->vertices[1] = this->m_position.y;
-    this->vertices[2] = this->m_position.x + this->width;
-    this->vertices[3] = this->m_position.y + this->height;
-    this->vertices[4] = this->m_position.x;
-    this->vertices[5] = this->m_position.y;
+    //------------------------------------- 
 
-    //triangle B
 
-    this->vertices[6] = this->m_position.x + this->width;
-    this->vertices[7] = this->m_position.y + this->height;
-    this->vertices[8] = this->m_position.x;
-    this->vertices[9] = this->m_position.y + this->height;
-    this->vertices[10] = this->m_position.x;
-    this->vertices[11] = this->m_position.y;
+    if (strcmp(this->m_type, "line") == 0)
+    {
 
-    this->prim->Bind_Buffer(this->vertices, this->prim->VBO, this->prim->VAO , 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
+        float vertices[6] = { this->start.x, this->start.y, 0.0f, this->end.x, this->end.y, 0.0f };
 
-    #ifdef __EMSCRIPTEN__
-        Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
-    #else
-        Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, GL_FILL); 
-    #endif
+        this->Bind_Buffer(vertices, this->shape->VBO, this->shape->VAO, 0, 2, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 2 * sizeof(float));
+        
+        #ifdef __EMSCRIPTEN__
+            Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, 0);
+        #else
+            Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, this->shape->drawStyle == 0 ? GL_FILL : GL_LINE); 
+        #endif
+    }
+
+
+    //-------------------------------------
+
+
+    if (strcmp(this->m_type, "quad") == 0)
+    {
+
+        if (strcmp(this->m_type, "cursor") == 0)
+            this->m_model = glm::translate(this->m_model, glm::vec3(this->x, this->y, 0.0f));  
+
+        this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->m_position.x, 0.5f * this->height + this->m_position.y, 0.0f)); 
+
+        if (this->m_rotation > 0)
+            this->m_model = glm::rotate(this->m_model, glm::radians(this->m_rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
+
+        this->m_model = glm::translate(this->m_model, glm::vec3(-0.5f * this->width - this->m_position.x, -0.5f * this->height - this->m_position.y, 0.0f));
+      
+        float vertices[12];
+        
+        //triangle A
+
+        vertices[0] = this->m_position.x + this->width;  
+        vertices[1] = this->m_position.y;
+        vertices[2] = this->m_position.x + this->width;
+        vertices[3] = this->m_position.y + this->height;
+        vertices[4] = this->m_position.x;
+        vertices[5] = this->m_position.y;
+
+        //triangle B
+
+        vertices[6] = this->m_position.x + this->width;
+        vertices[7] = this->m_position.y + this->height;
+        vertices[8] = this->m_position.x;
+        vertices[9] = this->m_position.y + this->height;
+        vertices[10] = this->m_position.x;
+        vertices[11] = this->m_position.y;
+
+        this->shape->Bind_Buffer(vertices, this->shape->VBO, this->shape->VAO , 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
+
+        #ifdef __EMSCRIPTEN__
+            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
+        #else
+            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, this->shape->drawStyle == 0 ? GL_FILL : GL_LINE); 
+        #endif
+    }
+
 }
 
 

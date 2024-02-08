@@ -40,11 +40,6 @@ namespace Graphics {
 
             Primitive() { this->GenBuffer(); };
 
-            Primitive(int numOfVerts): 
-                m_model(glm::mat4(1.0f)),
-                m_numOfVerts(numOfVerts)
-                    { this->GenBuffer(); }
-
             virtual ~Primitive() = default;
 
         private:
@@ -53,118 +48,63 @@ namespace Graphics {
    
     };
 
-    //Base Shape Rendering class extending primitive
-    class Shape : public Primitive {
+
+//--------------------------------------
+
+    // Texture2D is able to store and configure a texture in OpenGL.
+    // It is essentially a quad with additional utilities for image data
+    class Texture2D : public Primitive {
 
         public:
 
-            Shader m_graphicsShader;
-
-            glm::vec3 m_strokeColor;
-            glm::vec3 m_fillColor;
-            float m_alpha;
-            const char* m_type;
-            bool m_debug = false;
-
-            float x, y, rotation;
-
-            Shape(float x, float y, int numOfVerts, const char* type);
-            virtual ~Shape() = default;
-
-            virtual void Render(int drawStyle = 1) = 0;
-
-            inline void SetStroke(const glm::vec3 &stroke) { m_strokeColor = stroke; }
-            inline void SetFill(const glm::vec3 &fill) { m_fillColor = fill; } 
-            inline void SetDebug(bool debug = true) { m_debug = debug; }
-
-            inline void SetPosition(float x, float y) { 
-                this->x = x; 
-                this->y = y;
-            }
-
-    };
-
-
-    //--------------------------------------
-
-
-    class Line : public Shape {
-
-        public:
-
-            short vertices[6];
-
-            Line(float x, float y, const glm::vec2 &start, const glm::vec2 &end): 
-                Shape(x, y, 6, "line")
-                    { std::cout << "Primitive: line drawn.\n";  }
-
-           ~Line() = default;
-
-            void Render(int drawStyle = 1);
-
-        private:
-
-            glm::vec2 start, end;
-
-    };
-
-
-    //--------------------------------------
-
-
-    class Triangle : public Shape { 
-
-        public:
-
-            short vertices[18];
-
-            Triangle(float x, float y): 
-                Shape(x, y, 18, "triangle")
-                    { std::cout << "Primitive: triangle drawn.\n"; }
-
-           ~Triangle()= default;
-
-            void Render(int drawStyle = 1);
-
-    };
-
-
-    //--------------------------------------
-
-
-    class Rectangle : public Shape {
-
-        public:
-
-            short vertices[12];
+            float FrameWidth, FrameHeight, U1, V1, U2, V2, Width, Height; // width and height of loaded image in pixels 
             
-            float width, height;
+            unsigned int Repeat,
+                         Wrap_S, // wrapping mode on S axis
+                         Wrap_T, // wrapping mode on T axis
+                         Filter_Min, // filtering mode if texture pixels < screen pixels
+                         Filter_Max; // filtering mode if texture pixels > screen pixels
 
-            Rectangle(
-                const char* type, 
-                float x = 0.0f, 
-                float y = 0.0f, 
-                float width = 20.0f, 
-                float height = 20.0f
-            ): 
-                Shape(x, y, 12, type),
-                    width(width),
-                    height(height)
-                        { std::cout << "Primitive: rectangle drawn.\n"; }
+            Texture2D() :  
+                Primitive(), 
+                    Width(0.0f),
+                    Height(0.0f),
+                    FrameWidth(0.0f),
+                    FrameHeight(0.0f),
+                    U1(0.0f),
+                    V1(0.0f),
+                    U2(1.0f),
+                    V2(1.0f),
+                    Internal_Format(GL_RGB), 
+                    Image_Format(GL_RGB),
+                    Wrap_S(GL_REPEAT),
+                    Wrap_T(GL_REPEAT), 
+                    Filter_Min(GL_NEAREST),   
+                    Filter_Max(GL_NEAREST),
+                    Channels(3),
+                    Repeat(1)
+            { glGenTextures(1, &this->ID);  };
+            
+            ~Texture2D(){};
 
-            Rectangle(float x, float y, float width, float height): 
-                Shape(x, y, 12, "rectangle"),
-                    width(width),
-                    height(height)
-                        { std::cout << "Primitive: rectangle drawn.\n"; }
+            static Texture2D& GetTexture(const std::string &key);
+            static void Load(const std::string &key);
+            static void UnLoad(const std::string &key);
+            static void SetChannels(Texture2D &texture, unsigned int channels);
+            
+            void SetFiltering();
+            void Generate(unsigned int width, unsigned int height, auto &data);  // generates texture from image data
+            void Update(const glm::vec2 &position, bool flipX, bool flipY, int drawStyle);
+            void Bind() const { glBindTexture(GL_TEXTURE_2D, this->ID); }; // binds the texture as the current active GL_TEXTURE_2D texture object
 
+        private: 
 
-           ~Rectangle() = default;
-
-           void Render(int drawStyle = 1);
-
-    };
-
+            unsigned int Channels;
+            unsigned int Internal_Format; // format of texture object RGB, RGBA
+            unsigned int Image_Format; // format of loaded image
+            float UVs[12];
+            short vertices[12];
+    }; 
 
 }
 

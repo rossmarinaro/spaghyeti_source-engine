@@ -40,7 +40,7 @@ void Editor::Update()
 
     Time::Update(glfwGetTime());
     
-    GUI::Render();
+    GUI::Render(); 
 
     glViewport(camera->m_position.x, camera->m_position.y, Window::m_width, Window::m_height);
 	glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);

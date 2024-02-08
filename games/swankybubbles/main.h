@@ -31,8 +31,8 @@ class SwankyBubbles : public Game {
         static inline std::mutex bubble_lock;
         static inline std::mutex elf_lock;
 
-        static inline Graphics::Rectangle* attackBox;
-        static inline Graphics::Rectangle* hitBox;
+        static inline Graphics::Quad* attackBox;
+        static inline Graphics::Quad* hitBox;
 
         static inline std::vector<Sprite*> bubbles; 
         static inline std::vector<Sprite*> elves; 

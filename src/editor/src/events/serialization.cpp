@@ -158,26 +158,26 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &empty : data["nodes"]["empty"])
     {
 
-        EmptyNode* en = dynamic_cast<EmptyNode*>(Node::MakeNode("Empty"));
+        // EmptyNode* en = dynamic_cast<EmptyNode*>(Node::MakeNode("Empty"));
 
-        en->show_debug = empty["debug graphics"]; 
-        en->debug_fill = empty["fill"];
-        en->m_debugGraphic->width = empty["width"];  
-        en->m_debugGraphic->height = empty["height"]; 
-        en->positionX = empty["position x"]; 
-        en->positionY = empty["position y"];
+        // en->show_debug = empty["debug graphics"]; 
+        // en->debug_fill = empty["fill"];
+        // en->m_debugGraphic->width = empty["width"];  
+        // en->m_debugGraphic->height = empty["height"]; 
+        // en->positionX = empty["position x"]; 
+        // en->positionY = empty["position y"];
 
-        //physics 
+        // //physics 
 
-        en->body_width = empty["components"]["physics"]["body_width"];
-        en->body_height = empty["components"]["physics"]["body_height"];
-        en->body_offsetX = empty["components"]["physics"]["body_offsetX"];
-        en->body_offsetY = empty["components"]["physics"]["body_offsetY"];
+        // en->body_width = empty["components"]["physics"]["body_width"];
+        // en->body_height = empty["components"]["physics"]["body_height"];
+        // en->body_offsetX = empty["components"]["physics"]["body_offsetX"];
+        // en->body_offsetY = empty["components"]["physics"]["body_offsetY"];
 
-        if (empty["components"]["physics"]["exists"]) {
-            en->AddComponent("Physics Body");
-            en->move_physics = true;
-        }
+        // if (empty["components"]["physics"]["exists"]) {
+        //     en->AddComponent("Physics Body");
+        //     en->move_physics = true;
+        // }
 
     }
 
@@ -393,38 +393,38 @@ void EventListener::Serialize(json &data)
 
         if (node->m_type == "Empty")
         {
-            EmptyNode* en = dynamic_cast<EmptyNode*>(node);
+            // EmptyNode* en = dynamic_cast<EmptyNode*>(node);
 
-            bool physics, script, shader = false;
+            // bool physics, script, shader = false;
 
-            empty.push_back({
+            // empty.push_back({
 
-                { "debug graphics", en->show_debug },
-                { "fill", en->debug_fill },
-                { "width", en->m_debugGraphic->width },
-                { "height", en->m_debugGraphic->height },
-                { "position x", en->positionX },
-                { "position y", en->positionY },
-                    { "components", {
-                        { "physics", {
-                                { "exists", physics },
-                                { "body_width", en->body_width },
-                                { "body_height", en->body_height },
-                                { "body_offsetX", en->body_offsetX },
-                                { "body_offsetY", en->body_offsetY }
-                            }
-                        },
-                        { "script", {
-                                { "exists", script }
-                            }
-                        },
-                        { "shader", {
-                                { "exists", shader }
-                            }
-                        }
-                    }
-                }
-            });
+            //     { "debug graphics", en->show_debug },
+            //     { "fill", en->debug_fill },
+            //     { "width", en->m_debugGraphic->width },
+            //     { "height", en->m_debugGraphic->height },
+            //     { "position x", en->positionX },
+            //     { "position y", en->positionY },
+            //         { "components", {
+            //             { "physics", {
+            //                     { "exists", physics },
+            //                     { "body_width", en->body_width },
+            //                     { "body_height", en->body_height },
+            //                     { "body_offsetX", en->body_offsetX },
+            //                     { "body_offsetY", en->body_offsetY }
+            //                 }
+            //             },
+            //             { "script", {
+            //                     { "exists", script }
+            //                 }
+            //             },
+            //             { "shader", {
+            //                     { "exists", shader }
+            //                 }
+            //             }
+            //         }
+            //     }
+            // });
 
         }
 

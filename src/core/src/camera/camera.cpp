@@ -21,7 +21,7 @@ glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 
     return (glm::highp_mat4)glm::ortho(
         m_screenLeft / m_zoom, 
-        width / m_zoom, 
+        width / m_zoom,  
         height / m_zoom, 
         m_screenTop / m_zoom, 
         -1.0f, 

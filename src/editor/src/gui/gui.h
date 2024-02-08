@@ -32,7 +32,7 @@ class GUI {
 
         static inline ImGuiIO io;
 
-        static inline std::shared_ptr<Quad> grid;
+        static inline std::shared_ptr<Geometry<Graphics::Quad>> grid;
 
         static void CreateGrid();
         static void RenderNodes();

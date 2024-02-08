@@ -95,38 +95,51 @@ class Entity {
 		virtual ~Entity() { g_ID--; };
 };
 
-//----------------------------- quad
+//----------------------------- container for shapes 
 
-class Quad : public Entity {
+class Geometry : public Entity {
 
     public:
 
 	  	Shader m_shader;
 
-		glm::vec3 m_strokeColor;
-		glm::vec3 m_fillColor;
+		glm::vec3 m_strokeColor, m_fillColor;
+		glm::vec2 start, end;
 
-        short vertices[12];
+		const char* m_type;
             
 		float width, height;
 
 		inline void SetStroke(const glm::vec3 &stroke) { this->m_strokeColor = stroke; }
 		inline void SetFill(const glm::vec3 &fill) { this->m_fillColor = fill; } 
 
-		Quad(float x, float y, float width, float height): 
+		//quad
+
+		Geometry(float x, float y, float width, float height): 
 			Entity(glm::vec2(x, y)),
-				prim(std::make_shared<Graphics::Primitive>()),
+				shape(std::make_shared<Graphics::Primitive>()),
+				m_type("quad"),
 				width(width),
 				height(height)
 					{ std::cout << "Entity: quad created.\n"; }
 
-		~Quad() = default;
+		//line
+
+		Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end): 
+			Entity(glm::vec2(x, y)),
+				shape(std::make_shared<Graphics::Primitive>()),
+				m_type("line"),
+				start(start),
+				end(end)
+					{ std::cout << "Entity: line created.\n"; }
+
+		~Geometry() = default;
 
 		void Render();
 
 	private:
 
-		std::shared_ptr<Graphics::Primitive> prim;
+		std::shared_ptr<Graphics::Primitive> shape;
 };
 
 //----------------------------- text

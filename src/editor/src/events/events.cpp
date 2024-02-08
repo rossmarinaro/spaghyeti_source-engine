@@ -590,17 +590,17 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Empty")
         {
 
-            EmptyNode* en = dynamic_cast<EmptyNode*>(node);
+            // EmptyNode* en = dynamic_cast<EmptyNode*>(node);
 
-            InsertTo("   auto empty_" + node->m_ID + " = CreateRect(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n", command_file);
+            // InsertTo("   auto empty_" + node->m_ID + " = CreateRect(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n", command_file);
 
-            //physics
+            // //physics
 
-            if (en->HasComponent("Physics Body"))
-            {
-                //InsertTo("   empty_" + node->m_ID + "->m_body.self = physics->CreateDynamicBody(glm::vec2(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + "), glm::vec2(1.0f, 1.0f), System::Utils::floatBetween(0.0f, 1.0f), false, 3, 1);\n", command_file);
-                //InsertTo("   empty_" + node->m_ID + "->m_body.offset = glm::vec2(" + std::to_string(sn->body_offsetX) + ", " + std::to_string(sn->body_offsetY) + ");\n", command_file);
-            }
+            // if (en->HasComponent("Physics Body"))
+            // {
+            //     //InsertTo("   empty_" + node->m_ID + "->m_body.self = physics->CreateDynamicBody(glm::vec2(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + "), glm::vec2(1.0f, 1.0f), System::Utils::floatBetween(0.0f, 1.0f), false, 3, 1);\n", command_file);
+            //     //InsertTo("   empty_" + node->m_ID + "->m_body.offset = glm::vec2(" + std::to_string(sn->body_offsetX) + ", " + std::to_string(sn->body_offsetY) + ");\n", command_file);
+            // }
         }
 
         //--------------- tilemap

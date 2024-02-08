@@ -7,11 +7,6 @@
 
 #define	RAND_LIMIT 32767
 
-// template <typename T>
-// 	concept output_streamable = requires(std::ostream &stm, const T &v)
-// 	{
-// 		{ stm <<v }->std::same_as<std::ostream&>;
-// 	}
 
 namespace System {
 
@@ -26,14 +21,6 @@ namespace System {
 			{
 				return std::make_unique<T>(std::forward<Args>(args)...);
 			}
-
-			// template<typename T>
-			// using Ref = std::shared_ptr<T>;
-			// template<typename T, typename ... Args>
-			// constexpr Ref<T> CreateRef(Args&& ... args)
-			// {
-			// 	return std::make_shared<T>(std::forward<Args>(args)...);
-			// }
 
 			static inline int randInt(int n) { return rand() % n; }
 

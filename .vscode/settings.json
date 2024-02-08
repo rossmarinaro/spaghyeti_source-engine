@@ -105,7 +105,8 @@
         "typeindex": "cpp",
         "variant": "cpp",
         "__functional_base_03": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "test": "cpp"
     },
     "C_Cpp.default.compilerPath": "C:\\Program Files\\MinGW\\bin\\gcc.exe",
     "C_Cpp.errorSquiggles": "disabled"

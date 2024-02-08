@@ -7,7 +7,6 @@
 
 #include "../shader/shader.h"
 #include "../primitive.h"
-#include "../texture.h"
 
 #include "../../../../../vendors/box2d/include/box2d/box2d.h"
 

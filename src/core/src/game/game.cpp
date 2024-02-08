@@ -51,8 +51,7 @@ void Game::Exit()
 
     gameState = false;
 
-    sprites.clear();
-    debugGraphics.clear();
+    entities.clear();
 
     #if DEVELOPMENT == 1 
         delete physics->debug;
@@ -107,8 +106,8 @@ void Game::UpdateFrame()
 
     entities.clear();
 
-    for (const auto &quad : quads)
-        entities.push_back(quad);
+    for (const auto &geom : geometry)
+        entities.push_back(geom);
 
     for (const auto &sprite : sprites)
         entities.push_back(sprite);
@@ -125,9 +124,6 @@ void Game::UpdateFrame()
         if ((entity.get() && entity) && entity.get()->m_renderable)
             entity->Render();
 
-    for (const auto &graphic : debugGraphics)
-        if ((graphic.get() && graphic) && graphic.get()->m_debug)
-            graphic->Render();
 
     //render input cursor
 
@@ -246,25 +242,6 @@ void Game::DestroyText(std::shared_ptr<Text> text)
 }
 
 
-//-----------------------------
-
- 
-void Game::DestroyGraphic(std::shared_ptr<Graphics::Shape> graphic)
-{
-
-    std::vector<std::shared_ptr<Graphics::Shape>>::iterator g_it = std::find(debugGraphics.begin() - 1, debugGraphics.end() - 1, graphic);
-
-    if (g_it != debugGraphics.end())
-        debugGraphics.erase(g_it);
-
-    graphic->m_debug = false;
-
-    graphic.reset();
-    graphic = nullptr;
-    
-
-}
-
 
 //-----------------------------
 
@@ -314,18 +291,27 @@ std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, floa
 }
 
 
+//-----------------------------
+
+
+std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height)
+{
+    auto geom = std::make_shared<Geometry>(x, y, width, height);
+
+    geometry.push_back(geom);
+
+    return geom;
+}
+
 
 //-----------------------------
 
 
-std::shared_ptr<Quad> Game::CreateQuad(float x, float y, float width, float height)
+std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end)
 {
+    auto geom = std::make_shared<Geometry>(x, y, start, end);
 
-    auto quad = std::make_shared<Quad>(x, y, width, height);
+    geometry.push_back(geom);
 
-    quads.push_back(quad);
-
-    return quad;
+    return geom;
 }
-
-
