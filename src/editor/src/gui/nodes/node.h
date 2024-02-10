@@ -210,7 +210,7 @@ class EmptyNode : public Node {
 
         bool show_debug, debug_fill;
 
-        std::shared_ptr<Geometry<Graphics::Quad>> m_debugGraphic;
+        std::shared_ptr<Geometry> m_debugGraphic;
 
         EmptyNode(const std::string &id);
         ~EmptyNode();      

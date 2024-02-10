@@ -95,11 +95,9 @@ void GUI::CreateGrid()
 
         "out vec2 position;\n"
 
-        "uniform mat4 model;\n"
-
         "void main()\n"
         "{\n"    
-            "gl_Position =  model * vec4(vert.xy, 0.0, 1.0);\n" 
+            "gl_Position = vec4(vert.xy, 0.0, 1.0);\n" 
         "}\n"; 
 
 
@@ -123,12 +121,11 @@ void GUI::CreateGrid()
         "}\n";
 
 
+    Shader::Load("grid", checker_vertex, checker_fragment, nullptr); 
 
-    Shader::Load("checkers", checker_vertex, checker_fragment, nullptr); 
-
-    grid = Game::CreateGeom(-10, -10, System::Window::m_scaleWidth, System::Window::m_scaleHeight);
+    grid = Game::CreateGeom(-10, -10, 1500, 1500);
     grid->SetDepth(0);
-    grid->m_shader = Shader::GetShader("checkers");
+    grid->m_shader = Shader::GetShader("grid");
 
 
 }
@@ -160,9 +157,6 @@ void GUI::Render()
     ImGui::Render();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    if (grid)
-        grid->SetScale(System::Window::m_scaleWidth, System::Window::m_scaleHeight);
     
 
     //Renderer::CreateFrameBuffer();

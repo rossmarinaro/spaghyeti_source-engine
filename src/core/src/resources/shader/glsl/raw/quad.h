@@ -18,13 +18,14 @@ namespace Shaders {
 
             "out vec2 uv;\n"
 
+            "uniform vec2 offset;\n"
             "uniform mat4 model;\n"
             "uniform mat4 projection;\n"
 
             "void main()\n"
             "{\n"           
                 "uv = UV;\n"
-                "gl_Position = projection * model * vec4(vert.xy, 0.0, 1.0);\n"
+                "gl_Position = projection * model * vec4(vert.xy + offset.xy, 0.0, 1.0);\n"
             "}\n"; 
 
 
@@ -55,12 +56,13 @@ namespace Shaders {
 
             "layout (location = 0) in vec2 pos;\n"
 
+            "uniform vec2 offset;\n"
             "uniform mat4 model;\n"
             "uniform mat4 projection;\n"
 
             "void main()\n"
             "{\n"
-            "   gl_Position = projection * model * vec4(pos.xy, 0.0, 1.0);\n"
+            "   gl_Position = projection * model * vec4(pos.xy + offset.xy, 0.0, 1.0);\n"
             "}\0";
 
         static const char* debugGraphicShader_fragment = 
@@ -89,13 +91,14 @@ namespace Shaders {
 
             "out vec2 uv;\n"
 
+            "uniform vec2 offset;\n"
             "uniform mat4 model;\n"
             "uniform mat4 projection;\n"
 
             "void main()\n"
-            "{\n"           
+            "{\n"            
                 "uv = UV;\n"
-                "gl_Position = projection * model * vec4(vert.xy, 0.0, 1.0);\n" 
+                "gl_Position = projection * model * vec4(vert.xy + offset.xy, 0.0, 1.0);\n" 
             "}\n"; 
 
 
@@ -125,18 +128,19 @@ namespace Shaders {
 
             "layout (location = 0) in vec2 pos;\n"
             
+            "uniform vec2 offset;\n"
             "uniform mat4 model;\n"
             "uniform mat4 projection;\n"
  
             "void main()\n"
             "{\n"
-            "   gl_Position = projection * model * vec4(pos.xy, 0.0, 1.0);\n"
+            "   gl_Position = projection * model * vec4(pos.xy + offset.xy, 0.0, 1.0);\n"
             "}\0";
 
         static const char* debugGraphicShader_fragment = 
 
             "#version 330 core\n"
-            
+             
             "out vec4 FragColor;\n"
             "uniform vec3 tint;\n"
 

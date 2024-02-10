@@ -13,7 +13,6 @@ using namespace Graphics;
 
 void Primitive::GenBuffer()
 { 
-
     glGenVertexArrays(1, &this->VAO); 
     glGenBuffers(1, &this->VBO);
     glGenBuffers(1, &this->UVBO);
@@ -48,15 +47,40 @@ void Primitive::Bind_Buffer(
 //--------------------------------
 
 
-void Primitive::Draw (int shape, int dimension, int slot, int vertices, int drawStyle) { 
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);  
+void Primitive::Draw (int shape, int dimension, int slot, int vertices, int drawStyle) 
+{ 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);    
+    glPolygonMode(GL_FRONT_AND_BACK, drawStyle);
     glDrawArrays(shape, 0, vertices);
-
+  
 }
 
 
 //------------------------------- generic shape container
+
+
+//line
+Geometry::Geometry(float x, float y, float width, float height): 
+    Entity(glm::vec2(x, y)),
+        primitive(std::make_shared<Graphics::Primitive>()),
+        m_shader(Shader::GetShader("graphics")),
+        m_type("quad"),
+        width(width),
+        height(height)
+            { std::cout << "Entity: quad created.\n"; }
+
+//quad
+Geometry::Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end): 
+    Entity(glm::vec2(x, y)),
+        primitive(std::make_shared<Graphics::Primitive>()),
+        m_shader(Shader::GetShader("graphics")),
+        m_type("line"),
+        start(start),
+        end(end)
+            { std::cout << "Entity: line created.\n"; }
+
+
+//------------------------------------- 
 
 
 void Geometry::Render()
@@ -64,37 +88,37 @@ void Geometry::Render()
 
     this->m_model = glm::mat4(1.0f); 
 
-    this->m_shader.SetVec3f("tint", this->m_strokeColor, true);
-    this->m_shader.SetMat4("model", this->m_model, true);  
-    this->m_shader.SetFloat("alphaVal", this->m_alpha, true);
+    auto SetShader = [&](){
+        this->m_shader.SetVec3f("tint", this->m_color, true);
+        this->m_shader.SetMat4("model", this->m_model, true);  
+        this->m_shader.SetFloat("alphaVal", this->m_alpha, true);
+    };
 
-
-    //------------------------------------- 
-
+    //line
 
     if (strcmp(this->m_type, "line") == 0)
     {
 
         float vertices[6] = { this->start.x, this->start.y, 0.0f, this->end.x, this->end.y, 0.0f };
 
-        this->Bind_Buffer(vertices, this->shape->VBO, this->shape->VAO, 0, 2, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 2 * sizeof(float));
+        SetShader();
+        
+        this->primitive->Bind_Buffer(vertices, this->primitive->VBO, this->primitive->VAO, 0, 2, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 2 * sizeof(float));
         
         #ifdef __EMSCRIPTEN__
-            Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, 0);
+            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, 0);
         #else
-            Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, this->shape->drawStyle == 0 ? GL_FILL : GL_LINE); 
+            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, this->drawStyle == 0 ? GL_FILL : GL_LINE); 
         #endif
     }
 
-
-    //-------------------------------------
-
+    //quad
 
     if (strcmp(this->m_type, "quad") == 0)
     {
 
-        if (strcmp(this->m_type, "cursor") == 0)
-            this->m_model = glm::translate(this->m_model, glm::vec3(this->x, this->y, 0.0f));  
+        //if (strcmp(this->m_shader.m_key, "cursor") == 0)
+            this->m_model = glm::translate(this->m_model, glm::vec3(this->m_position, 0.0f));  
 
         this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->m_position.x, 0.5f * this->height + this->m_position.y, 0.0f)); 
 
@@ -102,8 +126,10 @@ void Geometry::Render()
             this->m_model = glm::rotate(this->m_model, glm::radians(this->m_rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
 
         this->m_model = glm::translate(this->m_model, glm::vec3(-0.5f * this->width - this->m_position.x, -0.5f * this->height - this->m_position.y, 0.0f));
-      
-        float vertices[12];
+        
+        SetShader();
+
+        short vertices[12];
         
         //triangle A
 
@@ -123,14 +149,15 @@ void Geometry::Render()
         vertices[10] = this->m_position.x;
         vertices[11] = this->m_position.y;
 
-        this->shape->Bind_Buffer(vertices, this->shape->VBO, this->shape->VAO , 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
+        this->primitive->Bind_Buffer(vertices, this->primitive->VBO, this->primitive->VAO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
 
         #ifdef __EMSCRIPTEN__
             Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
         #else
-            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, this->shape->drawStyle == 0 ? GL_FILL : GL_LINE); 
+            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, this->drawStyle == 0 ? GL_FILL : GL_LINE); 
         #endif
     }
+
 
 }
 
@@ -304,7 +331,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, auto &data)
 //----------------------------------------
 
 
-void Texture2D::Update(const glm::vec2 &position, bool flipX, bool flipY, int drawStyle) 
+void Texture2D::Update(const glm::vec2 &position, bool flipX, bool flipY) 
 {   
  
     Format offset;
@@ -319,27 +346,35 @@ void Texture2D::Update(const glm::vec2 &position, bool flipX, bool flipY, int dr
 
     //----------------- vertices 
     
+    short vertices[12];
+
     //top right
+
         vertices[0] = texture.x + texture.format.width; 
         vertices[1] = texture.y;
 
     //bottom right
+
         vertices[2] = texture.x + texture.format.width;
         vertices[3] = texture.y + texture.format.height;
 
     //top left
+
         vertices[4] = texture.x;
         vertices[5] = texture.y;
 
     //bottom right
+
         vertices[6] = texture.x + texture.format.width;
         vertices[7] = texture.y + texture.format.height;
 
     //bottom left
+
         vertices[8] = texture.x;
         vertices[9] = texture.y + texture.format.height;
 
     //top left
+
         vertices[10] = texture.x;
         vertices[11] = texture.y;
 
@@ -347,33 +382,39 @@ void Texture2D::Update(const glm::vec2 &position, bool flipX, bool flipY, int dr
     //----------------- uvs
         
     //top right
-        UVs[0] = texture.format.u2;
-        UVs[1] = texture.format.v2;
+
+        this->UVs[0] = texture.format.u2;
+        this->UVs[1] = texture.format.v2;
 
     //bottom right
-        UVs[2] = texture.format.u2;
-        UVs[3] = texture.format.v1;
+
+        this->UVs[2] = texture.format.u2;
+        this->UVs[3] = texture.format.v1;
 
     //top left
-        UVs[4] = texture.format.u1;
-        UVs[5] = texture.format.v2;
+
+        this->UVs[4] = texture.format.u1;
+        this->UVs[5] = texture.format.v2;
 
     //bottom right
-        UVs[6] = texture.format.u2;
-        UVs[7] = texture.format.v1;
+
+        this->UVs[6] = texture.format.u2;
+        this->UVs[7] = texture.format.v1;
 
     //bottom left
-        UVs[8] = texture.format.u1;
-        UVs[9] = texture.format.v1;
+
+        this->UVs[8] = texture.format.u1;
+        this->UVs[9] = texture.format.v1;
 
     //top left
-        UVs[10] = texture.format.u1;
-        UVs[11] = texture.format.v2;
+
+        this->UVs[10] = texture.format.u1;
+        this->UVs[11] = texture.format.v2;
 
     this->Bind();
 
     this->Bind_Buffer(vertices, this->VBO, this->VAO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
-    this->Bind_Buffer(UVs, this->UVBO, this->VAO, 1, 2, GL_FLOAT, GL_TRUE, GL_STATIC_DRAW, 2 * sizeof(GLfloat));
+    this->Bind_Buffer(this->UVs, this->UVBO, this->VAO, 1, 2, GL_FLOAT, GL_TRUE, GL_STATIC_DRAW, 2 * sizeof(GLfloat));
 
     #ifdef __EMSCRIPTEN__
         Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);

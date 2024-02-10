@@ -70,7 +70,7 @@ void CollisionManager::EndContact(b2Contact* contact)
 //----------------------------------- UI related collisions (standard / projection matrix * 2)
 
 
-bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::shared_ptr<Geometry<Graphics::Quad>> &rect, bool factor)
+bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::shared_ptr<Geometry> &rect, bool factor)
 {
     //x axis
 
@@ -90,7 +90,7 @@ bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, co
 //-----------------------------------
 
 
-bool CollisionManager::CheckCollisions(const Sprite &sprite, const std::shared_ptr<Geometry<Graphics::Quad>> &rect)
+bool CollisionManager::CheckCollisions(const Sprite &sprite, const std::shared_ptr<Geometry> &rect)
 {
     //x axis
 

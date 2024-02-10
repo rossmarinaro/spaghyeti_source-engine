@@ -105,35 +105,18 @@ class Geometry : public Entity {
 
 	  	Shader m_shader;
 
-		glm::vec3 m_strokeColor, m_fillColor;
-		glm::vec2 start, end;
-
-		const char* m_type;
-            
 		float width, height;
 
-		inline void SetStroke(const glm::vec3 &stroke) { this->m_strokeColor = stroke; }
-		inline void SetFill(const glm::vec3 &fill) { this->m_fillColor = fill; } 
+		inline void SetColor(const glm::vec3 &color) { this->m_color = color; } 
+		inline void SetDrawStyle(int style) { this->drawStyle = style; } 
 
 		//quad
 
-		Geometry(float x, float y, float width, float height): 
-			Entity(glm::vec2(x, y)),
-				shape(std::make_shared<Graphics::Primitive>()),
-				m_type("quad"),
-				width(width),
-				height(height)
-					{ std::cout << "Entity: quad created.\n"; }
+		Geometry(float x, float y, float width, float height);
 
 		//line
 
-		Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end): 
-			Entity(glm::vec2(x, y)),
-				shape(std::make_shared<Graphics::Primitive>()),
-				m_type("line"),
-				start(start),
-				end(end)
-					{ std::cout << "Entity: line created.\n"; }
+		Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end);
 
 		~Geometry() = default;
 
@@ -141,7 +124,14 @@ class Geometry : public Entity {
 
 	private:
 
-		std::shared_ptr<Graphics::Primitive> shape;
+		glm::vec3 m_color = glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec2 start, end;
+
+		int drawStyle = 0;
+
+		const char* m_type;
+		
+		std::shared_ptr<Graphics::Primitive> primitive;
 };
 
 //----------------------------- text
@@ -168,7 +158,7 @@ class Text : public Entity {
 		);
 		
         Text() = default;
-        ~Text();
+       ~Text();
 
 };
 
@@ -230,7 +220,8 @@ class Sprite : public Entity {
 
 		Sprite(const std::string &key, const glm::vec2 &position = glm::vec2(0.0f, 0.0f), int frame = 0);
 		Sprite(const std::string &key, const glm::vec2 &position, const char* type);
-		~Sprite() { std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; };
+	   
+	   ~Sprite() { std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; };
 
 
 	private:

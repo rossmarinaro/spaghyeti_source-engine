@@ -12,7 +12,7 @@
 void Shader::InitBaseShaders()
 {
 
-    //load glsl shaders
+    //raw char array
 
     Load("cursor", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
     Load("graphics", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
@@ -21,6 +21,8 @@ void Shader::InitBaseShaders()
     Load("Points", Shaders::point_vertex, Shaders::point_fragment, nullptr);
     Load("Lines", Shaders::line_vertex, Shaders::line_fragment, nullptr);
     Load("Triangles", Shaders::triangle_vertex, Shaders::triangle_fragment, nullptr);
+
+    //files
 
     //Load("test from file","./shader/glsl/quad/vert.shader", "./shader/glsl/quad/frag.shader" , nullptr);
 
@@ -39,7 +41,17 @@ void Shader::Update(Camera* camera)
         camera->m_backgroundColor.y * camera->m_backgroundColor.w,
         camera->m_backgroundColor.z * camera->m_backgroundColor.w, 
         camera->m_backgroundColor.w 
-    );
+    ); 
+
+    //camera offset
+
+    GetShader("sprite").SetVec2f("offset", camera->m_position, true);
+    GetShader("graphics").SetVec2f("offset", camera->m_position, true);
+    GetShader("Points").SetVec2f("offset", camera->m_position, true);
+    GetShader("Lines").SetVec2f("offset", camera->m_position, true);
+    GetShader("Triangles").SetVec2f("offset", camera->m_position, true);
+
+    //projection matrix
 
     GetShader("sprite").SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
     GetShader("graphics").SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
@@ -135,7 +147,9 @@ void checkCompileErrors(unsigned int shader, const std::string &type)
 void Shader::Load(const std::string &key, const char* vertShader, const char* fragShader, const char* geomShader)
 {
 
-    Shader shader;
+    Shader shader; 
+
+    shader.m_key = key.c_str();
 
     if (
         System::Utils::str_includes(vertShader, ".vert") && System::Utils::str_includes(fragShader, ".frag") ||

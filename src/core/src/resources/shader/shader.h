@@ -15,6 +15,7 @@ class Shader {
 public:
 
     unsigned int ID;
+    const char* m_key;
 
     // utility functions
 

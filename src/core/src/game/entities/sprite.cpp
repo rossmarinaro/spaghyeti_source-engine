@@ -195,7 +195,7 @@ void Sprite::Render()
 
     this->m_shader.SetMat4("model", this->m_model, true);
 
-    this->m_texture.Update(this->m_position, this->m_flipX, this->m_flipY, 1); 
+    this->m_texture.Update(this->m_position, this->m_flipX, this->m_flipY); 
 
     //update physics body if exists
 
@@ -226,7 +226,7 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
         m_key(key),  
         m_currentFrame(frame),
         m_shader(Shader::GetShader("sprite")), 
-        m_texture(System::Resources::Manager::texture2D->GetTexture(key)),
+        m_texture(Graphics::Texture2D::GetTexture(key)),
         m_anims(System::Resources::Manager::GetAnimations(key)),
         m_isSpritesheet(false)
 {
@@ -247,7 +247,7 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, const char* ty
         m_key(key),  
         m_type(type),
         m_shader(Shader::GetShader(type)), 
-        m_texture(System::Resources::Manager::texture2D->GetTexture(key)),
+        m_texture(Graphics::Texture2D::GetTexture(key)),
         m_isSpritesheet(false)
 
 { 

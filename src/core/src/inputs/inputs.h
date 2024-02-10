@@ -14,8 +14,6 @@ class Inputs {
              isDown = false,
              m_left_click, m_SPACE, m_SHIFT, m_TAB, m_left, m_right, m_up, m_down, m_G;
 
-
-        //void Init();
         void ShutDown();
         void ResetControls();
         void CreateCursor();

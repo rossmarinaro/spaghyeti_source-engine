@@ -19,8 +19,6 @@ namespace Graphics {
 
             unsigned int ID, VAO;
             GLuint VBO, UVBO;
-    
-            glm::mat4 m_model; 
 
             void GenBuffer ();
             
@@ -41,10 +39,6 @@ namespace Graphics {
             Primitive() { this->GenBuffer(); };
 
             virtual ~Primitive() = default;
-
-        private:
-
-            int m_numOfVerts;
    
     };
 
@@ -85,7 +79,7 @@ namespace Graphics {
                     Repeat(1)
             { glGenTextures(1, &this->ID);  };
             
-            ~Texture2D(){};
+            ~Texture2D() = default;
 
             static Texture2D& GetTexture(const std::string &key);
             static void Load(const std::string &key);
@@ -94,7 +88,7 @@ namespace Graphics {
             
             void SetFiltering();
             void Generate(unsigned int width, unsigned int height, auto &data);  // generates texture from image data
-            void Update(const glm::vec2 &position, bool flipX, bool flipY, int drawStyle);
+            void Update(const glm::vec2 &position, bool flipX, bool flipY);
             void Bind() const { glBindTexture(GL_TEXTURE_2D, this->ID); }; // binds the texture as the current active GL_TEXTURE_2D texture object
 
         private: 
@@ -103,7 +97,6 @@ namespace Graphics {
             unsigned int Internal_Format; // format of texture object RGB, RGBA
             unsigned int Image_Format; // format of loaded image
             float UVs[12];
-            short vertices[12];
     }; 
 
 }

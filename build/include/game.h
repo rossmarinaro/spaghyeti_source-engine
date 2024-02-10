@@ -110,6 +110,7 @@ class Game {
         
         static void DestroyText(std::shared_ptr<Text> text);
         static void DestroySprite(std::shared_ptr<Sprite> sprite);
+        static void DestroyGeometry(std::shared_ptr<Geometry> geom);
         static void DestroyUI();
 
         static void RemoveFromVector(std::vector<std::shared_ptr<Sprite>>& vector, std::shared_ptr<Sprite> sprite);

@@ -180,7 +180,7 @@ void Inputs::CreateCursor()
     //cursor object
 
     Application::game->cursor = std::make_shared<Geometry>(0.0f, 0.0f, 20.0f, 20.0f);
-    Application::game->cursor->SetStroke(glm::vec3(1.0f, 0.0f, 0.0f));
+    Application::game->cursor->SetColor(glm::vec3(1.0f, 0.0f, 0.0f));
     Application::game->cursor->m_shader = System::Resources::Manager::shader->GetShader("cursor");
 }
 

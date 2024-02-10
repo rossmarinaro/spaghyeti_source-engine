@@ -242,6 +242,22 @@ void Game::DestroyText(std::shared_ptr<Text> text)
 }
 
 
+//-----------------------------
+
+ 
+void Game::DestroyGeometry(std::shared_ptr<Geometry> geom)
+{
+
+    std::vector<std::shared_ptr<Geometry>>::iterator it = std::find(geometry.begin() - 1, geometry.end() - 1, geom);
+
+    if (it != geometry.end())
+        geometry.erase(it);
+
+    geom.reset();
+    geom = nullptr; 
+
+}
+
 
 //-----------------------------
 
