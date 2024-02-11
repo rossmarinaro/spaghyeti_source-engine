@@ -25,7 +25,7 @@ TextNode::TextNode(const std::string &id):
 TextNode::~TextNode() {
 
     if (this->textHandle != nullptr)
-        Game::DestroyText(this->textHandle);
+        Game::DestroyEntity(this->textHandle);
 
     Editor::Log("Text node " + this->m_name + " deleted.");
 }

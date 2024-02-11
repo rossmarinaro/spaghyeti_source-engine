@@ -30,8 +30,8 @@ void Text::ShutDown() {
 
 Text::Text(std::string content, float x, float y, float scale, glm::vec3 tint)
 :
-    Entity(glm::vec2(x, y)),
-    content(content)
+    Entity("text", glm::vec2(x, y)),
+        content(content)
 {
 
     this->m_scale = glm::vec2(scale);

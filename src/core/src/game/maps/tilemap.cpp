@@ -73,10 +73,11 @@ void MapManager::ClearMap()
 
   for (auto &tile : tilesprites) {                
 
-    Game::DestroySprite(tile);
+    Game::DestroyEntity(tile);
 
     tile.reset();
     tile = nullptr;
+    
   }
 
   tilesprites.clear();

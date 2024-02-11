@@ -222,7 +222,7 @@ void Sprite::Render()
 
 Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
 : 
-    Entity(position),
+    Entity("sprite", position),
         m_key(key),  
         m_currentFrame(frame),
         m_shader(Shader::GetShader("sprite")), 
@@ -245,7 +245,7 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
  
 Sprite::Sprite(const std::string &key, const glm::vec2 &position, const char* type)
 : 
-    Entity(position),
+    Entity("sprite", position),
         m_key(key),  
         m_type(type),
         m_shader(Shader::GetShader(type)), 

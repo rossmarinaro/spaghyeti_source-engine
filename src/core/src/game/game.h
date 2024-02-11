@@ -57,7 +57,6 @@ class Game {
         {
             auto e = std::make_shared<T>(key, x, y);
 
-            sprites.push_back(e);
             entities.insert(e);
 
             return e;
@@ -99,8 +98,6 @@ class Game {
                 );
             }
 
-            sprites.push_back(player);
-
             entities.insert(player);
 
             return player;
@@ -112,9 +109,7 @@ class Game {
         static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
         static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end);
         
-        static void DestroyText(std::shared_ptr<Text> text);
-        static void DestroySprite(std::shared_ptr<Sprite> sprite);
-        static void DestroyGeometry(std::shared_ptr<Geometry> geom);
+        static void DestroyEntity(std::shared_ptr<Entity> entity);
         static void DestroyUI();
 
         static void RemoveFromVector(std::vector<std::shared_ptr<Sprite>>& vector, std::shared_ptr<Sprite> sprite);

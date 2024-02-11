@@ -29,6 +29,7 @@ class Entity {
 						  g_ID = 0;
 
 		int m_depth;
+
 		float 
 			m_rotation, 
 			m_alpha; 
@@ -39,6 +40,8 @@ class Entity {
 			m_active, 
 			m_renderable, 
 			m_alive;
+
+		const char* type;
 
 		glm::vec3 m_tint; 
 		glm::mat4 m_model; 
@@ -80,7 +83,8 @@ class Entity {
 		virtual void Update(Inputs* inputs){};
 
 		Entity() = default;
-		Entity(const glm::vec2 &position):
+		Entity(const char* type, const glm::vec2 &position):
+			type(type),
 			m_model(glm::mat4(1.0f)),
 			m_position(position),
 			m_scale(glm::vec2(1.0f)), 

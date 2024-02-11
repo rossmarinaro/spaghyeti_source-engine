@@ -24,7 +24,7 @@ EmptyNode::~EmptyNode()
 {
 
     if (this->m_debugGraphic)
-        Game::DestroyGeometry(this->m_debugGraphic);
+        Game::DestroyEntity(this->m_debugGraphic);
 
     Editor::Log("Empty node " + this->m_name + " deleted.");
 }

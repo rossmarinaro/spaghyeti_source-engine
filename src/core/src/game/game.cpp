@@ -140,12 +140,12 @@ void Game::DestroyUI()
 
     for (const auto &UI : entities)
     {
-        std::vector<std::shared_ptr<Sprite>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, UI);
+        std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, UI);
 
         if (it != entities.end())
             entities.erase(it);
 
-        DestroySprite(UI);
+        DestroyEntity(UI);
     }
 
 }
@@ -167,7 +167,7 @@ void Game::RemoveFromVector(std::vector<std::shared_ptr<Sprite>>& vector, std::s
     if (it != entities.end())
         entities.erase(it);
 
-    DestroySprite(sprite);
+    DestroyEntity(sprite);
 
 }
 
@@ -188,7 +188,7 @@ void Game::RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::sha
     if (it != entities.end())
         entities.erase(it);
 
-    DestroyText(text);
+    DestroyEntity(text);
 
 }
 
@@ -196,58 +196,31 @@ void Game::RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::sha
 //-----------------------------
 
  
-void Game::DestroySprite(std::shared_ptr<Sprite> sprite)
+void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
 
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, sprite);
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, entity);
 
     if (it != entities.end())
        entities.erase(it);
-    
-    sprite->m_renderable = false;
 
-    sprite->m_active = false;
-    sprite->m_alive = false;
+    if (strcmp(entity->type, "sprite") == 0)
+    {
 
-    if (sprite->m_body.self != nullptr)
-       physics->bodiesToRemove.insert(sprite);
+        auto sprite = std::static_pointer_cast<Sprite>(entity);
 
-    sprite.reset();
-    sprite = nullptr; 
+        sprite->m_renderable = false;
 
-}
+        sprite->m_active = false;
+        sprite->m_alive = false;
 
+        if (sprite->m_body.self != nullptr)
+            physics->bodiesToRemove.insert(sprite);
 
-//-----------------------------
+    }
 
- 
-void Game::DestroyText(std::shared_ptr<Text> text)
-{
-
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, text);
-
-    if (it != entities.end())
-        entities.erase(it);
-
-    text.reset();
-    text = nullptr; 
-
-}
-
-
-//-----------------------------
-
- 
-void Game::DestroyGeometry(std::shared_ptr<Geometry> geom)
-{
-
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, geom);
-
-    if (it != entities.end())
-        entities.erase(it);
-
-    geom.reset();
-    geom = nullptr; 
+    entity.reset();
+    entity = nullptr; 
 
 }
 

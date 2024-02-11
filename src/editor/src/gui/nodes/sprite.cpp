@@ -33,15 +33,8 @@ SpriteNode::~SpriteNode()
 {
 
     if (this->spriteHandle != nullptr)
-    {
-
-        //System::Resources::Manager::UnLoadFrames(this->spriteHandle->m_key);
-        //System::Resources::Manager::UnLoadAnims(this->spriteHandle->m_key);
-        //System::Resources::Manager::RegisterAssets();
-        
-        Game::DestroySprite(this->spriteHandle);
-    }
-
+        Game::DestroyEntity(this->spriteHandle);
+    
     Editor::Log("Sprite node " + this->m_name + " deleted.");
 }
 
@@ -52,16 +45,10 @@ SpriteNode::~SpriteNode()
 void SpriteNode::ApplyTexture(const std::pair<std::string, GLuint> &asset)
 {  
 
-    if (this->spriteHandle == nullptr) 
-    { 
+    if (this->spriteHandle == nullptr) { 
 
         this->spriteHandle = Game::CreateSprite(asset.first, 0.0f, 0.0f);
         this->spriteHandle->ID = this->m_ID;
-
-        // this->spriteHandle->m_texture.U1 = 0;   
-        // this->spriteHandle->m_texture.U2 = 0;
-        // this->spriteHandle->m_texture.V1 = 1; 
-        // this->spriteHandle->m_texture.V2 = 1;
     }
 
     else {
