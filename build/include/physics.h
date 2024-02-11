@@ -33,7 +33,7 @@ class Physics {
             b2PolygonShape box;
         };
 
-        static inline std::vector<std::unique_ptr<Body>> fixtureData;
+        static inline std::vector<std::shared_ptr<Body>> fixtureData;
 
         CollisionManager collisions;
         

@@ -83,7 +83,7 @@ void TilemapNode::ApplyTilemap()
                 texture.c_str(), 
                 this->map_width, 
                 this->map_height, 
-                this->tile_width, 
+                this->tile_width,  
                 this->tile_height,
                 this->depth[i]
             );

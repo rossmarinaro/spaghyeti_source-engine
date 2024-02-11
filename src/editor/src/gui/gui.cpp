@@ -124,7 +124,7 @@ void GUI::CreateGrid()
     Shader::Load("grid", checker_vertex, checker_fragment, nullptr); 
 
     grid = Game::CreateGeom(-10, -10, 1500, 1500);
-    grid->SetDepth(0);
+    grid->SetDepth(-1);
     grid->m_shader = Shader::GetShader("grid");
 
 

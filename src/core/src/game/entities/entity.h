@@ -25,7 +25,8 @@ class Entity {
 
 	public: 
 
-		static inline int DEPTH = 0, g_ID = 0;
+		static inline int DEPTH, 
+						  g_ID = 0;
 
 		int m_depth;
 		float 
@@ -170,7 +171,7 @@ class Sprite : public Entity {
 
 		Shader m_shader; 
 			
-		Graphics::Texture2D &m_texture; 
+		Graphics::Texture2D m_texture; 
 
 		std::string m_key;
 		std::string m_type = "generic";
@@ -229,8 +230,6 @@ class Sprite : public Entity {
 		bool m_contacting, 
 			 m_isSpritesheet, 
 			 anim_yoyo = false;
-
-		unsigned int m_id;
 
 		glm::vec2 m_velocity;
 		

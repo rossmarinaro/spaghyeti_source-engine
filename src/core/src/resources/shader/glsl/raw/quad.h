@@ -74,7 +74,7 @@ namespace Shaders {
             "out vec4 FragColor;\n"
             "uniform vec3 tint;\n"
 
-            "void main()\n"
+            "void main()\n" 
             "{\n"
             "   FragColor = vec4(tint, 1.0f);\n"
             "}\n\0";

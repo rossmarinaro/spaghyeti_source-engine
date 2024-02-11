@@ -21,9 +21,12 @@ class Game {
 
     public:  
 
-        static inline std::string name = "";
- 
+    
         const char* m_currentStage; 
+
+        static inline std::string name = "";
+
+        static inline int worldWidth, worldHeight = 0;
 
 		static inline Time* time;
         static inline Camera* camera;
@@ -120,11 +123,6 @@ class Game {
         //render queues
 
         static inline std::vector<std::shared_ptr<Entity>> entities;
-
-        static inline std::vector<std::shared_ptr<Geometry>> geometry;
-        static inline std::vector<std::shared_ptr<Sprite>> sprites;
-        static inline std::vector<std::shared_ptr<Sprite>> UIs;
-        static inline std::vector<std::shared_ptr<Text>> texts;
 
         std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
         std::shared_ptr<Geometry> cursor = nullptr;

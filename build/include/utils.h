@@ -14,14 +14,6 @@ namespace System {
 		
 		public:
 
-			template<typename T>
-			using Scope = std::unique_ptr<T>;
-			template<typename T, typename ... Args>
-			constexpr Scope<T> CreateScope(Args&& ... args)
-			{
-				return std::make_unique<T>(std::forward<Args>(args)...);
-			}
-
 			static inline int randInt(int n) { return rand() % n; }
 
 			static inline float randFloat(float n) { return ((float)(rand()) / (float)(RAND_MAX)) * n; }

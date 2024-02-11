@@ -304,7 +304,7 @@ std::vector<std::array<int, 4>> Manager::GetRawSpritesheetData(const std::string
 {
 
     std::map<std::string, std::vector<std::array<int, 4>>>::iterator it = System::Application::resources->ATLASES.find(key);
-
+ 
     if (it != System::Application::resources->ATLASES.end())
         return it->second; 
         

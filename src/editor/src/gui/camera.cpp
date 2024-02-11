@@ -4,17 +4,20 @@
 
 void GUI::RenderCamera()
 {
-    
-    ImGui::SliderFloat("x", (float*)&Editor::camera->m_position.x, -500.0f, 500.0f);
-    ImGui::SliderFloat("y", (float*)&Editor::camera->m_position.y, -500.0f, 500.0f);
+
+    ImGui::Text("viewport");
+
+    ImGui::InputInt("width", &Game::worldWidth);
+    ImGui::InputInt("height", &Game::worldHeight);
+    ImGui::SliderFloat("x", (float*)&Editor::camera->m_position.x, 0.0f, Game::worldWidth);
+    ImGui::SliderFloat("y", (float*)&Editor::camera->m_position.y, 0.0f, Game::worldHeight);
     ImGui::SliderFloat("zoom", (float*)&Editor::camera->m_zoom, -10.0f, 10.0f);
     ImGui::ColorEdit4("color", (float*)&Editor::camera->m_backgroundColor); 
-    
-    ImGui::Separator();
+
     ImGui::Text("grid");
 
     ImGui::SliderFloat("alpha", (float*)&grid->m_alpha, 0.0f, 1.0f);
 
-
 }
 
+ 

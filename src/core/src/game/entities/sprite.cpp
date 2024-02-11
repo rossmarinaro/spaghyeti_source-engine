@@ -230,8 +230,10 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
         m_anims(System::Resources::Manager::GetAnimations(key)),
         m_isSpritesheet(false)
 {
- 
-    this->ReadSpritesheetData(); 
+
+    #if STANDALONE == 1
+        this->ReadSpritesheetData(); 
+    #endif
 
     std::cout << "Sprite: " + this->m_key + " Created.\n";
 
@@ -252,7 +254,9 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, const char* ty
 
 { 
 
-    this->ReadSpritesheetData(); 
+    #if STANDALONE == 1
+        this->ReadSpritesheetData(); 
+    #endif 
         
     std::cout << "Sprite: UI " + this->m_key + " created.\n"; 
 }

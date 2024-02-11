@@ -13,6 +13,8 @@ Camera::Camera():
     std::cout << "Camera: initialized.\n";
 }
 
+//------------------------------
+
 glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 {
     

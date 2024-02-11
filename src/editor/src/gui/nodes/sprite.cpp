@@ -34,8 +34,10 @@ SpriteNode::~SpriteNode()
 
     if (this->spriteHandle != nullptr)
     {
-        System::Resources::Manager::UnLoadFrames(this->spriteHandle->m_key);
-        System::Resources::Manager::UnLoadAnims(this->spriteHandle->m_key);
+
+        //System::Resources::Manager::UnLoadFrames(this->spriteHandle->m_key);
+        //System::Resources::Manager::UnLoadAnims(this->spriteHandle->m_key);
+        //System::Resources::Manager::RegisterAssets();
         
         Game::DestroySprite(this->spriteHandle);
     }
@@ -50,9 +52,16 @@ SpriteNode::~SpriteNode()
 void SpriteNode::ApplyTexture(const std::pair<std::string, GLuint> &asset)
 {  
 
-    if (this->spriteHandle == nullptr) { 
+    if (this->spriteHandle == nullptr) 
+    { 
+
         this->spriteHandle = Game::CreateSprite(asset.first, 0.0f, 0.0f);
         this->spriteHandle->ID = this->m_ID;
+
+        // this->spriteHandle->m_texture.U1 = 0;   
+        // this->spriteHandle->m_texture.U2 = 0;
+        // this->spriteHandle->m_texture.V1 = 1; 
+        // this->spriteHandle->m_texture.V2 = 1;
     }
 
     else {
@@ -192,6 +201,7 @@ void SpriteNode::Render()
 
                         if (this->spriteHandle->IsSpritesheet())
                         {
+
                             if (ImGui::Button("play") && this->animBuf1[i].s.length()) 
                                 this->do_animate = true;
                                 
@@ -386,7 +396,7 @@ void SpriteNode::Render()
 
                                 for (int i = 0; i < this->frame; ++i)
                                 {
-                                    ImGui::Separator();
+                                    ImGui::Separator(); 
                               
                                     ImGui::Text("frame: %d", i);
                                     
@@ -415,7 +425,7 @@ void SpriteNode::Render()
                                     
                                     for (int i = 0; i < this->frame; ++i) {
                                         this->frames.push_back({ this->frameBuf1[i], this->frameBuf2[i], this->frameBuf3[i], this->frameBuf4[i] }); 
-                                        this->framesApplied = true;
+                                        this->framesApplied = true; this->spriteHandle->SetFrame(0);
                                     }
 
                                     std::vector<std::array<int, 4>> framesToPush;

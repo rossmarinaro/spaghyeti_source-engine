@@ -102,28 +102,15 @@ void Game::UpdateFrame()
         accumulator -= time->timeStep;
     }
 
-    //current entities
-
-    entities.clear();
-
-    for (const auto &geom : geometry)
-        entities.push_back(geom);
-
-    for (const auto &sprite : sprites)
-        entities.push_back(sprite);
-
-    for (const auto &UI : UIs)
-        entities.push_back(UI);
-
-    for (const auto &text : texts)
-        entities.push_back(text);
-
     //render queues
 
     for (const auto &entity : entities)
         if ((entity.get() && entity) && entity.get()->m_renderable)
             entity->Render();
 
+    //depth sort
+
+    std::sort(entities.begin(), entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
 
     //render input cursor
 
@@ -138,10 +125,6 @@ void Game::UpdateFrame()
 
     #endif
 
-    //depth sort
-
-    std::sort(entities.begin(), entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
-
     //propagate input functionality to game instance
     
     System::Application::game->Update(System::Application::inputs, System::Application::game->camera);
@@ -155,12 +138,12 @@ void Game::UpdateFrame()
 void Game::DestroyUI()
 {
 
-    for (const auto &UI : UIs)
+    for (const auto &UI : entities)
     {
-        std::vector<std::shared_ptr<Sprite>>::iterator it = std::find(UIs.begin() - 1, UIs.end() - 1, UI);
+        std::vector<std::shared_ptr<Sprite>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, UI);
 
-        if (it != UIs.end())
-            UIs.erase(it);
+        if (it != entities.end())
+            entities.erase(it);
 
         DestroySprite(UI);
     }
@@ -174,10 +157,15 @@ void Game::DestroyUI()
 void Game::RemoveFromVector(std::vector<std::shared_ptr<Sprite>>& vector, std::shared_ptr<Sprite> sprite)
 {
 
-    std::vector<std::shared_ptr<Sprite>>::iterator it = std::find(vector.begin() - 1, vector.end() - 1, sprite);
+    std::vector<std::shared_ptr<Sprite>>::iterator v_it = std::find(vector.begin() - 1, vector.end() - 1, sprite);
 
-    if (it != vector.end())
-        vector.erase(it);
+    if (v_it != vector.end())
+        vector.erase(v_it);
+
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, sprite);
+
+    if (it != entities.end())
+        entities.erase(it);
 
     DestroySprite(sprite);
 
@@ -190,10 +178,15 @@ void Game::RemoveFromVector(std::vector<std::shared_ptr<Sprite>>& vector, std::s
 void Game::RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::shared_ptr<Text> text)
 {
 
-    std::vector<std::shared_ptr<Text>>::iterator it = std::find(vector.begin() - 1, vector.end() - 1, text);
+    std::vector<std::shared_ptr<Text>>::iterator v_it = std::find(vector.begin() - 1, vector.end() - 1, text);
 
-    if (it != vector.end())
-        vector.erase(it);
+    if (v_it != vector.end())
+        vector.erase(v_it);
+
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, text);
+
+    if (it != entities.end())
+        entities.erase(it);
 
     DestroyText(text);
 
@@ -206,10 +199,10 @@ void Game::RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::sha
 void Game::DestroySprite(std::shared_ptr<Sprite> sprite)
 {
 
-    std::vector<std::shared_ptr<Sprite>>::iterator it = std::find(sprites.begin() - 1, sprites.end() - 1, sprite);
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, sprite);
 
-    if (it != sprites.end())
-       sprites.erase(it);
+    if (it != entities.end())
+       entities.erase(it);
     
     sprite->m_renderable = false;
 
@@ -231,10 +224,10 @@ void Game::DestroySprite(std::shared_ptr<Sprite> sprite)
 void Game::DestroyText(std::shared_ptr<Text> text)
 {
 
-    std::vector<std::shared_ptr<Text>>::iterator it = std::find(texts.begin() - 1, texts.end() - 1, text);
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, text);
 
-    if (it != texts.end())
-        texts.erase(it);
+    if (it != entities.end())
+        entities.erase(it);
 
     text.reset();
     text = nullptr; 
@@ -248,10 +241,10 @@ void Game::DestroyText(std::shared_ptr<Text> text)
 void Game::DestroyGeometry(std::shared_ptr<Geometry> geom)
 {
 
-    std::vector<std::shared_ptr<Geometry>>::iterator it = std::find(geometry.begin() - 1, geometry.end() - 1, geom);
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, geom);
 
-    if (it != geometry.end())
-        geometry.erase(it);
+    if (it != entities.end())
+        entities.erase(it);
 
     geom.reset();
     geom = nullptr; 
@@ -269,7 +262,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, floa
 
     sprite->SetScale(scale);
 
-    sprites.push_back(sprite);
+    entities.push_back(sprite);
 
     return sprite;
 }
@@ -286,7 +279,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
     
     element->SetFrame(frame);
 
-    UIs.push_back(element);
+    entities.push_back(element);
 
     return element;
 }
@@ -301,7 +294,7 @@ std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, floa
 
     auto text = std::make_shared<Text>(content, x, y); 
 
-    texts.push_back(text);
+    entities.push_back(text);
 
     return text;
 }
@@ -314,7 +307,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 {
     auto geom = std::make_shared<Geometry>(x, y, width, height);
 
-    geometry.push_back(geom);
+    entities.push_back(geom);
 
     return geom;
 }
@@ -327,7 +320,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &st
 {
     auto geom = std::make_shared<Geometry>(x, y, start, end);
 
-    geometry.push_back(geom);
+    entities.push_back(geom);
 
     return geom;
 }

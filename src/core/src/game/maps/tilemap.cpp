@@ -55,7 +55,7 @@ void MapManager::CreateLayer (
             {
                 auto tile = Game::CreateSprite(texture_key, x * tileWidth, y * tileHeight, tileType);
                 tile->m_depth = depth;
-                tilesprites.push_back(tile); 
+                tilesprites.push_back(tile);  
             }
 
         }

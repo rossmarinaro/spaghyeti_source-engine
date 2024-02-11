@@ -194,7 +194,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         tn->textBuf = text["content"];
         tn->tint = glm::vec3(text["tint"]["x"], text["tint"]["y"], text["tint"]["z"]);     
         tn->alpha = text["alpha"];       
-        tn->positionX = text["position x"];       
+        tn->positionX = text["position x"];        
         tn->positionY = text["position y"];   
         tn->rotation = text["rotation"];      
         tn->scaleX = text["scale x"];      
