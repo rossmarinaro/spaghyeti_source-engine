@@ -32,21 +32,21 @@ std::string System::Utils::GetFileType(const std::string &path)
 {
 
     if (
-        System::Utils::str_endsWith(path, ".png") ||
-        System::Utils::str_endsWith(path, ".jpg")
+        str_endsWith(path, ".png") ||
+        str_endsWith(path, ".jpg")
     ) 
         return "image"; 
     
     if (
-        System::Utils::str_endsWith(path, ".flac") ||
-        System::Utils::str_endsWith(path, ".ogg")
+        str_endsWith(path, ".flac") ||
+        str_endsWith(path, ".ogg")
     ) 
         return "audio";
     
     if (
-        System::Utils::str_endsWith(path, ".txt") ||
-        System::Utils::str_endsWith(path, ".json") || 
-        System::Utils::str_endsWith(path, ".csv")
+        str_endsWith(path, ".txt") ||
+        str_endsWith(path, ".json") || 
+        str_endsWith(path, ".csv")
     ) 
         return "data";
 

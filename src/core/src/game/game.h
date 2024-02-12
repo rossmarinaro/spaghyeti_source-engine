@@ -105,6 +105,7 @@ class Game {
         
         static std::shared_ptr<Sprite> CreateUI(const std::string &key, float x, float y, int frame = 0);
         static std::shared_ptr<Sprite> CreateSprite(const std::string &key, float x, float y, int frame = 0, float scale = 1.0f);
+        static std::shared_ptr<Sprite> CreateTileSprite(const std::string &key, float x, float y, int frame);
         static std::shared_ptr<Text> CreateText(const std::string &content, float x, float y);
         static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
         static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end);

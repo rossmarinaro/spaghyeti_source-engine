@@ -229,15 +229,7 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
         m_texture(Graphics::Texture2D::GetTexture(key)),
         m_anims(System::Resources::Manager::GetAnimations(key)),
         m_isSpritesheet(false)
-{
-
-    #if STANDALONE == 1
-        this->ReadSpritesheetData(); 
-    #endif
-
-    std::cout << "Sprite: " + this->m_key + " Created.\n";
-
-}
+{ std::cout << "Sprite: " + this->m_key + " Created.\n"; }
 
 
 //-------------------------------------- UI sprite
@@ -252,14 +244,7 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, const char* ty
         m_texture(Graphics::Texture2D::GetTexture(key)),
         m_isSpritesheet(false)
 
-{ 
-
-    #if STANDALONE == 1
-        this->ReadSpritesheetData(); 
-    #endif 
-        
-    std::cout << "Sprite: UI " + this->m_key + " created.\n"; 
-}
+{ std::cout << "Sprite: UI " + this->m_key + " created.\n"; }
 
 
 

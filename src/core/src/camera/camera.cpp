@@ -8,7 +8,7 @@ Camera::Camera():
     m_screenLeft(1.0f),
     m_screenTop(0.0f),
     m_position(glm::vec2(0.0f, 0.0f)),
-    m_backgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f))
+    m_backgroundColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f))
 {
     std::cout << "Camera: initialized.\n";
 }

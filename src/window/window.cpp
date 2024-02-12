@@ -89,7 +89,7 @@ void Window::Init()
 
     s_instance = glfwCreateWindow(
             m_width, 
-            m_height, (Application::game->name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2023 🍝👌").c_str(), 
+            m_height, (Application::game->name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2024 🍝👌").c_str(), 
             isFullScreen, 
             NULL
         );

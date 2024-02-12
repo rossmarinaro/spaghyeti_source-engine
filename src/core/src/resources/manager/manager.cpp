@@ -73,7 +73,7 @@ void Manager::LoadFile(const char* key, const char* path)
         System::Application::resources->file_audio_assets.insert({key, path});
 
     else if (
-        System::Utils::GetFileType(path) == "data" &&
+        System::Utils::GetFileType(path) == "data" && 
         System::Application::resources->file_text_assets.find(key) == System::Application::resources->file_text_assets.end()
     )
         System::Application::resources->file_text_assets.insert({key, path});
@@ -386,7 +386,7 @@ std::vector<std::string> Manager::ParseCSV(const std::string &key)
 
     std::map<std::string, std::string>::iterator it = System::Application::resources->file_text_assets.find(key);
 
-    if (it != System::Application::resources->file_text_assets.end()) {
+    if (it != System::Application::resources->file_text_assets.end()) { 
 
         std::ifstream in(it->second);
 

@@ -204,15 +204,14 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     if (it != entities.end())
        entities.erase(it);
 
-    if (strcmp(entity->type, "sprite") == 0)
-    {
+    entity->m_renderable = false;
+
+    entity->m_active = false;
+    entity->m_alive = false;
+
+    if (strcmp(entity->type, "sprite") == 0) {
 
         auto sprite = std::static_pointer_cast<Sprite>(entity);
-
-        sprite->m_renderable = false;
-
-        sprite->m_active = false;
-        sprite->m_alive = false;
 
         if (sprite->m_body.self != nullptr)
             physics->bodiesToRemove.insert(sprite);
@@ -233,6 +232,10 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, floa
 
     auto sprite = std::make_shared<Sprite>(key, glm::vec2(x, y), frame);
 
+    #if STANDALONE == 1
+        sprite->ReadSpritesheetData(); 
+    #endif
+
     sprite->SetScale(scale);
 
     entities.push_back(sprite);
@@ -249,6 +252,10 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
 {
 
     auto element = std::make_shared<Sprite>(key, glm::vec2(x, y), "UI");
+
+    #if STANDALONE == 1
+        element->ReadSpritesheetData(); 
+    #endif
     
     element->SetFrame(frame);
 
@@ -257,6 +264,24 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
     return element;
 }
 
+
+//-----------------------------
+
+
+std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, float y, int frame)
+{
+
+    auto ts = std::make_shared<Sprite>(key, glm::vec2(x, y), frame);
+
+    ts->type = "tile";
+
+    ts->ReadSpritesheetData(); 
+
+    entities.push_back(ts);
+
+    return ts;
+
+}
 
 
 //-----------------------------

@@ -16,7 +16,7 @@ class Camera {
             
             this->SetPosition(glm::vec2(0.0f, 0.0f));
             this->SetZoom(1.0f);
-            this->SetBackgroundColor(glm::vec4(0.25f, 0.25f, 0.25f, 1.0f));
+            this->SetBackgroundColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
             this->rotation = 0.0f;
         }

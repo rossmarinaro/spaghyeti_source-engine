@@ -167,6 +167,7 @@ class Text : public Entity {
 
 };
 
+
 //----------------------------- base sprite class
 
 class Sprite : public Entity {
@@ -257,7 +258,6 @@ class Player : public Sprite {
 		~Player() { std::cout << "Sprite: player destroyed.\n"; };
 
 };
-
 
 
 

@@ -46,16 +46,14 @@ void MapManager::CreateLayer (
         {
 
             //convert string to int at index
-
+ 
             int tileType = atoi(map[x + y * mapWidth].c_str());
 
             //skip if no tile
 
-            if (tileType > -1) 
-            {
-                auto tile = Game::CreateSprite(texture_key, x * tileWidth, y * tileHeight, tileType);
-                tile->m_depth = depth;
-                tilesprites.push_back(tile);  
+            if (tileType > -1) {
+                auto tile = Game::CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType);
+                tile->SetDepth(depth); 
             }
 
         }
@@ -68,20 +66,10 @@ void MapManager::CreateLayer (
 //-------------------------------------
 
 
-void MapManager::ClearMap()
-{
+void MapManager::ClearMap() {
 
-  for (auto &tile : tilesprites) {                
+    Game::entities.erase(std::remove_if(Game::entities.begin(), Game::entities.end(), [](auto t) { return strcmp(t->type, "tile") == 0; }), Game::entities.end());
 
-    Game::DestroyEntity(tile);
-
-    tile.reset();
-    tile = nullptr;
-    
-  }
-
-  tilesprites.clear();
-
-  std::cout << "Tilemap: layer cleared.\n";
+    std::cout << "Tilemap: layer cleared.\n";
 
 }

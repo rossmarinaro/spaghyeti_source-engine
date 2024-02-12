@@ -84,15 +84,13 @@ void TilemapNode::ApplyTilemap()
                 this->map_width, 
                 this->map_height, 
                 this->tile_width,  
-                this->tile_height,
+                this->tile_height, 
                 this->depth[i]
             );
 
            this->layersApplied = true;
         }
   //for (auto &tile : MapManager::tilesprites)  tile->m_texture.Repeat = 2;
-
-  
 
     }
 }
