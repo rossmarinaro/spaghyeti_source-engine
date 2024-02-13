@@ -41,7 +41,6 @@ class Physics {
             DebugDraw* debug;
         #endif
 
-        static inline std::vector<Body> bodies;
         static inline std::set<std::shared_ptr<Sprite>> bodiesToRemove;
 
         static inline const int32 velocityIterations = 6;

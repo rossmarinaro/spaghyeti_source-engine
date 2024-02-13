@@ -135,6 +135,21 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
             tmn->depth.push_back(layer["layers"]["depth"]);
         }
 
+        //physics 
+        
+        if (tilemap["components"]["physics"]["exists"]) {
+            tmn->AddComponent("Physics Body");
+            tmn->move_physics = true;
+        }
+
+        for (const auto &body : tilemap["components"]["physics"]["bodies"]) 
+        {
+            tmn->body_width.push_back(body["body_width"]);
+            tmn->body_height.push_back(body["body_height"]);
+            tmn->bodyX.push_back(body["bodyX"]);
+            tmn->bodyY.push_back(body["bodyY"]);
+        }
+
         tmn->ApplyTilemap();
     }
 
@@ -166,18 +181,6 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         en->m_debugGraphic->height = empty["height"]; 
         en->positionX = empty["position x"]; 
         en->positionY = empty["position y"];
-
-        //physics 
-
-        en->body_width = empty["components"]["physics"]["body_width"];
-        en->body_height = empty["components"]["physics"]["body_height"];
-        en->body_offsetX = empty["components"]["physics"]["body_offsetX"];
-        en->body_offsetY = empty["components"]["physics"]["body_offsetY"];
-
-        if (empty["components"]["physics"]["exists"]) {
-            en->AddComponent("Physics Body");
-            en->move_physics = true;
-        }
 
     }
 
@@ -245,21 +248,18 @@ void EventListener::Serialize(json &data)
 
             bool physics, animator, script, shader = false;
 
-            for (const auto &component : sn->components)
-            {
-                if (strcmp(component->m_type, "Physics Body") == 0)
-                    physics = true;
+            if (sn->HasComponent("Physics Body"))
+                physics = true;
 
-                if (strcmp(component->m_type, "Animator") == 0)
-                    animator = true;
+            if (sn->HasComponent("Animator"))
+                animator = true;
 
-                if (strcmp(component->m_type, "Script") == 0)
-                    script = true;
+            if (sn->HasComponent("Script"))
+                script = true;
 
-                if (strcmp(component->m_type, "Shader") == 0)
-                    shader = true;
-            }
-
+            if (sn->HasComponent("Shader"))
+                shader = true;
+            
             //frames
 
             json frames = json::array();
@@ -344,6 +344,8 @@ void EventListener::Serialize(json &data)
 
             TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
 
+            bool physics = tmn->HasComponent("Physics Body") ? true : false;
+
             //layers
 
             json layers = json::array();
@@ -361,6 +363,18 @@ void EventListener::Serialize(json &data)
                     }
                 });
 
+            //physics bodies
+
+            json bodies = json::array();
+
+            for (int i = 0; i < tmn->layer; ++i)
+                bodies.push_back({
+                    { "body_width", tmn->body_width.size() ? tmn->body_width[i] : 0 },
+                    { "body_height", tmn->body_height.size() ? tmn->body_height[i] : 0 },
+                    { "bodyX", tmn->bodyX.size() ? tmn->bodyX[i] : 0 },
+                    { "bodyY", tmn->bodyY.size() ? tmn->bodyY[i] : 0 }
+                });
+
             tilemaps.push_back({
                 { "ID", node->m_ID },
                 { "name", node->m_name },
@@ -368,7 +382,15 @@ void EventListener::Serialize(json &data)
                 { "map_width", tmn->map_width },
                 { "map_height", tmn->map_height },
                 { "tile_width", tmn->tile_width },
-                { "tile_height", tmn->tile_height }
+                { "tile_height", tmn->tile_height },
+                { "components", {
+                        { "physics", {
+                                { "exists", physics },
+                                { "bodies", bodies }
+                            }
+                        }
+                    }
+                }
             });
         }
 
@@ -406,14 +428,6 @@ void EventListener::Serialize(json &data)
                 { "position x", en->positionX },
                 { "position y", en->positionY },
                     { "components", {
-                        { "physics", {
-                                { "exists", physics },
-                                { "body_width", en->body_width },
-                                { "body_height", en->body_height },
-                                { "body_offsetX", en->body_offsetX },
-                                { "body_offsetY", en->body_offsetY }
-                            }
-                        },
                         { "script", {
                                 { "exists", script }
                             }

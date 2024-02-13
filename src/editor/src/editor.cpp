@@ -32,7 +32,10 @@ void Editor::Update()
     Application::Update(); 
 
     Shader::Update(camera);
-
+    
+    if (GUI::grid) 
+        GUI::grid->Render();
+        
     glfwPollEvents(); 
     
     if (Application::inputs != nullptr)

@@ -19,11 +19,7 @@ Node::Node(const std::string &id, std::string type, std::string name):
     positionY(0.0f), 
     scaleX(1.0f),
     scaleY(1.0f),
-    rotation(0.0f),
-    body_width(50.0f),
-    body_height(50.0f),
-    body_offsetX(0.0f),
-    body_offsetY(0.0f)
+    rotation(0.0f)
 {
 
     for (auto &node : nodes)
@@ -63,8 +59,7 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
 Node* Node::MakeNode(const char* type)
 {
 
-    if (count > MAX_NODES)
-    {
+    if (count > MAX_NODES) {
         Editor::Log("Max nodes reached.");
         return nullptr; 
     }
@@ -173,9 +168,9 @@ Component* Node::AddComponent(const char* type)
     //return if component exists
     
     for (auto &component : this->components)
-        if (component->m_type == type)
+        if ((std::string)component->m_type == type) 
             return nullptr;
-    
+        
     Component* component = new Component(this->m_ID, type);
 
     components.push_back(component);

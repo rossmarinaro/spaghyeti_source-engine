@@ -49,12 +49,8 @@ void EmptyNode::Render()
 
             if (ImGui::BeginMenu("Add Component"))
             {
-
-                if (ImGui::MenuItem("Physics Body"))
-                    this->AddComponent("Physics Body");
-
                 if (ImGui::MenuItem("Scripts")) 
-                    this->AddComponent("Script");
+                    this->AddComponent("Script"); 
 
                 if (ImGui::MenuItem("Shader"))
                     this->AddComponent("Shader");

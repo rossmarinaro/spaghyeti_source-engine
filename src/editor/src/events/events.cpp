@@ -594,13 +594,6 @@ void EventListener::BuildAndRun()
 
             InsertTo("   auto empty_" + node->m_ID + " = CreateRect(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n", command_file);
 
-            //physics
-
-            if (en->HasComponent("Physics Body"))
-            {
-                //InsertTo("   empty_" + node->m_ID + "->m_body.self = physics->CreateDynamicBody(glm::vec2(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + "), glm::vec2(1.0f, 1.0f), System::Utils::floatBetween(0.0f, 1.0f), false, 3, 1);\n", command_file);
-                //InsertTo("   empty_" + node->m_ID + "->m_body.offset = glm::vec2(" + std::to_string(sn->body_offsetX) + ", " + std::to_string(sn->body_offsetY) + ");\n", command_file);
-            }
         }
 
         //--------------- tilemap
@@ -631,6 +624,13 @@ void EventListener::BuildAndRun()
                 InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n", command_file);
                 InsertTo("   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n", command_file);
             }
+
+            //static physics bodies
+
+            if (tmn->HasComponent("Physics Body"))
+                for (int i = 0; i < tmn->bodies.size(); i++)    
+                    InsertTo("   physics->CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n", command_file);
+
         } 
 
         //--------------- audio

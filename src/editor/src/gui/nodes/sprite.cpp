@@ -16,7 +16,11 @@ SpriteNode::SpriteNode(const std::string &id):
         filter_nearest(true),
         frame(1),
         anim(1),
-        depth(1)
+        depth(1),
+        body_width(50.0f),
+        body_height(50.0f),
+        body_offsetX(0.0f),
+        body_offsetY(0.0f)
 
 {
 
@@ -229,6 +233,7 @@ void SpriteNode::Render()
 
                     if (ImGui::BeginMenu("remove animator?"))
                     {
+                        
                         if (ImGui::MenuItem("yes")) 
                         {
                             this->RemoveComponent(component); 
@@ -286,27 +291,16 @@ void SpriteNode::Render()
                     ImGui::SliderFloat("offset x", &this->body_offsetX, 0.0f, System::Window::m_width); 
                     ImGui::SliderFloat("offset y", &this->body_offsetY, 0.0f, System::Window::m_height); 
 
-                    if (ImGui::BeginMenu("apply changes?"))
-                    {
-
-                        if (ImGui::MenuItem("yes") && this->spriteHandle)
-                        {
-                            b2PolygonShape body = this->spriteHandle->m_body.shape;
-                            body.SetAsBox(this->body_width, this->body_height);
-                            b2FixtureDef fixtureDef;
-                            fixtureDef.shape = &body; 
-
-                            this->spriteHandle->m_body.self->DestroyFixture(this->spriteHandle->m_body.self->GetFixtureList());
-                            this->spriteHandle->m_body.self->CreateFixture(&fixtureDef);
-                        }
-                        
-                        ImGui::EndMenu();
-                    }
-
                     if (ImGui::BeginMenu("remove physics?"))
                     {
-                        if (ImGui::MenuItem("yes"))
-                            this->RemoveComponent(component); 
+                        if (ImGui::MenuItem("yes")) 
+                        {
+                            this->RemoveComponent(component);
+
+                            if (this->spriteHandle->m_body.self != nullptr)
+                                Game::physics->bodiesToRemove.insert(this->spriteHandle);
+
+                        }
 
                         ImGui::EndMenu();
                     }
@@ -488,10 +482,16 @@ void SpriteNode::Render()
 
             if (this->spriteHandle->m_body.self)
             {
-                if (this->move_physics)
+                if (!this->move_physics)
                     this->spriteHandle->m_body.self->SetTransform(b2Vec2(this->spriteHandle->m_position.x + this->body_offsetX, this->spriteHandle->m_position.y + this->body_offsetY), 0);
 
-                this->spriteHandle->m_body.self->SetEnabled(false);
+                b2PolygonShape body = this->spriteHandle->m_body.shape; 
+                body.SetAsBox(this->body_width, this->body_height);
+                b2FixtureDef fixtureDef;
+                fixtureDef.shape = &body; 
+
+                this->spriteHandle->m_body.self->DestroyFixture(this->spriteHandle->m_body.self->GetFixtureList());
+                this->spriteHandle->m_body.self->CreateFixture(&fixtureDef);
             }
         
         }

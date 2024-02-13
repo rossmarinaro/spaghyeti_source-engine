@@ -123,10 +123,8 @@ void GUI::CreateGrid()
 
     Shader::Load("grid", checker_vertex, checker_fragment, nullptr); 
 
-    grid = Game::CreateGeom(-10, -10, 1500, 1500);
-    grid->SetDepth(-1);
+    grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
     grid->m_shader = Shader::GetShader("grid");
-
 
 }
 

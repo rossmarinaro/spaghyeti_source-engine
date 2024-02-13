@@ -78,13 +78,24 @@ Component::Component(const std::string &id, const char* type):
     {
 
         for (auto &node : Node::nodes) 
-            if (node->m_ID == id) {
+            if (node->m_ID == id) 
+            { 
 
-                SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
-                auto spr = sn->spriteHandle;
+                if (node->m_type == "Sprite") {
 
-                if (spr)
-                    spr->m_body.self = Game::physics->CreateDynamicBody(glm::vec2(spr->m_position.x, spr->m_position.y), glm::vec2(sn->body_width, sn->body_height));
+                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+
+                    sn->spriteHandle->m_body.self = Game::physics->CreateDynamicBody(glm::vec2(sn->spriteHandle->m_position.x, sn->spriteHandle->m_position.y), glm::vec2(sn->body_width, sn->body_height)); 
+                }
+
+                if (node->m_type == "Tilemap") {
+
+                    TilemapNode* tn = dynamic_cast<TilemapNode*>(node);
+                    
+                    tn->CreateBody();
+
+                }
+
             }
     }
 

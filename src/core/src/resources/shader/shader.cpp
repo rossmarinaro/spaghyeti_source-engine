@@ -18,9 +18,14 @@ void Shader::InitBaseShaders()
     Load("graphics", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
     Load("sprite", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("UI", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
-    Load("Points", Shaders::point_vertex, Shaders::point_fragment, nullptr);
-    Load("Lines", Shaders::line_vertex, Shaders::line_fragment, nullptr);
-    Load("Triangles", Shaders::triangle_vertex, Shaders::triangle_fragment, nullptr);
+    
+    #if DEVELOPMENT == 1
+
+        Load("Points", Shaders::point_vertex, Shaders::point_fragment, nullptr);
+        Load("Lines", Shaders::line_vertex, Shaders::line_fragment, nullptr);
+        Load("Triangles", Shaders::triangle_vertex, Shaders::triangle_fragment, nullptr);
+
+    #endif
 
     //files
 
@@ -47,9 +52,14 @@ void Shader::Update(Camera* camera)
 
     GetShader("sprite").SetVec2f("offset", camera->m_position, true);
     GetShader("graphics").SetVec2f("offset", camera->m_position, true);
-    GetShader("Points").SetVec2f("offset", camera->m_position, true);
-    GetShader("Lines").SetVec2f("offset", camera->m_position, true);
-    GetShader("Triangles").SetVec2f("offset", camera->m_position, true);
+
+    #if DEVELOPMENT == 1
+
+        GetShader("Points").SetVec2f("offset", camera->m_position, true);
+        GetShader("Lines").SetVec2f("offset", camera->m_position, true);
+        GetShader("Triangles").SetVec2f("offset", camera->m_position, true);
+
+    #endif
 
     //projection matrix
 

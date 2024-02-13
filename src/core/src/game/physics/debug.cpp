@@ -18,7 +18,7 @@ void Points::Create()
 
 	m_maxVertices = points;
 
-	m_shader = &Resources::Manager::shader->GetShader("Points");
+	m_shader = Resources::Manager::shader->GetShader("Points");
 
 	m_vertexAttribute = 0;
     m_colorAttribute = 1;
@@ -61,7 +61,7 @@ void Points::Flush()
 	if (m_count == 0)
         return;
 
-	this->m_shader->SetMat4("projectionMatrix", System::Application::game->camera->GetProjectionMatrix(Window::m_scaleWidth, Window::m_scaleHeight), true);
+	this->m_shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(Window::m_scaleWidth, Window::m_scaleHeight), true);
 
     glBindVertexArray(m_vaoId);
 
@@ -95,7 +95,7 @@ void Lines::Create()
 {
 
 	m_maxVertices = lines;
-    m_shader = &Resources::Manager::shader->GetShader("Lines");
+    m_shader = Resources::Manager::shader->GetShader("Lines");
 
     m_vertexAttribute = 0;
     m_colorAttribute = 1;
@@ -133,7 +133,7 @@ void Lines::Flush()
     if (m_count == 0)
         return; 
 
-	this->m_shader->SetMat4("projectionMatrix", System::Application::game->camera->GetProjectionMatrix(Window::m_scaleWidth, Window::m_scaleHeight), true);
+	this->m_shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(Window::m_scaleWidth, Window::m_scaleHeight), true);
 
     glBindVertexArray(m_vaoId);
 
@@ -162,7 +162,7 @@ void Triangles::Create()
 {
 
 	m_maxVertices = triangles;
-   	m_shader = &Resources::Manager::shader->GetShader("Triangles");
+   	m_shader = Resources::Manager::shader->GetShader("Triangles");
 
     m_vertexAttribute = 0;
     m_colorAttribute = 1;
@@ -200,7 +200,7 @@ void Triangles::Flush()
     if (m_count == 0)
         return;
 
-	this->m_shader->SetMat4("projectionMatrix", System::Application::game->camera->GetProjectionMatrix(Window::m_scaleWidth, Window::m_scaleHeight), true);
+	this->m_shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(Window::m_scaleWidth, Window::m_scaleHeight), true);
 
     glBindVertexArray(m_vaoId);
 

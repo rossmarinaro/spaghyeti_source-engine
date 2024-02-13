@@ -21,16 +21,11 @@ class Node {
               scaleY,
               positionX, 
               positionY,
-              rotation,
-              body_width, 
-              body_height,  
-              body_offsetX, 
-              body_offsetY;
+              rotation;
 
-        std::string m_ID;
-
-        std::string m_name;
-        std::string m_type;
+        std::string m_ID,
+                    m_name,
+                    m_type;
 
         std::vector<Component*> components;
 
@@ -68,28 +63,6 @@ class Node {
 
 };
 
-
-//---------------------------------
-
-
-class AudioNode : public Node {
-
-    public:
-
-        std::string audio_source_name;
-        float volume;
-        bool loop;
-
-        AudioNode(const std::string &id);
-        ~AudioNode();
-
-        void Render() override;
-
-    private:
-
-        Graphics::Texture2D &audioTexture;
-};
-
 //---------------------------------
 
 
@@ -102,6 +75,11 @@ class SpriteNode : public Node {
             anim, 
             depth;
 
+        float body_width, 
+              body_height,  
+              body_offsetX, 
+              body_offsetY;
+
         bool framesApplied,       
              filter_nearest,
              do_yoyo;
@@ -113,16 +91,15 @@ class SpriteNode : public Node {
         std::map<std::string, Anims> animations; 
 
         std::shared_ptr<Sprite> spriteHandle;
-
-        std::vector<int> frameBuf1; 
-        std::vector<int> frameBuf2; 
-        std::vector<int> frameBuf3; 
-        std::vector<int> frameBuf4;
-
         std::vector<StringContainer> animBuf1; 
-        std::vector<int> animBuf2; 
-        std::vector<int> animBuf3; 
-        std::vector<int> animBuf4; 
+
+        std::vector<int> frameBuf1,
+                         frameBuf2,
+                         frameBuf3,
+                         frameBuf4,
+                         animBuf2,
+                         animBuf3,
+                         animBuf4; 
 
         SpriteNode(const std::string &id);
         ~SpriteNode();      
@@ -159,18 +136,25 @@ class TilemapNode : public Node {
             tile_width, 
             tile_height;
 
-        std::vector<int> spr_sheet_width; 
-        std::vector<int> spr_sheet_height;
-        std::vector<int> depth;
+        std::vector<int> spr_sheet_width,
+                         spr_sheet_height,
+                         depth;
+
+        std::vector<float> body_width, 
+                           body_height,  
+                           bodyX, 
+                           bodyY;
 
         std::vector<std::array<std::string, 3>> layers;
         std::vector<std::array<int, 4>> offset;
+        std::vector<b2Body*> bodies;
 
         TilemapNode(const std::string &id);
         ~TilemapNode();
 
         void Render() override;
         void ApplyTilemap();
+        void CreateBody();
 
     private: 
 
@@ -199,6 +183,28 @@ class TextNode : public Node {
 
         void Render() override;
 
+};
+
+
+//---------------------------------
+
+
+class AudioNode : public Node {
+
+    public:
+
+        std::string audio_source_name;
+        float volume;
+        bool loop;
+
+        AudioNode(const std::string &id);
+        ~AudioNode();
+
+        void Render() override;
+
+    private:
+
+        Graphics::Texture2D &audioTexture;
 };
 
 //---------------------------------

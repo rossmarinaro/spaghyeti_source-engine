@@ -5,9 +5,23 @@
 #include "./entity.h"
 
 
+
 class DebugGraphic {
 
     public:
+
+        virtual void Create() = 0;
+        virtual void Flush() = 0;
+
+        static void Destroy(auto *shape);
+
+        static void Vertex(auto *shape, const b2Vec2& v, const b2Color& c, float size);
+        static void Vertex(auto *shape, const b2Vec2& v, const b2Color& c);
+
+        DebugGraphic() = default;
+        virtual ~DebugGraphic() = default;
+
+    protected:
 
         enum { 
             points = 512,
@@ -25,19 +39,11 @@ class DebugGraphic {
         GLint m_colorAttribute;
         GLint m_sizeAttribute;
 
-        Shader* m_shader;
+        Shader m_shader;
 
-        virtual void Create() = 0;
-        virtual void Flush() = 0;
-
-        static void Destroy(auto *shape);
-
-        static void Vertex(auto *shape, const b2Vec2& v, const b2Color& c, float size);
-        static void Vertex(auto *shape, const b2Vec2& v, const b2Color& c);
-
-        DebugGraphic() = default;
-        virtual ~DebugGraphic() = default;
 };
+
+//-------------------------------------
 
 
 class Points : public DebugGraphic

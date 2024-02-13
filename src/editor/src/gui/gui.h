@@ -27,12 +27,12 @@ class GUI {
         static void Render();
         static void Close();
 
+        static inline std::unique_ptr<Geometry> grid;
 
     private:
 
         static inline ImGuiIO io;
 
-        static inline std::shared_ptr<Geometry> grid;
 
         static void CreateGrid();
         static void RenderNodes();

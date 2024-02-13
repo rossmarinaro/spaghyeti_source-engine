@@ -39,8 +39,6 @@ b2Body* Physics::CreateStaticBody(float x, float y, float width, float height)
     body.box.SetAsBox(body.m_width, body.m_height);       
     body.self->CreateFixture(&body.box, 0.0f); 
 
-    bodies.push_back(body);
-
     return body.self;
 }
 
@@ -82,8 +80,6 @@ b2Body* Physics::CreateDynamicBody(
     body.fixtureDef.isSensor = isSensor;
 
     body.self->CreateFixture(&body.fixtureDef);
-
-    bodies.push_back(body);
     
     return body.self;
 }
