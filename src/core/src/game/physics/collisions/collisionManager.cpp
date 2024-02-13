@@ -18,19 +18,20 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
         auto sprite = std::dynamic_pointer_cast<Sprite>(*it);
         
-        if (sprite->m_body.self) 
-        {
+        if (sprite->m_body.bodies.size()) 
+            for (auto body : sprite->m_body.bodies)
+            {
 
-            b2Fixture* fixture = sprite->m_body.self->GetFixtureList();
+                b2Fixture* fixture = body->GetFixtureList();
 
-            b2BodyUserData data = fixture->GetBody()->GetUserData();
+                b2BodyUserData data = fixture->GetBody()->GetUserData();
 
-            if (
-                data.pointer == bodyUserDataA.pointer ||
-                data.pointer == bodyUserDataB.pointer
-            )
-                sprite->BeginContact();
-        }
+                if (
+                    data.pointer == bodyUserDataA.pointer ||
+                    data.pointer == bodyUserDataB.pointer
+                )
+                    sprite->BeginContact();
+            }
     }
 
 }
@@ -49,19 +50,20 @@ void CollisionManager::EndContact(b2Contact* contact)
 
         auto sprite = std::dynamic_pointer_cast<Sprite>(*it);
         
-        if (sprite->m_body.self) 
-        {
+       if (sprite->m_body.bodies.size()) 
+            for (auto body : sprite->m_body.bodies)
+            {
+ 
+                b2Fixture* fixture = body->GetFixtureList();
 
-            b2Fixture* fixture = sprite->m_body.self->GetFixtureList();
+                b2BodyUserData data = fixture->GetBody()->GetUserData();
 
-            b2BodyUserData data = fixture->GetBody()->GetUserData();
-
-            if (
-                data.pointer == bodyUserDataA.pointer ||
-                data.pointer == bodyUserDataB.pointer
-            )
-                sprite->EndContact();
-        }
+                if (
+                    data.pointer == bodyUserDataA.pointer ||
+                    data.pointer == bodyUserDataB.pointer
+                )
+                    sprite->EndContact();
+            }
     }
 }
 

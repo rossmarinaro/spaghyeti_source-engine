@@ -63,7 +63,7 @@ b2Body* Physics::CreateDynamicBody(
     body.def.type = b2_dynamicBody;
   
     body.def.position.Set(position.x, position.y);
-
+ 
     body.def.userData.pointer = type;
 
     body.self = System::Application::game->physics->world.CreateBody(&body.def);  
@@ -101,8 +101,10 @@ void Physics::CleanupRemovedBodies()
 
         auto sprite = *it;
 
-        world.DestroyBody(sprite->m_body.self);
-        sprite->m_body.self = nullptr;
+        for (auto body : sprite->m_body.bodies) {
+            world.DestroyBody(body);
+            body = nullptr;
+        }
         
     }
 

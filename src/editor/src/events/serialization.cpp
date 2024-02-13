@@ -100,14 +100,17 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         //physics 
 
-        sn->body_width = sprite["components"]["physics"]["body_width"];
-        sn->body_height = sprite["components"]["physics"]["body_height"];
-        sn->body_offsetX = sprite["components"]["physics"]["body_offsetX"];
-        sn->body_offsetY = sprite["components"]["physics"]["body_offsetY"];
-
         if (sprite["components"]["physics"]["exists"]) {
             sn->AddComponent("Physics Body");
-            sn->move_physics = true;
+            sn->move_physics = sprite["components"]["physics"]["moveable"];
+        }
+
+        for (const auto &body : sprite["components"]["physics"]["bodies"]) 
+        {
+            sn->body_width.push_back(body["body_width"]);
+            sn->body_height.push_back(body["body_height"]);
+            sn->bodyX.push_back(body["bodyX"]);
+            sn->bodyY.push_back(body["bodyY"]);
         }
 
     }
@@ -137,10 +140,8 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         //physics 
         
-        if (tilemap["components"]["physics"]["exists"]) {
+        if (tilemap["components"]["physics"]["exists"]) 
             tmn->AddComponent("Physics Body");
-            tmn->move_physics = true;
-        }
 
         for (const auto &body : tilemap["components"]["physics"]["bodies"]) 
         {
@@ -247,7 +248,7 @@ void EventListener::Serialize(json &data)
             SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
 
             bool physics, animator, script, shader = false;
-
+ 
             if (sn->HasComponent("Physics Body"))
                 physics = true;
 
@@ -284,6 +285,18 @@ void EventListener::Serialize(json &data)
                         { "end", sn->animBuf3[i] }
                     });
 
+            //physics bodies
+
+            json bodies = json::array();
+
+            for (int i = 0; i < sn->bodies.size(); ++i)
+                bodies.push_back({
+                    { "body_width", sn->body_width.size() ? sn->body_width[i] : 0 },
+                    { "body_height", sn->body_height.size() ? sn->body_height[i] : 0 },
+                    { "bodyX", sn->bodyX.size() ? sn->bodyX[i] : 0 },
+                    { "bodyY", sn->bodyY.size() ? sn->bodyY[i] : 0 }
+                });
+
 
             //settings
 
@@ -313,10 +326,8 @@ void EventListener::Serialize(json &data)
                 { "components", {
                         { "physics", {
                                 { "exists", physics },
-                                { "body_width", sn->body_width },
-                                { "body_height", sn->body_height },
-                                { "body_offsetX", sn->body_offsetX },
-                                { "body_offsetY", sn->body_offsetY }
+                                { "moveable", sn->move_physics },
+                                { "bodies", bodies }
                             }
                         },
                         { "animator", {

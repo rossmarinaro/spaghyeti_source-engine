@@ -64,7 +64,7 @@ static void ThrowMeatball()
     meatball->m_body.self->SetLinearVelocity(b2Vec2(randX, System::Utils::floatBetween(10.0f, -10.0f)));  
     meatball->m_body.self->SetFixedRotation(true);
 
-    meatball->m_body.offset = glm::vec2(-10.0f, -5.0f);
+    meatball->m_body.offset = glm::vec2(-10.0f, -5.0f); 
 
     MeatballMadness::meatballs.push_back(meatball); 
 

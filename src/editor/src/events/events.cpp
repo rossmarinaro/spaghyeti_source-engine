@@ -553,19 +553,19 @@ void EventListener::BuildAndRun()
 
             //physics
 
-            if (sn->HasComponent("Physics Body") && sn->spriteHandle->m_body.self)
-            {
-                InsertTo("   sprite_" + node->m_ID + "->m_body.self = physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(1.0f, 1.0f), System::Utils::floatBetween(0.0f, 1.0f), false, 3, 1);\n", command_file);
-                InsertTo("   sprite_" + node->m_ID + "->m_body.offset = glm::vec2(" + std::to_string(sn->body_offsetX) + ", " + std::to_string(sn->body_offsetY) + ");\n", command_file);
-            }
-
+            if (sn->HasComponent("Physics Body"))
+                for (int i = 0; i < sn->bodies.size(); i++) {
+                    InsertTo("   sprite_" + node->m_ID + "->m_body.bodies[" + std::to_string(i) + "] = physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(1.0f, 1.0f), System::Utils::floatBetween(0.0f, 1.0f), false, 3, 1);\n", command_file);
+                    InsertTo("   sprite_" + node->m_ID + "->m_body.offsets[" + std::to_string(i) + "] = glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ");\n", command_file);
+                }
+                
             //create animations
 
             if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size())
             {
                 InsertTo("   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n", command_file);
                 InsertTo("   sprite_" + node->m_ID + "->ReadSpritesheetData();\n", command_file);
-            }
+            } 
 
         }
 
@@ -619,7 +619,7 @@ void EventListener::BuildAndRun()
                     offset_oss << offsetsToLoad.back();
 
                     InsertTo("   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n", command_file);
-                }
+                } 
 
                 InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n", command_file);
                 InsertTo("   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n", command_file);

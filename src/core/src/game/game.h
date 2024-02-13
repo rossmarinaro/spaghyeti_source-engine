@@ -53,8 +53,7 @@ class Game {
         static void UpdateFrame();
 
         template<typename T>
-        static inline std::shared_ptr<T> CreateCustomSprite(const std::string &key, float x, float y)
-        {
+        static inline std::shared_ptr<T> CreateCustomSprite(const std::string &key, float x, float y) {
             auto e = std::make_shared<T>(key, x, y);
 
             entities.insert(e);
@@ -85,9 +84,9 @@ class Game {
             if (hasBody)
             {
 
-                player->m_body.offset = bodyOffset;
+                player->m_body.offsets.push_back(bodyOffset);
 
-                player->m_body.self = physics->CreateDynamicBody(
+                auto body = physics->CreateDynamicBody(
                     glm::vec2(player->m_position.x, player->m_position.y), 
                     glm::vec2(bodyDimensions.x * scale, bodyDimensions.y * scale),
                     false,
@@ -96,6 +95,8 @@ class Game {
                     friction,
                     restitution
                 );
+                
+                player->m_body.bodies.push_back(body);
             }
 
             entities.insert(player);

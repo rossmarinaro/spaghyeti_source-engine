@@ -11,6 +11,7 @@ class Component {
         Component(const std::string &id, const char* type);
         ~Component();
 
+
     private:
 
         static inline int count = 0;

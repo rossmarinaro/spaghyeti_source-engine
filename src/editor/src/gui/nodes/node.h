@@ -14,7 +14,6 @@ class Node {
 
         bool created, 
              m_active, 
-             move_physics,
              show_options;
 
         float scaleX, 
@@ -75,13 +74,9 @@ class SpriteNode : public Node {
             anim, 
             depth;
 
-        float body_width, 
-              body_height,  
-              body_offsetX, 
-              body_offsetY;
-
         bool framesApplied,       
              filter_nearest,
+             move_physics,
              do_yoyo;
 
         typedef struct Frames { int x, y, width, height; };
@@ -101,6 +96,13 @@ class SpriteNode : public Node {
                          animBuf3,
                          animBuf4; 
 
+        std::vector<float> body_width, 
+                           body_height,  
+                           bodyX, 
+                           bodyY;
+
+        std::vector<b2Body*> bodies;
+
         SpriteNode(const std::string &id);
         ~SpriteNode();      
 
@@ -108,7 +110,7 @@ class SpriteNode : public Node {
 
         void ApplyTexture(const std::pair<std::string, GLuint> &asset);
         void ApplyAnimation(const std::string &key, int start, int end);
-
+        void CreateBody(const char* type);
 
     private:
 
@@ -214,7 +216,9 @@ class EmptyNode : public Node {
 
     public:
 
-        bool show_debug, debug_fill;
+        bool 
+            show_debug, 
+            debug_fill;
 
         std::shared_ptr<Geometry> m_debugGraphic;
 

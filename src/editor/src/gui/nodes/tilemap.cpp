@@ -143,10 +143,10 @@ void TilemapNode::Render()
                         this->bodyX.push_back(i);
                         this->bodyY.push_back(i);
                         
-                        ImGui::SliderFloat("box width", &this->body_width[i], 0.0f, System::Window::m_width); 
-                        ImGui::SliderFloat("box height", &this->body_height[i], 0.0f, System::Window::m_height); 
                         ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, System::Window::m_width); 
                         ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, System::Window::m_height); 
+                        ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
+                        ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height); 
 
                         ImGui::Separator();             
                         

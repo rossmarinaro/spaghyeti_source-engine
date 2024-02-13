@@ -85,7 +85,7 @@ Component::Component(const std::string &id, const char* type):
 
                     SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
 
-                    sn->spriteHandle->m_body.self = Game::physics->CreateDynamicBody(glm::vec2(sn->spriteHandle->m_position.x, sn->spriteHandle->m_position.y), glm::vec2(sn->body_width, sn->body_height)); 
+                    sn->CreateBody("dynamic");
                 }
 
                 if (node->m_type == "Tilemap") {
@@ -100,7 +100,6 @@ Component::Component(const std::string &id, const char* type):
     }
 
 }
-
 
 //-------------------------------------
 

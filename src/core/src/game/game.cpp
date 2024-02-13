@@ -213,7 +213,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
         auto sprite = std::static_pointer_cast<Sprite>(entity);
 
-        if (sprite->m_body.self != nullptr)
+        if (sprite->m_body.bodies.size())
             physics->bodiesToRemove.insert(sprite);
 
     }

@@ -191,10 +191,14 @@ class Sprite : public Entity {
 
 		struct {
 
-			b2Body* self = nullptr;
-			b2PolygonShape shape;
-			glm::vec2 offset;
-			int GetBodyDataType() const { return this->self->GetFixtureList()->GetBody()->GetUserData().pointer; }
+			std::vector<b2Body*> bodies;
+			std::vector<b2PolygonShape> shapes;
+			std::vector<glm::vec2> offsets;
+			
+			int GetBodyDataType() const { 
+				for (const auto &body : this->bodies)
+				return body->GetFixtureList()->GetBody()->GetUserData().pointer; 
+			}
 
 		} m_body;
 

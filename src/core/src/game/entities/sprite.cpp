@@ -197,16 +197,20 @@ void Sprite::Render()
 
     this->m_texture.Update(this->m_position, this->m_flipX, this->m_flipY); 
 
-    //update physics body if exists
+    //update physics bodies if exists
 
-    if (this->m_body.self != nullptr)
-    {
-
-        if (this->m_body.self->IsEnabled()) {
-            b2Vec2 position = this->m_body.self->GetPosition();
-            this->SetPosition(glm::vec2(position.x + this->m_body.offset.x, position.y + this->m_body.offset.y)); 
-        }
-    } 
+    if (this->m_body.bodies.size())
+        for (int i = 0; i < this->m_body.bodies.size(); i++)
+            if (this->m_body.bodies[i]->IsEnabled()) 
+            {
+                if (this->m_body.bodies[i]->GetType() == b2_dynamicBody) {
+                    b2Vec2 position = this->m_body.bodies[i]->GetPosition();
+                    this->SetPosition(glm::vec2(position.x + this->m_body.offsets[i].x, position.y + this->m_body.offsets[i].y)); 
+                }
+                
+                if (this->m_body.bodies[i]->GetType() == b2_staticBody)
+                    this->m_body.bodies[i]->SetTransform(b2Vec2(this->m_position.x + this->m_body.offsets[i].x, this->m_position.y + this->m_body.offsets[i].y), 0);
+            }
 
     //play current animation
 
@@ -227,8 +231,8 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
         m_currentFrame(frame),
         m_shader(Shader::GetShader("sprite")), 
         m_texture(Graphics::Texture2D::GetTexture(key)),
-        m_anims(System::Resources::Manager::GetAnimations(key)),
-        m_isSpritesheet(false)
+        m_anims(System::Resources::Manager::GetAnimations(key))
+        
 { std::cout << "Sprite: " + this->m_key + " Created.\n"; }
 
 
@@ -241,8 +245,7 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, const char* ty
         m_key(key),  
         m_type(type),
         m_shader(Shader::GetShader(type)), 
-        m_texture(Graphics::Texture2D::GetTexture(key)),
-        m_isSpritesheet(false)
+        m_texture(Graphics::Texture2D::GetTexture(key))
 
 { std::cout << "Sprite: UI " + this->m_key + " created.\n"; }
 

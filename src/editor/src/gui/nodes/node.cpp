@@ -14,7 +14,6 @@ Node::Node(const std::string &id, std::string type, std::string name):
     created(false),
     m_active(true),
     show_options(false),
-    move_physics(false),
     positionX(0.0f),
     positionY(0.0f), 
     scaleX(1.0f),
