@@ -18,11 +18,11 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
         auto sprite = std::dynamic_pointer_cast<Sprite>(*it);
         
-        if (sprite->m_body.bodies.size()) 
-            for (auto body : sprite->m_body.bodies)
+        if (sprite->bodies.size()) 
+            for (auto body : sprite->bodies)
             {
 
-                b2Fixture* fixture = body->GetFixtureList();
+                b2Fixture* fixture = body.first->GetFixtureList();
 
                 b2BodyUserData data = fixture->GetBody()->GetUserData();
 
@@ -50,11 +50,11 @@ void CollisionManager::EndContact(b2Contact* contact)
 
         auto sprite = std::dynamic_pointer_cast<Sprite>(*it);
         
-       if (sprite->m_body.bodies.size()) 
-            for (auto body : sprite->m_body.bodies)
+       if (sprite->bodies.size()) 
+            for (auto body : sprite->bodies)
             {
  
-                b2Fixture* fixture = body->GetFixtureList();
+                b2Fixture* fixture = body.first->GetFixtureList();
 
                 b2BodyUserData data = fixture->GetBody()->GetUserData();
 

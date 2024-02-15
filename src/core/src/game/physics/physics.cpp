@@ -85,27 +85,33 @@ b2Body* Physics::CreateDynamicBody(
 }
 
 
+
+//-----------------------------
+
+ 
+void Physics::DestroyBody(b2Body* b) {
+    System::Application::game->physics->bodiesToRemove.insert(b);
+}
+
+
 //---------------------------
 
 
 void Physics::CleanupRemovedBodies()
 {
 
-    //destroy body
-
-    std::set<std::shared_ptr<Sprite>>::iterator it = bodiesToRemove.begin();
-    std::set<std::shared_ptr<Sprite>>::iterator end = bodiesToRemove.end();
+    std::set<b2Body*>::iterator it = System::Application::game->physics->bodiesToRemove.begin();
+    std::set<b2Body*>::iterator end = System::Application::game->physics->bodiesToRemove.end();
 
     for (; it != end; ++it) 
     {
+        auto b = *it;
 
-        auto sprite = *it;
-
-        for (auto body : sprite->m_body.bodies) {
-            world.DestroyBody(body);
-            body = nullptr;
+        if (b != nullptr) {
+            world.DestroyBody(b);
+            b = nullptr;
         }
-        
+
     }
 
     bodiesToRemove.clear();

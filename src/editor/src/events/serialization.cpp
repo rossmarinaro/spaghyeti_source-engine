@@ -111,7 +111,14 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
             sn->body_height.push_back(body["body_height"]);
             sn->bodyX.push_back(body["bodyX"]);
             sn->bodyY.push_back(body["bodyY"]);
+            
+            std::string t = body["type"];
+            sn->bodyType.push_back(t.c_str());
         }
+
+        if (sn->bodyType.size())
+            for (const auto &type : sn->bodyType)
+                sn->CreateBody(type);
 
     }
 
@@ -149,6 +156,8 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
             tmn->body_height.push_back(body["body_height"]);
             tmn->bodyX.push_back(body["bodyX"]);
             tmn->bodyY.push_back(body["bodyY"]);
+
+            tmn->CreateBody();
         }
 
         tmn->ApplyTilemap();
@@ -294,7 +303,8 @@ void EventListener::Serialize(json &data)
                     { "body_width", sn->body_width.size() ? sn->body_width[i] : 0 },
                     { "body_height", sn->body_height.size() ? sn->body_height[i] : 0 },
                     { "bodyX", sn->bodyX.size() ? sn->bodyX[i] : 0 },
-                    { "bodyY", sn->bodyY.size() ? sn->bodyY[i] : 0 }
+                    { "bodyY", sn->bodyY.size() ? sn->bodyY[i] : 0 },
+                    { "type", sn->bodyType.size() ? (std::string)sn->bodyType[i] : ""}
                 });
 
 

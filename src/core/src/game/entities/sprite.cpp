@@ -199,17 +199,17 @@ void Sprite::Render()
 
     //update physics bodies if exists
 
-    if (this->m_body.bodies.size())
-        for (int i = 0; i < this->m_body.bodies.size(); i++)
-            if (this->m_body.bodies[i]->IsEnabled()) 
+    if (this->bodies.size())
+        for (int i = 0; i < this->bodies.size(); i++)
+            if (this->bodies[i].first->IsEnabled()) 
             {
-                if (this->m_body.bodies[i]->GetType() == b2_dynamicBody) {
-                    b2Vec2 position = this->m_body.bodies[i]->GetPosition();
-                    this->SetPosition(glm::vec2(position.x + this->m_body.offsets[i].x, position.y + this->m_body.offsets[i].y)); 
+                if (this->bodies[i].first->GetType() == b2_dynamicBody) {
+                    b2Vec2 position = this->bodies[i].first->GetPosition();
+                    this->SetPosition(glm::vec2(position.x + this->bodies[i].second.x, position.y + this->bodies[i].second.y)); 
                 }
                 
-                if (this->m_body.bodies[i]->GetType() == b2_staticBody)
-                    this->m_body.bodies[i]->SetTransform(b2Vec2(this->m_position.x + this->m_body.offsets[i].x, this->m_position.y + this->m_body.offsets[i].y), 0);
+                if (this->bodies[i].first->GetType() == b2_staticBody)
+                    this->bodies[i].first->SetTransform(b2Vec2(this->m_position.x + this->bodies[i].second.x, this->m_position.y + this->bodies[i].second.y), 0);
             }
 
     //play current animation
@@ -243,7 +243,6 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, const char* ty
 : 
     Entity("sprite", position),
         m_key(key),  
-        m_type(type),
         m_shader(Shader::GetShader(type)), 
         m_texture(Graphics::Texture2D::GetTexture(key))
 

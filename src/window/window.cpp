@@ -77,7 +77,7 @@ void Window::Init()
     GLFWmonitor* isFullScreen = NULL;
 
     #if STANDALONE == 1
-        isFullScreen = glfwGetPrimaryMonitor();
+        //isFullScreen = glfwGetPrimaryMonitor();
     #endif
 
     //set window dimensions for desktop builds

@@ -191,8 +191,7 @@ void Node::RemoveComponent(Component* component)
     if (it != components.end())
         components.erase(it);
 
-    if (component)
-    {
+    if (component) {
         delete component;
         component = nullptr;
     }

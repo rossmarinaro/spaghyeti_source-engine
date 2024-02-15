@@ -103,6 +103,8 @@ class SpriteNode : public Node {
 
         std::vector<b2Body*> bodies;
 
+        std::vector<const char*> bodyType;
+
         SpriteNode(const std::string &id);
         ~SpriteNode();      
 

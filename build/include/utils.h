@@ -39,7 +39,7 @@ namespace System {
 			
 			static inline bool str_includes(const std::string &str, const std::string &sub) { return str.find(sub) != std::string::npos; }
 
-			static inline constexpr bool str_endsWith(std::string_view str, std::string_view suff) {
+			static inline bool str_endsWith(std::string_view str, std::string_view suff) {
 				return str.size() >= suff.size() && 0 == str.compare(str.size() - suff.size(), suff.size(), suff);
 			}
 	

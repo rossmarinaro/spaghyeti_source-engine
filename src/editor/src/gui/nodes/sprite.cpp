@@ -54,6 +54,7 @@ void SpriteNode::CreateBody(const char* type)
     if (strcmp("dynamic", type) == 0) 
         body  = Game::physics->CreateDynamicBody(glm::vec2(0.0f), glm::vec2(20.0f)); 
 
+    this->bodyType.push_back(type);
     this->bodies.push_back(body);
     
 }
@@ -317,37 +318,35 @@ void SpriteNode::Render()
 
                         ImGui::Separator();     
 
-                        b2PolygonShape body ;//= this->spriteHandle->m_body.shape;
-                        body.SetAsBox(this->body_width[i], this->body_height[i]);
-                        b2FixtureDef fixtureDef;
-                        fixtureDef.shape = &body;
+                        if (this->bodies[i] != nullptr)
+                        {
+                            b2PolygonShape body ;//= this->spriteHandle->m_body.shape;
+                            body.SetAsBox(this->body_width[i], this->body_height[i]);
+                            b2FixtureDef fixtureDef;
+                            fixtureDef.shape = &body;
 
-                        this->bodies[i]->DestroyFixture(this->bodies[i]->GetFixtureList());
-                        this->bodies[i]->CreateFixture(&fixtureDef);    
+                            this->bodies[i]->DestroyFixture(this->bodies[i]->GetFixtureList());
+                            this->bodies[i]->CreateFixture(&fixtureDef);    
 
-                        if (!this->move_physics)    
-                            this->bodies[i]->SetTransform(b2Vec2(this->bodyX[i], this->bodyY[i]), 0);
+                            if (!this->move_physics)    
+                                this->bodies[i]->SetTransform(b2Vec2(this->bodyX[i], this->bodyY[i]), 0);
+
+                            else
+                                this->bodies[i]->SetTransform(b2Vec2(this->spriteHandle->m_position.x + this->bodyX[i], this->spriteHandle->m_position.y + this->bodyY[i]), 0);
+                        }
 
                         ImGui::PopID();
 
                     }
 
-                    if (ImGui::BeginMenu("add")) 
+                    if (ImGui::Button("add")) 
+                        this->CreateBody("static");
+
+                    if (ImGui::Button("remove") && this->bodies.size() > 1) 
                     {
-
-                        if (ImGui::MenuItem("static")) 
-                            this->CreateBody("static");
-
-                        if (ImGui::MenuItem("dynamic")) 
-                            this->CreateBody("dynamic");
-
-                        ImGui::EndMenu();
-                        
-                    }
-
-                    if (ImGui::Button("remove") && this->bodies.size() > 1) {
-                        Game::physics->world.DestroyBody(this->bodies.back());
+                        Game::physics->DestroyBody(this->bodies.back());
                         this->bodies.pop_back();
+                        this->bodyType.pop_back();
                     }
 
                     ImGui::Checkbox("lock", &this->move_physics); 
@@ -358,8 +357,11 @@ void SpriteNode::Render()
                         {
                             this->RemoveComponent(component);
 
-                            //todo: remove bodies
+                            for (const auto &body : this->bodies)
+                                Game::physics->DestroyBody(body);
 
+                            this->bodies.clear();
+                            this->bodyType.clear();
                         }
 
                         ImGui::EndMenu();
@@ -393,7 +395,7 @@ void SpriteNode::Render()
                     if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->currentTexture, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset.first) == "image")
                         ApplyTexture(Editor::selectedAsset);
 
-                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(Editor::selectedAsset.first) != "image")
+                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && Editor::selectedAsset.first.length() && System::Utils::GetFileType(Editor::selectedAsset.first) != "image")
                         ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
                         
                     if (this->currentTexture)

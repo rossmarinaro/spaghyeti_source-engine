@@ -81,8 +81,6 @@ void Game::UpdateFrame()
     if (!gameState)
         return;
 
-    physics->CleanupRemovedBodies();
-
     #if DEVELOPMENT == 1 
         physics->debug->SetFlags(physics->m_flags);
     #endif
@@ -101,6 +99,8 @@ void Game::UpdateFrame()
         physics->world.Step(time->timeStep, physics->velocityIterations, physics->positionIterations);
         accumulator -= time->timeStep;
     }
+
+    physics->CleanupRemovedBodies();
 
     //render queues
 
@@ -213,9 +213,12 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
         auto sprite = std::static_pointer_cast<Sprite>(entity);
 
-        if (sprite->m_body.bodies.size())
-            physics->bodiesToRemove.insert(sprite);
+        if (sprite->bodies.size()) {
+            for (const auto &body : sprite->bodies)
+                physics->DestroyBody(body.first); 
 
+            sprite->bodies.clear();
+        }
     }
 
     entity.reset();

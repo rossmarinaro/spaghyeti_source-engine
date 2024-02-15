@@ -180,7 +180,7 @@ class Sprite : public Entity {
 		Graphics::Texture2D m_texture; 
 
 		std::string m_key;
-		std::string m_type = "generic";
+
 		std::map<std::string, std::pair<int, int>> m_anims;
 
 		//key val data to be assigned to sprite object
@@ -189,18 +189,12 @@ class Sprite : public Entity {
 
 		//physics body
 
-		struct {
-
-			std::vector<b2Body*> bodies;
-			std::vector<b2PolygonShape> shapes;
-			std::vector<glm::vec2> offsets;
-			
-			int GetBodyDataType() const { 
-				for (const auto &body : this->bodies)
-				return body->GetFixtureList()->GetBody()->GetUserData().pointer; 
-			}
-
-		} m_body;
+		std::vector<std::pair<b2Body*, glm::vec2>> bodies;
+		
+		int GetBodyDataType() const { 
+			for (const auto &body : this->bodies)
+				return body.first->GetFixtureList()->GetBody()->GetUserData().pointer; 
+		}
 
 		int m_frames, m_currentFrame;
 
@@ -238,7 +232,7 @@ class Sprite : public Entity {
 	private:
 
 		bool m_contacting, 
-			 m_isSpritesheet, 
+			 m_isSpritesheet = false, 
 			 anim_yoyo = false;
 
 		glm::vec2 m_velocity;

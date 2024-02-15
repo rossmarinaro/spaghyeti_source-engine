@@ -83,8 +83,6 @@ class Game {
             if (hasBody)
             {
 
-                player->m_body.offsets.push_back(bodyOffset);
-
                 auto body = physics->CreateDynamicBody(
                     glm::vec2(player->m_position.x, player->m_position.y), 
                     glm::vec2(bodyDimensions.x * scale, bodyDimensions.y * scale),
@@ -95,7 +93,7 @@ class Game {
                     restitution
                 );
                 
-                player->m_body.bodies.push_back(body);
+                player->bodies.push_back({ body, bodyOffset });
             }
 
             entities.insert(player);

@@ -452,7 +452,7 @@ void EventListener::InsertTo(const std::string &code, const std::string &directo
 void EventListener::BuildAndRun()
 {
 
-    #ifdef _WIN32
+#ifdef _WIN32
 
     //temp files: asset and command lists
 
@@ -492,80 +492,79 @@ void EventListener::BuildAndRun()
 
             SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
 
-            //load frames
-
-            std::ostringstream frame_oss;
-            std::vector<std::string> framesToLoad;
-
-            for (const auto &frame : sn->frames)
-                framesToLoad.push_back("{" + std::to_string(frame.x)  + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + "}");
-
-            if (!framesToLoad.empty()) {
-                std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
-                frame_oss << framesToLoad.back();
-
-                InsertTo("  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n", asset_file);
-
-            }
-
-            //load animations
-
-            std::ostringstream anim_oss;
-            std::vector<std::string> animsToLoad;
-
-            for (const auto &anim : sn->animations)
-                animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
-
-            if (!animsToLoad.empty())
+            if (sn->spriteHandle != nullptr)
             {
-                std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
-                anim_oss << animsToLoad.back();
 
-                InsertTo("  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n", asset_file);
-            }
+                //load frames
 
-            //entity header definitions and scripts. trim extension and compare with instantiated entities.
+                std::ostringstream frame_oss;
+                std::vector<std::string> framesToLoad;
 
-            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                if (System::Utils::ReplaceFrom(script.path().filename().string(), ".", "") == node->m_ID)
+                for (const auto &frame : sn->frames)
+                    framesToLoad.push_back("{" + std::to_string(frame.x)  + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + "}");
+
+                if (!framesToLoad.empty()) {
+                    std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
+                    frame_oss << framesToLoad.back();
+
+                    InsertTo("  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n", asset_file);
+
+                }
+
+                //load animations
+
+                std::ostringstream anim_oss;
+                std::vector<std::string> animsToLoad;
+
+                for (const auto &anim : sn->animations)
+                    animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
+
+                if (!animsToLoad.empty())
                 {
-                    game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
-                    InsertTo("   auto sprite_" + node->m_ID + " = CreateCustomSprite<Sprite_" + node->m_ID + ">(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
+                    std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
+                    anim_oss << animsToLoad.back();
+
+                    InsertTo("  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n", asset_file);
                 }
 
+                //entity header definitions and scripts. trim extension and compare with instantiated entities.
 
-            //if no script present, define base class
+                for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                    if (System::Utils::ReplaceFrom(script.path().filename().string(), ".", "") == node->m_ID) {
+                        game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
+                        InsertTo("   auto sprite_" + node->m_ID + " = CreateCustomSprite<Sprite_" + node->m_ID + ">(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
+                    }
 
-            if (std::find_if(node->components.begin(), node->components.end(), [](Component* component) { return strcmp(component->m_type, "Script") == 0; }) == node->components.end())
-                InsertTo("   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
+                //if no script present, define base class
 
-            //sprite configurations
+                if (std::find_if(node->components.begin(), node->components.end(), [](Component* component) { return strcmp(component->m_type, "Script") == 0; }) == node->components.end())
+                    InsertTo("   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
 
-            InsertTo("   sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->spriteHandle->m_scale.x) + ", " + std::to_string(sn->spriteHandle->m_scale.y) + ");\n", command_file);
-            InsertTo("   sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ");\n", command_file);
-            InsertTo("   sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->spriteHandle->m_rotation) + ");\n", command_file);
-            InsertTo("   sprite_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(sn->spriteHandle->m_tint.x) + ", " + std::to_string(sn->spriteHandle->m_tint.y) + ", " + std::to_string(sn->spriteHandle->m_tint.z) + "));\n", command_file);
+                //sprite configurations
 
-            std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
+                InsertTo("   sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->spriteHandle->m_scale.x) + ", " + std::to_string(sn->spriteHandle->m_scale.y) + ");\n", command_file);
+                InsertTo("   sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ");\n", command_file);
+                InsertTo("   sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->spriteHandle->m_rotation) + ");\n", command_file);
+                InsertTo("   sprite_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(sn->spriteHandle->m_tint.x) + ", " + std::to_string(sn->spriteHandle->m_tint.y) + ", " + std::to_string(sn->spriteHandle->m_tint.z) + "));\n", command_file);
 
-            InsertTo("   sprite_" + node->m_ID + "->m_texture.Filter_Min = " + filtering + ";\n", command_file);
-            InsertTo("   sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n", command_file);
+                std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
 
-            //physics
+                InsertTo("   sprite_" + node->m_ID + "->m_texture.Filter_Min = " + filtering + ";\n", command_file);
+                InsertTo("   sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n", command_file);
 
-            if (sn->HasComponent("Physics Body"))
-                for (int i = 0; i < sn->bodies.size(); i++) {
-                    InsertTo("   sprite_" + node->m_ID + "->m_body.bodies[" + std::to_string(i) + "] = physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(1.0f, 1.0f), System::Utils::floatBetween(0.0f, 1.0f), false, 3, 1);\n", command_file);
-                    InsertTo("   sprite_" + node->m_ID + "->m_body.offsets[" + std::to_string(i) + "] = glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ");\n", command_file);
-                }
-                
-            //create animations
+                //physics bodies
 
-            if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size())
-            {
-                InsertTo("   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n", command_file);
-                InsertTo("   sprite_" + node->m_ID + "->ReadSpritesheetData();\n", command_file);
-            } 
+                if (sn->HasComponent("Physics Body"))
+                    for (int i = 0; i < sn->bodies.size(); i++) 
+                        InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(1.0f, 1.0f), 0.0f, false), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
+                    
+                //create animations
+
+                if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size()) {
+                    InsertTo("   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n", command_file);
+                    InsertTo("   sprite_" + node->m_ID + "->ReadSpritesheetData();\n", command_file);
+                } 
+            }
 
         }
 
@@ -576,12 +575,17 @@ void EventListener::BuildAndRun()
 
             TextNode* tn = dynamic_cast<TextNode*>(node);
 
-            InsertTo("   auto text_" + node->m_ID + " = CreateText(" + tn->textHandle->content + ", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
+            if (tn->textHandle != nullptr)
+            {
+                
+                InsertTo("   auto text_" + node->m_ID + " = CreateText(" + tn->textHandle->content + ", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
 
-            InsertTo("   text_" + node->m_ID + "->SetScale(" + std::to_string(tn->textHandle->m_scale.x) + ", " + std::to_string(tn->textHandle->m_scale.y) + ");\n", command_file);
-            InsertTo("   text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->textHandle->m_position.x) + ", " + std::to_string(tn->textHandle->m_position.y) + ");\n", command_file);
-            InsertTo("   text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->textHandle->m_rotation) + ");\n", command_file);
-            InsertTo("   text_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(tn->textHandle->m_tint.x) + ", " + std::to_string(tn->textHandle->m_tint.y) + ", " + std::to_string(tn->textHandle->m_tint.z) + "));\n", command_file);
+                InsertTo("   text_" + node->m_ID + "->SetScale(" + std::to_string(tn->textHandle->m_scale.x) + ", " + std::to_string(tn->textHandle->m_scale.y) + ");\n", command_file);
+                InsertTo("   text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->textHandle->m_position.x) + ", " + std::to_string(tn->textHandle->m_position.y) + ");\n", command_file);
+                InsertTo("   text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->textHandle->m_rotation) + ");\n", command_file);
+                InsertTo("   text_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(tn->textHandle->m_tint.x) + ", " + std::to_string(tn->textHandle->m_tint.y) + ", " + std::to_string(tn->textHandle->m_tint.z) + "));\n", command_file);
+
+            }
 
         }
 
@@ -610,20 +614,21 @@ void EventListener::BuildAndRun()
 
             for (const auto &offset : tmn->offset)
                 offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + "}");
- 
-            for (int i = 0; i < tmn->layer; i++)
-            {
+            
+            if (tmn->layers.size())
+                for (int i = 0; i < tmn->layer; i++)
+                {
 
-                if (!offsetsToLoad.empty()) {
-                    std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
-                    offset_oss << offsetsToLoad.back();
+                    if (!offsetsToLoad.empty()) {
+                        std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
+                        offset_oss << offsetsToLoad.back();
 
-                    InsertTo("   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n", command_file);
-                } 
+                        InsertTo("   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n", command_file);
+                    } 
 
-                InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n", command_file);
-                InsertTo("   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n", command_file);
-            }
+                    InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n", command_file);
+                    InsertTo("   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n", command_file);
+                }
 
             //static physics bodies
 
@@ -676,7 +681,7 @@ void EventListener::BuildAndRun()
     game_src <<	"#include <windows.h>\n";
     game_src << "#endif\n";
 
-    game_src << "\n#include \"" + root_path + "/include/app.h\"\n";
+    game_src << "\n#include \"" + root_path + "/include/app.h\"\n\n";
 
     game_src << "class " + name_upper + " : public Game {\n\n";
     game_src << "    public:\n";
@@ -688,7 +693,7 @@ void EventListener::BuildAndRun()
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
     game_src << "void " + name_upper + "::Run(Camera *camera) {\n" + commandData + "}\n\n";
-    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera *camera) {\n  for (const auto &sprite : sprites) { \n      sprite->Render();\n      sprite->Update(inputs);\n   }   \n}\n\n\n";
+    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera *camera) {\n    for (const auto &entity : entities) { \n         if (strcmp(entity->type, \"sprite\") == 0) {\n          entity->Render();\n          entity->Update(inputs);\n         }\n    }   \n}\n\n\n";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";
@@ -744,7 +749,7 @@ void EventListener::BuildAndRun()
 
     Editor::Log("Project " + currentProject + " built successfully.");
 
-    #endif
+#endif
 }
 
 

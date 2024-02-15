@@ -166,15 +166,22 @@ void TilemapNode::Render()
                     if (ImGui::Button("add")) 
                         this->CreateBody();
 
-                    if (ImGui::Button("remove") && this->bodies.size() > 1) {
-                        Game::physics->world.DestroyBody(this->bodies.back());
+                    if (ImGui::Button("remove") && this->bodies.size() > 1) { 
+                        Game::physics->DestroyBody(this->bodies.back()); 
                         this->bodies.pop_back();
                     }
 
                     if (ImGui::BeginMenu("remove physics?"))
                     {
                         if (ImGui::MenuItem("yes"))
+                        {
                             this->RemoveComponent(component); 
+
+                            for (auto &body : this->bodies)
+                               Game::physics->DestroyBody(body);
+
+                            this->bodies.clear();
+                        }
 
                         ImGui::EndMenu();
                     }

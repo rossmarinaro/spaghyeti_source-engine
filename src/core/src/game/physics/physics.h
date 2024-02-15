@@ -21,6 +21,7 @@ class Physics {
 
         b2Vec2 gravity;
         b2World world;
+        std::set<b2Body*> bodiesToRemove;
         
         struct Body {
 
@@ -41,8 +42,6 @@ class Physics {
            DebugDraw* debug; 
         #endif
 
-        static inline std::set<std::shared_ptr<Sprite>> bodiesToRemove;
-
         static inline const int32 velocityIterations = 6;
         static inline const int32 positionIterations = 2;
 
@@ -58,6 +57,7 @@ class Physics {
             float restitution = 0.0f
         );
 
+        void DestroyBody(b2Body* b);
         void CleanupRemovedBodies(); 
 
         Physics();
