@@ -14,9 +14,12 @@ Component::Component(const std::string &id, const char* type, bool init):
     
     count++;  
 
+    if (!init)
+        return;
+
     //----------------animator
 
-
+ 
     if (strcmp(this->m_type, "Animator") == 0)
     {
         
@@ -48,9 +51,12 @@ Component::Component(const std::string &id, const char* type, bool init):
         {
 
             this->m_initialized = true;
+
+            std::string root_path = Editor::rootPath;
+            std::replace(root_path.begin(), root_path.end(), '\\', '/');
             
             src << "#pragma once\n\n"; 
-            src << "#include \"" + Editor::rootPath + "/build/include/entity.h\"\n\n";   
+            src << "#include \"" + root_path + "/include/entity.h\"\n\n";   
             src << "using app = System::Application;\n";
 
         } 
@@ -66,7 +72,7 @@ Component::Component(const std::string &id, const char* type, bool init):
         src <<  "        void Update(Inputs* inputs) override {\n\n";
         src <<  "        }\n\n";
         src <<  "};";
-
+ 
         src.close();
 
     };
@@ -76,9 +82,6 @@ Component::Component(const std::string &id, const char* type, bool init):
 
     if (strcmp(this->m_type, "Physics Body") == 0)
     {
-
-        if (!init)
-            return;
 
         for (auto &node : Node::nodes) 
             if (node->m_ID == id) 

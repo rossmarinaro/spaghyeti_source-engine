@@ -469,6 +469,14 @@ void EventListener::BuildAndRun()
 
     std::ofstream game_src(srcPath, std::ofstream::trunc);
 
+    std::string root_path = Editor::rootPath;
+    std::replace(root_path.begin(), root_path.end(), '\\', '/');
+
+    game_src << "#ifdef _WIN32\n";
+    game_src <<	"#include <windows.h>\n";
+    game_src << "#endif\n";
+    game_src << "\n#include \"" + root_path + "/include/app.h\"\n\n";
+
     //asset preload
 
     for (const auto &asset : AssetManager::loadedAssets)
@@ -530,15 +538,21 @@ void EventListener::BuildAndRun()
                 //entity header definitions and scripts. trim extension and compare with instantiated entities.
 
                 for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                    if (System::Utils::ReplaceFrom(script.path().filename().string(), ".", "") == node->m_ID) {
+                {
+                    //if no script present, define base class
+
+                    if (!script.exists()) {
+                        InsertTo("   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
+                        break;
+                    }   
+
+                    //else define custom sprite
+                    
+                    else if (System::Utils::ReplaceFrom(script.path().filename().string(), ".", "") == node->m_ID) {
                         game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
                         InsertTo("   auto sprite_" + node->m_ID + " = CreateCustomSprite<Sprite_" + node->m_ID + ">(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
                     }
-
-                //if no script present, define base class
-
-                if (std::find_if(node->components.begin(), node->components.end(), [](Component* component) { return strcmp(component->m_type, "Script") == 0; }) == node->components.end())
-                    InsertTo("   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
+                }
 
                 //sprite configurations
 
@@ -555,22 +569,28 @@ void EventListener::BuildAndRun()
                 //physics bodies
 
                 if (sn->HasComponent("Physics Body"))
+                {
                     for (int i = 0; i < sn->bodies.size(); i++) 
                     {
-
+ 
                         if (sn->bodies[i].second == "static")
                             InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
                         
                         if (sn->bodies[i].second == "dynamic")
-                            InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(" + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), false, 3, 1), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
+                            InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(" + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), false, 3, " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
                     }    
+
+                    InsertTo("   for (const auto &body : sprite_" + node->m_ID + "->bodies)\n  body.first->SetFixedRotation(true);\n", command_file);
+
+                }
                     
-                //create animations
+                //animator
 
                 if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size()) {
                     InsertTo("   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n", command_file);
                     InsertTo("   sprite_" + node->m_ID + "->ReadSpritesheetData();\n", command_file);
                 } 
+
             }
 
         }
@@ -630,10 +650,10 @@ void EventListener::BuildAndRun()
                         std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
                         offset_oss << offsetsToLoad.back();
 
-                        InsertTo("   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n", command_file);
+                        InsertTo("   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n", asset_file);
                     } 
 
-                    InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n", command_file);
+                    InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n", asset_file);
                     InsertTo("   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n", command_file);
                 }
 
@@ -674,21 +694,10 @@ void EventListener::BuildAndRun()
     std::string commandData((std::istreambuf_iterator<char>(commandRes)), std::istreambuf_iterator<char>());
     std::string preloadData((std::istreambuf_iterator<char>(preloadRes)), std::istreambuf_iterator<char>());
 
-    std::string root_path = Editor::rootPath;
-    std::replace(root_path.begin(), root_path.end(), '\\', '/');
-
     std::string name_upper = currentProject;
-
     transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
     //project source template
-
-
-    game_src << "#ifdef _WIN32\n";
-    game_src <<	"#include <windows.h>\n";
-    game_src << "#endif\n";
-
-    game_src << "\n#include \"" + root_path + "/include/app.h\"\n\n";
 
     game_src << "class " + name_upper + " : public Game {\n\n";
     game_src << "    public:\n";

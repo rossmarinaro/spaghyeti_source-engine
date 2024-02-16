@@ -179,7 +179,7 @@ void Inputs::CreateCursor()
 
     //cursor object
 
-    Application::game->cursor = std::make_shared<Geometry>(0.0f, 0.0f, 20.0f, 20.0f);
+    Application::game->cursor = std::make_shared<Geometry>(100.0f, 100.0f, 20.0f, 20.0f);
     Application::game->cursor->SetColor(glm::vec3(1.0f, 0.0f, 0.0f));
     Application::game->cursor->m_shader = System::Resources::Manager::shader->GetShader("cursor");
 }
@@ -445,7 +445,9 @@ void Inputs::ShutDown()
 void Inputs::ResetControls()
 {
 
-    if (Application::isMobile) {
+    this->cursorReset = true;
+
+    if (!Application::isMobile) {
         this->cursorX = -100.0f;
         this->cursorY = -100.0f;
     }

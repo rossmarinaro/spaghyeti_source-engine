@@ -10,19 +10,41 @@ void Sprite::SetVelocity(float velX, float velY)
     if (!this->m_active)
         return;
 
-    this->m_position.x += velX * System::Application::game->time->GetSeconds(); 
-    this->m_position.y += velY * System::Application::game->time->GetSeconds(); 
+    //use physics if available
+
+    if (this->bodies.size()) 
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(velX, velY), this->bodies[0].first->GetWorldCenter(), true);
+
+    else {
+        this->m_position.x += velX * System::Application::game->time->GetSeconds(); 
+        this->m_position.y += velY * System::Application::game->time->GetSeconds(); 
+    }
+
 };
+
+//--------------------------------
 
 void Sprite::SetVelocityX(float velX) 
 { 
-    if (this->m_active)
+    if (!this->m_active)
+        return;
+
+    if (this->bodies.size()) 
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(velX, this->bodies[0].first->GetLinearVelocity().y), this->bodies[0].first->GetWorldCenter(), true);
+    else
         this->m_position.x += velX; //* System::Application::game->time->GetSeconds();     
 };
 
+//---------------------------------
+
 void Sprite::SetVelocityY(float velY) 
 { 
-    if (this->m_active)
+    if (!this->m_active)
+        return;
+
+    if (this->bodies.size()) 
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, velY), this->bodies[0].first->GetWorldCenter(), true);
+    else
         this->m_position.y += velY; //* System::Application::game->time->GetSeconds(); 
 };
 
@@ -205,7 +227,7 @@ void Sprite::Render()
             {
                 if (this->bodies[i].first->GetType() == b2_dynamicBody) {
                     b2Vec2 position = this->bodies[i].first->GetPosition();
-                    this->SetPosition(glm::vec2(position.x + this->bodies[i].second.x, position.y + this->bodies[i].second.y)); 
+                    this->SetPosition(glm::vec2(position.x /* + this->bodies[i].second.x */, position.y /* + this->bodies[i].second.y */)); 
                 }
                 
                 if (this->bodies[i].first->GetType() == b2_staticBody)

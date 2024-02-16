@@ -81,7 +81,12 @@ class SpriteNode : public Node {
 
         bool framesApplied,       
              filter_nearest,
+             is_sensor,
              do_yoyo;
+
+        float restitution,
+              density, 
+              friction;
 
         typedef struct Frames { int x, y, width, height; };
         typedef struct Anims { std::string key; int start, end; };

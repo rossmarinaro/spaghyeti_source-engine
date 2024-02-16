@@ -30,7 +30,6 @@ class Game {
         static inline Camera* camera;
         static inline Physics* physics;
         static inline Text* text; 
-        static inline Player* player = nullptr;
 
         std::map<const char*, std::any> data;
 
@@ -51,54 +50,13 @@ class Game {
         static void UpdateFrame();
 
         template<typename T>
-        static inline std::shared_ptr<T> CreateCustomSprite(const std::string &key, float x, float y) {
-            
-            auto e = std::make_shared<T>(key, x, y);
-
-            entities.insert(e);
-
-            return e;
-        }
-
-        template<typename T>
-        static inline std::shared_ptr<T> CreatePlayer(
-            const std::string &key, 
-            float x, 
-            float y, 
-            float scale = 1.0f,
-            bool hasBody = false, 
-            glm::vec2 bodyDimensions = glm::vec2(1.0f, 1.0f),  
-            glm::vec2 bodyOffset = glm::vec2(0.0f, 0.0f),
-            float density = 0.0f,
-            float friction = 0.0f,
-            float restitution = 0.0f
-        )
+        static inline std::shared_ptr<T> CreateCustomSprite(const std::string &key, float x, float y) 
         {
+            auto sprite = std::make_shared<T>(key, x, y);
 
-            auto player = std::make_shared<T>(key, glm::vec2(x, y));
+            entities.push_back(std::dynamic_pointer_cast<Sprite>(sprite));
 
-            if (scale)
-                player->SetScale(scale); 
-
-            if (hasBody)
-            {
-
-                auto body = physics->CreateDynamicBody(
-                    glm::vec2(player->m_position.x, player->m_position.y), 
-                    glm::vec2(bodyDimensions.x * scale, bodyDimensions.y * scale),
-                    false,
-                    2,
-                    density,
-                    friction,
-                    restitution
-                );
-                
-                player->bodies.push_back({ body, bodyOffset });
-            }
-
-            entities.insert(player);
-
-            return player;
+            return sprite;
         }
         
         static std::shared_ptr<Sprite> CreateUI(const std::string &key, float x, float y, int frame = 0);

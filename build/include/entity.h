@@ -242,20 +242,5 @@ class Sprite : public Entity {
 		std::vector<std::array<int, 4>> m_resourceData; 
 };
 
-//----------------------------- player
-
-class Player : public Sprite { 
-
-	public:
-
-		virtual void Update() = 0;
-
-		Player(const std::string &key, const glm::vec2 &position): 
-			Sprite(key, position)
-				{ std::cout << "Sprite: player spawned.\n"; };
-		
-		~Player() { std::cout << "Sprite: player destroyed.\n"; };
-
-};
 
 

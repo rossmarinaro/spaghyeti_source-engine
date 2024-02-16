@@ -3,6 +3,7 @@
 
 #include "./events.h"
 #include "../editor.h"
+#include "../assets/assets.h"
 #include "../gui/nodes/node.h"
 #include "../../../../build/include/app.h"
 
@@ -101,10 +102,23 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         //physics 
 
         if (sprite["components"]["physics"]["exists"]) 
+        {
             sn->AddComponent("Physics Body", false);
+            sn->friction = sprite["components"]["physics"]["friction"];
+            sn->restitution = sprite["components"]["physics"]["restitution"];
+            sn->density = sprite["components"]["physics"]["density"];
+        }
 
         for (const auto &body : sprite["components"]["physics"]["bodies"]) 
             sn->CreateBody(static_cast<std::string>(body["type"]).c_str(), body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+
+        //script
+
+        for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+            if (script.exists()) {
+                sn->AddComponent("Script", false);
+                break;
+            }
         
     }
 
@@ -312,7 +326,10 @@ void EventListener::Serialize(json &data)
                 { "components", {
                         { "physics", {
                                 { "exists", physics },
-                                { "bodies", bodies }
+                                { "bodies", bodies },
+                                { "friction", sn->friction },
+                                { "restitution", sn->restitution },
+                                { "density", sn->density }
                             }
                         },
                         { "animator", {

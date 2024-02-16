@@ -65,7 +65,7 @@ b2Body* Physics::CreateDynamicBody(
     body.def.position.Set(position.x, position.y);
  
     body.def.userData.pointer = type;
-
+ 
     body.self = System::Application::game->physics->world.CreateBody(&body.def);  
     
     body.box.SetAsBox(dimensions.x, dimensions.y);          

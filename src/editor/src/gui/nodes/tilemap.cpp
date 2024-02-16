@@ -150,11 +150,6 @@ void TilemapNode::Render()
                     {
 
                         ImGui::PushID(i);
-
-                        this->body_width.push_back(i);
-                        this->body_height.push_back(i);
-                        this->bodyX.push_back(i);
-                        this->bodyY.push_back(i);
                         
                         ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, System::Window::m_width); 
                         ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, System::Window::m_height); 

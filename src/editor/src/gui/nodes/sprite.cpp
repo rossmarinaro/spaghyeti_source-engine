@@ -14,9 +14,13 @@ SpriteNode::SpriteNode(const std::string &id):
         do_animate(false),
         do_yoyo(false),
         filter_nearest(true),
+        is_sensor(false),
         frame(1),
         anim(1),
-        depth(1)
+        depth(1),
+        restitution(0.0f),
+        density(0.0f), 
+        friction(0.0f)
 
 {
 
@@ -314,6 +318,8 @@ void SpriteNode::Render()
 
                         ImGui::PushID(i);
 
+                        ImGui::Text((i == 0) ? "anchor: %d" : "body: %d", i);
+
                         ImGui::SliderFloat("offset x", &this->bodyX[i], 0.0f, System::Window::m_width); 
                         ImGui::SliderFloat("offset y", &this->bodyY[i], 0.0f, System::Window::m_height);
                         ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
@@ -336,6 +342,15 @@ void SpriteNode::Render()
                         ImGui::PopID();
 
                     }
+
+                    ImGui::Text("settings");
+
+                    ImGui::SliderFloat("density", &this->density, 0.0f, 10.0f);
+                    ImGui::SliderFloat("friction", &this->friction, 0.0f, 1.0f);
+                    ImGui::SliderFloat("restitution", &this->restitution, 0.0f, 1.0f);
+                    ImGui::Checkbox("isSensor", &this->is_sensor);
+
+                    ImGui::Separator();     
 
                     if (ImGui::Button("add")) 
                         this->CreateBody("static");

@@ -24,7 +24,7 @@ void Waiter::Update()
 
         this->SetFlipX(false);
         this->Animate("run", true, 7);
-
+ 
         if (this->m_body.self->GetLinearVelocity().x >= 30000)
             this->m_body.self->SetLinearVelocity(b2Vec2(30000, this->linearVelocity.y));
     }
