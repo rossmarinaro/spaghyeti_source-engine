@@ -14,7 +14,6 @@ SpriteNode::SpriteNode(const std::string &id):
         do_animate(false),
         do_yoyo(false),
         filter_nearest(true),
-        move_physics(true),
         frame(1),
         anim(1),
         depth(1)
@@ -35,6 +34,11 @@ SpriteNode::~SpriteNode()
 
     if (this->spriteHandle != nullptr)
         Game::DestroyEntity(this->spriteHandle);
+
+    for (const auto &body : this->bodies)
+        Game::physics->DestroyBody(body.first);
+
+    this->bodies.clear();
     
     Editor::Log("Sprite node " + this->m_name + " deleted.");
 }
@@ -43,19 +47,23 @@ SpriteNode::~SpriteNode()
 //---------------------------------
 
 
-void SpriteNode::CreateBody(const char* type) 
+void SpriteNode::CreateBody(const char* type, float x, float y, float width, float height) 
 {
+
+    this->bodyX.push_back(x);
+    this->bodyY.push_back(y);
+    this->body_width.push_back(width);
+    this->body_height.push_back(height);
 
     b2Body* body;
 
     if (strcmp("static", type) == 0) 
-        body  = Game::physics->CreateStaticBody(0.0f, 0.0f, 40.0f, 40.0f); 
+        body  = Game::physics->CreateStaticBody(x, y, width, height); 
 
     if (strcmp("dynamic", type) == 0) 
-        body  = Game::physics->CreateDynamicBody(glm::vec2(0.0f), glm::vec2(20.0f)); 
+        body  = Game::physics->CreateDynamicBody(glm::vec2(x, y), glm::vec2(width, height)); 
 
-    this->bodyType.push_back(type);
-    this->bodies.push_back(body);
+    this->bodies.push_back({ body, type });
     
 }
 
@@ -306,11 +314,6 @@ void SpriteNode::Render()
 
                         ImGui::PushID(i);
 
-                        this->body_width.push_back(i);
-                        this->body_height.push_back(i);
-                        this->bodyX.push_back(i);
-                        this->bodyY.push_back(i);
-
                         ImGui::SliderFloat("offset x", &this->bodyX[i], 0.0f, System::Window::m_width); 
                         ImGui::SliderFloat("offset y", &this->bodyY[i], 0.0f, System::Window::m_height);
                         ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
@@ -318,21 +321,16 @@ void SpriteNode::Render()
 
                         ImGui::Separator();     
 
-                        if (this->bodies[i] != nullptr)
+                        if (this->bodies[i].first != nullptr)
                         {
-                            b2PolygonShape body ;//= this->spriteHandle->m_body.shape;
+                            b2PolygonShape body ;//= this->spriteHandle->shape;
                             body.SetAsBox(this->body_width[i], this->body_height[i]);
                             b2FixtureDef fixtureDef;
                             fixtureDef.shape = &body;
 
-                            this->bodies[i]->DestroyFixture(this->bodies[i]->GetFixtureList());
-                            this->bodies[i]->CreateFixture(&fixtureDef);    
+                            this->bodies[i].first->DestroyFixture(this->bodies[i].first->GetFixtureList());
+                            this->bodies[i].first->CreateFixture(&fixtureDef);    
 
-                            if (!this->move_physics)    
-                                this->bodies[i]->SetTransform(b2Vec2(this->bodyX[i], this->bodyY[i]), 0);
-
-                            else
-                                this->bodies[i]->SetTransform(b2Vec2(this->spriteHandle->m_position.x + this->bodyX[i], this->spriteHandle->m_position.y + this->bodyY[i]), 0);
                         }
 
                         ImGui::PopID();
@@ -342,14 +340,10 @@ void SpriteNode::Render()
                     if (ImGui::Button("add")) 
                         this->CreateBody("static");
 
-                    if (ImGui::Button("remove") && this->bodies.size() > 1) 
-                    {
-                        Game::physics->DestroyBody(this->bodies.back());
+                    if (ImGui::Button("remove") && this->bodies.size() > 1) {
+                        Game::physics->DestroyBody(this->bodies.back().first);
                         this->bodies.pop_back();
-                        this->bodyType.pop_back();
                     }
-
-                    ImGui::Checkbox("lock", &this->move_physics); 
 
                     if (ImGui::BeginMenu("remove physics?"))
                     {
@@ -358,10 +352,10 @@ void SpriteNode::Render()
                             this->RemoveComponent(component);
 
                             for (const auto &body : this->bodies)
-                                Game::physics->DestroyBody(body);
+                                Game::physics->DestroyBody(body.first);
 
                             this->bodies.clear();
-                            this->bodyType.clear();
+
                         }
 
                         ImGui::EndMenu();
@@ -531,9 +525,6 @@ void SpriteNode::Render()
         }
 
 
-        //entity physics body transform
-
-
         if (this->spriteHandle)
         {
 
@@ -541,6 +532,11 @@ void SpriteNode::Render()
             this->spriteHandle->SetPosition(this->positionX, this->positionY);
             this->spriteHandle->SetRotation(this->rotation); 
             this->spriteHandle->SetDepth(this->depth);
+
+            //entity physics body transform
+            
+            for (int i = 0; i < this->bodies.size(); i++)   
+                this->bodies[i].first->SetTransform(b2Vec2(this->spriteHandle->m_position.x + this->bodyX[i], this->spriteHandle->m_position.y + this->bodyY[i]), 0);
 
         }
 

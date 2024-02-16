@@ -85,15 +85,6 @@ b2Body* Physics::CreateDynamicBody(
 }
 
 
-
-//-----------------------------
-
- 
-void Physics::DestroyBody(b2Body* b) {
-    System::Application::game->physics->bodiesToRemove.insert(b);
-}
-
-
 //---------------------------
 
 
@@ -117,3 +108,11 @@ void Physics::CleanupRemovedBodies()
     bodiesToRemove.clear();
 
 }
+
+//-----------------------------
+
+//does not destroy body immediately. body will be destroyed after next timestep
+void Physics::DestroyBody(b2Body* b) {
+    System::Application::game->physics->bodiesToRemove.insert(b);
+}
+

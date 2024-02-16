@@ -57,7 +57,7 @@ static void ThrowMeatball()
  
     meatball->SetData("platter position", System::Utils::intBetween(0, 50));
 
-    meatball->m_body.self = Game::physics->CreateDynamicBody(glm::vec2(meatball->m_position.x, meatball->m_position.y), glm::vec2(1.0f, 1.0f), System::Utils::floatBetween(0.0f, 1.0f), false, 3, 1);
+    meatball->m_body.self = Game::physics->CreateDynamicBody(glm::vec2(meatball->m_position.x, meatball->m_position.y), /* glm::vec2(1.0f, 1.0f), System::Utils::floatBetween(0.0f, 1.0f), */ false, 3, 1);
 
     float randX = System::Utils::floatBetween(-10.0f, -1000.0f);
 

@@ -82,7 +82,7 @@ class Game {
                 player->SetScale(scale); 
 
             if (hasBody)
-            {
+            { 
 
                 auto body = physics->CreateDynamicBody(
                     glm::vec2(player->m_position.x, player->m_position.y), 

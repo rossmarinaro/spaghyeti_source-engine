@@ -26,6 +26,11 @@ class Node {
                     m_name,
                     m_type;
 
+        std::vector<float> body_width, 
+                           body_height,  
+                           bodyX, 
+                           bodyY;
+
         std::vector<Component*> components;
 
         struct StringContainer { std::string s = ""; };
@@ -55,7 +60,7 @@ class Node {
         static void ClearAll();
         static int ChangeName(ImGuiInputTextCallbackData* data);
 
-        Component* AddComponent(const char* type);
+        Component* AddComponent(const char* type, bool init = true);
         void RemoveComponent(Component* component);
         const Component* GetComponent(const char* type);
         const bool HasComponent(const char* type);
@@ -76,7 +81,6 @@ class SpriteNode : public Node {
 
         bool framesApplied,       
              filter_nearest,
-             move_physics,
              do_yoyo;
 
         typedef struct Frames { int x, y, width, height; };
@@ -96,14 +100,7 @@ class SpriteNode : public Node {
                          animBuf3,
                          animBuf4; 
 
-        std::vector<float> body_width, 
-                           body_height,  
-                           bodyX, 
-                           bodyY;
-
-        std::vector<b2Body*> bodies;
-
-        std::vector<const char*> bodyType;
+        std::vector<std::pair<b2Body*, std::string>> bodies;
 
         SpriteNode(const std::string &id);
         ~SpriteNode();      
@@ -112,7 +109,14 @@ class SpriteNode : public Node {
 
         void ApplyTexture(const std::pair<std::string, GLuint> &asset);
         void ApplyAnimation(const std::string &key, int start, int end);
-        void CreateBody(const char* type);
+
+        void CreateBody(
+            const char* type, 
+            float x = 0.0f, 
+            float y = 0.0f, 
+            float width = 0.0f, 
+            float height = 0.0f
+        );
 
     private:
 
@@ -144,11 +148,6 @@ class TilemapNode : public Node {
                          spr_sheet_height,
                          depth;
 
-        std::vector<float> body_width, 
-                           body_height,  
-                           bodyX, 
-                           bodyY;
-
         std::vector<std::array<std::string, 3>> layers;
         std::vector<std::array<int, 4>> offset;
         std::vector<b2Body*> bodies;
@@ -158,7 +157,12 @@ class TilemapNode : public Node {
 
         void Render() override;
         void ApplyTilemap();
-        void CreateBody();
+        void CreateBody(
+            float x = 0.0f, 
+            float y = 0.0f, 
+            float width = 0.0f, 
+            float height = 0.0f
+        );
 
     private: 
 

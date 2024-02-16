@@ -5,7 +5,7 @@
 #include "../editor.h"
 #include "../../../../build/include/app.h"
 
-Component::Component(const std::string &id, const char* type): 
+Component::Component(const std::string &id, const char* type, bool init): 
     m_ID(id),
     m_type(type),
     m_initialized(false),
@@ -76,6 +76,9 @@ Component::Component(const std::string &id, const char* type):
 
     if (strcmp(this->m_type, "Physics Body") == 0)
     {
+
+        if (!init)
+            return;
 
         for (auto &node : Node::nodes) 
             if (node->m_ID == id) 

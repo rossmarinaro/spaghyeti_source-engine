@@ -25,6 +25,11 @@ TilemapNode::~TilemapNode() {
     
     MapManager::ClearMap();
 
+    for (auto &body : this->bodies)
+        Game::physics->DestroyBody(body);
+
+    this->bodies.clear();
+
     Editor::Log("Tilemap node " + this->m_name + " deleted.");
 }
 
@@ -98,8 +103,16 @@ void TilemapNode::ApplyTilemap()
 //---------------------------
 
 
-void TilemapNode::CreateBody() {
-    auto body = Game::physics->CreateStaticBody(0.0f, 0.0f, 0.0f, 0.0f);
+void TilemapNode::CreateBody(float x, float y, float width, float height) 
+{
+
+    this->bodyX.push_back(x);
+    this->bodyY.push_back(y);
+    this->body_width.push_back(width);
+    this->body_height.push_back(height);
+
+    auto body = Game::physics->CreateStaticBody(x, y, width, height);
+
     this->bodies.push_back(body);
 }
 

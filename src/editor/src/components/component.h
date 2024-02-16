@@ -8,7 +8,7 @@ class Component {
         const char* m_type;
         std::string m_resourcePath, m_ID, m_name;
 
-        Component(const std::string &id, const char* type);
+        Component(const std::string &id, const char* type, bool init = true);
         ~Component();
 
 

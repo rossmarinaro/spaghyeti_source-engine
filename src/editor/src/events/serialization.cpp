@@ -100,26 +100,12 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         //physics 
 
-        if (sprite["components"]["physics"]["exists"]) {
-            sn->AddComponent("Physics Body");
-            sn->move_physics = sprite["components"]["physics"]["moveable"];
-        }
+        if (sprite["components"]["physics"]["exists"]) 
+            sn->AddComponent("Physics Body", false);
 
         for (const auto &body : sprite["components"]["physics"]["bodies"]) 
-        {
-            sn->body_width.push_back(body["body_width"]);
-            sn->body_height.push_back(body["body_height"]);
-            sn->bodyX.push_back(body["bodyX"]);
-            sn->bodyY.push_back(body["bodyY"]);
-            
-            std::string t = body["type"];
-            sn->bodyType.push_back(t.c_str());
-        }
-
-        if (sn->bodyType.size())
-            for (const auto &type : sn->bodyType)
-                sn->CreateBody(type);
-
+            sn->CreateBody(static_cast<std::string>(body["type"]).c_str(), body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+        
     }
 
     //tilemaps
@@ -137,29 +123,21 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         tmn->tile_width = tilemap["tile_width"];
         tmn->tile_height = tilemap["tile_height"];
 
-        for (const auto &layer : tilemap["layers"]) 
-        {
-            tmn->layers.push_back({ layer["layers"]["key"], layer["layers"]["path"], layer["layers"]["texture"] });
+        for (const auto &layer : tilemap["layers"]) {
+            tmn->layers.push_back({ layer["csv"]["key"], layer["csv"]["path"], layer["csv"]["texture"] });
             tmn->spr_sheet_width.push_back(layer["frames x"]);
             tmn->spr_sheet_height.push_back(layer["frames y"]);
-            tmn->depth.push_back(layer["layers"]["depth"]);
+            tmn->depth.push_back(layer["depth"]);
         }
 
         //physics 
         
         if (tilemap["components"]["physics"]["exists"]) 
-            tmn->AddComponent("Physics Body");
+            tmn->AddComponent("Physics Body", false);
 
         for (const auto &body : tilemap["components"]["physics"]["bodies"]) 
-        {
-            tmn->body_width.push_back(body["body_width"]);
-            tmn->body_height.push_back(body["body_height"]);
-            tmn->bodyX.push_back(body["bodyX"]);
-            tmn->bodyY.push_back(body["bodyY"]);
-
-            tmn->CreateBody();
-        }
-
+            tmn->CreateBody(body["bodyY"], body["bodyX"], body["body_width"], body["body_height"]);
+        
         tmn->ApplyTilemap();
     }
 
@@ -304,7 +282,7 @@ void EventListener::Serialize(json &data)
                     { "body_height", sn->body_height.size() ? sn->body_height[i] : 0 },
                     { "bodyX", sn->bodyX.size() ? sn->bodyX[i] : 0 },
                     { "bodyY", sn->bodyY.size() ? sn->bodyY[i] : 0 },
-                    { "type", sn->bodyType.size() ? (std::string)sn->bodyType[i] : ""}
+                    { "type", sn->bodies[i].second }
                 });
 
 
@@ -330,13 +308,10 @@ void EventListener::Serialize(json &data)
                 { "rotation", sn->rotation },
                 { "scaleX", sn->scaleX },
                 { "scaleY", sn->scaleY },
-
                 { "frames", frames },
-
                 { "components", {
                         { "physics", {
                                 { "exists", physics },
-                                { "moveable", sn->move_physics },
                                 { "bodies", bodies }
                             }
                         },
@@ -376,7 +351,7 @@ void EventListener::Serialize(json &data)
                     { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
                     { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
                     { "depth", tmn->depth.size() ? tmn->depth[i] : 0 },
-                    { "layers", {
+                    { "csv", {
                             { "key", tmn->layers[i][0] },
                             { "path", tmn->layers[i][1] },
                             { "texture", tmn->layers[i][2] }
@@ -388,13 +363,14 @@ void EventListener::Serialize(json &data)
 
             json bodies = json::array();
 
-            for (int i = 0; i < tmn->layer; ++i)
-                bodies.push_back({
-                    { "body_width", tmn->body_width.size() ? tmn->body_width[i] : 0 },
-                    { "body_height", tmn->body_height.size() ? tmn->body_height[i] : 0 },
-                    { "bodyX", tmn->bodyX.size() ? tmn->bodyX[i] : 0 },
-                    { "bodyY", tmn->bodyY.size() ? tmn->bodyY[i] : 0 }
-                });
+            if (physics)
+                for (int i = 0; i < tmn->layer; ++i)
+                    bodies.push_back({
+                        { "body_width", tmn->body_width.size() ? tmn->body_width[i] : 0 },
+                        { "body_height", tmn->body_height.size() ? tmn->body_height[i] : 0 },
+                        { "bodyX", tmn->bodyX.size() ? tmn->bodyX[i] : 0 },
+                        { "bodyY", tmn->bodyY.size() ? tmn->bodyY[i] : 0 }
+                    });
 
             tilemaps.push_back({
                 { "ID", node->m_ID },

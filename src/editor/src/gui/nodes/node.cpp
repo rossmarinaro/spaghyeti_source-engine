@@ -161,7 +161,7 @@ void Node::ClearAll ()
 //--------------------------
 
 
-Component* Node::AddComponent(const char* type)
+Component* Node::AddComponent(const char* type, bool init)
 {
 
     //return if component exists
@@ -170,7 +170,7 @@ Component* Node::AddComponent(const char* type)
         if ((std::string)component->m_type == type) 
             return nullptr;
         
-    Component* component = new Component(this->m_ID, type);
+    Component* component = new Component(this->m_ID, type, init);
 
     components.push_back(component);
  
