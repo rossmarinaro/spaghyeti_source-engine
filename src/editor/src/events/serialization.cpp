@@ -103,14 +103,22 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         if (sprite["components"]["physics"]["exists"]) 
         {
-            sn->AddComponent("Physics Body", false);
+            sn->AddComponent("Physics", false);
             sn->friction = sprite["components"]["physics"]["friction"];
             sn->restitution = sprite["components"]["physics"]["restitution"];
             sn->density = sprite["components"]["physics"]["density"];
         }
 
         for (const auto &body : sprite["components"]["physics"]["bodies"]) 
-            sn->CreateBody(static_cast<std::string>(body["type"]).c_str(), body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+            sn->CreateBody(
+                static_cast<std::string>(body["type"]).c_str(), 
+                body["bodyX"], 
+                body["bodyY"], 
+                body["body_width"], 
+                body["body_height"],
+                body["sensor"], 
+                body["pointer"]
+            );
 
         //script
 
@@ -147,7 +155,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         //physics 
         
         if (tilemap["components"]["physics"]["exists"]) 
-            tmn->AddComponent("Physics Body", false);
+            tmn->AddComponent("Physics", false);
 
         for (const auto &body : tilemap["components"]["physics"]["bodies"]) 
             tmn->CreateBody(body["bodyY"], body["bodyX"], body["body_width"], body["body_height"]);
@@ -248,20 +256,6 @@ void EventListener::Serialize(json &data)
 
             SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
 
-            bool physics, animator, script, shader = false;
- 
-            if (sn->HasComponent("Physics Body"))
-                physics = true;
-
-            if (sn->HasComponent("Animator"))
-                animator = true;
-
-            if (sn->HasComponent("Script"))
-                script = true;
-
-            if (sn->HasComponent("Shader"))
-                shader = true;
-            
             //frames
 
             json frames = json::array();
@@ -292,11 +286,13 @@ void EventListener::Serialize(json &data)
 
             for (int i = 0; i < sn->bodies.size(); ++i)
                 bodies.push_back({
+                    { "type", sn->bodies[i].second },
                     { "body_width", sn->body_width.size() ? sn->body_width[i] : 0 },
                     { "body_height", sn->body_height.size() ? sn->body_height[i] : 0 },
                     { "bodyX", sn->bodyX.size() ? sn->bodyX[i] : 0 },
                     { "bodyY", sn->bodyY.size() ? sn->bodyY[i] : 0 },
-                    { "type", sn->bodies[i].second }
+                    { "pointer", sn->body_pointer.size() ? sn->body_pointer[i] : 0 },
+                    { "sensor", sn->is_sensor.size() ? sn->is_sensor[i] : false }
                 });
 
 
@@ -325,7 +321,7 @@ void EventListener::Serialize(json &data)
                 { "frames", frames },
                 { "components", {
                         { "physics", {
-                                { "exists", physics },
+                                { "exists", sn->HasComponent("Physics") },
                                 { "bodies", bodies },
                                 { "friction", sn->friction },
                                 { "restitution", sn->restitution },
@@ -333,16 +329,16 @@ void EventListener::Serialize(json &data)
                             }
                         },
                         { "animator", {
-                                { "exists", animator },
+                                { "exists", sn->HasComponent("Animator") },
                                 { "animations", animations }
                             }
                         },
                         { "script", {
-                                { "exists", script }
+                                { "exists", sn->HasComponent("Script") }
                             }
                         },
                         { "shader", {
-                                { "exists", shader }
+                                { "exists", sn->HasComponent("Shader") }
                             }
                         }
                     }
@@ -356,8 +352,6 @@ void EventListener::Serialize(json &data)
         {
 
             TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
-
-            bool physics = tmn->HasComponent("Physics Body") ? true : false;
 
             //layers
 
@@ -380,14 +374,13 @@ void EventListener::Serialize(json &data)
 
             json bodies = json::array();
 
-            if (physics)
-                for (int i = 0; i < tmn->layer; ++i)
-                    bodies.push_back({
-                        { "body_width", tmn->body_width.size() ? tmn->body_width[i] : 0 },
-                        { "body_height", tmn->body_height.size() ? tmn->body_height[i] : 0 },
-                        { "bodyX", tmn->bodyX.size() ? tmn->bodyX[i] : 0 },
-                        { "bodyY", tmn->bodyY.size() ? tmn->bodyY[i] : 0 }
-                    });
+            for (int i = 0; i < tmn->layer; ++i)
+                bodies.push_back({
+                    { "body_width", tmn->body_width.size() ? tmn->body_width[i] : 0 },
+                    { "body_height", tmn->body_height.size() ? tmn->body_height[i] : 0 },
+                    { "bodyX", tmn->bodyX.size() ? tmn->bodyX[i] : 0 },
+                    { "bodyY", tmn->bodyY.size() ? tmn->bodyY[i] : 0 }
+                });
 
             tilemaps.push_back({
                 { "ID", node->m_ID },
@@ -399,7 +392,7 @@ void EventListener::Serialize(json &data)
                 { "tile_height", tmn->tile_height },
                 { "components", {
                         { "physics", {
-                                { "exists", physics },
+                                { "exists", tmn->HasComponent("Physics") },
                                 { "bodies", bodies }
                             }
                         }
@@ -431,8 +424,6 @@ void EventListener::Serialize(json &data)
         {
             EmptyNode* en = dynamic_cast<EmptyNode*>(node);
 
-            bool physics, script, shader = false;
-
             empty.push_back({
 
                 { "debug graphics", en->show_debug },
@@ -443,11 +434,11 @@ void EventListener::Serialize(json &data)
                 { "position y", en->positionY },
                     { "components", {
                         { "script", {
-                                { "exists", script }
+                                { "exists", en->HasComponent("Script") }
                             }
                         },
                         { "shader", {
-                                { "exists", shader }
+                                { "exists", en->HasComponent("Shader") }
                             }
                         }
                     }

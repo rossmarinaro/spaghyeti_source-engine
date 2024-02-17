@@ -14,7 +14,6 @@ SpriteNode::SpriteNode(const std::string &id):
         do_animate(false),
         do_yoyo(false),
         filter_nearest(true),
-        is_sensor(false),
         frame(1),
         anim(1),
         depth(1),
@@ -39,11 +38,6 @@ SpriteNode::~SpriteNode()
     if (this->spriteHandle != nullptr)
         Game::DestroyEntity(this->spriteHandle);
 
-    for (const auto &body : this->bodies)
-        Game::physics->DestroyBody(body.first);
-
-    this->bodies.clear();
-    
     Editor::Log("Sprite node " + this->m_name + " deleted.");
 }
 
@@ -51,13 +45,23 @@ SpriteNode::~SpriteNode()
 //---------------------------------
 
 
-void SpriteNode::CreateBody(const char* type, float x, float y, float width, float height) 
+void SpriteNode::CreateBody(
+    const char* type, 
+    float x, 
+    float y, 
+    float width, 
+    float height,
+    bool isSensor,
+    int pointerType
+) 
 {
 
     this->bodyX.push_back(x);
     this->bodyY.push_back(y);
     this->body_width.push_back(width);
     this->body_height.push_back(height);
+    this->is_sensor.push_back(isSensor);
+    this->body_pointer.push_back(pointerType);
 
     b2Body* body;
 
@@ -150,8 +154,8 @@ void SpriteNode::Render()
                     if (ImGui::MenuItem("Animator"))
                         this->AddComponent("Animator");
 
-                    if (ImGui::MenuItem("Physics Body"))
-                        this->AddComponent("Physics Body");
+                    if (ImGui::MenuItem("Physics"))
+                        this->AddComponent("Physics");
                 
                     if (ImGui::MenuItem("Scripts"))
                         this->AddComponent("Script");
@@ -310,7 +314,7 @@ void SpriteNode::Render()
                 //------------------------------ physics
 
 
-                if (strcmp(component->m_type, "Physics Body") == 0 && ImGui::BeginMenu("Physics"))
+                if (strcmp(component->m_type, "Physics") == 0 && ImGui::BeginMenu("Physics"))
                 {
 
                     for (int i = 0; i < this->bodies.size(); i++)
@@ -324,6 +328,10 @@ void SpriteNode::Render()
                         ImGui::SliderFloat("offset y", &this->bodyY[i], 0.0f, System::Window::m_height);
                         ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
                         ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height);   
+                        ImGui::InputInt("type", &this->body_pointer[i]);
+                        bool s[i] = {this->is_sensor[i]};
+                        
+                        ImGui::Checkbox("sensor", s/* this->is_sensor[i] */);
 
                         ImGui::Separator();     
 
@@ -348,7 +356,6 @@ void SpriteNode::Render()
                     ImGui::SliderFloat("density", &this->density, 0.0f, 10.0f);
                     ImGui::SliderFloat("friction", &this->friction, 0.0f, 1.0f);
                     ImGui::SliderFloat("restitution", &this->restitution, 0.0f, 1.0f);
-                    ImGui::Checkbox("isSensor", &this->is_sensor);
 
                     ImGui::Separator();     
 
@@ -363,16 +370,8 @@ void SpriteNode::Render()
                     if (ImGui::BeginMenu("remove physics?"))
                     {
                         if (ImGui::MenuItem("yes")) 
-                        {
                             this->RemoveComponent(component);
-
-                            for (const auto &body : this->bodies)
-                                Game::physics->DestroyBody(body.first);
-
-                            this->bodies.clear();
-
-                        }
-
+                            
                         ImGui::EndMenu();
                     }
 
@@ -539,7 +538,8 @@ void SpriteNode::Render()
             ImGui::TreePop();
         }
 
-
+        //entity handle update
+        
         if (this->spriteHandle)
         {
 
@@ -551,7 +551,11 @@ void SpriteNode::Render()
             //entity physics body transform
             
             for (int i = 0; i < this->bodies.size(); i++)   
-                this->bodies[i].first->SetTransform(b2Vec2(this->spriteHandle->m_position.x + this->bodyX[i], this->spriteHandle->m_position.y + this->bodyY[i]), 0);
+                this->bodies[i].first->SetTransform(
+                    b2Vec2(
+                        this->spriteHandle->m_position.x + this->bodyX[i], 
+                        this->spriteHandle->m_position.y + this->bodyY[i]
+                    ), 0);
 
         }
 

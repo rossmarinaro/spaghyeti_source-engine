@@ -130,15 +130,15 @@ void Inputs::checkOverlap()
 void Inputs::processInput(GLFWwindow* window)
 {
 
-    this->isDown = this->m_left_click ||
-                   this->m_left ||
-                   this->m_right ||
-                   this->m_down ||
-                   this->m_up ||
-                   this->m_SHIFT ||
-                   this->m_TAB ||
-                   this->m_SPACE;
-
+    this->isDown = this->m_left_click == true||
+                   this->m_left == true ||
+                   this->m_right == true ||
+                   this->m_down == true ||
+                   this->m_up == true ||
+                   this->m_SHIFT == true ||
+                   this->m_TAB == true ||
+                   this->m_SPACE == true;
+ 
     //gamepad
 
     int present = glfwJoystickPresent(GLFW_JOYSTICK_1);

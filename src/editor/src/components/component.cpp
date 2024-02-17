@@ -80,7 +80,7 @@ Component::Component(const std::string &id, const char* type, bool init):
     //------------------physics
 
 
-    if (strcmp(this->m_type, "Physics Body") == 0)
+    if (strcmp(this->m_type, "Physics") == 0)
     {
 
         for (auto &node : Node::nodes) 
@@ -96,9 +96,9 @@ Component::Component(const std::string &id, const char* type, bool init):
 
                 if (node->m_type == "Tilemap") {
 
-                    TilemapNode* tn = dynamic_cast<TilemapNode*>(node);
+                    TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
                     
-                    tn->CreateBody();
+                    tmn->CreateBody();
 
                 }
 
@@ -113,9 +113,59 @@ Component::Component(const std::string &id, const char* type, bool init):
 Component::~Component() 
 { 
 
+    //script
+
     if (strcmp(this->m_type, "Script") == 0)
         if(this->m_resourcePath.size() > 0)
             remove(this->m_resourcePath.c_str());
+
+    //physics
+
+    if (strcmp(this->m_type, "Physics") == 0)
+    {
+        for (auto &node : Node::nodes) 
+            if (node->m_ID == this->m_ID) 
+            { 
+
+                if (node->m_type == "Sprite") {
+
+                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+
+                    for (const auto &body : sn->bodies)
+                        Game::physics->DestroyBody(body.first);
+
+                    sn->bodyX.clear();
+                    sn->bodyY.clear();
+                    sn->body_width.clear();
+                    sn->body_height.clear();
+                    sn->is_sensor.clear();
+                    sn->body_pointer.clear();
+                    sn->bodies.clear();
+
+                    sn->restitution = 0.0f;
+                    sn->density = 0.0f;
+                    sn->friction = 0.0f;
+                }
+
+                if (node->m_type == "Tilemap") 
+                {
+
+                    TilemapNode* tmn = dynamic_cast<TilemapNode*>(node); 
+
+                    for (auto &body : tmn->bodies)
+                        Game::physics->DestroyBody(body);
+
+                    tmn->bodyX.clear();
+                    tmn->bodyY.clear();
+                    tmn->body_width.clear();
+                    tmn->body_height.clear();
+                    
+                    tmn->bodies.clear();
+
+                }
+
+            }
+    }
 
     Editor::Log("Component " + this->m_ID + " removed."); 
 }

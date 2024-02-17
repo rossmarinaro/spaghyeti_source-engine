@@ -25,11 +25,6 @@ TilemapNode::~TilemapNode() {
     
     MapManager::ClearMap();
 
-    for (auto &body : this->bodies)
-        Game::physics->DestroyBody(body);
-
-    this->bodies.clear();
-
     Editor::Log("Tilemap node " + this->m_name + " deleted.");
 }
 
@@ -136,14 +131,14 @@ void TilemapNode::Render()
 
             if (ImGui::BeginMenu("Add Component"))
             {
-                if (ImGui::MenuItem("Physics Body"))
-                    this->AddComponent("Physics Body");
+                if (ImGui::MenuItem("Physics"))
+                    this->AddComponent("Physics");
             
                 ImGui::EndMenu();
             }
 
             for (const auto &component : this->components)
-                if (strcmp(component->m_type, "Physics Body") == 0 && ImGui::BeginMenu("Physics"))
+                if (strcmp(component->m_type, "Physics") == 0 && ImGui::BeginMenu("Physics"))
                 { 
 
                     for (int i = 0; i < this->bodies.size(); i++)
@@ -182,14 +177,7 @@ void TilemapNode::Render()
                     if (ImGui::BeginMenu("remove physics?"))
                     {
                         if (ImGui::MenuItem("yes"))
-                        {
                             this->RemoveComponent(component); 
-
-                            for (auto &body : this->bodies)
-                               Game::physics->DestroyBody(body);
-
-                            this->bodies.clear();
-                        }
 
                         ImGui::EndMenu();
                     }

@@ -81,7 +81,6 @@ class SpriteNode : public Node {
 
         bool framesApplied,       
              filter_nearest,
-             is_sensor,
              do_yoyo;
 
         float restitution,
@@ -103,7 +102,10 @@ class SpriteNode : public Node {
                          frameBuf4,
                          animBuf2,
                          animBuf3,
-                         animBuf4; 
+                         animBuf4,
+                         body_pointer;
+
+        std::vector<bool> is_sensor;
 
         std::vector<std::pair<b2Body*, std::string>> bodies;
 
@@ -120,7 +122,9 @@ class SpriteNode : public Node {
             float x = 0.0f, 
             float y = 0.0f, 
             float width = 0.0f, 
-            float height = 0.0f
+            float height = 0.0f,
+            bool isSensor = false,
+            int pointerType = 0
         );
 
     private:

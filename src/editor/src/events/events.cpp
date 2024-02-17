@@ -568,7 +568,7 @@ void EventListener::BuildAndRun()
 
                 //physics bodies
 
-                if (sn->HasComponent("Physics Body"))
+                if (sn->HasComponent("Physics"))
                 {
                     for (int i = 0; i < sn->bodies.size(); i++) 
                     {
@@ -577,7 +577,7 @@ void EventListener::BuildAndRun()
                             InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
                         
                         if (sn->bodies[i].second == "dynamic")
-                            InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(" + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), false, 3, " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
+                            InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(" + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), " + std::to_string(sn->is_sensor[i]) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
                     }    
 
                     InsertTo("   for (const auto &body : sprite_" + node->m_ID + "->bodies)\n  body.first->SetFixedRotation(true);\n", command_file);
@@ -659,7 +659,7 @@ void EventListener::BuildAndRun()
 
             //static physics bodies
 
-            if (tmn->HasComponent("Physics Body"))
+            if (tmn->HasComponent("Physics"))
                 for (int i = 0; i < tmn->bodies.size(); i++)    
                     InsertTo("   physics->CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n", command_file);
 

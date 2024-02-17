@@ -227,7 +227,7 @@ void Sprite::Render()
             {
                 if (this->bodies[i].first->GetType() == b2_dynamicBody) {
                     b2Vec2 position = this->bodies[i].first->GetPosition();
-                    this->SetPosition(glm::vec2(position.x /* + this->bodies[i].second.x */, position.y /* + this->bodies[i].second.y */)); 
+                    this->SetPosition(glm::vec2(position.x - this->bodies[i].second.x, position.y - this->bodies[i].second.y)); 
                 }
                 
                 if (this->bodies[i].first->GetType() == b2_staticBody)
