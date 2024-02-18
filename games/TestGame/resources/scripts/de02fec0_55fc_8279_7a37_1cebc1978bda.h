@@ -1,8 +1,8 @@
 #pragma once
 
-#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/include/entity.h"
+#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/include/game.h"
 
-using app = System::Application;
+
 class Sprite_de02fec0_55fc_8279_7a37_1cebc1978bda : public Sprite {
 
     public:
@@ -17,17 +17,22 @@ class Sprite_de02fec0_55fc_8279_7a37_1cebc1978bda : public Sprite {
 
         //update every frame
 
-        void Update(Inputs* inputs) override {
-        if (inputs->m_down)
-                //  {
-                        if (inputs->m_left)
-                            this->SetVelocityX(-20);
+        void Update(Inputs* inputs, Camera* camera) override 
+        { 
+            this->velocityY = 2000;
 
-                    else if (inputs->m_right)
-                            this->SetVelocityX(20);
-                //  }
-                // else 
-                    //  this->SetVelocityX(0);//this->bodies[0].first->SetLinearVelocity(b2Vec2(0, 0));
+            if (inputs->m_left)
+                this->velocityX = -1000; 
+
+            else if (inputs->m_right)
+                this->velocityX = 1000;
+
+            else this->velocityX = 0;
+
+            this->SetVelocity(this->velocityX, this->velocityY);
+
+            camera->SetPosition(glm::vec2(camera->m_position.x - 1, camera->m_position.y/* this->m_position */)); 
+         
         }
 
 };

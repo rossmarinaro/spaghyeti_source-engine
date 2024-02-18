@@ -12,10 +12,7 @@ TilemapNode::TilemapNode(const std::string &id):
         map_height(10),
         tile_width(64),
         tile_height(64)
-{
-
-    Editor::Log("Tilemap node " + this->m_name + " created.");   
-}
+{ Editor::Log("Tilemap node " + this->m_name + " created."); }
 
 
 //---------------------------

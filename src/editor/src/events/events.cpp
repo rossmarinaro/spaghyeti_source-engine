@@ -577,7 +577,7 @@ void EventListener::BuildAndRun()
                             InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
                         
                         if (sn->bodies[i].second == "dynamic")
-                            InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(" + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), " + std::to_string(sn->is_sensor[i]) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
+                            InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(" + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
                     }    
 
                     InsertTo("   for (const auto &body : sprite_" + node->m_ID + "->bodies)\n  body.first->SetFixedRotation(true);\n", command_file);
@@ -685,7 +685,7 @@ void EventListener::BuildAndRun()
     InsertTo("   camera->SetBackgroundColor(glm::vec4(" + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + "));\n", command_file);
     InsertTo("   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n", command_file);
     InsertTo("   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n", command_file);
-
+ 
     //extact data from resource file
 
     std::ifstream commandRes(command_file);
@@ -709,7 +709,7 @@ void EventListener::BuildAndRun()
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
     game_src << "void " + name_upper + "::Run(Camera *camera) {\n" + commandData + "}\n\n";
-    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera *camera) {\n    for (const auto &entity : entities) { \n         if (strcmp(entity->type, \"sprite\") == 0) {\n          entity->Render();\n          entity->Update(inputs);\n         }\n    }   \n}\n\n\n";
+    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera* camera) {\n    for (const auto &entity : entities) { \n         if (strcmp(entity->type, \"sprite\") == 0) {\n          entity->Render();\n          entity->Update(inputs, camera);\n         }\n    }   \n}\n\n\n";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";

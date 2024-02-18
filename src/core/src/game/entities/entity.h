@@ -80,7 +80,7 @@ class Entity {
 		}
 
 		virtual void Render() = 0;
-		virtual void Update(Inputs* inputs){};
+		virtual void Update(Inputs* inputs, Camera* camera){};
 
 		Entity() = default;
 		Entity(const char* type, const glm::vec2 &position):
@@ -174,6 +174,12 @@ class Sprite : public Entity {
 
 	public:  
 
+		int m_frames, m_currentFrame;
+
+		float velocityX, velocityY;
+
+		const char* currentAnim = nullptr;
+
 		Shader m_shader; 
 			
 		Graphics::Texture2D m_texture; 
@@ -193,10 +199,6 @@ class Sprite : public Entity {
 			for (const auto &body : this->bodies)
 				return body.first->GetFixtureList()->GetBody()->GetUserData().pointer; 
 		}
-
-		int m_frames, m_currentFrame;
-
-		const char* currentAnim = nullptr;
 
 		template<typename T>
 		inline T GetData(const std::string &key) { return std::any_cast<T>(this->data.at(key)); }

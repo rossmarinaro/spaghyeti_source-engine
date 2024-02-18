@@ -56,11 +56,15 @@ void SpriteNode::CreateBody(
 ) 
 {
 
+    BoolContainer bc;
+
+    bc.b = isSensor;
+
     this->bodyX.push_back(x);
     this->bodyY.push_back(y);
     this->body_width.push_back(width);
     this->body_height.push_back(height);
-    this->is_sensor.push_back(isSensor);
+    this->is_sensor.push_back(bc);
     this->body_pointer.push_back(pointerType);
 
     b2Body* body;
@@ -329,9 +333,11 @@ void SpriteNode::Render()
                         ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
                         ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height);   
                         ImGui::InputInt("type", &this->body_pointer[i]);
-                        bool s[i] = {this->is_sensor[i]};
-                        
-                        ImGui::Checkbox("sensor", s/* this->is_sensor[i] */);
+
+                        //sensor available for static body only
+
+                        if (i > 0)
+                            ImGui::Checkbox("sensor", &this->is_sensor[i].b);
 
                         ImGui::Separator();     
 
@@ -361,6 +367,8 @@ void SpriteNode::Render()
 
                     if (ImGui::Button("add")) 
                         this->CreateBody("static");
+
+                    ImGui::SameLine();
 
                     if (ImGui::Button("remove") && this->bodies.size() > 1) {
                         Game::physics->DestroyBody(this->bodies.back().first);

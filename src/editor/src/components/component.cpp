@@ -57,7 +57,6 @@ Component::Component(const std::string &id, const char* type, bool init):
             
             src << "#pragma once\n\n"; 
             src << "#include \"" + root_path + "/include/entity.h\"\n\n";   
-            src << "using app = System::Application;\n";
 
         } 
 
@@ -113,20 +112,36 @@ Component::Component(const std::string &id, const char* type, bool init):
 Component::~Component() 
 { 
 
-    //script
+    for (auto &node : Node::nodes) 
+        if (node->m_ID == this->m_ID) 
+        {  
 
-    if (strcmp(this->m_type, "Script") == 0)
-        if(this->m_resourcePath.size() > 0)
-            remove(this->m_resourcePath.c_str());
+            //script
 
-    //physics
+            if (strcmp(this->m_type, "Script") == 0)
+                if(this->m_resourcePath.size() > 0)
+                    remove(this->m_resourcePath.c_str());
 
-    if (strcmp(this->m_type, "Physics") == 0)
-    {
-        for (auto &node : Node::nodes) 
-            if (node->m_ID == this->m_ID) 
-            { 
+            //animator
 
+            if (strcmp(this->m_type, "Animator") == 0)
+            {
+                if (node->m_type == "Sprite") 
+                {
+                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+
+                    sn->animBuf1.clear();
+                    sn->animBuf2.clear();
+                    sn->animBuf3.clear();
+                    sn->animBuf4.clear();
+                }
+            }
+
+            //physics
+
+            if (strcmp(this->m_type, "Physics") == 0)
+            {
+            
                 if (node->m_type == "Sprite") {
 
                     SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
@@ -165,7 +180,7 @@ Component::~Component()
                 }
 
             }
-    }
+        }
 
     Editor::Log("Component " + this->m_ID + " removed."); 
 }

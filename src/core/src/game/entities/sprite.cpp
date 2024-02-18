@@ -2,22 +2,24 @@
 #include "../../app/app.h"
 #include "../../resources/manager/manager.h"
 
-//------------------------------------ velocity
+//------------------------------------ velocity, use physics if available / else default to position update
 
 
 void Sprite::SetVelocity(float velX, float velY) 
 { 
+
     if (!this->m_active)
         return;
 
-    //use physics if available
+    this->velocityX = velX;
+    this->velocityY = velY;
 
     if (this->bodies.size()) 
-        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(velX, velY), this->bodies[0].first->GetWorldCenter(), true);
-
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->velocityX * 100000, this->velocityY * 100000), this->bodies[0].first->GetWorldCenter(), true);
+    
     else {
-        this->m_position.x += velX * System::Application::game->time->GetSeconds(); 
-        this->m_position.y += velY * System::Application::game->time->GetSeconds(); 
+        this->m_position.x += this->velocityX * System::Application::game->time->GetSeconds(); 
+        this->m_position.y += this->velocityY * System::Application::game->time->GetSeconds(); 
     }
 
 };
@@ -26,26 +28,42 @@ void Sprite::SetVelocity(float velX, float velY)
 
 void Sprite::SetVelocityX(float velX) 
 { 
+
     if (!this->m_active)
         return;
 
-    if (this->bodies.size()) 
-        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(velX, this->bodies[0].first->GetLinearVelocity().y), this->bodies[0].first->GetWorldCenter(), true);
+    this->velocityX = velX;
+
+    if (this->bodies.size()) {
+        if (this->velocityX == 0.0f)
+            this->bodies[0].first->SetLinearVelocity(b2Vec2(0, this->velocityY));
+        else
+            this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->velocityX * 100000, this->bodies[0].first->GetLinearVelocity().y), this->bodies[0].first->GetWorldCenter(), true);
+    }
     else
-        this->m_position.x += velX; //* System::Application::game->time->GetSeconds();     
+        this->m_position.x += this->velocityX * System::Application::game->time->GetSeconds();     
 };
+
 
 //---------------------------------
 
+
 void Sprite::SetVelocityY(float velY) 
 { 
+
     if (!this->m_active)
         return;
 
-    if (this->bodies.size()) 
-        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, velY), this->bodies[0].first->GetWorldCenter(), true);
+    this->velocityY = velY;
+
+    if (this->bodies.size()) {
+        if (this->velocityY == 0.0f)
+            this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX, 0));
+        else 
+            this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, this->velocityY * 100000), this->bodies[0].first->GetWorldCenter(), true);
+    }
     else
-        this->m_position.y += velY; //* System::Application::game->time->GetSeconds(); 
+        this->m_position.y += this->velocityY * System::Application::game->time->GetSeconds(); 
 };
 
 
@@ -253,7 +271,9 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
         m_currentFrame(frame),
         m_shader(Shader::GetShader("sprite")), 
         m_texture(Graphics::Texture2D::GetTexture(key)),
-        m_anims(System::Resources::Manager::GetAnimations(key))
+        m_anims(System::Resources::Manager::GetAnimations(key)),
+        velocityX(0.0f),
+        velocityY(0.0f)
         
 { std::cout << "Sprite: " + this->m_key + " Created.\n"; }
 

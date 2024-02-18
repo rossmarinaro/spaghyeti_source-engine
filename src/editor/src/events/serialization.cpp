@@ -158,7 +158,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
             tmn->AddComponent("Physics", false);
 
         for (const auto &body : tilemap["components"]["physics"]["bodies"]) 
-            tmn->CreateBody(body["bodyY"], body["bodyX"], body["body_width"], body["body_height"]);
+            tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
         
         tmn->ApplyTilemap();
     }
@@ -292,7 +292,7 @@ void EventListener::Serialize(json &data)
                     { "bodyX", sn->bodyX.size() ? sn->bodyX[i] : 0 },
                     { "bodyY", sn->bodyY.size() ? sn->bodyY[i] : 0 },
                     { "pointer", sn->body_pointer.size() ? sn->body_pointer[i] : 0 },
-                    { "sensor", sn->is_sensor.size() ? sn->is_sensor[i] : false }
+                    { "sensor", sn->is_sensor.size() ? sn->is_sensor[i].b : false }
                 });
 
 

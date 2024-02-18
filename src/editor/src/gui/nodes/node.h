@@ -34,6 +34,7 @@ class Node {
         std::vector<Component*> components;
 
         struct StringContainer { std::string s = ""; };
+        struct BoolContainer { bool b = false; };
 
         Node(const std::string &id, std::string type, std::string name = "Untitled");
 
@@ -95,6 +96,7 @@ class SpriteNode : public Node {
 
         std::shared_ptr<Sprite> spriteHandle;
         std::vector<StringContainer> animBuf1; 
+        std::vector<BoolContainer> is_sensor;
 
         std::vector<int> frameBuf1,
                          frameBuf2,
@@ -104,8 +106,6 @@ class SpriteNode : public Node {
                          animBuf3,
                          animBuf4,
                          body_pointer;
-
-        std::vector<bool> is_sensor;
 
         std::vector<std::pair<b2Body*, std::string>> bodies;
 

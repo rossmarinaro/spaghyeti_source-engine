@@ -79,7 +79,7 @@ class Entity {
 		}
 
 		virtual void Render() = 0;
-		virtual void Update(Inputs* inputs){};
+		virtual void Update(Inputs* inputs, Camera* camera){};
 
 		Entity() = default;
 		Entity(const char* type, const glm::vec2 &position):
@@ -175,12 +175,17 @@ class Sprite : public Entity {
 
 	public:  
 
+		int m_frames, m_currentFrame;
+
+		float velocityX, velocityY;
+
+		const char* currentAnim = nullptr;
+
 		Shader m_shader; 
 			
 		Graphics::Texture2D m_texture; 
 
 		std::string m_key;
-
 		std::map<std::string, std::pair<int, int>> m_anims;
 
 		//key val data to be assigned to sprite object
@@ -190,15 +195,11 @@ class Sprite : public Entity {
 		//physics body
 
 		std::vector<std::pair<b2Body*, glm::vec2>> bodies;
-		
+
 		int GetBodyDataType() const { 
 			for (const auto &body : this->bodies)
 				return body.first->GetFixtureList()->GetBody()->GetUserData().pointer; 
 		}
-
-		int m_frames, m_currentFrame;
-
-		const char* currentAnim = nullptr;
 
 		template<typename T>
 		inline T GetData(const std::string &key) { return std::any_cast<T>(this->data.at(key)); }
@@ -225,7 +226,7 @@ class Sprite : public Entity {
 
 		Sprite(const std::string &key, const glm::vec2 &position = glm::vec2(0.0f, 0.0f), int frame = 0);
 		Sprite(const std::string &key, const glm::vec2 &position, const char* type);
-
+	   
 	   ~Sprite() { std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; };
 
 
