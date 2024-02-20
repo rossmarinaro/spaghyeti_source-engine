@@ -2,6 +2,7 @@
 
 #include "../renderer/renderer.h"
 
+
 //camera class
 class Camera {
 
@@ -27,7 +28,9 @@ class Camera {
         inline void SetZoom(float zoom) { m_zoom = zoom; }
         inline float const GetZoom() { return m_zoom; }
 
+        glm::highp_mat4 GetViewMatrix(Camera* camera);
         glm::highp_mat4 GetProjectionMatrix(float width, float height);
+
 
         Camera();
         ~Camera() = default;

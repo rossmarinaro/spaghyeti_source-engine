@@ -14,10 +14,11 @@ void Shader::InitBaseShaders()
 
     //raw char array
 
-    Load("cursor", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
-    Load("graphics", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
+    Load("player", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("sprite", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("UI", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
+    Load("graphics", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
+    Load("cursor", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
     
     #if DEVELOPMENT == 1
 
@@ -50,23 +51,35 @@ void Shader::Update(Camera* camera)
 
     //camera offset
 
+    GetShader("player").SetVec2f("offset", camera->m_position, true);
     GetShader("sprite").SetVec2f("offset", camera->m_position, true);
     GetShader("graphics").SetVec2f("offset", camera->m_position, true);
 
-    #if DEVELOPMENT == 1
+   // #if DEVELOPMENT == 1
 
         GetShader("Points").SetVec2f("offset", camera->m_position, true);
         GetShader("Lines").SetVec2f("offset", camera->m_position, true);
         GetShader("Triangles").SetVec2f("offset", camera->m_position, true);
 
-    #endif
+        GetShader("Points").SetMat4("view", camera->GetViewMatrix(camera), true);
+        GetShader("Lines").SetMat4("view", camera->GetViewMatrix(camera), true);
+        GetShader("Triangles").SetMat4("view", camera->GetViewMatrix(camera), true);
+        
+    //#endif
 
     //projection matrix
 
+    GetShader("player").SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
     GetShader("sprite").SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
     GetShader("graphics").SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
     GetShader("cursor").SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::m_width * 2), static_cast<float>(System::Window::m_height * 2)), true);
     GetShader("UI").SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::m_width * 2), static_cast<float>(System::Window::m_height * 2)), true);
+
+    //view matrix
+
+    GetShader("player").SetMat4("view", glm::mat4(1.0f), true);
+    GetShader("sprite").SetMat4("view", camera->GetViewMatrix(camera), true);
+    GetShader("graphics").SetMat4("view", camera->GetViewMatrix(camera), true);
 }
 
 

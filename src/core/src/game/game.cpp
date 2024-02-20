@@ -105,7 +105,7 @@ void Game::UpdateFrame()
     //render queues
 
     for (const auto &entity : entities)
-        if ((entity.get() && entity) && entity.get()->m_renderable)
+        if ((entity.get() && entity) && entity.get()->m_renderable) 
             entity->Render();
 
     //depth sort

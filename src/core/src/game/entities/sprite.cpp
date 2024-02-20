@@ -2,6 +2,7 @@
 #include "../../app/app.h"
 #include "../../resources/manager/manager.h"
 
+
 //------------------------------------ velocity, use physics if available / else default to position update
 
 
@@ -32,11 +33,11 @@ void Sprite::SetVelocityX(float velX)
     if (!this->m_active)
         return;
 
-    this->velocityX = velX;
+    this->velocityX = velX; 
 
     if (this->bodies.size()) {
         if (this->velocityX == 0.0f)
-            this->bodies[0].first->SetLinearVelocity(b2Vec2(0, this->velocityY));
+            this->bodies[0].first->SetLinearVelocity(b2Vec2(0, this->bodies[0].first->GetLinearVelocity().y));
         else
             this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->velocityX * 100000, this->bodies[0].first->GetLinearVelocity().y), this->bodies[0].first->GetWorldCenter(), true);
     }
@@ -58,13 +59,43 @@ void Sprite::SetVelocityY(float velY)
 
     if (this->bodies.size()) {
         if (this->velocityY == 0.0f)
-            this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX, 0));
+            this->bodies[0].first->SetLinearVelocity(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, 0));
         else 
             this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, this->velocityY * 100000), this->bodies[0].first->GetWorldCenter(), true);
     }
     else
         this->m_position.y += this->velocityY * System::Application::game->time->GetSeconds(); 
 };
+
+//----------------------------- set impulse x
+
+
+void Sprite::SetImpulse(float x, float y) {
+
+    if (this->m_active && this->bodies.size())
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 100000, y * 100000), this->bodies[0].first->GetWorldCenter(), true);
+}
+
+
+//----------------------------- set impulse x
+
+
+void Sprite::SetImpulseX(float x) {
+
+    if (this->m_active && this->bodies.size())
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 100000, 0), this->bodies[0].first->GetWorldCenter(), true);
+}
+
+
+
+//----------------------------- set impulse y
+
+
+void Sprite::SetImpulseY(float y) {
+
+    if (this->m_active && this->bodies.size())
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(0, y * 100000), this->bodies[0].first->GetWorldCenter(), true);
+}
 
 
 //----------------------------- read animation data
@@ -182,7 +213,6 @@ void Sprite::Animate(const std::string &animKey, bool yoyo, int rate)
 void Sprite::Render()
 {  
 
-
     if (!this->m_renderable || !this->m_alive)
         return;
 
@@ -211,8 +241,6 @@ void Sprite::Render()
 
     this->m_model = glm::mat4(1.0f); 
 
-    //this->m_model = glm::translate(this->m_model, glm::vec3(this->m_position, 0.0f));  
-
     this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->m_texture.FrameWidth + this->m_position.x, 0.5f * this->m_texture.FrameHeight + this->m_position.y, 0.0f)); 
 
     this->m_model = glm::scale(this->m_model, glm::vec3(this->m_scale, 1.0f));  
@@ -232,7 +260,6 @@ void Sprite::Render()
 
     this->m_shader.SetFloat("alphaVal", this->m_alpha, true); 
     this->m_shader.SetVec3f("tint", this->m_tint, true);
-
     this->m_shader.SetMat4("model", this->m_model, true);
 
     this->m_texture.Update(this->m_position, this->m_flipX, this->m_flipY); 
@@ -256,7 +283,6 @@ void Sprite::Render()
 
     if (this->m_isSpritesheet && this->currentAnim != nullptr)
         this->Animate(this->currentAnim); 
-
 
 }
 

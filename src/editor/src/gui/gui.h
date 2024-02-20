@@ -28,11 +28,11 @@ class GUI {
         static void Close();
 
         static inline std::unique_ptr<Geometry> grid;
+        static inline float grid_quantity = 50.0f;
 
     private:
 
         static inline ImGuiIO io;
-
 
         static void CreateGrid();
         static void RenderNodes();

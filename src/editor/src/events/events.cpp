@@ -535,24 +535,23 @@ void EventListener::BuildAndRun()
                     InsertTo("  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n", asset_file);
                 }
 
-                //entity header definitions and scripts. trim extension and compare with instantiated entities.
+                //define custom sprite if script present
 
-                for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                {
-                    //if no script present, define base class
+                bool script_present = false;
 
-                    if (!script.exists()) {
-                        InsertTo("   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
-                        break;
-                    }   
+                for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
+                    if (System::Utils::ReplaceFrom(script.path().filename().string(), ".", "") == node->m_ID) 
+                    {
+                        script_present = true;
 
-                    //else define custom sprite
-                    
-                    else if (System::Utils::ReplaceFrom(script.path().filename().string(), ".", "") == node->m_ID) {
                         game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
                         InsertTo("   auto sprite_" + node->m_ID + " = CreateCustomSprite<Sprite_" + node->m_ID + ">(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
                     }
-                }
+
+                //if no script present, define base class
+
+                if (!script_present) 
+                    InsertTo("   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
 
                 //sprite configurations
 
@@ -623,7 +622,8 @@ void EventListener::BuildAndRun()
 
             EmptyNode* en = dynamic_cast<EmptyNode*>(node);
 
-            InsertTo("   auto empty_" + node->m_ID + " = CreateRect(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n", command_file);
+            InsertTo("   auto empty_" + node->m_ID + " = CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n", command_file);
+            InsertTo("   auto empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n", command_file);
 
         }
 
@@ -709,7 +709,7 @@ void EventListener::BuildAndRun()
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
     game_src << "void " + name_upper + "::Run(Camera *camera) {\n" + commandData + "}\n\n";
-    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera* camera) {\n    for (const auto &entity : entities) { \n         if (strcmp(entity->type, \"sprite\") == 0) {\n          entity->Render();\n          entity->Update(inputs, camera);\n         }\n    }   \n}\n\n\n";
+    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera* camera) {\n    for (const auto &entity : entities) { \n    entity->Render();\n     if (entity->IsSprite()) {\n                 entity->Update(inputs, camera);\n         }\n        }   \n}\n\n\n";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";
@@ -762,7 +762,7 @@ void EventListener::BuildAndRun()
         );
 
     remove(srcPath.c_str());
-
+ 
     Editor::Log("Project " + currentProject + " built successfully.");
 
 #endif

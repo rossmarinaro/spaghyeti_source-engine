@@ -49,6 +49,11 @@ class Entity {
 
 		std::string ID;
 
+		inline bool IsSprite() {
+			return strcmp(this->type, "sprite") == 0 || 
+				   strcmp(this->type, "tile") == 0;
+		}
+
 		inline void SetDepth(int depth) { this->m_depth = depth; }
 		inline void SetAlpha(float alpha) { this->m_alpha = alpha; }
 		inline void SetRotation(float rotation) { this->m_rotation = rotation; }
@@ -79,6 +84,10 @@ class Entity {
 			this->m_renderable = isEnabled;
 		}
 
+		inline void StartFollow(Camera* camera, float offset) {
+			camera->SetPosition(glm::vec2(-this->m_position.x + offset, camera->m_position.y));
+		}
+		
 		virtual void Render() = 0;
 		virtual void Update(Inputs* inputs, Camera* camera){};
 
@@ -211,7 +220,7 @@ class Sprite : public Entity {
 
 		inline void BeginContact() { this->m_contacting = true; }
 		inline void EndContact() { this->m_contacting = false; }
-
+		inline bool IsContacting() { this->m_contacting; }
 		inline bool IsSpritesheet() { return this->m_isSpritesheet; }
 
 		void ReadSpritesheetData();
@@ -219,6 +228,10 @@ class Sprite : public Entity {
 		void SetVelocity(float velX, float velY);
 		void SetVelocityX(float velX);
 		void SetVelocityY(float velY);
+		
+		void SetImpulse(float x, float y);
+		void SetImpulseX(float x);
+		void SetImpulseY(float y);
 		
 		void Animate(const std::string &animKey, bool yoyo = false, int rate = 2); 
 		void Render();

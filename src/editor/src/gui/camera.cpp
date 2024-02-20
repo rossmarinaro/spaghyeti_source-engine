@@ -17,6 +17,9 @@ void GUI::RenderCamera()
     ImGui::Text("grid");
 
     ImGui::SliderFloat("alpha", (float*)&grid->m_alpha, 0.0f, 1.0f);
+    ImGui::SliderFloat("pitch", (float*)&grid_quantity, 0.0f, 200.0f);
+
+
 
 }
 

@@ -31,6 +31,12 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     Editor::camera->m_backgroundColor.z = data["camera"]["color"]["z"];
     Editor::camera->m_backgroundColor.w = data["camera"]["color"]["w"];
 
+    GUI::grid->m_alpha = data["camera"]["alpha"];
+    GUI::grid_quantity = data["camera"]["pitch"];
+    
+    Game::worldWidth = data["camera"]["width"];
+    Game::worldHeight = data["camera"]["height"];
+
     //sprites
 
     for (const auto &sprite : data["nodes"]["sprites"])
@@ -240,11 +246,16 @@ void EventListener::Serialize(json &data)
 
     data["camera"]["x"] = Editor::camera->m_position.x;
     data["camera"]["y"] = Editor::camera->m_position.y;
-    data["camera"]["zoom"] = Editor::camera->m_zoom;
+    data["camera"]["width"] = Game::worldWidth;
+    data["camera"]["height"] = Game::worldHeight;
+    data["camera"]["zoom"] = Editor::camera->m_zoom; 
     data["camera"]["color"]["x"] = Editor::camera->m_backgroundColor.x;
     data["camera"]["color"]["y"] = Editor::camera->m_backgroundColor.y;
     data["camera"]["color"]["z"] = Editor::camera->m_backgroundColor.z;
     data["camera"]["color"]["w"] = Editor::camera->m_backgroundColor.w;
+    data["camera"]["alpha"] = GUI::grid->m_alpha;
+    data["camera"]["pitch"] = GUI::grid_quantity;
+  
 
     for (const auto &node : Node::nodes)
     {
@@ -374,7 +385,7 @@ void EventListener::Serialize(json &data)
 
             json bodies = json::array();
 
-            for (int i = 0; i < tmn->layer; ++i)
+            for (int i = 0; i < tmn->bodies.size(); ++i) 
                 bodies.push_back({
                     { "body_width", tmn->body_width.size() ? tmn->body_width[i] : 0 },
                     { "body_height", tmn->body_height.size() ? tmn->body_height[i] : 0 },
