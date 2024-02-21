@@ -1,9 +1,9 @@
 
-#include "../../app/app.h"
-#include "./physics.h"
+#include "../../../../../build/include/app.h"
+#include "../../../../../build/include/physics.h"
 
 Physics::Physics():
-    gravity(b2Vec2(0.0f, 200.0f)), 
+    gravity(b2Vec2(0.0f, 500.0f)), 
     world(gravity)  
     { 
 
@@ -15,7 +15,7 @@ Physics::Physics():
         m_flags += b2Draw::e_centerOfMassBit;
 
         std::cout << "Physics: world enabled.\n"; 
-    }
+    } 
 
 
 //----------------------------------

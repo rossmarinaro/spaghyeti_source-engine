@@ -3,8 +3,6 @@
 #include <vector>
 #include <string>
 
-#include "../../../../../build/include/entity.h"
-
 #include "../../components/component.h"
 #include "../gui.h"
 
@@ -32,6 +30,7 @@ class Node {
                            bodyY;
 
         std::vector<Component*> components;
+        std::vector<std::string> behaviors;
 
         struct StringContainer { std::string s = ""; };
         struct BoolContainer { bool b = false; };

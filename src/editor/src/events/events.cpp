@@ -19,7 +19,7 @@
 #include "../assets/assets.h"
 #include "../gui/nodes/node.h"
 #include "../../../../build/include/app.h"
-#include "../../../../games/currentGame.h"
+//#include "../../../../games/currentGame.h"
 
 // #include <stdio.h>
 // #include <unistd.h>
@@ -477,6 +477,14 @@ void EventListener::BuildAndRun()
     game_src << "#endif\n";
     game_src << "\n#include \"" + root_path + "/include/app.h\"\n\n";
 
+    glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor();
+
+    InsertTo("   camera->SetBackgroundColor(glm::vec4(" + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + "));\n", command_file);
+    InsertTo("   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n", command_file);
+    InsertTo("   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n", command_file);
+ 
+    //InsertTo("   physics->world.SetGravity(b2Vec2(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + "));\n", command_file);
+
     //asset preload
 
     for (const auto &asset : AssetManager::loadedAssets)
@@ -487,6 +495,12 @@ void EventListener::BuildAndRun()
 
         InsertTo("  System::Resources::Manager::LoadFile(" + asset.first + ", " + path + ");\n", asset_file);
     }
+
+    //include scripts
+
+    for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
+        game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
+
 
     //command data, iterate over nodes and create objects
 
@@ -516,7 +530,6 @@ void EventListener::BuildAndRun()
                     frame_oss << framesToLoad.back();
 
                     InsertTo("  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n", asset_file);
-
                 }
 
                 //load animations
@@ -527,32 +540,15 @@ void EventListener::BuildAndRun()
                 for (const auto &anim : sn->animations)
                     animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
 
-                if (!animsToLoad.empty())
-                {
+                if (!animsToLoad.empty()) {
                     std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
                     anim_oss << animsToLoad.back();
 
                     InsertTo("  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n", asset_file);
                 }
 
-                //define custom sprite if script present
-
-                bool script_present = false;
-
-                for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
-                    if (System::Utils::ReplaceFrom(script.path().filename().string(), ".", "") == node->m_ID) 
-                    {
-                        script_present = true;
-
-                        game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
-                        InsertTo("   auto sprite_" + node->m_ID + " = CreateCustomSprite<Sprite_" + node->m_ID + ">(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
-                    }
-
-                //if no script present, define base class
-
-                if (!script_present) 
-                    InsertTo("   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
-
+                InsertTo("   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
+                                        
                 //sprite configurations
 
                 InsertTo("   sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->spriteHandle->m_scale.x) + ", " + std::to_string(sn->spriteHandle->m_scale.y) + ");\n", command_file);
@@ -678,14 +674,19 @@ void EventListener::BuildAndRun()
 
         }
 
+        //define behaviors
+
+        for (const auto &behavior : node->behaviors) {
+
+            std::string behavior_inst = "behavior_" + node->m_ID;
+
+            InsertTo("   std::shared_ptr<" + behavior + "> " + "behavior_" + node->m_ID + ";\n", command_file);
+            InsertTo("   for (const auto &entity : entities) { \n    this->behaviors.insert({ entity, " + behavior_inst + " });\n", command_file);
+
+        }
+
     }
 
-    glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor();
-
-    InsertTo("   camera->SetBackgroundColor(glm::vec4(" + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + "));\n", command_file);
-    InsertTo("   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n", command_file);
-    InsertTo("   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n", command_file);
- 
     //extact data from resource file
 
     std::ifstream commandRes(command_file);
@@ -792,6 +793,7 @@ void EventListener::GenerateProject()
 
     std::filesystem::create_directory(resources + "\\icon");
     std::filesystem::create_directory(resources + "\\scripts");
+    std::filesystem::create_directory(resources + "\\shaders");
     std::filesystem::create_directory(resources + "\\assets");
 
     std::filesystem::create_directory(resources + "\\assets\\images");
@@ -812,6 +814,7 @@ void EventListener::GenerateProject()
     std::ofstream web_preJS(web + "/pre-js.js");
     std::ofstream web_HTML(web + "/template.html");
 
+    main_makeFile << "\n";
     main_makeFile << "OBJS = \\" << "\n";
     main_makeFile << "  $(wildcard ./src/*.cpp) \\" << "\n";
     main_makeFile << "  $(wildcard ./src/**/*.cpp) \\" << "\n";

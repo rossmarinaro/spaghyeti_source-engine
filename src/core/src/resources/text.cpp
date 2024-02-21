@@ -1,4 +1,4 @@
-#include "../app/app.h"
+#include "../../../../build/include/app.h"
 
 
 void Text::Init()
@@ -30,7 +30,7 @@ void Text::ShutDown() {
 
 Text::Text(std::string content, float x, float y, float scale, glm::vec3 tint)
 :
-    Entity("text", glm::vec2(x, y)),
+    Entity("text", x, y),
         content(content)
 {
 

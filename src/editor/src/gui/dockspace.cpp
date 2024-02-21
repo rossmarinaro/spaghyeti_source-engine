@@ -111,21 +111,21 @@ void GUI::RenderDockSpace()
     ImGui::Begin("GlobalDockspace", p_open, window_flags);
 
 
-   if (!opt_padding)
-       ImGui::PopStyleVar();
+    if (!opt_padding)
+        ImGui::PopStyleVar();
 
-   if (opt_fullscreen)
-       ImGui::PopStyleVar(2);
+    if (opt_fullscreen)
+        ImGui::PopStyleVar(2);
 
-    // Submit the DockSpace
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-    {
-        ImGuiID dockspace_id = ImGui::GetID("GlobalDockspace");
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-    }
-    else
-        ShowDockingDisabledMessage();
+        // Submit the DockSpace
+        ImGuiIO& io = ImGui::GetIO();
+
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+            ImGuiID dockspace_id = ImGui::GetID("GlobalDockspace");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        }
+        else
+            ShowDockingDisabledMessage();
     
 
     if (ImGui::BeginMenuBar())
@@ -223,7 +223,7 @@ void GUI::RenderDockSpace()
             auto dock_id_up = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.13f, nullptr, &dockspace_id);
 
             // we now dock our windows into the docking node we made above
-            ImGui::DockBuilderDockWindow("Logs", dock_id_right);
+            ImGui::DockBuilderDockWindow("Actions", dock_id_right);
             ImGui::DockBuilderDockWindow("Workspace", dock_id_left);
             ImGui::DockBuilderDockWindow("Assets", dock_id_down);
             ImGui::DockBuilderDockWindow("Toolbar", dock_id_up);
@@ -254,27 +254,12 @@ void GUI::RenderDockSpace()
     ImGui::End();
 
 
-    //--------------logs
-
-
-
-    ImGui::Begin("Logs");
-
-        RenderLogs();
-
-        //show demo example
-            //bool show = true;
-            //ImGui::ShowDemoWindow(&show); 
-
-    ImGui::End();
-
-
     //--------------workspace
 
 
     ImGui::Begin("Workspace", p_open, window_flags);
 
-       if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
 
             ImGuiID dockspace_id_ws = ImGui::GetID("Workspace");
@@ -294,7 +279,7 @@ void GUI::RenderDockSpace()
                 //split the dockspace into 2 nodes -- DockBuilderSplitNode takes in the following args in the following order
                 //window ID to split, direction, fraction (between 0 and 1), the final two setting let's us choose which id we want (which ever one we DON'T set as NULL, will be returned by the function)
                                                                   
-                auto dock_id_down_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Down, 0.45f, nullptr, &dockspace_id_ws);
+                auto dock_id_down_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Down, 0.42f, nullptr, &dockspace_id_ws);
                 auto dock_id_up_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Up, 1.0f, nullptr, &dockspace_id_ws);
 
                 //we now dock our windows into the docking node we made above
@@ -312,6 +297,66 @@ void GUI::RenderDockSpace()
             RenderNodes();
         ImGui::End();
 
+
+    ImGui::End();
+
+
+     //-------------- actions
+
+
+    ImGui::Begin("Actions", p_open, window_flags);
+
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        {
+
+            ImGuiID dockspace_id_ws = ImGui::GetID("Workspace");
+
+            ImGui::DockSpace(dockspace_id_ws, ImVec2(0.0f, 0.0f), dockspace_flags);
+
+            static auto first_time = true;
+
+            if (first_time)
+            {
+                first_time = false;
+
+                ImGui::DockBuilderRemoveNode(dockspace_id_ws); // clear any previous layout
+                ImGui::DockBuilderAddNode(dockspace_id_ws, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+                ImGui::DockBuilderSetNodeSize(dockspace_id_ws, viewport->Size);
+
+                //split the dockspace into 2 nodes -- DockBuilderSplitNode takes in the following args in the following order
+                //window ID to split, direction, fraction (between 0 and 1), the final two setting let's us choose which id we want (which ever one we DON'T set as NULL, will be returned by the function)
+                                                                  
+                auto dock_id_up_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Up, 0.1f, nullptr, &dockspace_id_ws);
+                auto dock_id_down_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Down, 1.3f, nullptr, &dockspace_id_ws);
+
+                //we now dock our windows into the docking node we made above
+                ImGui::DockBuilderDockWindow("Settings", dock_id_up_ws);
+                ImGui::DockBuilderDockWindow("Logs", dock_id_down_ws);
+                ImGui::DockBuilderFinish(dockspace_id_ws);
+            }
+        }
+
+        ImGui::Begin("Settings");
+
+            if (ImGui::BeginMenu("Physics"))
+            {
+                ImGui::InputFloat("gravity x", &Editor::gravityX);
+                ImGui::InputFloat("gravity y", &Editor::gravityY);
+
+                ImGui::EndMenu();
+            }
+            
+        ImGui::End();
+
+        ImGui::Begin("Logs");
+
+            RenderLogs();
+
+            //show demo example
+                //bool show = true;
+                //ImGui::ShowDemoWindow(&show); 
+
+        ImGui::End();
 
 
     ImGui::End();

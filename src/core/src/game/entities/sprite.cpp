@@ -1,6 +1,6 @@
   
-#include "../../app/app.h"
-#include "../../resources/manager/manager.h"
+#include "../../../../../build/include/app.h"
+#include "../../../../../build/include/manager.h"
 
 
 //------------------------------------ velocity, use physics if available / else default to position update
@@ -16,8 +16,8 @@ void Sprite::SetVelocity(float velX, float velY)
     this->velocityY = velY;
 
     if (this->bodies.size()) 
-        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->velocityX * 100000, this->velocityY * 100000), this->bodies[0].first->GetWorldCenter(), true);
-    
+        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX * 100000, this->velocityY * 100000));
+
     else {
         this->m_position.x += this->velocityX * System::Application::game->time->GetSeconds(); 
         this->m_position.y += this->velocityY * System::Application::game->time->GetSeconds(); 
@@ -25,7 +25,9 @@ void Sprite::SetVelocity(float velX, float velY)
 
 };
 
+
 //--------------------------------
+
 
 void Sprite::SetVelocityX(float velX) 
 { 
@@ -35,12 +37,9 @@ void Sprite::SetVelocityX(float velX)
 
     this->velocityX = velX; 
 
-    if (this->bodies.size()) {
-        if (this->velocityX == 0.0f)
-            this->bodies[0].first->SetLinearVelocity(b2Vec2(0, this->bodies[0].first->GetLinearVelocity().y));
-        else
-            this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->velocityX * 100000, this->bodies[0].first->GetLinearVelocity().y), this->bodies[0].first->GetWorldCenter(), true);
-    }
+    if (this->bodies.size() && this->IsContacting()) 
+        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX, this->bodies[0].first->GetLinearVelocity().y));
+
     else
         this->m_position.x += this->velocityX * System::Application::game->time->GetSeconds();     
 };
@@ -57,15 +56,13 @@ void Sprite::SetVelocityY(float velY)
 
     this->velocityY = velY;
 
-    if (this->bodies.size()) {
-        if (this->velocityY == 0.0f)
-            this->bodies[0].first->SetLinearVelocity(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, 0));
-        else 
-            this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, this->velocityY * 100000), this->bodies[0].first->GetWorldCenter(), true);
-    }
+    if (this->bodies.size()) 
+        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, this->velocityY));
+    
     else
         this->m_position.y += this->velocityY * System::Application::game->time->GetSeconds(); 
 };
+
 
 //----------------------------- set impulse x
 
@@ -83,9 +80,8 @@ void Sprite::SetImpulse(float x, float y) {
 void Sprite::SetImpulseX(float x) {
 
     if (this->m_active && this->bodies.size())
-        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 100000, 0), this->bodies[0].first->GetWorldCenter(), true);
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 100000, this->bodies[0].first->GetLinearVelocity().y), this->bodies[0].first->GetWorldCenter(), true);
 }
-
 
 
 //----------------------------- set impulse y
@@ -94,7 +90,7 @@ void Sprite::SetImpulseX(float x) {
 void Sprite::SetImpulseY(float y) {
 
     if (this->m_active && this->bodies.size())
-        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(0, y * 100000), this->bodies[0].first->GetWorldCenter(), true);
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, y * 100000), this->bodies[0].first->GetWorldCenter(), true);
 }
 
 
@@ -290,9 +286,9 @@ void Sprite::Render()
 //-------------------------------------- standard sprite
 
 
-Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
+Sprite::Sprite(const std::string &key, float x, float y, int frame)
 : 
-    Entity("sprite", position),
+    Entity("sprite", x, y),
         m_key(key),  
         m_currentFrame(frame),
         m_shader(Shader::GetShader("sprite")), 
@@ -307,9 +303,9 @@ Sprite::Sprite(const std::string &key, const glm::vec2 &position, int frame)
 //-------------------------------------- UI sprite
 
  
-Sprite::Sprite(const std::string &key, const glm::vec2 &position, const char* type)
+Sprite::Sprite(const std::string &key, float x, float y, const char* type)
 : 
-    Entity("sprite", position),
+    Entity("sprite", x, y),
         m_key(key),  
         m_shader(Shader::GetShader(type)), 
         m_texture(Graphics::Texture2D::GetTexture(key))

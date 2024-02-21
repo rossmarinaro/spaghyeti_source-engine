@@ -16,6 +16,7 @@
 
 #include "./manager.h"
 #include "./inputs.h"
+
  
 //base gameobject entity class
 
@@ -31,7 +32,7 @@ class Entity {
 
 		float 
 			m_rotation, 
-			m_alpha; 
+			m_alpha;  
 		bool 
 			m_isSpritesheet, 
 			m_flipX, 
@@ -63,6 +64,7 @@ class Entity {
 			this->m_position.y = y; 
 		}
 		
+		inline void ClearTint() { this->m_tint = glm::vec3(1.0f); }
 		inline void SetTint(const glm::vec3 &tint) { this->m_tint = tint; }
 		inline void SetFlipX(bool flipX) { this->m_flipX = flipX; };
 		inline void SetFlipY(bool flipY) { this->m_flipY = flipY; };
@@ -91,10 +93,10 @@ class Entity {
 		virtual void Update(Inputs* inputs, Camera* camera){};
 
 		Entity() = default;
-		Entity(const char* type, const glm::vec2 &position):
+		Entity(const char* type, float x, float y):
 			type(type),
 			m_model(glm::mat4(1.0f)),
-			m_position(position),
+			m_position(glm::vec2(x, y)),
 			m_scale(glm::vec2(1.0f)), 
 			m_rotation(0.0f),  
 			m_alpha(1.0f),
@@ -191,7 +193,7 @@ class Sprite : public Entity {
 		const char* currentAnim = nullptr;
 
 		Shader m_shader; 
-			
+	
 		Graphics::Texture2D m_texture; 
 
 		std::string m_key;
@@ -219,8 +221,7 @@ class Sprite : public Entity {
 		inline void SetAnimation(const char* key) { this->currentAnim = key; }
 		inline void StopAnimation() { this->currentAnim = nullptr; }
 
-		inline void BeginContact() { this->m_contacting = true; }
-		inline void EndContact() { this->m_contacting = false; }
+		inline void SetContact(bool isContact) { this->m_contacting = isContact; }
 		inline bool IsContacting() { this->m_contacting; }
 		inline bool IsSpritesheet() { return this->m_isSpritesheet; }
 
@@ -237,8 +238,8 @@ class Sprite : public Entity {
 		void Animate(const std::string &animKey, bool yoyo = false, int rate = 2); 
 		void Render();
 
-		Sprite(const std::string &key, const glm::vec2 &position = glm::vec2(0.0f, 0.0f), int frame = 0);
-		Sprite(const std::string &key, const glm::vec2 &position, const char* type);
+		Sprite(const std::string &key, float x = 0.0f, float y = 0.0f, int frame = 0);
+		Sprite(const std::string &key, float x, float y, const char* type);
 	   
 	   ~Sprite() { std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; };
 

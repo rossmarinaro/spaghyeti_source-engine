@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include <thread>
 
-#include "./audio.h"
-#include "../misc/time.h"
-#include "../resources/manager/manager.h"
+#include "../../../../build/include/audio.h"
+#include "../../../../build/include/time.h"
+#include "../../../../build/include/manager.h"
 
 #define DEVICE_FORMAT       ma_format_f32
 #define DEVICE_CHANNELS     2

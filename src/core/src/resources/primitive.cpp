@@ -1,9 +1,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../../../vendors/stb/stb_image.h" 
 
-#include "./manager/manager.h"
-#include "../app/app.h"
-#include "../game/entities/entity.h"
+#include "../../../../build/include/manager.h"
+#include "../../../../build/include/app.h"
+#include "../../../../build/include/entity.h"
 
 using namespace Graphics;
 
@@ -61,7 +61,7 @@ void Primitive::Draw (int shape, int dimension, int slot, int vertices, int draw
 
 //line
 Geometry::Geometry(float x, float y, float width, float height): 
-    Entity("geometry", glm::vec2(x, y)),
+    Entity("geometry", x, y),
         primitive(std::make_shared<Graphics::Primitive>()),
         m_shader(Shader::GetShader("graphics")),
         m_type("quad"),
@@ -71,7 +71,7 @@ Geometry::Geometry(float x, float y, float width, float height):
 
 //quad
 Geometry::Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end): 
-    Entity("geometry", glm::vec2(x, y)),
+    Entity("geometry", x, y),
         primitive(std::make_shared<Graphics::Primitive>()),
         m_shader(Shader::GetShader("graphics")),
         m_type("line"),

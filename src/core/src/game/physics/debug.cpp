@@ -1,8 +1,8 @@
 #if DEVELOPMENT == 1
 
-#include "../../app/app.h"
-#include "./physics.h"
-#include "./debug.h"
+#include "../../../../../build/include/app.h"
+#include "../../../../../build/include/physics.h"
+#include "../../../../../build/include/debug.h"
 
 using namespace System;
 using namespace Graphics;

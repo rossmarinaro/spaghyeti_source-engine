@@ -6,10 +6,9 @@
 #include "./tilemap.h"
 #include "./entity.h"
 #include "./physics.h"
-
+#include "./behaviors.h"
 #include "./time.h"
 #include "./utils.h"
-
 #include "./camera.h"
 
 #include "../../vendors/miniaudio.h"
@@ -32,6 +31,7 @@ class Game {
         static inline Text* text; 
 
         std::map<const char*, std::any> data;
+        std::map<std::shared_ptr<Entity>, std::shared_ptr<Behavior>> behaviors;
 
         template<typename T>
 		inline T GetData(const char* key) const { return std::any_cast<T>(this->data.at(key)); }
@@ -48,16 +48,6 @@ class Game {
         static void Boot();
         static void Exit();
         static void UpdateFrame();
-
-        template<typename T>
-        static inline std::shared_ptr<T> CreateCustomSprite(const std::string &key, float x, float y) 
-        {
-            auto sprite = std::make_shared<T>(key, x, y);
-
-            entities.push_back(std::dynamic_pointer_cast<Sprite>(sprite));
-
-            return sprite;
-        }
         
         static std::shared_ptr<Sprite> CreateUI(const std::string &key, float x, float y, int frame = 0);
         static std::shared_ptr<Sprite> CreateSprite(const std::string &key, float x, float y, int frame = 0, float scale = 1.0f);

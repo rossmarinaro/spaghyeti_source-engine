@@ -5,6 +5,10 @@
 #include "../editor.h"
 #include "../../../../build/include/app.h"
 
+
+//------------------------------------
+
+
 Component::Component(const std::string &id, const char* type, bool init): 
     m_ID(id),
     m_type(type),
@@ -17,92 +21,7 @@ Component::Component(const std::string &id, const char* type, bool init):
     if (!init)
         return;
 
-    //----------------animator
-
- 
-    if (strcmp(this->m_type, "Animator") == 0)
-    {
-        
-    }
-
-
-    //---------------- shader
-
-
-    if (strcmp(this->m_type, "Shader") == 0)
-    {
-        
-    }
-
-
-    //-----------------script
-
-
-    if (strcmp(this->m_type, "Script") == 0)
-    {
-
-        std::ofstream src;
-
-        m_resourcePath = Editor::projectPath + "\\resources\\scripts\\" + id + ".h";
-
-        src.open(m_resourcePath, std::ofstream::app | std::ofstream::out);
-
-        if (!this->m_initialized)
-        {
-
-            this->m_initialized = true;
-
-            std::string root_path = Editor::rootPath;
-            std::replace(root_path.begin(), root_path.end(), '\\', '/');
-            
-            src << "#pragma once\n\n"; 
-            src << "#include \"" + root_path + "/include/entity.h\"\n\n";   
-
-        } 
-
-        src <<  "class Sprite_" + id + " : public Sprite {\n\n";
-        src <<  "    public:\n\n";
-        src <<  "        //constructor, called on start\n\n";
-        src <<  "        Sprite_" + id + " (const std::string &key, float x, float y):\n";
-        src <<  "            Sprite(key, glm::vec2(x, y))\n";
-        src <<  "        {\n\n";      
-        src <<  "        }\n\n"; 
-        src <<  "        //update every frame\n\n";
-        src <<  "        void Update(Inputs* inputs) override {\n\n";
-        src <<  "        }\n\n";
-        src <<  "};";
- 
-        src.close();
-
-    };
-
-    //------------------physics
-
-
-    if (strcmp(this->m_type, "Physics") == 0)
-    {
-
-        for (auto &node : Node::nodes) 
-            if (node->m_ID == id) 
-            { 
-
-                if (node->m_type == "Sprite") {
-
-                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
-
-                    sn->CreateBody("dynamic");
-                }
-
-                if (node->m_type == "Tilemap") {
-
-                    TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
-                    
-                    tmn->CreateBody();
-
-                }
-
-            }
-    }
+    this->Make(type);
 
 }
 
@@ -118,9 +37,9 @@ Component::~Component()
 
             //script
 
-            if (strcmp(this->m_type, "Script") == 0)
-                if(this->m_resourcePath.size() > 0)
-                    remove(this->m_resourcePath.c_str());
+            // if (strcmp(this->m_type, "Script") == 0)
+            //     if(this->m_resourcePath.size() > 0)
+            //         remove(this->m_resourcePath.c_str());
 
             //animator
 
@@ -186,3 +105,136 @@ Component::~Component()
 }
 
 
+//-------------------------------
+
+
+void Component::Make(const std::string &name)
+{
+
+    //animator
+
+    if (strcmp(this->m_type, "Animator") == 0)
+    {
+        
+    }
+
+
+    //shader
+
+
+    if (strcmp(this->m_type, "Shader") == 0)
+    {
+
+        std::ofstream src;
+
+        m_resourcePath = Editor::projectPath + "\\resources\\shaders\\" + m_ID + ".glsl";
+
+        src.open(m_resourcePath, std::ofstream::app | std::ofstream::out);
+
+        // #version 330 core
+
+        // layout (location = 0) in vec2 vert;
+        // layout (location = 1) in vec2 UV;
+
+        // out vec2 uv;
+
+        // uniform mat4 model;
+        // uniform mat4 projection;
+        // uniform float zoom;
+
+        // void main()
+        // {          
+        //     uv = UV;
+        //     gl_Position = projection * model * vec4(vert.xy * zoom, 0.0, 1.0);
+        // }; 
+
+        // #version 330 core
+
+        // in vec2 uv;
+        // out vec4 color;
+
+        // uniform sampler2D image;
+        // uniform vec3 spriteColor;
+        // uniform float alphaVal;
+        // uniform int repeat;
+
+        // void main()
+        // {
+
+        //     color = vec4(spriteColor, alphaVal) * texture(image, uv * repeat);  
+        // };
+ 
+        src.close();
+    }
+
+
+    //script
+
+
+    if (strcmp(this->m_type, "Script") == 0)
+    {
+
+        std::ofstream src;
+
+        m_resourcePath = Editor::projectPath + "\\resources\\scripts\\" + name + ".h";
+
+        src.open(m_resourcePath, std::ofstream::app | std::ofstream::out);
+
+        if (!this->m_initialized)
+        {
+
+            this->m_initialized = true;
+
+            std::string root_path = Editor::rootPath;
+            std::replace(root_path.begin(), root_path.end(), '\\', '/');
+            
+            src << "#pragma once\n\n"; 
+            src << "#include \"" + root_path + "/include/behaviors.h\"\n\n";    
+
+        } 
+
+        src <<  "class " + name + " : public Behavior {\n\n"; 
+        src <<  "    public:\n\n";
+        src <<  "        //constructor, called on start\n\n";
+        src <<           name + " (Entity* entity):\n";
+        src <<  "            Behavior(entity)\n";
+        src <<  "        {\n\n";      
+        src <<  "        }\n\n"; 
+        src <<  "        //update every frame\n\n";
+        src <<  "        void Update(Inputs* inputs, Camera* camera) override {\n\n";
+        src <<  "        }\n\n";
+        src <<  "};";
+ 
+        src.close();
+
+    }
+
+
+    //physics
+
+
+    if (strcmp(this->m_type, "Physics") == 0)
+    {
+
+        for (auto &node : Node::nodes) 
+            if (node->m_ID == m_ID) 
+            { 
+
+                if (node->m_type == "Sprite") {
+
+                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+
+                    sn->CreateBody("dynamic");
+                }
+
+                if (node->m_type == "Tilemap") {
+
+                    TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
+                    
+                    tmn->CreateBody();
+
+                }
+
+            }
+    }
+}

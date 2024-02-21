@@ -1,5 +1,5 @@
-#include "../app/app.h"
-
+#include "../../../../build/include/app.h"
+#include "../../../../build/include/camera.h"
 
 
 void System::Renderer::Update(Camera* camera)

@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../core/src/app/app.h"
-#include "./window.h"
+#include "../../build/include/app.h"
+#include "../../build/include/window.h"
 
 #ifdef __EMSCRIPTEN__
     #include <emscripten/eventloop.h>

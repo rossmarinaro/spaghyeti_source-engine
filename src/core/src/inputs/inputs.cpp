@@ -1,5 +1,4 @@
-#include "./inputs.h"
-#include "../app/app.h"
+#include "../../../../build/include/app.h"
 
 
 using namespace System;

@@ -1,37 +1,54 @@
-#include "../../../app/app.h"
-#include "./collisionManager.h"
 
+#include "../../../../../../build/include/app.h"
+#include "../../../../../../build/include/collisionManager.h"
 
 //---------------- box2d overlaps
 
 void CollisionManager::BeginContact(b2Contact* contact)
 {
 
-    b2BodyUserData bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData();
-    b2BodyUserData bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
+    //b2BodyUserData bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData();
+    //b2BodyUserData bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
 
-    std::vector<std::shared_ptr<Entity>>::iterator it = System::Application::game->entities.begin();
-    std::vector<std::shared_ptr<Entity>>::iterator end = System::Application::game->entities.end();
+    // std::vector<std::shared_ptr<Entity>>::iterator it = System::Application::game->entities.begin();
+    // std::vector<std::shared_ptr<Entity>>::iterator end = System::Application::game->entities.end();
 
-    for (; it != end; ++it)
+    // for (; it != end; ++it)
+    // {
+
+    //     auto sprite = std::dynamic_pointer_cast<Sprite>(*it);sprite->SetTint(glm::vec3(1.0f, 0.0f, 0.0f));
+    //       sprite->SetContact(true);
+    //     if (sprite->bodies.size()) 
+    //         for (auto body : sprite->bodies)
+    //         {
+
+    //             b2Fixture* fixture = body.first->GetFixtureList();
+
+    //             b2BodyUserData data = fixture->GetBody()->GetUserData();
+
+    //             //if (
+    //              //   data.pointer ==0 //bodyUserDataA.pointer ||
+    //                 //data.pointer == bodyUserDataB.pointer
+    //           //  )
+    //                 sprite->SetContact(true);
+    //         }
+    // }
+
+    for (const auto &entity : System::Application::game->entities)
     {
+        //auto sprite = std::dynamic_pointer_cast<Sprite>(entity);
 
-        auto sprite = std::dynamic_pointer_cast<Sprite>(*it);
-        
-        if (sprite->bodies.size()) 
-            for (auto body : sprite->bodies)
-            {
+      //  if (sprite->bodies.size()) 
+           // for (auto &body : sprite->bodies)
+           // {
 
-                b2Fixture* fixture = body.first->GetFixtureList();
+              //  b2Fixture* fixture = body.first->GetFixtureList();
 
-                b2BodyUserData data = fixture->GetBody()->GetUserData();
+               // b2BodyUserData data = fixture->GetBody()->GetUserData();
 
-                if (
-                    data.pointer == bodyUserDataA.pointer ||
-                    data.pointer == bodyUserDataB.pointer
-                )
-                    sprite->BeginContact();
-            }
+                //if (body.first->GetFixtureList() == contact->GetFixtureA() || body.first->GetFixtureList() == contact->GetFixtureB())
+                    entity->SetTint(glm::vec3(1.0f, 0.0f, 0.0f));//->SetContact(true);
+           // }
     }
 
 }
@@ -39,31 +56,48 @@ void CollisionManager::BeginContact(b2Contact* contact)
 void CollisionManager::EndContact(b2Contact* contact)
 {
 
-    b2BodyUserData bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData();
-    b2BodyUserData bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
+    //b2BodyUserData bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData();
+    //b2BodyUserData bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
 
-    std::vector<std::shared_ptr<Entity>>::iterator it = System::Application::game->entities.begin();
-    std::vector<std::shared_ptr<Entity>>::iterator end = System::Application::game->entities.end();
+//     std::vector<std::shared_ptr<Entity>>::iterator it = System::Application::game->entities.begin();
+//     std::vector<std::shared_ptr<Entity>>::iterator end = System::Application::game->entities.end();
 
-    for (; it != end; ++it)
-    {
+//     for (; it != end; ++it)
+//     {
 
-        auto sprite = std::dynamic_pointer_cast<Sprite>(*it);
-        
-       if (sprite->bodies.size()) 
-            for (auto body : sprite->bodies)
-            {
+//         auto sprite = std::dynamic_pointer_cast<Sprite>(*it);sprite->ClearTint();
+// sprite->SetContact(false);
+//        if (sprite->bodies.size()) 
+//             for (auto body : sprite->bodies) 
+//             {
  
-                b2Fixture* fixture = body.first->GetFixtureList();
+//                 b2Fixture* fixture = body.first->GetFixtureList();
 
-                b2BodyUserData data = fixture->GetBody()->GetUserData();
+//                 b2BodyUserData data = fixture->GetBody()->GetUserData();
 
-                if (
-                    data.pointer == bodyUserDataA.pointer ||
-                    data.pointer == bodyUserDataB.pointer
-                )
-                    sprite->EndContact();
-            }
+//                // if (
+//                 //    data.pointer ==0 //bodyUserDataA.pointer ||
+//                    // data.pointer == bodyUserDataB.pointer
+//                // )
+//                     sprite->SetContact(false);
+//             }
+//     }
+
+    for (const auto &entity : System::Application::game->entities)
+    {
+      //  auto sprite = std::dynamic_pointer_cast<Sprite>(entity);
+        
+       // if (sprite->bodies.size()) 
+         //   for (auto &body : sprite->bodies)
+          //  {
+
+               // b2Fixture* fixture = body.first->GetFixtureList();
+
+               // b2BodyUserData data = fixture->GetBody()->GetUserData();
+
+               // if (body.first->GetFixtureList() == contact->GetFixtureA() || body.first->GetFixtureList() == contact->GetFixtureB())
+                    entity->ClearTint();//->SetContact(false);
+           // }
     }
 }
 

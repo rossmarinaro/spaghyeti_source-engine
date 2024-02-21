@@ -1,4 +1,4 @@
-#include "../app/app.h"
+#include "../../../../build/include/app.h"
                                 
   
 //------------------------- base backend game layer functionality        
@@ -106,7 +106,7 @@ void Game::UpdateFrame()
 
     for (const auto &entity : entities)
         if ((entity.get() && entity) && entity.get()->m_renderable) 
-            entity->Render();
+            {entity->Render(); entity->SetTint(glm::vec3(1.0f,0.0f,0.0f));}
 
     //depth sort
 
@@ -209,7 +209,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     entity->m_active = false;
     entity->m_alive = false;
 
-    if (strcmp(entity->type, "sprite") == 0) {
+    if (entity->IsSprite()) {
 
         auto sprite = std::static_pointer_cast<Sprite>(entity);
 
@@ -224,7 +224,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     entity.reset();
     entity = nullptr; 
 
-}
+} 
 
 
 //-----------------------------
@@ -233,7 +233,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, float y, int frame, float scale)
 {
 
-    auto sprite = std::make_shared<Sprite>(key, glm::vec2(x, y), frame);
+    auto sprite = std::make_shared<Sprite>(key, x, y, frame);
 
     #if STANDALONE == 1
         sprite->ReadSpritesheetData(); 
@@ -254,7 +254,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, floa
 std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y, int frame)
 {
 
-    auto element = std::make_shared<Sprite>(key, glm::vec2(x, y), "UI");
+    auto element = std::make_shared<Sprite>(key, x, y, "UI");
 
     #if STANDALONE == 1
         element->ReadSpritesheetData(); 
@@ -274,7 +274,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
 std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, float y, int frame)
 {
 
-    auto ts = std::make_shared<Sprite>(key, glm::vec2(x, y), frame);
+    auto ts = std::make_shared<Sprite>(key, x, y, frame);
 
     ts->type = "tile";
 

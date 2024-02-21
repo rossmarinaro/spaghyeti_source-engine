@@ -298,6 +298,29 @@ void SpriteNode::Render()
                 if (strcmp(component->m_type, "Script") == 0 && ImGui::BeginMenu("Script"))
                 {
 
+                    if (ImGui::MenuItem("new"))
+                        component->Make("Script");
+
+                    for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                    {
+
+                        // std::string key = asset.first;
+                        // std::string path = asset.second;
+
+                        // key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
+                        // path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+
+                        // if (System::Utils::str_endsWith(path, ".h")) {
+
+                        //     if (ImGui::MenuItem(key.c_str())) {
+
+                        //         // this->layers[i][0] = key;
+                        //         // this->layers[i][1] = path;
+                        //         // this->layersApplied = false;
+                        //     }
+                        // }
+                    }
+
                     if (ImGui::MenuItem("edit"))
                         #ifdef _WIN32
                             system((component->m_resourcePath).c_str());

@@ -1,6 +1,6 @@
-#include "../game.h"
-#include "./tilemap.h"
-#include "../../app/app.h"
+#include "../../../../../build/include/game.h"
+#include "../../../../../build/include/tilemap.h"
+#include "../../../../../build/include/app.h"
 
 
 

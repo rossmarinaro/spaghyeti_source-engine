@@ -14,7 +14,7 @@ class Sprite_de02fec0_55fc_8279_7a37_1cebc1978bda : public Sprite {
         //constructor, called on start
 
         Sprite_de02fec0_55fc_8279_7a37_1cebc1978bda (const std::string &key, float x, float y):
-            Sprite(key, glm::vec2(x, y))
+            Sprite(key, x, y)
         {
             this->health = 10;
             this->canJump = true;
@@ -38,14 +38,17 @@ class Sprite_de02fec0_55fc_8279_7a37_1cebc1978bda : public Sprite {
                 this->SetFlipX(true);
             }
 
+            else 
+                this->SetVelocityX(0);
+
             if (inputs->m_down && this->canJump) {
-                this->SetImpulseX(-2000);
-                /* this->canJump = false; */
+                this->SetImpulseY(-2000);
+                this->canJump = false;
             }
 
             if (this->IsContacting())
-                this->canJump = true;
-
+                {this->canJump = true; /* this->SetAlpha(0.5f); */ }
+//else this->SetAlpha(1.0f);
             //if (this->follow)
                 this->StartFollow(camera, 500);
 

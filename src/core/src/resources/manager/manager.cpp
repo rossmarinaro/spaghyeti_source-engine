@@ -3,8 +3,8 @@
 #include <fstream>
 #include <vector>
 
-#include "../../app/app.h"
-
+#include "../../../../../build/include/app.h"
+#include "../../../../../build/include/manager.h"
 
 using namespace System::Resources;
 

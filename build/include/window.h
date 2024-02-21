@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./renderer.h"
+#include <future>
 
 namespace SPAGHYETI_CORE System {
 

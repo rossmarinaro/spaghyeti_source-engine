@@ -48,6 +48,9 @@ class Editor
         static inline std::string projectPath = "";
 		static inline std::string rootPath;
 
+		static inline float gravityX = 0.0f,
+                            gravityY = 500.0f;
+
 		Editor();
 		~Editor();
 

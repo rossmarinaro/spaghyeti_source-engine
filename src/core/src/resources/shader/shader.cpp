@@ -1,5 +1,4 @@
-#include "../../app/app.h"
-#include "./shader.h"
+#include "../../../../../build/include/app.h"
 
 #include "./glsl/raw/quad.h"
 #include "./glsl/raw/batch.h"
@@ -55,7 +54,7 @@ void Shader::Update(Camera* camera)
     GetShader("sprite").SetVec2f("offset", camera->m_position, true);
     GetShader("graphics").SetVec2f("offset", camera->m_position, true);
 
-   // #if DEVELOPMENT == 1
+    #if DEVELOPMENT == 1
 
         GetShader("Points").SetVec2f("offset", camera->m_position, true);
         GetShader("Lines").SetVec2f("offset", camera->m_position, true);
@@ -65,7 +64,7 @@ void Shader::Update(Camera* camera)
         GetShader("Lines").SetMat4("view", camera->GetViewMatrix(camera), true);
         GetShader("Triangles").SetMat4("view", camera->GetViewMatrix(camera), true);
         
-    //#endif
+    #endif
 
     //projection matrix
 

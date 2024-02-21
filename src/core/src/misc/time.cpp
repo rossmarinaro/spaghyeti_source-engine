@@ -7,8 +7,8 @@
 #include <iomanip>
 #include <thread>
 
-#include "../app/app.h"
-#include "../renderer/renderer.h"
+#include "../../../../build/include/app.h"
+#include "../../../../build/include/renderer.h"
 
 using namespace /* SPAGHYETI_CORE */ System;
 using namespace std::chrono_literals;

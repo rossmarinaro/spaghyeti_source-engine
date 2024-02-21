@@ -1,6 +1,4 @@
-#include "../app/app.h"
-#include "./camera.h"
-
+#include "../../../../build/include/app.h"
 
 Camera::Camera():
     rotation(0.0f),

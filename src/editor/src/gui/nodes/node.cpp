@@ -164,7 +164,7 @@ void Node::ClearAll ()
 Component* Node::AddComponent(const char* type, bool init)
 {
 
-    //return if component exists
+    //return if component exists 
     
     for (auto &component : this->components)
         if ((std::string)component->m_type == type) 

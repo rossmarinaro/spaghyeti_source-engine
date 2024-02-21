@@ -1,5 +1,5 @@
-#include "./utils.h"
-#include "../app/app.h"
+#include "../../../../build/include/utils.h"
+#include "../../../../build/include/app.h"
 
 
 bool System::Utils::CoinFlip(void)
