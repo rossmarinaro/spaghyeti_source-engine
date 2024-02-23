@@ -283,21 +283,25 @@ void Sprite::Render()
 }
 
 
-//-------------------------------------- standard sprite
+
+//-------------------------------------- standard sprite / tile
 
 
-Sprite::Sprite(const std::string &key, float x, float y, int frame)
+Sprite::Sprite(const std::string &key, float x, float y, int frame, bool isTile)
 : 
     Entity("sprite", x, y),
         m_key(key),  
         m_currentFrame(frame),
         m_shader(Shader::GetShader("sprite")), 
-        m_texture(Graphics::Texture2D::GetTexture(key)),
+        m_texture(Graphics::Texture2D::GetTexture(key)), 
         m_anims(System::Resources::Manager::GetAnimations(key)),
         velocityX(0.0f),
         velocityY(0.0f)
-        
-{ std::cout << "Sprite: " + this->m_key + " Created.\n"; }
+{ 
+    if (!isTile)
+        std::cout << "Sprite: " + this->m_key + " Created.\n"; 
+}
+
 
 
 //-------------------------------------- UI sprite

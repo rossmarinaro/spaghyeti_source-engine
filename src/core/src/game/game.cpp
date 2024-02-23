@@ -52,6 +52,7 @@ void Game::Exit()
     gameState = false;
 
     entities.clear();
+    System::Application::game->behaviors.clear();
 
     #if DEVELOPMENT == 1 
         delete physics->debug;
@@ -106,7 +107,13 @@ void Game::UpdateFrame()
 
     for (const auto &entity : entities)
         if ((entity.get() && entity) && entity.get()->m_renderable) 
-            {entity->Render(); entity->SetTint(glm::vec3(1.0f,0.0f,0.0f));}
+            entity->Render();
+
+    //update behaviors
+
+    for (const auto &behavior : System::Application::game->behaviors)
+        if (behavior.get() && behavior)
+            behavior->Update(System::Application::inputs, System::Application::game->camera);
 
     //depth sort
 
@@ -227,6 +234,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 } 
 
 
+
 //-----------------------------
 
 
@@ -274,7 +282,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
 std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, float y, int frame)
 {
 
-    auto ts = std::make_shared<Sprite>(key, x, y, frame);
+    auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
 
     ts->type = "tile";
 

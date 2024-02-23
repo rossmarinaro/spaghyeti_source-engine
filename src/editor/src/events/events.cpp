@@ -456,15 +456,12 @@ void EventListener::BuildAndRun()
 
     //temp files: asset and command lists
 
-    std::string asset_file = Editor::projectPath + AssetManager::preload_dir;
-    std::string command_file = Editor::projectPath + AssetManager::command_dir;
+    std::ostringstream asset_queue, command_queue, update_queue;
 
     //set game source input file stream
 
     std::string srcPath = Editor::projectPath + "\\src\\game.cpp";
 
-    remove(asset_file.c_str());
-    remove(command_file.c_str());
     remove(srcPath.c_str());
 
     std::ofstream game_src(srcPath, std::ofstream::trunc);
@@ -479,9 +476,9 @@ void EventListener::BuildAndRun()
 
     glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor();
 
-    InsertTo("   camera->SetBackgroundColor(glm::vec4(" + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + "));\n", command_file);
-    InsertTo("   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n", command_file);
-    InsertTo("   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n", command_file);
+    command_queue << "   camera->SetBackgroundColor(glm::vec4(" + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + "));\n";
+    command_queue << "   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n";
+    command_queue << "   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n";
  
     //InsertTo("   physics->world.SetGravity(b2Vec2(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + "));\n", command_file);
 
@@ -493,7 +490,7 @@ void EventListener::BuildAndRun()
 
         std::replace(path.begin(), path.end(), '\\', '/');
 
-        InsertTo("  System::Resources::Manager::LoadFile(" + asset.first + ", " + path + ");\n", asset_file);
+        asset_queue << "  System::Resources::Manager::LoadFile(" + asset.first + ", " + path + ");\n";
     }
 
     //include scripts
@@ -529,7 +526,7 @@ void EventListener::BuildAndRun()
                     std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
                     frame_oss << framesToLoad.back();
 
-                    InsertTo("  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n", asset_file);
+                    asset_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n";
                 }
 
                 //load animations
@@ -544,22 +541,22 @@ void EventListener::BuildAndRun()
                     std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
                     anim_oss << animsToLoad.back();
 
-                    InsertTo("  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n", asset_file);
+                    asset_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n";
                 }
 
-                InsertTo("   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
+                command_queue << "   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
                                         
                 //sprite configurations
 
-                InsertTo("   sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->spriteHandle->m_scale.x) + ", " + std::to_string(sn->spriteHandle->m_scale.y) + ");\n", command_file);
-                InsertTo("   sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ");\n", command_file);
-                InsertTo("   sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->spriteHandle->m_rotation) + ");\n", command_file);
-                InsertTo("   sprite_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(sn->spriteHandle->m_tint.x) + ", " + std::to_string(sn->spriteHandle->m_tint.y) + ", " + std::to_string(sn->spriteHandle->m_tint.z) + "));\n", command_file);
+                command_queue << "   sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->spriteHandle->m_scale.x) + ", " + std::to_string(sn->spriteHandle->m_scale.y) + ");\n";
+                command_queue << "   sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ");\n";
+                command_queue << "   sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->spriteHandle->m_rotation) + ");\n";
+                command_queue << "   sprite_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(sn->spriteHandle->m_tint.x) + ", " + std::to_string(sn->spriteHandle->m_tint.y) + ", " + std::to_string(sn->spriteHandle->m_tint.z) + "));\n";
 
                 std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
 
-                InsertTo("   sprite_" + node->m_ID + "->m_texture.Filter_Min = " + filtering + ";\n", command_file);
-                InsertTo("   sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n", command_file);
+                command_queue << "   sprite_" + node->m_ID + "->m_texture.Filter_Min = " + filtering + ";\n";
+                command_queue << "   sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n";
 
                 //physics bodies
 
@@ -569,21 +566,21 @@ void EventListener::BuildAndRun()
                     {
  
                         if (sn->bodies[i].second == "static")
-                            InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
+                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n";
                         
                         if (sn->bodies[i].second == "dynamic")
-                            InsertTo("   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(" + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n", command_file);
+                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(" + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n";
                     }    
 
-                    InsertTo("   for (const auto &body : sprite_" + node->m_ID + "->bodies)\n  body.first->SetFixedRotation(true);\n", command_file);
+                    command_queue << "   for (const auto &body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
 
                 }
                     
                 //animator
 
                 if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size()) {
-                    InsertTo("   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n", command_file);
-                    InsertTo("   sprite_" + node->m_ID + "->ReadSpritesheetData();\n", command_file);
+                    command_queue << "   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n";
+                    command_queue << "   sprite_" + node->m_ID + "->ReadSpritesheetData();\n";
                 } 
 
             }
@@ -600,12 +597,12 @@ void EventListener::BuildAndRun()
             if (tn->textHandle != nullptr)
             {
                 
-                InsertTo("   auto text_" + node->m_ID + " = CreateText(" + tn->textHandle->content + ", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n", command_file);
+                command_queue << "   auto text_" + node->m_ID + " = CreateText(" + tn->textHandle->content + ", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
 
-                InsertTo("   text_" + node->m_ID + "->SetScale(" + std::to_string(tn->textHandle->m_scale.x) + ", " + std::to_string(tn->textHandle->m_scale.y) + ");\n", command_file);
-                InsertTo("   text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->textHandle->m_position.x) + ", " + std::to_string(tn->textHandle->m_position.y) + ");\n", command_file);
-                InsertTo("   text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->textHandle->m_rotation) + ");\n", command_file);
-                InsertTo("   text_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(tn->textHandle->m_tint.x) + ", " + std::to_string(tn->textHandle->m_tint.y) + ", " + std::to_string(tn->textHandle->m_tint.z) + "));\n", command_file);
+                command_queue << "   text_" + node->m_ID + "->SetScale(" + std::to_string(tn->textHandle->m_scale.x) + ", " + std::to_string(tn->textHandle->m_scale.y) + ");\n";
+                command_queue << "   text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->textHandle->m_position.x) + ", " + std::to_string(tn->textHandle->m_position.y) + ");\n";
+                command_queue << "   text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->textHandle->m_rotation) + ");\n";
+                command_queue << "   text_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(tn->textHandle->m_tint.x) + ", " + std::to_string(tn->textHandle->m_tint.y) + ", " + std::to_string(tn->textHandle->m_tint.z) + "));\n";
 
             }
 
@@ -618,8 +615,8 @@ void EventListener::BuildAndRun()
 
             EmptyNode* en = dynamic_cast<EmptyNode*>(node);
 
-            InsertTo("   auto empty_" + node->m_ID + " = CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n", command_file);
-            InsertTo("   auto empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n", command_file);
+            command_queue << "   auto empty_" + node->m_ID + " = CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
+            command_queue << "   auto empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
 
         }
 
@@ -646,18 +643,18 @@ void EventListener::BuildAndRun()
                         std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
                         offset_oss << offsetsToLoad.back();
 
-                        InsertTo("   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n", asset_file);
+                        asset_queue << "   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
                     } 
 
-                    InsertTo("   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n", asset_file);
-                    InsertTo("   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n", command_file);
+                    asset_queue << "   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
+                    command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
                 }
 
             //static physics bodies
 
             if (tmn->HasComponent("Physics"))
                 for (int i = 0; i < tmn->bodies.size(); i++)    
-                    InsertTo("   physics->CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n", command_file);
+                    command_queue << "   physics->CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
 
         } 
 
@@ -670,30 +667,34 @@ void EventListener::BuildAndRun()
 
             std::string loop = an->loop ? "true" : "false";
 
-            InsertTo("   System::Audio::play(" + an->audio_source_name + ", " + loop + ", " + std::to_string(an->volume) + ");\n", command_file);
+            command_queue << "   System::Audio::play(" + an->audio_source_name + ", " + loop + ", " + std::to_string(an->volume) + ");\n";
 
         }
 
+        
         //define behaviors
 
         for (const auto &behavior : node->behaviors) {
 
-            std::string behavior_inst = "behavior_" + node->m_ID;
+            std::string entity = (node->m_type + "_" + node->m_ID);
 
-            InsertTo("   std::shared_ptr<" + behavior + "> " + "behavior_" + node->m_ID + ";\n", command_file);
-            InsertTo("   for (const auto &entity : entities) { \n    this->behaviors.insert({ entity, " + behavior_inst + " });\n", command_file);
+            transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
+
+            command_queue << "   CreateBehavior<" + behavior.first + ">(" + entity + ", this);\n";
 
         }
 
     }
+    
+    //update queue
+    //TODO
 
-    //extact data from resource file
 
-    std::ifstream commandRes(command_file);
-    std::ifstream preloadRes(asset_file);
+    //convert data string stream to string
 
-    std::string commandData((std::istreambuf_iterator<char>(commandRes)), std::istreambuf_iterator<char>());
-    std::string preloadData((std::istreambuf_iterator<char>(preloadRes)), std::istreambuf_iterator<char>());
+    std::string commandData = command_queue.str(); 
+    std::string preloadData = asset_queue.str();
+    std::string updateData = update_queue.str();
 
     std::string name_upper = currentProject;
     transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
@@ -710,7 +711,7 @@ void EventListener::BuildAndRun()
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
     game_src << "void " + name_upper + "::Run(Camera *camera) {\n" + commandData + "}\n\n";
-    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera* camera) {\n    for (const auto &entity : entities) { \n    entity->Render();\n     if (entity->IsSprite()) {\n                 entity->Update(inputs, camera);\n         }\n        }   \n}\n\n\n";
+    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera* camera) {\n"      + updateData +            "\n}\n\n\n";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";
@@ -748,10 +749,6 @@ void EventListener::BuildAndRun()
     game_src <<	"}";
 
     game_src.close();
-    commandRes.close();
-
-    remove(asset_file.c_str());
-    remove(command_file.c_str());
 
     system("cls");
 

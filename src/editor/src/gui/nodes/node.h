@@ -30,7 +30,7 @@ class Node {
                            bodyY;
 
         std::vector<Component*> components;
-        std::vector<std::string> behaviors;
+        std::map<std::string, std::string> behaviors;
 
         struct StringContainer { std::string s = ""; };
         struct BoolContainer { bool b = false; };
@@ -44,8 +44,7 @@ class Node {
                           MAX_NODES = 100; 
 
         template <typename T>
-            static inline T* Create (const std::string &id)
-            {
+            static inline T* Create (const std::string &id) {
  
                 T* n = new T(id);
                 nodes.push_back(n);
@@ -60,7 +59,7 @@ class Node {
         static void ClearAll();
         static int ChangeName(ImGuiInputTextCallbackData* data);
 
-        Component* AddComponent(const char* type, bool init = true);
+        void AddComponent(const char* type, bool init = true);
         void RemoveComponent(Component* component);
         const Component* GetComponent(const char* type);
         const bool HasComponent(const char* type);

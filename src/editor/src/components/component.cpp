@@ -2,6 +2,7 @@
 
 #include "./component.h"
 #include "../gui/nodes/node.h"
+#include "../assets/assets.h"
 #include "../editor.h"
 #include "../../../../build/include/app.h"
 
@@ -9,20 +10,14 @@
 //------------------------------------
 
 
-Component::Component(const std::string &id, const char* type, bool init): 
+Component::Component(const std::string &id, const char* type): 
     m_ID(id),
     m_type(type),
-    m_initialized(false),
     m_name("")
-{
-    
+{ 
     count++;  
 
-    if (!init)
-        return;
-
-    this->Make(type);
-
+    Editor::Log((std::string)type + " component added.");  
 }
 
 //-------------------------------------
@@ -32,14 +27,14 @@ Component::~Component()
 { 
 
     for (auto &node : Node::nodes) 
+    
         if (node->m_ID == this->m_ID) 
         {  
 
             //script
 
-            // if (strcmp(this->m_type, "Script") == 0)
-            //     if(this->m_resourcePath.size() > 0)
-            //         remove(this->m_resourcePath.c_str());
+            if (strcmp(this->m_type, "Script") == 0)
+                node->behaviors.clear();
 
             //animator
 
@@ -108,7 +103,7 @@ Component::~Component()
 //-------------------------------
 
 
-void Component::Make(const std::string &name)
+void Component::Make()
 {
 
     //animator
@@ -118,9 +113,7 @@ void Component::Make(const std::string &name)
         
     }
 
-
     //shader
-
 
     if (strcmp(this->m_type, "Shader") == 0)
     {
@@ -174,29 +167,30 @@ void Component::Make(const std::string &name)
     if (strcmp(this->m_type, "Script") == 0)
     {
 
-        std::ofstream src;
+        if (!this->script_name.size())
+            return;
 
-        m_resourcePath = Editor::projectPath + "\\resources\\scripts\\" + name + ".h";
+        m_resourcePath = Editor::projectPath + AssetManager::script_dir + "/" + this->script_name + ".h";
 
-        src.open(m_resourcePath, std::ofstream::app | std::ofstream::out);
+        if (std::filesystem::exists(m_resourcePath)) {
+            Editor::Log("Script name already exists!");
+            return;
+        }
 
-        if (!this->m_initialized)
-        {
+        std::ofstream src(m_resourcePath);
 
-            this->m_initialized = true;
+        std::string root_path = Editor::rootPath;
+        std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
-            std::string root_path = Editor::rootPath;
-            std::replace(root_path.begin(), root_path.end(), '\\', '/');
-            
-            src << "#pragma once\n\n"; 
-            src << "#include \"" + root_path + "/include/behaviors.h\"\n\n";    
+        transform(this->script_name.begin(), this->script_name.end(), this->script_name.begin(), ::toupper);
+        
+        src << "#pragma once\n\n"; 
+        src << "#include \"" + root_path + "/include/behaviors.h\"\n\n";    
 
-        } 
-
-        src <<  "class " + name + " : public Behavior {\n\n"; 
+        src <<  "class " + this->script_name + "_Behavior : public Behavior {\n\n"; 
         src <<  "    public:\n\n";
         src <<  "        //constructor, called on start\n\n";
-        src <<           name + " (Entity* entity):\n";
+        src <<  "        " + this->script_name + "_Behavior (std::shared_ptr<Entity> entity):\n";
         src <<  "            Behavior(entity)\n";
         src <<  "        {\n\n";      
         src <<  "        }\n\n"; 
@@ -206,6 +200,8 @@ void Component::Make(const std::string &name)
         src <<  "};";
  
         src.close();
+
+        this->script_name = "";
 
     }
 
@@ -238,3 +234,5 @@ void Component::Make(const std::string &name)
             }
     }
 }
+
+

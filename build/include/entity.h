@@ -90,7 +90,6 @@ class Entity {
 		}
 		
 		virtual void Render() = 0;
-		virtual void Update(Inputs* inputs, Camera* camera){};
 
 		Entity() = default;
 		Entity(const char* type, float x, float y):
@@ -180,7 +179,9 @@ class Text : public Entity {
 
 };
 
+
 //----------------------------- base sprite class
+
 
 class Sprite : public Entity {
 
@@ -238,10 +239,22 @@ class Sprite : public Entity {
 		void Animate(const std::string &animKey, bool yoyo = false, int rate = 2); 
 		void Render();
 
-		Sprite(const std::string &key, float x = 0.0f, float y = 0.0f, int frame = 0);
 		Sprite(const std::string &key, float x, float y, const char* type);
+
+		Sprite(
+			const std::string &key, 
+			float x = 0.0f, 
+			float y = 0.0f, 
+			int frame = 0, 
+			bool isTile = false
+		);
 	   
-	   ~Sprite() { std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; };
+	   ~Sprite() { 
+
+			if (strcmp(this->type, "tile") != 0)
+				std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; 
+
+		}
 
 
 	private:

@@ -12,16 +12,6 @@
 using namespace /* SPAGHYETI_CORE */ System;
 
 
-//----------------------------------
-
-
-void RemoveTempFiles()
-{
-    remove((Editor::projectPath + "\\src\\game.cpp").c_str());
-    remove((Editor::projectPath + AssetManager::command_dir).c_str());
-    remove((Editor::projectPath + AssetManager::preload_dir).c_str());
-}
-
 
 //-----------------------------
 
@@ -102,7 +92,7 @@ Editor::~Editor()
 
     Node::ClearAll();
 
-    RemoveTempFiles();
+    remove((Editor::projectPath + "\\src\\game.cpp").c_str());
 
     Resources::Manager::UnLoadRawImage("editor logo");
     Resources::Manager::UnLoadRawImage("icon large");
@@ -140,7 +130,7 @@ void Editor::Log(const std::string &message)
 void Editor::Reset()
 {
 
-    RemoveTempFiles();
+    remove((Editor::projectPath + "\\src\\game.cpp").c_str());
 
     Node::ClearAll();
 

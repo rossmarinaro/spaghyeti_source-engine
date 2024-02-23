@@ -3,7 +3,7 @@
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/include/behaviors.h"
 
 
-class TestBehavior : public Behavior {
+class TestBehavior_Behavior : public Behavior {
 
     public:
 
@@ -13,12 +13,12 @@ class TestBehavior : public Behavior {
 
         //constructor, called on start
 
-        TestBehavior(Entity* entity):
+        TestBehavior_Behavior(std::shared_ptr<Entity> entity):
             Behavior(entity)
         {
             this->health = 10;
             this->canJump = true;
-            this->m_shader = Shader::GetShader("player");
+            this->sprite->m_shader = Shader::GetShader("player");
             this->follow = true; 
             System::Application::game->time->delayedCall(3000, [&]() { this->follow = false; });
         }

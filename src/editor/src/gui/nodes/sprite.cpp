@@ -155,6 +155,7 @@ void SpriteNode::Render()
             {
                 if (this->spriteHandle) 
                 {
+
                     if (ImGui::MenuItem("Animator"))
                         this->AddComponent("Animator");
 
@@ -166,6 +167,7 @@ void SpriteNode::Render()
 
                     if (ImGui::MenuItem("Shader"))
                         this->AddComponent("Shader");
+   
                 }
                 else
                     ImGui::Text("Please apply texture before creating a component.");
@@ -298,42 +300,96 @@ void SpriteNode::Render()
                 if (strcmp(component->m_type, "Script") == 0 && ImGui::BeginMenu("Script"))
                 {
 
-                    if (ImGui::MenuItem("new"))
-                        component->Make("Script");
-
-                    for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                    if (this->behaviors.size())
                     {
+                        ImGui::Text("Assigned Scripts:");
 
-                        // std::string key = asset.first;
-                        // std::string path = asset.second;
+                        for (const auto &behavior : this->behaviors)
+                            if (ImGui::BeginMenu(behavior.first.c_str()))
+                            {
+                                if (ImGui::MenuItem("edit"))
+                                    #ifdef _WIN32
+                                        system((Editor::projectPath + AssetManager::script_dir + "/" + behavior.second).c_str());
+                                    #endif
 
-                        // key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
-                        // path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+                                if (ImGui::BeginMenu("remove script?")) 
+                                {
+                                    if (ImGui::MenuItem("yes")) {
 
-                        // if (System::Utils::str_endsWith(path, ".h")) {
+                                        std::map<std::string, std::string>::iterator it = this->behaviors.find(behavior.first);
 
-                        //     if (ImGui::MenuItem(key.c_str())) {
+                                        if (it != this->behaviors.end())
+                                            this->behaviors.erase(it);
+                                    }
+                                    
+                                    ImGui::EndMenu();
+                                }
 
-                        //         // this->layers[i][0] = key;
-                        //         // this->layers[i][1] = path;
-                        //         // this->layersApplied = false;
-                        //     }
-                        // }
+                                ImGui::EndMenu();
+                            }
                     }
 
-                    if (ImGui::MenuItem("edit"))
-                        #ifdef _WIN32
-                            system((component->m_resourcePath).c_str());
-                        #endif
+                    else
+                        ImGui::Text("Assigned Scripts: (none)");
 
-                    if (ImGui::BeginMenu("remove script?"))
+                    ImGui::Separator();
+
+                    if (ImGui::BeginMenu("script library"))
+                    {
+                        if (ImGui::BeginMenu("new script")) 
+                        {
+                           
+                            ImGui::InputText("name", &component->script_name);
+
+                            if (component->script_name.size())
+                                if (ImGui::MenuItem("submit")) 
+                                    component->Make();
+                            
+                            ImGui::EndMenu();
+                        }
+
+                        if (ImGui::BeginMenu("select script"))
+                        {
+                            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                            {
+
+                                std::string filename = script.path().filename().string();
+
+                                if (System::Utils::str_endsWith(filename, ".h"))
+                                    if (ImGui::MenuItem(System::Utils::ReplaceFrom(filename, ".", "").c_str())) 
+                                    {
+
+                                        std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
+                                        std::replace(AssetManager::script_dir.begin(), AssetManager::script_dir.end(), '\\', '/');
+
+                                        std::string line,
+                                                    path = Editor::projectPath + AssetManager::script_dir + '/';
+                                                 
+                                        std::ifstream src(path + filename);
+
+                                        while (src >> line)
+                                            if (line == "class")  
+                                                if (src >> line)
+                                                    this->behaviors.insert({ line, filename });  
+
+                                    }
+
+                            }
+
+                            ImGui::EndMenu();
+                        }
+                        
+                        ImGui::EndMenu();
+                    }
+
+                    if (ImGui::BeginMenu("remove scripts?"))
                     {
                         if (ImGui::MenuItem("yes"))
                             this->RemoveComponent(component); 
                         
                         ImGui::EndMenu();
                     }
-
+                    
                     ImGui::EndMenu();
                 }
 

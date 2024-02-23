@@ -112,7 +112,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
             sn->AddComponent("Physics", false);
             sn->friction = sprite["components"]["physics"]["friction"];
             sn->restitution = sprite["components"]["physics"]["restitution"];
-            sn->density = sprite["components"]["physics"]["density"];
+            sn->density = sprite["components"]["physics"]["density"]; 
         }
 
         for (const auto &body : sprite["components"]["physics"]["bodies"]) 
@@ -133,6 +133,10 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
                 sn->AddComponent("Script", false);
                 break;
             }
+
+
+        for (const auto &scripts : sprite["components"]["script"]["scripts"])
+            sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
         
     }
 
@@ -260,6 +264,16 @@ void EventListener::Serialize(json &data)
     for (const auto &node : Node::nodes)
     {
 
+        //scripts
+
+        json scripts = json::array();
+
+        for (const auto &behavior : node->behaviors)
+            scripts.push_back({
+                { "key", behavior.first }, 
+                { "value", behavior.second }
+            });
+
         //sprites
 
         if (node->m_type == "Sprite")
@@ -345,7 +359,8 @@ void EventListener::Serialize(json &data)
                             }
                         },
                         { "script", {
-                                { "exists", sn->HasComponent("Script") }
+                                { "exists", sn->HasComponent("Script") },
+                                { "scripts", scripts }
                             }
                         },
                         { "shader", {

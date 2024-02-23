@@ -31,7 +31,6 @@ class Game {
         static inline Text* text; 
 
         std::map<const char*, std::any> data;
-        std::map<std::shared_ptr<Entity>, std::shared_ptr<Behavior>> behaviors;
 
         template<typename T>
 		inline T GetData(const char* key) const { return std::any_cast<T>(this->data.at(key)); }
@@ -56,6 +55,13 @@ class Game {
         static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
         static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end);
         
+        template <typename T>
+        static inline void CreateBehavior(std::shared_ptr<Entity> entity, Game* game) {
+
+            auto behavior = std::make_shared<T>(entity);
+            game->behaviors.push_back(behavior);
+        }
+                
         static void DestroyEntity(std::shared_ptr<Entity> entity);
         static void DestroyUI();
 
@@ -66,9 +72,15 @@ class Game {
 
         static inline std::vector<std::shared_ptr<Entity>> entities;
 
+
+        //ui
+
         std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
         std::shared_ptr<Geometry> cursor = nullptr;
 
+    protected:
+
+        std::vector<std::shared_ptr<Behavior>> behaviors;
 
     private:
 

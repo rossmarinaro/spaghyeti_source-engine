@@ -27,6 +27,7 @@ Node::Node(const std::string &id, std::string type, std::string name):
 }
 
 
+
 //---------------------------
 
 
@@ -108,16 +109,7 @@ void Node::DeleteNode (Node* node)
 
     if (node->components.size())
         for (auto &component : node->components)
-        {
-
-            std::vector<Component*>::iterator it = std::find(node->components.begin(), node->components.end(), component);
-
-            if (it != node->components.end())
-                node->components.erase(it);
-
-            delete component;
-            component = nullptr;
-        }
+            node->RemoveComponent(component);
 
     //delete node instance
 
@@ -141,15 +133,7 @@ void Node::ClearAll ()
 {
 
     for (auto &node : nodes)
-        if (node && node->m_active)
-        {
-            node->m_active = false;
-
-            delete node;
-            node = nullptr;
-        }
-
-    nodes.clear();
+        DeleteNode(node);
 
     count = 0;
 
@@ -161,22 +145,22 @@ void Node::ClearAll ()
 //--------------------------
 
 
-Component* Node::AddComponent(const char* type, bool init)
+void Node::AddComponent(const char* type, bool init)
 {
 
     //return if component exists 
     
     for (auto &component : this->components)
         if ((std::string)component->m_type == type) 
-            return nullptr;
+            return;
         
-    Component* component = new Component(this->m_ID, type, init);
+    Component* component = new Component(this->m_ID, type);
 
-    components.push_back(component);
- 
-    Editor::Log((std::string)type + " component added.");   
+    components.push_back(component); 
 
-    return component;
+    if (init)
+        component->Make();
+
 }
 
 

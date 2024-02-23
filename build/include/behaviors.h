@@ -1,3 +1,5 @@
+#pragma once
+
 #include "./camera.h"
 #include "./inputs.h"
 #include "./entity.h"
@@ -6,20 +8,21 @@ class Behavior {
 
     public:
 
-        Entity* entity;
-        Sprite* sprite;
-        Text* text;
-        Geometry* geometry;
+        std::shared_ptr<Entity> entity;
+        std::shared_ptr<Sprite> sprite;
+        std::shared_ptr<Text> text;
+        std::shared_ptr<Geometry> geometry;
 
-        void Update(Inputs* inputs, Camera* camera) {}
+        virtual void Update(Inputs* inputs, Camera* camera) {}
 
-        Behavior(Entity* entity) {
+        Behavior(std::shared_ptr<Entity> entity) {
 
-            this->sprite = dynamic_cast<Sprite*>(entity);
-            this->text = dynamic_cast<Text*>(entity);
-            this->geometry = dynamic_cast<Geometry*>(entity);
+            this->sprite = std::dynamic_pointer_cast<Sprite>(entity);
+            this->text = std::dynamic_pointer_cast<Text>(entity);
+            this->geometry = std::dynamic_pointer_cast<Geometry>(entity);
         }
 
-        ~Behavior() = default;
+        virtual ~Behavior() = default;
 
 };
+
