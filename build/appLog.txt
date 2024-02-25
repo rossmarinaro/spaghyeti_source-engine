@@ -1,42 +1,10 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Feb 23 12:59:36 2024
-IMGui Version:  @ Fri Feb 23 12:59:37 2024
-GUI launched. @ Fri Feb 23 12:59:37 2024
-nodes deleted. @ Fri Feb 23 12:59:41 2024
-Workspace reset. @ Fri Feb 23 12:59:41 2024
-sprite node Untitled created. @ Fri Feb 23 12:59:41 2024
-Physics component added. @ Fri Feb 23 12:59:41 2024
-Script component added. @ Fri Feb 23 12:59:41 2024
-Tilemap node Untitled_1 created. @ Fri Feb 23 12:59:41 2024
-Physics component added. @ Fri Feb 23 12:59:41 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sun Feb 25 15:05:57 2024
+IMGui Version:  @ Sun Feb 25 15:05:57 2024
+GUI launched. @ Sun Feb 25 15:05:57 2024
+nodes deleted. @ Sun Feb 25 15:06:01 2024
+Workspace reset. @ Sun Feb 25 15:06:01 2024
 Project game2 opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Feb 23 12:59:41 2024
-Component fde76485_cd1e_7791_c20f_58225743459d removed. @ Fri Feb 23 12:59:44 2024
-Component fde76485_cd1e_7791_c20f_58225743459d removed. @ Fri Feb 23 12:59:44 2024
-Sprite node Untitled deleted. @ Fri Feb 23 12:59:44 2024
-Component c3f40f12_27eb_aa51_83ba_038ac73d7684 removed. @ Fri Feb 23 12:59:49 2024
-Tilemap node Untitled_1 deleted. @ Fri Feb 23 12:59:49 2024
-nodes deleted. @ Fri Feb 23 12:59:56 2024
-Workspace reset. @ Fri Feb 23 12:59:56 2024
-Project game opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Feb 23 12:59:56 2024
-nodes deleted. @ Fri Feb 23 13:00:01 2024
-Workspace reset. @ Fri Feb 23 13:00:01 2024
-sprite node Untitled created. @ Fri Feb 23 13:00:02 2024
-Physics component added. @ Fri Feb 23 13:00:02 2024
-Script component added. @ Fri Feb 23 13:00:02 2024
-Tilemap node Untitled_1 created. @ Fri Feb 23 13:00:02 2024
-Physics component added. @ Fri Feb 23 13:00:02 2024
-Project game2 opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Feb 23 13:00:02 2024
-Component fde76485_cd1e_7791_c20f_58225743459d removed. @ Fri Feb 23 13:00:06 2024
-Component fde76485_cd1e_7791_c20f_58225743459d removed. @ Fri Feb 23 13:00:06 2024
-Sprite node Untitled deleted. @ Fri Feb 23 13:00:06 2024
-Component c3f40f12_27eb_aa51_83ba_038ac73d7684 removed. @ Fri Feb 23 13:00:06 2024
-Tilemap node Untitled_1 deleted. @ Fri Feb 23 13:00:06 2024
-nodes deleted. @ Fri Feb 23 13:00:06 2024
-Workspace reset. @ Fri Feb 23 13:00:06 2024
-Project game opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Feb 23 13:00:07 2024
-GUI exited @ Fri Feb 23 13:00:09 2024
-nodes deleted. @ Fri Feb 23 13:00:09 2024
-Editor closed. @ Fri Feb 23 13:00:09 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Sun Feb 25 15:06:02 2024
+GUI exited @ Sun Feb 25 15:06:07 2024
+nodes deleted. @ Sun Feb 25 15:06:07 2024
+Editor closed. @ Sun Feb 25 15:06:07 2024

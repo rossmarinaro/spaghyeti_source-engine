@@ -16,14 +16,11 @@
 
 #include "./events.h"
 #include "../editor.h"
-#include "../assets/assets.h"
+#include "../assets/assets.h" 
 #include "../gui/nodes/node.h"
 #include "../../../../build/include/app.h"
-//#include "../../../../games/currentGame.h"
 
-// #include <stdio.h>
-// #include <unistd.h>
-// #define MSGSIZE 16
+
 //--------------------------------- file open callbacks (windows only)
 
 
@@ -418,7 +415,7 @@ void EventListener::OpenFile()
             unsigned int id = System::Resources::Manager::texture2D->GetTexture(texture).ID;
 
             if (
-                std::find_if(
+                std::find_if( 
                     AssetManager::images.begin(), AssetManager::images.end(),
                     [&](std::pair<std::string, GLuint> pair) { return pair.first == asset; }
                 ) == AssetManager::images.end()
@@ -476,13 +473,13 @@ void EventListener::BuildAndRun()
 
     glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor();
 
+    command_queue << "   this->SetWorldDimensions(" + std::to_string(Editor::worldWidth) + ", " + std::to_string(Editor::worldHeight) + ");\n";
+
     command_queue << "   camera->SetBackgroundColor(glm::vec4(" + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + "));\n";
     command_queue << "   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n";
     command_queue << "   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n";
  
     //InsertTo("   physics->world.SetGravity(b2Vec2(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + "));\n", command_file);
-
-    //asset preload
 
     for (const auto &asset : AssetManager::loadedAssets)
     {
@@ -503,6 +500,12 @@ void EventListener::BuildAndRun()
 
     for (const auto &node : Node::nodes)
     {
+
+        //load shaders
+
+        if (node->HasComponent("Shader"))
+            asset_queue << "  System::Resources::Manager::shader->Load(" + node->shader.first + ", " + node->shader.second.first + ", " + node->shader.second.second + ");\n";
+
 
         //--------------- sprite
 
@@ -583,6 +586,12 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->m_ID + "->ReadSpritesheetData();\n";
                 } 
 
+                //shader
+
+                if (sn->HasComponent("Shader")) 
+                    command_queue << "   sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + sn->shader.first + "\");\n";
+
+
             }
 
         }
@@ -617,6 +626,11 @@ void EventListener::BuildAndRun()
 
             command_queue << "   auto empty_" + node->m_ID + " = CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
             command_queue << "   auto empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
+
+            //shader
+
+            if (en->HasComponent("Shader")) 
+                command_queue << "   sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + en->shader.first + "\");\n";
 
         }
 
@@ -671,7 +685,6 @@ void EventListener::BuildAndRun()
 
         }
 
-        
         //define behaviors
 
         for (const auto &behavior : node->behaviors) {
@@ -687,7 +700,7 @@ void EventListener::BuildAndRun()
     }
     
     //update queue
-    //TODO
+    //...
 
 
     //convert data string stream to string

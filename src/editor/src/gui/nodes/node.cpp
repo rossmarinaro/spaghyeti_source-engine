@@ -203,3 +203,31 @@ const bool Node::HasComponent(const char* type)
     for (const auto &component : components)
         return strcmp(type, component->m_type) == 0; 
 }
+
+
+//-----------------------------
+
+
+void Node::LoadShader(Node* node, const std::string &name, const std::string &vertPath, const std::string &fragPath)
+{
+
+    node->shader = { name, { vertPath, fragPath } };  
+
+    Shader::Load(name, vertPath.c_str(), fragPath.c_str(), nullptr);
+
+    if (node->m_type == "Sprite")
+    {
+        SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+
+        if (sn->spriteHandle)
+            sn->spriteHandle->m_shader = Shader::GetShader(name);
+    }
+
+    if (node->m_type == "Empty")
+    {
+        EmptyNode* en = dynamic_cast<EmptyNode*>(node);
+
+        if (en->m_debugGraphic)
+            en->m_debugGraphic->m_shader = Shader::GetShader(name);
+    }
+}

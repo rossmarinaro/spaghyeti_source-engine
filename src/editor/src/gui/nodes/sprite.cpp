@@ -1,7 +1,6 @@
 #include "./node.h"
 #include "../gui.h"
 #include "../../editor.h"
-#include "../../assets/assets.h"
 #include "../../../../../build/include/app.h"
 
 
@@ -177,10 +176,10 @@ void SpriteNode::Render()
 
             //component options
 
-            //-------------------------------- animator
-
             for (const auto &component : this->components)
             {
+
+                //-------------------------------- animator
 
                 if (strcmp(component->m_type, "Animator") == 0 && ImGui::BeginMenu("Animator"))
                 {
@@ -193,7 +192,7 @@ void SpriteNode::Render()
 
                         ImGui::PushID(i);
 
-                        if (this->anim > 1)
+                        if (i != 0 && this->anim > 1)
                         {
 
                             ImGui::SameLine();
@@ -270,20 +269,10 @@ void SpriteNode::Render()
                     if (ImGui::Button("add"))
                         this->anim++;
 
-                    if (ImGui::BeginMenu("remove animator?"))
-                    {
+                    if (ImGui::BeginMenu("remove animator?")) {
                         
                         if (ImGui::MenuItem("yes")) 
-                        {
                             this->RemoveComponent(component); 
-
-                            this->animBuf1.pop_back();
-                            this->animBuf2.pop_back();
-                            this->animBuf3.pop_back();
-                            this->animBuf4.pop_back();
-
-                            this->anim--;
-                        }
 
                         ImGui::EndMenu();
                     }
@@ -294,101 +283,23 @@ void SpriteNode::Render()
                 }
 
 
+                //------------------------------ shader
+
+
+                if (strcmp(component->m_type, "Shader") == 0 && ImGui::BeginMenu("Shader")) {
+
+                    GUI::RenderShaderOptions(this->m_ID);
+                    
+                    ImGui::EndMenu();
+                }
+
+
                 //------------------------------ script
 
 
-                if (strcmp(component->m_type, "Script") == 0 && ImGui::BeginMenu("Script"))
-                {
+                if (strcmp(component->m_type, "Script") == 0 && ImGui::BeginMenu("Script")) {
 
-                    if (this->behaviors.size())
-                    {
-                        ImGui::Text("Assigned Scripts:");
-
-                        for (const auto &behavior : this->behaviors)
-                            if (ImGui::BeginMenu(behavior.first.c_str()))
-                            {
-                                if (ImGui::MenuItem("edit"))
-                                    #ifdef _WIN32
-                                        system((Editor::projectPath + AssetManager::script_dir + "/" + behavior.second).c_str());
-                                    #endif
-
-                                if (ImGui::BeginMenu("remove script?")) 
-                                {
-                                    if (ImGui::MenuItem("yes")) {
-
-                                        std::map<std::string, std::string>::iterator it = this->behaviors.find(behavior.first);
-
-                                        if (it != this->behaviors.end())
-                                            this->behaviors.erase(it);
-                                    }
-                                    
-                                    ImGui::EndMenu();
-                                }
-
-                                ImGui::EndMenu();
-                            }
-                    }
-
-                    else
-                        ImGui::Text("Assigned Scripts: (none)");
-
-                    ImGui::Separator();
-
-                    if (ImGui::BeginMenu("script library"))
-                    {
-                        if (ImGui::BeginMenu("new script")) 
-                        {
-                           
-                            ImGui::InputText("name", &component->script_name);
-
-                            if (component->script_name.size())
-                                if (ImGui::MenuItem("submit")) 
-                                    component->Make();
-                            
-                            ImGui::EndMenu();
-                        }
-
-                        if (ImGui::BeginMenu("select script"))
-                        {
-                            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                            {
-
-                                std::string filename = script.path().filename().string();
-
-                                if (System::Utils::str_endsWith(filename, ".h"))
-                                    if (ImGui::MenuItem(System::Utils::ReplaceFrom(filename, ".", "").c_str())) 
-                                    {
-
-                                        std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
-                                        std::replace(AssetManager::script_dir.begin(), AssetManager::script_dir.end(), '\\', '/');
-
-                                        std::string line,
-                                                    path = Editor::projectPath + AssetManager::script_dir + '/';
-                                                 
-                                        std::ifstream src(path + filename);
-
-                                        while (src >> line)
-                                            if (line == "class")  
-                                                if (src >> line)
-                                                    this->behaviors.insert({ line, filename });  
-
-                                    }
-
-                            }
-
-                            ImGui::EndMenu();
-                        }
-                        
-                        ImGui::EndMenu();
-                    }
-
-                    if (ImGui::BeginMenu("remove scripts?"))
-                    {
-                        if (ImGui::MenuItem("yes"))
-                            this->RemoveComponent(component); 
-                        
-                        ImGui::EndMenu();
-                    }
+                    GUI::RenderScriptOptions(this->m_ID);
                     
                     ImGui::EndMenu();
                 }

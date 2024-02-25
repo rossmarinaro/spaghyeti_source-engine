@@ -34,6 +34,7 @@ public:
     static void InitBaseShaders();
     static void Update(Camera* camera);
     static void Load(const std::string &key, const char* vertShader, const char* fragShader, const char* geomShader);
+    static void UnLoad(const std::string &key);
     static Shader& GetShader(const std::string &key);
 
     Shader() = default;

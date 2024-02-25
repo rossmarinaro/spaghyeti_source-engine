@@ -5,6 +5,25 @@
 #include "./glsl/raw/particles.h"
 #include "./glsl/raw/physics_debug.h"
 
+
+//---------------------------------
+
+
+Shader& Shader::GetShader(const std::string &key) {
+    return System::Resources::Manager::shaders[key];
+} 
+
+
+//-------------------------------
+
+
+Shader &Shader::Use() {
+    
+    glUseProgram(this->ID);
+    return *this;
+}
+
+
 //--------------------------- init base shaders
 
 
@@ -29,7 +48,7 @@ void Shader::InitBaseShaders()
 
     //files
 
-    //Load("test from file","./shader/glsl/quad/vert.shader", "./shader/glsl/quad/frag.shader" , nullptr);
+    //...
 
     std::cout << "Base shaders initialized.\n";
 }
@@ -79,25 +98,17 @@ void Shader::Update(Camera* camera)
     GetShader("player").SetMat4("view", glm::mat4(1.0f), true);
     GetShader("sprite").SetMat4("view", camera->GetViewMatrix(camera), true);
     GetShader("graphics").SetMat4("view", camera->GetViewMatrix(camera), true);
+
+    //custom shaders
+
+    for (const auto &shader : System::Resources::Manager::shaders)
+    {
+        GetShader(shader.first).SetVec2f("offset", camera->m_position, true);
+        GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
+        GetShader(shader.first).SetMat4("view", camera->GetViewMatrix(camera), true);
+    }
 }
 
-
-//---------------------------------
-
-
-Shader& Shader::GetShader(const std::string &key) {
-    return System::Resources::Manager::shaders[key];
-} 
-
-
-//-------------------------------
-
-
-Shader &Shader::Use() {
-    
-    glUseProgram(this->ID);
-    return *this;
-}
 
 
 //--------------------------------- 
@@ -187,7 +198,7 @@ void Shader::Load(const std::string &key, const char* vertShader, const char* fr
                       geomShaderFile(geomShader);
 
         std::stringstream vShaderStream, 
-                          fShaderStream,
+                          fShaderStream, 
                           gShaderStream;
 
         // read file's buffer contents into streams
@@ -321,6 +332,17 @@ void Shader::Generate(const char* vertexPath, const char* fragmentPath, const ch
         glDeleteShader(geometry);  
 }
 
+
+// ---------------------------------------------------------- unload
+
+
+void Shader::UnLoad(const std::string &key)
+{ 
+    std::map<std::string, Shader>::iterator it = System::Resources::Manager::shaders.find(key);
+    
+    if (it != System::Resources::Manager::shaders.end())
+        System::Resources::Manager::shaders.erase(it);
+}
 
 
 // ---------------------------------------------------------- utility uniform functions

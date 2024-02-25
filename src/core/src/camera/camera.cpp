@@ -33,9 +33,18 @@ glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 
 
 glm::highp_mat4 Camera::GetViewMatrix(Camera* camera) {
+
     return glm::translate(glm::mat4(1.0f), glm::vec3(camera->m_position, 0.0f));
 }
 
 
 
+//-------------------------------
 
+
+void Camera::SetPosition(const glm::vec2 &position) { 
+
+    if (this->m_position.x < System::Application::game->GetWorldDimensions().x &&
+        this->m_position.y < System::Application::game->GetWorldDimensions().y)
+            this->m_position = position; 
+}

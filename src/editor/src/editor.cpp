@@ -92,7 +92,8 @@ Editor::~Editor()
 
     Node::ClearAll();
 
-    remove((Editor::projectPath + "\\src\\game.cpp").c_str());
+    remove((projectPath + "\\src\\game.cpp").c_str());
+    remove((projectPath + "\\spaghyeti_parse.json").c_str());
 
     Resources::Manager::UnLoadRawImage("editor logo");
     Resources::Manager::UnLoadRawImage("icon large");
@@ -130,11 +131,14 @@ void Editor::Log(const std::string &message)
 void Editor::Reset()
 {
 
-    remove((Editor::projectPath + "\\src\\game.cpp").c_str());
+    remove((projectPath + "\\src\\game.cpp").c_str());
 
     Node::ClearAll();
 
-    Editor::camera->Reset();
+    worldWidth = 0; 
+	worldHeight = 0;
+    selectedAsset = {};  
+    camera->Reset();
  
     AssetManager::images.clear();
     AssetManager::loadedAssets.clear();

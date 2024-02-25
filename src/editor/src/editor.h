@@ -37,19 +37,22 @@ class Editor
 {
 
 	public:
-		
+
+		static inline int worldWidth = 0, 
+						  worldHeight = 0;
+
+		static inline float gravityX = 0.0f,
+						    gravityY = 500.0f;
+
 		static inline bool useEditor = false;
 		static inline EventListener events;
 		
 		static inline Camera* camera;
-
+		
         static inline std::pair<std::string, GLuint> selectedAsset;
 		static inline std::string platform = "Windows";
         static inline std::string projectPath = "";
 		static inline std::string rootPath;
-
-		static inline float gravityX = 0.0f,
-                            gravityY = 500.0f;
 
 		Editor();
 		~Editor();

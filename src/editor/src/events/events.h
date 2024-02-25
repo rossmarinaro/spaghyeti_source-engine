@@ -19,13 +19,7 @@ class EventListener {
         void Serialize(json &data);
         void Deserialize(std::ifstream &JSON, std::filesystem::path &result);
 
-    private:
- 
-        static inline std::vector<std::string> contentCode;
-        static inline std::vector<std::string> assetCode; 
-        static inline std::vector<std::string> entityCode;
-
-        static inline bool m_initialized = false;
+    protected:
         
         void InsertTo(const std::string &code, const std::string &directory);
 };

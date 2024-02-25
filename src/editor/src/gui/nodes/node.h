@@ -30,10 +30,8 @@ class Node {
                            bodyY;
 
         std::vector<Component*> components;
+        std::pair<std::string, std::pair<std::string, std::string>> shader;
         std::map<std::string, std::string> behaviors;
-
-        struct StringContainer { std::string s = ""; };
-        struct BoolContainer { bool b = false; };
 
         Node(const std::string &id, std::string type, std::string name = "Untitled");
 
@@ -56,13 +54,19 @@ class Node {
 
         static Node* MakeNode(const char* type);
         static void DeleteNode (Node* node);
-        static void ClearAll();
+        
         static int ChangeName(ImGuiInputTextCallbackData* data);
+        static void LoadShader(Node* node, const std::string &name, const std::string &vertPath, const std::string &fragPath);
+        static void ClearAll();
 
         void AddComponent(const char* type, bool init = true);
         void RemoveComponent(Component* component);
+
         const Component* GetComponent(const char* type);
         const bool HasComponent(const char* type);
+
+        struct StringContainer { std::string s = ""; };
+        struct BoolContainer { bool b = false; };
 
 };
 
@@ -221,6 +225,8 @@ class AudioNode : public Node {
 
         Graphics::Texture2D &audioTexture;
 };
+
+
 
 //---------------------------------
 

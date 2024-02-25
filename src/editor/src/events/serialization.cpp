@@ -34,8 +34,11 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     GUI::grid->m_alpha = data["camera"]["alpha"];
     GUI::grid_quantity = data["camera"]["pitch"];
     
-    Game::worldWidth = data["camera"]["width"];
-    Game::worldHeight = data["camera"]["height"];
+    Editor::worldWidth = data["camera"]["width"];
+    Editor::worldHeight = data["camera"]["height"];
+
+    Editor::gravityX = data["settings"]["physics"]["gravity"]["x"];
+    Editor::gravityY = data["settings"]["physics"]["gravity"]["y"];
 
     //sprites
 
@@ -128,16 +131,32 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         //script
 
-        for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-            if (script.exists()) {
-                sn->AddComponent("Script", false);
-                break;
-            }
+        if (sprite["components"]["script"]["exists"]) 
+        {
+            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                if (script.exists()) {
+                    sn->AddComponent("Script", false);
+                    break;
+                }
 
+            for (const auto &scripts : sprite["components"]["script"]["scripts"])
+                sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+        }
 
-        for (const auto &scripts : sprite["components"]["script"]["scripts"])
-            sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
-        
+        //shader
+
+        if (sprite["components"]["shader"]["exists"]) {
+
+            sn->AddComponent("Shader", false);
+
+            if (sprite["components"]["shader"]["shaders"].size())
+                Node::LoadShader(sn, 
+                    static_cast<std::string>(sprite["components"]["shader"]["shaders"]["key"]).c_str(),
+                    static_cast<std::string>(sprite["components"]["shader"]["shaders"]["vertex"]).c_str(),
+                    static_cast<std::string>(sprite["components"]["shader"]["shaders"]["fragment"]).c_str()
+                );
+        }
+
     }
 
     //tilemaps
@@ -202,6 +221,36 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         en->positionX = empty["position x"]; 
         en->positionY = empty["position y"];
 
+        //script
+
+        if (empty["components"]["script"]["exists"]) 
+        {
+
+            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                if (script.exists()) {
+                    en->AddComponent("Script", false);
+                    break;
+                }
+
+            for (const auto &scripts : empty["components"]["script"]["scripts"])
+                en->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+        }
+
+        //shader
+
+        if (empty["components"]["shader"]["exists"]) {
+            
+            en->AddComponent("Shader", false);
+
+            if (empty["components"]["shader"]["shaders"].size())
+                Node::LoadShader(en, 
+                    static_cast<std::string>(empty["components"]["shader"]["shaders"]["key"]).c_str(),
+                    static_cast<std::string>(empty["components"]["shader"]["shaders"]["vertex"]).c_str(),
+                    static_cast<std::string>(empty["components"]["shader"]["shaders"]["fragment"]).c_str()
+                );
+        }
+        
+
     }
 
     //text
@@ -221,7 +270,22 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         tn->positionY = text["position y"];   
         tn->rotation = text["rotation"];      
         tn->scaleX = text["scale x"];      
-        tn->scaleY = text["scale y"];     
+        tn->scaleY = text["scale y"];    
+
+        //script
+
+        if (text["components"]["script"]["exists"]) 
+        {
+            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                if (script.exists()) {
+                    tn->AddComponent("Script", false);
+                    break;
+                }
+
+            for (const auto &scripts : text["components"]["script"]["scripts"])
+                tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+
+        }
 
     }
 
@@ -250,8 +314,8 @@ void EventListener::Serialize(json &data)
 
     data["camera"]["x"] = Editor::camera->m_position.x;
     data["camera"]["y"] = Editor::camera->m_position.y;
-    data["camera"]["width"] = Game::worldWidth;
-    data["camera"]["height"] = Game::worldHeight;
+    data["camera"]["width"] = Editor::worldWidth;
+    data["camera"]["height"] = Editor::worldHeight;
     data["camera"]["zoom"] = Editor::camera->m_zoom; 
     data["camera"]["color"]["x"] = Editor::camera->m_backgroundColor.x;
     data["camera"]["color"]["y"] = Editor::camera->m_backgroundColor.y;
@@ -259,6 +323,11 @@ void EventListener::Serialize(json &data)
     data["camera"]["color"]["w"] = Editor::camera->m_backgroundColor.w;
     data["camera"]["alpha"] = GUI::grid->m_alpha;
     data["camera"]["pitch"] = GUI::grid_quantity;
+
+    //settings
+
+    data["settings"]["physics"]["gravity"]["x"] = Editor::gravityX;
+    data["settings"]["physics"]["gravity"]["y"] = Editor::gravityY;
   
 
     for (const auto &node : Node::nodes)
@@ -273,6 +342,14 @@ void EventListener::Serialize(json &data)
                 { "key", behavior.first }, 
                 { "value", behavior.second }
             });
+
+        //shader
+
+        json shader = {
+                { "key", node->shader.first }, 
+                { "vertex", node->shader.second.first },
+                { "fragment", node->shader.second.second }
+            };
 
         //sprites
 
@@ -364,7 +441,8 @@ void EventListener::Serialize(json &data)
                             }
                         },
                         { "shader", {
-                                { "exists", sn->HasComponent("Shader") }
+                                { "exists", sn->HasComponent("Shader") },
+                                { "shaders", shader }
                             }
                         }
                     }
@@ -441,7 +519,6 @@ void EventListener::Serialize(json &data)
                 { "loop", an->loop }
             });
 
-
         }
 
         //empty
@@ -458,13 +535,15 @@ void EventListener::Serialize(json &data)
                 { "height", en->m_debugGraphic->height },
                 { "position x", en->positionX },
                 { "position y", en->positionY },
-                    { "components", {
+                { "components", {
                         { "script", {
-                                { "exists", en->HasComponent("Script") }
+                                { "exists", en->HasComponent("Script") },
+                                { "scripts", scripts }
                             }
                         },
                         { "shader", {
-                                { "exists", en->HasComponent("Shader") }
+                                { "exists", en->HasComponent("Shader") },
+                                { "shaders", shader }
                             }
                         }
                     }
@@ -494,7 +573,15 @@ void EventListener::Serialize(json &data)
                 { "position y", tn->positionY }, 
                 { "rotation", tn->rotation },
                 { "scale x", tn->scaleX },     
-                { "scale y", tn->scaleY }
+                { "scale y", tn->scaleY },
+                { "components", {
+                        { "script", {
+                                { "exists", tn->HasComponent("Script") },
+                                { "scripts", scripts }
+                            }
+                        }
+                    }
+                }
             });
         }
 

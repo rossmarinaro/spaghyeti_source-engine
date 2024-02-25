@@ -26,10 +26,26 @@ Component::Component(const std::string &id, const char* type):
 Component::~Component() 
 { 
 
-    for (auto &node : Node::nodes) 
+    for (const auto &node : Node::nodes) 
     
         if (node->m_ID == this->m_ID) 
         {  
+
+            //shader
+
+            if (strcmp(this->m_type, "Shader") == 0) 
+            {
+
+                if (node->m_type == "Sprite") {
+                    auto sn = dynamic_cast<SpriteNode*>(node);
+                    sn->spriteHandle->m_shader = Shader::GetShader("sprite");
+                }
+
+                if (node->m_type == "Empty") {
+                    auto en = dynamic_cast<EmptyNode*>(node);
+                    en->m_debugGraphic->m_shader = Shader::GetShader("graphics");
+                }
+            }
 
             //script
 
@@ -48,6 +64,7 @@ Component::~Component()
                     sn->animBuf2.clear();
                     sn->animBuf3.clear();
                     sn->animBuf4.clear();
+                    sn->anim = 0;
                 }
             }
 
@@ -96,7 +113,7 @@ Component::~Component()
             }
         }
 
-    Editor::Log("Component " + this->m_ID + " removed."); 
+    Editor::Log((std::string)this->m_type + " component" + " removed."); 
 }
 
 
@@ -106,58 +123,56 @@ Component::~Component()
 void Component::Make()
 {
 
-    //animator
-
-    if (strcmp(this->m_type, "Animator") == 0)
-    {
-        
-    }
-
     //shader
 
     if (strcmp(this->m_type, "Shader") == 0)
     {
 
-        std::ofstream src;
+        if (!this->filename.size())
+            return;
 
-        m_resourcePath = Editor::projectPath + "\\resources\\shaders\\" + m_ID + ".glsl";
+        std::string path = Editor::projectPath + AssetManager::shader_dir + "/" + this->filename,
+                    vert = path + "/" + this->filename + ".vert",
+                    frag = path + "/" + this->filename + ".frag";
 
-        src.open(m_resourcePath, std::ofstream::app | std::ofstream::out);
 
-        // #version 330 core
+        if (std::filesystem::exists(vert) && std::filesystem::exists(frag)) {
+            Editor::Log("Shader name already exists!");
+            return;
+        }
 
-        // layout (location = 0) in vec2 vert;
-        // layout (location = 1) in vec2 UV;
+        std::filesystem::create_directory(path);
+        std::ofstream vert_src(vert);
+        std::ofstream frag_src(frag);
 
-        // out vec2 uv;
+        vert_src << "#version 330 core\n\n";
+        vert_src << "layout (location = 0) in vec2 vert;\n";
+        vert_src << "layout (location = 1) in vec2 UV;\n\n";
+        vert_src << "out vec2 uv;\n\n";
+        vert_src << "uniform mat4 model;\n";
+        vert_src << "uniform mat4 view;\n";
+        vert_src << "uniform mat4 projection;\n";
+        vert_src << "uniform vec2 offset;\n\n";
+        vert_src << "void main()\n";
+        vert_src << "{\n";          
+        vert_src << "   uv = UV;\n";
+        vert_src << "   gl_Position = projection * model * view * vec4(vert.xy + offset.xy, 0.0, 1.0);\n";
+        vert_src << "};";
 
-        // uniform mat4 model;
-        // uniform mat4 projection;
-        // uniform float zoom;
+        frag_src << "#version 330 core\n\n";
+        frag_src << "in vec2 uv;\n";
+        frag_src << "out vec4 color;\n";
+        frag_src << "uniform sampler2D image;\n";
+        frag_src << "void main()\n";
+        frag_src << "{\n";
+        frag_src << "   color = vec4(1., 1., 1., 1.) * texture(image, uv);\n";
+        frag_src << "};";
 
-        // void main()
-        // {          
-        //     uv = UV;
-        //     gl_Position = projection * model * vec4(vert.xy * zoom, 0.0, 1.0);
-        // }; 
+        vert_src.close();
+        frag_src.close();
 
-        // #version 330 core
-
-        // in vec2 uv;
-        // out vec4 color;
-
-        // uniform sampler2D image;
-        // uniform vec3 spriteColor;
-        // uniform float alphaVal;
-        // uniform int repeat;
-
-        // void main()
-        // {
-
-        //     color = vec4(spriteColor, alphaVal) * texture(image, uv * repeat);  
-        // };
+        this->filename = "";
  
-        src.close();
     }
 
 
@@ -167,30 +182,30 @@ void Component::Make()
     if (strcmp(this->m_type, "Script") == 0)
     {
 
-        if (!this->script_name.size())
+        if (!this->filename.size())
             return;
 
-        m_resourcePath = Editor::projectPath + AssetManager::script_dir + "/" + this->script_name + ".h";
+        std::string path = Editor::projectPath + AssetManager::script_dir + "/" + this->filename + ".h";
 
-        if (std::filesystem::exists(m_resourcePath)) {
+        if (std::filesystem::exists(path)) {
             Editor::Log("Script name already exists!");
             return;
         }
 
-        std::ofstream src(m_resourcePath);
+        std::ofstream src(path);
 
         std::string root_path = Editor::rootPath;
         std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
-        transform(this->script_name.begin(), this->script_name.end(), this->script_name.begin(), ::toupper);
+        transform(this->filename.begin(), this->filename.end(), this->filename.begin(), ::toupper);
         
         src << "#pragma once\n\n"; 
         src << "#include \"" + root_path + "/include/behaviors.h\"\n\n";    
 
-        src <<  "class " + this->script_name + "_Behavior : public Behavior {\n\n"; 
+        src <<  "class " + this->filename + "_Behavior : public Behavior {\n\n"; 
         src <<  "    public:\n\n";
         src <<  "        //constructor, called on start\n\n";
-        src <<  "        " + this->script_name + "_Behavior (std::shared_ptr<Entity> entity):\n";
+        src <<  "        " + this->filename + "_Behavior (std::shared_ptr<Entity> entity):\n";
         src <<  "            Behavior(entity)\n";
         src <<  "        {\n\n";      
         src <<  "        }\n\n"; 
@@ -201,10 +216,28 @@ void Component::Make()
  
         src.close();
 
-        this->script_name = "";
+        this->filename = "";
 
     }
 
+    //animator
+
+    if (strcmp(this->m_type, "Animator") == 0)
+    {
+
+        for (const auto &node : Node::nodes) 
+            if (node->m_ID == m_ID) 
+            { 
+
+                if (node->m_type == "Sprite") {
+
+                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+
+                    sn->anim++;
+                }
+
+            }
+    }
 
     //physics
 
@@ -212,7 +245,7 @@ void Component::Make()
     if (strcmp(this->m_type, "Physics") == 0)
     {
 
-        for (auto &node : Node::nodes) 
+        for (const auto &node : Node::nodes) 
             if (node->m_ID == m_ID) 
             { 
 

@@ -27,6 +27,9 @@ class GUI {
         static void Render();
         static void Close();
 
+        static void RenderShaderOptions(const std::string &nodeId);
+        static void RenderScriptOptions(const std::string &nodeId);
+
         static inline std::unique_ptr<Geometry> grid;
         
         static inline float grid_quantity = 20.0f;

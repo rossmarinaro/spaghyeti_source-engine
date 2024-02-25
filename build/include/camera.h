@@ -22,12 +22,13 @@ class Camera {
             this->rotation = 0.0f;
         }
 
-        inline void SetPosition(const glm::vec2 &position) { m_position = position; }
-        inline void SetBackgroundColor(const glm::vec4 &color) { m_backgroundColor = color; }
-        inline const glm::vec4 &GetBackgroundColor() { return m_backgroundColor; }
-        inline void SetZoom(float zoom) { m_zoom = zoom; }
-        inline float const GetZoom() { return m_zoom; }
+        inline void SetBackgroundColor(const glm::vec4 &color) { this->m_backgroundColor = color; }
+        inline const glm::vec4 &GetBackgroundColor() { return this->m_backgroundColor; }
+        inline void SetZoom(float zoom) { this->m_zoom = zoom; }
+        inline float const GetZoom() { return this->m_zoom; }
 
+        void SetPosition(const glm::vec2 &position);
+        
         glm::highp_mat4 GetViewMatrix(Camera* camera);
         glm::highp_mat4 GetProjectionMatrix(float width, float height);
 

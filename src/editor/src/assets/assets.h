@@ -7,6 +7,7 @@ class AssetManager {
     public:
 
     static inline std::string script_dir = "resources\\scripts";
+    static inline std::string shader_dir = "resources\\shaders";
 
     static inline std::vector<std::pair<std::string, GLuint>> images; 
     static inline std::map<std::string, std::string> loadedAssets;

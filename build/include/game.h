@@ -23,8 +23,6 @@ class Game {
 
         static inline std::string name = "";
 
-        static inline int worldWidth, worldHeight = 0; 
-
 		static inline Time* time;
         static inline Camera* camera;
         static inline Physics* physics;
@@ -33,9 +31,22 @@ class Game {
         std::map<const char*, std::any> data;
 
         template<typename T>
-		inline T GetData(const char* key) const { return std::any_cast<T>(this->data.at(key)); }
+		inline T GetData(const char* key) const { 
+            return std::any_cast<T>(this->data.at(key));
+        }
 
-		inline void SetData(const char* key, std::any value) { this->data.insert({key, value}); }
+		inline void SetData(const char* key, std::any value) { 
+            this->data.insert({key, value}); 
+        }
+
+        inline void SetWorldDimensions(float width, float height) { 
+            this->worldWidth = width;
+            this->worldHeight = height;
+        }
+
+        inline const glm::vec2 GetWorldDimensions() { 
+            return glm::vec2(this->worldWidth, this->worldHeight);
+        }
 
         Game() = default;
         virtual ~Game() = default;
@@ -72,17 +83,15 @@ class Game {
 
         static inline std::vector<std::shared_ptr<Entity>> entities;
 
-
         //ui
-
+ 
         std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
         std::shared_ptr<Geometry> cursor = nullptr;
 
     protected:
 
         std::vector<std::shared_ptr<Behavior>> behaviors;
-
-    private:
+        int worldWidth, worldHeight = 0; 
 
         static inline ma_device music;
         static inline bool gameState = false;

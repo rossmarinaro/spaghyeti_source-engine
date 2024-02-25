@@ -12,19 +12,20 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
     for (const auto &entity : System::Application::game->entities)
     {
+        
         auto sprite = std::dynamic_pointer_cast<Sprite>(entity);
 
        if (sprite->bodies.size()) 
-           for (auto &body : sprite->bodies)
-           {
+            for (auto &body : sprite->bodies)
+            {
 
                b2Fixture* fixture = body.first->GetFixtureList();
 
                b2BodyUserData data = fixture->GetBody()->GetUserData();
 
-                if (data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer/* body.first->GetFixtureList() == contact->GetFixtureA() || body.first->GetFixtureList() == contact->GetFixtureB() */)
-                    entity->SetContact(true);//->SetTint(glm::vec3(1.0f, 0.0f, 0.0f));
-           }
+                if (data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer)
+                    sprite->SetContact(true);//->SetTint(glm::vec3(1.0f, 0.0f, 0.0f));
+            }
     }
 
 }
@@ -37,19 +38,20 @@ void CollisionManager::EndContact(b2Contact* contact)
 
     for (const auto &entity : System::Application::game->entities)
     {
+
        auto sprite = std::dynamic_pointer_cast<Sprite>(entity);
         
        if (sprite->bodies.size()) 
-           for (auto &body : sprite->bodies)
-           {
+            for (auto &body : sprite->bodies)
+            {
 
                b2Fixture* fixture = body.first->GetFixtureList();
 
                b2BodyUserData data = fixture->GetBody()->GetUserData();
 
-                if (data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer /* body.first->GetFixtureList() == contact->GetFixtureA() || body.first->GetFixtureList() == contact->GetFixtureB() */)
-                    entity->SetContact(false);//->ClearTint();
-           }
+                if (data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer)
+                    sprite->SetContact(false);//->ClearTint();
+            }
     }
 }
 

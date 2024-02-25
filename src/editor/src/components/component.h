@@ -10,10 +10,9 @@ class Component {
         const char* m_type;
 
         std::string 
-                   m_resourcePath, 
                    m_ID, 
                    m_name,
-                   script_name;
+                   filename;
 
         void Make();
 

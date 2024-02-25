@@ -158,7 +158,7 @@ class Text : public Entity {
     public:
 
         GLTtext* buffer;
-        std::string content;
+        std::string content; 
 
         static void Init();
         static void ShutDown();

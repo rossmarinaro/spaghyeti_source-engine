@@ -49,6 +49,44 @@ void TextNode::Render()
         
             static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->m_ID);
 
+            if (ImGui::BeginMenu("Add Component"))
+            {
+                if (ImGui::MenuItem("Scripts")) 
+                    this->AddComponent("Script"); 
+
+                if (ImGui::MenuItem("Shader")) 
+                    this->AddComponent("Shader");
+            
+                ImGui::EndMenu();
+            }
+
+            //component options
+
+            for (const auto &component : this->components)
+            {
+
+
+            //------------------------------ script
+
+
+                if (strcmp(component->m_type, "Script") == 0 && ImGui::BeginMenu("Script")) {
+
+                    GUI::RenderScriptOptions(this->m_ID);
+                    
+                    ImGui::EndMenu();
+                }
+
+                //------------------------------ shader
+
+
+                if (strcmp(component->m_type, "Shader") == 0 && ImGui::BeginMenu("Shader")) {
+
+                    GUI::RenderShaderOptions(this->m_ID);
+                    
+                    ImGui::EndMenu();
+                }
+            }
+
             if (ImGui::BeginMenu("Delete"))
             {
                 if (ImGui::MenuItem("Are You Sure?"))
