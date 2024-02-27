@@ -15,7 +15,10 @@ void GUI::RenderShaderOptions(const std::string &nodeId)
         if (node->m_ID == nodeId)
         {
 
-            auto component = std::find_if(node->components.begin(), node->components.end(), [&](Component* component) { return (std::string)component->m_type == "Shader"; });
+            auto component = std::find_if(node->components.begin(), node->components.end(), [&](std::shared_ptr<Component> component) { return (std::string)component->m_type == "Shader"; });
+
+            if (component == node->components.end())
+                return;
 
             if (node->shader.first.length())
             {
@@ -133,7 +136,10 @@ void GUI::RenderScriptOptions(const std::string &nodeId)
         if (node->m_ID == nodeId)
         {
 
-            auto component = std::find_if(node->components.begin(), node->components.end(), [&](Component* component) { return (std::string)component->m_type == "Script"; });
+            auto component = std::find_if(node->components.begin(), node->components.end(), [&](std::shared_ptr<Component> component) { return (std::string)component->m_type == "Script"; });
+            
+            if (component == node->components.end())
+                return;
 
             if (node->behaviors.size())
             {

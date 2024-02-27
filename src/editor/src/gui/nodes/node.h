@@ -29,7 +29,7 @@ class Node {
                            bodyX, 
                            bodyY;
 
-        std::vector<Component*> components;
+        std::vector<std::shared_ptr<Component>> components;
         std::pair<std::string, std::pair<std::string, std::string>> shader;
         std::map<std::string, std::string> behaviors;
 
@@ -60,9 +60,9 @@ class Node {
         static void ClearAll();
 
         void AddComponent(const char* type, bool init = true);
-        void RemoveComponent(Component* component);
+        void RemoveComponent(std::shared_ptr<Component> component);
 
-        const Component* GetComponent(const char* type);
+        const std::shared_ptr<Component> GetComponent(const char* type);
         const bool HasComponent(const char* type);
 
         struct StringContainer { std::string s = ""; };
@@ -239,10 +239,17 @@ class EmptyNode : public Node {
             show_debug, 
             debug_fill;
 
+        float 
+            rectWidth, 
+            rectHeight,
+            radius;
+
+        std::string currentShape;
         std::shared_ptr<Geometry> m_debugGraphic;
 
         EmptyNode(const std::string &id);
         ~EmptyNode();      
+        void CreateShape(const std::string &shape);
 
         void Render() override;
 

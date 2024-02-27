@@ -7,26 +7,46 @@
 
 EmptyNode::EmptyNode(const std::string &id): 
     Node(id, "Empty"),
+        rectWidth(0.0f),
+        rectHeight(0.0f),
+        radius(0.0f),
         show_debug(false),
-        debug_fill(false)
-{
-
-    this->m_debugGraphic = Game::CreateGeom(20.0f, 20.0f, 10.0f, 10.0f);    
-
-    Editor::Log("Empty node " + this->m_name + " created.");   
-}
+        debug_fill(false),
+        currentShape("")
+{ Editor::Log("Empty node " + this->m_name + " created."); }
 
 
 //---------------------------
  
 
-EmptyNode::~EmptyNode()
-{
+EmptyNode::~EmptyNode() {
 
     if (this->m_debugGraphic)
         Game::DestroyEntity(this->m_debugGraphic);
 
     Editor::Log("Empty node " + this->m_name + " deleted.");
+}
+
+
+//--------------------------
+
+
+void EmptyNode::CreateShape(const std::string &shape)
+{
+
+    if (!this->m_debugGraphic) {
+
+        if (shape == "rectangle")
+            this->m_debugGraphic = Game::CreateGeom(20.0f, 20.0f, 10.0f, 10.0f); 
+
+        else if (shape == "ellipse") {}
+
+        else    
+            return;
+            
+        this->currentShape = shape;   
+
+    }
 }
 
 
@@ -99,7 +119,15 @@ void EmptyNode::Render()
 
             if (this->show_options)
             {
-                
+
+                if (ImGui::BeginMenu("Create Graphic")) {
+
+                    if (ImGui::MenuItem("rectangle"))
+                        this->CreateShape("rectangle");
+
+                    ImGui::EndMenu();
+                }
+                    
                 if (this->m_debugGraphic)
                 {
 
@@ -107,13 +135,26 @@ void EmptyNode::Render()
 
                     ImGui::SameLine();
 
-                    ImGui::Checkbox("fill", &this->debug_fill);
+                    if (this->currentShape != "") {
+                        ImGui::Checkbox("fill", &this->debug_fill);
+                        ImGui::SliderFloat("position x", &this->positionX, 10.0f, 1000.0f); 
+                        ImGui::SliderFloat("position y", &this->positionY, 10.0f, 1000.0f);
+                    }
 
-                    ImGui::SliderFloat("position x", &this->positionX, 10.0f, 1000.0f); 
-                    ImGui::SliderFloat("position y", &this->positionY, 10.0f, 1000.0f); 
+                    if (this->currentShape == "rectangle") {
+ 
+                        ImGui::SliderFloat("width", &this->rectWidth, 10.0f, 1000.0f); 
+                        ImGui::SliderFloat("height", &this->rectHeight, 10.0f, 1000.0f); 
 
-                    ImGui::SliderFloat("width", &this->m_debugGraphic->width, 10.0f, 1000.0f); 
-                    ImGui::SliderFloat("height", &this->m_debugGraphic->height, 10.0f, 1000.0f); 
+                        this->m_debugGraphic->SetSize(this->rectWidth, this->rectHeight);
+                    }
+
+                    if (this->currentShape == "ellipse") {
+
+                        ImGui::SliderFloat("radius", &this->radius, 10.0f, 1000.0f);  
+
+                        this->m_debugGraphic->SetSize(this->radius);
+                    }
 
                     this->m_debugGraphic->m_renderable = this->show_debug ? true : false;
 

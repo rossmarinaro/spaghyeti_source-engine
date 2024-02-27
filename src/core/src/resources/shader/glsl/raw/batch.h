@@ -4,49 +4,40 @@
 
 namespace Shaders {
 
-//"#version 450 core\n";
-
-    const char* batchQuadShader_vertex = 
+    static const char* batchQuadShader_vertex = 
                     
         "#version 330 core\n"
 
-        "layout (location = 0) in vec3 a_Position;\n"
-        "layout (location = 1) in vec4 a_Color;\n"
-        "layout (location = 2) in vec2 a_TexCoord;\n"
-        "layout (location = 3) in float a_TexIndex;\n"
+        "layout (location = 0) in vec2 vert;\n"
+        "layout (location = 1) in vec4 UV;\n"
 
-        "out vec4 v_Color;\n"
-        "out vec2 v_TexCoord;\n"
-        "out float v_TexIndex;\n"
-
-        "uniform mat4 u_ViewProj;\n"
-        "uniform mat4 u_Transform;\n"
+        "uniform vec2 offset;\n"
+        "uniform mat4 model;\n"
+        "uniform mat4 view;\n"
+        "uniform mat4 projection;\n"
 
         "void main()\n"
         "{\n"           
-            "v_Color = a_Color;\n" 
-            "v_TexCoord = a_TexCoord;\n"
-            "v_TexIndex = a_TexIndex;\n"
-            "gl_Position = u_ViewProj * u_Trasform * vec4(a_Position, 1.0);\n"
+            "uv = UV;\n"
+            "gl_Position = projection * model * view * vec4(vert.xy + offset.xy, 0.0, 1.0);\n"
         "}\n"; 
 
 
-    const char* batchQuadShader_fragment =  
+    static const char* batchQuadShader_fragment =  
 
         "#version 330 core\n"
 
-        "layout (location = 0) out vec4 o_Color;\n"
+        "in vec2 uv;\n"
+        "out vec4 color;\n"
 
-        "in vec4 v_Color;\n"
-        "in vec2 v_TexCoord;\n"
-        "in float TexIndex;\n"
-
-        "uniform sampler2D u_Textures[32];\n" 
+        "uniform sampler2D images[32];\n" 
+        "uniform vec3 tint;\n"
+        "uniform float alphaVal;\n"
 
         "void main()\n"
         "{\n"    
-            "int index = int(v_TexIndex);\n" 
-            "o_Color = texture(u_Textures[index], v_TexCoord) * v_Color;\n"   
+            "int index = int(uv);\n" 
+            "color = texture(images[index], uv) * tint * alphaVal;\n"   
         "}\n";  
 
 }

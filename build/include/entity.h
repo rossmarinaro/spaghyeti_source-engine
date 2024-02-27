@@ -86,9 +86,14 @@ class Entity {
 		}
 
 		inline void StartFollow(Camera* camera, float offset) {
-			camera->SetPosition(glm::vec2(-this->m_position.x + offset, camera->m_position.y));
+
+			camera->targetX = this->m_position.x;
+			camera->targetY = this->m_position.y;
+
+			if (camera->InBounds())
+				camera->SetPosition(glm::vec2(-this->m_position.x + offset, camera->m_position.y));
 		}
-		
+		 
 		virtual void Render() = 0;
 
 		Entity() = default;
@@ -120,10 +125,17 @@ class Geometry : public Entity {
 
 	  	Shader m_shader;
 
-		float width, height;
+		float width, height, radius;
 
 		inline void SetColor(const glm::vec3 &color) { this->m_color = color; } 
 		inline void SetDrawStyle(int style) { this->drawStyle = style; } 
+
+		inline void SetSize(float width, float height) { 
+			this->width = width; 
+			this->height = height;
+		} 
+
+		inline void SetSize(float radius) { this->radius = radius; } 
 
 		//quad
 
@@ -223,7 +235,7 @@ class Sprite : public Entity {
 		inline void StopAnimation() { this->currentAnim = nullptr; }
 
 		inline void SetContact(bool isContact) { this->m_contacting = isContact; }
-		inline bool IsContacting() { this->m_contacting; }
+		inline bool IsContacting() { return this->m_contacting; }
 		inline bool IsSpritesheet() { return this->m_isSpritesheet; }
 
 		void ReadSpritesheetData();

@@ -29,7 +29,7 @@ void Game::Boot()
 
     System::Resources::Manager::RegisterAssets();
 
-    System::Application::game->Run(System::Application::game->camera);
+    System::Application::game->Run(System::Application::inputs, camera, physics);
     
     System::Application::inputs->CreateCursor();
 
@@ -101,7 +101,7 @@ void Game::UpdateFrame()
         accumulator -= time->timeStep;
     }
 
-    physics->CleanupRemovedBodies();
+    physics->Update();
 
     //render queues
 
@@ -134,7 +134,7 @@ void Game::UpdateFrame()
 
     //propagate input functionality to game instance
     
-    System::Application::game->Update(System::Application::inputs, System::Application::game->camera);
+    System::Application::game->Update(System::Application::inputs);
 
 }  
 
@@ -285,7 +285,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, 
     auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
 
     ts->type = "tile";
-
+    //ts->m_shader = Shader::GetShader("sprite_batch");
     ts->ReadSpritesheetData(); 
 
     entities.push_back(ts);

@@ -154,9 +154,9 @@ void Node::AddComponent(const char* type, bool init)
         if ((std::string)component->m_type == type) 
             return;
         
-    Component* component = new Component(this->m_ID, type);
+    std::shared_ptr<Component> component = std::make_shared<Component>(this->m_ID, type);
 
-    components.push_back(component); 
+    this->components.push_back(component); 
 
     if (init)
         component->Make();
@@ -167,16 +167,16 @@ void Node::AddComponent(const char* type, bool init)
 //------------------------------
 
 
-void Node::RemoveComponent(Component* component)
+void Node::RemoveComponent(std::shared_ptr<Component> component)
 {
 
-    std::vector<Component*>::iterator it = std::find(components.begin(), components.end(), component);
+    std::vector<std::shared_ptr<Component>>::iterator it = std::find(components.begin(), components.end(), component);
 
     if (it != components.end())
         components.erase(it);
 
     if (component) {
-        delete component;
+        component.reset();
         component = nullptr;
     }
 }
@@ -185,7 +185,7 @@ void Node::RemoveComponent(Component* component)
 //------------------------------
 
 
-const Component* Node::GetComponent(const char* type)
+const std::shared_ptr<Component> Node::GetComponent(const char* type)
 {
     for (const auto &component : components)
         if (strcmp(type, component->m_type) == 0) 
@@ -198,10 +198,10 @@ const Component* Node::GetComponent(const char* type)
 //------------------------------
 
 
-const bool Node::HasComponent(const char* type)
-{
-    for (const auto &component : components)
-        return strcmp(type, component->m_type) == 0; 
+const bool Node::HasComponent(const char* type) {
+    
+    return std::find_if(components.begin(), components.end(), [&](std::shared_ptr<Component> component) { 
+        return strcmp(type, component->m_type) == 0; }) != components.end(); 
 }
 
 

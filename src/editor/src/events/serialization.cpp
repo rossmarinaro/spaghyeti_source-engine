@@ -116,38 +116,35 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
             sn->friction = sprite["components"]["physics"]["friction"];
             sn->restitution = sprite["components"]["physics"]["restitution"];
             sn->density = sprite["components"]["physics"]["density"]; 
-        }
 
-        for (const auto &body : sprite["components"]["physics"]["bodies"]) 
-            sn->CreateBody(
-                static_cast<std::string>(body["type"]).c_str(), 
-                body["bodyX"], 
-                body["bodyY"], 
-                body["body_width"], 
-                body["body_height"],
-                body["sensor"], 
-                body["pointer"]
-            );
+            for (const auto &body : sprite["components"]["physics"]["bodies"]) 
+                sn->CreateBody(
+                    static_cast<std::string>(body["type"]).c_str(), 
+                    body["bodyX"], 
+                    body["bodyY"], 
+                    body["body_width"], 
+                    body["body_height"],
+                    body["sensor"], 
+                    body["pointer"]
+                );
+        }
 
         //script
 
-        if (sprite["components"]["script"]["exists"]) 
-        {
-            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                if (script.exists()) {
-                    sn->AddComponent("Script", false);
-                    break;
-                }
+        if (sprite["components"]["script"]["exists"]) {
+            
+            sn->AddComponent("Script", false);
 
-            for (const auto &scripts : sprite["components"]["script"]["scripts"])
-                sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+            if (sprite["components"]["script"]["scripts"].size())
+                for (const auto &scripts : sprite["components"]["script"]["scripts"])
+                    sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
         }
 
         //shader
 
         if (sprite["components"]["shader"]["exists"]) {
 
-            sn->AddComponent("Shader", false);
+            sn->AddComponent("Shader", false); 
 
             if (sprite["components"]["shader"]["shaders"].size())
                 Node::LoadShader(sn, 
@@ -216,24 +213,22 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         en->show_debug = empty["debug graphics"]; 
         en->debug_fill = empty["fill"];
-        en->m_debugGraphic->width = empty["width"];  
-        en->m_debugGraphic->height = empty["height"]; 
+        en->rectWidth = empty["width"];  
+        en->rectHeight = empty["height"]; 
+        en->radius = empty["radius"]; 
+        en->currentShape = empty["shape"]; 
         en->positionX = empty["position x"]; 
         en->positionY = empty["position y"];
 
         //script
 
-        if (empty["components"]["script"]["exists"]) 
-        {
+        if (empty["components"]["script"]["exists"]) {
 
-            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                if (script.exists()) {
-                    en->AddComponent("Script", false);
-                    break;
-                }
+            en->AddComponent("Script", false);
 
-            for (const auto &scripts : empty["components"]["script"]["scripts"])
-                en->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+            if (empty["components"]["script"]["scripts"].size())
+                for (const auto &scripts : empty["components"]["script"]["scripts"])
+                    en->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
         }
 
         //shader
@@ -276,14 +271,11 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         if (text["components"]["script"]["exists"]) 
         {
-            for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                if (script.exists()) {
-                    tn->AddComponent("Script", false);
-                    break;
-                }
+            tn->AddComponent("Script", false);
 
-            for (const auto &scripts : text["components"]["script"]["scripts"])
-                tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+            if (text["components"]["script"]["scripts"].size())
+                for (const auto &scripts : text["components"]["script"]["scripts"])
+                    tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
 
         }
 
@@ -345,11 +337,14 @@ void EventListener::Serialize(json &data)
 
         //shader
 
-        json shader = {
-                { "key", node->shader.first }, 
-                { "vertex", node->shader.second.first },
-                { "fragment", node->shader.second.second }
-            };
+        json shader = {};
+
+        if (node->shader.first.length())
+            shader = {
+                    { "key", node->shader.first }, 
+                    { "vertex", node->shader.second.first },
+                    { "fragment", node->shader.second.second }
+                };
 
         //sprites
 
@@ -531,8 +526,10 @@ void EventListener::Serialize(json &data)
 
                 { "debug graphics", en->show_debug },
                 { "fill", en->debug_fill },
-                { "width", en->m_debugGraphic->width },
-                { "height", en->m_debugGraphic->height },
+                { "width", en->rectWidth },
+                { "height", en->rectHeight },
+                { "radius", en->radius },
+                { "shape", en->currentShape },
                 { "position x", en->positionX },
                 { "position y", en->positionY },
                 { "components", {

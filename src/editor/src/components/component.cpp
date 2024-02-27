@@ -10,40 +10,46 @@
 //------------------------------------
 
 
-Component::Component(const std::string &id, const char* type): 
+Component::Component(const std::string &id, const char* type):
     m_ID(id),
     m_type(type),
     m_name("")
-{ 
-    count++;  
+{
+    count++;
 
-    Editor::Log((std::string)type + " component added.");  
+    Editor::Log((std::string)type + " component added.");
 }
 
 //-------------------------------------
 
 
-Component::~Component() 
-{ 
+Component::~Component()
+{
 
-    for (const auto &node : Node::nodes) 
-    
-        if (node->m_ID == this->m_ID) 
-        {  
+    for (const auto &node : Node::nodes)
+
+        if (node->m_ID == this->m_ID)
+        {
 
             //shader
 
-            if (strcmp(this->m_type, "Shader") == 0) 
+            if (strcmp(this->m_type, "Shader") == 0)
             {
 
                 if (node->m_type == "Sprite") {
+
                     auto sn = dynamic_cast<SpriteNode*>(node);
-                    sn->spriteHandle->m_shader = Shader::GetShader("sprite");
+
+                    if (sn->spriteHandle.get())
+                        sn->spriteHandle->m_shader = Shader::GetShader("sprite");
                 }
 
                 if (node->m_type == "Empty") {
+                    
                     auto en = dynamic_cast<EmptyNode*>(node);
-                    en->m_debugGraphic->m_shader = Shader::GetShader("graphics");
+                    
+                    if (en->m_debugGraphic.get())
+                        en->m_debugGraphic->m_shader = Shader::GetShader("graphics");
                 }
             }
 
@@ -56,7 +62,8 @@ Component::~Component()
 
             if (strcmp(this->m_type, "Animator") == 0)
             {
-                if (node->m_type == "Sprite") 
+                
+                if (node->m_type == "Sprite")
                 {
                     SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
 
@@ -72,7 +79,7 @@ Component::~Component()
 
             if (strcmp(this->m_type, "Physics") == 0)
             {
-            
+
                 if (node->m_type == "Sprite") {
 
                     SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
@@ -93,10 +100,10 @@ Component::~Component()
                     sn->friction = 0.0f;
                 }
 
-                if (node->m_type == "Tilemap") 
+                if (node->m_type == "Tilemap")
                 {
 
-                    TilemapNode* tmn = dynamic_cast<TilemapNode*>(node); 
+                    TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
 
                     for (auto &body : tmn->bodies)
                         Game::physics->DestroyBody(body);
@@ -105,7 +112,7 @@ Component::~Component()
                     tmn->bodyY.clear();
                     tmn->body_width.clear();
                     tmn->body_height.clear();
-                    
+
                     tmn->bodies.clear();
 
                 }
@@ -113,7 +120,7 @@ Component::~Component()
             }
         }
 
-    Editor::Log((std::string)this->m_type + " component" + " removed."); 
+    Editor::Log((std::string)this->m_type + " component" + " removed.");
 }
 
 
@@ -154,7 +161,7 @@ void Component::Make()
         vert_src << "uniform mat4 projection;\n";
         vert_src << "uniform vec2 offset;\n\n";
         vert_src << "void main()\n";
-        vert_src << "{\n";          
+        vert_src << "{\n";
         vert_src << "   uv = UV;\n";
         vert_src << "   gl_Position = projection * model * view * vec4(vert.xy + offset.xy, 0.0, 1.0);\n";
         vert_src << "};";
@@ -172,7 +179,7 @@ void Component::Make()
         frag_src.close();
 
         this->filename = "";
- 
+
     }
 
 
@@ -198,22 +205,22 @@ void Component::Make()
         std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
         transform(this->filename.begin(), this->filename.end(), this->filename.begin(), ::toupper);
-        
-        src << "#pragma once\n\n"; 
-        src << "#include \"" + root_path + "/include/behaviors.h\"\n\n";    
 
-        src <<  "class " + this->filename + "_Behavior : public Behavior {\n\n"; 
+        src << "#pragma once\n\n";
+        src << "#include \"" + root_path + "/include/behaviors.h\"\n\n";
+
+        src <<  "class " + this->filename + "_Behavior : public Behavior {\n\n";
         src <<  "    public:\n\n";
         src <<  "        //constructor, called on start\n\n";
         src <<  "        " + this->filename + "_Behavior (std::shared_ptr<Entity> entity):\n";
         src <<  "            Behavior(entity)\n";
-        src <<  "        {\n\n";      
-        src <<  "        }\n\n"; 
+        src <<  "        {\n\n";
+        src <<  "        }\n\n";
         src <<  "        //update every frame\n\n";
         src <<  "        void Update(Inputs* inputs, Camera* camera) override {\n\n";
         src <<  "        }\n\n";
         src <<  "};";
- 
+
         src.close();
 
         this->filename = "";
@@ -225,9 +232,9 @@ void Component::Make()
     if (strcmp(this->m_type, "Animator") == 0)
     {
 
-        for (const auto &node : Node::nodes) 
-            if (node->m_ID == m_ID) 
-            { 
+        for (const auto &node : Node::nodes)
+            if (node->m_ID == m_ID)
+            {
 
                 if (node->m_type == "Sprite") {
 
@@ -245,9 +252,9 @@ void Component::Make()
     if (strcmp(this->m_type, "Physics") == 0)
     {
 
-        for (const auto &node : Node::nodes) 
-            if (node->m_ID == m_ID) 
-            { 
+        for (const auto &node : Node::nodes)
+            if (node->m_ID == m_ID)
+            {
 
                 if (node->m_type == "Sprite") {
 
@@ -259,7 +266,7 @@ void Component::Make()
                 if (node->m_type == "Tilemap") {
 
                     TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
-                    
+
                     tmn->CreateBody();
 
                 }

@@ -5,6 +5,12 @@ Camera::Camera():
     m_zoom(1.0f),
     m_screenLeft(1.0f),
     m_screenTop(0.0f),
+    targetX(0.0f),
+    targetY(0.0f),
+    currentBoundsWidthBegin(500.0f),
+    currentBoundsWidthEnd(1500.0f),
+    currentBoundsHeightBegin(0.0f),
+    currentBoundsHeightEnd(600.0f),
     m_position(glm::vec2(0.0f, 0.0f)),
     m_backgroundColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f))
 {
@@ -12,6 +18,7 @@ Camera::Camera():
 }
 
 //------------------------------
+
 
 glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 {
@@ -38,13 +45,13 @@ glm::highp_mat4 Camera::GetViewMatrix(Camera* camera) {
 }
 
 
-
 //-------------------------------
 
 
-void Camera::SetPosition(const glm::vec2 &position) { 
+bool Camera::InBounds() { 
 
-    if (this->m_position.x < System::Application::game->GetWorldDimensions().x &&
-        this->m_position.y < System::Application::game->GetWorldDimensions().y)
-            this->m_position = position; 
-}
+    return this->targetX > this->currentBoundsWidthBegin &&
+           this->targetX < this->currentBoundsWidthEnd && 
+           this->targetY > this->currentBoundsHeightBegin &&
+           this->targetY < this->currentBoundsHeightEnd;
+ }

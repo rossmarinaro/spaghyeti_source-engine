@@ -1,10 +1,9 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sun Feb 25 15:05:57 2024
-IMGui Version:  @ Sun Feb 25 15:05:57 2024
-GUI launched. @ Sun Feb 25 15:05:57 2024
-nodes deleted. @ Sun Feb 25 15:06:01 2024
-Workspace reset. @ Sun Feb 25 15:06:01 2024
-Project game2 opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Sun Feb 25 15:06:02 2024
-GUI exited @ Sun Feb 25 15:06:07 2024
-nodes deleted. @ Sun Feb 25 15:06:07 2024
-Editor closed. @ Sun Feb 25 15:06:07 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Tue Feb 27 10:04:26 2024
+IMGui Version:  @ Tue Feb 27 10:04:27 2024
+GUI launched. @ Tue Feb 27 10:04:27 2024
+nodes deleted. @ Tue Feb 27 10:04:31 2024
+Workspace reset. @ Tue Feb 27 10:04:31 2024
+sprite node Untitled created. @ Tue Feb 27 10:04:31 2024
+Script component added. @ Tue Feb 27 10:04:31 2024
+Empty node Untitled_1 created. @ Tue Feb 27 10:04:31 2024
+Crash Report Exception Record: 3221225477 @ Tue Feb 27 10:04:31 2024

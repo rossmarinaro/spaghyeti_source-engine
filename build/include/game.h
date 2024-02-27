@@ -52,8 +52,8 @@ class Game {
         virtual ~Game() = default;
 
         virtual void Preload() {}
-        virtual void Run(Camera* camera) {}
-        virtual void Update(Inputs* inputs, Camera* camera) {}
+        virtual void Run(Inputs* inputs, Camera* camera, Physics* physics) {}
+        virtual void Update(Inputs* inputs) {}
 
         static void Boot();
         static void Exit();

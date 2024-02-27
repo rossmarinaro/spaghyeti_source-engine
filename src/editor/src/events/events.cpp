@@ -473,13 +473,14 @@ void EventListener::BuildAndRun()
 
     glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor();
 
+    command_queue << "   this->camera = camera;\n   this->physics = physics;\n";
     command_queue << "   this->SetWorldDimensions(" + std::to_string(Editor::worldWidth) + ", " + std::to_string(Editor::worldHeight) + ");\n";
 
     command_queue << "   camera->SetBackgroundColor(glm::vec4(" + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + "));\n";
     command_queue << "   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n";
     command_queue << "   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n";
  
-    //InsertTo("   physics->world.SetGravity(b2Vec2(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + "));\n", command_file);
+    command_queue << "   physics->SetGravity(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + ");\n";
 
     for (const auto &asset : AssetManager::loadedAssets)
     {
@@ -503,8 +504,8 @@ void EventListener::BuildAndRun()
 
         //load shaders
 
-        if (node->HasComponent("Shader"))
-            asset_queue << "  System::Resources::Manager::shader->Load(" + node->shader.first + ", " + node->shader.second.first + ", " + node->shader.second.second + ");\n";
+        if (node->HasComponent("Shader") && node->shader.first.length())
+            asset_queue << "  System::Resources::Manager::shader->Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\");\n";
 
 
         //--------------- sprite
@@ -588,7 +589,7 @@ void EventListener::BuildAndRun()
 
                 //shader
 
-                if (sn->HasComponent("Shader")) 
+                if (sn->HasComponent("Shader") && sn->shader.first.length()) 
                     command_queue << "   sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + sn->shader.first + "\");\n";
 
 
@@ -621,16 +622,20 @@ void EventListener::BuildAndRun()
 
         if (node->m_type == "Empty")
         {
-
+ 
             EmptyNode* en = dynamic_cast<EmptyNode*>(node);
 
-            command_queue << "   auto empty_" + node->m_ID + " = CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
-            command_queue << "   auto empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
+            command_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n";
+
+            if (en->currentShape == "rectangle") {
+                command_queue << "   empty_" + node->m_ID + " = CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
+                command_queue << "   empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
+            }
 
             //shader
 
-            if (en->HasComponent("Shader")) 
-                command_queue << "   sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + en->shader.first + "\");\n";
+            if (en->HasComponent("Shader") && en->shader.first.length()) 
+                command_queue << "   empty_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + en->shader.first + "\");\n";
 
         }
 
@@ -698,7 +703,7 @@ void EventListener::BuildAndRun()
         }
 
     }
-    
+  
     //update queue
     //...
 
@@ -718,13 +723,13 @@ void EventListener::BuildAndRun()
     game_src << "    public:\n";
     game_src << "        " + name_upper + "() { name = \"" + name_upper + "\"; }\n";
     game_src << "        void Preload() override;\n";
-    game_src << "        void Run(Camera* camera) override;\n";
-    game_src << "        void Update(Inputs* inputs, Camera* camera) override;\n";
+    game_src << "        void Run(Inputs* inputs, Camera* camera, Physics* physics) override;\n";
+    game_src << "        void Update(Inputs* inputs) override;\n";
     game_src <<"};\n\n\n"; 
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
-    game_src << "void " + name_upper + "::Run(Camera *camera) {\n" + commandData + "}\n\n";
-    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera* camera) {\n"      + updateData +            "\n}\n\n\n";
+    game_src << "void " + name_upper + "::Run(Inputs* inputs, Camera* camera, Physics* physics) {\n" + commandData + "}\n\n";
+    game_src << "void " + name_upper + "::Update(Inputs* inputs) {\n"      + updateData +            "\n}\n\n\n";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";

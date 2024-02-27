@@ -38,7 +38,7 @@ void Sprite::SetVelocityX(float velX)
     this->velocityX = velX; 
 
     if (this->bodies.size() && this->IsContacting()) 
-        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX, this->bodies[0].first->GetLinearVelocity().y));
+        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX * 100000, this->bodies[0].first->GetLinearVelocity().y));
 
     else
         this->m_position.x += this->velocityX * System::Application::game->time->GetSeconds();     
@@ -57,7 +57,7 @@ void Sprite::SetVelocityY(float velY)
     this->velocityY = velY;
 
     if (this->bodies.size()) 
-        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, this->velocityY));
+        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, this->velocityY * 100000));
     
     else
         this->m_position.y += this->velocityY * System::Application::game->time->GetSeconds(); 
@@ -248,7 +248,10 @@ void Sprite::Render()
 
     //update shaders and textures 
 
-    this->m_shader.SetInt("image", 0, true);
+   // if (strcmp(this->type, "tile") == 0)
+        //this->m_shader.SetInt("images", 1, true);
+    //else
+        this->m_shader.SetInt("image", 0, true);
 
     #ifndef __EMSCRIPTEN__
         this->m_shader.SetInt("repeat", this->m_texture.Repeat, true);

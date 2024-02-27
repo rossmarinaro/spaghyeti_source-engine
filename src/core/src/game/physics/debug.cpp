@@ -51,7 +51,7 @@ void Points::Create()
     glBindVertexArray(0);
 
     m_count = 0;
-}
+} 
 
 
 void Points::Flush()

@@ -11,11 +11,13 @@ class Physics {
 
     public:
 
+        float gravityX, gravityY;
+
         bool sleeping = true, 
-            setWarmStart = false, 
-            continuous = true, 
-            subStep = false,
-            clearForces = false;
+             setWarmStart = false, 
+             continuous = true, 
+             subStep = false,
+             clearForces = false;
 
         uint32 m_flags;
 
@@ -45,6 +47,11 @@ class Physics {
         static inline const int32 velocityIterations = 6;
         static inline const int32 positionIterations = 2;
 
+        inline void SetGravity(float x, float y) {
+            this->gravityX = x;
+            this->gravityY = y;
+        };
+
         b2Body* CreateStaticBody(float x, float y, float width, float height);
 
         b2Body* CreateDynamicBody(
@@ -58,10 +65,10 @@ class Physics {
         );
 
         void DestroyBody(b2Body* b);
-        void CleanupRemovedBodies(); 
+        void Update();
 
         Physics();
-    ~Physics() = default;
+        ~Physics() = default;
 
 };
 

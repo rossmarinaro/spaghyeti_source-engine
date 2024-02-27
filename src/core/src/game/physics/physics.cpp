@@ -3,19 +3,21 @@
 #include "../../../../../build/include/physics.h"
 
 Physics::Physics():
-    gravity(b2Vec2(0.0f, 500.0f)), 
+    gravityX(0.0f),
+    gravityY(500.0f),
+    gravity(b2Vec2(this->gravityX, this->gravityY)), 
     world(gravity)  
-    { 
+{ 
 
-        m_flags = 0;
+    m_flags = 0;
 
-        m_flags += b2Draw::e_shapeBit;
-        m_flags += b2Draw::e_jointBit;
-        m_flags += b2Draw::e_aabbBit;
-        m_flags += b2Draw::e_centerOfMassBit;
+    m_flags += b2Draw::e_shapeBit;
+    m_flags += b2Draw::e_jointBit;
+    m_flags += b2Draw::e_aabbBit;
+    m_flags += b2Draw::e_centerOfMassBit;
 
-        std::cout << "Physics: world enabled.\n"; 
-    } 
+    std::cout << "Physics: world enabled.\n"; 
+} 
 
 
 //----------------------------------
@@ -85,11 +87,21 @@ b2Body* Physics::CreateDynamicBody(
 }
 
 
-//---------------------------
+//-----------------------------
 
 
-void Physics::CleanupRemovedBodies()
+//does not destroy body immediately. body will be destroyed after next timestep
+void Physics::DestroyBody(b2Body* b) {
+    System::Application::game->physics->bodiesToRemove.insert(b);
+}
+
+
+//-------------------------------
+
+
+void Physics::Update()
 {
+    //cleanup removed bodies
 
     std::set<b2Body*>::iterator it = System::Application::game->physics->bodiesToRemove.begin();
     std::set<b2Body*>::iterator end = System::Application::game->physics->bodiesToRemove.end();
@@ -105,14 +117,9 @@ void Physics::CleanupRemovedBodies()
 
     }
 
-    bodiesToRemove.clear();
+    System::Application::game->physics->bodiesToRemove.clear();
 
-}
-
-//-----------------------------
-
-//does not destroy body immediately. body will be destroyed after next timestep
-void Physics::DestroyBody(b2Body* b) {
-    System::Application::game->physics->bodiesToRemove.insert(b);
+    if (System::Application::game->physics != nullptr)
+        world.SetGravity(b2Vec2(gravityX, gravityY));
 }
 
