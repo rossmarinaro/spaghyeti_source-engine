@@ -20,9 +20,7 @@ AudioNode::AudioNode(const std::string &id):
 //---------------------------
  
 
-AudioNode::~AudioNode()
-{
-
+AudioNode::~AudioNode() {
 
     Editor::Log("audio node " + this->m_name + " deleted.");
 }
@@ -47,8 +45,8 @@ void AudioNode::Render()
 
             if (ImGui::BeginMenu("Delete"))
             {
-                if (ImGui::MenuItem("Are You Sure?"))
-                    DeleteNode(this); 
+                if (ImGui::MenuItem("Are You Sure?")) 
+                    DeleteNode(this);
 
                 ImGui::EndMenu();
             }

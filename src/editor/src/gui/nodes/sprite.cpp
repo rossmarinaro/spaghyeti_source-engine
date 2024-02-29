@@ -33,10 +33,11 @@ SpriteNode::SpriteNode(const std::string &id):
 
 SpriteNode::~SpriteNode()
 {
+    currentTexture = NULL;
 
     if (this->spriteHandle != nullptr)
         Game::DestroyEntity(this->spriteHandle);
-
+    
     Editor::Log("Sprite node " + this->m_name + " deleted.");
 }
 
@@ -380,7 +381,7 @@ void SpriteNode::Render()
 
             if (ImGui::BeginMenu("Delete"))
             {
-                if (ImGui::MenuItem("Are You Sure?"))
+                if (ImGui::MenuItem("Are You Sure?")) 
                     DeleteNode(this);
 
                 ImGui::EndMenu();

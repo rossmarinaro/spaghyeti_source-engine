@@ -21,7 +21,7 @@ Node::Node(const std::string &id, std::string type, std::string name):
     rotation(0.0f)
 {
 
-    for (auto &node : nodes)
+    for (const auto &node : nodes)
         if (node->m_name == this->m_name)
             this->m_name = this->m_name + "_" +std::to_string(count); 
 }
@@ -63,7 +63,7 @@ Node* Node::MakeNode(const char* type)
         Editor::Log("Max nodes reached.");
         return nullptr; 
     }
-
+  
     //generate UUID and replace hyphens with underscores
 
     std::string uuid = UUID::generate_uuid();
@@ -73,27 +73,25 @@ Node* Node::MakeNode(const char* type)
             uuid[i] = '_';
 
     if (strcmp(type, "Empty") == 0) 
-        nodes[count] = Create<EmptyNode>(uuid);
+        nodes.push_back(Create<EmptyNode>(uuid));
 
     else if (strcmp(type, "Audio") == 0) 
-        nodes[count] = Create<AudioNode>(uuid);
+        nodes.push_back(Create<AudioNode>(uuid));
 
     else if (strcmp(type, "Text") == 0) 
-        nodes[count] = Create<TextNode>(uuid);
+        nodes.push_back(Create<TextNode>(uuid));
     
     else if (strcmp(type, "Sprite") == 0) 
-        nodes[count] = Create<SpriteNode>(uuid);
+        nodes.push_back(Create<SpriteNode>(uuid));
     
     else if (strcmp(type, "Tilemap") == 0) 
-        nodes[count] = Create<TilemapNode>(uuid);
+        nodes.push_back(Create<TilemapNode>(uuid));
     
     else return nullptr;
-
-    Node* node = nodes[count]; 
-
+    
     count++;
-
-    return node;
+    
+    return nodes[count - 1];
 }
 
 
@@ -113,14 +111,14 @@ void Node::DeleteNode (Node* node)
 
     //delete node instance
 
-    std::vector<Node*>::iterator it = std::find(nodes.begin(), nodes.end(), node);
+    auto it = std::find(nodes.begin(), nodes.end(), node);
 
     if (it != nodes.end())
         nodes.erase(it);
 
     delete node;
     node = nullptr;
-
+    
     count--;
 
 }
@@ -133,9 +131,8 @@ void Node::ClearAll ()
 {
 
     for (auto &node : nodes)
-        DeleteNode(node);
-
-    count = 0;
+        if (node->m_active)
+            DeleteNode(node);
 
     Editor::Log("nodes deleted.");
 }
@@ -208,24 +205,27 @@ const bool Node::HasComponent(const char* type) {
 //-----------------------------
 
 
-void Node::LoadShader(Node* node, const std::string &name, const std::string &vertPath, const std::string &fragPath)
+void Node::LoadShader(
+    Node* node, 
+    const std::string &name, 
+    const std::string &vertPath, 
+    const std::string &fragPath
+)
 {
 
     node->shader = { name, { vertPath, fragPath } };  
 
     Shader::Load(name, vertPath.c_str(), fragPath.c_str(), nullptr);
 
-    if (node->m_type == "Sprite")
-    {
-        SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+    if (node->m_type == "Sprite") {
+        auto sn = dynamic_cast<SpriteNode*>(node);
 
         if (sn->spriteHandle)
             sn->spriteHandle->m_shader = Shader::GetShader(name);
     }
 
-    if (node->m_type == "Empty")
-    {
-        EmptyNode* en = dynamic_cast<EmptyNode*>(node);
+    if (node->m_type == "Empty") {
+        auto en = dynamic_cast<EmptyNode*>(node);
 
         if (en->m_debugGraphic)
             en->m_debugGraphic->m_shader = Shader::GetShader(name);

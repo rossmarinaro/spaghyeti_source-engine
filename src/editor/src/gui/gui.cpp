@@ -160,7 +160,9 @@ void GUI::Render()
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    grid->m_shader.SetFloat("pitch", grid_quantity, true);
+    if (grid)
+        grid->m_shader.SetFloat("pitch", grid_quantity, true);
+        
     //Renderer::CreateFrameBuffer();
 }
 
@@ -171,6 +173,8 @@ void GUI::Render()
 
 void GUI::Close()
 {
+    
+    m_running = false;
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

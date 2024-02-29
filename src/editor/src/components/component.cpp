@@ -26,9 +26,10 @@ Component::Component(const std::string &id, const char* type):
 Component::~Component()
 {
 
-    for (const auto &node : Node::nodes)
+    if (Node::nodes.size())
+        for (const auto &node : Node::nodes) 
 
-        if (node->m_ID == this->m_ID)
+        if (node->m_active && node->m_ID == this->m_ID)
         {
 
             //shader
@@ -65,7 +66,7 @@ Component::~Component()
                 
                 if (node->m_type == "Sprite")
                 {
-                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+                    auto sn = dynamic_cast<SpriteNode*>(node);
 
                     sn->animBuf1.clear();
                     sn->animBuf2.clear();
@@ -82,7 +83,7 @@ Component::~Component()
 
                 if (node->m_type == "Sprite") {
 
-                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+                    auto sn = dynamic_cast<SpriteNode*>(node);
 
                     for (const auto &body : sn->bodies)
                         Game::physics->DestroyBody(body.first);
@@ -103,7 +104,7 @@ Component::~Component()
                 if (node->m_type == "Tilemap")
                 {
 
-                    TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
+                    auto tmn = dynamic_cast<TilemapNode*>(node);
 
                     for (auto &body : tmn->bodies)
                         Game::physics->DestroyBody(body);
@@ -152,6 +153,8 @@ void Component::Make()
         std::ofstream vert_src(vert);
         std::ofstream frag_src(frag);
 
+        //default red tint image shader
+
         vert_src << "#version 330 core\n\n";
         vert_src << "layout (location = 0) in vec2 vert;\n";
         vert_src << "layout (location = 1) in vec2 UV;\n\n";
@@ -172,7 +175,7 @@ void Component::Make()
         frag_src << "uniform sampler2D image;\n";
         frag_src << "void main()\n";
         frag_src << "{\n";
-        frag_src << "   color = vec4(1., 1., 1., 1.) * texture(image, uv);\n";
+        frag_src << "   color = vec4(1., 0., 0., 1.) * texture(image, uv);\n";
         frag_src << "};";
 
         vert_src.close();
@@ -238,7 +241,7 @@ void Component::Make()
 
                 if (node->m_type == "Sprite") {
 
-                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+                    auto sn = dynamic_cast<SpriteNode*>(node);
 
                     sn->anim++;
                 }
@@ -258,14 +261,14 @@ void Component::Make()
 
                 if (node->m_type == "Sprite") {
 
-                    SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+                    auto sn = dynamic_cast<SpriteNode*>(node);
 
                     sn->CreateBody("dynamic");
                 }
 
                 if (node->m_type == "Tilemap") {
 
-                    TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
+                    auto tmn = dynamic_cast<TilemapNode*>(node);
 
                     tmn->CreateBody();
 

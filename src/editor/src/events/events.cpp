@@ -513,7 +513,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Sprite")
         {
 
-            SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+            auto sn = dynamic_cast<SpriteNode*>(node);
 
             if (sn->spriteHandle != nullptr)
             {
@@ -602,7 +602,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Text")
         {
 
-            TextNode* tn = dynamic_cast<TextNode*>(node);
+            auto tn = dynamic_cast<TextNode*>(node);
 
             if (tn->textHandle != nullptr)
             {
@@ -623,7 +623,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Empty")
         {
  
-            EmptyNode* en = dynamic_cast<EmptyNode*>(node);
+            auto en = dynamic_cast<EmptyNode*>(node);
 
             command_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n";
 
@@ -644,7 +644,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Tilemap")
         {
 
-            TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
+            auto tmn = dynamic_cast<TilemapNode*>(node);
 
             //load frames
 
@@ -682,7 +682,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Audio")
         {
 
-            AudioNode* an = dynamic_cast<AudioNode*>(node);
+            auto an = dynamic_cast<AudioNode*>(node);
 
             std::string loop = an->loop ? "true" : "false";
 

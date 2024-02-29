@@ -45,7 +45,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &sprite : data["nodes"]["sprites"])
     {
 
-        SpriteNode* sn = dynamic_cast<SpriteNode*>(Node::MakeNode("Sprite"));
+        auto sn = dynamic_cast<SpriteNode*>(Node::MakeNode("Sprite"));
 
         sn->m_ID = sprite["ID"];
         sn->m_name = sprite["name"];
@@ -161,7 +161,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &tilemap : data["nodes"]["tilemaps"])
     {
 
-        TilemapNode* tmn = dynamic_cast<TilemapNode*>(Node::MakeNode("Tilemap"));
+        auto tmn = dynamic_cast<TilemapNode*>(Node::MakeNode("Tilemap"));
 
         tmn->m_ID = tilemap["ID"];
         tmn->m_name = tilemap["name"];
@@ -171,22 +171,25 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         tmn->tile_width = tilemap["tile_width"];
         tmn->tile_height = tilemap["tile_height"];
 
-        for (const auto &layer : tilemap["layers"]) {
-            tmn->layers.push_back({ layer["csv"]["key"], layer["csv"]["path"], layer["csv"]["texture"] });
-            tmn->spr_sheet_width.push_back(layer["frames x"]);
-            tmn->spr_sheet_height.push_back(layer["frames y"]);
-            tmn->depth.push_back(layer["depth"]);
-        }
+        if (tilemap["layers"].size())
+            for (const auto &layer : tilemap["layers"]) {
+                tmn->layers.push_back({ layer["csv"]["key"], layer["csv"]["path"], layer["csv"]["texture"] });
+                tmn->spr_sheet_width.push_back(layer["frames x"]);
+                tmn->spr_sheet_height.push_back(layer["frames y"]);
+                tmn->depth.push_back(layer["depth"]);
+            }
 
         //physics 
         
         if (tilemap["components"]["physics"]["exists"]) 
             tmn->AddComponent("Physics", false);
 
-        for (const auto &body : tilemap["components"]["physics"]["bodies"]) 
-            tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+        if (tilemap["components"]["physics"]["bodies"].size())
+            for (const auto &body : tilemap["components"]["physics"]["bodies"]) 
+                tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
         
-        tmn->ApplyTilemap();
+        if (tilemap["layers"].size())
+            tmn->ApplyTilemap();
     }
 
     //audio
@@ -194,7 +197,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &audio : data["nodes"]["audio"])
     {
 
-        AudioNode* an = dynamic_cast<AudioNode*>(Node::MakeNode("Audio"));
+        auto an = dynamic_cast<AudioNode*>(Node::MakeNode("Audio"));
 
         an->m_ID = audio["ID"];
         an->m_name = audio["name"];
@@ -209,7 +212,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &empty : data["nodes"]["empty"])
     {
 
-        EmptyNode* en = dynamic_cast<EmptyNode*>(Node::MakeNode("Empty"));
+        auto en = dynamic_cast<EmptyNode*>(Node::MakeNode("Empty"));
 
         en->show_debug = empty["debug graphics"]; 
         en->debug_fill = empty["fill"];
@@ -253,7 +256,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &text : data["nodes"]["text"])
     {
 
-        TextNode* tn = dynamic_cast<TextNode*>(Node::MakeNode("Text"));
+        auto tn = dynamic_cast<TextNode*>(Node::MakeNode("Text"));
 
         tn->m_ID = text["ID"];
         tn->m_name = text["name"];
@@ -351,7 +354,7 @@ void EventListener::Serialize(json &data)
         if (node->m_type == "Sprite")
         {
 
-            SpriteNode* sn = dynamic_cast<SpriteNode*>(node);
+            auto sn = dynamic_cast<SpriteNode*>(node);
 
             //frames
 
@@ -450,13 +453,13 @@ void EventListener::Serialize(json &data)
         if (node->m_type == "Tilemap")
         {
 
-            TilemapNode* tmn = dynamic_cast<TilemapNode*>(node);
+            auto tmn = dynamic_cast<TilemapNode*>(node);
 
             //layers
 
             json layers = json::array();
 
-            for (int i = 0; i < tmn->layer; ++i)
+            for (int i = 0; i < tmn->layers.size(); ++i)
                 layers.push_back({
                     { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
                     { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
@@ -504,7 +507,7 @@ void EventListener::Serialize(json &data)
 
         if (node->m_type == "Audio")
         {
-            AudioNode* an = dynamic_cast<AudioNode*>(node);
+            auto an = dynamic_cast<AudioNode*>(node);
 
             audio.push_back({
                 { "ID", node->m_ID },
@@ -520,7 +523,7 @@ void EventListener::Serialize(json &data)
 
         if (node->m_type == "Empty")
         {
-            EmptyNode* en = dynamic_cast<EmptyNode*>(node);
+            auto en = dynamic_cast<EmptyNode*>(node);
 
             empty.push_back({
 
@@ -553,7 +556,7 @@ void EventListener::Serialize(json &data)
 
         if (node->m_type == "Text")
         {
-            TextNode* tn = dynamic_cast<TextNode*>(node);
+            auto tn = dynamic_cast<TextNode*>(node);
 
             text.push_back({
                 { "ID", node->m_ID },

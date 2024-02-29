@@ -44,10 +44,13 @@ class Node {
         template <typename T>
             static inline T* Create (const std::string &id) {
  
-                T* n = new T(id);
-                nodes.push_back(n);
+                auto n = new T(id);
 
-                return n;
+                if (n) 
+                    return n;
+                
+                return nullptr;
+
             }
 
         static inline std::vector<Node*> nodes;
@@ -56,7 +59,14 @@ class Node {
         static void DeleteNode (Node* node);
         
         static int ChangeName(ImGuiInputTextCallbackData* data);
-        static void LoadShader(Node* node, const std::string &name, const std::string &vertPath, const std::string &fragPath);
+        
+        static void LoadShader(
+            Node* node, 
+            const std::string &name, 
+            const std::string &vertPath, 
+            const std::string &fragPath
+        );
+
         static void ClearAll();
 
         void AddComponent(const char* type, bool init = true);

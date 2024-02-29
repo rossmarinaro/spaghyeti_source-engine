@@ -184,7 +184,7 @@ void TilemapNode::Render()
 
             if (ImGui::BeginMenu("Delete"))
             {
-                if (ImGui::MenuItem("Are You Sure?"))
+                if (ImGui::MenuItem("Are You Sure?")) 
                     DeleteNode(this);
 
                 ImGui::EndMenu();
