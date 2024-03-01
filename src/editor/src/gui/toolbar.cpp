@@ -3,6 +3,111 @@
 #include "./gui.h"
 
 
+void GUI::ShowSettings()
+{
+
+    //scene global vars
+
+    if (ImGui::BeginMenu("Globals"))
+    {
+
+        ImGui::Text("Global Variables");
+
+        ImGui::Separator();
+
+        for (int i = 0; i < Editor::globals.size(); i++)
+        {
+
+            ImGui::PushID(i);
+
+            ImGui::Text("var: %d", i);
+
+            if (ImGui::InputText("name", &Editor::globals[i].first))
+                Editor::globals_applied = false;
+
+            ImGui::SameLine();
+
+            static const char* items[] = { "int", "float", "bool", "string", "int[]", "float[]", "string[]" };
+
+            if (ImGui::BeginCombo("type", Editor::globals[i].second.c_str()))
+            {
+                for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+                {
+                    bool is_sel = (Editor::globals[i].second == items[n]);
+
+                    if (ImGui::Selectable(items[n], is_sel)) {
+                        Editor::globals[i].second = items[n];
+                        Editor::globals_applied = false;
+                    }
+
+                    if (is_sel)
+                        ImGui::SetItemDefaultFocus();
+                }
+
+                ImGui::EndCombo();
+            }
+
+            ImGui::Separator();
+
+            ImGui::PopID();
+        }
+
+        if (ImGui::Button("add"))
+            Editor::globals.push_back({"", ""});
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("delete")) 
+        {
+
+            std::string type = Editor::globals.back().second,
+                        var = Editor::globals.back().first;
+
+            Editor::globals.pop_back();
+
+            Editor::globals_applied = false;
+
+            Editor::Log("global variable: " + type + " " + var + " removed.");
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("apply"))
+        {
+            for (const auto &var : Editor::globals) {
+
+                if ((!var.first.length() || !var.second.length()) || std::adjacent_find(Editor::globals.begin(), Editor::globals.end()) != Editor::globals.end())
+                    break;
+
+                Editor::Log("global variable: " + var.second + " " + var.first + " added.");
+
+                Editor::globals_applied = true;
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (Editor::globals_applied)
+            ImGui::Text("variables applied.");
+
+        ImGui::EndMenu();
+    }
+
+    //world physics
+
+    if (ImGui::BeginMenu("Physics"))
+    {
+        ImGui::InputFloat("gravity x", &Editor::gravityX);
+        ImGui::InputFloat("gravity y", &Editor::gravityY);
+        ImGui::Checkbox("continuous", &Editor::gravity_continuous);
+        ImGui::Checkbox("sleeping", &Editor::gravity_sleeping);
+
+        ImGui::EndMenu();
+    }
+}
+
+//----------------------------------------
+
 void GUI::ShowMenu()
 {
 

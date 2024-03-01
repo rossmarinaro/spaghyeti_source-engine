@@ -139,6 +139,10 @@ void Editor::Reset()
 	worldHeight = 0;
     selectedAsset = {};  
     camera->Reset();
+    globals_applied = false;
+    gravity_continuous = true;
+    gravity_sleeping = true;
+    globals.clear();
  
     AssetManager::images.clear();
     AssetManager::loadedAssets.clear();

@@ -248,7 +248,7 @@ class EmptyNode : public Node {
         bool 
             show_debug, 
             debug_fill;
-
+ 
         float 
             rectWidth, 
             rectHeight,

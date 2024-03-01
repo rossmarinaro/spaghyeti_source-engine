@@ -172,10 +172,8 @@ void Node::RemoveComponent(std::shared_ptr<Component> component)
     if (it != components.end())
         components.erase(it);
 
-    if (component) {
-        component.reset();
-        component = nullptr;
-    }
+    if (!components.size()) 
+        (*it).reset();
 }
 
 

@@ -39,6 +39,13 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
     Editor::gravityX = data["settings"]["physics"]["gravity"]["x"];
     Editor::gravityY = data["settings"]["physics"]["gravity"]["y"];
+    Editor::gravity_continuous = data["settings"]["physics"]["continuous"];
+    Editor::gravity_sleeping = data["settings"]["physics"]["sleeping"];
+
+    //global variables
+    
+    if (data["globals"].size())
+        Editor::globals.push_back({ data["globals"]["key"], data["globals"]["type"] });
 
     //sprites
 
@@ -93,7 +100,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
             sn->AddComponent("Animator");
 
         for (const auto &anim : sprite["components"]["animator"]["animations"]) 
-        {
+        { 
 
             sn->animations.insert({ anim["key"], { anim["key"], anim["start"], anim["end"] } });
 
@@ -117,16 +124,17 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
             sn->restitution = sprite["components"]["physics"]["restitution"];
             sn->density = sprite["components"]["physics"]["density"]; 
 
-            for (const auto &body : sprite["components"]["physics"]["bodies"]) 
-                sn->CreateBody(
-                    static_cast<std::string>(body["type"]).c_str(), 
-                    body["bodyX"], 
-                    body["bodyY"], 
-                    body["body_width"], 
-                    body["body_height"],
-                    body["sensor"], 
-                    body["pointer"]
-                );
+            if (sprite["components"]["physics"]["bodies"].size())
+                for (const auto &body : sprite["components"]["physics"]["bodies"]) 
+                    sn->CreateBody(
+                        static_cast<std::string>(body["type"]).c_str(), 
+                        body["bodyX"], 
+                        body["bodyY"], 
+                        body["body_width"], 
+                        body["body_height"],
+                        body["sensor"], 
+                        body["pointer"]
+                    );
         }
 
         //script
@@ -323,7 +331,19 @@ void EventListener::Serialize(json &data)
 
     data["settings"]["physics"]["gravity"]["x"] = Editor::gravityX;
     data["settings"]["physics"]["gravity"]["y"] = Editor::gravityY;
-  
+    data["settings"]["physics"]["continuous"] = Editor::gravity_continuous;
+    data["settings"]["physics"]["sleeping"] = Editor::gravity_sleeping;
+
+    json globals = json::array();
+
+    if (Editor::globals_applied)
+        for (const auto &global : Editor::globals)
+            globals.push_back({
+                { "key", global.first },
+                { "type", global.second }
+            });
+
+    data["globals"] = globals;
 
     for (const auto &node : Node::nodes)
     {

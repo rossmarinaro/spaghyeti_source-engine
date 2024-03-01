@@ -70,10 +70,10 @@ void SpriteNode::CreateBody(
     b2Body* body;
 
     if (strcmp("static", type) == 0) 
-        body  = Game::physics->CreateStaticBody(x, y, width, height); 
+        body = Game::physics->CreateStaticBody(x, y, width, height); 
 
     if (strcmp("dynamic", type) == 0) 
-        body  = Game::physics->CreateDynamicBody(glm::vec2(x, y), glm::vec2(width, height)); 
+        body = Game::physics->CreateDynamicBody(glm::vec2(x, y), glm::vec2(width, height)); 
 
     this->bodies.push_back({ body, type });
     
@@ -229,7 +229,7 @@ void SpriteNode::Render()
                         ImGui::InputInt("start", &this->animBuf2[i]); 
                         ImGui::InputInt("end", &this->animBuf3[i]);
 
-                        if (this->spriteHandle->IsSpritesheet())
+                        if (this->spriteHandle && this->spriteHandle->IsSpritesheet())
                         {
 
                             if (ImGui::Button("play") && this->animBuf1[i].s.length()) 
@@ -400,7 +400,7 @@ void SpriteNode::Render()
                     //texture
         
                     if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->currentTexture, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset.first) == "image")
-                        ApplyTexture(Editor::selectedAsset);
+                        this->ApplyTexture(Editor::selectedAsset);
 
                     else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && Editor::selectedAsset.first.length() && System::Utils::GetFileType(Editor::selectedAsset.first) != "image")
                         ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
@@ -549,12 +549,13 @@ void SpriteNode::Render()
 
             //entity physics body transform
             
-            for (int i = 0; i < this->bodies.size(); i++)   
-                this->bodies[i].first->SetTransform(
-                    b2Vec2(
-                        this->spriteHandle->m_position.x + this->bodyX[i], 
-                        this->spriteHandle->m_position.y + this->bodyY[i]
-                    ), 0);
+            if (this->bodies.size())
+                for (int i = 0; i < this->bodies.size(); i++)   
+                    this->bodies[i].first->SetTransform(
+                        b2Vec2(
+                            this->spriteHandle->m_position.x + this->bodyX[i], 
+                            this->spriteHandle->m_position.y + this->bodyY[i]
+                        ), 0);
 
         }
 

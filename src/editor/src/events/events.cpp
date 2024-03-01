@@ -453,7 +453,7 @@ void EventListener::BuildAndRun()
 
     //temp files: asset and command lists
 
-    std::ostringstream asset_queue, command_queue, update_queue;
+    std::ostringstream asset_queue, global_queue, command_queue, update_queue;
 
     //set game source input file stream
 
@@ -471,6 +471,39 @@ void EventListener::BuildAndRun()
     game_src << "#endif\n";
     game_src << "\n#include \"" + root_path + "/include/app.h\"\n\n";
 
+    //set global vars
+
+    if (Editor::globals_applied)
+        for (const auto &global : Editor::globals)
+        {
+            if (std::adjacent_find(Editor::globals.begin(), Editor::globals.end()) != Editor::globals.end()) {
+                Editor::Log("Error: duplicate global variable found.");
+                break;
+            }
+
+            if (!global.first.length() || !global.second.length()) {
+                Editor::Log("Error: incomplete global variable.");
+                break;
+            }
+
+            std::string type = global.second, 
+                        var = "GLOBALVAR_" + global.first;
+
+            if (global.second == "string")
+                type = "std::string";
+
+            if (global.second == "int[]")
+                type = "std::vector<int>";
+
+            if (global.second == "float[]")
+                type = "std::vector<float>";
+
+            if (global.second == "string[]")
+                type = "std::vector<std::string>";
+
+            global_queue << type + " " + var + ";\n";
+        }
+
     glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor();
 
     command_queue << "   this->camera = camera;\n   this->physics = physics;\n";
@@ -480,6 +513,11 @@ void EventListener::BuildAndRun()
     command_queue << "   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n";
     command_queue << "   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n";
  
+    std::string phys_isCont = Editor::gravity_continuous ? "true" : "false",
+                phys_isSleeping = Editor::gravity_sleeping ? "true" : "false";
+
+    command_queue << "   physics->continuous = " + phys_isCont + ";\n";
+    command_queue << "   physics->sleeping = " + phys_isSleeping + ";\n";
     command_queue << "   physics->SetGravity(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + ");\n";
 
     for (const auto &asset : AssetManager::loadedAssets)
@@ -710,6 +748,7 @@ void EventListener::BuildAndRun()
 
     //convert data string stream to string
 
+    std::string globalData = global_queue.str(); 
     std::string commandData = command_queue.str(); 
     std::string preloadData = asset_queue.str();
     std::string updateData = update_queue.str();
@@ -721,6 +760,7 @@ void EventListener::BuildAndRun()
 
     game_src << "class " + name_upper + " : public Game {\n\n";
     game_src << "    public:\n";
+    game_src << "        " + globalData;
     game_src << "        " + name_upper + "() { name = \"" + name_upper + "\"; }\n";
     game_src << "        void Preload() override;\n";
     game_src << "        void Run(Inputs* inputs, Camera* camera, Physics* physics) override;\n";

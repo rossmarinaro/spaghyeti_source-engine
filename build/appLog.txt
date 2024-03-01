@@ -1,22 +1,13 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Thu Feb 29 14:55:58 2024
-IMGui Version:  @ Thu Feb 29 14:55:58 2024
-GUI launched. @ Thu Feb 29 14:55:59 2024
-nodes deleted. @ Thu Feb 29 14:56:03 2024
-Workspace reset. @ Thu Feb 29 14:56:03 2024
-sprite node Untitled created. @ Thu Feb 29 14:56:03 2024
-Physics component added. @ Thu Feb 29 14:56:03 2024
-Script component added. @ Thu Feb 29 14:56:03 2024
-Shader component added. @ Thu Feb 29 14:56:03 2024
-Tilemap node Untitled_1 created. @ Thu Feb 29 14:56:03 2024
-Empty node Untitled_2 created. @ Thu Feb 29 14:56:03 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Mar 01 15:38:54 2024
+IMGui Version:  @ Fri Mar 01 15:38:55 2024
+GUI launched. @ Fri Mar 01 15:38:55 2024
+nodes deleted. @ Fri Mar 01 15:38:59 2024
+Workspace reset. @ Fri Mar 01 15:38:59 2024
 Project game2 opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Thu Feb 29 14:56:03 2024
-Empty node Untitled_2 deleted. @ Thu Feb 29 14:56:07 2024
-GUI exited @ Thu Feb 29 14:56:09 2024
-Physics component removed. @ Thu Feb 29 14:56:09 2024
-Shader component removed. @ Thu Feb 29 14:56:09 2024
-Sprite node Untitled deleted. @ Thu Feb 29 14:56:09 2024
-Script component removed. @ Thu Feb 29 14:56:09 2024
-Tilemap node Untitled_1 deleted. @ Thu Feb 29 14:56:09 2024
-nodes deleted. @ Thu Feb 29 14:56:09 2024
-Editor closed. @ Thu Feb 29 14:56:09 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Mar 01 15:38:59 2024
+global variable: int tt added. @ Fri Mar 01 15:39:16 2024
+global variable: int ttt added. @ Fri Mar 01 15:39:16 2024
+global variable: ttt removed. @ Fri Mar 01 15:39:21 2024
+GUI exited @ Fri Mar 01 15:39:32 2024
+nodes deleted. @ Fri Mar 01 15:39:32 2024
+Editor closed. @ Fri Mar 01 15:39:32 2024

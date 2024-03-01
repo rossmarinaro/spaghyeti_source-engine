@@ -279,7 +279,7 @@ void GUI::RenderDockSpace()
                 //split the dockspace into 2 nodes -- DockBuilderSplitNode takes in the following args in the following order
                 //window ID to split, direction, fraction (between 0 and 1), the final two setting let's us choose which id we want (which ever one we DON'T set as NULL, will be returned by the function)
                                                                   
-                auto dock_id_up_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Up, 0.1f, nullptr, &dockspace_id_ws);
+                auto dock_id_up_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Up, 0.11f, nullptr, &dockspace_id_ws);
                 auto dock_id_down_ws = ImGui::DockBuilderSplitNode(dockspace_id_ws, ImGuiDir_Down, 1.0f, nullptr, &dockspace_id_ws);
 
                 //we now dock our windows into the docking node we made above
@@ -291,15 +291,7 @@ void GUI::RenderDockSpace()
 
         
         ImGui::Begin("Settings");
-
-            if (ImGui::BeginMenu("Physics"))
-            {
-                ImGui::InputFloat("gravity x", &Editor::gravityX);
-                ImGui::InputFloat("gravity y", &Editor::gravityY);
-
-                ImGui::EndMenu();
-            }
-            
+            ShowSettings();
         ImGui::End();
 
         ImGui::Begin("Scene Heirarchy");

@@ -44,6 +44,7 @@ class GUI {
         static void RenderLogs();
         static void RenderAssets();
         static void RenderCamera();
+        static void ShowSettings();
         static void ShowMenu();
         static void ShowOptionsInit();
         static void ShowOptionsQuit();

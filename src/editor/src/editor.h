@@ -44,11 +44,15 @@ class Editor
 		static inline float gravityX = 0.0f,
 						    gravityY = 500.0f;
 
-		static inline bool useEditor = false;
+		static inline bool globals_applied = false,
+						   gravity_continuous = true,
+						   gravity_sleeping = true;
+
 		static inline EventListener events;
 		
 		static inline Camera* camera;
 		
+		static inline std::vector<std::pair<std::string, std::string>> globals;
         static inline std::pair<std::string, GLuint> selectedAsset;
 		static inline std::string platform = "Windows";
         static inline std::string projectPath = "";
