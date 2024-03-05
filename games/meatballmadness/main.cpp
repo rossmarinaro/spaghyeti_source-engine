@@ -1,5 +1,5 @@
 
-#include "../../src/core/src/app/app.h"
+#include "../../build/include/app.h"
 #include "./main.h"
 #include "./player.h"
 
@@ -51,20 +51,16 @@ bool canRestart = false;
 static void ThrowMeatball()
 {
 
-    auto meatball = Game::CreateSprite("meatball", 960.0f, 530.0f);
-
-    meatball->SetScale(2.0f);
+    auto meatball = Game::CreateSprite("meatball", 960.0f, 530.0f, 0, 2.0f);
  
     meatball->SetData("platter position", System::Utils::intBetween(0, 50));
 
-    meatball->m_body.self = Game::physics->CreateDynamicBody(glm::vec2(meatball->m_position.x, meatball->m_position.y), /* glm::vec2(1.0f, 1.0f), System::Utils::floatBetween(0.0f, 1.0f), */ false, 3, 1);
+    meatball->bodies.push_back({ System::Application::game->physics->CreateDynamicBody(meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, 1 ), { 0.0f, 5.0f } });
 
     float randX = System::Utils::floatBetween(-10.0f, -1000.0f);
 
-    meatball->m_body.self->SetLinearVelocity(b2Vec2(randX, System::Utils::floatBetween(10.0f, -10.0f)));  
-    meatball->m_body.self->SetFixedRotation(true);
-
-    meatball->m_body.offset = glm::vec2(-10.0f, -5.0f); 
+    meatball->bodies[0].first->SetLinearVelocity(b2Vec2(randX, System::Utils::floatBetween(10.0f, -10.0f)));  
+    meatball->bodies[0].first->SetFixedRotation(true);
 
     MeatballMadness::meatballs.push_back(meatball); 
 
@@ -116,14 +112,13 @@ static void MoveChef()
 
 
 
-void MeatballMadness::Update(Inputs* inputs, Camera* camera)
+void MeatballMadness::Update(Inputs* inputs, Physics* physics)
 {   
-
-    player->Update();
 
     //platter hitbox
 
-    playerHitBox->SetTransform(b2Vec2(player->m_flipX ? player->m_position.x : player->m_position.x + 60, player->m_position.y), 0); 
+    if (playerHitBox)
+        playerHitBox->SetTransform(b2Vec2(player->m_flipX ? player->m_position.x : player->m_position.x + 60, player->m_position.y), 0); 
 
     //game over
 
@@ -146,14 +141,14 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera)
     else if (!started)
     {
 
-        if (inputs->isDown)
+        if (inputs->m_SPACE || inputs->m_left_click)
         {
 
             #ifdef __EMSCRIPTEN__
                 if (!System::Audio::musicPlaying)
                     System::Audio::play("music", true);
             #endif
-
+            player->SetData("can move", true);
             started = true;
         }
 
@@ -199,13 +194,13 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera)
 
                     meatball->SetRotation(0);
 
-                    if(meatball->m_body.self) {
+                    if(meatball->bodies[0].first) {
 
-                        meatball->m_body.self->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+                        meatball->bodies[0].first->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
 
-                        meatball->m_body.self->SetEnabled(false); 
+                        meatball->bodies[0].first->SetEnabled(false); 
                         
-                        physics->bodiesToRemove.insert(meatball);  
+                        physics->DestroyBody(meatball->bodies[0].first);  
                     }
 
                     if (meatball->m_active) {
@@ -219,17 +214,17 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera)
             //overlap hitbox
 
                 else if (
-                    meatball->m_body.self && 
-                    b2TestOverlap(meatball->m_body.self->GetFixtureList()->GetAABB(0), playerHitBox->GetFixtureList()->GetAABB(0))
+                    meatball->bodies[0].first && 
+                    b2TestOverlap(meatball->bodies[0].first->GetFixtureList()->GetAABB(0), playerHitBox->GetFixtureList()->GetAABB(0))
                 )
                 {
 
                     meatball->SetRotation(0);
                     meatball->SetFrame(1);
 
-                    if (meatball->m_body.self) {     
-                        meatball->m_body.self->SetEnabled(false); 
-                        physics->bodiesToRemove.insert(meatball); 
+                    if (meatball->bodies[0].first) {     
+                        meatball->bodies[0].first->SetEnabled(false); 
+                        physics->DestroyBody(meatball->bodies[0].first);
                     }
 
                     meatball->m_active = false;
@@ -321,7 +316,7 @@ void MeatballMadness::Preload()
 //-----------------------------
 
 
-void MeatballMadness::Run(Camera* camera) 
+void MeatballMadness::Run(Inputs* inputs, Camera* camera, Physics* physics) 
 {
 
     #ifndef __EMSCRIPTEN__
@@ -337,6 +332,32 @@ void MeatballMadness::Run(Camera* camera)
     #endif
 
     this->Reset();
+
+    //environment bounds
+
+    physics->CreateStaticBody(0.0f, 0.0f, 1500.0f, 0.0f);
+    physics->CreateStaticBody(0.0f, 850.0f, 1500.0f, 10.0f);
+    physics->CreateStaticBody(250.0f, 850.0f, 10.0f, 850.0f);
+    physics->CreateStaticBody(1020.0f, 0.0f, 10.0f, 850.0f);
+
+    auto background = CreateSprite("background", 450.0f, 280.0f);
+    background->SetScale(2.5f, 2.42f);
+
+    auto patron = CreateSprite("patron", 165.0f, 640.0f);               
+    patron->SetScale(3.0f);
+    patron->SetAnimation("idle");
+
+    chef = CreateSprite("chef", 1250.0f, 640.0f);
+    chef->SetScale(2.0f);
+    chef->SetFrame(2);
+
+    player = CreateSprite("waiter", 450.0f, 760.0f, 0, 2.5);
+
+    player->bodies.push_back({ physics->CreateDynamicBody(450.0f, 760.0f, 10.0f, 35.0f, false, 3, 1.5), { 20.0f, 45.0f } });
+    player->bodies[0].first->SetFixedRotation(true);
+    player->SetData("can move", false);
+    CreateBehavior<Waiter>(player, this);
+    playerHitBox = physics->CreateDynamicBody(0.0f, 0.0f, 40.0f, 10.0f, true, 1);
 
     //UI
 
@@ -376,29 +397,6 @@ void MeatballMadness::Run(Camera* camera)
 
     }
 
-    //environment bounds
-
-    physics->CreateStaticBody(0.0f, 0.0f, 1500.0f, 0.0f);
-    physics->CreateStaticBody(0.0f, 850.0f, 1500.0f, 10.0f);
-    physics->CreateStaticBody(250.0f, 850.0f, 10.0f, 850.0f);
-    physics->CreateStaticBody(1020.0f, 0.0f, 10.0f, 850.0f);
-
-    auto background = CreateSprite("background", 450.0f, 280.0f);
-    background->SetScale(2.5f, 2.42f);
-
-    auto patron = CreateSprite("patron", 165.0f, 640.0f);               
-    patron->SetScale(3.0f);
-    patron->SetAnimation("idle");
-
-    chef = CreateSprite("chef", 1250.0f, 640.0f);
-    chef->SetScale(2.0f);
-    chef->SetFrame(2);
-
-    player = CreatePlayer<Waiter>("waiter", 450.0f, 760.0f, 2.5, true, glm::vec2(10.0f, 30.0f), glm::vec2(-20.0f, -45.0f), 0.1f);
-    player->m_body.self->SetFixedRotation(true);
-
-    playerHitBox = Game::physics->CreateDynamicBody(glm::vec2(0.0f, 0.0f), glm::vec2(40.0f, 10.0f), true, 1);
-
     #ifndef __EMSCRIPTEN__
         if (!System::Audio::musicPlaying)
            System::Audio::play("music", true);
@@ -433,7 +431,7 @@ void MeatballMadness::Reset()
 {
 
     for (auto &meatball : meatballs)
-        DestroySprite(meatball);
+        DestroyEntity(meatball);
 
     meatballs.clear(); 
     

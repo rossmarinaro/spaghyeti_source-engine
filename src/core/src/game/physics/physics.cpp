@@ -50,8 +50,10 @@ b2Body* Physics::CreateStaticBody(float x, float y, float width, float height)
 
 
 b2Body* Physics::CreateDynamicBody(
-    glm::vec2 position, 
-    glm::vec2 dimensions,
+    float x,
+    float y,
+    float width,
+    float height,
     bool isSensor,
     int type, 
     float density, 
@@ -64,16 +66,16 @@ b2Body* Physics::CreateDynamicBody(
 
     body.def.type = b2_dynamicBody;
   
-    body.def.position.Set(position.x, position.y);
+    body.def.position.Set(x, y);
  
     body.def.userData.pointer = type;
  
     body.self = System::Application::game->physics->world.CreateBody(&body.def);  
     
-    body.box.SetAsBox(dimensions.x, dimensions.y);          
+    body.box.SetAsBox(width, height);          
 
-    body.m_width = dimensions.x;
-    body.m_height = dimensions.y;
+    body.m_width = width;
+    body.m_height = height;
 
     body.fixtureDef.shape = &body.box; 
     body.fixtureDef.density = density;  
@@ -119,7 +121,7 @@ void Physics::Update()
 
     System::Application::game->physics->bodiesToRemove.clear();
 
-    if (System::Application::game->physics != nullptr)
-        world.SetGravity(b2Vec2(gravityX, gravityY));
+    //if (System::Application::game->physics.world != nullptr)
+     //   world.SetGravity(b2Vec2(gravityX, gravityY));
 }
 

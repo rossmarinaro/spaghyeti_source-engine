@@ -1,13 +1,5 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Mar 01 15:38:54 2024
-IMGui Version:  @ Fri Mar 01 15:38:55 2024
-GUI launched. @ Fri Mar 01 15:38:55 2024
-nodes deleted. @ Fri Mar 01 15:38:59 2024
-Workspace reset. @ Fri Mar 01 15:38:59 2024
-Project game2 opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Mar 01 15:38:59 2024
-global variable: int tt added. @ Fri Mar 01 15:39:16 2024
-global variable: int ttt added. @ Fri Mar 01 15:39:16 2024
-global variable: ttt removed. @ Fri Mar 01 15:39:21 2024
-GUI exited @ Fri Mar 01 15:39:32 2024
-nodes deleted. @ Fri Mar 01 15:39:32 2024
-Editor closed. @ Fri Mar 01 15:39:32 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Mar 04 21:07:16 2024
+IMGui Version:  @ Mon Mar 04 21:07:16 2024
+GUI launched. @ Mon Mar 04 21:07:16 2024
+GUI exited @ Mon Mar 04 21:07:19 2024
+Editor closed. @ Mon Mar 04 21:07:19 2024

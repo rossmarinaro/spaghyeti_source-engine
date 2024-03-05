@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+
 #include "../../components/component.h"
 #include "../gui.h"
 
@@ -36,32 +37,43 @@ class Node {
         Node(const std::string &id, std::string type, std::string name = "Untitled");
 
         virtual ~Node() = default;
-        virtual void Render() = 0;
+        virtual void Render(std::shared_ptr<Node> node) = 0;
+        virtual void Reset(const char* component = "") = 0;
 
         static inline int count = 0, 
                           MAX_NODES = 100; 
 
-        template <typename T>
-            static inline T* Create (const std::string &id) {
- 
-                auto n = new T(id);
+        static inline std::vector<std::shared_ptr<Node>> nodes;
 
-                if (n) 
-                    return n;
+        static const char* Assign();
+
+        static inline std::shared_ptr<Node> GetNode(const std::string &id) {
+            return *std::find_if(nodes.begin(), nodes.end(), [&](std::shared_ptr<Node> n) { 
+                return n->m_ID == id; 
+            });
+        }
+
+        template <typename T>
+            static inline std::shared_ptr<T> MakeNode() {
+
+                auto uuid = Assign();
+            
+                if (uuid) {
+                 
+                    auto node = std::make_shared<T>(uuid);
+                    nodes.push_back(node);
+                    return node;
+                }
                 
                 return nullptr;
 
             }
 
-        static inline std::vector<Node*> nodes;
-
-        static Node* MakeNode(const char* type);
-        static void DeleteNode (Node* node);
-        
+        static void DeleteNode (std::shared_ptr<Node> node);
         static int ChangeName(ImGuiInputTextCallbackData* data);
         
         static void LoadShader(
-            Node* node, 
+            std::shared_ptr<Node> node, 
             const std::string &name, 
             const std::string &vertPath, 
             const std::string &fragPath
@@ -72,7 +84,7 @@ class Node {
         void AddComponent(const char* type, bool init = true);
         void RemoveComponent(std::shared_ptr<Component> component);
 
-        const std::shared_ptr<Component> GetComponent(const char* type);
+        const std::shared_ptr<Component> GetComponent(const std::string &type, const std::string &id);
         const bool HasComponent(const char* type);
 
         struct StringContainer { std::string s = ""; };
@@ -124,7 +136,8 @@ class SpriteNode : public Node {
         SpriteNode(const std::string &id);
         ~SpriteNode();      
 
-        void Render() override;
+        void Render(std::shared_ptr<Node> node) override;
+        void Reset(const char* component_type = "") override;
 
         void ApplyTexture(const std::pair<std::string, GLuint> &asset);
         void ApplyAnimation(const std::string &key, int start, int end);
@@ -176,7 +189,9 @@ class TilemapNode : public Node {
         TilemapNode(const std::string &id);
         ~TilemapNode();
 
-        void Render() override;
+        void Render(std::shared_ptr<Node> node) override;
+        void Reset(const char* component_type = "") override;
+
         void ApplyTilemap();
         void CreateBody(
             float x = 0.0f, 
@@ -210,7 +225,8 @@ class TextNode : public Node {
         TextNode(const std::string &id);
         ~TextNode();     
 
-        void Render() override;
+        void Render(std::shared_ptr<Node> node) override;
+        void Reset(const char* component_type = "") override;
 
 };
 
@@ -229,7 +245,8 @@ class AudioNode : public Node {
         AudioNode(const std::string &id);
         ~AudioNode();
 
-        void Render() override;
+        void Render(std::shared_ptr<Node> node) override;
+        void Reset(const char* component_type = "") override;
 
     private:
 
@@ -259,8 +276,10 @@ class EmptyNode : public Node {
 
         EmptyNode(const std::string &id);
         ~EmptyNode();      
+
         void CreateShape(const std::string &shape);
 
-        void Render() override;
+        void Render(std::shared_ptr<Node> node) override;
+        void Reset(const char* component_type = "") override;
 
 };

@@ -12,10 +12,12 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
     for (const auto &entity : System::Application::game->entities)
     {
-        
-        auto sprite = std::dynamic_pointer_cast<Sprite>(entity);
+        if (strcmp(entity->type, "sprite") != 0) 
+            return;
 
-       if (sprite->bodies.size()) 
+        auto sprite = std::static_pointer_cast<Sprite>(entity);
+
+        if (sprite->bodies.size()) 
             for (auto &body : sprite->bodies)
             {
 
@@ -39,7 +41,10 @@ void CollisionManager::EndContact(b2Contact* contact)
     for (const auto &entity : System::Application::game->entities)
     {
 
-       auto sprite = std::dynamic_pointer_cast<Sprite>(entity);
+       if (strcmp(entity->type, "sprite") != 0) 
+            return;
+
+        auto sprite = std::static_pointer_cast<Sprite>(entity);
         
        if (sprite->bodies.size()) 
             for (auto &body : sprite->bodies)

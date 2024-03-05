@@ -3,7 +3,7 @@
 #include <mutex>
 #include <algorithm>
 
-#include "../../src/core/src/game/game.h"
+#include "../../build/include/game.h"
 
 
 //game instance
@@ -20,7 +20,7 @@ class MeatballMadness : public Game {
         static inline std::shared_ptr<Text> creditsText;
         static inline std::shared_ptr<Text> gameOverText;
         static inline std::shared_ptr<Sprite> chef; 
-        static inline std::shared_ptr<Player> player;
+        static inline std::shared_ptr<Sprite> player;
 
         static inline b2Body* playerHitBox;
         static inline std::vector<std::shared_ptr<Sprite>> meatballs;
@@ -31,8 +31,8 @@ class MeatballMadness : public Game {
         void Reset();
 
         void Preload() override;
-		void Run(Camera* camera) override;
-		void Update(Inputs* inputs, Camera* camera) override;
+		void Run(Inputs* inputs, Camera* camera, Physics* physics) override;
+		void Update(Inputs* inputs, Physics* physics) override;
 
     private:
 

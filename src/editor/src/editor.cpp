@@ -27,9 +27,6 @@ void Editor::Update()
         GUI::grid->Render();
         
     glfwPollEvents(); 
-    
-    if (Application::inputs != nullptr)
-       Application::inputs->processInput(Window::s_instance);
 
     Time::Update(glfwGetTime());
     
@@ -79,6 +76,8 @@ Editor::Editor()
     while (!glfwWindowShouldClose(Window::s_instance))
        Update();
 
+    Node::ClearAll();
+
     GUI::Close();
 
 }
@@ -89,8 +88,6 @@ Editor::Editor()
 
 Editor::~Editor()
 {
-
-    Node::ClearAll();
 
     remove((projectPath + "\\src\\game.cpp").c_str());
     remove((projectPath + "\\spaghyeti_parse.json").c_str());

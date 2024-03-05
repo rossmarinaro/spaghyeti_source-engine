@@ -1,44 +1,47 @@
-#include "../../src/core/src/app/app.h"
+#include "../../build/include/app.h"
 #include "./player.h"
 
-void Waiter::Update()
+void Waiter::Update(Inputs* inputs, Camera* camera)
 { 
+
+    if (!this->sprite->bodies.size() || this->sprite->GetData<bool>("can move") == false)
+        return;
 
     if (System::Application::inputs->m_down && this->canJump)
     {
         System::Application::game->time->delayedCall(500, [&]() { this->canJump = false; });
-        this->Animate("run", true, 7);
+        this->sprite->Animate("run", true, 7);
 
         this->linearVelocity.y = -50000; 
     }
 
-    else if (!this->canJump && this->m_body.self->GetPosition().y <= 710)
+    else if (!this->canJump && this->sprite->bodies[0].first->GetPosition().y <= 710)
         this->linearVelocity.y = 10000;
 
-    if (this->m_body.self->GetPosition().y >= 740) 
+    if (this->sprite->bodies[0].first->GetPosition().y >= 740) 
         this->canJump = true; 
  
     if (System::Application::inputs->m_right)   
     {
         this->linearVelocity.x = 10000.0f;
 
-        this->SetFlipX(false);
-        this->Animate("run", true, 7);
+        this->sprite->SetFlipX(false);
+        this->sprite->Animate("run", true, 7);
  
-        if (this->m_body.self->GetLinearVelocity().x >= 30000)
-            this->m_body.self->SetLinearVelocity(b2Vec2(30000, this->linearVelocity.y));
-    }
+        if (this->sprite->bodies[0].first->GetLinearVelocity().x >= 30000)
+            this->sprite->bodies[0].first->SetLinearVelocity(b2Vec2(30000, this->linearVelocity.y));
+    } 
     
     else if (System::Application::inputs->m_left)
     {
 
         this->linearVelocity.x = -10000.0f;
         
-        this->SetFlipX(true);
-        this->Animate("run", true, 7);
+        this->sprite->SetFlipX(true);
+        this->sprite->Animate("run", true, 7);
 
-        if (this->m_body.self->GetLinearVelocity().x <= -30000)
-            this->m_body.self->SetLinearVelocity(b2Vec2(-30000, this->linearVelocity.y));
+        if (this->sprite->bodies[0].first->GetLinearVelocity().x <= -30000)
+            this->sprite->bodies[0].first->SetLinearVelocity(b2Vec2(-30000, this->linearVelocity.y));
     }
 
     else
@@ -46,17 +49,17 @@ void Waiter::Update()
 
         this->linearVelocity.x = 0; 
         
-        if (this->canJump && this->m_body.self->GetLinearVelocity().y != 0) 
-           this->SetFrame(0);
+        if (this->canJump && this->sprite->bodies[0].first->GetLinearVelocity().y != 0) 
+           this->sprite->SetFrame(0);
         
         else
-            this->SetFrame(1);
+            this->sprite->SetFrame(1);
 
-        this->m_body.self->SetLinearVelocity(b2Vec2(0, this->linearVelocity.y));
+        this->sprite->bodies[0].first->SetLinearVelocity(b2Vec2(0, this->linearVelocity.y));
         
     }
 
-    this->m_body.self->ApplyLinearImpulse(b2Vec2(this->linearVelocity.x, this->linearVelocity.y), this->m_body.self->GetWorldCenter(), true);
+    this->sprite->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->linearVelocity.x, this->linearVelocity.y), this->sprite->bodies[0].first->GetWorldCenter(), true);
 
 }
 

@@ -45,14 +45,15 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     //global variables
     
     if (data["globals"].size())
-        Editor::globals.push_back({ data["globals"]["key"], data["globals"]["type"] });
+        for (const auto &global : data["globals"])
+            Editor::globals.push_back({ global["key"], global["type"] });
 
     //sprites
 
     for (const auto &sprite : data["nodes"]["sprites"])
     {
 
-        auto sn = dynamic_cast<SpriteNode*>(Node::MakeNode("Sprite"));
+        auto sn = Node::MakeNode<SpriteNode>(); 
 
         sn->m_ID = sprite["ID"];
         sn->m_name = sprite["name"];
@@ -169,7 +170,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &tilemap : data["nodes"]["tilemaps"])
     {
 
-        auto tmn = dynamic_cast<TilemapNode*>(Node::MakeNode("Tilemap"));
+        auto tmn = Node::MakeNode<TilemapNode>(); 
 
         tmn->m_ID = tilemap["ID"];
         tmn->m_name = tilemap["name"];
@@ -205,7 +206,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &audio : data["nodes"]["audio"])
     {
 
-        auto an = dynamic_cast<AudioNode*>(Node::MakeNode("Audio"));
+        auto an = Node::MakeNode<AudioNode>(); 
 
         an->m_ID = audio["ID"];
         an->m_name = audio["name"];
@@ -220,7 +221,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &empty : data["nodes"]["empty"])
     {
 
-        auto en = dynamic_cast<EmptyNode*>(Node::MakeNode("Empty"));
+        auto en = Node::MakeNode<EmptyNode>(); 
 
         en->show_debug = empty["debug graphics"]; 
         en->debug_fill = empty["fill"];
@@ -239,7 +240,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
             if (empty["components"]["script"]["scripts"].size())
                 for (const auto &scripts : empty["components"]["script"]["scripts"])
-                    en->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+                    en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
         }
 
         //shader
@@ -264,7 +265,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     for (const auto &text : data["nodes"]["text"])
     {
 
-        auto tn = dynamic_cast<TextNode*>(Node::MakeNode("Text"));
+        auto tn = Node::MakeNode<TextNode>(); 
 
         tn->m_ID = text["ID"];
         tn->m_name = text["name"];
@@ -374,7 +375,7 @@ void EventListener::Serialize(json &data)
         if (node->m_type == "Sprite")
         {
 
-            auto sn = dynamic_cast<SpriteNode*>(node);
+            auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
             //frames
 
@@ -473,7 +474,7 @@ void EventListener::Serialize(json &data)
         if (node->m_type == "Tilemap")
         {
 
-            auto tmn = dynamic_cast<TilemapNode*>(node);
+            auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
 
             //layers
 
@@ -527,7 +528,7 @@ void EventListener::Serialize(json &data)
 
         if (node->m_type == "Audio")
         {
-            auto an = dynamic_cast<AudioNode*>(node);
+            auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
             audio.push_back({
                 { "ID", node->m_ID },
@@ -543,7 +544,7 @@ void EventListener::Serialize(json &data)
 
         if (node->m_type == "Empty")
         {
-            auto en = dynamic_cast<EmptyNode*>(node);
+            auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
             empty.push_back({
 
@@ -576,7 +577,7 @@ void EventListener::Serialize(json &data)
 
         if (node->m_type == "Text")
         {
-            auto tn = dynamic_cast<TextNode*>(node);
+            auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
             text.push_back({
                 { "ID", node->m_ID },

@@ -1,17 +1,20 @@
 #pragma once
 
-#include "../../src/core/src/game/entities/entity.h"
+#include "../../build/include/behaviors.h"
 
-class Waiter : public Player {
+class Waiter : public Behavior {
 
     public:
 
-        void Update();
-
-        Waiter(const std::string &key, const glm::vec2 &position): 
-            Player(key, position) {};
+        Waiter(std::shared_ptr<Entity> entity): 
+            Behavior(entity) 
+        {
+            
+        };
         
         ~Waiter() = default;
+
+        void Update(Inputs* inputs, Camera* camera) override;
 
     private:
 

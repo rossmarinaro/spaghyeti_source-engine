@@ -55,8 +55,10 @@ class Physics {
         b2Body* CreateStaticBody(float x, float y, float width, float height);
 
         b2Body* CreateDynamicBody(
-            glm::vec2 position, 
-            glm::vec2 dimensions,
+            float x,
+            float y,
+            float width,
+            float height,
             bool isSensor = true,
             int type = 0, 
             float density = 0.0f, 

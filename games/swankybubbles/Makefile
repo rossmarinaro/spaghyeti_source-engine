@@ -31,7 +31,7 @@ LIBRARY_PATHS = -LC:\libs\glad #-LC:\libs\openAL\Win32
 # -w suppresses all warnings
 # -Wl,-subsystem,windows gets rid of the console window
 
-COMPILER_FLAGS = -DSTANDALONE=0 -D_JSON=1 -w #-Wl,-subsystem,windows
+COMPILER_FLAGS = -DDEVELOPMENT=0 -DSTANDALONE=1 -D_JSON=1 -w #-Wl,-subsystem,windows
 
 #LINKER_FLAGS specifies the libraries we're linking against
 

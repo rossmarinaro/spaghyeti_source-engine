@@ -28,7 +28,7 @@ void Game::Boot()
     System::Application::game->Preload();
 
     System::Resources::Manager::RegisterAssets();
-
+ 
     System::Application::game->Run(System::Application::inputs, camera, physics);
     
     System::Application::inputs->CreateCursor();
@@ -134,7 +134,7 @@ void Game::UpdateFrame()
 
     //propagate input functionality to game instance
     
-    System::Application::game->Update(System::Application::inputs);
+    System::Application::game->Update(System::Application::inputs, physics);
 
 }  
 

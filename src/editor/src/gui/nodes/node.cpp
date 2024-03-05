@@ -23,7 +23,7 @@ Node::Node(const std::string &id, std::string type, std::string name):
 
     for (const auto &node : nodes)
         if (node->m_name == this->m_name)
-            this->m_name = this->m_name + "_" +std::to_string(count); 
+            this->m_name = this->m_name + "_" + std::to_string(count); 
 }
 
 
@@ -56,49 +56,33 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
 //---------------------------
 
 
-Node* Node::MakeNode(const char* type)
+const char* Node::Assign()
 {
 
     if (count > MAX_NODES) {
         Editor::Log("Max nodes reached.");
         return nullptr; 
     }
-  
+
+    count++;
+
     //generate UUID and replace hyphens with underscores
 
     std::string uuid = UUID::generate_uuid();
 
     for (int i = 0; i < uuid.length(); i++)
         if (uuid[i] == '-')
-            uuid[i] = '_';
+            uuid[i] = '_'; 
+            
+    return uuid.c_str();
 
-    if (strcmp(type, "Empty") == 0) 
-        nodes.push_back(Create<EmptyNode>(uuid));
-
-    else if (strcmp(type, "Audio") == 0) 
-        nodes.push_back(Create<AudioNode>(uuid));
-
-    else if (strcmp(type, "Text") == 0) 
-        nodes.push_back(Create<TextNode>(uuid));
-    
-    else if (strcmp(type, "Sprite") == 0) 
-        nodes.push_back(Create<SpriteNode>(uuid));
-    
-    else if (strcmp(type, "Tilemap") == 0) 
-        nodes.push_back(Create<TilemapNode>(uuid));
-    
-    else return nullptr;
-    
-    count++;
-    
-    return nodes[count - 1];
 }
 
 
 //-------------------------
 
 
-void Node::DeleteNode (Node* node)
+void Node::DeleteNode (std::shared_ptr<Node> node)
 {
 
     node->m_active = false;
@@ -106,39 +90,38 @@ void Node::DeleteNode (Node* node)
     //delete all attached components
 
     if (node->components.size())
-        for (auto &component : node->components)
+        for (const auto &component : node->components)
             node->RemoveComponent(component);
 
     //delete node instance
-
+ 
     auto it = std::find(nodes.begin(), nodes.end(), node);
 
     if (it != nodes.end())
         nodes.erase(it);
 
-    delete node;
-    node = nullptr;
-    
-    count--;
+    if (count > 0) 
+        count--;
 
+    else 
+        node.reset();
 }
 
 
 //--------------------------
 
 
-void Node::ClearAll ()
-{
+void Node::ClearAll() {
 
-    for (auto &node : nodes)
-        if (node->m_active)
-            DeleteNode(node);
+    for (auto &node : nodes) {
+        node->m_active = false;
+        node->Reset();
+    }
 
-    Editor::Log("nodes deleted.");
+    nodes.clear();
 }
 
  
-
 //--------------------------
 
 
@@ -147,11 +130,14 @@ void Node::AddComponent(const char* type, bool init)
 
     //return if component exists 
     
-    for (auto &component : this->components)
-        if ((std::string)component->m_type == type) 
+    if (std::find_if(this->components.begin(), this->components.end(), 
+        [&](std::shared_ptr<Component> component){ return component->m_type == type; }) 
+        != this->components.end()) {
+            Editor::Log("Component " + (std::string)type + " already exists!");
             return;
+        }
         
-    std::shared_ptr<Component> component = std::make_shared<Component>(this->m_ID, type);
+    auto component = std::make_shared<Component>(this->m_ID, type, this->m_type);
 
     this->components.push_back(component); 
 
@@ -167,12 +153,15 @@ void Node::AddComponent(const char* type, bool init)
 void Node::RemoveComponent(std::shared_ptr<Component> component)
 {
 
-    std::vector<std::shared_ptr<Component>>::iterator it = std::find(components.begin(), components.end(), component);
+    std::vector<std::shared_ptr<Component>>::iterator it = std::find(this->components.begin(), this->components.end(), component);
 
-    if (it != components.end())
-        components.erase(it);
+    if (it != this->components.end()) {
 
-    if (!components.size()) 
+        this->Reset((*it)->m_type.c_str());
+        this->components.erase(it);
+    }
+
+    if (!this->components.size()) 
         (*it).reset();
 }
 
@@ -180,13 +169,18 @@ void Node::RemoveComponent(std::shared_ptr<Component> component)
 //------------------------------
 
 
-const std::shared_ptr<Component> Node::GetComponent(const char* type)
+const std::shared_ptr<Component> Node::GetComponent(const std::string &type, const std::string &id)
 {
-    for (const auto &component : components)
-        if (strcmp(type, component->m_type) == 0) 
+
+    for (auto it = this->components.begin(); it != this->components.end(); ++it) {
+
+        auto component = *it;
+
+        if (id == component->m_ID && type == component->m_type) 
             return component;
-        else
-            return nullptr;
+    }
+
+    return nullptr;
 }
 
 
@@ -196,7 +190,7 @@ const std::shared_ptr<Component> Node::GetComponent(const char* type)
 const bool Node::HasComponent(const char* type) {
     
     return std::find_if(components.begin(), components.end(), [&](std::shared_ptr<Component> component) { 
-        return strcmp(type, component->m_type) == 0; }) != components.end(); 
+        return (std::string)type == component->m_type; }) != components.end(); 
 }
 
 
@@ -204,7 +198,7 @@ const bool Node::HasComponent(const char* type) {
 
 
 void Node::LoadShader(
-    Node* node, 
+    std::shared_ptr<Node> node, 
     const std::string &name, 
     const std::string &vertPath, 
     const std::string &fragPath
@@ -216,14 +210,14 @@ void Node::LoadShader(
     Shader::Load(name, vertPath.c_str(), fragPath.c_str(), nullptr);
 
     if (node->m_type == "Sprite") {
-        auto sn = dynamic_cast<SpriteNode*>(node);
+        auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
         if (sn->spriteHandle)
             sn->spriteHandle->m_shader = Shader::GetShader(name);
     }
 
     if (node->m_type == "Empty") {
-        auto en = dynamic_cast<EmptyNode*>(node);
+        auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
         if (en->m_debugGraphic)
             en->m_debugGraphic->m_shader = Shader::GetShader(name);

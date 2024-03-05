@@ -53,7 +53,7 @@ class Game {
 
         virtual void Preload() {}
         virtual void Run(Inputs* inputs, Camera* camera, Physics* physics) {}
-        virtual void Update(Inputs* inputs) {}
+        virtual void Update(Inputs* inputs, Physics* physics) {}
 
         static void Boot();
         static void Exit();

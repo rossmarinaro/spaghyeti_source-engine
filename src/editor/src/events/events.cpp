@@ -501,7 +501,7 @@ void EventListener::BuildAndRun()
             if (global.second == "string[]")
                 type = "std::vector<std::string>";
 
-            global_queue << type + " " + var + ";\n";
+            global_queue << "   " + type + " " + var + ";\n";
         }
 
     glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor();
@@ -551,7 +551,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Sprite")
         {
 
-            auto sn = dynamic_cast<SpriteNode*>(node);
+            auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
             if (sn->spriteHandle != nullptr)
             {
@@ -608,10 +608,10 @@ void EventListener::BuildAndRun()
                     {
  
                         if (sn->bodies[i].second == "static")
-                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n";
+                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
                         
                         if (sn->bodies[i].second == "dynamic")
-                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(glm::vec2(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + "), glm::vec2(" + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + "), " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n";
+                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n";
                     }    
 
                     command_queue << "   for (const auto &body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
@@ -640,7 +640,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Text")
         {
 
-            auto tn = dynamic_cast<TextNode*>(node);
+            auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
             if (tn->textHandle != nullptr)
             {
@@ -661,7 +661,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Empty")
         {
  
-            auto en = dynamic_cast<EmptyNode*>(node);
+            auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
             command_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n";
 
@@ -682,7 +682,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Tilemap")
         {
 
-            auto tmn = dynamic_cast<TilemapNode*>(node);
+            auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
 
             //load frames
 
@@ -720,7 +720,7 @@ void EventListener::BuildAndRun()
         if (node->m_type == "Audio")
         {
 
-            auto an = dynamic_cast<AudioNode*>(node);
+            auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
             std::string loop = an->loop ? "true" : "false";
 
@@ -760,7 +760,7 @@ void EventListener::BuildAndRun()
 
     game_src << "class " + name_upper + " : public Game {\n\n";
     game_src << "    public:\n";
-    game_src << "        " + globalData;
+    game_src << "    " + globalData;
     game_src << "        " + name_upper + "() { name = \"" + name_upper + "\"; }\n";
     game_src << "        void Preload() override;\n";
     game_src << "        void Run(Inputs* inputs, Camera* camera, Physics* physics) override;\n";

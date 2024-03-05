@@ -7,16 +7,16 @@ class Component {
 
     public:
 
-        const char* m_type;
-
         std::string 
                    m_ID, 
                    m_name,
-                   filename;
+                   filename,
+                   m_type, 
+                   m_nodeType;
 
         void Make();
 
-        Component(const std::string &id, const char* type);
+        Component(const std::string &id, const std::string &type, const std::string &node_type);
         ~Component();
     
 

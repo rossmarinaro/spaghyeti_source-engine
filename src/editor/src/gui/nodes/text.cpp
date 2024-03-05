@@ -31,11 +31,25 @@ TextNode::~TextNode() {
 }
 
 
+//---------------------------
+
+
+void TextNode::Reset(const char* component_type)
+{
+    bool passAll = strcmp(component_type, "") == 0;
+
+    if (strcmp(component_type, "Shader") == 0 || passAll)
+    {}
+
+    if (strcmp(component_type, "Script") == 0 || passAll)
+    {}
+}
+
 
 //---------------------------
 
 
-void TextNode::Render()
+void TextNode::Render(std::shared_ptr<Node> node)
 {
 
     ImGui::Separator(); 
@@ -62,35 +76,30 @@ void TextNode::Render()
 
             //component options
 
-            for (const auto &component : this->components)
-            {
-
-
             //------------------------------ script
 
 
-                if (strcmp(component->m_type, "Script") == 0 && ImGui::BeginMenu("Script")) {
+            if (this->HasComponent("Script") && ImGui::BeginMenu("Script")) {
 
-                    GUI::RenderScriptOptions(this->m_ID);
-                    
-                    ImGui::EndMenu();
-                }
+                GUI::RenderScriptOptions(this->m_ID);
+                
+                ImGui::EndMenu();
+            }
 
-                //------------------------------ shader
+            //------------------------------ shader
 
 
-                if (strcmp(component->m_type, "Shader") == 0 && ImGui::BeginMenu("Shader")) {
+            if (this->HasComponent("Shader") && ImGui::BeginMenu("Shader")) {
 
-                    GUI::RenderShaderOptions(this->m_ID);
-                    
-                    ImGui::EndMenu();
-                }
+                GUI::RenderShaderOptions(this->m_ID);
+                
+                ImGui::EndMenu();
             }
 
             if (ImGui::BeginMenu("Delete"))
             {
                 if (ImGui::MenuItem("Are You Sure?")) 
-                    DeleteNode(this);
+                    DeleteNode(node);
 
                 ImGui::EndMenu();
             }

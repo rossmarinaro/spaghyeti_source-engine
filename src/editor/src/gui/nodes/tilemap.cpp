@@ -29,6 +29,29 @@ TilemapNode::~TilemapNode() {
 //---------------------------
 
 
+void TilemapNode::Reset(const char* component_type)
+{
+
+    bool passAll = strcmp(component_type, "") == 0;
+
+    if (strcmp(component_type, "Physics") == 0 || passAll) 
+    {
+        for (const auto &body : this->bodies)
+            Game::physics->DestroyBody(body);
+
+        this->bodyX.clear();
+        this->bodyY.clear();
+        this->body_width.clear();
+        this->body_height.clear();
+
+        this->bodies.clear();
+    }
+}
+
+
+//---------------------------
+
+
 void TilemapNode::ApplyTilemap()
 {
 
@@ -112,7 +135,7 @@ void TilemapNode::CreateBody(float x, float y, float width, float height)
 //---------------------------
 
 
-void TilemapNode::Render()
+void TilemapNode::Render(std::shared_ptr<Node> node)
 {
 
     ImGui::Separator(); 
@@ -134,50 +157,56 @@ void TilemapNode::Render()
                 ImGui::EndMenu();
             }
 
-            for (const auto &component : this->components)
-                if (strcmp(component->m_type, "Physics") == 0 && ImGui::BeginMenu("Physics"))
-                { 
+            //components
 
-                    for (int i = 0; i < this->bodies.size(); i++)
-                    {
+            if (this->HasComponent("Physics") && ImGui::BeginMenu("Physics"))
+            { 
 
-                        ImGui::PushID(i);
-                        
-                        ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, System::Window::m_width); 
-                        ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, System::Window::m_height); 
-                        ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
-                        ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height); 
+                auto physics_component = this->GetComponent("Physics", this->m_ID);
 
-                        ImGui::Separator();             
-                        
-                        b2PolygonShape body; 
-                        body.SetAsBox(this->body_width[i], this->body_height[i]);
-                        b2FixtureDef fixtureDef;
-                        fixtureDef.shape = &body; 
+                if (!physics_component)
+                    return;
 
-                        this->bodies[i]->DestroyFixture(this->bodies[i]->GetFixtureList());
-                        this->bodies[i]->CreateFixture(&fixtureDef);
-                        this->bodies[i]->SetTransform(b2Vec2(this->bodyX[i], this->bodyY[i]), 0);
-                        
-                        ImGui::PopID();
+                for (int i = 0; i < this->bodies.size(); i++)
+                {
 
-                    }
+                    ImGui::PushID(i);
+                    
+                    ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, System::Window::m_width); 
+                    ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, System::Window::m_height); 
+                    ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
+                    ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height); 
 
-                    if (ImGui::Button("add")) 
-                        this->CreateBody();
+                    ImGui::Separator();             
+                    
+                    b2PolygonShape body; 
+                    body.SetAsBox(this->body_width[i], this->body_height[i]);
+                    b2FixtureDef fixtureDef;
+                    fixtureDef.shape = &body; 
 
-                    if (ImGui::Button("remove") && this->bodies.size() > 1) { 
-                        Game::physics->DestroyBody(this->bodies.back()); 
-                        this->bodies.pop_back();
-                    }
+                    this->bodies[i]->DestroyFixture(this->bodies[i]->GetFixtureList());
+                    this->bodies[i]->CreateFixture(&fixtureDef);
+                    this->bodies[i]->SetTransform(b2Vec2(this->bodyX[i], this->bodyY[i]), 0);
+                    
+                    ImGui::PopID();
 
-                    if (ImGui::BeginMenu("remove physics?"))
-                    {
-                        if (ImGui::MenuItem("yes"))
-                            this->RemoveComponent(component); 
+                }
 
-                        ImGui::EndMenu();
-                    }
+                if (ImGui::Button("add")) 
+                    this->CreateBody();
+
+                if (ImGui::Button("remove") && this->bodies.size() > 1) { 
+                    Game::physics->DestroyBody(this->bodies.back()); 
+                    this->bodies.pop_back();
+                }
+
+                if (ImGui::BeginMenu("remove physics?"))
+                {
+                    if (ImGui::MenuItem("yes"))
+                        this->RemoveComponent(physics_component); 
+
+                    ImGui::EndMenu();
+                }
 
                 ImGui::EndMenu();
             }
@@ -185,7 +214,7 @@ void TilemapNode::Render()
             if (ImGui::BeginMenu("Delete"))
             {
                 if (ImGui::MenuItem("Are You Sure?")) 
-                    DeleteNode(this);
+                    DeleteNode(node);
 
                 ImGui::EndMenu();
             }

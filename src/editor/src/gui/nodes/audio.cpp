@@ -29,7 +29,14 @@ AudioNode::~AudioNode() {
 //---------------------------
 
 
-void AudioNode::Render()
+void AudioNode::Reset(const char* component_type)
+{}
+
+
+//---------------------------
+
+
+void AudioNode::Render(std::shared_ptr<Node> node)
 {
 
     ImGui::Separator(); 
@@ -46,7 +53,7 @@ void AudioNode::Render()
             if (ImGui::BeginMenu("Delete"))
             {
                 if (ImGui::MenuItem("Are You Sure?")) 
-                    DeleteNode(this);
+                    DeleteNode(node);
 
                 ImGui::EndMenu();
             }
