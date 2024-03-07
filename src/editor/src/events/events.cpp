@@ -764,12 +764,12 @@ void EventListener::BuildAndRun()
     game_src << "        " + name_upper + "() { name = \"" + name_upper + "\"; }\n";
     game_src << "        void Preload() override;\n";
     game_src << "        void Run(Inputs* inputs, Camera* camera, Physics* physics) override;\n";
-    game_src << "        void Update(Inputs* inputs) override;\n";
+    game_src << "        void Update(Inputs* inputs, Camera* camera, Physics* physics) override;\n";
     game_src <<"};\n\n\n"; 
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
     game_src << "void " + name_upper + "::Run(Inputs* inputs, Camera* camera, Physics* physics) {\n" + commandData + "}\n\n";
-    game_src << "void " + name_upper + "::Update(Inputs* inputs) {\n"      + updateData +            "\n}\n\n\n";
+    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera* camera, Physics* physics) {\n"      + updateData +            "\n}\n\n\n";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";

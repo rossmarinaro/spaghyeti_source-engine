@@ -52,7 +52,14 @@ class Physics {
             this->gravityY = y;
         };
 
-        b2Body* CreateStaticBody(float x, float y, float width, float height);
+        b2Body* CreateStaticBody(
+            float x, 
+            float y, 
+            float width, 
+            float height, 
+            bool isSensor = false, 
+            int type = 0
+        );
 
         b2Body* CreateDynamicBody(
             float x,

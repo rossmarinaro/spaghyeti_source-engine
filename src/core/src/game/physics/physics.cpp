@@ -2,6 +2,8 @@
 #include "../../../../../build/include/app.h"
 #include "../../../../../build/include/physics.h"
 
+//------------------------------
+
 Physics::Physics():
     gravityX(0.0f),
     gravityY(500.0f),
@@ -23,7 +25,14 @@ Physics::Physics():
 //----------------------------------
 
 
-b2Body* Physics::CreateStaticBody(float x, float y, float width, float height)
+b2Body* Physics::CreateStaticBody(
+    float x, 
+    float y, 
+    float width, 
+    float height, 
+    bool isSensor, 
+    int type
+)
 {
 
     Body body;
@@ -31,12 +40,14 @@ b2Body* Physics::CreateStaticBody(float x, float y, float width, float height)
     body.def.type = b2_staticBody;
     body.def.position.Set(x, y);     
 
-    body.def.userData.pointer = 0;
+    body.def.userData.pointer = type;
 
     body.self = System::Application::game->physics->world.CreateBody(&body.def);
 
     body.m_width = width;
     body.m_height = height;
+
+    body.fixtureDef.isSensor = isSensor;
 
     body.box.SetAsBox(body.m_width, body.m_height);       
     body.self->CreateFixture(&body.box, 0.0f); 
@@ -116,7 +127,6 @@ void Physics::Update()
             world.DestroyBody(b);
             b = nullptr;
         }
-
     }
 
     System::Application::game->physics->bodiesToRemove.clear();

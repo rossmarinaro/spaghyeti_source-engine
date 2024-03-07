@@ -32,11 +32,10 @@ class MeatballMadness : public Game {
 
         void Preload() override;
 		void Run(Inputs* inputs, Camera* camera, Physics* physics) override;
-		void Update(Inputs* inputs, Physics* physics) override;
+		void Update(Inputs* inputs, Camera* camera, Physics* physics) override;
 
     private:
 
-        
-         
+
 }; 
 

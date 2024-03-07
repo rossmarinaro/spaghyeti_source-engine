@@ -19,8 +19,8 @@ void Sprite::SetVelocity(float velX, float velY)
         this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX * 100000, this->velocityY * 100000));
 
     else {
-        this->m_position.x += this->velocityX * System::Application::game->time->GetSeconds(); 
-        this->m_position.y += this->velocityY * System::Application::game->time->GetSeconds(); 
+        this->m_position.x += this->velocityX /* * System::Application::game->time->GetSeconds() */; 
+        this->m_position.y += this->velocityY /* * System::Application::game->time->GetSeconds() */; 
     }
 
 };
@@ -91,6 +91,18 @@ void Sprite::SetImpulseY(float y) {
 
     if (this->m_active && this->bodies.size())
         this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, y * 100000), this->bodies[0].first->GetWorldCenter(), true);
+}
+
+
+//----------------------------- remove bodies
+
+
+void Sprite::RemoveBodies() {
+
+    for (auto it = this->bodies.begin(); it != this->bodies.end(); ++it) 
+        System::Application::game->physics->DestroyBody((*it).first);
+
+    this->bodies.clear();
 }
 
 
@@ -269,13 +281,13 @@ void Sprite::Render()
         for (int i = 0; i < this->bodies.size(); i++)
             if (this->bodies[i].first->IsEnabled()) 
             {
-                if (this->bodies[i].first->GetType() == b2_dynamicBody) {
-                    b2Vec2 position = this->bodies[i].first->GetPosition();
-                    this->SetPosition(glm::vec2(position.x - this->bodies[i].second.x, position.y - this->bodies[i].second.y)); 
+                if (i == 0 && this->bodies[i].first->GetType() == b2_dynamicBody) { 
+                    b2Vec2 position = this->bodies[0].first->GetPosition();
+                    this->SetPosition(glm::vec2(position.x - this->bodies[0].second.x, position.y - this->bodies[0].second.y)); 
                 }
-                
-                if (this->bodies[i].first->GetType() == b2_staticBody)
+                else
                     this->bodies[i].first->SetTransform(b2Vec2(this->m_position.x + this->bodies[i].second.x, this->m_position.y + this->bodies[i].second.y), 0);
+
             }
 
     //play current animation
@@ -321,6 +333,14 @@ Sprite::Sprite(const std::string &key, float x, float y, const char* type)
 
 
 
+//-------------------------------------------
+
+
+Sprite::~Sprite() {
+
+    if (strcmp(this->type, "tile") != 0)
+        std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; 
+}
 
 
 

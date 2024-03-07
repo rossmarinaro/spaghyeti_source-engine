@@ -13,8 +13,10 @@ class SpawnBehavior_Behavior : public Behavior {
         //constructor, called on start
 
         SpawnBehavior_Behavior(std::shared_ptr<Entity> entity):
-            Behavior(entity)
+            Behavior(entity, "SpawnBehavior_Behavior")
         {
+            //interval spawn timer
+
             System::Application::game->time->setInterval(3000, [&]() { 
                 float x = System::Utils::floatBetween(0.0f, 1000.0f);
                 float y = System::Utils::floatBetween(0.0f, 1000.0f);

@@ -26,7 +26,7 @@ class Entity {
 	public: 
 
 		static inline int DEPTH, 
-						  g_ID = 0;
+						  g_count = 0;
 
 		int m_depth;
 
@@ -110,9 +110,9 @@ class Entity {
 			m_renderable(true),
 			m_flipX(false),
 			m_flipY(false), 
-			m_depth(DEPTH + 1){ g_ID++; };
+			m_depth(DEPTH + 1){ g_count++; };
 
-		virtual ~Entity() { g_ID--; };
+		virtual ~Entity() { g_count--; };
 };
 
 
@@ -199,7 +199,10 @@ class Sprite : public Entity {
 
 	public:  
 
-		int m_frames, m_currentFrame;
+		int
+			m_frames, 
+			m_currentFrame, 
+			num_contacts = 0;
 
 		float velocityX, velocityY;
 
@@ -239,6 +242,7 @@ class Sprite : public Entity {
 		inline bool IsSpritesheet() { return this->m_isSpritesheet; }
 
 		void ReadSpritesheetData();
+		void RemoveBodies();
 
 		void SetVelocity(float velX, float velY);
 		void SetVelocityX(float velX);
@@ -261,12 +265,7 @@ class Sprite : public Entity {
 			bool isTile = false
 		);
 	   
-	   ~Sprite() { 
-
-			if (strcmp(this->type, "tile") != 0)
-				std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; 
-
-		}
+	   ~Sprite();
 
 
 	private:

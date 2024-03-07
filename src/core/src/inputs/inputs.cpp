@@ -129,14 +129,14 @@ void Inputs::checkOverlap()
 void Inputs::processInput(GLFWwindow* window)
 {
 
-    this->isDown = this->m_left_click ||
-                   this->m_left ||
-                   this->m_right ||
-                   this->m_down ||
-                   this->m_up ||
-                   this->m_SHIFT ||
-                   this->m_TAB ||
-                   this->m_SPACE;
+    this->isDown = this->m_left_click == true ||
+                   this->m_left == true ||
+                   this->m_right == true ||
+                   this->m_down == true ||
+                   this->m_up == true ||
+                   this->m_SHIFT == true ||
+                   this->m_TAB == true ||
+                   this->m_SPACE == true;
 
     //gamepad
 
@@ -157,14 +157,14 @@ void Inputs::processInput(GLFWwindow* window)
     //set control states
 
     if (Application::isMobile)
-        for (int index = 0; index < Application::game->virtual_buttons.size(); index++)
-            switch (index)
+        for (int i = 0; i < Application::game->virtual_buttons.size(); i++)
+            switch (i)
             {
-                case 0: this->m_left = Application::game->virtual_buttons[index]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 1: this->m_right = Application::game->virtual_buttons[index]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 2: this->m_down = Application::game->virtual_buttons[index]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 3: this->m_up = Application::game->virtual_buttons[index]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 4: this->m_SPACE = Application::game->virtual_buttons[index]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
+                case 0: this->m_left = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
+                case 1: this->m_right = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
+                case 2: this->m_down = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
+                case 3: this->m_up = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
+                case 4: this->m_SPACE = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
             }
 
     checkOverlap();
@@ -239,10 +239,10 @@ void Inputs::setKeyInputs(bool boolean, int key, GLFWwindow* window)
             this->m_right = boolean;
         break;
         case GLFW_KEY_UP:
-            this->m_down = boolean;
+            this->m_up = boolean;
         break;
         case GLFW_KEY_DOWN:
-           this->m_up = boolean;
+           this->m_down = boolean;
         break;
         case GLFW_KEY_LEFT_SHIFT:
         case GLFW_KEY_RIGHT_SHIFT:

@@ -124,7 +124,7 @@ void Component::Make()
         src <<  "    public:\n\n";
         src <<  "        //constructor, called on start\n\n";
         src <<  "        " + this->filename + "_Behavior (std::shared_ptr<Entity> entity):\n";
-        src <<  "            Behavior(entity)\n";
+        src <<  "            Behavior(entity, \""+ this->filename + "\")\n";
         src <<  "        {\n\n";
         src <<  "        }\n\n";
         src <<  "        //update every frame\n\n";

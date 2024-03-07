@@ -53,11 +53,12 @@ static void ThrowMeatball()
 
     auto meatball = Game::CreateSprite("meatball", 960.0f, 530.0f, 0, 2.0f);
  
+    meatball->SetDepth(10);
     meatball->SetData("platter position", System::Utils::intBetween(0, 50));
 
     meatball->bodies.push_back({ System::Application::game->physics->CreateDynamicBody(meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, 1 ), { 0.0f, 5.0f } });
 
-    float randX = System::Utils::floatBetween(-10.0f, -1000.0f);
+    float randX = System::Utils::floatBetween(-10.0f, -1500.0f);
 
     meatball->bodies[0].first->SetLinearVelocity(b2Vec2(randX, System::Utils::floatBetween(10.0f, -10.0f)));  
     meatball->bodies[0].first->SetFixedRotation(true);
@@ -112,7 +113,7 @@ static void MoveChef()
 
 
 
-void MeatballMadness::Update(Inputs* inputs, Physics* physics)
+void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
 {   
 
     //platter hitbox
@@ -141,14 +142,16 @@ void MeatballMadness::Update(Inputs* inputs, Physics* physics)
     else if (!started)
     {
 
-        if (inputs->m_SPACE || inputs->m_left_click)
+        if (inputs->isDown)
         {
 
             #ifdef __EMSCRIPTEN__
                 if (!System::Audio::musicPlaying)
                     System::Audio::play("music", true);
             #endif
-            player->SetData("can move", true);
+
+            this->GetBehavior<Waiter>("Waiter")->canMove = true;
+            
             started = true;
         }
 
@@ -165,8 +168,14 @@ void MeatballMadness::Update(Inputs* inputs, Physics* physics)
             scoreText->content = "SCORE: " + std::to_string(score);
 
         if (meatballs.size())
-            for (auto &meatball : meatballs)
+        {
+            
+            auto it = meatballs.begin();
+            
+            for (; it != meatballs.end(); ++it)
             {
+
+                auto meatball = *it;
 
                 if (!meatball.get())
                     return;
@@ -191,50 +200,35 @@ void MeatballMadness::Update(Inputs* inputs, Physics* physics)
                 else if (meatball->m_position.y >= 830) {
 
                     meatball->SetFrame(1);
-
                     meatball->SetRotation(0);
-
-                    if(meatball->bodies[0].first) {
-
-                        meatball->bodies[0].first->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
-
-                        meatball->bodies[0].first->SetEnabled(false); 
-                        
-                        physics->DestroyBody(meatball->bodies[0].first);  
-                    }
 
                     if (meatball->m_active) {
 
+                        meatball->bodies[0].first->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
                         meatball->m_active = false;
+                        meatball->RemoveBodies();   
 
                         fails += 1; 
                     }
+
                 }
 
             //overlap hitbox
 
                 else if (
-                    meatball->bodies[0].first && 
+                    meatball->m_active &&
                     b2TestOverlap(meatball->bodies[0].first->GetFixtureList()->GetAABB(0), playerHitBox->GetFixtureList()->GetAABB(0))
                 )
                 {
-
                     meatball->SetRotation(0);
                     meatball->SetFrame(1);
-
-                    if (meatball->bodies[0].first) {     
-                        meatball->bodies[0].first->SetEnabled(false); 
-                        physics->DestroyBody(meatball->bodies[0].first);
-                    }
-
+                    meatball->RemoveBodies();
                     meatball->m_active = false;
-
                 }
 
-            //meatball on platter
+                else if (!meatball->m_active) {
 
-                else if (!meatball->m_active)
-                {
+                    //meatball on platter
 
                     const int meatballPosition = meatball->GetData<int>("platter position");
                     
@@ -250,12 +244,16 @@ void MeatballMadness::Update(Inputs* inputs, Physics* physics)
                     meatball->m_rotation -= System::Utils::floatBetween(0.0f, -10.0f);
 
             }
+        }
 
         MoveChef();
 
     }
-        
 
+    for (const auto &entity : entities)
+        gameOverText->SetDepth(entity->m_depth + 1);
+
+              
 }
 
 
@@ -319,6 +317,8 @@ void MeatballMadness::Preload()
 void MeatballMadness::Run(Inputs* inputs, Camera* camera, Physics* physics) 
 {
 
+    //splash image
+
     #ifndef __EMSCRIPTEN__
 
         GLFWimage image; 
@@ -335,10 +335,12 @@ void MeatballMadness::Run(Inputs* inputs, Camera* camera, Physics* physics)
 
     //environment bounds
 
-    physics->CreateStaticBody(0.0f, 0.0f, 1500.0f, 0.0f);
-    physics->CreateStaticBody(0.0f, 850.0f, 1500.0f, 10.0f);
-    physics->CreateStaticBody(250.0f, 850.0f, 10.0f, 850.0f);
-    physics->CreateStaticBody(1020.0f, 0.0f, 10.0f, 850.0f);
+    physics->CreateStaticBody(0.0f, 0.0f, 1500.0f, 0.0f, 3);
+    physics->CreateStaticBody(0.0f, 850.0f, 1500.0f, 10.0f, 3);
+    physics->CreateStaticBody(250.0f, 850.0f, 10.0f, 850.0f, 3);
+    physics->CreateStaticBody(1020.0f, 0.0f, 10.0f, 850.0f, 3);
+
+    //sprites
 
     auto background = CreateSprite("background", 450.0f, 280.0f);
     background->SetScale(2.5f, 2.42f);
@@ -351,11 +353,13 @@ void MeatballMadness::Run(Inputs* inputs, Camera* camera, Physics* physics)
     chef->SetScale(2.0f);
     chef->SetFrame(2);
 
-    player = CreateSprite("waiter", 450.0f, 760.0f, 0, 2.5);
+    //player
 
-    player->bodies.push_back({ physics->CreateDynamicBody(450.0f, 760.0f, 10.0f, 35.0f, false, 3, 1.5), { 20.0f, 45.0f } });
+    player = CreateSprite("waiter", 450.0f, 760.0f, 1, 2.5);
+
+    player->bodies.push_back({ physics->CreateDynamicBody(450.0f, 760.0f, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 70.0f } });
     player->bodies[0].first->SetFixedRotation(true);
-    player->SetData("can move", false);
+
     CreateBehavior<Waiter>(player, this);
     playerHitBox = physics->CreateDynamicBody(0.0f, 0.0f, 40.0f, 10.0f, true, 1);
 
@@ -493,12 +497,13 @@ void MeatballMadness::Reset()
 
 		#ifdef __EMSCRIPTEN__  
 
-			System::Application::isMobile = checkMobile();
+			if (checkMobile())
+                _ISMOBILE = 1
 
 			fetchData(); 
 		
 		#elif _ISMOBILE == 1 
-			System::Application::isMobile = true; 
+			
 
 		#endif
 

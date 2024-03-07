@@ -14,12 +14,12 @@ class TestBehavior_Behavior : public Behavior {
         //constructor, called on start
 
         TestBehavior_Behavior(std::shared_ptr<Entity> entity):
-            Behavior(entity)
+            Behavior(entity, "TestBehavior_Behavior")
         {
             this->health = 10;
             this->canJump = true;
             this->sprite->m_shader = Shader::GetShader("player");
-            this->follow = true; 
+            this->follow = true;  
         }
 
         //update every frame
@@ -27,7 +27,7 @@ class TestBehavior_Behavior : public Behavior {
         void Update(Inputs* inputs, Camera* camera) override 
         { 
 
-            if (inputs->m_down && this->canJump) {
+            if (inputs->m_up && this->canJump) {
                 this->canJump = false;
                 this->sprite->SetImpulseY(-400);
             }
@@ -42,7 +42,7 @@ class TestBehavior_Behavior : public Behavior {
                 }
 
                 else if (inputs->m_right) {
-                    this->sprite->SetVelocityX(380);
+                    this->sprite->SetVelocityX(380); 
                     this->sprite->SetFlipX(true);
                 }
 

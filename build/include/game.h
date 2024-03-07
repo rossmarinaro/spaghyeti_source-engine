@@ -21,39 +21,19 @@ class Game {
 
         const char* m_currentStage; 
 
+        Game() = default;
+        virtual ~Game() = default;
+
+        virtual void Preload() {}
+        virtual void Run(Inputs* inputs, Camera* camera, Physics* physics) {}
+        virtual void Update(Inputs* inputs, Camera* camera, Physics* physics) {}
+
         static inline std::string name = "";
 
 		static inline Time* time;
         static inline Camera* camera;
         static inline Physics* physics;
         static inline Text* text; 
-
-        std::map<const char*, std::any> data;
-
-        template<typename T>
-		inline T GetData(const char* key) const { 
-            return std::any_cast<T>(this->data.at(key));
-        }
-
-		inline void SetData(const char* key, std::any value) { 
-            this->data.insert({key, value}); 
-        }
-
-        inline void SetWorldDimensions(float width, float height) { 
-            this->worldWidth = width;
-            this->worldHeight = height;
-        }
-
-        inline const glm::vec2 GetWorldDimensions() { 
-            return glm::vec2(this->worldWidth, this->worldHeight);
-        }
-
-        Game() = default;
-        virtual ~Game() = default;
-
-        virtual void Preload() {}
-        virtual void Run(Inputs* inputs, Camera* camera, Physics* physics) {}
-        virtual void Update(Inputs* inputs, Physics* physics) {}
 
         static void Boot();
         static void Exit();
@@ -92,6 +72,33 @@ class Game {
 
         std::vector<std::shared_ptr<Behavior>> behaviors;
         int worldWidth, worldHeight = 0; 
+
+        std::map<const char*, std::any> data;
+
+        template<typename T>
+		inline T GetData(const char* key) const { 
+            return std::any_cast<T>(this->data.at(key));
+        }
+
+		inline void SetData(const char* key, std::any value) { 
+            this->data.insert({key, value}); 
+        }
+
+        inline const glm::vec2 GetWorldDimensions() { 
+            return glm::vec2(this->worldWidth, this->worldHeight);
+        }
+
+        inline void SetWorldDimensions(float width, float height) { 
+            this->worldWidth = width;
+            this->worldHeight = height;
+        }
+
+        template <typename T>
+        inline std::shared_ptr<T> GetBehavior(const std::string &key) {
+            return std::dynamic_pointer_cast<T>(*std::find_if(behaviors.begin(), behaviors.end(), [&](std::shared_ptr<Behavior> b) { 
+                return b->key == key; 
+            }));
+        }
 
         static inline ma_device music;
         static inline bool gameState = false;

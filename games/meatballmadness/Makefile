@@ -35,7 +35,7 @@ LIBRARY_PATHS = -LC:\libs\glad
 
 COMPILER_FLAGS = \
 	-DSPAGHYETI_CORE \
-	-DDEVELOPMENT=1 \
+	-DDEVELOPMENT=0 \
 	-DUSE_JSON=1 \
 	-DSTANDALONE=1 \
 	-w #-Wl,-subsystem,windows

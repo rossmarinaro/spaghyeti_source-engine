@@ -8,6 +8,8 @@ class Behavior {
 
     public:
 
+        std::string key;
+
         std::shared_ptr<Entity> entity;
         std::shared_ptr<Sprite> sprite;
         std::shared_ptr<Text> text;
@@ -15,7 +17,9 @@ class Behavior {
 
         virtual void Update(Inputs* inputs, Camera* camera) {}
 
-        Behavior(std::shared_ptr<Entity> entity) {
+        Behavior(std::shared_ptr<Entity> entity, const std::string &key) {
+
+            this->key = key; 
 
             this->sprite = std::dynamic_pointer_cast<Sprite>(entity);
             this->text = std::dynamic_pointer_cast<Text>(entity);
