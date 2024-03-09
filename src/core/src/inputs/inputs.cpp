@@ -1,6 +1,5 @@
 #include "../../../../build/include/app.h"
 
-
 using namespace System;
 
 //--------------------------------- native input callback to browser
@@ -98,31 +97,6 @@ Inputs::Inputs()
 }
 
 
-//-------------------------------------
-
-
-void Inputs::checkOverlap()
-{
-
-    for (int i = 0; i < Application::game->virtual_buttons.size(); i++)
-    {
-
-        auto button = Application::game->virtual_buttons[i];
-
-        if (!button->m_active && !button->m_renderable)
-            continue;
-
-        bool isOverlapping = Application::game->physics->collisions.CheckCollisions(button, Application::game->cursor);
-
-        button->SetTint(isOverlapping ? glm::vec3(1.0f, 0.0f, 0.0f) : glm::vec3(1.0f, 1.0f, 1.0f));
-
-        button->SetAlpha(isOverlapping ? 0.5f : 1.0f);
-
-    }
-}
-
-
-
 //----------------------------------------
 
 
@@ -136,6 +110,7 @@ void Inputs::processInput(GLFWwindow* window)
                    this->m_up == true ||
                    this->m_SHIFT == true ||
                    this->m_TAB == true ||
+                   this->m_ENTER == true ||
                    this->m_SPACE == true;
 
     //gamepad
@@ -162,8 +137,8 @@ void Inputs::processInput(GLFWwindow* window)
             {
                 case 0: this->m_left = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
                 case 1: this->m_right = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 2: this->m_down = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 3: this->m_up = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
+                case 2: this->m_up = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
+                case 3: this->m_down = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
                 case 4: this->m_SPACE = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
             }
 
@@ -171,17 +146,12 @@ void Inputs::processInput(GLFWwindow* window)
 }
 
 
-//-------------------------------------
+//------------------------------------- cursor object
 
 
-void Inputs::CreateCursor()
-{
-
-    //cursor object
-
-    Application::game->cursor = std::make_shared<Geometry>(100.0f, 100.0f, 20.0f, 20.0f);
-    Application::game->cursor->SetColor(glm::vec3(1.0f, 0.0f, 0.0f));
-    Application::game->cursor->m_shader = System::Resources::Manager::shader->GetShader("cursor");
+void Inputs::CreateCursor() {
+    Application::game->cursor = Application::game->CreateGeom(100.0f, 100.0f, 30.0f, 30.0f, "cursor");
+    Application::game->cursor->SetColor(glm::vec3(1.0f, 0.0f, 0.0f)); 
 }
 
 
@@ -202,9 +172,33 @@ void Inputs::RenderCursor()
         Application::inputs->checkOverlap();
 
         #if DEVELOPMENT == 1
-            if (Application::game->physics->debug->enable)
-               Application::game->cursor->Render();
+            Application::game->cursor->SetAlpha(Application::game->physics->debug->enable ? 1.0f : 0.0f);
+        #else
+            Application::game->cursor->SetAlpha(0.0f);
         #endif
+    }
+}
+
+
+//-------------------------------------
+
+
+void Inputs::checkOverlap()
+{
+
+    for (int i = 0; i < Application::game->virtual_buttons.size(); i++)
+    {
+
+        auto button = Application::game->virtual_buttons[i];
+
+        if (!button->m_active && !button->m_renderable)
+            continue;
+
+        bool isOverlapping = Application::game->physics->collisions.CheckCollisions(button, Application::game->cursor, 2);
+
+        button->SetTint(isOverlapping ? glm::vec3(1.0f, 0.0f, 0.0f) : glm::vec3(1.0f, 1.0f, 1.0f));
+        button->SetAlpha(isOverlapping ? 0.5f : 1.0f); 
+
     }
 }
 
@@ -214,9 +208,8 @@ void Inputs::RenderCursor()
 
 void Inputs::ToggleVirtualButtonVisibility(bool visibility) {
 
-    for (auto &button : Application::game->virtual_buttons)
-        button->m_alpha = visibility ?
-            1.0f : 0.0f;
+    for (const auto &button : Application::game->virtual_buttons)
+        button->SetAlpha(visibility ? 1.0f : 0.0f);
 }
 
 
@@ -251,6 +244,9 @@ void Inputs::setKeyInputs(bool boolean, int key, GLFWwindow* window)
         case GLFW_KEY_SPACE:
             this->m_SPACE = boolean;
         break;
+        case GLFW_KEY_ENTER:
+            this->m_ENTER = boolean;
+        break;
         case GLFW_MOUSE_BUTTON_LEFT:
             this->m_left_click = boolean;
         break;
@@ -270,10 +266,7 @@ void Inputs::setKeyInputs(bool boolean, int key, GLFWwindow* window)
 void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
 {
 
-    if (!Application::isMobile)
-        return;
-
-    if (Application::game->cursor == nullptr)
+    if (!Application::isMobile || Application::game->cursor == nullptr)
         return;
 
     //set cursor object to movement
@@ -315,6 +308,12 @@ void Inputs::setGamepadInputs(unsigned int joystick)
     int buttonCount;
 
     const unsigned char* buttons = glfwGetJoystickButtons(joystick, &buttonCount);
+
+    if (GLFW_PRESS == buttons[0])
+        this->m_ENTER = true;
+
+    else if (GLFW_RELEASE == buttons[0])
+        this->m_ENTER = false;
 
     if (
         GLFW_PRESS == buttons[1] ||
@@ -447,8 +446,8 @@ void Inputs::ResetControls()
     this->cursorReset = true;
 
     if (!Application::isMobile) {
-        this->cursorX = -100.0f;
-        this->cursorY = -100.0f;
+        //this->cursorX = -100.0f;
+        //this->cursorY = -100.0f;
     }
 
     else
@@ -461,7 +460,7 @@ void Inputs::ResetControls()
     this->m_SHIFT = false;
     this->m_TAB = false;
     this->m_SPACE = false;
-
+    this->m_ENTER = false;
 }
 
 

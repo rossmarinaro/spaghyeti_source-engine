@@ -106,8 +106,17 @@ void Game::UpdateFrame()
     //render queues
 
     for (const auto &entity : entities)
-        if ((entity.get() && entity) && entity.get()->m_renderable) 
+        if ((entity.get() && entity) && entity.get()->m_renderable) {
+
+            if (System::Application::game->cursor != nullptr)
+                System::Application::game->cursor->SetDepth(entity->m_depth + 1);
+
             entity->Render();
+        }
+            
+    //render input cursor
+
+    System::Application::inputs->RenderCursor();
 
     //update behaviors
 
@@ -119,9 +128,6 @@ void Game::UpdateFrame()
 
     std::sort(entities.begin(), entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
 
-    //render input cursor
-
-    System::Application::inputs->RenderCursor();
 
     #if DEVELOPMENT == 1 
 
@@ -312,9 +318,9 @@ std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, floa
 //----------------------------- (rect)
 
 
-std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height)
+std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height, const std::string &shader)
 {
-    auto geom = std::make_shared<Geometry>(x, y, width, height);
+    auto geom = std::make_shared<Geometry>(x, y, width, height, shader);
 
     entities.push_back(geom);
 
@@ -325,9 +331,9 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 //----------------------------- (line)
 
 
-std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end)
+std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end, const std::string &shader)
 {
-    auto geom = std::make_shared<Geometry>(x, y, start, end);
+    auto geom = std::make_shared<Geometry>(x, y, start, end, shader);
 
     entities.push_back(geom);
 

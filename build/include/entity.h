@@ -139,11 +139,11 @@ class Geometry : public Entity {
 
 		//quad
 
-		Geometry(float x, float y, float width, float height);
+		Geometry(float x, float y, float width, float height, const std::string &shader);
 
 		//line
 
-		Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end);
+		Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end, const std::string &shader);
 
 		~Geometry() = default;
 
@@ -223,9 +223,10 @@ class Sprite : public Entity {
 
 		std::vector<std::pair<b2Body*, glm::vec2>> bodies;
 
-		int GetBodyDataType() const { 
+		inline int GetBodyDataType() const { 
 			for (const auto &body : this->bodies)
 				return body.first->GetFixtureList()->GetBody()->GetUserData().pointer; 
+			return 0;
 		}
 
 		template<typename T>

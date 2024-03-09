@@ -41,7 +41,7 @@ void Sprite::SetVelocityX(float velX)
         this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX * 100000, this->bodies[0].first->GetLinearVelocity().y));
 
     else
-        this->m_position.x += this->velocityX ;/// System::Application::game->time->GetSeconds();     
+        this->m_position.x += this->velocityX; // System::Application::game->time->GetSeconds();     
 };
 
 
@@ -60,7 +60,7 @@ void Sprite::SetVelocityY(float velY)
         this->bodies[0].first->SetLinearVelocity(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, this->velocityY * 100000));
     
     else
-        this->m_position.y += this->velocityY ;/// System::Application::game->time->GetSeconds(); 
+        this->m_position.y += this->velocityY; // System::Application::game->time->GetSeconds(); 
 };
 
 

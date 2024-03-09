@@ -37,11 +37,15 @@ void Manager::Clear()
 void Manager::RegisterAssets()
 {
 
-    //load base texture (white 1 x 1)
+    #ifndef __EMSCRIPTEN__
 
-    static const char data[] = { 0xff, 0xff, 0xff, 0xff };
+        //load base texture (white 1 x 1)
 
-    LoadRawImage("base", data, 1, 1, 4);
+        static const char data[] = { 0xff, 0xff, 0xff, 0xff };
+
+        LoadRawImage("base", data, 1, 1, 4);
+
+    #endif
 
     //load textures
 

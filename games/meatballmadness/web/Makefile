@@ -62,14 +62,5 @@ OBJ_NAME = -O3 -o dist/index.html --shell-file template.html
 all : $(OBJS)
 	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) $(OBJ_NAME) 
 
-
-#--show-ports
-
-#sample em
-#touch test.cpp && em++ -std=c++20 test.cpp -sEXPORT_ALL=1 -sWASM=1 -sLEGACY_GL_EMULATION=0 -sASSERTIONS -sGL_ASSERTIONS=1 -sMAX_WEBGL_VERSION=3 -sMIN_WEBGL_VERSION=0 -sUSE_WEBGL2=1 -sFULL_ES2=1 -pthread -O3 -o opengl-engine-test-emscripten.html
-
-#sample gcc
-#g++ -g -std=c++20 ../vendors/glad/src/glad.c sample.cpp -IC:\libs\glad\include\glad -IC:\libs\glfw-3.3.8\include\GLFW -LC:\libs\glad -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 -w -o test.exe && ./test.exe
-
 #--js-flags=--experimental-wasm=threads --enable-features=WebAssembly,SharedArrayBuffer 
 

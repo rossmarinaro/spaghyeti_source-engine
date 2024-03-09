@@ -11,7 +11,16 @@ class Inputs {
         bool cursorReset,
              initVirtualControls = false,
              isDown = false,
-             m_left_click, m_SPACE, m_SHIFT, m_TAB, m_left, m_right, m_up, m_down, m_G;
+             m_left_click,
+             m_SPACE, 
+             m_SHIFT, 
+             m_ENTER,
+             m_TAB, 
+             m_left,
+             m_right,
+             m_up,
+             m_down,
+             m_G;
 
 
         void ShutDown();
@@ -29,7 +38,7 @@ class Inputs {
         static void input_callback(GLFWwindow* window, int input, int action, int mods);
 
         Inputs();
-        ~Inputs() = default;
+       ~Inputs() = default;
 
 };
     

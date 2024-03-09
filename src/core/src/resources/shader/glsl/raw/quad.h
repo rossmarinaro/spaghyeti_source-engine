@@ -65,7 +65,7 @@ namespace Shaders {
             "void main()\n"
             "{\n"
             "   gl_Position = projection * model * view * vec4(pos.xy + offset.xy, 0.0, 1.0);\n"
-            "}\0";
+            "}";
 
         static const char* debugGraphicShader_fragment = 
 
@@ -75,11 +75,12 @@ namespace Shaders {
             
             "out vec4 FragColor;\n"
             "uniform vec3 tint;\n"
+            "uniform float alphaVal;\n"
 
             "void main()\n" 
             "{\n"
-            "   FragColor = vec4(tint, 1.0f);\n"
-            "}\n\0";
+            "   FragColor = vec4(tint, alphaVal);\n"
+            "}\n";
 
     #else
 
@@ -147,10 +148,11 @@ namespace Shaders {
              
             "out vec4 FragColor;\n"
             "uniform vec3 tint;\n"
+            "uniform float alphaVal;\n"
 
             "void main()\n"
             "{\n"
-            "   FragColor = vec4(tint, 1.0f);\n"
+            "   FragColor = vec4(tint, alphaVal);\n"
             "}\n\0";
 
     #endif

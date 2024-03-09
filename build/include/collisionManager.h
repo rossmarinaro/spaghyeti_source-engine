@@ -8,14 +8,9 @@ class CollisionManager : public b2ContactListener {
     public:
 
         static bool CheckCollisions(const std::shared_ptr<Sprite> &spriteA, const std::shared_ptr<Sprite> &spriteB);
-        static bool CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::shared_ptr<Geometry> &rect, bool factor = 1);
-
-        static bool CheckCollisions(const Sprite &sprite, const std::shared_ptr<Geometry> &rect);
-
-        static bool CheckCollisions(const Sprite &spriteA, const Sprite &spriteB);
+        static bool CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::shared_ptr<Geometry> &rect, int factor = 1);
 
         virtual void BeginContact(b2Contact* contact);
         virtual void EndContact(b2Contact* contact);
-
 
 };

@@ -81,11 +81,10 @@ void CollisionManager::EndContact(b2Contact* contact)
 }
 
 
+//----------------------------------- UI related collisions (standard / ui layer projection matrix * factor)
 
-//----------------------------------- UI related collisions (standard / projection matrix * 2)
 
-
-bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::shared_ptr<Geometry> &rect, bool factor)
+bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::shared_ptr<Geometry> &rect, int factor)
 {
     //x axis
 
@@ -100,47 +99,6 @@ bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, co
     return collisionX && collisionY;
 
 }
-
-
-//-----------------------------------
-
-
-bool CollisionManager::CheckCollisions(const Sprite &sprite, const std::shared_ptr<Geometry> &rect)
-{
-    //x axis
-
-    bool collisionX = sprite.m_position.x + sprite.m_texture.FrameWidth / 2 >= rect->m_position.x &&
-                      rect->m_position.x + rect->width / 2 >= sprite.m_position.x;
-
-    //y axis
-
-    bool collisionY = sprite.m_position.y + sprite.m_texture.FrameHeight / 2 >= rect->m_position.y &&
-                      rect->m_position.y + rect->height / 2 >= sprite.m_position.y;
-
-    return collisionX && collisionY;
-
-}
-
-
-//-----------------------------------
-
-
-bool CollisionManager::CheckCollisions(const Sprite &spriteA, const Sprite &spriteB)
-{
-    //x axis
-
-    bool collisionX = spriteA.m_position.x + spriteA.m_texture.FrameWidth / 2 >= spriteB.m_position.x &&
-                      spriteB.m_position.x + spriteB.m_texture.FrameWidth / 2 >= spriteA.m_position.x;
-
-    //y axis
-
-    bool collisionY = spriteA.m_position.y + spriteA.m_texture.FrameHeight / 2 >= spriteB.m_position.y &&
-                      spriteB.m_position.y + spriteB.m_texture.FrameHeight / 2 >= spriteA.m_position.y;
-
-    return collisionX && collisionY;
-
-}
-
 
 //-----------------------------------
 
@@ -161,4 +119,3 @@ bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &spriteA, c
 
 }
 
-//-----------------------------------

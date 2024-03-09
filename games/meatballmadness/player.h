@@ -2,6 +2,8 @@
 
 #include "../../build/include/behaviors.h"
 
+//player script
+
 class Waiter : public Behavior {
 
     public: 
@@ -24,10 +26,10 @@ class Waiter : public Behavior {
             if (!this->canMove)
                 return;
 
-            if (inputs->m_up && this->canJump) 
+            if (inputs->m_up && this->canJump && this->sprite->bodies[0].first->GetLinearVelocity().y == 0) 
             {
                 this->sprite->SetImpulseY(-10000);
-                this->sprite->SetFrame(1);
+                this->sprite->SetFrame(0);
                 this->canJump = false;
             }
             
@@ -42,8 +44,6 @@ class Waiter : public Behavior {
                     this->sprite->SetFlipX(false);
                     this->sprite->Animate("run", true, 7);
                     this->sprite->SetVelocityX(3200);
-                    //sprite->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->speed_x, sprite->bodies[0].first->GetLinearVelocity().y), sprite->bodies[0].first->GetWorldCenter(), true);
-
                 } 
                 
                 else if (inputs->m_left)
@@ -52,14 +52,14 @@ class Waiter : public Behavior {
                     this->sprite->SetFlipX(true);
                     this->sprite->Animate("run", true, 7);
                     this->sprite->SetVelocityX(-3200);
-                    //sprite->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->speed_x, sprite->bodies[0].first->GetLinearVelocity().y), sprite->bodies[0].first->GetWorldCenter(), true);
-
                 }
 
                 else {
                     this->sprite->SetFrame(1);
                     this->sprite->SetVelocityX(0);
                 }
+
+
             }
 
         }

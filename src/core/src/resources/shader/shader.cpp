@@ -70,20 +70,24 @@ void Shader::Update(Camera* camera)
 
     //custom shaders
 
-    for (const auto &shader : System::Resources::Manager::shaders)
+    for (auto it = System::Resources::Manager::shaders.begin(); it != System::Resources::Manager::shaders.end(); ++it)
     {
-        
-        GetShader(shader.first).SetVec2f("offset", camera->m_position, true);
+        auto shader = *it;
+
+        if (shader.first != "cursor" && shader.first != "UI")
+            GetShader(shader.first).SetVec2f("offset", camera->m_position, true);
+        else
+            GetShader(shader.first).SetVec2f("offset", glm::vec2(0.0f), true);
         
         if (shader.first != "Points" && shader.first != "Lines" && shader.first != "Triangles")
         {
-            if (shader.first == "cursor" || shader.first == "UI") 
+           if (shader.first == "cursor" || shader.first == "UI") 
                 GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::m_width * 2), static_cast<float>(System::Window::m_height * 2)), true);  
-            else        
-                GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
+           else        
+               GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
         }
       
-        if (shader.first != "player")
+        if (shader.first != "player" && shader.first != "cursor" && shader.first != "UI")
             GetShader(shader.first).SetMat4("view", camera->GetViewMatrix(camera), true);
         else
             GetShader(shader.first).SetMat4("view", glm::mat4(1.0f), true);

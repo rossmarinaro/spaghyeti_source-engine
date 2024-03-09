@@ -50,7 +50,11 @@ void Primitive::Bind_Buffer(
 void Primitive::Draw (int shape, int dimension, int slot, int vertices, int drawStyle) 
 { 
     glBindBuffer(GL_ARRAY_BUFFER, 0);    
-    glPolygonMode(GL_FRONT_AND_BACK, drawStyle);
+
+    #ifndef __EMSCRIPTEN__
+        glPolygonMode(GL_FRONT_AND_BACK, drawStyle);
+    #endif
+    
     glDrawArrays(shape, 0, vertices);
   
 }
@@ -60,20 +64,20 @@ void Primitive::Draw (int shape, int dimension, int slot, int vertices, int draw
 
 
 //line
-Geometry::Geometry(float x, float y, float width, float height): 
+Geometry::Geometry(float x, float y, float width, float height, const std::string &shader): 
     Entity("geometry", x, y),
         primitive(std::make_shared<Graphics::Primitive>()),
-        m_shader(Shader::GetShader("graphics")),
+        m_shader(Shader::GetShader(shader)),
         m_type("quad"),
         width(width),
         height(height)
             { std::cout << "Entity: quad created.\n"; }
 
 //quad
-Geometry::Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end): 
+Geometry::Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end, const std::string &shader): 
     Entity("geometry", x, y),
         primitive(std::make_shared<Graphics::Primitive>()),
-        m_shader(Shader::GetShader("graphics")),
+        m_shader(Shader::GetShader(shader)),
         m_type("line"),
         start(start),
         end(end)
@@ -116,9 +120,7 @@ void Geometry::Render()
 
     if (strcmp(this->m_type, "quad") == 0)
     {
-
-        //if (strcmp(this->m_shader.m_key, "cursor") == 0)
-            this->m_model = glm::translate(this->m_model, glm::vec3(this->m_position, 0.0f));  
+        this->m_model = glm::translate(this->m_model, glm::vec3(this->m_position, 0.0f));  
 
         this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->m_position.x, 0.5f * this->height + this->m_position.y, 0.0f)); 
 

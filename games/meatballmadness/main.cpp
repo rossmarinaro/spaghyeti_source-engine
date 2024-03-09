@@ -25,7 +25,6 @@
 
 #endif
 
-
 #include "./resources/assets/raw/anims/waiter.h"
 #include "./resources/assets/raw/anims/chef.h"
 #include "./resources/assets/raw/anims/patron.h"
@@ -34,8 +33,6 @@
 #include "./resources/assets/atlas/meatball.h"
 #include "./resources/assets/atlas/chef.h"
 #include "./resources/assets/atlas/patron.h"
-
-
 
 bool chefMoveLeft = true;
 bool chefMoveRight = false;
@@ -53,15 +50,16 @@ static void ThrowMeatball()
 
     auto meatball = Game::CreateSprite("meatball", 960.0f, 530.0f, 0, 2.0f);
  
-    meatball->SetDepth(10);
+    const float randX = System::Utils::floatBetween(0.0f, 1.0f) > 0.5f ? 
+                            System::Utils::floatBetween(0.0f, -500.0f) : 
+                            System::Utils::floatBetween(-500.0f, -1500.0f);
+
+    meatball->SetData("velX", round(randX));
+    meatball->SetData("velY", System::Utils::intBetween(450, 4500));
     meatball->SetData("platter position", System::Utils::intBetween(0, 50));
+    meatball->SetDepth(10);
 
-    meatball->bodies.push_back({ System::Application::game->physics->CreateDynamicBody(meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, 1 ), { 0.0f, 5.0f } });
-
-    float randX = System::Utils::floatBetween(-10.0f, -1500.0f);
-
-    meatball->bodies[0].first->SetLinearVelocity(b2Vec2(randX, System::Utils::floatBetween(10.0f, -10.0f)));  
-    meatball->bodies[0].first->SetFixedRotation(true);
+    meatball->bodies.push_back({ System::Application::game->physics->CreateDynamicBody(meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f) ), { 0.0f, 5.0f } });
 
     MeatballMadness::meatballs.push_back(meatball); 
 
@@ -129,7 +127,7 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
     else if (paused)
     {
 
-        if (inputs->isDown && canRestart) {
+        if (inputs->isDown && canRestart == true) {
             
             gameOverText->SetAlpha(0.0f);
     
@@ -163,9 +161,6 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
 
         menuText->SetAlpha(0.0f);
         creditsText->SetAlpha(0.0f);
-
-        if (scoreText != nullptr)
-            scoreText->content = "SCORE: " + std::to_string(score);
 
         if (meatballs.size())
         {
@@ -240,20 +235,38 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
                     );
                 }
 
-                else
-                    meatball->m_rotation -= System::Utils::floatBetween(0.0f, -10.0f);
+                else {   
 
+                    const float fX = meatball->GetData<float>("velX");
+                    const int fY = meatball->GetData<int>("velY");
+
+                    meatball->bodies[0].first->SetLinearVelocity(b2Vec2(fX, fY));
+                    meatball->m_rotation -= System::Utils::floatBetween(0.0f, -10.0f);
+                }
             }
         }
 
         MoveChef();
 
+        //set depth  
+
+        for (const auto &entity : entities) {
+            
+            if (scoreText != nullptr) {
+                scoreText->content = "SCORE: " + std::to_string(score);
+                scoreText->SetDepth(entity->m_depth + 1);
+            }
+
+            
+            for (const auto &button : virtual_buttons)
+                if (button)
+                    button->SetDepth(entity->m_depth + 1);
+
+            gameOverText->SetDepth(entity->m_depth + 1);
+        }
     }
 
-    for (const auto &entity : entities)
-        gameOverText->SetDepth(entity->m_depth + 1);
-
-              
+       
 }
 
 
@@ -395,7 +408,7 @@ void MeatballMadness::Run(Inputs* inputs, Camera* camera, Physics* physics)
             
         virtual_buttons[1]->SetRotation(180);
 
-        for (auto &button : virtual_buttons)
+        for (const auto &button : virtual_buttons)
             if (button)
                 button->SetScale(4.0f);
 
@@ -445,7 +458,7 @@ void MeatballMadness::Reset()
     chefMoveLeft = true;
     chefMoveRight = false;
 
-    System::Application::game->time->delayedCall(2000, [&]() { canRestart = true; });
+    System::Application::game->time->delayedCall(3000, [&]() { canRestart = true; });
 
 }
 
@@ -497,15 +510,12 @@ void MeatballMadness::Reset()
 
 		#ifdef __EMSCRIPTEN__  
 
-			if (checkMobile())
-                _ISMOBILE = 1
-
-			fetchData(); 
-		
-		#elif _ISMOBILE == 1 
-			
-
-		#endif
+            System::Application::isMobile = checkMobile();
+            fetchData();
+            
+        #elif _ISMOBILE == 1
+            System::Application::isMobile = true;
+        #endif
 
 	//main application process
 
