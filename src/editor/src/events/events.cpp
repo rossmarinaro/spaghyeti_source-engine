@@ -785,7 +785,6 @@ void EventListener::BuildAndRun()
     game_src <<	"   });\n";
     game_src << "#endif\n\n\n";
 
-    game_src << "#undef main\n\n";
     game_src <<	"int main(int argc, char* args[])\n";
     game_src <<	"{\n";
     game_src <<	"   #ifdef _WIN32\n";

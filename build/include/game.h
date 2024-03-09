@@ -38,13 +38,13 @@ class Game {
         static void Boot();
         static void Exit();
         static void UpdateFrame();
-        
+
         static std::shared_ptr<Sprite> CreateUI(const std::string &key, float x, float y, int frame = 0);
         static std::shared_ptr<Sprite> CreateSprite(const std::string &key, float x, float y, int frame = 0, float scale = 1.0f);
         static std::shared_ptr<Sprite> CreateTileSprite(const std::string &key, float x, float y, int frame);
         static std::shared_ptr<Text> CreateText(const std::string &content, float x, float y);
-        static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height, const std::string &shader = "graphics");
-        static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end, const std::string &shader = "graphics");
+        static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
+        static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end);
         
         template <typename T>
         static inline void CreateBehavior(std::shared_ptr<Entity> entity, Game* game) {
@@ -99,6 +99,11 @@ class Game {
                 return b->key == key; 
             }));
         }
+
+        inline bool UIListenForInput(int index) {
+            return this->virtual_buttons[index]->m_tint != glm::vec3(1.0f);
+        }
+
 
         static inline ma_device music;
         static inline bool gameState = false;

@@ -100,7 +100,7 @@ Inputs::Inputs()
 //----------------------------------------
 
 
-void Inputs::processInput(GLFWwindow* window)
+void Inputs::ProcessInput(GLFWwindow* window)
 {
 
     this->isDown = this->m_left_click == true ||
@@ -118,40 +118,30 @@ void Inputs::processInput(GLFWwindow* window)
     int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 
     if (1 == present)
-        setGamepadInputs(GLFW_JOYSTICK_1);
+        SetGamepadInputs(GLFW_JOYSTICK_1);
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
 
         glfwSetWindowShouldClose(window, true);
-        std::cout << "Application exited.\n";
+        std::cout << "Application exit called.\n";
 
         return;
     }
 
-    //set control states
-
-    if (Application::isMobile)
-        for (int i = 0; i < Application::game->virtual_buttons.size(); i++)
-            switch (i)
-            {
-                case 0: this->m_left = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 1: this->m_right = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 2: this->m_up = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 3: this->m_down = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-                case 4: this->m_SPACE = Application::game->virtual_buttons[i]->m_tint == glm::vec3(1.0f, 0.0f, 0.0f); break;
-            }
-
-    checkOverlap();
+    CheckOverlap();
 }
 
 
 //------------------------------------- cursor object
 
 
-void Inputs::CreateCursor() {
-    Application::game->cursor = Application::game->CreateGeom(100.0f, 100.0f, 30.0f, 30.0f, "cursor");
+void Inputs::CreateCursor() 
+{
+    Application::game->cursor = Application::game->CreateGeom(100.0f, 100.0f, 30.0f, 30.0f);
     Application::game->cursor->SetColor(glm::vec3(1.0f, 0.0f, 0.0f)); 
+    Application::game->cursor->SetAlpha(0.0f); 
+    Application::game->cursor->m_shader = System::Resources::Manager::shader->GetShader("cursor");
 }
 
 
@@ -169,7 +159,7 @@ void Inputs::RenderCursor()
         if (Application::isMobile && cursorReset)
             cursor_callback(Window::s_instance, -100.0f, -100.0f);
 
-        Application::inputs->checkOverlap();
+        CheckOverlap();
 
         #if DEVELOPMENT == 1
             Application::game->cursor->SetAlpha(Application::game->physics->debug->enable ? 1.0f : 0.0f);
@@ -183,7 +173,7 @@ void Inputs::RenderCursor()
 //-------------------------------------
 
 
-void Inputs::checkOverlap()
+void Inputs::CheckOverlap()
 {
 
     for (int i = 0; i < Application::game->virtual_buttons.size(); i++)
@@ -217,7 +207,7 @@ void Inputs::ToggleVirtualButtonVisibility(bool visibility) {
 //----------------------------------------
 
 
-void Inputs::setKeyInputs(bool boolean, int key, GLFWwindow* window)
+void Inputs::SetKeyInputs(bool boolean, int key, GLFWwindow* window)
 {
 
     switch (key)
@@ -284,10 +274,10 @@ void Inputs::key_callback(GLFWwindow* window, int key, int scancode, int action,
 {
 
     if (action == GLFW_PRESS)
-        Application::inputs->setKeyInputs(true, key, window);
+        Application::inputs->SetKeyInputs(true, key, window);
 
     if (action == GLFW_RELEASE)
-        Application::inputs->setKeyInputs(false, key, window);
+        Application::inputs->SetKeyInputs(false, key, window);
 
 }
 
@@ -295,7 +285,7 @@ void Inputs::key_callback(GLFWwindow* window, int key, int scancode, int action,
 //----------------------------------------
 
 
-void Inputs::setGamepadInputs(unsigned int joystick)
+void Inputs::SetGamepadInputs(unsigned int joystick)
 {
 
     int axesCount;
@@ -446,8 +436,8 @@ void Inputs::ResetControls()
     this->cursorReset = true;
 
     if (!Application::isMobile) {
-        //this->cursorX = -100.0f;
-        //this->cursorY = -100.0f;
+        this->cursorX = -100.0f;
+        this->cursorY = -100.0f;
     }
 
     else

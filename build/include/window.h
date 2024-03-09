@@ -3,7 +3,7 @@
 #include "./renderer.h"
 #include <future>
 
-namespace /* SPAGHYETI_CORE */ System {
+namespace SPAGHYETI_CORE System {
 
     //main window
     class Window {

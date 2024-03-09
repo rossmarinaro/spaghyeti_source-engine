@@ -50,16 +50,18 @@ static void ThrowMeatball()
 
     auto meatball = Game::CreateSprite("meatball", 960.0f, 530.0f, 0, 2.0f);
  
-    const float randX = System::Utils::floatBetween(0.0f, 1.0f) > 0.5f ? 
+    const float speedX = System::Utils::floatBetween(0.0f, 1.0f) > 0.5f ? 
                             System::Utils::floatBetween(0.0f, -500.0f) : 
                             System::Utils::floatBetween(-500.0f, -1500.0f);
 
-    meatball->SetData("velX", round(randX));
-    meatball->SetData("velY", System::Utils::intBetween(450, 4500));
+    meatball->SetData("velX", round(speedX));
+    meatball->SetData("velY", System::Utils::intBetween(200, 7000));
     meatball->SetData("platter position", System::Utils::intBetween(0, 50));
     meatball->SetDepth(10);
 
     meatball->bodies.push_back({ System::Application::game->physics->CreateDynamicBody(meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f) ), { 0.0f, 5.0f } });
+    meatball->bodies[0].first->SetFixedRotation(true);
+    meatball->SetVelocity(round(System::Utils::floatBetween(-500.0f, -1000.0f)), System::Utils::floatBetween(100.0f, -200.0f));
 
     MeatballMadness::meatballs.push_back(meatball); 
 
@@ -94,14 +96,14 @@ static void MoveChef()
     {
         MeatballMadness::chef->SetVelocityX(1.5f);
         MeatballMadness::chef->SetFlipX(true);
-        MeatballMadness::chef->Animate("move with meatball");
+        MeatballMadness::chef->Animate("move with meatball", false, 4);
     }
     
     if (chefMoveRight)
     {
         MeatballMadness::chef->SetVelocityX(-1.5f);
         MeatballMadness::chef->SetFlipX(false);
-        MeatballMadness::chef->Animate("move");
+        MeatballMadness::chef->Animate("move", false, 4);
     }
 
 }
@@ -113,6 +115,20 @@ static void MoveChef()
 
 void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
 {   
+    
+    //set control states
+
+    if (System::Application::isMobile)
+        for (int i = 0; i < virtual_buttons.size(); i++)
+        {
+            virtual_buttons[i]->SetScale(4.0f);
+            
+            switch (i) {
+                case 0: inputs->m_left = UIListenForInput(0); break;
+                case 1: inputs->m_right = UIListenForInput(1); break;
+                case 2: inputs->m_up = UIListenForInput(2); break;
+            }
+        }
 
     //platter hitbox
 
@@ -240,8 +256,8 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
                     const float fX = meatball->GetData<float>("velX");
                     const int fY = meatball->GetData<int>("velY");
 
-                    meatball->bodies[0].first->SetLinearVelocity(b2Vec2(fX, fY));
-                    meatball->m_rotation -= System::Utils::floatBetween(0.0f, -10.0f);
+                    meatball->bodies[0].first->ApplyForceToCenter(b2Vec2(fX, fY), true);
+                    meatball->m_rotation -= System::Utils::floatBetween(5.0f, 13.0f);
                 }
             }
         }
@@ -408,10 +424,6 @@ void MeatballMadness::Run(Inputs* inputs, Camera* camera, Physics* physics)
             
         virtual_buttons[1]->SetRotation(180);
 
-        for (const auto &button : virtual_buttons)
-            if (button)
-                button->SetScale(4.0f);
-
     }
 
     #ifndef __EMSCRIPTEN__
@@ -498,36 +510,34 @@ void MeatballMadness::Reset()
 #endif
 
 
-#undef main
+int main(int argc, char* args[])
+{  
 
-	int main(int argc, char* args[])
-	{  
+    #ifdef _WIN32
+        ShowWindow(GetConsoleWindow(), SW_HIDE);
+        SetUnhandledExceptionFilter(UnhandledExceptionFilter);
+    #endif
 
-		#ifdef _WIN32
-			ShowWindow(GetConsoleWindow(), SW_HIDE);
-			SetUnhandledExceptionFilter(UnhandledExceptionFilter);
-		#endif
+    #ifdef __EMSCRIPTEN__  
 
-		#ifdef __EMSCRIPTEN__  
+        System::Application::isMobile = checkMobile();
+        fetchData();
+        
+    #elif _ISMOBILE == 1
+        System::Application::isMobile = true;
+    #endif
 
-            System::Application::isMobile = checkMobile();
-            fetchData();
-            
-        #elif _ISMOBILE == 1
-            System::Application::isMobile = true;
-        #endif
+    //main application process
 
-	//main application process
+    MeatballMadness game;
+    System::Application app { &game }; 
 
-		MeatballMadness game;
-        System::Application app { &game }; 
+    #ifdef __EMSCRIPTEN__
+        emscripten_exit_with_live_runtime();
+    #endif
 
-		#ifdef __EMSCRIPTEN__
-			emscripten_exit_with_live_runtime();
-		#endif
-
-		return 0; 
-	}
+    return 0; 
+}
 
 
     //Boof RedGibbon

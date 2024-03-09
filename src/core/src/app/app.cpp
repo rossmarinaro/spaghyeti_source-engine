@@ -47,7 +47,7 @@ void System::Application::Update()
         glfwPollEvents();  
         
         if (inputs != nullptr)
-            inputs->processInput(Window::s_instance);
+            inputs->ProcessInput(Window::s_instance);
   
         glViewport(0, 0, Window::m_width, Window::m_height);
         glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);

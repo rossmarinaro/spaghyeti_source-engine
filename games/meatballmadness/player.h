@@ -40,7 +40,6 @@ class Waiter : public Behavior {
         
                 if (inputs->m_right) 
                 {
-                    this->speed_x = 1000;
                     this->sprite->SetFlipX(false);
                     this->sprite->Animate("run", true, 7);
                     this->sprite->SetVelocityX(3200);
@@ -48,7 +47,6 @@ class Waiter : public Behavior {
                 
                 else if (inputs->m_left)
                 {
-                    this->speed_x = -1000;
                     this->sprite->SetFlipX(true);
                     this->sprite->Animate("run", true, 7);
                     this->sprite->SetVelocityX(-3200);
@@ -59,7 +57,6 @@ class Waiter : public Behavior {
                     this->sprite->SetVelocityX(0);
                 }
 
-
             }
 
         }
@@ -67,6 +64,5 @@ class Waiter : public Behavior {
     private:
 
         bool canJump;
-        float speed_x;
 
 };

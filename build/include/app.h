@@ -28,7 +28,7 @@
 
 /****** Application *****/
 
-namespace /* SPAGHYETI_CORE */ System {
+namespace SPAGHYETI_CORE System {
 
 
 	class Application 

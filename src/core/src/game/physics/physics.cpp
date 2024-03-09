@@ -131,7 +131,6 @@ void Physics::Update()
 
     System::Application::game->physics->bodiesToRemove.clear();
 
-    //if (System::Application::game->physics.world != nullptr)
-     //   world.SetGravity(b2Vec2(gravityX, gravityY));
+    world.SetGravity(b2Vec2(gravityX, gravityY));
 }
 

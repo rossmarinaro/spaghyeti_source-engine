@@ -139,11 +139,11 @@ class Geometry : public Entity {
 
 		//quad
 
-		Geometry(float x, float y, float width, float height, const std::string &shader);
+		Geometry(float x, float y, float width, float height);
 
 		//line
 
-		Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end, const std::string &shader);
+		Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end);
 
 		~Geometry() = default;
 

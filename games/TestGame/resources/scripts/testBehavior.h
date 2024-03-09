@@ -27,6 +27,9 @@ class TestBehavior_Behavior : public Behavior {
         void Update(Inputs* inputs, Camera* camera) override 
         { 
 
+            if (this->follow)
+                this->sprite->StartFollow(camera, 500);
+
             if (inputs->m_up && this->canJump) {
                 this->canJump = false;
                 this->sprite->SetImpulseY(-400);
@@ -37,21 +40,18 @@ class TestBehavior_Behavior : public Behavior {
                 this->canJump = true;
 
                 if (inputs->m_left) {       
-                    this->sprite->SetVelocityX(-380);
+                    this->sprite->SetVelocityX(-3800);
                     this->sprite->SetFlipX(false); 
                 }
 
                 else if (inputs->m_right) {
-                    this->sprite->SetVelocityX(380); 
+                    this->sprite->SetVelocityX(3800); 
                     this->sprite->SetFlipX(true);
                 }
 
                 else 
                     this->sprite->SetVelocityX(0);
             }
-
-            if (this->follow)
-                this->sprite->StartFollow(camera, 500);
 
         }
 

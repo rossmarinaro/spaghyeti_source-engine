@@ -67,7 +67,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         sn->spriteHandle->m_texture.U1 = sprite["U1"];
         sn->spriteHandle->m_texture.V1 = sprite["V1"];
-        sn->spriteHandle->m_texture.U2 = sprite["U2"];
+        sn->spriteHandle->m_texture.U2 = sprite["U2"]; 
         sn->spriteHandle->m_texture.V2 = sprite["V2"];
         sn->spriteHandle->m_key = sprite["currentTexture"];
         sn->spriteHandle->m_tint.x = sprite["m_tint"]["x"];

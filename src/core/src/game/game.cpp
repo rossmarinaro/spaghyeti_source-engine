@@ -318,9 +318,9 @@ std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, floa
 //----------------------------- (rect)
 
 
-std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height, const std::string &shader)
+std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height)
 {
-    auto geom = std::make_shared<Geometry>(x, y, width, height, shader);
+    auto geom = std::make_shared<Geometry>(x, y, width, height);
 
     entities.push_back(geom);
 
@@ -331,9 +331,9 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 //----------------------------- (line)
 
 
-std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end, const std::string &shader)
+std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end)
 {
-    auto geom = std::make_shared<Geometry>(x, y, start, end, shader);
+    auto geom = std::make_shared<Geometry>(x, y, start, end);
 
     entities.push_back(geom);
 

@@ -64,20 +64,20 @@ void Primitive::Draw (int shape, int dimension, int slot, int vertices, int draw
 
 
 //line
-Geometry::Geometry(float x, float y, float width, float height, const std::string &shader): 
+Geometry::Geometry(float x, float y, float width, float height): 
     Entity("geometry", x, y),
         primitive(std::make_shared<Graphics::Primitive>()),
-        m_shader(Shader::GetShader(shader)),
+        m_shader(Shader::GetShader("graphics")),
         m_type("quad"),
         width(width),
         height(height)
             { std::cout << "Entity: quad created.\n"; }
 
 //quad
-Geometry::Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end, const std::string &shader): 
+Geometry::Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end): 
     Entity("geometry", x, y),
         primitive(std::make_shared<Graphics::Primitive>()),
-        m_shader(Shader::GetShader(shader)),
+        m_shader(Shader::GetShader("graphics")),
         m_type("line"),
         start(start),
         end(end)
