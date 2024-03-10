@@ -401,7 +401,7 @@ void EventListener::OpenFile()
 
             std::map<std::string, std::string>::iterator iterator = AssetManager::loadedAssets.find(asset);
 
-            if (iterator == AssetManager::loadedAssets.end() || Editor::selectedAsset.first.length() < 0) {
+            if (iterator == AssetManager::loadedAssets.end() || Editor::selectedAsset.length() < 0) {
 
                 const std::string key = "\"" + asset + "\"";
 
@@ -568,7 +568,8 @@ void EventListener::BuildAndRun()
                     std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
                     frame_oss << framesToLoad.back();
 
-                    asset_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n";
+                    if (sn->frames.size() > 1)
+                        asset_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n";
                 }
 
                 //load animations

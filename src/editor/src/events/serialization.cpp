@@ -62,8 +62,10 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         sn->rotation = sprite["rotation"];
         sn->scaleX = sprite["scaleX"];
         sn->scaleY = sprite["scaleY"];
+        sn->flippedX = sprite["flipX"];
+        sn->flippedY = sprite["flipY"];
 
-        sn->ApplyTexture({ sprite["currentTexture"], System::Resources::Manager::texture2D->GetTexture(sprite["currentTexture"]).ID });  
+        sn->ApplyTexture(sprite["currentTexture"]);  
 
         sn->spriteHandle->m_texture.U1 = sprite["U1"];
         sn->spriteHandle->m_texture.V1 = sprite["V1"];
@@ -75,7 +77,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         sn->spriteHandle->m_tint.z = sprite["m_tint"]["z"];
         sn->spriteHandle->m_alpha = sprite["m_alpha"];
 
-        sn->spriteHandle->SetTexture(System::Resources::Manager::texture2D->GetTexture(sprite["currentTexture"]).ID);
+        sn->spriteHandle->SetTexture(sprite["currentTexture"]);
 
         for (const auto &frame : sprite["frames"]) {
             sn->frames.push_back({ frame["frame x"], frame["frame y"], frame["frame width"], frame["frame height"] });
@@ -439,6 +441,8 @@ void EventListener::Serialize(json &data)
                 { "rotation", sn->rotation },
                 { "scaleX", sn->scaleX },
                 { "scaleY", sn->scaleY },
+                { "flipX", sn->flippedX },
+                { "flipY", sn->flippedY },
                 { "frames", frames },
                 { "components", {
                         { "physics", {

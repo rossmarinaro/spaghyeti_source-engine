@@ -230,20 +230,20 @@ class Sprite : public Entity {
 		}
 
 		template<typename T>
-		inline T GetData(const std::string &key) { return std::any_cast<T>(this->data.at(key)); }
+		inline T GetData(const std::string& key) { return std::any_cast<T>(this->data.at(key)); }
 
-		inline void SetData(const std::string &key, const std::any &value) { this->data.insert({key, value}); }
-		inline void SetTexture(unsigned int id) { this->m_texture.ID = id; }
+		inline void SetData(const std::string& key, const std::any& value) { this->data.insert({key, value}); }
 		inline void SetFrame(int frame) { this->m_currentFrame = frame; }
 		inline void SetAnimation(const char* key) { this->currentAnim = key; }
 		inline void StopAnimation() { this->currentAnim = nullptr; }
 
 		inline void SetContact(bool isContact) { this->m_contacting = isContact; }
 		inline bool IsContacting() { return this->m_contacting; }
-		inline bool IsSpritesheet() { return this->m_isSpritesheet; }
+		inline bool IsSpritesheet() { return this->m_isSpritesheet; } 
 
 		void ReadSpritesheetData();
 		void RemoveBodies();
+		void SetTexture(const std::string& key);
 
 		void SetVelocity(float velX, float velY);
 		void SetVelocityX(float velX);
@@ -253,7 +253,7 @@ class Sprite : public Entity {
 		void SetImpulseX(float x);
 		void SetImpulseY(float y);
 		
-		void Animate(const std::string &animKey, bool yoyo = false, int rate = 2); 
+		void Animate(const std::string& animKey, bool yoyo = false, int rate = 2); 
 		void Render();
 
 		Sprite(const std::string &key, float x, float y, const char* type);

@@ -281,13 +281,13 @@ void Texture2D::Load(const std::string &key)
 void Texture2D::UnLoad(const std::string &key) 
 {
     
-    Texture2D* tex = &System::Resources::Manager::textures[key];
+    Texture2D* texture = &System::Resources::Manager::textures[key];
 
-    glDeleteTextures(1, &tex->ID);   
+    glDeleteTextures(1, &texture->ID);   
     glBindTexture(GL_TEXTURE_2D, 0); 
-    glDeleteVertexArrays(1, &tex->VAO); 
-    glDeleteBuffers(1, &tex->VBO);
-    glDeleteBuffers(1, &tex->UVBO);
+    glDeleteVertexArrays(1, &texture->VAO); 
+    glDeleteBuffers(1, &texture->VBO);
+    glDeleteBuffers(1, &texture->UVBO);
 
     System::Resources::Manager::textures.erase(key);
 
@@ -335,16 +335,34 @@ void Texture2D::Generate(unsigned int width, unsigned int height, auto &data)
 
 void Texture2D::Update(const glm::vec2 &position, bool flipX, bool flipY) 
 {   
+
+    //---------------- format texture
  
     Format offset;
 
-    if (flipX) 
+    //flip X
+
+    if (flipX && !flipY) 
         offset = { this->FrameWidth, this->FrameHeight, this->U2, this->V1, this->U1, this->V2 }; 
+
+    //flip Y
+
+    else if (!flipX && flipY)
+        offset = { this->FrameWidth, this->FrameHeight, this->U1, this->V2, this->U2, this->V1 }; 
+
+    //flip X, Y
+
+    else if (flipX && flipY)
+        offset = { this->FrameWidth, this->FrameHeight, this->U2, this->V2, this->U1, this->V1 }; 
+
+    //no flip
 
     else
         offset = { this->FrameWidth, this->FrameHeight, this->U1, this->V1, this->U2, this->V2 }; 
+
     
     Renderable texture = { position.x, position.y, offset }; //posX, posY, UV
+
 
     //----------------- vertices 
     

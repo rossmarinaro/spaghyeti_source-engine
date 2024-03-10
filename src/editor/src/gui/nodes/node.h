@@ -3,10 +3,10 @@
 #include <vector>
 #include <string>
 
-
 #include "../../components/component.h"
 #include "../gui.h"
 
+//base node 
 class Node {
 
     public:
@@ -106,6 +106,8 @@ class SpriteNode : public Node {
 
         bool framesApplied,       
              filter_nearest,
+             flippedX,
+             flippedY,
              do_yoyo;
 
         float restitution,
@@ -139,7 +141,7 @@ class SpriteNode : public Node {
         void Render(std::shared_ptr<Node> node) override;
         void Reset(const char* component_type = "") override;
 
-        void ApplyTexture(const std::pair<std::string, GLuint> &asset);
+        void ApplyTexture(const std::string &key);
         void ApplyAnimation(const std::string &key, int start, int end);
 
         void CreateBody(

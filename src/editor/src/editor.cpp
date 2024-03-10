@@ -134,7 +134,7 @@ void Editor::Reset()
 
     worldWidth = 0; 
 	worldHeight = 0;
-    selectedAsset = {};  
+    selectedAsset.clear();  
     camera->Reset();
     globals_applied = false;
     gravity_continuous = true;

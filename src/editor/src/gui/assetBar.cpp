@@ -28,8 +28,8 @@ void GUI::RenderAssets()
                 ImGui::SameLine(); 
 
             if (ImGui::ImageButton("asset icon", (void*)(intptr_t) AssetManager::images[i].second, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0))) {
-                Editor::selectedAsset = AssetManager::images[i];
-                Editor::Log("Current asset selected: " + Editor::selectedAsset.first);
+                Editor::selectedAsset = AssetManager::images[i].first;
+                Editor::Log("Current asset selected: " + Editor::selectedAsset);
             }
 
             //asset tool tip

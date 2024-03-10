@@ -13,6 +13,8 @@ SpriteNode::SpriteNode(const std::string &id):
         do_animate(false),
         do_yoyo(false),
         filter_nearest(true),
+        flippedX(false),
+        flippedY(false),
         frame(1),
         anim(1),
         depth(1),
@@ -63,7 +65,7 @@ void SpriteNode::Reset(const char* component_type)
         this->animBuf2.clear();
         this->animBuf3.clear();
         this->animBuf4.clear();
-        this->anim = 0;
+        this->anim = 0; 
     }
 
     if (strcmp(component_type, "Physics") == 0 || passAll)
@@ -130,21 +132,19 @@ void SpriteNode::CreateBody(
 //--------------------------------- applies texture to current seleted node 
 
 
-void SpriteNode::ApplyTexture(const std::pair<std::string, GLuint> &asset)
+void SpriteNode::ApplyTexture(const std::string &asset)
 {  
 
     if (this->spriteHandle == nullptr) { 
 
-        this->spriteHandle = Game::CreateSprite(asset.first, 0.0f, 0.0f);
+        this->spriteHandle = Game::CreateSprite(asset, 0.0f, 0.0f);
         this->spriteHandle->ID = this->m_ID;
     }
 
-    else {
-        this->spriteHandle->SetTexture(asset.second); 
-        this->spriteHandle->m_key = asset.first;
-    }
+    else 
+       this->spriteHandle->SetTexture(asset); 
 
-    this->currentTexture = asset.second; 
+    this->currentTexture = this->spriteHandle->m_texture.GetTexture(asset).ID;  
 
 }
 
@@ -453,20 +453,23 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                     //texture
         
-                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->currentTexture, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset.first) == "image")
+                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->currentTexture, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image")
                         this->ApplyTexture(Editor::selectedAsset);
 
-                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && Editor::selectedAsset.first.length() && System::Utils::GetFileType(Editor::selectedAsset.first) != "image")
+                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && Editor::selectedAsset.length() && System::Utils::GetFileType(Editor::selectedAsset) != "image")
                         ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
                         
                     if (this->currentTexture)
                     {
-
-                        ImGui::Checkbox("UVs", &this->show_sprite_uv); ImGui::SameLine();
-
-                        ImGui::Checkbox("atlas", &this->show_sprite_atlas); ImGui::SameLine();
-
                         ImGui::Checkbox("filter nearest", &this->filter_nearest);
+
+                        ImGui::Text("flip"); ImGui::SameLine();
+                        ImGui::Checkbox("X", &this->flippedX); ImGui::SameLine();
+                        ImGui::Checkbox("Y", &this->flippedY);
+
+                        ImGui::Text("format"); ImGui::SameLine();
+                        ImGui::Checkbox("UVs", &this->show_sprite_uv); ImGui::SameLine();
+                        ImGui::Checkbox("atlas", &this->show_sprite_atlas); 
  
                         if (this->filter_nearest)
                         {
@@ -600,6 +603,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
             this->spriteHandle->SetPosition(this->positionX, this->positionY);
             this->spriteHandle->SetRotation(this->rotation); 
             this->spriteHandle->SetDepth(this->depth);
+            this->spriteHandle->SetFlip(this->flippedX, this->flippedY);
 
             //entity physics body transform
             

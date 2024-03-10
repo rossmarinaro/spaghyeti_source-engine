@@ -53,7 +53,7 @@ class Editor
 		static inline Camera* camera;
 		
 		static inline std::vector<std::pair<std::string, std::string>> globals;
-        static inline std::pair<std::string, GLuint> selectedAsset;
+        static inline std::string selectedAsset;
 		static inline std::string platform = "Windows";
         static inline std::string projectPath = "";
 		static inline std::string rootPath;

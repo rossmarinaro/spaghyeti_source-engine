@@ -64,8 +64,8 @@ void AudioNode::Render(std::shared_ptr<Node> node)
             {
 
                 if (ImGui::ImageButton("audio source", (void*)(intptr_t)this->audioTexture.ID, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0))) {
-                    if (System::Utils::GetFileType(Editor::selectedAsset.first) == "audio")
-                        this->audio_source_name = Editor::selectedAsset.first;
+                    if (System::Utils::GetFileType(Editor::selectedAsset) == "audio")
+                        this->audio_source_name = Editor::selectedAsset;
                 }
                     
                 else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(this->audio_source_name) != "audio") 
