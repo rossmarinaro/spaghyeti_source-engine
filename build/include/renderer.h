@@ -20,10 +20,10 @@
 
 #else 
 
-    //#ifndef _GLFW_WIN32
-       // #define _GLFW_WIN32
-        #include "../../vendors/glad/include/glad/glad.h"
-  //  #endif
+    #ifndef _GLFW_WIN32
+        #define _GLFW_WIN32
+        #include "../../vendors/glad/include/glad/glad.h" 
+    #endif
 
 #endif
 

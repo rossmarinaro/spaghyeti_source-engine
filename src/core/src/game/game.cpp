@@ -12,7 +12,8 @@ void Game::Boot()
     time = new Time;
     camera = new Camera;
     physics = new Physics;
-
+    maps = new MapManager;
+    
 	physics->world.SetContactListener(&physics->collisions);
     
     #if DEVELOPMENT == 1 
@@ -26,11 +27,8 @@ void Game::Boot()
     //preload / run game layer
 
     System::Application::game->Preload();
-
     System::Resources::Manager::RegisterAssets();
- 
     System::Application::game->Run(System::Application::inputs, camera, physics);
-    
     System::Application::inputs->CreateCursor();
 
     glfwSetWindowTitle(System::Window::s_instance, name.c_str());
@@ -67,6 +65,9 @@ void Game::Exit()
 
     delete time;
     time = nullptr;
+
+    delete maps;
+    maps = nullptr;
 
     std::cout << "Game: exited.\n";
 

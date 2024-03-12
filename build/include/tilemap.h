@@ -7,6 +7,9 @@ class MapManager {
 
     public:
 
+        std::string currentMap;
+        std::vector<std::vector<std::shared_ptr<Sprite>>> layers;
+
         static void CreateLayer (
             const char* data_key, 
             const char* texture_key, 
@@ -17,9 +20,8 @@ class MapManager {
             uint32_t depth
         );
         
+        static void RemoveLayer(const std::string& key);
         static void ClearMap();
-
-        static inline std::vector<std::vector<std::shared_ptr<Sprite>>> layers;
 
 }; 
 

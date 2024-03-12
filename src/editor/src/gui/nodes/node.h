@@ -69,22 +69,21 @@ class Node {
 
             }
 
+        static void ClearAll();
         static void DeleteNode (std::shared_ptr<Node> node);
         static int ChangeName(ImGuiInputTextCallbackData* data);
-        
+        static void ApplyShader(std::shared_ptr<Node> node, const std::string& name, bool setShader = false);
         static void LoadShader(
             std::shared_ptr<Node> node, 
             const std::string &name, 
             const std::string &vertPath, 
             const std::string &fragPath
         );
-
-        static void ClearAll();
-
+        
+        
         void AddComponent(const char* type, bool init = true);
         void RemoveComponent(std::shared_ptr<Component> component);
-
-        const std::shared_ptr<Component> GetComponent(const std::string &type, const std::string &id);
+        const std::shared_ptr<Component> GetComponent(const std::string& type, const std::string& id);
         const bool HasComponent(const char* type);
 
         struct StringContainer { std::string s = ""; };

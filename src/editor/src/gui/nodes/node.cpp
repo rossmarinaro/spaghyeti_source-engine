@@ -28,7 +28,7 @@ Node::Node(const std::string &id, std::string type, std::string name):
 
 
 
-//---------------------------
+//--------------------------- change title name
 
 
 int Node::ChangeName(ImGuiInputTextCallbackData* data)
@@ -53,7 +53,7 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
 }
 
 
-//---------------------------
+//--------------------------- assign UUID to node and increment global counter
 
 
 const char* Node::Assign()
@@ -79,7 +79,7 @@ const char* Node::Assign()
 }
 
 
-//-------------------------
+//------------------------- delete
 
 
 void Node::DeleteNode (std::shared_ptr<Node> node)
@@ -103,23 +103,28 @@ void Node::DeleteNode (std::shared_ptr<Node> node)
     if (count > 0) 
         count--;
 
-    else 
-        node.reset();
 }
 
 
-//--------------------------
+//-------------------------- remove all
 
 
-void Node::ClearAll() {
+void Node::ClearAll() 
+{
 
-    for (auto& node : nodes) 
-        DeleteNode(node);
+    if (!nodes.size()) 
+        return;
 
+    for (const auto& node : nodes) 
+        node->Reset();
+    
+    nodes.clear();
+    count = 0;
+    
 }
 
  
-//--------------------------
+//-------------------------- add component
 
 
 void Node::AddComponent(const char* type, bool init)
@@ -144,7 +149,7 @@ void Node::AddComponent(const char* type, bool init)
 }
 
 
-//------------------------------
+//------------------------------ remove component
 
 
 void Node::RemoveComponent(std::shared_ptr<Component> component)
@@ -158,12 +163,10 @@ void Node::RemoveComponent(std::shared_ptr<Component> component)
         this->components.erase(it);
     }
 
-    if (!this->components.size()) 
-        (*it).reset();
 }
 
 
-//------------------------------
+//------------------------------ get component
 
 
 const std::shared_ptr<Component> Node::GetComponent(const std::string &type, const std::string &id)
@@ -181,7 +184,7 @@ const std::shared_ptr<Component> Node::GetComponent(const std::string &type, con
 }
 
 
-//------------------------------
+//------------------------------ node has component
 
 
 const bool Node::HasComponent(const char* type) {
@@ -191,20 +194,33 @@ const bool Node::HasComponent(const char* type) {
 }
 
 
-//-----------------------------
+//----------------------------- load custom shader
 
 
 void Node::LoadShader(
     std::shared_ptr<Node> node, 
-    const std::string &name, 
-    const std::string &vertPath, 
-    const std::string &fragPath
+    const std::string& name, 
+    const std::string& vertPath, 
+    const std::string& fragPath
 )
 {
 
     node->shader = { name, { vertPath, fragPath } };  
 
     Shader::Load(name, vertPath.c_str(), fragPath.c_str(), nullptr);
+
+    Node::ApplyShader(node, name);
+}
+
+
+//------------------------------- apply shaders
+
+
+void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name, bool setShader) 
+{
+
+    if (setShader)
+        node->shader = { name, {} };  
 
     if (node->m_type == "Sprite") {
         auto sn = std::dynamic_pointer_cast<SpriteNode>(node);

@@ -19,7 +19,7 @@ TilemapNode::TilemapNode(const std::string &id):
  
 
 TilemapNode::~TilemapNode() {
-    
+
     MapManager::ClearMap();
 
     Editor::Log("Tilemap node " + this->m_name + " deleted.");
@@ -312,11 +312,10 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                     ImGui::SameLine();
 
-                    if (ImGui::Button("remove layer") && this->layer > 1) 
-                    {
+                    if (ImGui::Button("remove layer") && this->layer > 1) {
 
-                        for (auto& tile : MapManager::layers.back())
-                            Game::DestroyEntity(tile);
+                        if (this->layers.size())
+                            Game::maps->RemoveLayer(this->layers[this->layer - 1][0]);
 
                         this->layers.pop_back();
                         this->layer--;

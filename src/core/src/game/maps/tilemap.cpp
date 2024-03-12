@@ -1,8 +1,7 @@
-#include "../../../../../build/include/game.h"
 #include "../../../../../build/include/tilemap.h"
 #include "../../../../../build/include/app.h"
 
-
+using app = System::Application;
 
 //------------------------------------- load tilemap layer
 
@@ -53,8 +52,10 @@ void MapManager::CreateLayer (
 
             if (tileType > -1) 
             {
-                auto tile = Game::CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType);
+                auto tile = app::game->CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType);
+                
                 tile->SetDepth(depth); 
+                tile->ID = (std::string)data_key;
 
                 //add layer to stack
 
@@ -63,26 +64,52 @@ void MapManager::CreateLayer (
 
         }
 
-    layers.push_back(layer);
+    app::game->maps->layers.push_back(layer);
 
     std::cout << "Tilemap: Initialized layer: " + (std::string)data_key + "\n";
 
 }
 
 
-//-------------------------------------
+//------------------------------------- remove layer
+
+
+void MapManager::RemoveLayer(const std::string& key) 
+{
+
+    for (auto it = app::game->maps->layers.begin(); it != app::game->maps->layers.end(); ++it) {
+
+        auto layer = *it;
+
+        layer.erase(
+            std::remove_if(layer.begin(), layer.end(), [&](auto t) { 
+                return strcmp(t->type, "tile") == 0 && t->ID == key; 
+            }), layer.end());
+    }
+
+    app::game->entities.erase(
+        std::remove_if(app::game->entities.begin(), app::game->entities.end(), [&](auto t) { 
+            return strcmp(t->type, "tile") == 0 && t->ID == key; }), 
+                app::game->entities.end());
+
+    std::cout << "Tilemap: layer " + key + " cleared.\n";
+
+}
+
+
+//------------------------------------- clear all layers
 
 
 void MapManager::ClearMap() 
 {
 
-    Game::entities.erase(
-        std::remove_if(Game::entities.begin(), Game::entities.end(), [](auto t) { 
-            return strcmp(t->type, "tile") == 0; 
-        }), Game::entities.end());
+    app::game->maps->layers.clear();
 
-    layers.clear();
+    app::game->entities.erase(
+        std::remove_if(app::game->entities.begin(), app::game->entities.end(), [](auto t) { 
+            return strcmp(t->type, "tile") == 0; }), 
+                app::game->entities.end());
 
-    std::cout << "Tilemap: layer cleared.\n";
+    std::cout << "Tilemap: layers cleared.\n";
 
 }

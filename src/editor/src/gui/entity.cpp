@@ -64,6 +64,21 @@ void GUI::RenderShaderOptions(const std::string &nodeId)
             if (ImGui::BeginMenu("select shader"))
             {
 
+                ImGui::Text("Stock:");
+
+                if (ImGui::MenuItem("standard")) 
+                    Node::ApplyShader(node, "sprite", true);
+
+                if (ImGui::MenuItem("batch")) 
+                    Node::ApplyShader(node, "sprite_batch", true);
+
+                if (ImGui::MenuItem("billboard")) 
+                    Node::ApplyShader(node, "sprite_billboard", true);
+
+                ImGui::Separator();
+
+                ImGui::Text("Custom:");
+
                 if (std::filesystem::is_empty(Editor::projectPath + AssetManager::shader_dir))
                     ImGui::Text("no shaders in directory.");
 
@@ -95,7 +110,7 @@ void GUI::RenderShaderOptions(const std::string &nodeId)
                                     Node::LoadShader(node, name, vertPath, fragPath);
                                     
                                 else    
-                                    Editor::Log("Loading custom shader failed. file not found.");
+                                    Editor::Log("Loading custom shader failed. file not found."); 
                                 
                             }
 
@@ -115,7 +130,12 @@ void GUI::RenderShaderOptions(const std::string &nodeId)
             {
                 node->RemoveComponent(component); 
                 
-                if (node->shader.first.length())
+                if (
+                    node->shader.first.length() && 
+                    node->shader.first != "standard" && 
+                    node->shader.first != "sprite_batch" && 
+                    node->shader.first != "sprite_billboard" 
+                )
                     Shader::UnLoad(node->shader.first);
             }
             

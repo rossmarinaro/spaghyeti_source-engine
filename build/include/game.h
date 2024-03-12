@@ -34,6 +34,7 @@ class Game {
         static inline Camera* camera;
         static inline Physics* physics;
         static inline Text* text; 
+        static inline MapManager* maps;
 
         static void Boot();
         static void Exit();
