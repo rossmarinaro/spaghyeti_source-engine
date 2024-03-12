@@ -1,7 +1,7 @@
 #include <fstream>
 #include <sstream>
 #include <time.h>
-#include <ctime> 
+#include <ctime>
 
 #include "./editor.h"
 #include "./assets/assets.h"
@@ -12,29 +12,26 @@
 using namespace /* SPAGHYETI_CORE */ System;
 
 
-
 //-----------------------------
 
 
-void Editor::Update() 
+void Editor::Update()
 {
 
-    Application::Update(); 
+    Application::Update(camera);
 
-    Shader::Update(camera);
-    
-    if (GUI::grid) 
+    if (GUI::grid)
         GUI::grid->Render();
-        
-    glfwPollEvents(); 
+
+    glfwPollEvents();
 
     Time::Update(glfwGetTime());
-    
-    GUI::Render(); 
+
+    GUI::Render();
 
     glViewport(0, 0, Window::m_width, Window::m_height);
 	glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);
-	glfwSwapBuffers(Window::s_instance); 
+	glfwSwapBuffers(Window::s_instance);
 
 }
 
@@ -45,34 +42,34 @@ void Editor::Update()
 Editor::Editor()
 {
     //AllocConsole();
-    
+
     remove("appLog.txt");
 
-    rootPath = std::filesystem::current_path().string(); 
+    rootPath = std::filesystem::current_path().string();
 
     Log("Editor Root: " + rootPath);
 
     Camera cam;
     camera = &cam;
 
-    Window::Init(); 
- 
-    Application::Init(); 
+    Window::Init();
 
-    GUI::Launch(); 
+    Application::Init();
 
-    //set top-left header and bottom toolbar icon 
-    
-    GLFWimage image; 
-    
+    GUI::Launch();
+
+    //set top-left header and bottom toolbar icon
+
+    GLFWimage image;
+
     image.width = 66;
     image.height = 65;
     image.pixels = reinterpret_cast<unsigned char*>(const_cast<char*>(System::Resources::Manager::GetRawData("editor logo")));
- 
+
     glfwSetWindowIcon(Window::s_instance, 1, &image);
 
     //main update loop
-    
+
     while (!glfwWindowShouldClose(Window::s_instance))
        Update();
 
@@ -97,7 +94,7 @@ Editor::~Editor()
     Resources::Manager::UnLoadRawImage("audio src");
     Resources::Manager::UnLoadRawImage("data src");
 
-    Editor::Log("Editor closed.");   
+    Editor::Log("Editor closed.");
 
 }
 
@@ -105,10 +102,10 @@ Editor::~Editor()
 //------------------------------
 
 
-void Editor::Log(const std::string &message)
+void Editor::Log(const std::string& message)
 {
 
-    std::filesystem::current_path(Editor::rootPath);   
+    std::filesystem::current_path(Editor::rootPath);
 
     std::ofstream src;
 
@@ -118,7 +115,7 @@ void Editor::Log(const std::string &message)
 
     src << message << " @ " << std::ctime(&time_stamp);
 
-    src.close(); 
+    src.close();
 }
 
 
@@ -132,21 +129,23 @@ void Editor::Reset()
 
     Node::ClearAll();
 
-    worldWidth = 0; 
-	worldHeight = 0;
-    selectedAsset.clear();  
-    camera->Reset();
+    worldWidth = 2000;
+	worldHeight = 2000;
+
     globals_applied = false;
     gravity_continuous = true;
     gravity_sleeping = true;
+
+    camera->Reset();
+
+    selectedAsset.clear();
     globals.clear();
- 
+
     AssetManager::images.clear();
     AssetManager::loadedAssets.clear();
 
     Log("Workspace reset.");
 }
-
 
 
 

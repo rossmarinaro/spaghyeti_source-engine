@@ -139,7 +139,7 @@ void Inputs::ProcessInput(GLFWwindow* window)
 void Inputs::CreateCursor() 
 {
     Application::game->cursor = Application::game->CreateGeom(100.0f, 100.0f, 30.0f, 30.0f);
-    Application::game->cursor->SetColor(glm::vec3(1.0f, 0.0f, 0.0f)); 
+    Application::game->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
     Application::game->cursor->SetAlpha(0.0f); 
     Application::game->cursor->m_shader = System::Resources::Manager::shader->GetShader("cursor");
 }

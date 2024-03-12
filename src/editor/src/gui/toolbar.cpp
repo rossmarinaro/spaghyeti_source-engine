@@ -104,6 +104,27 @@ void GUI::ShowSettings()
 
         ImGui::EndMenu();
     }
+
+    //world bounds
+
+    if (ImGui::BeginMenu("bounds"))
+    {
+        if (ImGui::BeginMenu("width")) {
+            ImGui::InputFloat("begin", &Editor::camera->currentBoundsWidthBegin);
+            ImGui::InputFloat("end", &Editor::camera->currentBoundsWidthEnd);
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("height")) {
+            ImGui::InputFloat("begin", &Editor::camera->currentBoundsHeightBegin);
+            ImGui::InputFloat("end", &Editor::camera->currentBoundsHeightEnd);
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenu();
+    }
 }
 
 //----------------------------------------

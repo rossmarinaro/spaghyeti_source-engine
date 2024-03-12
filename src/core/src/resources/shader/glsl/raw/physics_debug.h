@@ -10,7 +10,6 @@ namespace Shaders {
         "#version 330\n"
 
         "uniform mat4 projection;\n"
-        "uniform float zoom;\n"
         "uniform vec2 offset;\n"
         "uniform mat4 view;\n"
 
@@ -20,10 +19,10 @@ namespace Shaders {
 
         "out vec4 f_color;\n"
 
-        "void main(void)\n"
+        "void main(void)\n"  
         "{\n"
         "	f_color = v_color;\n"
-        "	gl_Position = projection * view * vec4(v_position + offset.xy * zoom, 0.0f, 1.0f);\n" 
+        "	gl_Position = projection * view * vec4(v_position + offset.xy, 0.0f, 1.0f);\n" 
         "   gl_PointSize = v_size;\n"
         "}\n";
 
@@ -47,7 +46,6 @@ namespace Shaders {
         "#version 330\n"
 
         "uniform mat4 projection;\n"
-        "uniform float zoom;\n"
         "uniform vec2 offset;\n"
         "uniform mat4 view;\n"
 
@@ -59,7 +57,7 @@ namespace Shaders {
         "void main(void)\n"
         "{\n"
         "	f_color = v_color;\n"
-        "	gl_Position = projection * view * vec4(v_position + offset.xy * zoom, 0.0f, 1.0f);\n"  
+        "	gl_Position = projection * view * vec4(v_position + offset.xy, 0.0f, 1.0f);\n"  
         "}\n";
 
     static const char* line_fragment = \
@@ -82,7 +80,6 @@ namespace Shaders {
         "#version 330\n"
 
         "uniform mat4 projection;\n" 
-        "uniform float zoom;\n"
         "uniform vec2 offset;\n"
         "uniform mat4 view;\n"
         
@@ -94,7 +91,7 @@ namespace Shaders {
         "void main(void)\n"
         "{\n"
         "	f_color = v_color;\n"         
-        "	gl_Position = projection * view * vec4(v_position + offset.xy * zoom, 0.0f, 1.0f);\n"
+        "	gl_Position = projection * view * vec4(v_position + offset.xy, 0.0f, 1.0f);\n"
         "}\n";
 
     static const char* triangle_fragment = \

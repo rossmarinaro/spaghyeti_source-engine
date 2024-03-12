@@ -71,17 +71,23 @@ Geometry::Geometry(float x, float y, float width, float height):
         m_type("quad"),
         width(width),
         height(height)
-            { std::cout << "Entity: quad created.\n"; }
+{ 
+    this->m_tint = glm::vec3(0.0f, 0.0f, 1.0f);
+    std::cout << "Entity: quad created.\n"; 
+}
 
 //quad
-Geometry::Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end): 
+Geometry::Geometry(float x, float y, const glm::vec2& start, const glm::vec2& end): 
     Entity("geometry", x, y),
         primitive(std::make_shared<Graphics::Primitive>()),
         m_shader(Shader::GetShader("graphics")),
         m_type("line"),
         start(start),
         end(end)
-            { std::cout << "Entity: line created.\n"; }
+{
+    this->m_tint = glm::vec3(0.0f, 1.0f, 0.0f);
+    std::cout << "Entity: line created.\n"; 
+}
 
 
 //------------------------------------- 
@@ -93,7 +99,7 @@ void Geometry::Render()
     this->m_model = glm::mat4(1.0f); 
 
     auto SetShader = [&](){
-        this->m_shader.SetVec3f("tint", this->m_color, true);
+        this->m_shader.SetVec3f("tint", this->m_tint, true);
         this->m_shader.SetMat4("model", this->m_model, true);  
         this->m_shader.SetFloat("alphaVal", this->m_alpha, true);
     };

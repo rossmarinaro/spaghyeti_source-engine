@@ -21,10 +21,10 @@ void MapManager::CreateLayer (
 
     const std::vector<std::string> &data = System::Resources::Manager::GetRawTilemapData(data_key);
     std::vector<std::string> map;
+    std::vector<std::shared_ptr<Sprite>> layer; 
 
     std::stringstream ss; 
     std::string line; 
-
 
     if (!data.size()) {
 
@@ -39,7 +39,7 @@ void MapManager::CreateLayer (
         ss << data[i]; 
 
     while(getline(ss, line, ','))
-        map.push_back(line);  
+        map.push_back(line); 
 
     for (int y = 0; y < mapHeight; ++y)
         for (int x = 0; x < mapWidth; ++x) 
@@ -51,12 +51,19 @@ void MapManager::CreateLayer (
 
             //skip if no tile
 
-            if (tileType > -1) {
+            if (tileType > -1) 
+            {
                 auto tile = Game::CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType);
                 tile->SetDepth(depth); 
+
+                //add layer to stack
+
+                layer.push_back(tile);
             }
 
         }
+
+    layers.push_back(layer);
 
     std::cout << "Tilemap: Initialized layer: " + (std::string)data_key + "\n";
 
@@ -66,9 +73,15 @@ void MapManager::CreateLayer (
 //-------------------------------------
 
 
-void MapManager::ClearMap() {
+void MapManager::ClearMap() 
+{
 
-    Game::entities.erase(std::remove_if(Game::entities.begin(), Game::entities.end(), [](auto t) { return strcmp(t->type, "tile") == 0; }), Game::entities.end());
+    Game::entities.erase(
+        std::remove_if(Game::entities.begin(), Game::entities.end(), [](auto t) { 
+            return strcmp(t->type, "tile") == 0; 
+        }), Game::entities.end());
+
+    layers.clear();
 
     std::cout << "Tilemap: layer cleared.\n";
 

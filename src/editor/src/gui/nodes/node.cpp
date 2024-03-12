@@ -90,7 +90,7 @@ void Node::DeleteNode (std::shared_ptr<Node> node)
     //delete all attached components
 
     if (node->components.size())
-        for (const auto &component : node->components)
+        for (const auto& component : node->components)
             node->RemoveComponent(component);
 
     //delete node instance
@@ -113,12 +113,9 @@ void Node::DeleteNode (std::shared_ptr<Node> node)
 
 void Node::ClearAll() {
 
-    for (auto &node : nodes) {
-        node->m_active = false;
-        node->Reset();
-    }
+    for (auto& node : nodes) 
+        DeleteNode(node);
 
-    nodes.clear();
 }
 
  

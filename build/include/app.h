@@ -46,7 +46,7 @@ namespace SPAGHYETI_CORE System {
 			static inline std::vector<Game*> layers;   
 
 			static void Init();
-			static void Update();
+			static void Update(Camera* camera);
 
 			template<typename T>
 			static inline const T &GetData(std::string key) { return std::any_cast<T>(data.at(key)); }

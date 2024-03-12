@@ -35,14 +35,14 @@ void System::Application::Init()
 //----------------------------- 
 
 
-void System::Application::Update() 
+void System::Application::Update(Camera* camera) 
 {
 
-    Renderer::Update(game->camera);
-
-    Time::Update(glfwGetTime()); 
+    Renderer::Update(camera);
 
     #if STANDALONE == 1 
+
+        Time::Update(glfwGetTime()); 
   
         glfwPollEvents();  
         
@@ -52,7 +52,6 @@ void System::Application::Update()
         glViewport(0, 0, Window::m_width, Window::m_height);
         glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);
         glfwSwapBuffers(Window::s_instance);
-
 
     #endif
 
@@ -94,7 +93,7 @@ System::Application::Application(Game* layer)
         #else
 
             while (!glfwWindowShouldClose(Window::s_instance))
-                Update();
+                Update(game->camera);
     
         #endif
  

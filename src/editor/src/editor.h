@@ -38,8 +38,8 @@ class Editor
 
 	public:
 
-		static inline int worldWidth = 0, 
-						  worldHeight = 0;
+		static inline int worldWidth = 2000, 
+						  worldHeight = 2000;
 
 		static inline float gravityX = 0.0f,
 						    gravityY = 500.0f;

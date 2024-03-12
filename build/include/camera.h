@@ -26,7 +26,10 @@ class Camera {
             this->SetPosition(glm::vec2(0.0f, 0.0f));
             this->SetZoom(1.0f);
             this->SetBackgroundColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
-    
+            this->SetBounds(0.0f, 0.0f, 0.0f, 0.0f);
+            
+            this->targetX = 0.0f;
+            this->targetY = 0.0f;
             this->rotation = 0.0f;
         }
 
@@ -37,6 +40,8 @@ class Camera {
         inline float const GetZoom() { return this->m_zoom; }
         
         bool InBounds();
+        void Pan(float rateX, float rateY);
+        void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd); 
         glm::highp_mat4 GetViewMatrix(Camera* camera);
         glm::highp_mat4 GetProjectionMatrix(float width, float height);
 

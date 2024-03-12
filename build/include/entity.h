@@ -86,12 +86,11 @@ class Entity {
 		}
 
 		inline void StartFollow(Camera* camera, float offset) {
-
 			camera->targetX = this->m_position.x;
 			camera->targetY = this->m_position.y;
 
 			if (camera->InBounds())
-				camera->SetPosition(glm::vec2(-this->m_position.x + offset, camera->m_position.y));
+				camera->m_position.x = (-this->m_position.x + offset) / 2;   	 
 		}
 		 
 		virtual void Render() = 0;
@@ -127,7 +126,6 @@ class Geometry : public Entity {
 
 		float width, height, radius;
 
-		inline void SetColor(const glm::vec3 &color) { this->m_color = color; } 
 		inline void SetDrawStyle(int style) { this->drawStyle = style; } 
 
 		inline void SetSize(float width, float height) { 
@@ -151,7 +149,6 @@ class Geometry : public Entity {
 
 	private:
 
-		glm::vec3 m_color = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec2 start, end;
 
 		int drawStyle = 0;

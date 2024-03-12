@@ -471,13 +471,11 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                         ImGui::Checkbox("UVs", &this->show_sprite_uv); ImGui::SameLine();
                         ImGui::Checkbox("atlas", &this->show_sprite_atlas); 
  
-                        if (this->filter_nearest)
-                        {
+                        if (this->filter_nearest) {
                             this->spriteHandle->m_texture.Filter_Min = GL_NEAREST;
                             this->spriteHandle->m_texture.Filter_Max = GL_NEAREST;
                         }
-                        else
-                        {
+                        else {
                             this->spriteHandle->m_texture.Filter_Min = GL_LINEAR;
                             this->spriteHandle->m_texture.Filter_Max = GL_LINEAR;
                         }

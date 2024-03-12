@@ -54,6 +54,10 @@ void Points::Create()
 } 
 
 
+//------------------------------------
+
+
+
 void Points::Flush()
 {
     #ifndef __EMSCRIPTEN__
@@ -125,6 +129,9 @@ void Lines::Create()
 }
 
 
+//------------------------------------
+
+
 void Lines::Flush()
 {
 
@@ -192,6 +199,9 @@ void Triangles::Create()
 } 
 
 
+//------------------------------------
+
+
 void Triangles::Flush()
 {
 
@@ -245,6 +255,10 @@ void DebugGraphic::Vertex(auto *shape, const b2Vec2& v, const b2Color& c, float 
     ++shape->m_count;
 }
 
+
+//------------------------------------
+
+
 void DebugGraphic::Vertex(auto *shape, const b2Vec2& v, const b2Color& c)
 {
 
@@ -259,6 +273,10 @@ void DebugGraphic::Vertex(auto *shape, const b2Vec2& v, const b2Color& c)
     
 	++shape->m_count;
 }
+
+
+//------------------------------------
+
 
 void DebugGraphic::Destroy(auto *shape)
 {
@@ -294,6 +312,9 @@ DebugDraw::DebugDraw():
 }
 
 
+//------------------------------------
+
+
 DebugDraw::~DebugDraw()
 {
 
@@ -314,6 +335,9 @@ DebugDraw::~DebugDraw()
 }
 
 
+//------------------------------------
+
+
 void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
 
@@ -329,6 +353,9 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 		p1 = p2;
 	}
 }
+
+
+//------------------------------------
 
 
 void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
@@ -355,6 +382,10 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 		p1 = p2;
 	}
 }
+
+
+//------------------------------------
+
 
 
 void DebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2Color& color)
@@ -387,6 +418,10 @@ void DebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2Color& co
 		v1 = v2;
 	}
 }
+
+
+//------------------------------------
+
 
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color)
@@ -448,11 +483,17 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2
 }
 
 
+//------------------------------------
+
+
 void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
 	DebugGraphic::Vertex(m_lines, p1, color);
 	DebugGraphic::Vertex(m_lines, p2, color);
 }
+
+
+//------------------------------------
 
 
 void DebugDraw::DrawTransform(const b2Transform& xf)
@@ -477,10 +518,16 @@ void DebugDraw::DrawTransform(const b2Transform& xf)
 }
 
 
+//------------------------------------
+
+
 void DebugDraw::DrawPoint(const b2Vec2& p, float size, const b2Color& color)
 {
 	DebugGraphic::Vertex(m_points, p, color, size);
 }
+
+
+//------------------------------------
 
 
 void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
@@ -506,6 +553,10 @@ void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 	DebugGraphic::Vertex(m_lines, p4, c);
 	DebugGraphic::Vertex(m_lines, p1, c);
 }
+
+
+
+//------------------------------------
 
 
 void DebugDraw::Flush()

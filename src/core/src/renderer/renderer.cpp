@@ -13,12 +13,8 @@ void System::Renderer::Update(Camera* camera)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
  
     glClear(GL_COLOR_BUFFER_BIT);
-
-    #if STANDALONE == 1
     
-        Shader::Update(camera);
-         
-    #endif
+    Shader::Update(camera);
 
 }
 

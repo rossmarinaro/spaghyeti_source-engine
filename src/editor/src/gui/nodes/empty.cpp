@@ -144,7 +144,9 @@ void EmptyNode::Render(std::shared_ptr<Node> node)
                     ImGui::SameLine();
 
                     if (this->currentShape != "") {
-                        ImGui::Checkbox("fill", &this->debug_fill);
+                        ImGui::Checkbox("fill", &this->debug_fill); 
+                        ImGui::ColorEdit3("tint", (float*)&this->m_debugGraphic->m_tint); ImGui::SameLine();
+                        ImGui::SliderFloat("alpha", &this->m_debugGraphic->m_alpha, 0.0f, 1.0f);
                         ImGui::SliderFloat("position x", &this->positionX, 10.0f, 1000.0f); 
                         ImGui::SliderFloat("position y", &this->positionY, 10.0f, 1000.0f);
                     }

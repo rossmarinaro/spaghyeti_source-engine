@@ -19,6 +19,8 @@ class MapManager {
         
         static void ClearMap();
 
+        static inline std::vector<std::vector<std::shared_ptr<Sprite>>> layers;
+
 }; 
 
 

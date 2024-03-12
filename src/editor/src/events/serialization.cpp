@@ -31,6 +31,11 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     Editor::camera->m_backgroundColor.z = data["camera"]["color"]["z"];
     Editor::camera->m_backgroundColor.w = data["camera"]["color"]["w"];
 
+    Editor::camera->SetBounds(
+        data["camera"]["bounds"]["width"]["begin"], data["camera"]["bounds"]["width"]["end"],
+        data["camera"]["bounds"]["height"]["begin"], data["camera"]["bounds"]["height"]["end"]
+    );
+
     GUI::grid->m_alpha = data["camera"]["alpha"];
     GUI::grid_quantity = data["camera"]["pitch"];
     
@@ -181,6 +186,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         tmn->map_height = tilemap["map_height"];
         tmn->tile_width = tilemap["tile_width"];
         tmn->tile_height = tilemap["tile_height"];
+        tmn->layer = tilemap["layer"];
 
         if (tilemap["layers"].size())
             for (const auto &layer : tilemap["layers"]) {
@@ -230,9 +236,20 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         en->rectWidth = empty["width"];  
         en->rectHeight = empty["height"]; 
         en->radius = empty["radius"]; 
-        en->currentShape = empty["shape"]; 
         en->positionX = empty["position x"]; 
         en->positionY = empty["position y"];
+
+        if (static_cast<std::string>(empty["shape"]).length()) {
+
+            en->CreateShape(empty["shape"]);
+
+            if (en->m_debugGraphic) {
+                en->m_debugGraphic->m_tint.x = empty["m_tint"]["x"];
+                en->m_debugGraphic->m_tint.y = empty["m_tint"]["y"];
+                en->m_debugGraphic->m_tint.z = empty["m_tint"]["z"];
+                en->m_debugGraphic->m_alpha = empty["m_alpha"];
+            }
+        }
 
         //script
 
@@ -329,6 +346,10 @@ void EventListener::Serialize(json &data)
     data["camera"]["color"]["w"] = Editor::camera->m_backgroundColor.w;
     data["camera"]["alpha"] = GUI::grid->m_alpha;
     data["camera"]["pitch"] = GUI::grid_quantity;
+    data["camera"]["bounds"]["width"]["begin"] = Editor::camera->currentBoundsWidthBegin;
+    data["camera"]["bounds"]["width"]["end"] = Editor::camera->currentBoundsWidthEnd;
+    data["camera"]["bounds"]["height"]["begin"] = Editor::camera->currentBoundsHeightBegin;
+    data["camera"]["bounds"]["height"]["end"] = Editor::camera->currentBoundsHeightEnd;
 
     //settings
 
@@ -512,6 +533,7 @@ void EventListener::Serialize(json &data)
             tilemaps.push_back({
                 { "ID", node->m_ID },
                 { "name", node->m_name },
+                { "layer", tmn->layer },
                 { "layers", layers },
                 { "map_width", tmn->map_width },
                 { "map_height", tmn->map_height },
@@ -560,6 +582,13 @@ void EventListener::Serialize(json &data)
                 { "shape", en->currentShape },
                 { "position x", en->positionX },
                 { "position y", en->positionY },
+                { "m_tint", {
+                        { "x", en->m_debugGraphic->m_tint.x },
+                        { "y", en->m_debugGraphic->m_tint.y },
+                        { "z", en->m_debugGraphic->m_tint.z }
+                    }
+                },
+                { "m_alpha", en->m_debugGraphic->m_alpha },
                 { "components", {
                         { "script", {
                                 { "exists", en->HasComponent("Script") },

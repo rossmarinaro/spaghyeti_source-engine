@@ -32,7 +32,6 @@ void Shader::InitBaseShaders()
 
     //raw char array
 
-    Load("player", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("sprite", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("sprite_batch", Shaders::batchQuadShader_vertex, Shaders::batchQuadShader_fragment, nullptr);
     Load("UI", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
@@ -74,11 +73,15 @@ void Shader::Update(Camera* camera)
     {
         auto shader = *it;
 
+        //offset
+
         if (shader.first != "cursor" && shader.first != "UI")
             GetShader(shader.first).SetVec2f("offset", camera->m_position, true);
         else
             GetShader(shader.first).SetVec2f("offset", glm::vec2(0.0f), true);
-        
+
+        //projection
+
         if (shader.first != "Points" && shader.first != "Lines" && shader.first != "Triangles")
         {
            if (shader.first == "cursor" || shader.first == "UI") 
@@ -86,8 +89,10 @@ void Shader::Update(Camera* camera)
            else        
                GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
         }
+
+        //view
       
-        if (shader.first != "player" && shader.first != "cursor" && shader.first != "UI")
+        if (shader.first != "cursor" && shader.first != "UI")
             GetShader(shader.first).SetMat4("view", camera->GetViewMatrix(camera), true);
         else
             GetShader(shader.first).SetMat4("view", glm::mat4(1.0f), true);
@@ -104,31 +109,31 @@ void checkCompileErrors(unsigned int shader, const std::string &type)
 
     #ifdef __EMSCRIPTEN__
 
-    GLint result;
-    GLint log_length;
-    GLsizei length;
+        GLint result;
+        GLint log_length;
+        GLsizei length;
 
-    char infoLog[1024];
-    int success; 
+        char infoLog[1024];
+        int success; 
 
-    if (type != "PROGRAM") //vert, frag, geom
-    {
-
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-
-        std::vector<GLchar> log(log_length); 
-
-        if (result == GL_FALSE)
+        if (type != "PROGRAM") //vert, frag, geom
         {
 
-            glGetShaderInfoLog(shader, log.size(), &length, log.data());
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
 
-            std::cout << log.data() << "\n";
+            std::vector<GLchar> log(log_length); 
+
+            if (result == GL_FALSE)
+            {
+
+                glGetShaderInfoLog(shader, log.size(), &length, log.data());
+
+                std::cout << log.data() << "\n";
+            }
+            else
+                std::cout << "SHADER: " + type + " COMPILED SUCESSFULLY.\n";  
         }
-        else
-            std::cout << "SHADER: " + type + " COMPILED SUCESSFULLY.\n";  
-    }
 
     #else
 

@@ -18,7 +18,6 @@ class TestBehavior_Behavior : public Behavior {
         {
             this->health = 10;
             this->canJump = true;
-            this->sprite->m_shader = Shader::GetShader("player");
             this->follow = true;  
         }
 
@@ -32,7 +31,7 @@ class TestBehavior_Behavior : public Behavior {
 
             if (inputs->m_up && this->canJump) {
                 this->canJump = false;
-                this->sprite->SetImpulseY(-400);
+                this->sprite->SetImpulse(this->sprite->bodies[0].first->GetLinearVelocity().x, -400);
             }
 
             else if (this->sprite->IsContacting())

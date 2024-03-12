@@ -308,8 +308,6 @@ void Sprite::Render()
 
 }
 
-
-
 //-------------------------------------- standard sprite / tile
 
 

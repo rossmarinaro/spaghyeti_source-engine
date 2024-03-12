@@ -164,48 +164,50 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                 auto physics_component = this->GetComponent("Physics", this->m_ID);
 
-                if (!physics_component)
-                    return;
-
-                for (int i = 0; i < this->bodies.size(); i++)
+                if (physics_component)
                 {
 
-                    ImGui::PushID(i);
-                    
-                    ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, System::Window::m_width); 
-                    ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, System::Window::m_height); 
-                    ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
-                    ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height); 
+                    for (int i = 0; i < this->bodies.size(); i++)
+                    {
 
-                    ImGui::Separator();             
-                    
-                    b2PolygonShape body; 
-                    body.SetAsBox(this->body_width[i], this->body_height[i]);
-                    b2FixtureDef fixtureDef;
-                    fixtureDef.shape = &body; 
+                        ImGui::PushID(i);
+                        
+                        ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, this->map_width * this->tile_width);  
+                        ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, this->map_height * this->tile_height); 
+                        ImGui::SliderFloat("width", &this->body_width[i], 0.0f, this->map_width * this->tile_width); 
+                        ImGui::SliderFloat("height", &this->body_height[i], 0.0f, this->map_height * this->tile_height); 
 
-                    this->bodies[i]->DestroyFixture(this->bodies[i]->GetFixtureList());
-                    this->bodies[i]->CreateFixture(&fixtureDef);
-                    this->bodies[i]->SetTransform(b2Vec2(this->bodyX[i], this->bodyY[i]), 0);
-                    
-                    ImGui::PopID();
+                        ImGui::Separator();             
+                        
+                        b2PolygonShape body; 
+                        body.SetAsBox(this->body_width[i], this->body_height[i]);
 
-                }
+                        b2FixtureDef fixtureDef;
+                        fixtureDef.shape = &body; 
 
-                if (ImGui::Button("add")) 
-                    this->CreateBody();
+                        this->bodies[i]->DestroyFixture(this->bodies[i]->GetFixtureList());
+                        this->bodies[i]->CreateFixture(&fixtureDef);
+                        this->bodies[i]->SetTransform(b2Vec2(this->bodyX[i], this->bodyY[i]), 0);
+                        
+                        ImGui::PopID();
 
-                if (ImGui::Button("remove") && this->bodies.size() > 1) { 
-                    Game::physics->DestroyBody(this->bodies.back()); 
-                    this->bodies.pop_back();
-                }
+                    }
 
-                if (ImGui::BeginMenu("remove physics?"))
-                {
-                    if (ImGui::MenuItem("yes"))
-                        this->RemoveComponent(physics_component); 
+                    if (ImGui::Button("add")) 
+                        this->CreateBody();
 
-                    ImGui::EndMenu();
+                    if (ImGui::Button("remove") && this->bodies.size() > 1) { 
+                        Game::physics->DestroyBody(this->bodies.back()); 
+                        this->bodies.pop_back();
+                    }
+
+                    if (ImGui::BeginMenu("remove physics?"))
+                    {
+                        if (ImGui::MenuItem("yes"))
+                            this->RemoveComponent(physics_component); 
+
+                        ImGui::EndMenu();
+                    }                
                 }
 
                 ImGui::EndMenu();
@@ -274,7 +276,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                         ImGui::Text(csv_name.c_str()); 
 
-                        if (ImGui::ImageButton("tex button", (void*)(intptr_t) System::Resources::Manager::texture2D->GetTexture(this->layers[i][2]).ID, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image") 
+                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)System::Resources::Manager::texture2D->GetTexture(this->layers[i][2]).ID, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image") 
                         {
                             this->layers[i][2] = Editor::selectedAsset;
                             this->layersApplied = false;
@@ -310,10 +312,13 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                     ImGui::SameLine();
 
-                    if (ImGui::Button("remove layer") && this->layer > 1) {
+                    if (ImGui::Button("remove layer") && this->layer > 1) 
+                    {
+
+                        for (auto& tile : MapManager::layers.back())
+                            Game::DestroyEntity(tile);
 
                         this->layers.pop_back();
-
                         this->layer--;
                     }
 

@@ -128,7 +128,6 @@ void Game::UpdateFrame()
 
     std::sort(entities.begin(), entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
 
-
     #if DEVELOPMENT == 1 
 
         if (physics->debug->enable) {

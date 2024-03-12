@@ -94,19 +94,7 @@ void Window::Init()
             NULL
         );
 
-    //glfwSetWindowMonitor()
-
-    // #ifndef __EMSCRIPTEN__
-
-    //     GLFWimage image; 
-        
-    //     image.width = 70;
-    //     image.height = 70;
-    //     image.pixels = reinterpret_cast<unsigned char*>(const_cast<char*>(System::Resources::Manager::GetRawData("logo")));
-    
-    //     glfwSetWindowIcon(s_instance, 1, &image);
-
-    // #endif 
+    //glfwSetWindowMonitor();
 
     if (!s_instance) {
         glfwTerminate();

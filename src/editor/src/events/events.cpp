@@ -504,11 +504,12 @@ void EventListener::BuildAndRun()
             global_queue << "   " + type + " " + var + ";\n";
         }
 
-    glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor();
+    glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor(); 
 
     command_queue << "   this->camera = camera;\n   this->physics = physics;\n";
     command_queue << "   this->SetWorldDimensions(" + std::to_string(Editor::worldWidth) + ", " + std::to_string(Editor::worldHeight) + ");\n";
 
+    command_queue << "   camera->SetBounds(" + std::to_string(Editor::camera->currentBoundsWidthBegin) + ", " + std::to_string(Editor::camera->currentBoundsWidthEnd) + ", " + std::to_string(Editor::camera->currentBoundsHeightBegin) + ", " + std::to_string(Editor::camera->currentBoundsHeightEnd) + ");\n";
     command_queue << "   camera->SetBackgroundColor(glm::vec4(" + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + "));\n";
     command_queue << "   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n";
     command_queue << "   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n";
@@ -666,6 +667,13 @@ void EventListener::BuildAndRun()
 
             command_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n";
 
+            if (en->currentShape.length()) {
+                command_queue << "   empty_" + node->m_ID + "->SetTint({" + std::to_string(en->m_debugGraphic->m_tint.r) + ", " + std::to_string(en->m_debugGraphic->m_tint.g) + ", " + std::to_string(en->m_debugGraphic->m_tint.b) + "});\n";
+                command_queue << "   empty_" + node->m_ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->m_alpha) + ");\n";
+            }
+
+            //TODO: set shape
+
             if (en->currentShape == "rectangle") {
                 command_queue << "   empty_" + node->m_ID + " = CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
                 command_queue << "   empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
@@ -693,18 +701,17 @@ void EventListener::BuildAndRun()
             for (const auto &offset : tmn->offset)
                 offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + "}");
             
+            if (!offsetsToLoad.empty()) {
+                std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
+                offset_oss << offsetsToLoad.back();
+            } 
+
             if (tmn->layers.size())
                 for (int i = 0; i < tmn->layer; i++)
                 {
-
-                    if (!offsetsToLoad.empty()) {
-                        std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
-                        offset_oss << offsetsToLoad.back();
-
-                        asset_queue << "   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
-                    } 
-
+                    asset_queue << "   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
                     asset_queue << "   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
+                    
                     command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
                 }
 
@@ -759,10 +766,10 @@ void EventListener::BuildAndRun()
 
     //project source template
 
-    game_src << "class " + name_upper + " : public Game {\n\n";
+    game_src << "\n\nclass " + name_upper + " : public Game {\n\n";
     game_src << "    public:\n";
     game_src << "    " + globalData;
-    game_src << "        " + name_upper + "() { name = \"" + name_upper + "\"; }\n";
+    game_src << "    " + name_upper + "() { name = \"" + name_upper + "\"; }\n";
     game_src << "        void Preload() override;\n";
     game_src << "        void Run(Inputs* inputs, Camera* camera, Physics* physics) override;\n";
     game_src << "        void Update(Inputs* inputs, Camera* camera, Physics* physics) override;\n";
