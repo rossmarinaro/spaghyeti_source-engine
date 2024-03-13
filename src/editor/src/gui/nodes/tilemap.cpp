@@ -171,11 +171,14 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                     {
 
                         ImGui::PushID(i);
+
+                        ImGui::Text("manual input: CTRL + click");
                         
-                        ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, this->map_width * this->tile_width);  
-                        ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, this->map_height * this->tile_height); 
-                        ImGui::SliderFloat("width", &this->body_width[i], 0.0f, this->map_width * this->tile_width); 
-                        ImGui::SliderFloat("height", &this->body_height[i], 0.0f, this->map_height * this->tile_height); 
+                        ImGui::SliderFloat("width", &this->body_width[i], 0.0f, this->map_width * this->tile_width, NULL, ImGuiSliderFlags_AlwaysClamp); 
+                        ImGui::SliderFloat("height", &this->body_height[i], 0.0f, this->map_height * this->tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
+
+                        ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, this->map_width * this->tile_width, NULL, ImGuiSliderFlags_AlwaysClamp);  
+                        ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, this->map_height * this->tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
 
                         ImGui::Separator();             
                         

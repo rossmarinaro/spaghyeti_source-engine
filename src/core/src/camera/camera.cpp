@@ -22,7 +22,7 @@ Camera::Camera():
 
 void Camera::SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd) 
 {
-
+ 
     this->currentBoundsWidthBegin = widthBegin;
     this->currentBoundsWidthEnd = widthEnd;
     this->currentBoundsHeightBegin = heightBegin;

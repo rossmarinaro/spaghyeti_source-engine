@@ -4,7 +4,7 @@
 #include "../../../../../build/include/app.h"
 
 
-SpriteNode::SpriteNode(const std::string &id): 
+SpriteNode::SpriteNode(const std::string& id): 
     Node(id, "Sprite"),
         show_sprite_uv(false),
         show_sprite_texture(false),
@@ -15,6 +15,7 @@ SpriteNode::SpriteNode(const std::string &id):
         filter_nearest(true),
         flippedX(false),
         flippedY(false),
+        lock_in_place(false),
         frame(1),
         anim(1),
         depth(1),
@@ -132,7 +133,7 @@ void SpriteNode::CreateBody(
 //--------------------------------- applies texture to current seleted node 
 
 
-void SpriteNode::ApplyTexture(const std::string &asset)
+void SpriteNode::ApplyTexture(const std::string& asset)
 {  
 
     if (this->spriteHandle == nullptr) { 
@@ -152,7 +153,7 @@ void SpriteNode::ApplyTexture(const std::string &asset)
 //--------------------------------- applies texture to current seleted node 
 
 
-void SpriteNode::ApplyAnimation(const std::string &key, int start, int end)
+void SpriteNode::ApplyAnimation(const std::string& key, int start, int end)
 {
 
     try {
@@ -378,7 +379,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                     ImGui::SliderFloat("offset y", &this->bodyY[i], 0.0f, System::Window::m_height);
                     ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
                     ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height);   
-                    ImGui::InputInt("type", &this->body_pointer[i]);
+                    ImGui::InputInt("type", &this->body_pointer[i]); 
 
                     //sensor available for static body only
 
@@ -389,7 +390,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                     if (this->bodies[i].first != nullptr)
                     {
-                        b2PolygonShape body ;//= this->spriteHandle->shape;
+                        b2PolygonShape body;
                         body.SetAsBox(this->body_width[i], this->body_height[i]);
                         b2FixtureDef fixtureDef;
                         fixtureDef.shape = &body;
@@ -462,6 +463,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                     if (this->currentTexture)
                     {
                         ImGui::Checkbox("filter nearest", &this->filter_nearest);
+                        ImGui::Checkbox("lock image", &this->lock_in_place);
 
                         ImGui::Text("flip"); ImGui::SameLine();
                         ImGui::Checkbox("X", &this->flippedX); ImGui::SameLine();

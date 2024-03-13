@@ -86,15 +86,16 @@ class Entity {
 		}
 
 		inline void StartFollow(Camera* camera, float offset) {
+
 			camera->targetX = this->m_position.x;
 			camera->targetY = this->m_position.y;
 
 			if (camera->InBounds())
-				camera->m_position.x = (-this->m_position.x + offset) / 2;   	 
+				camera->m_position.x = (-this->m_position.x + offset) / 2;  
 		}
 		 
 		virtual void Render() = 0;
-
+ 
 		Entity() = default;
 		Entity(const char* type, float x, float y):
 			type(type),

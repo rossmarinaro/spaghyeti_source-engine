@@ -284,7 +284,7 @@ void Sprite::Render()
     this->m_shader.SetVec3f("tint", this->m_tint, true);
     this->m_shader.SetMat4("model", this->m_model, true);
 
-    this->m_texture.Update(this->m_position, this->m_flipX, this->m_flipY); 
+    this->m_texture.Update(this->m_position, this->m_flipX, this->m_flipY);  
 
     //update physics bodies if exists
 

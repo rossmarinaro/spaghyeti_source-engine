@@ -34,11 +34,11 @@ void Shader::InitBaseShaders()
 
     Load("sprite", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("sprite_batch", Shaders::batchQuadShader_vertex, Shaders::batchQuadShader_fragment, nullptr);
-    Load("sprite_billboard", Shaders::batchQuadShader_vertex, Shaders::batchQuadShader_fragment, nullptr);
+    Load("sprite_billboard", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("UI", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("graphics", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
     Load("cursor", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
-    
+     
     #if DEVELOPMENT == 1
 
         Load("Points", Shaders::point_vertex, Shaders::point_fragment, nullptr);
@@ -76,27 +76,33 @@ void Shader::Update(Camera* camera)
 
         //offset
 
-        if (shader.first != "cursor" && shader.first != "UI" && shader.first != "sprite_billboard")
-            GetShader(shader.first).SetVec2f("offset", camera->m_position, true);
-        else
+        if (shader.first == "cursor" || shader.first == "UI" || shader.first == "sprite_billboard")             
             GetShader(shader.first).SetVec2f("offset", glm::vec2(0.0f), true);
+
+        else            
+            GetShader(shader.first).SetVec2f("offset", camera->m_position, true);
 
         //projection
 
         if (shader.first != "Points" && shader.first != "Lines" && shader.first != "Triangles")
         {
-           if (shader.first == "cursor" || shader.first == "UI" && shader.first != "sprite_billboard") 
+
+            if (shader.first == "cursor" || shader.first == "UI" || shader.first == "sprite_billboard")                 
                 GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::m_width * 2), static_cast<float>(System::Window::m_height * 2)), true);  
-           else        
-               GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
+
+            else                 
+                GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
+       
         }
 
         //view
       
-        if (shader.first != "cursor" && shader.first != "UI" && shader.first != "sprite_billboard")
-            GetShader(shader.first).SetMat4("view", camera->GetViewMatrix(camera), true);
-        else
+        if (shader.first == "cursor" || shader.first == "UI" || shader.first == "sprite_billboard")             
             GetShader(shader.first).SetMat4("view", glm::mat4(1.0f), true);
+
+        else             
+            GetShader(shader.first).SetMat4("view", camera->GetViewMatrix(camera), true);
+
     }
 }
 

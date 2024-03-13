@@ -23,9 +23,9 @@ class Camera {
 
         inline void Reset() {
             
-            this->SetPosition(glm::vec2(0.0f, 0.0f));
+            this->SetPosition({ 0.0f, 0.0f });
             this->SetZoom(1.0f);
-            this->SetBackgroundColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+            this->SetBackgroundColor({ 0.5f, 0.5f, 0.5f, 1.0f });
             this->SetBounds(0.0f, 0.0f, 0.0f, 0.0f);
             
             this->targetX = 0.0f;

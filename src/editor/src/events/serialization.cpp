@@ -8,7 +8,7 @@
 #include "../../../../build/include/app.h"
 
 
-//---------------------------------------
+//--------------------------------------- Save / Load Projects
 
 //project de-serialization
 void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &result)
@@ -69,6 +69,8 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         sn->scaleY = sprite["scaleY"];
         sn->flippedX = sprite["flipX"];
         sn->flippedY = sprite["flipY"];
+        sn->depth = sprite["depth"];
+        sn->lock_in_place = sprite["lock"];
 
         sn->ApplyTexture(sprite["currentTexture"]);  
 
@@ -464,6 +466,8 @@ void EventListener::Serialize(json &data)
                 { "scaleY", sn->scaleY },
                 { "flipX", sn->flippedX },
                 { "flipY", sn->flippedY },
+                { "depth", sn->depth },
+                { "lock", sn->lock_in_place },
                 { "frames", frames },
                 { "components", {
                         { "physics", {

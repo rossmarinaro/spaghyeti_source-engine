@@ -565,7 +565,8 @@ void EventListener::BuildAndRun()
                 for (const auto &frame : sn->frames)
                     framesToLoad.push_back("{" + std::to_string(frame.x)  + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + "}");
 
-                if (!framesToLoad.empty()) {
+                if (!framesToLoad.empty()) 
+                {
                     std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
                     frame_oss << framesToLoad.back();
 
@@ -588,19 +589,26 @@ void EventListener::BuildAndRun()
                     asset_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n";
                 }
 
-                command_queue << "   auto sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+                global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";  \n";
+
+                command_queue << "   sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
                                         
                 //sprite configurations
 
                 command_queue << "   sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->spriteHandle->m_scale.x) + ", " + std::to_string(sn->spriteHandle->m_scale.y) + ");\n";
                 command_queue << "   sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ");\n";
                 command_queue << "   sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->spriteHandle->m_rotation) + ");\n";
-                command_queue << "   sprite_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(sn->spriteHandle->m_tint.x) + ", " + std::to_string(sn->spriteHandle->m_tint.y) + ", " + std::to_string(sn->spriteHandle->m_tint.z) + "));\n";
+                command_queue << "   sprite_" + node->m_ID + "->SetTint({ " + std::to_string(sn->spriteHandle->m_tint.x) + ", " + std::to_string(sn->spriteHandle->m_tint.y) + ", " + std::to_string(sn->spriteHandle->m_tint.z) + " });\n";
+                command_queue << "   sprite_" + node->m_ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
+                command_queue << "   sprite_" + node->m_ID + "->SetFlip(" + std::to_string(sn->spriteHandle->m_flipX) + ", " + std::to_string(sn->spriteHandle->m_flipY) + ");\n";
 
                 std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
 
                 command_queue << "   sprite_" + node->m_ID + "->m_texture.Filter_Min = " + filtering + ";\n";
                 command_queue << "   sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n";
+
+                if (sn->lock_in_place)
+                    update_queue << "   sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"sprite_billboard\");\n";
 
                 //physics bodies
 
@@ -616,7 +624,7 @@ void EventListener::BuildAndRun()
                             command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), glm::vec2(" + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ") });\n";
                     }    
 
-                    command_queue << "   for (const auto &body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
+                    command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
 
                 }
                     
@@ -646,8 +654,9 @@ void EventListener::BuildAndRun()
 
             if (tn->textHandle != nullptr)
             {
-                
-                command_queue << "   auto text_" + node->m_ID + " = CreateText(" + tn->textHandle->content + ", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+                global_queue << "   std::shared_ptr<Text> text_" + node->m_ID + ");     \n";
+
+                command_queue << "   text_" + node->m_ID + " = CreateText(" + tn->textHandle->content + ", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
 
                 command_queue << "   text_" + node->m_ID + "->SetScale(" + std::to_string(tn->textHandle->m_scale.x) + ", " + std::to_string(tn->textHandle->m_scale.y) + ");\n";
                 command_queue << "   text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->textHandle->m_position.x) + ", " + std::to_string(tn->textHandle->m_position.y) + ");\n";
@@ -665,7 +674,7 @@ void EventListener::BuildAndRun()
  
             auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
-            command_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n";
+            global_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";       \n";
 
             if (en->currentShape.length()) {
                 command_queue << "   empty_" + node->m_ID + "->SetTint({" + std::to_string(en->m_debugGraphic->m_tint.r) + ", " + std::to_string(en->m_debugGraphic->m_tint.g) + ", " + std::to_string(en->m_debugGraphic->m_tint.b) + "});\n";
@@ -750,10 +759,6 @@ void EventListener::BuildAndRun()
 
     }
   
-    //update queue
-    //...
-
-
     //convert data string stream to string
 
     std::string globalData = global_queue.str(); 
@@ -768,11 +773,12 @@ void EventListener::BuildAndRun()
 
     game_src << "\n\nclass " + name_upper + " : public Game {\n\n";
     game_src << "    public:\n";
-    game_src << "    " + globalData;
     game_src << "    " + name_upper + "() { name = \"" + name_upper + "\"; }\n";
     game_src << "        void Preload() override;\n";
     game_src << "        void Run(Inputs* inputs, Camera* camera, Physics* physics) override;\n";
     game_src << "        void Update(Inputs* inputs, Camera* camera, Physics* physics) override;\n";
+    game_src << "    private:\n";
+    game_src << "    " + globalData + "\n";
     game_src <<"};\n\n\n"; 
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";

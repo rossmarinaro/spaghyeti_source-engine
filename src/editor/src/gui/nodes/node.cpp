@@ -216,11 +216,8 @@ void Node::LoadShader(
 //------------------------------- apply shaders
 
 
-void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name, bool setShader) 
+void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name) 
 {
-
-    if (setShader)
-        node->shader = { name, {} };  
 
     if (node->m_type == "Sprite") {
         auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
