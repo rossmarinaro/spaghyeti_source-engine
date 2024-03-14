@@ -264,10 +264,10 @@ void Sprite::Render()
 
     this->m_model = glm::mat4(1.0f); 
 
-    this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->m_texture.FrameWidth + this->m_position.x, 0.5f * this->m_texture.FrameHeight + this->m_position.y, 0.0f)); 
+    this->m_model = glm::translate(this->m_model, { 0.5f * this->m_texture.FrameWidth + this->m_position.x, 0.5f * this->m_texture.FrameHeight + this->m_position.y, 0.0f }); 
     this->m_model = glm::scale(this->m_model, glm::vec3(this->m_scale, 1.0f));  
-    this->m_model = glm::rotate(this->m_model, glm::radians(this->m_rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
-    this->m_model = glm::translate(this->m_model, glm::vec3(-0.5f * this->m_texture.FrameWidth - this->m_position.x, -0.5f * this->m_texture.FrameHeight - this->m_position.y, 0.0f));
+    this->m_model = glm::rotate(this->m_model, glm::radians(this->m_rotation), { 0.0f, 0.0f, 1.0f }); 
+    this->m_model = glm::translate(this->m_model, { -0.5f * this->m_texture.FrameWidth - this->m_position.x, -0.5f * this->m_texture.FrameHeight - this->m_position.y, 0.0f });
 
     //update shaders and textures 
 

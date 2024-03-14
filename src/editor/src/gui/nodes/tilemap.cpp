@@ -166,13 +166,13 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                 if (physics_component)
                 {
+                    
+                    ImGui::Text("manual input: CTRL + click");
 
                     for (int i = 0; i < this->bodies.size(); i++)
                     {
 
                         ImGui::PushID(i);
-
-                        ImGui::Text("manual input: CTRL + click");
                         
                         ImGui::SliderFloat("width", &this->body_width[i], 0.0f, this->map_width * this->tile_width, NULL, ImGuiSliderFlags_AlwaysClamp); 
                         ImGui::SliderFloat("height", &this->body_height[i], 0.0f, this->map_height * this->tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 

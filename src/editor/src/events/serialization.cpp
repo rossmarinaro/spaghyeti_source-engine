@@ -104,6 +104,9 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         System::Resources::Manager::LoadFrames(sn->spriteHandle->m_key, framesToPush);
 
+        if (sn->frames.size() > 1)
+            sn->spriteHandle->ReadSpritesheetData();
+
         //animator
 
         if (sprite["components"]["animator"]["exists"])
@@ -114,7 +117,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
             sn->animations.insert({ anim["key"], { anim["key"], anim["start"], anim["end"] } });
 
-            SpriteNode::StringContainer sc = { anim["key"]};
+            SpriteNode::StringContainer sc = { anim["key"] };
 
             sn->animBuf1.push_back(sc);
             sn->animBuf2.push_back(anim["start"]); 

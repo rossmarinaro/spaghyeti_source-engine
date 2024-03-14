@@ -589,7 +589,7 @@ void EventListener::BuildAndRun()
                     asset_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n";
                 }
 
-                global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";  \n";
+                global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n";
 
                 command_queue << "   sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
                                         

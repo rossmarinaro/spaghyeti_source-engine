@@ -107,7 +107,6 @@ void Shader::Update(Camera* camera)
 }
 
 
-
 //--------------------------------- 
 
 

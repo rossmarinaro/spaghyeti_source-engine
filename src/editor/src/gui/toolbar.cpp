@@ -107,7 +107,7 @@ void GUI::ShowSettings()
 
     //world bounds
 
-    if (ImGui::BeginMenu("bounds"))
+    if (ImGui::BeginMenu("World Bounds"))
     {
         if (ImGui::BeginMenu("width")) {
             ImGui::InputFloat("begin", &Editor::camera->currentBoundsWidthBegin);

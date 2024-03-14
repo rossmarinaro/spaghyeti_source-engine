@@ -31,8 +31,8 @@ class TestBehavior_Behavior : public Behavior {
 
             if (inputs->m_up && this->canJump) {
                 this->canJump = false;
-                this->sprite->bodies[0].first->ApplyForceToCenter(b2Vec2(this->sprite->m_flipX ? 20 : -20, -400), true);
-                //this->sprite->SetImpulseY(-400);
+                //this->sprite->bodies[0].first->ApplyForceToCenter(b2Vec2(this->sprite->m_flipX ? 20 : -20, -400), true);
+                this->sprite->SetImpulseY(-400);
             }
 
             else if (this->sprite->IsContacting())

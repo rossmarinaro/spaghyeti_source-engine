@@ -530,9 +530,12 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                                 if (ImGui::Button("apply"))
                                 {
                                     
-                                    for (int i = 0; i < this->frame; ++i) {
+                                    for (int i = 0; i < this->frame; ++i) 
+                                    {
                                         this->frames.push_back({ this->frameBuf1[i], this->frameBuf2[i], this->frameBuf3[i], this->frameBuf4[i] }); 
-                                        this->framesApplied = true; this->spriteHandle->SetFrame(0);
+                                        this->framesApplied = true; 
+                                        this->spriteHandle->ReadSpritesheetData();
+                                        this->spriteHandle->SetFrame(0);
                                     }
 
                                     std::vector<std::array<int, 4>> framesToPush;
