@@ -10,8 +10,6 @@ SpriteNode::SpriteNode(const std::string& id):
         show_sprite_texture(false),
         show_sprite_atlas(false),
         framesApplied(false),
-        do_animate(false),
-        do_yoyo(false),
         filter_nearest(true),
         flippedX(false),
         flippedY(false),
@@ -158,6 +156,10 @@ void SpriteNode::ApplyAnimation(const std::string& key, int start, int end)
 
     try {
 
+        BoolContainer bc;
+
+        this->do_yoyo.push_back(bc);
+
         std::map<std::string, std::pair<int, int>> animsToLoad;
 
         this->animations.insert({ key, { key, start, end }  });
@@ -175,8 +177,6 @@ void SpriteNode::ApplyAnimation(const std::string& key, int start, int end)
     catch (std::runtime_error& err) { 
         std::cout << "there was a problem applying animation: " << err.what() << "\n"; 
     }
-
-    
 }
 
 
@@ -235,19 +235,47 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                 if (!anim_component)
                     return;
 
-                for (int i = 0; i < this->anim; ++i)
+                for (int i = 0; i < this->anim; i++)
                 {
-
-                    ImGui::Separator();
 
                     ImGui::Text("animation: %d", i);
 
                     ImGui::PushID(i);
+       
+                    StringContainer sc;
+                    this->animBuf1.push_back(sc);
+                    this->animBuf2.push_back(i);
+                    this->animBuf3.push_back(i);
+                    this->animBuf4.push_back(2);
+
+                    ImGui::SameLine();
+
+                    if (this->spriteHandle && this->spriteHandle->IsSpritesheet())
+                    {
+
+                        if (ImGui::Button("play")) 
+                            this->currentAnim = { this->animBuf1[i].s, { this->do_yoyo[i].b, this->animBuf4[i] } };
+                            
+                        ImGui::SameLine(); 
+
+                        if (ImGui::Button("stop")) 
+                            this->currentAnim = { "", {} };
+
+                    }
+
+                    if (this->animBuf1.size() && this->animBuf1[i].s.length()) {
+
+                        ImGui::SameLine();
+
+                        if (ImGui::Button("apply")) 
+                            this->ApplyAnimation(this->animBuf1[i].s, this->animBuf2[i], this->animBuf3[i]);
+                        
+                    }
 
                     if (i != 0 && this->anim > 1)
                     {
 
-                        ImGui::SameLine();
+                        ImGui::SameLine(); 
 
                         if (ImGui::Button("remove")) {
 
@@ -261,65 +289,23 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                     }
                 
-                    if (this->animBuf1.size() && this->animBuf1[i].s.length()) {
-
-                        ImGui::SameLine();
-
-                        if (ImGui::Button("apply"))
-                            this->ApplyAnimation(this->animBuf1[i].s, this->animBuf2[i], this->animBuf3[i]);
-                    }
-
-                    StringContainer sc;
-
-                    this->animBuf1.push_back(sc);
-                    this->animBuf2.push_back(i);
-                    this->animBuf3.push_back(i);
-                    this->animBuf4.push_back(2);
 
                     ImGui::InputText("key", &this->animBuf1[i].s);
                     ImGui::InputInt("start", &this->animBuf2[i]); 
                     ImGui::InputInt("end", &this->animBuf3[i]);
+                    ImGui::InputInt("rate", &this->animBuf4[i]);
+                    ImGui::Checkbox("yoyo", &this->do_yoyo[i].b);
 
-                    if (this->spriteHandle && this->spriteHandle->IsSpritesheet())
-                    {
-
-                        if (ImGui::Button("play") && this->animBuf1[i].s.length()) 
-                            this->do_animate = true;
-                            
-                        ImGui::SameLine(); 
-
-                        if (ImGui::Button("stop") && this->animBuf1[i].s.length()) 
-                            this->do_animate = false;
-
-                        if (this->do_animate)   
-                            this->spriteHandle->Animate(this->animBuf1[i].s, this->do_yoyo, this->animBuf4[i]);
-
-                        ImGui::SameLine();
-                        
-                        if (ImGui::Button("+") && this->spriteHandle->m_currentFrame < this->spriteHandle->m_frames - 1)                       
-                            this->spriteHandle->m_currentFrame++; 
-
-                        ImGui::SameLine();
-
-                        if (ImGui::Button("-") && this->spriteHandle->m_currentFrame > 0)                         
-                            this->spriteHandle->m_currentFrame--;
-
-                        ImGui::SameLine();
-                            
-                        ImGui::Text("frame: %d", this->spriteHandle->m_currentFrame);
-
-                        ImGui::InputInt("rate", &this->animBuf4[i]);
-
-                        ImGui::Checkbox("yoyo", &this->do_yoyo); 
-
-                    }
+                    ImGui::Separator();
 
                     ImGui::PopID();
                     
                 }
 
-                if (ImGui::Button("add"))
+                if (ImGui::Button("add animation"))
                     this->anim++;
+           
+                ImGui::SameLine();
 
                 if (ImGui::BeginMenu("remove animator?")) {
                     
@@ -328,8 +314,6 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                     ImGui::EndMenu();
                 }
-
-                ImGui::Separator();
 
                 ImGui::EndMenu();
             }
@@ -552,6 +536,22 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                                     ImGui::Text("applied");
                                 }
 
+                                if (this->spriteHandle)
+                                {
+                                    
+                                    if (ImGui::Button("+") && this->spriteHandle->m_currentFrame < this->spriteHandle->m_frames - 1)                       
+                                        this->spriteHandle->m_currentFrame++; 
+
+                                    ImGui::SameLine();
+
+                                    if (ImGui::Button("-") && this->spriteHandle->m_currentFrame > 0)                         
+                                        this->spriteHandle->m_currentFrame--;
+
+                                    ImGui::SameLine();
+
+                                    ImGui::Text("frame: %d", this->spriteHandle->m_currentFrame);
+                                }
+
                                 if (ImGui::Button("add frame"))
                                     this->frame++;
 
@@ -607,6 +607,9 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
             this->spriteHandle->SetRotation(this->rotation); 
             this->spriteHandle->SetDepth(this->depth);
             this->spriteHandle->SetFlip(this->flippedX, this->flippedY);
+
+            if (this->currentAnim.first.length())   
+                this->spriteHandle->Animate(this->currentAnim.first, this->currentAnim.second.first, this->currentAnim.second.second);
 
             //entity physics body transform
             

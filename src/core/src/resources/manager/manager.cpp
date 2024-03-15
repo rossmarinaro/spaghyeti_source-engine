@@ -10,9 +10,9 @@ using namespace System::Resources;
 
 
 
-//--------------------------- clear resources
+//--------------------------- 
 
-
+//clear resources
 void Manager::Clear()
 {
 
@@ -31,9 +31,9 @@ void Manager::Clear()
 }
 
 
-//----------------------------------- register the assets
+//-----------------------------------
 
-
+//register the assets
 void Manager::RegisterAssets()
 {
 
@@ -57,9 +57,9 @@ void Manager::RegisterAssets()
 }
 
 
-//----------------------------------- load individual files
+//----------------------------------- 
 
-
+//load individual files
 void Manager::LoadFile(const char* key, const char* path)
 {
 
@@ -92,9 +92,9 @@ void Manager::LoadFile(const char* key, const char* path)
 } 
 
 
-//------------------------------------ load frames from vector of int arrays
+//------------------------------------
 
-
+//load frames from vector of int arrays
 void Manager::LoadFrames(const std::string &key, const std::vector<std::array<int, 4>>& frames) {
 
     if (System::Application::resources->ATLASES.find(key) == System::Application::resources->ATLASES.end())
@@ -103,9 +103,10 @@ void Manager::LoadFrames(const std::string &key, const std::vector<std::array<in
 }
 
 
-//------------------------------------ load frames from file
+//------------------------------------ 
 
 
+//load frames from file
 void Manager::LoadAtlas(const std::string &key, const char* path) {
 
     if (System::Application::resources->ATLAS_PATH.find(key) == System::Application::resources->ATLAS_PATH.end())
@@ -113,9 +114,10 @@ void Manager::LoadAtlas(const std::string &key, const char* path) {
 }
 
 
-//------------------------------------ load animations from map of start / end pairs defined by key
+//------------------------------------ 
 
 
+//load animations from map of start / end pairs defined by key
 void Manager::LoadAnims(const std::string &key, const std::map<std::string, std::pair<int, int>> &anims) {
 
     if (System::Application::resources->ANIMS.find(key) == System::Application::resources->ANIMS.end())
@@ -125,6 +127,7 @@ void Manager::LoadAnims(const std::string &key, const std::map<std::string, std:
 //------------------------------------ load tilemaps
 
 
+//load tilemaps
 void Manager::LoadTilemap(const std::string &key, const std::vector<std::string> &data) {
     
     if (System::Application::resources->TILEMAP.find(key) == System::Application::resources->TILEMAP.end())
@@ -132,9 +135,10 @@ void Manager::LoadTilemap(const std::string &key, const std::vector<std::string>
 }
 
 
-//--------------------------------- load raw char array image / dimensions and bytes per pixel channel
+//--------------------------------- 
 
 
+//load raw char array image / dimensions and bytes per pixel channel
 void Manager::LoadRawImage(const char* key, const char* arr, int width, int height, int channel) {
 
     if (System::Application::resources->IMAGE_DIMENSIONS_AND_CHANNELS.find(key) == System::Application::resources->IMAGE_DIMENSIONS_AND_CHANNELS.end())
@@ -146,9 +150,10 @@ void Manager::LoadRawImage(const char* key, const char* arr, int width, int heig
 
 }
 
-//------------------------------------- load raw char array audio / size in bytes
+//------------------------------------- 
 
 
+//load raw char array audio / size in bytes
 void Manager::LoadRawAudio(const char* key, const char* arr, unsigned int bytes) 
 {
     if (System::Application::resources->AUDIO_SIZE.find(key) == System::Application::resources->AUDIO_SIZE.end())
@@ -161,8 +166,9 @@ void Manager::LoadRawAudio(const char* key, const char* arr, unsigned int bytes)
 }
 
 
-//------------------------------------- unload files
+//------------------------------------- 
 
+//unload files
 void Manager::UnLoadFile(const char* key)
 {
 
@@ -184,9 +190,9 @@ void Manager::UnLoadFile(const char* key)
 } 
 
 
-//------------------------------------ unload frames from vector of int arrays
+//------------------------------------
 
-
+// unload frames from vector of int arrays
 void Manager::UnLoadFrames(const std::string &key) {
 
     if (System::Application::resources->ATLASES.find(key) != System::Application::resources->ATLASES.end())
@@ -195,9 +201,9 @@ void Manager::UnLoadFrames(const std::string &key) {
 }
 
 
-//------------------------------------ unload frames from file
+//------------------------------------ 
 
-
+//unload frames from file
 void Manager::UnLoadAtlas(const std::string &key) {
 
     if (System::Application::resources->ATLAS_PATH.find(key) != System::Application::resources->ATLAS_PATH.end())
@@ -205,18 +211,18 @@ void Manager::UnLoadAtlas(const std::string &key) {
 }
 
 
-//------------------------------------ unload animations 
+//------------------------------------ 
 
-
+//unload animations 
 void Manager::UnLoadAnims(const std::string &key) {
 
     if (System::Application::resources->ANIMS.find(key) != System::Application::resources->ANIMS.end())
         System::Application::resources->ANIMS.erase(System::Application::resources->ANIMS.find(key));
 }
 
-//------------------------------------ unload tilemaps
+//------------------------------------ 
 
-
+//unload tilemaps
 void Manager::UnLoadTilemap(const std::string &key) {
     
     if (System::Application::resources->TILEMAP.find(key) != System::Application::resources->TILEMAP.end())
@@ -224,9 +230,9 @@ void Manager::UnLoadTilemap(const std::string &key) {
 }
 
 
-//--------------------------------- unload raw char array image
+//--------------------------------- 
 
-
+//unload raw char array image
 void Manager::UnLoadRawImage(const char* key) {
 
     if (System::Application::resources->IMAGE_DIMENSIONS_AND_CHANNELS.find(key) != System::Application::resources->IMAGE_DIMENSIONS_AND_CHANNELS.end())
@@ -238,9 +244,9 @@ void Manager::UnLoadRawImage(const char* key) {
 
 }
 
-//------------------------------------- unload raw char array audio
+//------------------------------------- 
 
-
+//unload raw char array audio
 void Manager::UnLoadRawAudio(const char* key) {
 
     if (System::Application::resources->AUDIO_SIZE.find(key) != System::Application::resources->AUDIO_SIZE.end())
@@ -253,9 +259,9 @@ void Manager::UnLoadRawAudio(const char* key) {
 }
 
 
-//---------------------------- get raw data
+//----------------------------
 
-
+// get raw data
 const char* Manager::GetRawData(const std::string &key)
 {
 
@@ -266,9 +272,9 @@ const char* Manager::GetRawData(const std::string &key)
 }
 
 
-//---------------------------- get raw dimensions
+//---------------------------- 
 
-
+//get raw dimensions
 const std::array<int, 3> Manager::GetRawDimensionsAndChannels(const std::string &key)
 {
 
@@ -287,9 +293,9 @@ const std::array<int, 3> Manager::GetRawDimensionsAndChannels(const std::string 
 }
 
 
-//----------------------------------- sizeof audio
+//----------------------------------- 
 
-
+//sizeof audio
 const unsigned int Manager::GetSizeOfRawAudio(const std::string &key)
 {
 
@@ -301,9 +307,9 @@ const unsigned int Manager::GetSizeOfRawAudio(const std::string &key)
 };
 
 
-//-------------------------------- get raw atlas
+//-------------------------------- 
 
-
+//get raw atlas
 std::vector<std::array<int, 4>> Manager::GetRawSpritesheetData(const std::string &key)
 {
 
@@ -316,9 +322,9 @@ std::vector<std::array<int, 4>> Manager::GetRawSpritesheetData(const std::string
 }
 
 
-//-------------------------------- get raw tilemap
+//-------------------------------- 
 
-
+//get raw tilemap
 const std::vector<std::string> Manager::GetRawTilemapData(const std::string &key)
 {
 
@@ -331,9 +337,9 @@ const std::vector<std::string> Manager::GetRawTilemapData(const std::string &key
 }
 
 
-//-------------------------------- get atlas path
+//--------------------------------
 
-
+// get atlas path
 const char* Manager::GetSpritesheetPath(const std::string &key)
 {
 
@@ -349,9 +355,9 @@ const char* Manager::GetSpritesheetPath(const std::string &key)
 }
 
 
-//--------------------------------- get anims
+//--------------------------------- 
 
-
+//get anims by sprite key
 const std::map<std::string, std::pair<int, int>> Manager::GetAnimations(const std::string &key)
 {
 
@@ -365,9 +371,9 @@ const std::map<std::string, std::pair<int, int>> Manager::GetAnimations(const st
 }
 
 
-//--------------------------- get asset path
+//--------------------------- 
 
-
+//get asset path
 const char* Manager::GetFilePath(const std::string &key)
 {
 
@@ -379,9 +385,9 @@ const char* Manager::GetFilePath(const std::string &key)
 }
 
 
-//--------------------------- parse CSV
+//--------------------------- 
 
-
+//parse CSV
 std::vector<std::string> Manager::ParseCSV(const std::string &key)
 {
 

@@ -632,7 +632,7 @@ void EventListener::BuildAndRun()
 
                 if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size()) {
                     command_queue << "   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n";
-                    command_queue << "   sprite_" + node->m_ID + "->ReadSpritesheetData();\n";
+                    command_queue << "   sprite_" + node->m_ID + "->ReadSpritesheetData();\n"; 
                 } 
 
                 //shader
@@ -747,13 +747,13 @@ void EventListener::BuildAndRun()
 
         //define behaviors
 
-        for (const auto &behavior : node->behaviors) {
+        for (const auto& behavior : node->behaviors) {
 
             std::string entity = (node->m_type + "_" + node->m_ID);
 
             transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
 
-            command_queue << "   CreateBehavior<" + behavior.first + ">(" + entity + ", this);\n";
+            command_queue << "   CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
 
         }
 

@@ -121,7 +121,7 @@ void Game::UpdateFrame()
 
     //update behaviors
 
-    for (const auto &behavior : System::Application::game->behaviors)
+    for (const auto& behavior : System::Application::game->behaviors)
         if (behavior.get() && behavior)
             behavior->Update(System::Application::inputs, System::Application::game->camera);
 

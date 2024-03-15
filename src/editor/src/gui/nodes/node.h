@@ -102,8 +102,7 @@ class SpriteNode : public Node {
              filter_nearest,
              flippedX,
              flippedY,
-             lock_in_place,
-             do_yoyo;
+             lock_in_place;
 
         float restitution,
               density, 
@@ -130,14 +129,14 @@ class SpriteNode : public Node {
 
         std::vector<std::pair<b2Body*, std::string>> bodies;
 
-        SpriteNode(const std::string &id);
+        SpriteNode(const std::string& id);
         ~SpriteNode();      
 
         void Render(std::shared_ptr<Node> node) override;
         void Reset(const char* component_type = "") override;
 
-        void ApplyTexture(const std::string &key);
-        void ApplyAnimation(const std::string &key, int start, int end);
+        void ApplyTexture(const std::string& key);
+        void ApplyAnimation(const std::string& key, int start, int end);
 
         void CreateBody(
             const char* type, 
@@ -154,8 +153,10 @@ class SpriteNode : public Node {
         bool show_sprite_options,
              show_sprite_texture,
              show_sprite_atlas,
-             show_sprite_uv,
-             do_animate;
+             show_sprite_uv;
+
+        std::pair<std::string, std::pair<bool, int>> currentAnim;
+        std::vector<BoolContainer> do_yoyo;
 
         GLuint currentTexture = NULL;
 
@@ -183,7 +184,7 @@ class TilemapNode : public Node {
         std::vector<std::array<int, 4>> offset;
         std::vector<b2Body*> bodies;
 
-        TilemapNode(const std::string &id);
+        TilemapNode(const std::string& id);
         ~TilemapNode();
 
         void Render(std::shared_ptr<Node> node) override;
@@ -219,7 +220,7 @@ class TextNode : public Node {
 
         std::string textBuf;
 
-        TextNode(const std::string &id);
+        TextNode(const std::string& id);
         ~TextNode();     
 
         void Render(std::shared_ptr<Node> node) override;
@@ -239,7 +240,7 @@ class AudioNode : public Node {
         float volume;
         bool loop;
 
-        AudioNode(const std::string &id);
+        AudioNode(const std::string& id);
         ~AudioNode();
 
         void Render(std::shared_ptr<Node> node) override;
@@ -247,7 +248,7 @@ class AudioNode : public Node {
 
     private:
 
-        Graphics::Texture2D &audioTexture;
+        Graphics::Texture2D& audioTexture;
 };
 
 
@@ -271,10 +272,10 @@ class EmptyNode : public Node {
         std::string currentShape;
         std::shared_ptr<Geometry> m_debugGraphic;
 
-        EmptyNode(const std::string &id);
+        EmptyNode(const std::string& id);
         ~EmptyNode();      
 
-        void CreateShape(const std::string &shape);
+        void CreateShape(const std::string& shape);
 
         void Render(std::shared_ptr<Node> node) override;
         void Reset(const char* component_type = "") override;

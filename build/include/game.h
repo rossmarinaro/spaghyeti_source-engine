@@ -71,7 +71,7 @@ class Game {
 
     protected:
 
-        std::vector<std::shared_ptr<Behavior>> behaviors;
+        std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
         int worldWidth, worldHeight = 0; 
 
         std::map<const char*, std::any> data;
@@ -96,7 +96,7 @@ class Game {
 
         template <typename T>
         inline std::shared_ptr<T> GetBehavior(const std::string &key) {
-            return std::dynamic_pointer_cast<T>(*std::find_if(behaviors.begin(), behaviors.end(), [&](std::shared_ptr<Behavior> b) { 
+            return std::dynamic_pointer_cast<T>(*std::find_if(behaviors.begin(), behaviors.end(), [&](std::shared_ptr<entity_behaviors::Behavior> b) { 
                 return b->key == key; 
             }));
         }

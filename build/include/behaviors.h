@@ -4,29 +4,33 @@
 #include "./inputs.h"
 #include "./entity.h"
 
-class Behavior {
+namespace entity_behaviors {
 
-    public:
+    class Behavior {
 
-        std::string key;
+        public:
 
-        std::shared_ptr<Entity> entity;
-        std::shared_ptr<Sprite> sprite;
-        std::shared_ptr<Text> text;
-        std::shared_ptr<Geometry> geometry;
+            std::string key;
 
-        virtual void Update(Inputs* inputs, Camera* camera) {}
+            std::shared_ptr<Entity> entity;
+            std::shared_ptr<Sprite> sprite;
+            std::shared_ptr<Text> text;
+            std::shared_ptr<Geometry> geometry;
 
-        Behavior(std::shared_ptr<Entity> entity, const std::string &key) {
+            virtual void Update(Inputs* inputs, Camera* camera) {}
 
-            this->key = key; 
+            Behavior(std::shared_ptr<Entity> entity, const std::string &key) {
 
-            this->sprite = std::dynamic_pointer_cast<Sprite>(entity);
-            this->text = std::dynamic_pointer_cast<Text>(entity);
-            this->geometry = std::dynamic_pointer_cast<Geometry>(entity);
-        }
+                this->key = key; 
 
-        virtual ~Behavior() = default;
+                this->sprite = std::dynamic_pointer_cast<Sprite>(entity);
+                this->text = std::dynamic_pointer_cast<Text>(entity);
+                this->geometry = std::dynamic_pointer_cast<Geometry>(entity);
+            }
 
-};
+            virtual ~Behavior() = default;
+
+    };
+
+}
 

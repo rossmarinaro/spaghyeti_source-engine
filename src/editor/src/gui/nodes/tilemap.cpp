@@ -247,7 +247,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                         if (ImGui::BeginMenu("CSV: ")) 
                         {
 
-                            for (const auto &asset : AssetManager::loadedAssets)
+                            for (const auto& asset : AssetManager::loadedAssets)
                             {
 
                                 std::string key = asset.first;

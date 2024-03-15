@@ -65,7 +65,7 @@ void System::Application::Update(Camera* camera)
 System::Application::Application(Game* layer)
 { 
 
-    std::cout << "Application started. 👌\n";  
+    std::cout << "PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌\n";  
 
 
     if (!game) {

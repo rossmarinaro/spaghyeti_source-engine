@@ -112,17 +112,15 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         if (sprite["components"]["animator"]["exists"])
             sn->AddComponent("Animator");
 
-        for (const auto &anim : sprite["components"]["animator"]["animations"]) 
+        for (const auto& anim : sprite["components"]["animator"]["animations"]) 
         { 
-
-            sn->animations.insert({ anim["key"], { anim["key"], anim["start"], anim["end"] } });
 
             SpriteNode::StringContainer sc = { anim["key"] };
 
             sn->animBuf1.push_back(sc);
             sn->animBuf2.push_back(anim["start"]); 
             sn->animBuf3.push_back(anim["end"]);
-
+        
             sn->ApplyAnimation(anim["key"], anim["start"], anim["end"]);
         }
 
@@ -327,7 +325,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
 
 //project serialization
-void EventListener::Serialize(json &data)
+void EventListener::Serialize(json& data)
 {
 
     json nodes;
@@ -374,7 +372,7 @@ void EventListener::Serialize(json &data)
 
     data["globals"] = globals;
 
-    for (const auto &node : Node::nodes)
+    for (const auto& node : Node::nodes)
     {
 
         //scripts
