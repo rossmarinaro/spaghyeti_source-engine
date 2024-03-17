@@ -6,9 +6,7 @@
 
 SpriteNode::SpriteNode(const std::string& id): 
     Node(id, "Sprite"),
-        show_sprite_uv(false),
         show_sprite_texture(false),
-        show_sprite_atlas(false),
         framesApplied(false),
         filter_nearest(true),
         flippedX(false),
@@ -166,7 +164,8 @@ void SpriteNode::ApplyAnimation(const std::string& key, int start, int end)
 
         for (const auto& anim : this->animations)
             animsToLoad.insert({ { anim.second.key, { anim.second.start, anim.second.end } } });
-
+        
+        System::Resources::Manager::UnLoadAnims(this->spriteHandle->m_key);
         System::Resources::Manager::LoadAnims(this->spriteHandle->m_key, animsToLoad);
 
         this->spriteHandle->m_anims = System::Resources::Manager::GetAnimations(this->spriteHandle->m_key);
@@ -222,6 +221,9 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                 
                 ImGui::EndMenu();
             }
+
+            //if (ImGui::Button("Save prefab"))
+                //AssetManager::SavePrefab(node);
 
             //component options
 
@@ -446,16 +448,163 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                         
                     if (this->currentTexture)
                     {
+
+                    //spritesheet / atlas
+
+                        if (ImGui::BeginMenu("frames")) 
+                        {
+                            //apply frames
+
+                            if (ImGui::Button("apply"))
+                            {
+
+                                this->frames.clear();
+
+                                for (int i = 0; i < this->frame; i++) 
+                                    this->frames.push_back({ this->frameBuf1[i], this->frameBuf2[i], this->frameBuf3[i], this->frameBuf4[i] , this->frameBuf5[i], this->frameBuf6[i]}); 
+
+                                std::vector<std::array<int, 6>> framesToPush;
+
+                                for (const auto& fr : this->frames) 
+                                    framesToPush.push_back({ fr.x, fr.y, fr.width, fr.height , fr.factorX, fr.factorY});
+                                
+                                System::Resources::Manager::UnLoadFrames(this->spriteHandle->m_key);
+                                System::Resources::Manager::LoadFrames(this->spriteHandle->m_key, framesToPush);
+
+                                this->framesApplied = true; 
+                                this->spriteHandle->ReadSpritesheetData();
+                                this->spriteHandle->SetFrame(0);
+
+                            }
+
+                            if (this->framesApplied) {  
+                                ImGui::SameLine(); 
+                                ImGui::Text("applied");
+                            }
+
+                            ImGui::SameLine();
+
+                            if (this->spriteHandle)
+                            {
+
+                                if (ImGui::BeginMenu("frames:"))
+                                {
+
+                                    for (int i = 0; i < this->frame; ++i)
+                                    {
+                                        ImGui::Separator(); 
+                                    
+                                        ImGui::Text("frame: %d", i); 
+                                        
+                                        ImGui::PushID(i);
+                                        
+                                        this->frameBuf1.push_back(i);
+                                        this->frameBuf2.push_back(i);
+                                        this->frameBuf3.push_back(i);
+                                        this->frameBuf4.push_back(i);
+                                        this->frameBuf5.push_back(i);
+                                        this->frameBuf6.push_back(i);
+
+                                        if (ImGui::Button("+x") && this->frameBuf5[i] > 1) {
+                                            this->framesApplied = false;
+                                            this->frameBuf5[i]--;
+                                        }
+
+                                        ImGui::SameLine();
+
+                                        if (ImGui::Button("+x") && this->frameBuf5[i]) {
+                                            this->framesApplied = false;
+                                            this->frameBuf5[i]++;
+                                        }
+
+                                        ImGui::SameLine();
+
+                                        ImGui::Text("factor x: %d", this->frameBuf5[i]);
+
+                                        if (ImGui::Button("-y") && this->frameBuf6[i] > 1) {
+                                            this->framesApplied = false;
+                                            this->frameBuf6[i]--;
+                                        }
+
+                                        ImGui::SameLine();
+
+                                        if (ImGui::Button("+y") && this->frameBuf6[i]) {
+                                            this->framesApplied = false;
+                                            this->frameBuf6[i]++;
+                                        }
+
+                                        ImGui::SameLine();
+
+                                        ImGui::Text("factor y: %d", this->frameBuf6[i]);
+
+                                        if (
+                                            ImGui::InputInt("position x", &this->frameBuf1[i]) ||
+                                            ImGui::InputInt("position y", &this->frameBuf2[i]) || 
+                                            ImGui::InputInt("width", &this->frameBuf3[i]) || 
+                                            ImGui::InputInt("height", &this->frameBuf4[i]) 
+                                        ) 
+                                            this->framesApplied = false;
+
+                                        ImGui::PopID();
+
+                                    } 
+
+                                    ImGui::EndMenu();
+                                }
+
+                                if (ImGui::Button("-") && this->spriteHandle->m_currentFrame > 0) 
+                                    this->spriteHandle->m_currentFrame--;                    
+                                
+                                ImGui::SameLine();
+
+                                if (ImGui::Button("+") && this->spriteHandle->m_currentFrame < this->spriteHandle->m_frames - 1) 
+                                    this->spriteHandle->m_currentFrame++; 
+
+                                ImGui::SameLine();
+
+                                ImGui::Text("frame: %d", this->spriteHandle->m_currentFrame);
+
+                                ImGui::SameLine();
+
+                                ImGui::Text("total: %d", this->frame); 
+
+                            }
+
+                            if (ImGui::Button("add frame"))
+                                this->frame++;
+
+                            ImGui::SameLine();
+
+                            if (ImGui::Button("remove frame") && this->frame > 1) 
+                            {
+                                this->frames.pop_back();
+
+                                this->frameBuf1.pop_back();
+                                this->frameBuf2.pop_back();
+                                this->frameBuf3.pop_back();
+                                this->frameBuf4.pop_back();
+
+                                this->frame--;
+                            }
+
+                            ImGui::EndMenu();
+                        } 
+
+                        if (ImGui::BeginMenu("UVs"))
+                        {
+                            ImGui::SliderFloat("U1", &this->spriteHandle->m_texture.U1, 0.0f, 1.0f); 
+                            ImGui::SliderFloat("V1", &this->spriteHandle->m_texture.V1, 0.0f, 1.0f);
+                            ImGui::SliderFloat("U2", &this->spriteHandle->m_texture.U2, 0.0f, 1.0f);
+                            ImGui::SliderFloat("V2", &this->spriteHandle->m_texture.V2, 0.0f, 1.0f);
+
+                            ImGui::EndMenu();
+                        }
+
                         ImGui::Checkbox("filter nearest", &this->filter_nearest);
                         ImGui::Checkbox("lock image", &this->lock_in_place);
 
-                        ImGui::Text("flip"); ImGui::SameLine();
-                        ImGui::Checkbox("X", &this->flippedX); ImGui::SameLine();
-                        ImGui::Checkbox("Y", &this->flippedY);
-
-                        ImGui::Text("format"); ImGui::SameLine();
-                        ImGui::Checkbox("UVs", &this->show_sprite_uv); ImGui::SameLine();
-                        ImGui::Checkbox("atlas", &this->show_sprite_atlas); 
+                        ImGui::Checkbox("flipX", &this->flippedX); 
+                        ImGui::Checkbox("flipY", &this->flippedY);
  
                         if (this->filter_nearest) {
                             this->spriteHandle->m_texture.Filter_Min = GL_NEAREST;
@@ -467,112 +616,6 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                         }
 
                         this->spriteHandle->m_texture.SetFiltering();
-
-                        if (this->show_sprite_uv)
-                        {
-                            ImGui::SliderFloat("U1", &this->spriteHandle->m_texture.U1, 0.0f, 1.0f); 
-                            ImGui::SliderFloat("V1", &this->spriteHandle->m_texture.V1, 0.0f, 1.0f);
-                            ImGui::SliderFloat("U2", &this->spriteHandle->m_texture.U2, 0.0f, 1.0f);
-                            ImGui::SliderFloat("V2", &this->spriteHandle->m_texture.V2, 0.0f, 1.0f);
-                        }
-
-                        //spritesheet / atlas
-
-                        if (this->show_sprite_atlas)
-                        {
-                            if (ImGui::BeginMenu("frames")) 
-                            {
-
-                                ImGui::Text("frames: %d", this->frame); 
-
-                                for (int i = 0; i < this->frame; ++i)
-                                {
-                                    ImGui::Separator(); 
-                              
-                                    ImGui::Text("frame: %d", i);
-                                    
-                                    ImGui::PushID(i);
-
-                                    this->frameBuf1.push_back(i);
-                                    this->frameBuf2.push_back(i);
-                                    this->frameBuf3.push_back(i);
-                                    this->frameBuf4.push_back(i);
-
-                                    if (
-                                        ImGui::InputInt("frame x", &this->frameBuf1[i]) ||
-                                        ImGui::InputInt("frame y", &this->frameBuf2[i]) || 
-                                        ImGui::InputInt("frame width", &this->frameBuf3[i]) || 
-                                        ImGui::InputInt("frame height", &this->frameBuf4[i])
-
-                                    ) 
-                                        this->framesApplied = false;
-
-                                    ImGui::PopID();
-
-                                } 
-
-                                if (ImGui::Button("apply"))
-                                {
-                                    
-                                    for (int i = 0; i < this->frame; ++i) 
-                                    {
-                                        this->frames.push_back({ this->frameBuf1[i], this->frameBuf2[i], this->frameBuf3[i], this->frameBuf4[i] }); 
-                                        this->framesApplied = true; 
-                                        this->spriteHandle->ReadSpritesheetData();
-                                        this->spriteHandle->SetFrame(0);
-                                    }
-
-                                    std::vector<std::array<int, 4>> framesToPush;
-
-                                    for (const auto& fr : this->frames) 
-                                        framesToPush.push_back({ fr.x, fr.y, fr.width, fr.height });
-                                    
-                                    System::Resources::Manager::LoadFrames(this->spriteHandle->m_key, framesToPush);
-
-                                }
-
-                                if (this->framesApplied) {  
-                                    ImGui::SameLine(); 
-                                    ImGui::Text("applied");
-                                }
-
-                                if (this->spriteHandle)
-                                {
-                                    
-                                    if (ImGui::Button("+") && this->spriteHandle->m_currentFrame < this->spriteHandle->m_frames - 1)                       
-                                        this->spriteHandle->m_currentFrame++; 
-
-                                    ImGui::SameLine();
-
-                                    if (ImGui::Button("-") && this->spriteHandle->m_currentFrame > 0)                         
-                                        this->spriteHandle->m_currentFrame--;
-
-                                    ImGui::SameLine();
-
-                                    ImGui::Text("frame: %d", this->spriteHandle->m_currentFrame);
-                                }
-
-                                if (ImGui::Button("add frame"))
-                                    this->frame++;
-
-                                ImGui::SameLine();
-
-                                if (ImGui::Button("remove frame") && this->frame > 1) 
-                                {
-                                    this->frames.pop_back();
-
-                                    this->frameBuf1.pop_back();
-                                    this->frameBuf2.pop_back();
-                                    this->frameBuf3.pop_back();
-                                    this->frameBuf4.pop_back();
-
-                                    this->frame--;
-                                }
-
-                                ImGui::EndMenu();
-                            }
-
-                        }
 
                         ImGui::ColorEdit3("tint", (float*)&this->spriteHandle->m_tint); 
                         ImGui::SliderFloat("alpha", &this->spriteHandle->m_alpha, 0.0f, 1.0f); 

@@ -86,26 +86,31 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
         sn->spriteHandle->SetTexture(sprite["currentTexture"]);
 
-        for (const auto &frame : sprite["frames"]) {
-            sn->frames.push_back({ frame["frame x"], frame["frame y"], frame["frame width"], frame["frame height"] });
-            sn->frameBuf1.push_back(frame["frame x"]);
-            sn->frameBuf2.push_back(frame["frame y"]);
-            sn->frameBuf3.push_back(frame["frame width"]);
-            sn->frameBuf4.push_back(frame["frame height"]);
-            sn->framesApplied = true;
+        for (const auto& frame : sprite["frames"]) {
+            sn->frameBuf1.push_back(frame["offset x"]);
+            sn->frameBuf2.push_back(frame["offset y"]);
+            sn->frameBuf3.push_back(frame["width"]);
+            sn->frameBuf4.push_back(frame["height"]);
+            sn->frameBuf5.push_back(frame["factor x"]);
+            sn->frameBuf6.push_back(frame["factor y"]);
+            sn->frames.push_back({ frame["offset x"], frame["offset y"], frame["width"], frame["height"], frame["factor x"], frame["factor y"] });
         }
 
         sn->frame = sn->frames.size();
 
-        std::vector<std::array<int, 4>> framesToPush;
+        std::vector<std::array<int, 6>> framesToPush;
 
         for (const auto& frame : sn->frames)
-            framesToPush.push_back({ frame.x, frame.y, frame.width, frame.height });
+            framesToPush.push_back({ frame.x, frame.y, frame.width, frame.height, frame.factorX, frame.factorY });
 
+        System::Resources::Manager::UnLoadFrames(sn->spriteHandle->m_key);
         System::Resources::Manager::LoadFrames(sn->spriteHandle->m_key, framesToPush);
 
-        if (sn->frames.size() > 1)
+        if (sn->frames.size() > 1) {
+            sn->framesApplied = true; 
             sn->spriteHandle->ReadSpritesheetData();
+            sn->spriteHandle->SetFrame(0);
+        }
 
         //animator
 
@@ -409,10 +414,12 @@ void EventListener::Serialize(json& data)
 
             for (int i = 0; i < sn->frame; ++i)
                 frames.push_back({
-                    { "frame x", sn->frameBuf1.size() ? sn->frameBuf1[i] : 0 },
-                    { "frame y", sn->frameBuf2.size() ? sn->frameBuf2[i] : 0 },
-                    { "frame width", sn->frameBuf3.size() ? sn->frameBuf3[i] : 0 },
-                    { "frame height", sn->frameBuf4.size() ? sn->frameBuf4[i] : 0 }
+                    { "offset x", sn->frameBuf1.size() ? sn->frameBuf1[i] : 0 },
+                    { "offset y", sn->frameBuf2.size() ? sn->frameBuf2[i] : 0 },
+                    { "width", sn->frameBuf3.size() ? sn->frameBuf3[i] : 0 },
+                    { "height", sn->frameBuf4.size() ? sn->frameBuf4[i] : 0 },
+                    { "factor x", sn->frameBuf5.size() ? sn->frameBuf5[i] : 1 },
+                    { "factor y", sn->frameBuf6.size() ? sn->frameBuf6[i] : 1 }
                 });
 
             //animations

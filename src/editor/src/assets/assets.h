@@ -15,4 +15,6 @@ class AssetManager {
     static std::string GetFolder(const std::string &asset);
     static std::string GetThumbnail(const std::string &asset);
 
+    static void SavePrefab(void* node);
+
 };

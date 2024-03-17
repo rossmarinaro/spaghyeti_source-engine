@@ -95,7 +95,7 @@ void Manager::LoadFile(const char* key, const char* path)
 //------------------------------------
 
 //load frames from vector of int arrays
-void Manager::LoadFrames(const std::string &key, const std::vector<std::array<int, 4>>& frames) {
+void Manager::LoadFrames(const std::string &key, const std::vector<std::array<int, 6>>& frames) {
 
     if (System::Application::resources->ATLASES.find(key) == System::Application::resources->ATLASES.end())
         System::Application::resources->ATLASES.insert( { key, frames } );
@@ -310,10 +310,10 @@ const unsigned int Manager::GetSizeOfRawAudio(const std::string &key)
 //-------------------------------- 
 
 //get raw atlas
-std::vector<std::array<int, 4>> Manager::GetRawSpritesheetData(const std::string &key)
+std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::string &key)
 {
 
-    std::map<std::string, std::vector<std::array<int, 4>>>::iterator it = System::Application::resources->ATLASES.find(key);
+    std::map<std::string, std::vector<std::array<int, 6>>>::iterator it = System::Application::resources->ATLASES.find(key);
  
     if (it != System::Application::resources->ATLASES.end())
         return it->second; 

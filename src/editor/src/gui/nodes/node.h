@@ -108,7 +108,7 @@ class SpriteNode : public Node {
               density, 
               friction;
 
-        typedef struct Frames { int x, y, width, height; };
+        typedef struct Frames { int x, y, width, height, factorX, factorY; };
         typedef struct Anims { std::string key; int start, end; };
 
         std::vector<Frames> frames; 
@@ -122,9 +122,13 @@ class SpriteNode : public Node {
                          frameBuf2,
                          frameBuf3,
                          frameBuf4,
+                         frameBuf5,
+                         frameBuf6,
+
                          animBuf2,
                          animBuf3,
                          animBuf4,
+                         
                          body_pointer;
 
         std::vector<std::pair<b2Body*, std::string>> bodies;
@@ -151,9 +155,7 @@ class SpriteNode : public Node {
     private:
 
         bool show_sprite_options,
-             show_sprite_texture,
-             show_sprite_atlas,
-             show_sprite_uv;
+             show_sprite_texture;
 
         std::pair<std::string, std::pair<bool, int>> currentAnim;
         std::vector<BoolContainer> do_yoyo;
@@ -181,7 +183,7 @@ class TilemapNode : public Node {
                          depth;
 
         std::vector<std::array<std::string, 3>> layers;
-        std::vector<std::array<int, 4>> offset;
+        std::vector<std::array<int, 6>> offset;
         std::vector<b2Body*> bodies;
 
         TilemapNode(const std::string& id);

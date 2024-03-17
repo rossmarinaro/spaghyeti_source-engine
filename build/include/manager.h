@@ -26,7 +26,7 @@ namespace System {
 
                 std::map<std::string, std::vector<std::string>> TILEMAP;
                 std::map<std::string, unsigned int> AUDIO_SIZE;
-                std::map<std::string, std::vector<std::array<int, 4>>> ATLASES;
+                std::map<std::string, std::vector<std::array<int, 6>>> ATLASES;
                 std::map<std::string, std::map<std::string, std::pair<int, int>>> ANIMS;
                 std::map<std::string, const char*> ATLAS_PATH;
                 std::map<std::string, std::array<int, 3>> IMAGE_DIMENSIONS_AND_CHANNELS;
@@ -57,7 +57,7 @@ namespace System {
 
                 static const std::array<int, 3> GetRawDimensionsAndChannels(const std::string &key);
 
-                static std::vector<std::array<int, 4>> GetRawSpritesheetData(const std::string &key);
+                static std::vector<std::array<int, 6>> GetRawSpritesheetData(const std::string &key);
                 
                 static const std::vector<std::string> GetRawTilemapData(const std::string &key);
 
@@ -66,7 +66,7 @@ namespace System {
                 static void LoadRawImage(const char* key, const char* arr, int width, int height, int channel);
                 static void LoadRawAudio(const char* key, const char* arr, unsigned int bytes);
                 static void LoadAnims(const std::string &key, const std::map<std::string, std::pair<int, int>> &anims);
-                static void LoadFrames(const std::string &key, const std::vector<std::array<int, 4>> &frames); 
+                static void LoadFrames(const std::string &key, const std::vector<std::array<int, 6>> &frames); 
                 static void LoadAtlas(const std::string &key, const char* path); 
                 static void LoadTilemap(const std::string &key, const std::vector<std::string> &data);
 

@@ -562,8 +562,8 @@ void EventListener::BuildAndRun()
                 std::ostringstream frame_oss;
                 std::vector<std::string> framesToLoad;
 
-                for (const auto &frame : sn->frames)
-                    framesToLoad.push_back("{" + std::to_string(frame.x)  + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + "}");
+                for (const auto& frame : sn->frames)
+                    framesToLoad.push_back("{" + std::to_string(frame.x) + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + ", " + std::to_string(frame.factorX) + ", " + std::to_string(frame.factorY) + "}");
 
                 if (!framesToLoad.empty()) 
                 {
@@ -708,7 +708,7 @@ void EventListener::BuildAndRun()
             std::vector<std::string> offsetsToLoad;
 
             for (const auto &offset : tmn->offset)
-                offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + "}");
+                offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + ", " + std::to_string(offset[4]) + ", " + std::to_string(offset[5]) + "}");
             
             if (!offsetsToLoad.empty()) {
                 std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));

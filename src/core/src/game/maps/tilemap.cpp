@@ -53,7 +53,7 @@ void MapManager::CreateLayer (
 
             if (tileType > -1) 
             {
-                auto tile = app::game->CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType);
+                auto tile = app::game->CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType); 
                 
                 tile->SetDepth(depth); 
                 tile->ID = (std::string)data_key;

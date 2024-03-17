@@ -75,8 +75,7 @@ void TilemapNode::ApplyTilemap()
 
                 if (w < this->map_width) {
 
-                    this->offset.push_back({ w, h, this->tile_width, this->tile_height }); 
-                    
+                    this->offset.push_back({ w, h, this->tile_width, this->tile_height, 1, 1 }); 
                     w++;
                 }
             }

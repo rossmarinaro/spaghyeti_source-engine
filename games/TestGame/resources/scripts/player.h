@@ -31,17 +31,13 @@ namespace entity_behaviors {
                 if (this->follow)
                     this->sprite->StartFollow(camera, 500);
 
-                if (inputs->m_up && this->canJump) {
-                    this->canJump = false;
-                    this->Jump(inputs);   
-                }
+                if (inputs->m_up && this->canJump) 
+                    {                this->canJump = true;this->Jump(inputs);}   
 
-                else if (this->sprite->IsContacting()) {
-                    this->canJump = true;
-                    this->Move(inputs);
-                }
+                else if (this->sprite->IsContacting()) 
+                    {                this->canJump = true;this->Move(inputs);}
 
-                else if (inputs->m_SPACE) 
+                if (inputs->m_SPACE) 
                     this->Attack();
 
             }
@@ -50,6 +46,10 @@ namespace entity_behaviors {
 
             void Move(Inputs* inputs)
             {
+
+
+                this->sprite->SetTint({1.0f, 0.0f, 0.0f});
+
                 if (inputs->m_left) {       
                     this->sprite->SetVelocityX(-3800); 
                     this->sprite->Animate("walk-left", false, 5); 
@@ -74,21 +74,22 @@ namespace entity_behaviors {
             {
                 //this->sprite->SetImpulseY(-400);
 
+                this->sprite->ClearTint();
+
                 if (inputs->m_left) {       
                     this->sprite->SetImpulse(-20, -400); 
-                    this->sprite->Animate("jump-left"); 
-                    this->flipX = true;
+                    this->sprite->SetFrame(14);
                 }
 
                 else if (inputs->m_right) {
                     this->sprite->SetImpulse(20, -400); 
-                    this->sprite->Animate("jump-right"); 
-                    this->flipX = false;
+                    this->sprite->SetFrame(12); 
                 }
 
                 else {
-                    this->sprite->SetVelocityY(-3800);//SetImpulseY(-1800);
-                    this->sprite->Animate(this->flipX ? "jump-left" : "jump-right");
+                    this->sprite->SetImpulseY(-7800);
+                    //this->sprite->Animate(this->flipX ? "jump-left" : "jump-right");
+                    this->sprite->SetFrame(this->flipX ? 14 : 12);
                 }
             }
 

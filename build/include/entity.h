@@ -277,7 +277,7 @@ class Sprite : public Entity {
 		
 		//internal spritesheet data
 
-		std::vector<std::array<int, 4>> m_resourceData; 
+		std::vector<std::array<int, 6>> m_resourceData; 
 };
 
 

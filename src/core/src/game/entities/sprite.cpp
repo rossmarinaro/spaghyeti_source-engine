@@ -247,16 +247,34 @@ void Sprite::Render()
         float currentFrameX = (float)this->m_resourceData[this->m_currentFrame][0],
               currentFrameY = (float)this->m_resourceData[this->m_currentFrame][1],
               currentFrameWidth = (float)this->m_resourceData[this->m_currentFrame][2],
-              currentFrameHeight = (float)this->m_resourceData[this->m_currentFrame][3];
+              currentFrameHeight = (float)this->m_resourceData[this->m_currentFrame][3],
+              factorX = (float)this->m_resourceData[this->m_currentFrame][4],
+              factorY = (float)this->m_resourceData[this->m_currentFrame][5];
 
         this->m_texture.FrameWidth = currentFrameWidth;
         this->m_texture.FrameHeight = currentFrameHeight;
 
-        this->m_texture.U1 = (currentFrameX * currentFrameWidth) / this->m_texture.Width;   
-        this->m_texture.U2 = ((currentFrameX + 1) * currentFrameWidth) / this->m_texture.Width;
+        //tilemap
 
-        this->m_texture.V1 = (currentFrameY * currentFrameHeight) / this->m_texture.Height; 
-        this->m_texture.V2 = ((currentFrameY + 1) * currentFrameHeight) / this->m_texture.Height; 
+        if (strcmp(this->type, "tile") == 0)
+        {
+            this->m_texture.U1 = (currentFrameX * currentFrameWidth) / this->m_texture.Width;      
+            this->m_texture.U2 = ((currentFrameX + 1) * currentFrameWidth) / this->m_texture.Width;
+
+            this->m_texture.V1 = (currentFrameY * currentFrameHeight) / this->m_texture.Height; 
+            this->m_texture.V2 = ((currentFrameY + 1) * currentFrameHeight) / this->m_texture.Height; 
+        }
+
+        //generic
+
+        else 
+        {
+            this->m_texture.U1 = (currentFrameX * factorX) / this->m_texture.Width;      
+            this->m_texture.U2 = ((currentFrameX + currentFrameWidth) * factorX) / this->m_texture.Width;
+
+            this->m_texture.V1 = (currentFrameY * factorY) / this->m_texture.Height; 
+            this->m_texture.V2 = ((currentFrameY + currentFrameHeight) * factorY) / this->m_texture.Height; 
+        }
 
     }
 
