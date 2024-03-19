@@ -49,10 +49,10 @@ void Manager::RegisterAssets()
 
     //load textures
 
-    for (const auto &texture : System::Application::resources->file_image_assets)
+    for (const auto& texture : System::Application::resources->file_image_assets)
        System::Application::resources->texture2D->Load(texture.first);
 
-    for (const auto &texture : System::Application::resources->raw_image_assets)
+    for (const auto& texture : System::Application::resources->raw_image_assets)
        System::Application::resources->texture2D->Load(texture.first);
 }
 
@@ -84,7 +84,6 @@ void Manager::LoadFile(const char* key, const char* path)
 
     else
         return;
-
 
     if (System::Application::resources->file_assets.find(key) == System::Application::resources->file_assets.end())
         System::Application::resources->file_assets.insert({key, path});

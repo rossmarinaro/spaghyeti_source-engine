@@ -42,7 +42,6 @@ class Camera {
         bool InBounds();
         void Pan(float rateX, float rateY);
         void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd); 
-        glm::highp_mat4 GetViewMatrix(Camera* camera);
         glm::highp_mat4 GetProjectionMatrix(float width, float height);
 
         Camera();

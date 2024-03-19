@@ -12,7 +12,6 @@
 
 #include <filesystem>
 #include <iterator>
-#include <bitset>
 
 #include "./events.h"
 #include "../editor.h"
@@ -273,11 +272,6 @@ bool EventListener::SaveProject(bool saveAs)
                     JSON[i] = '&';
                 else if (JSON[i] == ':')
                     JSON[i] = '$';
-
-            //convert to binary
-
-            //for (size_t i = 0; i < JSON.size(); ++i)
-                //src << std::bitset<8>(JSON.c_str()[i]); //JSON;
 
             src << JSON;
 

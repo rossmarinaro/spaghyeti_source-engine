@@ -40,18 +40,49 @@ namespace System {
 				return str.size() >= suff.size() && 0 == str.compare(str.size() - suff.size(), suff.size(), suff);
 			}
 
-			static inline bool CoinFlip(void)
-			{
-
-				srand(time(NULL)); //reset rand
-				float randNum = rand() % 10;
-				return randNum >= 6 ? true : false;
+			static inline bool CoinFlip(void) {
+				return rand() % 10 >= 6;
 			}
 
+			//returns number of digits in tiletype
+			static inline int CountDigits (long long n) 
+			{
+        
+				if (n == 0)
+					return 1;
+
+				int count = 0;
+
+				while (n != 0) {
+					n = n / 10;
+					++count;
+				}
+
+				return count;
+
+			}
+
+			//binary to dec
+			static inline int BinToDec (int n) 
+			{
+        
+				int num = n, 
+					dec_val = 0,
+					base = 1,
+					temp = num;
+
+				while(temp) 
+				{
+					int last_dig = temp % 10;
+					temp = temp / 10;	
+					dec_val += last_dig * base;
+					base = base * 2;
+				}
+
+				return dec_val;
+			}
 			
-			//---------------------------------- replace string from specific position
-
-
+			//replace string from specific position
 			static inline std::string ReplaceFrom(const std::string &str, const char* position, const char* replace_str)
 			{
 				std::string::size_type position_at = str.rfind(position, str.length());
@@ -63,8 +94,6 @@ namespace System {
 
 				return nullptr;
 			}
-
-			//---------------------------------------
 
 			static inline std::string GetFileType(const std::string &path)
 			{

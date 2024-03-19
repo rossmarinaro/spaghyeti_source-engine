@@ -101,7 +101,7 @@ void Shader::Update(Camera* camera)
             GetShader(shader.first).SetMat4("view", glm::mat4(1.0f), true);
 
         else             
-            GetShader(shader.first).SetMat4("view", camera->GetViewMatrix(camera), true);
+            GetShader(shader.first).SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(camera->m_position, 0.0f)), true);
 
     }
 }

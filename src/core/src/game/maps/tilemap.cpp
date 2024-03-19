@@ -1,11 +1,13 @@
+#include <bitset>
+#include <bits/stdc++.h>
+
 #include "../../../../../build/include/tilemap.h"
 #include "../../../../../build/include/app.h"
 
 using app = System::Application;
 
-//------------------------------------- load tilemap layer
 
-
+//create layer from csv
 void MapManager::CreateLayer (
 
     const char* data_key,
@@ -51,12 +53,39 @@ void MapManager::CreateLayer (
 
             //skip if no tile
 
-            if (tileType > -1) 
+            if (tileType != -1) 
             {
+
+                bool flipX = false, 
+                     flipY = false;
+
+                //number larger than total tiles indicates flip or rotation
+                //convert to binary to extract bit flags
+
+                if ((tileType < -1) || (tileType > mapWidth * mapHeight)) 
+                {
+
+                    //flags: 
+                    //1=flipX, 2=flipY, 3=diagonal
+
+                    std::bitset<32> bin(tileType);
+                    const char* flags = bin.to_string().substr(0, 3).c_str();
+                    std::string bin_reset = bin.to_string();
+
+                    bin_reset[0] = '0';
+                    bin_reset[1] = '0';
+                    bin_reset[2] = '0';
+                  
+                    tileType = System::Utils::BinToDec(atoi(bin_reset.c_str()));                   
+                    flipX = static_cast<std::string>(flags).substr(0, 1) == "1";
+                    flipY = static_cast<std::string>(flags).substr(1, 1) == "1";
+                }
+
                 auto tile = app::game->CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType); 
                 
-                tile->SetDepth(depth); 
                 tile->ID = (std::string)data_key;
+                tile->SetDepth(depth); 
+                tile->SetFlip(flipX, flipY);
 
                 //add layer to stack
 

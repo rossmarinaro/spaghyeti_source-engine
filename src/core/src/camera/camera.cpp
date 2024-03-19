@@ -54,15 +54,6 @@ bool Camera::InBounds() {
 //------------------------------
 
 
-glm::highp_mat4 Camera::GetViewMatrix(Camera* camera) {
-
-    return glm::translate(glm::mat4(1.0f), glm::vec3(camera->m_position, 0.0f));
-}
-
-
-//------------------------------
-
-
 glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 {
     
