@@ -31,7 +31,7 @@ b2Body* Physics::CreateStaticBody(
     float width, 
     float height, 
     bool isSensor, 
-    int type
+    int pointer
 )
 {
 
@@ -40,17 +40,16 @@ b2Body* Physics::CreateStaticBody(
     body.def.type = b2_staticBody;
     body.def.position.Set(x, y);     
 
-    body.def.userData.pointer = type;
+    body.def.userData.pointer = pointer;
 
     body.self = System::Application::game->physics->world.CreateBody(&body.def);
 
-    body.m_width = width;
-    body.m_height = height;
-
     body.fixtureDef.isSensor = isSensor;
 
-    body.box.SetAsBox(body.m_width, body.m_height);       
-    body.self->CreateFixture(&body.box, 0.0f); 
+    b2PolygonShape box;
+
+    box.SetAsBox(width, height);       
+    body.self->CreateFixture(&box, 0.0f); 
 
     return body.self;
 }
@@ -61,12 +60,13 @@ b2Body* Physics::CreateStaticBody(
 
 
 b2Body* Physics::CreateDynamicBody(
+    const char* type,
     float x,
     float y,
     float width,
     float height,
     bool isSensor,
-    int type, 
+    int pointer, 
     float density, 
     float friction, 
     float restitution
@@ -79,16 +79,28 @@ b2Body* Physics::CreateDynamicBody(
   
     body.def.position.Set(x, y);
  
-    body.def.userData.pointer = type;
+    body.def.userData.pointer = pointer;
  
-    body.self = System::Application::game->physics->world.CreateBody(&body.def);  
-    
-    body.box.SetAsBox(width, height);          
+    body.self = System::Application::game->physics->world.CreateBody(&body.def);
 
-    body.m_width = width;
-    body.m_height = height;
+    b2CircleShape circle;
+    b2PolygonShape box;
 
-    body.fixtureDef.shape = &body.box; 
+    if (strcmp(type, "circle") == 0) {
+	    circle.m_radius = 0.3f;
+        body.fixtureDef.shape = &circle;
+    }
+
+    if (strcmp(type, "box") == 0) {
+        box.SetAsBox(width, height);          
+        body.fixtureDef.shape = &box;
+    }
+
+    else {
+        box.SetAsBox(10, 10);          
+        body.fixtureDef.shape = &box;
+    }
+ 
     body.fixtureDef.density = density;  
     body.fixtureDef.friction = friction; 
     body.fixtureDef.restitution = restitution;
@@ -114,6 +126,32 @@ void Physics::DestroyBody(b2Body* b) {
 
 void Physics::Update()
 {
+
+    static double accumulator = 0.0;
+
+    accumulator += System::Application::game->time->m_delta;
+
+    while (accumulator >= System::Application::game->time->timeStep) {
+        
+        world.Step(
+            System::Application::game->time->timeStep, 
+            System::Application::game->physics->velocityIterations, 
+            System::Application::game->physics->positionIterations
+        );
+
+        accumulator -= System::Application::game->time->timeStep;
+    }
+
+    #if DEVELOPMENT == 1 
+        System::Application::game->physics->debug->SetFlags(System::Application::game->physics->m_flags);
+    #endif
+
+	world.SetAllowSleeping(System::Application::game->physics->sleeping);
+	world.SetWarmStarting(System::Application::game->physics->setWarmStart);
+	world.SetContinuousPhysics(System::Application::game->physics->continuous);
+	world.SetSubStepping(System::Application::game->physics->subStep);
+    world.SetAutoClearForces(System::Application::game->physics->clearForces);
+
     //cleanup removed bodies
 
     std::set<b2Body*>::iterator it = System::Application::game->physics->bodiesToRemove.begin();

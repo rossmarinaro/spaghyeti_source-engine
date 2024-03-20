@@ -89,9 +89,8 @@ void Node::DeleteNode (std::shared_ptr<Node> node)
 
     //delete all attached components
 
-    if (node->components.size())
-        for (const auto& component : node->components)
-            node->RemoveComponent(component);
+    node->Reset();
+    node->components.clear();
 
     //delete node instance
  

@@ -36,7 +36,7 @@ void TilemapNode::Reset(const char* component_type)
 
     if (strcmp(component_type, "Physics") == 0 || passAll) 
     {
-        for (const auto &body : this->bodies)
+        for (const auto& body : this->bodies)
             Game::physics->DestroyBody(body);
 
         this->bodyX.clear();
@@ -172,7 +172,20 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                     {
 
                         ImGui::PushID(i);
-                        
+
+                        ImGui::Text("body: %d", i);
+
+                        ImGui::SameLine();
+
+                        if (ImGui::Button("remove") && this->bodies.size() > 1) 
+                        {
+                            auto it = std::find(this->bodies.begin(), this->bodies.end(), this->bodies[i]);
+                            if (it != this->bodies.end()) {
+                                Game::physics->DestroyBody(*it); 
+                                this->bodies.erase(it);
+                            }
+                        }
+    
                         ImGui::SliderFloat("width", &this->body_width[i], 0.0f, this->map_width * this->tile_width, NULL, ImGuiSliderFlags_AlwaysClamp); 
                         ImGui::SliderFloat("height", &this->body_height[i], 0.0f, this->map_height * this->tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
 
@@ -198,10 +211,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                     if (ImGui::Button("add")) 
                         this->CreateBody();
 
-                    if (ImGui::Button("remove") && this->bodies.size() > 1) { 
-                        Game::physics->DestroyBody(this->bodies.back()); 
-                        this->bodies.pop_back();
-                    }
+                    ImGui::SameLine();
 
                     if (ImGui::BeginMenu("remove physics?"))
                     {

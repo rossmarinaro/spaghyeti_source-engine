@@ -57,7 +57,7 @@ class Entity {
 		inline void SetDepth(int depth) { this->m_depth = depth; }
 		inline void SetAlpha(float alpha) { this->m_alpha = alpha; }
 		inline void SetRotation(float rotation) { this->m_rotation = rotation; }
-		inline void SetPosition(const glm::vec2 &position) { this->m_position = position; }
+		inline void SetPosition(const glm::vec2& position) { this->m_position = position; }
 
 		inline void SetPosition(float x, float y) { 
 			this->m_position.x = x;
@@ -65,7 +65,7 @@ class Entity {
 		}
 		
 		inline void ClearTint() { this->m_tint = glm::vec3(1.0f); }
-		inline void SetTint(const glm::vec3 &tint) { this->m_tint = tint; }
+		inline void SetTint(const glm::vec3& tint) { this->m_tint = tint; }
 		inline void SetFlipX(bool flipX) { this->m_flipX = flipX; };
 		inline void SetFlipY(bool flipY) { this->m_flipY = flipY; };
 
@@ -142,7 +142,7 @@ class Geometry : public Entity {
 
 		//line
 
-		Geometry(float x, float y, const glm::vec2 &start, const glm::vec2 &end);
+		Geometry(float x, float y, const glm::vec2& start, const glm::vec2& end);
 
 		~Geometry() = default;
 

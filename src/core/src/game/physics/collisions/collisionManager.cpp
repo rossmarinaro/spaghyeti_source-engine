@@ -15,24 +15,24 @@ void CollisionManager::BeginContact(b2Contact* contact)
     b2Fixture* bodyFixtureA = contact->GetFixtureA()->GetBody()->GetFixtureList();
     b2Fixture* bodyFixtureB = contact->GetFixtureA()->GetBody()->GetFixtureList();
 
-    for (const auto &entity : System::Application::game->entities)
+    for (const auto& entity : System::Application::game->entities)
     {
         if (strcmp(entity->type, "sprite") != 0) 
-            return;
+            continue;       
 
-        auto sprite = std::static_pointer_cast<Sprite>(entity);
+        auto sprite = std::static_pointer_cast<Sprite>(entity); 
 
         if (sprite->bodies.size())  
         {
             sprite->num_contacts++;
 
-            for (const auto &body : sprite->bodies)
+            for (const auto& body : sprite->bodies)
             {
                 b2BodyUserData data = body.first->GetFixtureList()->GetBody()->GetUserData();
 
                 if ((data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer) && 
                     !bodyFixtureA->IsSensor() || !bodyFixtureB->IsSensor())
-                    sprite->SetContact(true);  //sprite->SetTint(glm::vec3(1.0f, 0.0f, 0.0f));   }
+                        sprite->SetContact(true);
             }
         }
     }
@@ -46,35 +46,34 @@ void CollisionManager::BeginContact(b2Contact* contact)
 void CollisionManager::EndContact(b2Contact* contact)
 {
 
- 
     b2BodyUserData bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData(),
                    bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
 
     b2Fixture* bodyFixtureA = contact->GetFixtureA()->GetBody()->GetFixtureList();
     b2Fixture* bodyFixtureB = contact->GetFixtureA()->GetBody()->GetFixtureList();
 
-    for (const auto &entity : System::Application::game->entities)
+    for (const auto& entity : System::Application::game->entities)
     {
 
         if (strcmp(entity->type, "sprite") != 0) 
-            return;
+            continue; 
 
         auto sprite = std::static_pointer_cast<Sprite>(entity);
-        
+
         if (sprite->bodies.size()) 
-        {
+        {        
             sprite->num_contacts--;
 
             if (sprite->num_contacts > 0)
                 break;
 
-            for (const auto &body : sprite->bodies)
+            for (const auto& body : sprite->bodies)
             {
                 b2BodyUserData data = body.first->GetFixtureList()->GetBody()->GetUserData();
 
                 if ((data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer) && 
                     !bodyFixtureA->IsSensor() || !bodyFixtureB->IsSensor())
-                        sprite->SetContact(false); //sprite->ClearTint();
+                        sprite->SetContact(false); 
             }
         }        
     }

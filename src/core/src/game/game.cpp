@@ -83,30 +83,11 @@ void Game::UpdateFrame()
     if (!gameState)
         return;
 
-    #if DEVELOPMENT == 1 
-        physics->debug->SetFlags(physics->m_flags);
-    #endif
-
-	physics->world.SetAllowSleeping(physics->sleeping);
-	physics->world.SetWarmStarting(physics->setWarmStart);
-	physics->world.SetContinuousPhysics(physics->continuous);
-	physics->world.SetSubStepping(physics->subStep);
-    physics->world.SetAutoClearForces(physics->clearForces);
-
-    static double accumulator = 0.0;
-
-    accumulator += time->m_delta;
-
-    while (accumulator >= time->timeStep) {
-        physics->world.Step(time->timeStep, physics->velocityIterations, physics->positionIterations);
-        accumulator -= time->timeStep;
-    }
-
     physics->Update();
 
     //render queues
 
-    for (const auto &entity : entities)
+    for (const auto& entity : entities)
         if ((entity.get() && entity) && entity.get()->m_renderable) {
 
             if (System::Application::game->cursor != nullptr)
@@ -244,7 +225,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 //-----------------------------
 
 
-std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, float y, int frame, float scale)
+std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, float y, int frame, float scale)
 {
 
     auto sprite = std::make_shared<Sprite>(key, x, y, frame);
@@ -265,7 +246,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, floa
 //-----------------------------
 
 
-std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y, int frame)
+std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y, int frame)
 {
 
     auto element = std::make_shared<Sprite>(key, x, y, "UI");
@@ -285,7 +266,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
 //-----------------------------
 
 
-std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, float y, int frame)
+std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, float y, int frame)
 {
 
     auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
@@ -304,7 +285,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, 
 //-----------------------------
 
 
-std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, float y)
+std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, float y)
 {
 
     auto text = std::make_shared<Text>(content, x, y); 

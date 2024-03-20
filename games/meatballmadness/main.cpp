@@ -59,7 +59,7 @@ static void ThrowMeatball()
     meatball->SetData("platter position", System::Utils::intBetween(0, 50));
     meatball->SetDepth(10);
 
-    meatball->bodies.push_back({ System::Application::game->physics->CreateDynamicBody(meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f) ), { 0.0f, 5.0f } });
+    meatball->bodies.push_back({ System::Application::game->physics->CreateDynamicBody("box", meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f) ), { 0.0f, 5.0f } });
     meatball->bodies[0].first->SetFixedRotation(true);
     meatball->SetVelocity(round(System::Utils::floatBetween(-500.0f, -1000.0f)), System::Utils::floatBetween(100.0f, -200.0f));
 
@@ -386,11 +386,11 @@ void MeatballMadness::Run(Inputs* inputs, Camera* camera, Physics* physics)
 
     player = CreateSprite("waiter", 450.0f, 760.0f, 1, 2.5);
 
-    player->bodies.push_back({ physics->CreateDynamicBody(450.0f, 760.0f, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 70.0f } });
+    player->bodies.push_back({ physics->CreateDynamicBody("box", 450.0f, 760.0f, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 70.0f } });
     player->bodies[0].first->SetFixedRotation(true);
 
     CreateBehavior<Waiter>(player, this);
-    playerHitBox = physics->CreateDynamicBody(0.0f, 0.0f, 40.0f, 10.0f, true, 1);
+    playerHitBox = physics->CreateDynamicBody("box", 0.0f, 0.0f, 40.0f, 10.0f, true, 1);
 
     //UI
 

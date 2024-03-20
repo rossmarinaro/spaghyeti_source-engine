@@ -26,14 +26,10 @@ class Physics {
         std::set<b2Body*> bodiesToRemove;
         
         struct Body {
-
-            float m_width, m_height;
-
             b2BodyDef def;
             b2Body* self;
             b2Fixture* fixture;
             b2FixtureDef fixtureDef;
-            b2PolygonShape box;
         };
 
         static inline std::vector<std::shared_ptr<Body>> fixtureData;
@@ -58,16 +54,17 @@ class Physics {
             float width, 
             float height, 
             bool isSensor = false, 
-            int type = 0
+            int pointer = 0
         );
 
         b2Body* CreateDynamicBody(
+            const char* type,
             float x,
             float y,
             float width,
             float height,
             bool isSensor = true,
-            int type = 0, 
+            int pointer = 0, 
             float density = 0.0f, 
             float friction = 0.0f, 
             float restitution = 0.0f

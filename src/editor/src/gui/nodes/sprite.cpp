@@ -68,7 +68,7 @@ void SpriteNode::Reset(const char* component_type)
     if (strcmp(component_type, "Physics") == 0 || passAll)
     {
 
-        for (const auto &body : this->bodies)
+        for (const auto& body : this->bodies)
             Game::physics->DestroyBody(body.first);
         
         this->bodyX.clear();
@@ -119,7 +119,7 @@ void SpriteNode::CreateBody(
         body = Game::physics->CreateStaticBody(x, y, width, height); 
 
     if (strcmp("dynamic", type) == 0) 
-        body = Game::physics->CreateDynamicBody(x, y, width, height); 
+        body = Game::physics->CreateDynamicBody("box", x, y, width, height); 
 
     this->bodies.push_back({ body, type });
     
@@ -392,7 +392,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                 ImGui::Text("settings");
 
-                ImGui::SliderFloat("density", &this->density, 0.0f, 10.0f);
+                ImGui::SliderFloat("density", &this->density, 0.0f, 1000.0f);
                 ImGui::SliderFloat("friction", &this->friction, 0.0f, 1.0f);
                 ImGui::SliderFloat("restitution", &this->restitution, 0.0f, 1.0f);
 
@@ -407,6 +407,8 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                     Game::physics->DestroyBody(this->bodies.back().first);
                     this->bodies.pop_back();
                 }
+
+                ImGui::SameLine();
 
                 if (ImGui::BeginMenu("remove physics?"))
                 {
