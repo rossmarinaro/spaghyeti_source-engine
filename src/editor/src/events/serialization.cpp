@@ -23,15 +23,15 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
 
     //camera
 
-    Editor::camera->m_position.x = data["camera"]["x"];
-    Editor::camera->m_position.y = data["camera"]["y"];
-    Editor::camera->m_zoom = data["camera"]["zoom"];
-    Editor::camera->m_backgroundColor.x = data["camera"]["color"]["x"];
-    Editor::camera->m_backgroundColor.y = data["camera"]["color"]["y"];
-    Editor::camera->m_backgroundColor.z = data["camera"]["color"]["z"];
-    Editor::camera->m_backgroundColor.w = data["camera"]["color"]["w"];
+    Editor::game->camera->m_position.x = data["camera"]["x"];
+    Editor::game->camera->m_position.y = data["camera"]["y"];
+    Editor::game->camera->m_zoom = data["camera"]["zoom"];
+    Editor::game->camera->m_backgroundColor.x = data["camera"]["color"]["x"];
+    Editor::game->camera->m_backgroundColor.y = data["camera"]["color"]["y"];
+    Editor::game->camera->m_backgroundColor.z = data["camera"]["color"]["z"];
+    Editor::game->camera->m_backgroundColor.w = data["camera"]["color"]["w"];
 
-    Editor::camera->SetBounds(
+    Editor::game->camera->SetBounds(
         data["camera"]["bounds"]["width"]["begin"], data["camera"]["bounds"]["width"]["end"],
         data["camera"]["bounds"]["height"]["begin"], data["camera"]["bounds"]["height"]["end"]
     );
@@ -304,7 +304,8 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
         tn->positionY = text["position y"];   
         tn->rotation = text["rotation"];      
         tn->scaleX = text["scale x"];      
-        tn->scaleY = text["scale y"];    
+        tn->scaleY = text["scale y"];
+        tn->depth = text["depth"];    
 
         //script
 
@@ -343,21 +344,21 @@ void EventListener::Serialize(json& data)
 
     //camera
 
-    data["camera"]["x"] = Editor::camera->m_position.x;
-    data["camera"]["y"] = Editor::camera->m_position.y;
+    data["camera"]["x"] = Editor::game->camera->m_position.x;
+    data["camera"]["y"] = Editor::game->camera->m_position.y;
     data["camera"]["width"] = Editor::worldWidth;
     data["camera"]["height"] = Editor::worldHeight;
-    data["camera"]["zoom"] = Editor::camera->m_zoom; 
-    data["camera"]["color"]["x"] = Editor::camera->m_backgroundColor.x;
-    data["camera"]["color"]["y"] = Editor::camera->m_backgroundColor.y;
-    data["camera"]["color"]["z"] = Editor::camera->m_backgroundColor.z;
-    data["camera"]["color"]["w"] = Editor::camera->m_backgroundColor.w;
+    data["camera"]["zoom"] = Editor::game->camera->m_zoom; 
+    data["camera"]["color"]["x"] = Editor::game->camera->m_backgroundColor.x;
+    data["camera"]["color"]["y"] = Editor::game->camera->m_backgroundColor.y;
+    data["camera"]["color"]["z"] = Editor::game->camera->m_backgroundColor.z;
+    data["camera"]["color"]["w"] = Editor::game->camera->m_backgroundColor.w;
     data["camera"]["alpha"] = GUI::grid->m_alpha;
     data["camera"]["pitch"] = GUI::grid_quantity;
-    data["camera"]["bounds"]["width"]["begin"] = Editor::camera->currentBoundsWidthBegin;
-    data["camera"]["bounds"]["width"]["end"] = Editor::camera->currentBoundsWidthEnd;
-    data["camera"]["bounds"]["height"]["begin"] = Editor::camera->currentBoundsHeightBegin;
-    data["camera"]["bounds"]["height"]["end"] = Editor::camera->currentBoundsHeightEnd;
+    data["camera"]["bounds"]["width"]["begin"] = Editor::game->camera->currentBoundsWidthBegin;
+    data["camera"]["bounds"]["width"]["end"] = Editor::game->camera->currentBoundsWidthEnd;
+    data["camera"]["bounds"]["height"]["begin"] = Editor::game->camera->currentBoundsHeightBegin;
+    data["camera"]["bounds"]["height"]["end"] = Editor::game->camera->currentBoundsHeightEnd;
 
     //settings
 
@@ -640,6 +641,7 @@ void EventListener::Serialize(json& data)
                 { "rotation", tn->rotation },
                 { "scale x", tn->scaleX },     
                 { "scale y", tn->scaleY },
+                { "depth", tn->depth },
                 { "components", {
                         { "script", {
                                 { "exists", tn->HasComponent("Script") },

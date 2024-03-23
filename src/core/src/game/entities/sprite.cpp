@@ -118,6 +118,8 @@ void Sprite::SetTexture(const std::string& key)
     this->m_texture.FrameWidth = texture.Width;
     this->m_texture.FrameHeight = texture.Height;
     this->m_texture.ID = texture.ID;
+
+    this->currentAnim = nullptr;
 }
 
 
@@ -164,7 +166,7 @@ void Sprite::ReadSpritesheetData()
 //---------------------- animate sprite
 
 
-void Sprite::Animate(const std::string &animKey, bool yoyo, int rate)
+void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
 { 
 
     uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
@@ -212,13 +214,21 @@ void Sprite::Animate(const std::string &animKey, bool yoyo, int rate)
 
             else    
             {
-                for (int i = anim->second.first; i < anim->second.second; i++) 
+                for (int i = anim->second.first; i < anim->second.second + 1; i++) 
                     frames.push_back(i);
                 
                 uint32_t elapsed = seconds % frames.size();
 
                 this->SetFrame(m_currentFrame != anim->second.second ? frames[elapsed] : anim->second.first);
             }
+
+            this->currentAnim = animKey.c_str();
+
+            int frame = yoyo ? 
+                this->m_anims.find(this->currentAnim)->second.first : 
+                this->m_anims.find(this->currentAnim)->second.second;
+
+			this->m_animComplete = frame == this->m_currentFrame;
 
         }
     }

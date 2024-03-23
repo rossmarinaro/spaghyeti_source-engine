@@ -6,19 +6,19 @@
 
 namespace entity_behaviors {
 
-    class SpawnEnemy_Behavior : public Behavior {
+    class SpawnEnemy : public Behavior {
 
         public:
 
 
             //constructor, called on start
 
-            SpawnEnemy_Behavior(std::shared_ptr<Entity> entity):
+            SpawnEnemy(std::shared_ptr<Entity> entity):
                 Behavior(entity, "SpawnEnemy")
             {
                 //interval spawn timer
 
-                System::Application::game->time->setInterval(3000, [&]() { 
+                Time::setInterval(3000, [&]() { 
                     float x = System::Utils::floatBetween(0.0f, 1000.0f);
                     float y = System::Utils::floatBetween(0.0f, 1000.0f);
                     auto spr = Game::CreateSprite("test3.png", x, y);
@@ -28,7 +28,7 @@ namespace entity_behaviors {
 
             //update every frame
 
-            void Update(Inputs* inputs, Camera* camera) override { }
+            void Update(Process::Context context) override { }
 
         private:
 

@@ -498,24 +498,23 @@ void EventListener::BuildAndRun()
             global_queue << "   " + type + " " + var + ";\n";
         }
 
-    glm::vec4 backgroundColor = Editor::camera->GetBackgroundColor(); 
+    glm::vec4 backgroundColor = Editor::game->camera->GetBackgroundColor(); 
 
-    command_queue << "   this->camera = camera;\n   this->physics = physics;\n";
     command_queue << "   this->SetWorldDimensions(" + std::to_string(Editor::worldWidth) + ", " + std::to_string(Editor::worldHeight) + ");\n";
 
-    command_queue << "   camera->SetBounds(" + std::to_string(Editor::camera->currentBoundsWidthBegin) + ", " + std::to_string(Editor::camera->currentBoundsWidthEnd) + ", " + std::to_string(Editor::camera->currentBoundsHeightBegin) + ", " + std::to_string(Editor::camera->currentBoundsHeightEnd) + ");\n";
-    command_queue << "   camera->SetBackgroundColor(glm::vec4(" + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + "));\n";
-    command_queue << "   camera->SetZoom(" + std::to_string(Editor::camera->GetZoom()) + ");\n";
-    command_queue << "   camera->SetPosition(glm::vec2(" + std::to_string(Editor::camera->m_position.x) + ", " + std::to_string(Editor::camera->m_position.y) + "));\n";
+    command_queue << "   this->camera->SetBounds(" + std::to_string(Editor::game->camera->currentBoundsWidthBegin) + ", " + std::to_string(Editor::game->camera->currentBoundsWidthEnd) + ", " + std::to_string(Editor::game->camera->currentBoundsHeightBegin) + ", " + std::to_string(Editor::game->camera->currentBoundsHeightEnd) + ");\n";
+    command_queue << "   this->camera->SetBackgroundColor({ " + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + " });\n";
+    command_queue << "   this->camera->SetZoom(" + std::to_string(Editor::game->camera->GetZoom()) + ");\n";
+    command_queue << "   this->camera->SetPosition({ " + std::to_string(Editor::game->camera->m_position.x) + ", " + std::to_string(Editor::game->camera->m_position.y) + " });\n";
  
     std::string phys_isCont = Editor::gravity_continuous ? "true" : "false",
                 phys_isSleeping = Editor::gravity_sleeping ? "true" : "false";
 
-    command_queue << "   physics->continuous = " + phys_isCont + ";\n";
-    command_queue << "   physics->sleeping = " + phys_isSleeping + ";\n";
-    command_queue << "   physics->SetGravity(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + ");\n";
+    command_queue << "   this->physics->continuous = " + phys_isCont + ";\n";
+    command_queue << "   this->physics->sleeping = " + phys_isSleeping + ";\n";
+    command_queue << "   this->physics->SetGravity(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + ");\n";
 
-    for (const auto &asset : AssetManager::loadedAssets)
+    for (const auto& asset : AssetManager::loadedAssets)
     {
         std::string path = asset.second;
 
@@ -526,13 +525,13 @@ void EventListener::BuildAndRun()
 
     //include scripts
 
-    for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
+    for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
         game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
 
 
     //command data, iterate over nodes and create objects
 
-    for (const auto &node : Node::nodes)
+    for (const auto& node : Node::nodes)
     {
 
         //load shaders
@@ -573,7 +572,7 @@ void EventListener::BuildAndRun()
                 std::ostringstream anim_oss;
                 std::vector<std::string> animsToLoad;
 
-                for (const auto &anim : sn->animations)
+                for (const auto& anim : sn->animations)
                     animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
 
                 if (!animsToLoad.empty()) {
@@ -583,7 +582,7 @@ void EventListener::BuildAndRun()
                     asset_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n";
                 }
 
-                global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n";
+                global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n\t";
 
                 command_queue << "   sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
                                         
@@ -612,10 +611,10 @@ void EventListener::BuildAndRun()
                     {
  
                         if (sn->bodies[i].second == "static")
-                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
+                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ this->physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
                         
                         if (sn->bodies[i].second == "dynamic")
-                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ physics->CreateDynamicBody(\"box\", " + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n";
+                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ this->physics->CreateDynamicBody(\"box\", " + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n";
                     }    
 
                     command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
@@ -648,14 +647,15 @@ void EventListener::BuildAndRun()
 
             if (tn->textHandle != nullptr)
             {
-                global_queue << "   std::shared_ptr<Text> text_" + node->m_ID + ");     \n";
+                global_queue << "   std::shared_ptr<Text> text_" + node->m_ID + ";\n\t";
 
-                command_queue << "   text_" + node->m_ID + " = CreateText(" + tn->textHandle->content + ", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+                command_queue << "   text_" + node->m_ID + " = CreateText(\"" + tn->textHandle->content + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
 
                 command_queue << "   text_" + node->m_ID + "->SetScale(" + std::to_string(tn->textHandle->m_scale.x) + ", " + std::to_string(tn->textHandle->m_scale.y) + ");\n";
                 command_queue << "   text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->textHandle->m_position.x) + ", " + std::to_string(tn->textHandle->m_position.y) + ");\n";
                 command_queue << "   text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->textHandle->m_rotation) + ");\n";
-                command_queue << "   text_" + node->m_ID + "->SetTint(glm::vec3(" + std::to_string(tn->textHandle->m_tint.x) + ", " + std::to_string(tn->textHandle->m_tint.y) + ", " + std::to_string(tn->textHandle->m_tint.z) + "));\n";
+                command_queue << "   text_" + node->m_ID + "->SetTint({ " + std::to_string(tn->textHandle->m_tint.x) + ", " + std::to_string(tn->textHandle->m_tint.y) + ", " + std::to_string(tn->textHandle->m_tint.z) + " });\n";
+                command_queue << "   text_" + node->m_ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
 
             }
 
@@ -668,7 +668,7 @@ void EventListener::BuildAndRun()
  
             auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
-            global_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";       \n";
+            global_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n\t";
 
             if (en->currentShape.length()) {
                 command_queue << "   empty_" + node->m_ID + "->SetTint({" + std::to_string(en->m_debugGraphic->m_tint.r) + ", " + std::to_string(en->m_debugGraphic->m_tint.g) + ", " + std::to_string(en->m_debugGraphic->m_tint.b) + "});\n";
@@ -722,7 +722,7 @@ void EventListener::BuildAndRun()
 
             if (tmn->HasComponent("Physics"))
                 for (int i = 0; i < tmn->bodies.size(); i++)    
-                    command_queue << "   physics->CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
+                   command_queue << "   this->physics->CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
 
         } 
 
@@ -767,17 +767,17 @@ void EventListener::BuildAndRun()
 
     game_src << "\n\nclass " + name_upper + " : public Game {\n\n";
     game_src << "    public:\n";
-    game_src << "    " + name_upper + "() { name = \"" + name_upper + "\"; }\n";
+    game_src << "    " + name_upper + "() { System::Application::name = \"" + name_upper + "\"; }\n";
     game_src << "        void Preload() override;\n";
-    game_src << "        void Run(Inputs* inputs, Camera* camera, Physics* physics) override;\n";
-    game_src << "        void Update(Inputs* inputs, Camera* camera, Physics* physics) override;\n";
+    game_src << "        void Run() override;\n";
+    game_src << "        void Update() override;\n";
     game_src << "    private:\n";
     game_src << "    " + globalData + "\n";
     game_src <<"};\n\n\n"; 
 
     game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
-    game_src << "void " + name_upper + "::Run(Inputs* inputs, Camera* camera, Physics* physics) {\n" + commandData + "}\n\n";
-    game_src << "void " + name_upper + "::Update(Inputs* inputs, Camera* camera, Physics* physics) {\n"      + updateData +            "\n}\n\n\n";
+    game_src << "void " + name_upper + "::Run() {\n" + commandData + "}\n\n";
+    game_src << "void " + name_upper + "::Update() {\n"      + updateData +            "\n}\n\n\n";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";

@@ -7,33 +7,46 @@
 void Game::Boot()   
 {   
 
-    text->Init(); 
+    Game* game = System::Application::game;
 
-    time = new Time;
-    camera = new Camera;
-    physics = new Physics;
+    //game components
+
+    game->text->Init(); 
+
+    game->time = new Time;
+    game->camera = new Camera;
+    game->physics = new Physics;
+    
     maps = new MapManager;
     
-	physics->world.SetContactListener(&physics->collisions);
+    //scene context handles
+
+    game->context = { System::Application::inputs, game->camera, game->physics, game->time };
+
+    //physics listener and debug
+    
+	game->physics->world.SetContactListener(&game->physics->collisions);
     
     #if DEVELOPMENT == 1 
     
-        physics->debug = new DebugDraw;
-
-	    physics->world.SetDebugDraw(physics->debug);
+        game->physics->debug = new DebugDraw;
+	    game->physics->world.SetDebugDraw(game->physics->debug);
 
     #endif 
 
     //preload / run game layer
 
-    System::Application::game->Preload();
+    game->Preload();
+
     System::Resources::Manager::RegisterAssets();
-    System::Application::game->Run(System::Application::inputs, camera, physics);
+
+    game->Run(); 
+
     System::Application::inputs->CreateCursor();
 
-    glfwSetWindowTitle(System::Window::s_instance, name.c_str());
+    glfwSetWindowTitle(System::Window::s_instance, System::Application::name.c_str());
 
-    std::cout << "Game: " + name + " initialized.\n";
+    std::cout << "Game: " + System::Application::name + " initialized.\n";
 
     gameState = true;
 
@@ -49,22 +62,25 @@ void Game::Exit()
 
     gameState = false;
 
-    entities.clear();
-    System::Application::game->behaviors.clear();
+    Game* game = System::Application::game;
+
+    game->entities.clear();
+
+    behaviors.clear();
 
     #if DEVELOPMENT == 1 
-        delete physics->debug;
-        physics->debug = nullptr;
+        delete game->physics->debug;
+        game->physics->debug = nullptr;
     #endif
 
-    delete camera;
-    camera = nullptr;
+    delete game->camera;
+    game->camera = nullptr;
 
-    delete physics;
-    physics = nullptr;
+    delete game->physics;
+    game->physics = nullptr;
 
-    delete time;
-    time = nullptr;
+    delete game->time;
+    game->time = nullptr;
 
     delete maps;
     maps = nullptr;
@@ -83,15 +99,17 @@ void Game::UpdateFrame()
     if (!gameState)
         return;
 
-    physics->Update();
+    Game* game = System::Application::game;
+
+    game->physics->Update();
 
     //render queues
 
-    for (const auto& entity : entities)
+    for (const auto& entity : game->entities)
         if ((entity.get() && entity) && entity.get()->m_renderable) {
 
-            if (System::Application::game->cursor != nullptr)
-                System::Application::game->cursor->SetDepth(entity->m_depth + 1);
+            if (game->cursor != nullptr)
+                game->cursor->SetDepth(entity->m_depth + 1);
 
             entity->Render();
         }
@@ -100,28 +118,28 @@ void Game::UpdateFrame()
 
     System::Application::inputs->RenderCursor();
 
-    //update behaviors
+    //update behaviors, pass game process context to subclasses
 
-    for (const auto& behavior : System::Application::game->behaviors)
+    for (const auto& behavior : behaviors)
         if (behavior.get() && behavior)
-            behavior->Update(System::Application::inputs, System::Application::game->camera);
+            behavior->Update(game->context); 
 
     //depth sort
 
-    std::sort(entities.begin(), entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
+    std::sort(game->entities.begin(), game->entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
 
     #if DEVELOPMENT == 1 
 
-        if (physics->debug->enable) {
-            physics->world.DebugDraw();
-            physics->debug->Flush();
+        if (game->physics->debug->enable) {
+            game->physics->world.DebugDraw();
+            game->physics->debug->Flush();
         }
 
     #endif
 
     //propagate input functionality to game instance
     
-    System::Application::game->Update(System::Application::inputs, camera, physics);
+    game->Update();
 
 }  
 
@@ -132,12 +150,12 @@ void Game::UpdateFrame()
 void Game::DestroyUI()
 {
 
-    for (const auto &UI : entities)
+    for (const auto& UI : System::Application::game->entities)
     {
-        std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end() - 1, UI);
+        std::vector<std::shared_ptr<Entity>>::iterator it = std::find(System::Application::game->entities.begin() - 1, System::Application::game->entities.end() - 1, UI);
 
-        if (it != entities.end())
-            entities.erase(it);
+        if (it != System::Application::game->entities.end())
+            System::Application::game->entities.erase(it);
 
         DestroyEntity(UI);
     }
@@ -193,10 +211,10 @@ void Game::RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::sha
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
 
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end(), entity);
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(System::Application::game->entities.begin() - 1, System::Application::game->entities.end(), entity);
 
-    if (it != entities.end())
-       entities.erase(it);
+    if (it != System::Application::game->entities.end())
+       System::Application::game->entities.erase(it);
 
     entity->m_renderable = false;
 
@@ -209,7 +227,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
         if (sprite->bodies.size()) {
             for (const auto& body : sprite->bodies)
-                physics->DestroyBody(body.first); 
+                System::Application::game->physics->DestroyBody(body.first); 
 
             sprite->bodies.clear();
         }
@@ -236,7 +254,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
 
     sprite->SetScale(scale);
 
-    entities.push_back(sprite);
+    System::Application::game->entities.push_back(sprite);
 
     return sprite;
 }
@@ -257,7 +275,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y,
     
     element->SetFrame(frame);
 
-    entities.push_back(element);
+    System::Application::game->entities.push_back(element);
 
     return element;
 }
@@ -275,7 +293,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
     //ts->m_shader = Shader::GetShader("sprite_batch");
     ts->ReadSpritesheetData(); 
 
-    entities.push_back(ts);
+    System::Application::game->entities.push_back(ts);
 
     return ts;
 
@@ -290,7 +308,7 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 
     auto text = std::make_shared<Text>(content, x, y); 
 
-    entities.push_back(text);
+    System::Application::game->entities.push_back(text);
 
     return text;
 }
@@ -303,7 +321,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 {
     auto geom = std::make_shared<Geometry>(x, y, width, height);
 
-    entities.push_back(geom);
+    System::Application::game->entities.push_back(geom);
 
     return geom;
 }
@@ -316,7 +334,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &st
 {
     auto geom = std::make_shared<Geometry>(x, y, start, end);
 
-    entities.push_back(geom);
+    System::Application::game->entities.push_back(geom);
 
     return geom;
 }

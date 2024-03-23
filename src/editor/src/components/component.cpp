@@ -120,15 +120,15 @@ void Component::Make()
         src << "#pragma once\n\n";
         src << "#include \"" + root_path + "/include/behaviors.h\"\n\n\n";
         src << "namespace entity_behaviors {\n\n";
-        src <<  "   class " + this->filename + "_Behavior : public Behavior {\n\n";
+        src <<  "   class " + this->filename + " : public Behavior {\n\n";
         src <<  "       public:\n\n";
         src <<  "           //constructor, called on start\n\n";
-        src <<  "           " + this->filename + "_Behavior (std::shared_ptr<Entity> entity):\n";
+        src <<  "           " + this->filename + "(std::shared_ptr<Entity> entity):\n";
         src <<  "               Behavior(entity, \""+ this->filename + "\")\n";
         src <<  "           {\n\n";
         src <<  "           }\n\n";
         src <<  "           //update every frame\n\n";
-        src <<  "           void Update(Inputs* inputs, Camera* camera) override {\n\n";
+        src <<  "           void Update(Process::Context context) override {\n\n";
         src <<  "           }\n\n";
         src <<  "   };\n";
         src <<  "};";

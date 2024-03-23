@@ -343,7 +343,7 @@ void MeatballMadness::Preload()
 //-----------------------------
 
 
-void MeatballMadness::Run(Inputs* inputs, Camera* camera, Physics* physics) 
+void MeatballMadness::Run() 
 {
 
     //splash image

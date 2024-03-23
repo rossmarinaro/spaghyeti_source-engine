@@ -40,7 +40,7 @@ class Physics {
             DebugDraw* debug;
         #endif
 
-        static inline const int32 velocityIterations = 6;
+        static inline const int32 velocityIterations = 3;
         static inline const int32 positionIterations = 2;
 
         inline void SetGravity(float x, float y) {
@@ -58,7 +58,7 @@ class Physics {
         );
 
         b2Body* CreateDynamicBody(
-            const char* type,
+            const std::string& type,
             float x,
             float y,
             float width,

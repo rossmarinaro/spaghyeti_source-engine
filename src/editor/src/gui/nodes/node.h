@@ -214,6 +214,8 @@ class TextNode : public Node {
 
     public:
 
+        int depth;
+
         float size, alpha;
 
         glm::vec3 tint;

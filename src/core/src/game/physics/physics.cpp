@@ -60,7 +60,7 @@ b2Body* Physics::CreateStaticBody(
 
 
 b2Body* Physics::CreateDynamicBody(
-    const char* type,
+    const std::string& type,
     float x,
     float y,
     float width,
@@ -86,12 +86,12 @@ b2Body* Physics::CreateDynamicBody(
     b2CircleShape circle;
     b2PolygonShape box;
 
-    if (strcmp(type, "circle") == 0) {
+    if (type == "circle") {
 	    circle.m_radius = 0.3f;
         body.fixtureDef.shape = &circle;
     }
 
-    if (strcmp(type, "box") == 0) {
+    if (type == "box") {
         box.SetAsBox(width, height);          
         body.fixtureDef.shape = &box;
     }

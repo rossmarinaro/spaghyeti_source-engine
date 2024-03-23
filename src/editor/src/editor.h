@@ -10,7 +10,6 @@
 #endif
 
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -50,7 +49,7 @@ class Editor
 
 		static inline EventListener events;
 		
-		static inline Camera* camera;
+		static inline Game* game;
 		
 		static inline std::vector<std::pair<std::string, std::string>> globals;
         static inline std::string selectedAsset;

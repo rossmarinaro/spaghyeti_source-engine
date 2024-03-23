@@ -18,14 +18,14 @@ using namespace /* SPAGHYETI_CORE */ System;
 void Editor::Update()
 {
 
-    Application::Update(camera);
+    Application::Update(game->camera);
 
     if (GUI::grid)
         GUI::grid->Render();
 
-    glfwPollEvents();
-
     Time::Update(glfwGetTime());
+    
+    glfwPollEvents();
 
     GUI::Render();
 
@@ -49,12 +49,13 @@ Editor::Editor()
 
     Log("Editor Root: " + rootPath);
 
-    Camera cam;
-    camera = &cam;
+    Game layer;
+    game = &layer;
 
+    Application::name = "SPAGHYETITOR";
     Window::Init();
 
-    Application::Init();
+    Application::Init(game);
 
     GUI::Launch();
 
@@ -136,7 +137,7 @@ void Editor::Reset()
     gravity_continuous = true;
     gravity_sleeping = true;
 
-    camera->Reset();
+    game->camera->Reset();
 
     selectedAsset.clear();
     globals.clear();

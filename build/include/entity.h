@@ -238,6 +238,7 @@ class Sprite : public Entity {
 		inline void SetContact(bool isContact) { this->m_contacting = isContact; }
 		inline bool IsContacting() { return this->m_contacting; }
 		inline bool IsSpritesheet() { return this->m_isSpritesheet; } 
+		inline bool IsAnimComplete() { return this->m_animComplete; }
 
 		void ReadSpritesheetData();
 		void RemoveBodies();
@@ -254,10 +255,10 @@ class Sprite : public Entity {
 		void Animate(const std::string& animKey, bool yoyo = false, int rate = 2); 
 		void Render();
 
-		Sprite(const std::string &key, float x, float y, const char* type);
+		Sprite(const std::string& key, float x, float y, const char* type);
 
 		Sprite(
-			const std::string &key, 
+			const std::string& key, 
 			float x = 0.0f, 
 			float y = 0.0f, 
 			int frame = 0, 
@@ -271,6 +272,7 @@ class Sprite : public Entity {
 
 		bool m_contacting, 
 			 m_isSpritesheet = false, 
+			 m_animComplete = true,
 			 anim_yoyo = false;
 
 		glm::vec2 m_velocity;

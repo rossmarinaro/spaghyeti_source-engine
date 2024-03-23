@@ -110,15 +110,15 @@ void GUI::ShowSettings()
     if (ImGui::BeginMenu("World Bounds"))
     {
         if (ImGui::BeginMenu("width")) {
-            ImGui::InputFloat("begin", &Editor::camera->currentBoundsWidthBegin);
-            ImGui::InputFloat("end", &Editor::camera->currentBoundsWidthEnd);
+            ImGui::InputFloat("begin", &Editor::game->camera->currentBoundsWidthBegin);
+            ImGui::InputFloat("end", &Editor::game->camera->currentBoundsWidthEnd);
 
             ImGui::EndMenu();
         }
 
         if (ImGui::BeginMenu("height")) {
-            ImGui::InputFloat("begin", &Editor::camera->currentBoundsHeightBegin);
-            ImGui::InputFloat("end", &Editor::camera->currentBoundsHeightEnd);
+            ImGui::InputFloat("begin", &Editor::game->camera->currentBoundsHeightBegin);
+            ImGui::InputFloat("end", &Editor::game->camera->currentBoundsHeightEnd);
 
             ImGui::EndMenu();
         }

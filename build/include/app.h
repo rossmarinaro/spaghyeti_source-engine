@@ -36,6 +36,7 @@ namespace SPAGHYETI_CORE System {
 
 		public:
 
+    		static inline std::string name = "";
 			static inline bool isMobile = false;
 
 			static inline Game* game;
@@ -45,7 +46,7 @@ namespace SPAGHYETI_CORE System {
 
 			static inline std::vector<Game*> layers;   
 
-			static void Init();
+			static void Init(Game* layer);
 			static void Update(Camera* camera);
 
 			template<typename T>
@@ -54,7 +55,7 @@ namespace SPAGHYETI_CORE System {
 			static inline void SetData(std::string key, std::any value) { data.insert({key, value}); }
 			static inline void ClearData() { data.clear(); }
 		
-			Application(Game* layer);
+			Application(Game* layer = nullptr);
 		    ~Application();
 
 		private:

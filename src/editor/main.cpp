@@ -2,7 +2,6 @@
 
 #include "../../build/include/app.h"
 #include "./src/editor.h"
-#include "./src/gameLayer.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -25,26 +24,23 @@ using namespace System;
 //-------------- main
 
 
-#undef main
+int main(int argc, char* args[])
+{   
 
-	int main(int argc, char* args[])
-	{   
+	#ifdef _WIN32
 
-		#ifdef _WIN32
-
-			#if DEVELOPMENT == 0
-				ShowWindow(GetConsoleWindow(), SW_HIDE); 
-			#endif
-
-			SetUnhandledExceptionFilter(UnhandledExceptionFilter);
+		#if DEVELOPMENT == 0
+			ShowWindow(GetConsoleWindow(), SW_HIDE); 
 		#endif
-		
-		GameLayer layer;
-		Application app { &layer };
-        Editor editor;
 
-		return 0; 
-	}
+		SetUnhandledExceptionFilter(UnhandledExceptionFilter);
+	#endif
+	
+	Application app;
+	Editor editor;
+
+	return 0; 
+}
 
 
 

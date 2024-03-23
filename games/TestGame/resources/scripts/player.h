@@ -4,58 +4,72 @@
 
 namespace entity_behaviors {
     
-    class PlayerController_Behavior : public Behavior {
+    class PlayerController : public Behavior {
 
         public:
 
             int health;
-            bool canJump;
-            bool follow, flipX;
 
             //constructor, called on start
 
-            PlayerController_Behavior(std::shared_ptr<Entity> entity):
+            PlayerController(std::shared_ptr<Entity> entity):
                 Behavior(entity, "PlayerController")
             {
                 this->health = 10;
                 this->canJump = true;
                 this->follow = true;  
                 this->flipX = false; 
-
+                this->canAttack = true;
+                this->attacking = false;
+                this->shootFireball = false;
             }
 
             //update every frame
 
-            void Update(Inputs* inputs, Camera* camera) override 
+            void Update(Process::Context context) override 
             { 
 
                 if (this->follow)
-                    this->sprite->StartFollow(camera, 500);
+                    this->sprite->StartFollow(context.camera, 500);
 
                 //jump
 
-                if (inputs->m_up && this->canJump) {               
+                if (context.inputs->m_up && this->canJump) {               
                     this->canJump = false;
-                    this->Jump(inputs);
+                    this->Jump(context.inputs);
                 }
 
                 //move   
 
                 else if (this->sprite->IsContacting()) {         
                     this->canJump = true;
-                    this->Move(inputs);
+                    this->Move(context.inputs);
                 }
 
-                //attacck
+                //attack
 
-                if (inputs->m_SPACE) 
-                    this->Attack();
+                if (context.inputs->m_SPACE && this->canAttack) {
+                    this->canAttack = false;
+                    this->attacking = true;
+                }
 
+                if (this->attacking) 
+                    this->Attack(context.physics);
             }
 
-            //-------------------------------------
+        //-------------------------------------
 
+        private:
 
+            bool 
+                canJump, 
+                canAttack, 
+                follow, 
+                flipX,
+                attacking,
+                shootFireball;
+
+        
             void Move(Inputs* inputs)
             {
 
@@ -71,7 +85,7 @@ namespace entity_behaviors {
                     this->flipX = false;
                 }
 
-                else {
+                else if (this->canAttack) {
                     this->sprite->SetVelocityX(0); 
                     this->sprite->Animate(this->flipX ? "idle-left" : "idle-right", true);
                 }
@@ -84,10 +98,10 @@ namespace entity_behaviors {
             {
 
                 if (inputs->m_left || inputs->m_right)
-                    this->sprite->SetImpulse(this->flipX ? -7000 : 7000, -99000);
+                    this->sprite->SetImpulse(this->flipX ? -9000 : 9000, -9000);
 
                 else
-                    this->sprite->SetImpulseY(-999000);
+                    this->sprite->SetImpulseY(-9000);  
 
                 //this->sprite->Animate(this->flipX ? "jump-left" : "jump-right");
                 this->sprite->SetFrame(this->flipX ? 14 : 12);
@@ -97,11 +111,36 @@ namespace entity_behaviors {
             //---------------------------------------
 
 
-            void Attack()
+            void Attack(Physics* physics)
             {
 
-            
+                auto hb = physics->CreateDynamicBody("box", 0, 0, 10, 10, true, 1); 
+
+                if (this->flipX) {
+                    this->sprite->Animate("attack-left", true, 4);
+                    hb->SetTransform(b2Vec2(this->sprite->m_position.x - 10, this->sprite->m_position.y + 45), 0);
+                }
+
+                else {
+                    this->sprite->Animate("attack-right", true, 4);
+                    hb->SetTransform(b2Vec2(this->sprite->m_position.x + 90, this->sprite->m_position.y + 45), 0);
+                }
+
+                if (this->sprite->IsAnimComplete()) 
+                {
+                    this->canAttack = true; 
+                    this->attacking = false;
+
+                    physics->DestroyBody(hb); 
+                } 
+
+                if (this->shootFireball)
+                {
+                    //todo: implement fireball
+                    Time::delayedCall(1000, [&]() { });
+                }           
             }
 
     };
 }
+

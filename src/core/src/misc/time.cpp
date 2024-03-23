@@ -10,58 +10,55 @@
 #include "../../../../build/include/app.h"
 #include "../../../../build/include/renderer.h"
 
-using namespace /* SPAGHYETI_CORE */ System;
 using namespace std::chrono_literals;
 
 
-Time::Time(float t): 
-    m_lastTime(0.0f), 
-    m_time(t)
-{
-}
+Time::Time(float t): m_now(t) {}
 
 void Time::Update(double t)
 {
 
-    Application::game->time->m_time = (float)t; //glQueryCounter
+    Time* time = System::Application::game->time;
 
-    Time delta = Application::game->time->m_time - Application::game->time->m_lastTime;
+    time->m_now = (float)t; //glQueryCounter
+
+    Time delta = time->m_now - m_last;
     
-    Application::game->time->m_lastTime = Application::game->time->m_time;
+    m_last = time->m_now;
 
-    m_delta = delta;
+    time->m_delta = delta;
 
     Game::UpdateFrame(); 
 }
 
 
 
-void Time::RunClock(int milliseconds)
-{
+// void Time::RunClock(int milliseconds)
+// {
 
-    const auto timer_duration = std::chrono::minutes(milliseconds); //90mins
+//     const auto timer_duration = std::chrono::minutes(milliseconds); //90mins
 
-    const auto start = std::chrono::steady_clock::now();
+//     const auto start = std::chrono::steady_clock::now();
 
-    Application::game->time->time_left = timer_duration - (std::chrono::steady_clock::now() - start);
+//     Application::game->time->time_left = timer_duration - (std::chrono::steady_clock::now() - start);
 
-    while (Application::game->time->time_left > 0s)
-    {
+//     while (Application::game->time->time_left > 0s)
+//     {
 
-        const auto hrs = std::chrono::duration_cast<std::chrono::hours>(Application::game->time->time_left);
-        const auto mins = std::chrono::duration_cast<std::chrono::minutes>(Application::game->time->time_left - hrs);
-        const auto secs = std::chrono::duration_cast<std::chrono::seconds>(Application::game->time->time_left - hrs - mins);
+//         const auto hrs = std::chrono::duration_cast<std::chrono::hours>(Application::game->time->time_left);
+//         const auto mins = std::chrono::duration_cast<std::chrono::minutes>(Application::game->time->time_left - hrs);
+//         const auto secs = std::chrono::duration_cast<std::chrono::seconds>(Application::game->time->time_left - hrs - mins);
 
-        std::cout << std::setfill('0') << std::setw(2) << hrs.count() << ":"
-                    << std::setfill('0') << std::setw(2) << mins.count() << ":"
-                    << std::setfill('0') << std::setw(2) << secs.count() << "\n";
+//         std::cout << std::setfill('0') << std::setw(2) << hrs.count() << ":"
+//                     << std::setfill('0') << std::setw(2) << mins.count() << ":"
+//                     << std::setfill('0') << std::setw(2) << secs.count() << "\n";
 
-        std::this_thread::sleep_for(1s);
+//         std::this_thread::sleep_for(1s);
 
-        Application::game->time->time_left = timer_duration - (std::chrono::steady_clock::now() - start);
+//         Application::game->time->time_left = timer_duration - (std::chrono::steady_clock::now() - start);
 
-    }
-}
+//     }
+// }
 
 
 //--------------- delayed call (setTimeout)

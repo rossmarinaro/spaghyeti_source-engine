@@ -89,7 +89,8 @@ void Window::Init()
 
     s_instance = glfwCreateWindow(
             m_width, 
-            m_height, (Application::game->name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2024 🍝👌").c_str(), 
+            m_height,
+            (Application::name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2024 🍝👌").c_str(), 
             isFullScreen, 
             NULL
         );
@@ -106,9 +107,8 @@ void Window::Init()
 
     std::cout << "window initialized.\n";
 
-    #ifdef __EMSCRIPTEN__
+    #ifndef __EMSCRIPTEN__
 
-    #else
         if (!gladLoadGL() || !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
             std::cout <<  "Failed to initialize GLAD\n";
             return;

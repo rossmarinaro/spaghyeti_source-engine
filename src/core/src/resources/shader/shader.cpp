@@ -72,6 +72,7 @@ void Shader::Update(Camera* camera)
 
     for (auto it = System::Resources::Manager::shaders.begin(); it != System::Resources::Manager::shaders.end(); ++it)
     {
+        
         auto shader = *it;
 
         //offset

@@ -69,10 +69,10 @@ void SpriteNode::Reset(const char* component_type)
     {
 
         for (const auto& body : this->bodies)
-            Game::physics->DestroyBody(body.first);
+            Editor::game->physics->DestroyBody(body.first);
         
         this->bodyX.clear();
-        this->bodyY.clear();
+        this->bodyY.clear(); 
         this->body_width.clear();
         this->body_height.clear();
         this->body_pointer.clear();
@@ -116,10 +116,10 @@ void SpriteNode::CreateBody(
     b2Body* body;
 
     if (strcmp("static", type) == 0) 
-        body = Game::physics->CreateStaticBody(x, y, width, height); 
+        body = Editor::game->physics->CreateStaticBody(x, y, width, height); 
 
     if (strcmp("dynamic", type) == 0) 
-        body = Game::physics->CreateDynamicBody("box", x, y, width, height); 
+        body = Editor::game->physics->CreateDynamicBody("box", x, y, width, height); 
 
     this->bodies.push_back({ body, type });
     
@@ -153,10 +153,6 @@ void SpriteNode::ApplyAnimation(const std::string& key, int start, int end)
 {
 
     try {
-
-        BoolContainer bc;
-
-        this->do_yoyo.push_back(bc);
 
         std::map<std::string, std::pair<int, int>> animsToLoad;
 
@@ -234,89 +230,91 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                 auto anim_component = this->GetComponent("Animator", this->m_ID);
 
-                if (!anim_component)
-                    return;
-
-                for (int i = 0; i < this->anim; i++)
+                if (anim_component)
                 {
-
-                    ImGui::Text("animation: %d", i);
-
-                    ImGui::PushID(i);
-       
-                    StringContainer sc;
-                    this->animBuf1.push_back(sc);
-                    this->animBuf2.push_back(i);
-                    this->animBuf3.push_back(i);
-                    this->animBuf4.push_back(2);
-
-                    ImGui::SameLine();
-
-                    if (this->spriteHandle && this->spriteHandle->IsSpritesheet())
+                    for (int i = 0; i < this->anim; i++)
                     {
 
-                        if (ImGui::Button("play")) 
-                            this->currentAnim = { this->animBuf1[i].s, { this->do_yoyo[i].b, this->animBuf4[i] } };
+                        ImGui::Text("animation: %d", i);
+
+                        ImGui::PushID(i);
+        
+                        StringContainer sc;
+                        BoolContainer bc;
+
+                        this->do_yoyo.push_back(bc);
+                        this->animBuf1.push_back(sc);
+                        this->animBuf2.push_back(i);
+                        this->animBuf3.push_back(i);
+                        this->animBuf4.push_back(2);
+
+                        if (this->spriteHandle && this->spriteHandle->IsSpritesheet())
+                        {
+
+                            if (ImGui::Button("play")) 
+                                this->currentAnim = { this->animBuf1[i].s, { this->do_yoyo[i].b, this->animBuf4[i] } };
+                                
+                            ImGui::SameLine(); 
+
+                            if (ImGui::Button("stop")) 
+                                this->currentAnim = { "", {} };
+
+                        }
+
+                        if (this->animBuf1.size() && this->animBuf1[i].s.length()) {
+
+                            ImGui::SameLine();
+
+                            if (ImGui::Button("apply")) 
+                                this->ApplyAnimation(this->animBuf1[i].s, this->animBuf2[i], this->animBuf3[i]);
                             
-                        ImGui::SameLine(); 
+                        }
 
-                        if (ImGui::Button("stop")) 
-                            this->currentAnim = { "", {} };
+                        if (i != 0 && this->anim > 1)
+                        {
 
-                    }
+                            ImGui::SameLine(); 
 
-                    if (this->animBuf1.size() && this->animBuf1[i].s.length()) {
+                            if (ImGui::Button("remove")) {
 
-                        ImGui::SameLine();
+                                std::map<std::string, Anims>::iterator it = this->animations.find(this->animBuf1[i].s);
 
-                        if (ImGui::Button("apply")) 
-                            this->ApplyAnimation(this->animBuf1[i].s, this->animBuf2[i], this->animBuf3[i]);
+                                if (it != this->animations.end())
+                                    this->animations.erase(it);
+
+                                this->anim--;
+                            }
+
+                        }
+                    
+
+                        ImGui::InputText("key", &this->animBuf1[i].s);
+                        ImGui::InputInt("start", &this->animBuf2[i]); 
+                        ImGui::InputInt("end", &this->animBuf3[i]);
+                        ImGui::InputInt("rate", &this->animBuf4[i]);
+                        ImGui::Checkbox("yoyo", &this->do_yoyo[i].b);
+
+                        ImGui::Separator();
+
+                        ImGui::PopID();
                         
                     }
 
-                    if (i != 0 && this->anim > 1)
-                    {
+                    if (ImGui::Button("add animation"))
+                        this->anim++;
+            
+                    ImGui::SameLine();
 
-                        ImGui::SameLine(); 
+                    if (ImGui::BeginMenu("remove animator?")) {
+                        
+                        if (ImGui::MenuItem("yes")) 
+                            this->RemoveComponent(anim_component); 
 
-                        if (ImGui::Button("remove")) {
-
-                            std::map<std::string, Anims>::iterator it = this->animations.find(this->animBuf1[i].s);
-
-                            if (it != this->animations.end())
-                                this->animations.erase(it);
-
-                            this->anim--;
-                        }
-
+                        ImGui::EndMenu();
                     }
-                
 
-                    ImGui::InputText("key", &this->animBuf1[i].s);
-                    ImGui::InputInt("start", &this->animBuf2[i]); 
-                    ImGui::InputInt("end", &this->animBuf3[i]);
-                    ImGui::InputInt("rate", &this->animBuf4[i]);
-                    ImGui::Checkbox("yoyo", &this->do_yoyo[i].b);
-
-                    ImGui::Separator();
-
-                    ImGui::PopID();
-                    
                 }
-
-                if (ImGui::Button("add animation"))
-                    this->anim++;
-           
-                ImGui::SameLine();
-
-                if (ImGui::BeginMenu("remove animator?")) {
-                    
-                    if (ImGui::MenuItem("yes")) 
-                        this->RemoveComponent(anim_component); 
-
-                    ImGui::EndMenu();
-                }
-
+              
                 ImGui::EndMenu();
             }
 
@@ -351,71 +349,71 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                 auto physics_component = this->GetComponent("Physics", this->m_ID);
 
-                if (!physics_component)
-                    return;
-
-                for (int i = 0; i < this->bodies.size(); i++)
+                if (physics_component)
                 {
-
-                    ImGui::PushID(i);
-
-                    ImGui::Text((i == 0) ? "anchor: %d" : "body: %d", i);
-
-                    ImGui::SliderFloat("offset x", &this->bodyX[i], 0.0f, System::Window::m_width); 
-                    ImGui::SliderFloat("offset y", &this->bodyY[i], 0.0f, System::Window::m_height);
-                    ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
-                    ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height);   
-                    ImGui::InputInt("type", &this->body_pointer[i]); 
-
-                    //sensor available for static body only
-
-                    if (i > 0)
-                        ImGui::Checkbox("sensor", &this->is_sensor[i].b);
-
-                    ImGui::Separator();     
-
-                    if (this->bodies[i].first != nullptr)
+                    for (int i = 0; i < this->bodies.size(); i++)
                     {
-                        b2PolygonShape body;
-                        body.SetAsBox(this->body_width[i], this->body_height[i]);
-                        b2FixtureDef fixtureDef;
-                        fixtureDef.shape = &body;
 
-                        this->bodies[i].first->DestroyFixture(this->bodies[i].first->GetFixtureList());
-                        this->bodies[i].first->CreateFixture(&fixtureDef);    
+                        ImGui::PushID(i);
+
+                        ImGui::Text((i == 0) ? "anchor: %d" : "body: %d", i);
+
+                        ImGui::SliderFloat("offset x", &this->bodyX[i], 0.0f, System::Window::m_width); 
+                        ImGui::SliderFloat("offset y", &this->bodyY[i], 0.0f, System::Window::m_height);
+                        ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
+                        ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height);   
+                        ImGui::InputInt("type", &this->body_pointer[i]); 
+
+                        //sensor available for static body only
+
+                        if (i > 0)
+                            ImGui::Checkbox("sensor", &this->is_sensor[i].b);
+
+                        ImGui::Separator();     
+
+                        if (this->bodies[i].first != nullptr)
+                        {
+                            b2PolygonShape body;
+                            body.SetAsBox(this->body_width[i], this->body_height[i]);
+                            b2FixtureDef fixtureDef;
+                            fixtureDef.shape = &body;
+
+                            this->bodies[i].first->DestroyFixture(this->bodies[i].first->GetFixtureList());
+                            this->bodies[i].first->CreateFixture(&fixtureDef);    
+
+                        }
+
+                        ImGui::PopID();
 
                     }
 
-                    ImGui::PopID();
+                    ImGui::Text("settings");
 
-                }
+                    ImGui::SliderFloat("density", &this->density, 0.0f, 1000.0f);
+                    ImGui::SliderFloat("friction", &this->friction, 0.0f, 1.0f);
+                    ImGui::SliderFloat("restitution", &this->restitution, 0.0f, 1.0f);
 
-                ImGui::Text("settings");
+                    ImGui::Separator();     
 
-                ImGui::SliderFloat("density", &this->density, 0.0f, 1000.0f);
-                ImGui::SliderFloat("friction", &this->friction, 0.0f, 1.0f);
-                ImGui::SliderFloat("restitution", &this->restitution, 0.0f, 1.0f);
+                    if (ImGui::Button("add")) 
+                        this->CreateBody("static");
 
-                ImGui::Separator();     
+                    ImGui::SameLine();
 
-                if (ImGui::Button("add")) 
-                    this->CreateBody("static");
+                    if (ImGui::Button("remove") && this->bodies.size() > 1) {
+                        Editor::game->physics->DestroyBody(this->bodies.back().first);
+                        this->bodies.pop_back();
+                    }
 
-                ImGui::SameLine();
+                    ImGui::SameLine();
 
-                if (ImGui::Button("remove") && this->bodies.size() > 1) {
-                    Game::physics->DestroyBody(this->bodies.back().first);
-                    this->bodies.pop_back();
-                }
-
-                ImGui::SameLine();
-
-                if (ImGui::BeginMenu("remove physics?"))
-                {
-                    if (ImGui::MenuItem("yes")) 
-                        this->RemoveComponent(physics_component);
-                        
-                    ImGui::EndMenu();
+                    if (ImGui::BeginMenu("remove physics?"))
+                    {
+                        if (ImGui::MenuItem("yes")) 
+                            this->RemoveComponent(physics_component);
+                            
+                        ImGui::EndMenu();
+                    }
                 }
 
                 ImGui::EndMenu();

@@ -10,6 +10,7 @@ TextNode::TextNode(const std::string &id):
         size(1),
         alpha(1),
         tint(glm::vec3(1.0f)),
+        depth(1),
         textBuf("")
 {
 
@@ -103,7 +104,7 @@ void TextNode::Render(std::shared_ptr<Node> node)
 
                 ImGui::EndMenu();
             }
-
+ 
             ImGui::Checkbox("Edit", &this->show_options);
 
             if (this->show_options)
@@ -111,6 +112,7 @@ void TextNode::Render(std::shared_ptr<Node> node)
                 ImGui::InputText("content", &this->textBuf);
 
                 ImGui::ColorEdit3("tint", (float*)&this->tint); 
+                ImGui::SliderInt("depth", &this->depth, 0, 1000);
                 ImGui::SliderFloat("alpha", &this->alpha, 0.0f, 1.0f);
                 ImGui::SliderFloat("position x", &this->positionX, 0.0f, System::Window::m_width); 
                 ImGui::SliderFloat("position y", &this->positionY, 0.0f, System::Window::m_height); 
@@ -132,7 +134,7 @@ void TextNode::Render(std::shared_ptr<Node> node)
             this->textHandle->SetPosition(this->positionX, this->positionY);
             this->textHandle->SetRotation(this->rotation);
             this->textHandle->SetTint(this->tint);
-        
+            this->textHandle->SetDepth(this->depth);
         }
 
         ImGui::PopID();

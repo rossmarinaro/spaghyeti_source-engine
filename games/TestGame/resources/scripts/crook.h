@@ -4,7 +4,7 @@
 
 namespace entity_behaviors {
     
-    class Crook_Behavior : public Behavior {
+    class Crook : public Behavior {
 
         public:
 
@@ -12,7 +12,7 @@ namespace entity_behaviors {
 
             //constructor, called on start
 
-            Crook_Behavior(std::shared_ptr<Entity> entity):
+            Crook(std::shared_ptr<Entity> entity):
                 Behavior(entity, "Crook")
             {
                 this->health = 3; 
@@ -20,10 +20,10 @@ namespace entity_behaviors {
 
             //update every frame
 
-            void Update(Inputs* inputs, Camera* camera) override 
+            void Update(Process::Context context) override 
             { 
 
-
+                //Game::GetBehavior("PlayerController");
             }
 
     };

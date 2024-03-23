@@ -1,30 +1,36 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Wed Mar 20 17:22:20 2024
-IMGui Version:  @ Wed Mar 20 17:22:21 2024
-GUI launched. @ Wed Mar 20 17:22:21 2024
-Workspace reset. @ Wed Mar 20 17:22:24 2024
-sprite node Untitled created. @ Wed Mar 20 17:22:27 2024
-Animator component added. @ Wed Mar 20 17:22:27 2024
-Physics component added. @ Wed Mar 20 17:22:27 2024
-Script component added. @ Wed Mar 20 17:22:27 2024
-sprite node Untitled created. @ Wed Mar 20 17:22:27 2024
-sprite node Untitled created. @ Wed Mar 20 17:22:27 2024
-sprite node Untitled created. @ Wed Mar 20 17:22:27 2024
-sprite node Untitled created. @ Wed Mar 20 17:22:27 2024
-sprite node Untitled created. @ Wed Mar 20 17:22:27 2024
-Tilemap node Untitled created. @ Wed Mar 20 17:22:27 2024
-Physics component added. @ Wed Mar 20 17:22:27 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Mar 22 22:28:44 2024
+IMGui Version:  @ Fri Mar 22 22:28:44 2024
+GUI launched. @ Fri Mar 22 22:28:44 2024
+Workspace reset. @ Fri Mar 22 22:28:50 2024
+sprite node Untitled created. @ Fri Mar 22 22:28:53 2024
+Animator component added. @ Fri Mar 22 22:28:53 2024
+Physics component added. @ Fri Mar 22 22:28:53 2024
+Script component added. @ Fri Mar 22 22:28:53 2024
+sprite node Untitled created. @ Fri Mar 22 22:28:53 2024
+sprite node Untitled created. @ Fri Mar 22 22:28:53 2024
+sprite node Untitled created. @ Fri Mar 22 22:28:53 2024
+sprite node Untitled created. @ Fri Mar 22 22:28:53 2024
+sprite node Untitled created. @ Fri Mar 22 22:28:53 2024
+Tilemap node Untitled created. @ Fri Mar 22 22:28:53 2024
+Physics component added. @ Fri Mar 22 22:28:53 2024
+Text node Untitled created. @ Fri Mar 22 22:28:53 2024
+Script component added. @ Fri Mar 22 22:28:53 2024
 Project scene2 opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Wed Mar 20 17:22:27 2024
-Animator component removed. @ Wed Mar 20 17:22:33 2024
-Physics component removed. @ Wed Mar 20 17:22:33 2024
-Script component removed. @ Wed Mar 20 17:22:33 2024
-Sprite node player deleted. @ Wed Mar 20 17:22:33 2024
-Sprite node background deleted. @ Wed Mar 20 17:22:43 2024
-Sprite node elf deleted. @ Wed Mar 20 17:22:43 2024
-Sprite node heart1 deleted. @ Wed Mar 20 17:22:43 2024
-Sprite node heart2 deleted. @ Wed Mar 20 17:22:43 2024
-Sprite node heart3 deleted. @ Wed Mar 20 17:22:43 2024
-Tilemap node map deleted. @ Wed Mar 20 17:22:43 2024
-Physics component removed. @ Wed Mar 20 17:22:43 2024
-GUI exited @ Wed Mar 20 17:22:43 2024
-Editor closed. @ Wed Mar 20 17:22:43 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Mar 22 22:28:53 2024
+Project scene2 built successfully. @ Fri Mar 22 22:29:05 2024
+Project scene2 built successfully. @ Fri Mar 22 22:29:32 2024
+Sprite node player deleted. @ Fri Mar 22 22:29:32 2024
+Animator component removed. @ Fri Mar 22 22:29:32 2024
+Physics component removed. @ Fri Mar 22 22:29:32 2024
+Script component removed. @ Fri Mar 22 22:29:32 2024
+Sprite node background deleted. @ Fri Mar 22 22:29:32 2024
+Sprite node elf deleted. @ Fri Mar 22 22:29:32 2024
+Sprite node heart1 deleted. @ Fri Mar 22 22:29:32 2024
+Sprite node heart2 deleted. @ Fri Mar 22 22:29:32 2024
+Sprite node heart3 deleted. @ Fri Mar 22 22:29:32 2024
+Tilemap node map deleted. @ Fri Mar 22 22:29:32 2024
+Physics component removed. @ Fri Mar 22 22:29:32 2024
+Text node FPS deleted. @ Fri Mar 22 22:29:32 2024
+Script component removed. @ Fri Mar 22 22:29:32 2024
+GUI exited @ Fri Mar 22 22:29:32 2024
+Editor closed. @ Fri Mar 22 22:29:32 2024

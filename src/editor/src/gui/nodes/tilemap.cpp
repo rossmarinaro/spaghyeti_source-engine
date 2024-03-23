@@ -37,7 +37,7 @@ void TilemapNode::Reset(const char* component_type)
     if (strcmp(component_type, "Physics") == 0 || passAll) 
     {
         for (const auto& body : this->bodies)
-            Game::physics->DestroyBody(body);
+            Editor::game->physics->DestroyBody(body);
 
         this->bodyX.clear();
         this->bodyY.clear();
@@ -125,7 +125,7 @@ void TilemapNode::CreateBody(float x, float y, float width, float height)
     this->body_width.push_back(width);
     this->body_height.push_back(height);
 
-    auto body = Game::physics->CreateStaticBody(x, y, width, height);
+    auto body = Editor::game->physics->CreateStaticBody(x, y, width, height);
 
     this->bodies.push_back(body);
 }
@@ -181,7 +181,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                         {
                             auto it = std::find(this->bodies.begin(), this->bodies.end(), this->bodies[i]);
                             if (it != this->bodies.end()) {
-                                Game::physics->DestroyBody(*it); 
+                                Editor::game->physics->DestroyBody(*it); 
                                 this->bodies.erase(it);
                             }
                         }

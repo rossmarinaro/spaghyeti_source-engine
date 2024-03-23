@@ -1,7 +1,7 @@
 #include "../../../../build/include/app.h"
 
 
-void System::Application::Init()
+void System::Application::Init(Game* layer)
 {
 
     #if STANDALONE == 0
@@ -9,14 +9,16 @@ void System::Application::Init()
         Inputs i;
         inputs = &i;
 
+        game = layer;
+        layers.push_back(game);
+
     #endif
     
     Shader::InitBaseShaders();
 
     //run game layer
     
-    if (game != nullptr) 
-        Game::Boot();
+    Game::Boot();
 
     //init input callbacks
 
@@ -50,7 +52,7 @@ void System::Application::Update(Camera* camera)
             inputs->ProcessInput(Window::s_instance);
   
         glViewport(0, 0, Window::m_width, Window::m_height);
-        glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);
+        glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback); 
         glfwSwapBuffers(Window::s_instance);
 
     #endif
@@ -67,17 +69,19 @@ System::Application::Application(Game* layer)
 
     std::cout << "PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌\n";  
 
-
-    if (!game) {
-        game = layer;
-        layers.push_back(game);
-    }
-
     //set global time object 
 
     resources = new Resources::Manager;
 
     #if STANDALONE == 1
+
+        if (!layer) {
+            std::cout << "Error: No target layer present.\n";  
+            return;    
+        }
+
+        game = layer;
+        layers.push_back(game);
 
         Window::Init();    
 
@@ -86,7 +90,7 @@ System::Application::Application(Game* layer)
 
         //run main app process
 
-        Init();
+        Init(game);
 
         #ifdef __EMSCRIPTEN__
             emscripten_set_main_loop(Update, 0, 1);
@@ -108,8 +112,9 @@ System::Application::Application(Game* layer)
 System::Application::~Application()
 {
     
-    if (game != nullptr)
+    #if STANDALONE == 1
         Game::Exit();
+    #endif
 
     Resources::Manager::Clear();
 
