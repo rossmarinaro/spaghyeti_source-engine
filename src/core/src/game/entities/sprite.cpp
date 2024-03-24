@@ -100,7 +100,7 @@ void Sprite::SetImpulseY(float y) {
 void Sprite::RemoveBodies() {
 
     for (auto it = this->bodies.begin(); it != this->bodies.end(); ++it) 
-        System::Application::game->physics->DestroyBody((*it).first);
+        Physics::DestroyBody((*it).first);
 
     this->bodies.clear();
 }

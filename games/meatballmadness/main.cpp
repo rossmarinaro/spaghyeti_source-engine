@@ -59,7 +59,7 @@ static void ThrowMeatball()
     meatball->SetData("platter position", System::Utils::intBetween(0, 50));
     meatball->SetDepth(10);
 
-    meatball->bodies.push_back({ System::Application::game->physics->CreateDynamicBody("box", meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f) ), { 0.0f, 5.0f } });
+    meatball->bodies.push_back({ Physics::CreateDynamicBody("box", meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f) ), { 0.0f, 5.0f } });
     meatball->bodies[0].first->SetFixedRotation(true);
     meatball->SetVelocity(round(System::Utils::floatBetween(-500.0f, -1000.0f)), System::Utils::floatBetween(100.0f, -200.0f));
 
@@ -164,7 +164,7 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
                     System::Audio::play("music", true);
             #endif
 
-            this->GetBehavior<Waiter>("Waiter")->canMove = true;
+            entity_behaviors::Behavior::GetBehavior<Waiter>(behaviors)->canMove = true;
             
             started = true;
         }
@@ -364,10 +364,10 @@ void MeatballMadness::Run()
 
     //environment bounds
 
-    physics->CreateStaticBody(0.0f, 0.0f, 1500.0f, 0.0f, 3);
-    physics->CreateStaticBody(0.0f, 850.0f, 1500.0f, 10.0f, 3);
-    physics->CreateStaticBody(250.0f, 850.0f, 10.0f, 850.0f, 3);
-    physics->CreateStaticBody(1020.0f, 0.0f, 10.0f, 850.0f, 3);
+    Physics::CreateStaticBody(0.0f, 0.0f, 1500.0f, 0.0f, 3);
+    Physics::CreateStaticBody(0.0f, 850.0f, 1500.0f, 10.0f, 3);
+    Physics::CreateStaticBody(250.0f, 850.0f, 10.0f, 850.0f, 3);
+    Physics::CreateStaticBody(1020.0f, 0.0f, 10.0f, 850.0f, 3);
 
     //sprites
 
@@ -386,11 +386,11 @@ void MeatballMadness::Run()
 
     player = CreateSprite("waiter", 450.0f, 760.0f, 1, 2.5);
 
-    player->bodies.push_back({ physics->CreateDynamicBody("box", 450.0f, 760.0f, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 70.0f } });
+    player->bodies.push_back({ Physics::CreateDynamicBody("box", 450.0f, 760.0f, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 70.0f } });
     player->bodies[0].first->SetFixedRotation(true);
 
     CreateBehavior<Waiter>(player, this);
-    playerHitBox = physics->CreateDynamicBody("box", 0.0f, 0.0f, 40.0f, 10.0f, true, 1);
+    playerHitBox = Physics::CreateDynamicBody("box", 0.0f, 0.0f, 40.0f, 10.0f, true, 1);
 
     //UI
 

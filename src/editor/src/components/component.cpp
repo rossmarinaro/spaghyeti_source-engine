@@ -128,7 +128,7 @@ void Component::Make()
         src <<  "           {\n\n";
         src <<  "           }\n\n";
         src <<  "           //update every frame\n\n";
-        src <<  "           void Update(Process::Context context) override {\n\n";
+        src <<  "           void Update(Process::Context context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {\n\n";
         src <<  "           }\n\n";
         src <<  "   };\n";
         src <<  "};";

@@ -66,7 +66,7 @@ void Game::Exit()
 
     game->entities.clear();
 
-    behaviors.clear();
+    game->behaviors.clear();
 
     #if DEVELOPMENT == 1 
         delete game->physics->debug;
@@ -120,9 +120,9 @@ void Game::UpdateFrame()
 
     //update behaviors, pass game process context to subclasses
 
-    for (const auto& behavior : behaviors)
+    for (const auto& behavior : game->behaviors)
         if (behavior.get() && behavior)
-            behavior->Update(game->context); 
+            behavior->Update(game->context, game->behaviors); 
 
     //depth sort
 
@@ -227,7 +227,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
         if (sprite->bodies.size()) {
             for (const auto& body : sprite->bodies)
-                System::Application::game->physics->DestroyBody(body.first); 
+                Physics::DestroyBody(body.first); 
 
             sprite->bodies.clear();
         }

@@ -611,10 +611,10 @@ void EventListener::BuildAndRun()
                     {
  
                         if (sn->bodies[i].second == "static")
-                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ this->physics->CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
+                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
                         
                         if (sn->bodies[i].second == "dynamic")
-                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ this->physics->CreateDynamicBody(\"box\", " + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n";
+                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n";
                     }    
 
                     command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
@@ -722,7 +722,7 @@ void EventListener::BuildAndRun()
 
             if (tmn->HasComponent("Physics"))
                 for (int i = 0; i < tmn->bodies.size(); i++)    
-                   command_queue << "   this->physics->CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
+                   command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
 
         } 
 

@@ -69,7 +69,7 @@ void SpriteNode::Reset(const char* component_type)
     {
 
         for (const auto& body : this->bodies)
-            Editor::game->physics->DestroyBody(body.first);
+            Physics::DestroyBody(body.first);
         
         this->bodyX.clear();
         this->bodyY.clear(); 
@@ -116,10 +116,10 @@ void SpriteNode::CreateBody(
     b2Body* body;
 
     if (strcmp("static", type) == 0) 
-        body = Editor::game->physics->CreateStaticBody(x, y, width, height); 
+        body = Physics::CreateStaticBody(x, y, width, height); 
 
     if (strcmp("dynamic", type) == 0) 
-        body = Editor::game->physics->CreateDynamicBody("box", x, y, width, height); 
+        body = Physics::CreateDynamicBody("box", x, y, width, height); 
 
     this->bodies.push_back({ body, type });
     
@@ -401,7 +401,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                     ImGui::SameLine();
 
                     if (ImGui::Button("remove") && this->bodies.size() > 1) {
-                        Editor::game->physics->DestroyBody(this->bodies.back().first);
+                        Physics::DestroyBody(this->bodies.back().first);
                         this->bodies.pop_back();
                     }
 

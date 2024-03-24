@@ -52,7 +52,7 @@ class Game {
         static inline void CreateBehavior(std::shared_ptr<Entity> entity, Game* game) {
 
             auto behavior = std::make_shared<T>(entity);
-            game->behaviorManager->behaviors.push_back(behavior); 
+            game->behaviors.push_back(behavior); 
         }
                 
         static void DestroyEntity(std::shared_ptr<Entity> entity);
@@ -74,12 +74,6 @@ class Game {
         std::map<const char*, std::any> data;
         std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
 
-        template <typename T>
-        inline std::shared_ptr<T> GetBehavior(const std::string& key) {
-            return std::dynamic_pointer_cast<T>(*std::find_if(behaviors.begin(), behaviors.end(), [&](std::shared_ptr<entity_behaviors::Behavior> b) { 
-                return b->key == key; 
-            }));
-        }
 
         template<typename T>
 		inline T GetData(const char* key) const { 

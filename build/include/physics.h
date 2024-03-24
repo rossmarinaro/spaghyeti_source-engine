@@ -19,21 +19,10 @@ class Physics {
              subStep = false,
              clearForces = false;
 
-        uint32 m_flags;
-
         b2Vec2 gravity;
         b2World world;
         std::set<b2Body*> bodiesToRemove;
         
-        struct Body {
-            b2BodyDef def;
-            b2Body* self;
-            b2Fixture* fixture;
-            b2FixtureDef fixtureDef;
-        };
-
-        static inline std::vector<std::shared_ptr<Body>> fixtureData;
-
         CollisionManager collisions;
         
         #if DEVELOPMENT == 1
@@ -43,12 +32,7 @@ class Physics {
         static inline const int32 velocityIterations = 3;
         static inline const int32 positionIterations = 2;
 
-        inline void SetGravity(float x, float y) {
-            this->gravityX = x;
-            this->gravityY = y;
-        };
-
-        b2Body* CreateStaticBody(
+        static b2Body* CreateStaticBody(
             float x, 
             float y, 
             float width, 
@@ -57,7 +41,7 @@ class Physics {
             int pointer = 0
         );
 
-        b2Body* CreateDynamicBody(
+        static b2Body* CreateDynamicBody(
             const std::string& type,
             float x,
             float y,
@@ -70,11 +54,28 @@ class Physics {
             float restitution = 0.0f
         );
 
-        void DestroyBody(b2Body* b);
+        static void DestroyBody(b2Body* b);
+
         void Update();
 
         Physics();
         ~Physics() = default;
+
+        inline void SetGravity(float x, float y) {
+            this->gravityX = x;
+            this->gravityY = y;
+        };
+
+    private:
+
+        uint32 m_flags;
+
+        struct Body {
+            b2BodyDef def;
+            b2Body* self;
+            b2Fixture* fixture;
+            b2FixtureDef fixtureDef;
+        };
 
 };
 

@@ -28,7 +28,7 @@ namespace entity_behaviors {
 
             //update every frame
 
-            void Update(Process::Context context) override { }
+            void Update(Process::Context context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override { }
 
         private:
 

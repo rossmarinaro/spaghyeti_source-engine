@@ -17,7 +17,6 @@
 #include "./manager.h"
 #include "./inputs.h"
 
- 
 //base gameobject entity class
 
 class Entity {
@@ -113,6 +112,7 @@ class Entity {
 			m_depth(DEPTH + 1){ g_count++; };
 
 		virtual ~Entity() { g_count--; };
+
 };
 
 
