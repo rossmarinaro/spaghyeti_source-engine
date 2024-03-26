@@ -21,7 +21,7 @@ using namespace System;
             Inputs::input_callback(Window::s_instance, 0, 0, 0);
 
         if (eventType == EMSCRIPTEN_EVENT_CLICK)
-            Application::inputs->m_left_click = true;
+            Application::game->inputs->m_left_click = true;
 
         (void)eventType;
         (void)pUserData;
@@ -38,9 +38,9 @@ using namespace System;
         if (eventType == EMSCRIPTEN_EVENT_TOUCHSTART)
         {
 
-            Application::inputs->m_left_click = true;
+            Application::game->inputs->m_left_click = true;
 
-            Application::inputs->cursorReset = false;
+            Application::game->inputs->cursorReset = false;
 
             for (int i = 0; i < event->numTouches; ++i)
             {
@@ -53,7 +53,7 @@ using namespace System;
 
         else
         {
-            Application::inputs->cursorReset = true;
+            Application::game->inputs->cursorReset = true;
             Inputs::input_callback(Window::s_instance, 0, 0, 0);
         }
 
@@ -261,8 +261,8 @@ void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
 
     //set cursor object to movement
 
-    Application::inputs->cursorX = (float)xPos;
-    Application::inputs->cursorY = (float)yPos;
+    Application::game->inputs->cursorX = (float)xPos;
+    Application::game->inputs->cursorY = (float)yPos;
 
 }
 
@@ -274,10 +274,10 @@ void Inputs::key_callback(GLFWwindow* window, int key, int scancode, int action,
 {
 
     if (action == GLFW_PRESS)
-        Application::inputs->SetKeyInputs(true, key, window);
+        Application::game->inputs->SetKeyInputs(true, key, window);
 
     if (action == GLFW_RELEASE)
-        Application::inputs->SetKeyInputs(false, key, window);
+        Application::game->inputs->SetKeyInputs(false, key, window);
 
 }
 
@@ -394,10 +394,10 @@ void Inputs::input_callback(GLFWwindow* window, int input, int action, int mods)
         if (action == GLFW_PRESS || action == 1)
             return;
         else
-            Application::inputs->ResetControls();
+            Application::game->inputs->ResetControls();
     }
     else
-       Application::inputs->ResetControls();
+       Application::game->inputs->ResetControls();
 
 }
 

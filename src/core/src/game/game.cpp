@@ -1,7 +1,29 @@
 #include "../../../../build/include/app.h"
                                 
   
-//------------------------- base backend game layer functionality        
+//------------------------- backend game layer functionality   
+
+
+Game::Game()
+{
+
+    //game components
+
+    this->inputs = new Inputs;
+    this->time = new Time;
+    this->camera = new Camera;
+    this->physics = new Physics;
+    
+    maps = new MapManager;
+
+    //scene context handles
+
+    this->context = { this->inputs, this->camera, this->physics, this->time };
+
+}
+
+
+//---------------------------- boot entry scene
 
 
 void Game::Boot()   
@@ -9,19 +31,7 @@ void Game::Boot()
 
     Game* game = System::Application::game;
 
-    //game components
-
     game->text->Init(); 
-
-    game->time = new Time;
-    game->camera = new Camera;
-    game->physics = new Physics;
-    
-    maps = new MapManager;
-    
-    //scene context handles
-
-    game->context = { System::Application::inputs, game->camera, game->physics, game->time };
 
     //physics listener and debug
     
@@ -34,23 +44,56 @@ void Game::Boot()
 
     #endif 
 
+
     //preload / run game layer
 
-    game->Preload();
+    game->currentScene = game->scenes[0]; 
+
+    game->currentScene->Preload();
 
     System::Resources::Manager::RegisterAssets();
 
-    game->Run(); 
+    game->currentScene->Run(); 
 
-    System::Application::inputs->CreateCursor();
+    System::Application::game->inputs->CreateCursor();
 
     glfwSetWindowTitle(System::Window::s_instance, System::Application::name.c_str());
 
     std::cout << "Game: " + System::Application::name + " initialized.\n";
 
     gameState = true;
+       
+}
 
-    
+
+//-----------------------------
+
+
+void Game::StartScene(const std::string& key) 
+{
+
+    Game* game = System::Application::game;
+
+    auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](std::shared_ptr<Scene> scene) { return scene->key == key; });
+
+    if (it != game->scenes.end())
+    {
+
+        gameState = false;
+
+        game->entities.clear();
+        game->currentScene->behaviors.clear();
+        
+        auto scene = *it;
+
+        game->currentScene = scene; 
+
+        game->currentScene->Preload();
+
+        System::Resources::Manager::RegisterAssets();
+
+        game->currentScene->Run();
+    }
 }
 
 
@@ -66,7 +109,7 @@ void Game::Exit()
 
     game->entities.clear();
 
-    game->behaviors.clear();
+    game->currentScene->behaviors.clear();
 
     #if DEVELOPMENT == 1 
         delete game->physics->debug;
@@ -81,6 +124,9 @@ void Game::Exit()
 
     delete game->time;
     game->time = nullptr;
+
+    delete game->inputs;
+    game->inputs = nullptr;
 
     delete maps;
     maps = nullptr;
@@ -116,13 +162,13 @@ void Game::UpdateFrame()
             
     //render input cursor
 
-    System::Application::inputs->RenderCursor();
+    System::Application::game->inputs->RenderCursor();
 
     //update behaviors, pass game process context to subclasses
 
-    for (const auto& behavior : game->behaviors)
+    for (const auto& behavior : game->currentScene->behaviors)
         if (behavior.get() && behavior)
-            behavior->Update(game->context, game->behaviors); 
+            behavior->Update(game->context, game->currentScene->behaviors); 
 
     //depth sort
 
@@ -139,7 +185,7 @@ void Game::UpdateFrame()
 
     //propagate input functionality to game instance
     
-    game->Update();
+    game->currentScene->Update();
 
 }  
 
@@ -168,16 +214,16 @@ void Game::DestroyUI()
 
 void Game::RemoveFromVector(std::vector<std::shared_ptr<Sprite>>& vector, std::shared_ptr<Sprite> sprite)
 {
-
+    
     std::vector<std::shared_ptr<Sprite>>::iterator v_it = std::find(vector.begin() - 1, vector.end(), sprite);
 
     if (v_it != vector.end())
         vector.erase(v_it);
 
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end(), sprite);
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(System::Application::game->entities.begin() - 1, System::Application::game->entities.end(), sprite);
 
-    if (it != entities.end())
-        entities.erase(it);
+    if (it != System::Application::game->entities.end())
+        System::Application::game->entities.erase(it);
 
     DestroyEntity(sprite);
 
@@ -195,10 +241,10 @@ void Game::RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::sha
     if (v_it != vector.end())
         vector.erase(v_it);
 
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(entities.begin() - 1, entities.end(), text);
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(System::Application::game->entities.begin() - 1, System::Application::game->entities.end(), text);
 
-    if (it != entities.end())
-        entities.erase(it);
+    if (it != System::Application::game->entities.end())
+        System::Application::game->entities.erase(it);
 
     DestroyEntity(text);
 

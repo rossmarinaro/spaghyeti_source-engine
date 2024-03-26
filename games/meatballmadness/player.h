@@ -4,65 +4,71 @@
 
 //player script
 
-class Waiter : public Behavior {
+namespace entity_behaviors {
 
-    public: 
-    
-        bool canMove;
+    class Waiter : public Behavior {
 
-        Waiter(std::shared_ptr<Entity> entity): 
-            Behavior(entity, "Waiter") 
-        {
-            this->canMove = false;
-            this->canJump = false;
-            this->speed_x = 0.0f;
-        };
+        public: 
         
-        ~Waiter() = default;
+            bool canMove;
 
-        void Update(Inputs* inputs, Camera* camera) override
-        {
-
-            if (!this->canMove)
-                return;
-
-            if (inputs->m_up && this->canJump && this->sprite->bodies[0].first->GetLinearVelocity().y == 0) 
+            Waiter(std::shared_ptr<Entity> entity): 
+                Behavior(entity, "Waiter") 
             {
-                this->sprite->SetImpulseY(-10000);
-                this->sprite->SetFrame(0);
+                this->canMove = false;
                 this->canJump = false;
-            }
+                this->speed_x = 0.0f;
+
+                this->player = std::static_pointer_cast<Sprite>(this->entity);
+            };
             
-            else if (this->sprite->IsContacting())
-            {    
-            
-                this->canJump = true;
-        
-                if (inputs->m_right) 
+            ~Waiter() = default;
+
+            void Update(Process::Context context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override
+            {
+
+                if (!this->canMove)
+                    return;
+
+                if (context.inputs->m_up && this->canJump && this->player->bodies[0].first->GetLinearVelocity().y == 0) 
                 {
-                    this->sprite->SetFlipX(false);
-                    this->sprite->Animate("run", true, 7);
-                    this->sprite->SetVelocityX(3200);
-                } 
+                    this->player->SetImpulseY(-10000);
+                    this->player->SetFrame(0);
+                    this->canJump = false;
+                }
                 
-                else if (inputs->m_left)
-                {
-                    this->sprite->SetFlipX(true);
-                    this->sprite->Animate("run", true, 7);
-                    this->sprite->SetVelocityX(-3200);
-                }
+                else if (this->player->IsContacting())
+                {    
+                
+                    this->canJump = true;
+            
+                    if (context.inputs->m_right) 
+                    {
+                        this->player->SetFlipX(false);
+                        this->player->Animate("run", true, 7);
+                        this->player->SetVelocityX(320);
+                    } 
+                    
+                    else if (context.inputs->m_left)
+                    {
+                        this->player->SetFlipX(true);
+                        this->player->Animate("run", true, 7);
+                        this->player->SetVelocityX(-320);
+                    }
 
-                else {
-                    this->sprite->SetFrame(1);
-                    this->sprite->SetVelocityX(0);
+                    else {
+                        this->player->SetFrame(1);
+                        this->player->SetVelocityX(0);
+                    }
+
                 }
 
             }
 
-        }
+        private:
 
-    private:
+            bool canJump;
 
-        bool canJump;
+    };
 
-};
+}

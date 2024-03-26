@@ -5,13 +5,13 @@
 
 namespace entity_behaviors {
 
-   class TEXT_Behavior : public Behavior {
+    class TEXT_Behavior : public Behavior {
 
         public: 
 
            //constructor, called on start
 
-            TEXT_Behavior (std::shared_ptr<Entity> entity):
+            TEXT_Behavior (/* Scene* scene,  */std::shared_ptr<Entity> entity):
                 Behavior(entity, "TEXT")
             {
                 this->text = std::static_pointer_cast<Text>(this->entity);
@@ -29,5 +29,5 @@ namespace entity_behaviors {
             
             std::shared_ptr<Text> text;
 
-   };
+    };
 };

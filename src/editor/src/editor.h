@@ -52,6 +52,7 @@ class Editor
 		static inline Game* game;
 		
 		static inline std::vector<std::pair<std::string, std::string>> globals;
+		static inline std::vector<std::string> scenes;
         static inline std::string selectedAsset;
 		static inline std::string platform = "Windows";
         static inline std::string projectPath = "";
@@ -60,7 +61,7 @@ class Editor
 		Editor();
 		~Editor();
 
-		static void Log(const std::string &message);
+		static void Log(const std::string& message);
 		static void Reset();
 
 

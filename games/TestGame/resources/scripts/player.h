@@ -44,7 +44,7 @@ namespace entity_behaviors {
 
                 //move   
 
-                else if (this->player->IsContacting()) {         
+                else if (this->player->IsContacting()) {      
                     this->canJump = true;
                     this->Move(context.inputs);
                 }
@@ -59,8 +59,10 @@ namespace entity_behaviors {
                 if (this->attacking) 
                     this->Attack(context.physics);
 
-                else
+                else {
                     this->hb->SetTransform(b2Vec2(this->player->m_position.x + 20, this->player->m_position.y + 20), 0);
+                    this->hb->SetEnabled(false);  
+                }
 
             }
 
@@ -69,17 +71,12 @@ namespace entity_behaviors {
             }
 
 
-        //-------------------------------------
-
-
         protected:
 
             int health;
 
             std::shared_ptr<Sprite> player;
 
-
-        //-------------------------------------
 
 
         private:
@@ -93,6 +90,8 @@ namespace entity_behaviors {
                 shootFireball;
 
             b2Body* hb;
+
+            //--------------------------------------- move
         
             void Move(Inputs* inputs)
             {
@@ -101,13 +100,13 @@ namespace entity_behaviors {
                     return;
 
                 if (inputs->m_left) {       
-                    this->player->SetVelocityX(-3800); 
+                    this->player->SetVelocityX(-300); 
                     this->player->Animate("walk-left", false, 5); 
                     this->flipX = true;
                 }
 
                 else if (inputs->m_right) {
-                    this->player->SetVelocityX(3800); 
+                    this->player->SetVelocityX(300); 
                     this->player->Animate("walk-right", false, 5); 
                     this->flipX = false;
                 }
@@ -118,28 +117,30 @@ namespace entity_behaviors {
                 }
             }
 
-            //---------------------------------------
+            //--------------------------------------- jump
 
 
             void Jump(Inputs* inputs)
             {
 
                 if (inputs->m_left || inputs->m_right)
-                    this->player->SetImpulse(this->flipX ? -9000 : 9000, -9000);
+                    this->player->SetImpulse(this->flipX ? -900 : 900, -900);
 
                 else
-                    this->player->SetImpulseY(-9000);  
+                    this->player->SetImpulseY(-1500);  
 
                 //this->player->Animate(this->flipX ? "jump-left" : "jump-right");
                 this->player->SetFrame(this->flipX ? 14 : 12);
             }
 
 
-            //---------------------------------------
+            //--------------------------------------- attack
 
 
             void Attack(Physics* physics)
             {
+
+                this->hb->SetEnabled(true);
               
                 if (this->flipX) {
                     this->player->Animate("attack-left", true, 4);

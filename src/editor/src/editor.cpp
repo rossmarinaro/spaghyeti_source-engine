@@ -49,10 +49,15 @@ Editor::Editor()
 
     Log("Editor Root: " + rootPath);
 
-    Game layer;
-    game = &layer;
+    Game g;
+    game = &g;
+
+    //init base sandox scene
+
+    Game::LoadScene<Scene>(game);
 
     Application::name = "SPAGHYETITOR";
+
     Window::Init();
 
     Application::Init(game);
@@ -65,7 +70,7 @@ Editor::Editor()
 
     image.width = 66;
     image.height = 65;
-    image.pixels = reinterpret_cast<unsigned char*>(const_cast<char*>(System::Resources::Manager::GetRawData("editor logo")));
+    image.pixels = reinterpret_cast<unsigned char*>(const_cast<char*>(Resources::Manager::GetRawData("editor logo")));
 
     glfwSetWindowIcon(Window::s_instance, 1, &image);
 
@@ -130,6 +135,8 @@ void Editor::Reset()
 
     Node::ClearAll();
 
+    game->camera->Reset();
+
     worldWidth = 2000;
 	worldHeight = 2000;
 
@@ -137,10 +144,9 @@ void Editor::Reset()
     gravity_continuous = true;
     gravity_sleeping = true;
 
-    game->camera->Reset();
-
     selectedAsset.clear();
     globals.clear();
+    scenes.clear();
 
     AssetManager::images.clear();
     AssetManager::loadedAssets.clear();

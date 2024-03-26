@@ -16,7 +16,7 @@ void Sprite::SetVelocity(float velX, float velY)
     this->velocityY = velY;
 
     if (this->bodies.size()) 
-        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX * 100000, this->velocityY * 100000));
+        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX, this->velocityY));
 
     else {
         this->m_position.x += this->velocityX /* * System::Application::game->time->GetSeconds() */; 
@@ -38,7 +38,7 @@ void Sprite::SetVelocityX(float velX)
     this->velocityX = velX; 
 
     if (this->bodies.size() && this->IsContacting()) 
-        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX * 100000, this->bodies[0].first->GetLinearVelocity().y));
+        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->velocityX, this->bodies[0].first->GetLinearVelocity().y));
 
     else
         this->m_position.x += this->velocityX; // System::Application::game->time->GetSeconds();     
@@ -57,7 +57,7 @@ void Sprite::SetVelocityY(float velY)
     this->velocityY = velY;
 
     if (this->bodies.size()) 
-        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, this->velocityY * 100000));
+        this->bodies[0].first->SetLinearVelocity(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, this->velocityY));
     
     else
         this->m_position.y += this->velocityY; // System::Application::game->time->GetSeconds(); 
@@ -70,7 +70,7 @@ void Sprite::SetVelocityY(float velY)
 void Sprite::SetImpulse(float x, float y) {
 
     if (this->m_active && this->bodies.size())
-        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 100000, y * 100000), this->bodies[0].first->GetWorldCenter(), true);
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 10000, y * 10000), this->bodies[0].first->GetWorldCenter(), true);
 }
 
 
@@ -80,7 +80,7 @@ void Sprite::SetImpulse(float x, float y) {
 void Sprite::SetImpulseX(float x) {
 
     if (this->m_active && this->bodies.size())
-        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 100000, this->bodies[0].first->GetLinearVelocity().y), this->bodies[0].first->GetWorldCenter(), true);
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 10000, this->bodies[0].first->GetLinearVelocity().y), this->bodies[0].first->GetWorldCenter(), true);
 }
 
 
@@ -90,7 +90,7 @@ void Sprite::SetImpulseX(float x) {
 void Sprite::SetImpulseY(float y) {
 
     if (this->m_active && this->bodies.size())
-        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, y * 100000), this->bodies[0].first->GetWorldCenter(), true);
+        this->bodies[0].first->ApplyLinearImpulse(b2Vec2(this->bodies[0].first->GetLinearVelocity().x, y * 10000), this->bodies[0].first->GetWorldCenter(), true);
 }
 
 
@@ -169,7 +169,7 @@ void Sprite::ReadSpritesheetData()
 void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
 { 
 
-    uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
+    uint32_t seconds = System::Application::game->time->m_delta * rate;
 
     try {
 

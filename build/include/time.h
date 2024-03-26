@@ -11,7 +11,7 @@ class Time {
 
         static inline std::atomic<bool> exitFlag { false };
 
-        static inline const double timeStep = 1.0f / 200.0f;
+        static inline const double timeStep = 1.0f / 1000.0f;
 
         Time(float t = 0.0f);
 
@@ -22,7 +22,6 @@ class Time {
         operator float() const { return this->m_now; }
 
         inline float GetSeconds() const { return this->m_now; }
-        
         inline float GetMilliseconds() const { return this->m_now * 1000; }
 
         static void delayedCall(int milliseconds, std::function<void()> &&fn_ptr);

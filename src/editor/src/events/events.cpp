@@ -217,6 +217,10 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             JSON.close();
 
+            //register opened scene
+
+            Editor::scenes.push_back(currentProject);
+
             remove(tmp.c_str());
 
             return true;
@@ -465,319 +469,329 @@ void EventListener::BuildAndRun()
     game_src << "#endif\n";
     game_src << "\n#include \"" + root_path + "/include/app.h\"\n\n";
 
-    //set global vars
+    //iterate over scenes to include
 
-    if (Editor::globals_applied)
-        for (const auto &global : Editor::globals)
+    for (const auto& scene : Editor::scenes)
+    {
+
+        //set global vars
+
+        if (Editor::globals_applied)
+            for (const auto &global : Editor::globals)
+            {
+                if (std::adjacent_find(Editor::globals.begin(), Editor::globals.end()) != Editor::globals.end()) {
+                    Editor::Log("Error: duplicate global variable found.");
+                    break;
+                }
+
+                if (!global.first.length() || !global.second.length()) {
+                    Editor::Log("Error: incomplete global variable.");
+                    break;
+                }
+
+                std::string type = global.second, 
+                            var = "GLOBALVAR_" + global.first;
+
+                if (global.second == "string")
+                    type = "std::string";
+
+                if (global.second == "int[]")
+                    type = "std::vector<int>";
+
+                if (global.second == "float[]")
+                    type = "std::vector<float>";
+
+                if (global.second == "string[]")
+                    type = "std::vector<std::string>";
+
+                global_queue << "   " + type + " " + var + ";\n";
+            }
+
+        glm::vec4 backgroundColor = Editor::game->camera->GetBackgroundColor(); 
+
+        command_queue << "   this->SetWorldDimensions(" + std::to_string(Editor::worldWidth) + ", " + std::to_string(Editor::worldHeight) + ");\n";
+
+        command_queue << "   this->context.camera->SetBounds(" + std::to_string(Editor::game->camera->currentBoundsWidthBegin) + ", " + std::to_string(Editor::game->camera->currentBoundsWidthEnd) + ", " + std::to_string(Editor::game->camera->currentBoundsHeightBegin) + ", " + std::to_string(Editor::game->camera->currentBoundsHeightEnd) + ");\n";
+        command_queue << "   this->context.camera->SetBackgroundColor({ " + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + " });\n";
+        command_queue << "   this->context.camera->SetZoom(" + std::to_string(Editor::game->camera->GetZoom()) + ");\n";
+        command_queue << "   this->context.camera->SetPosition({ " + std::to_string(Editor::game->camera->m_position.x) + ", " + std::to_string(Editor::game->camera->m_position.y) + " });\n";
+    
+        std::string phys_isCont = Editor::gravity_continuous ? "true" : "false",
+                    phys_isSleeping = Editor::gravity_sleeping ? "true" : "false";
+
+        command_queue << "   this->context.physics->continuous = " + phys_isCont + ";\n";
+        command_queue << "   this->context.physics->sleeping = " + phys_isSleeping + ";\n";
+        command_queue << "   this->context.physics->SetGravity(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + ");\n";
+
+        for (const auto& asset : AssetManager::loadedAssets)
         {
-            if (std::adjacent_find(Editor::globals.begin(), Editor::globals.end()) != Editor::globals.end()) {
-                Editor::Log("Error: duplicate global variable found.");
-                break;
-            }
+            std::string path = asset.second;
 
-            if (!global.first.length() || !global.second.length()) {
-                Editor::Log("Error: incomplete global variable.");
-                break;
-            }
+            std::replace(path.begin(), path.end(), '\\', '/');
 
-            std::string type = global.second, 
-                        var = "GLOBALVAR_" + global.first;
-
-            if (global.second == "string")
-                type = "std::string";
-
-            if (global.second == "int[]")
-                type = "std::vector<int>";
-
-            if (global.second == "float[]")
-                type = "std::vector<float>";
-
-            if (global.second == "string[]")
-                type = "std::vector<std::string>";
-
-            global_queue << "   " + type + " " + var + ";\n";
+            asset_queue << "  System::Resources::Manager::LoadFile(" + asset.first + ", " + path + ");\n";
         }
 
-    glm::vec4 backgroundColor = Editor::game->camera->GetBackgroundColor(); 
+        //include scripts
 
-    command_queue << "   this->SetWorldDimensions(" + std::to_string(Editor::worldWidth) + ", " + std::to_string(Editor::worldHeight) + ");\n";
-
-    command_queue << "   this->camera->SetBounds(" + std::to_string(Editor::game->camera->currentBoundsWidthBegin) + ", " + std::to_string(Editor::game->camera->currentBoundsWidthEnd) + ", " + std::to_string(Editor::game->camera->currentBoundsHeightBegin) + ", " + std::to_string(Editor::game->camera->currentBoundsHeightEnd) + ");\n";
-    command_queue << "   this->camera->SetBackgroundColor({ " + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + " });\n";
-    command_queue << "   this->camera->SetZoom(" + std::to_string(Editor::game->camera->GetZoom()) + ");\n";
-    command_queue << "   this->camera->SetPosition({ " + std::to_string(Editor::game->camera->m_position.x) + ", " + std::to_string(Editor::game->camera->m_position.y) + " });\n";
- 
-    std::string phys_isCont = Editor::gravity_continuous ? "true" : "false",
-                phys_isSleeping = Editor::gravity_sleeping ? "true" : "false";
-
-    command_queue << "   this->physics->continuous = " + phys_isCont + ";\n";
-    command_queue << "   this->physics->sleeping = " + phys_isSleeping + ";\n";
-    command_queue << "   this->physics->SetGravity(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + ");\n";
-
-    for (const auto& asset : AssetManager::loadedAssets)
-    {
-        std::string path = asset.second;
-
-        std::replace(path.begin(), path.end(), '\\', '/');
-
-        asset_queue << "  System::Resources::Manager::LoadFile(" + asset.first + ", " + path + ");\n";
-    }
-
-    //include scripts
-
-    for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
-        game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
+        for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
+            game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
 
 
-    //command data, iterate over nodes and create objects
+        //command data, iterate over nodes and create objects
 
-    for (const auto& node : Node::nodes)
-    {
-
-        //load shaders
-
-        if (node->HasComponent("Shader") && node->shader.first.length())
-            asset_queue << "  System::Resources::Manager::shader->Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\");\n";
-
-
-        //--------------- sprite
-
-        if (node->m_type == "Sprite")
+        for (const auto& node : Node::nodes)
         {
 
-            auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
+            //load shaders
 
-            if (sn->spriteHandle != nullptr)
+            if (node->HasComponent("Shader") && node->shader.first.length())
+                asset_queue << "  System::Resources::Manager::shader->Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\");\n";
+
+
+            //--------------- sprite
+
+            if (node->m_type == "Sprite")
             {
 
-                //load frames
+                auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
-                std::ostringstream frame_oss;
-                std::vector<std::string> framesToLoad;
-
-                for (const auto& frame : sn->frames)
-                    framesToLoad.push_back("{" + std::to_string(frame.x) + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + ", " + std::to_string(frame.factorX) + ", " + std::to_string(frame.factorY) + "}");
-
-                if (!framesToLoad.empty()) 
+                if (sn->spriteHandle != nullptr)
                 {
-                    std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
-                    frame_oss << framesToLoad.back();
 
-                    if (sn->frames.size() > 1)
-                        asset_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n";
-                }
+                    //load frames
 
-                //load animations
+                    std::ostringstream frame_oss;
+                    std::vector<std::string> framesToLoad;
 
-                std::ostringstream anim_oss;
-                std::vector<std::string> animsToLoad;
+                    for (const auto& frame : sn->frames)
+                        framesToLoad.push_back("{" + std::to_string(frame.x) + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + ", " + std::to_string(frame.factorX) + ", " + std::to_string(frame.factorY) + "}");
 
-                for (const auto& anim : sn->animations)
-                    animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
-
-                if (!animsToLoad.empty()) {
-                    std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
-                    anim_oss << animsToLoad.back();
-
-                    asset_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n";
-                }
-
-                global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n\t";
-
-                command_queue << "   sprite_" + node->m_ID + " = CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
-                                        
-                //sprite configurations
-
-                command_queue << "   sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->spriteHandle->m_scale.x) + ", " + std::to_string(sn->spriteHandle->m_scale.y) + ");\n";
-                command_queue << "   sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ");\n";
-                command_queue << "   sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->spriteHandle->m_rotation) + ");\n";
-                command_queue << "   sprite_" + node->m_ID + "->SetTint({ " + std::to_string(sn->spriteHandle->m_tint.x) + ", " + std::to_string(sn->spriteHandle->m_tint.y) + ", " + std::to_string(sn->spriteHandle->m_tint.z) + " });\n";
-                command_queue << "   sprite_" + node->m_ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
-                command_queue << "   sprite_" + node->m_ID + "->SetFlip(" + std::to_string(sn->spriteHandle->m_flipX) + ", " + std::to_string(sn->spriteHandle->m_flipY) + ");\n";
-
-                std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
-
-                command_queue << "   sprite_" + node->m_ID + "->m_texture.Filter_Min = " + filtering + ";\n";
-                command_queue << "   sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n";
-
-                if (sn->lock_in_place)
-                    update_queue << "   sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"sprite_billboard\");\n";
-
-                //physics bodies
-
-                if (sn->HasComponent("Physics"))
-                {
-                    for (int i = 0; i < sn->bodies.size(); i++) 
+                    if (!framesToLoad.empty()) 
                     {
- 
-                        if (sn->bodies[i].second == "static")
-                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
-                        
-                        if (sn->bodies[i].second == "dynamic")
-                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n";
-                    }    
+                        std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
+                        frame_oss << framesToLoad.back();
 
-                    command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
+                        if (sn->frames.size() > 1)
+                            asset_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n";
+                    }
+
+                    //load animations
+
+                    std::ostringstream anim_oss;
+                    std::vector<std::string> animsToLoad;
+
+                    for (const auto& anim : sn->animations)
+                        animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
+
+                    if (!animsToLoad.empty()) {
+                        std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
+                        anim_oss << animsToLoad.back();
+
+                        asset_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n";
+                    }
+
+                    global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n\t";
+
+                    command_queue << "   this->sprite_" + node->m_ID + " = Game::CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+                                            
+                    //sprite configurations
+
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->spriteHandle->m_scale.x) + ", " + std::to_string(sn->spriteHandle->m_scale.y) + ");\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ");\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->spriteHandle->m_rotation) + ");\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetTint({ " + std::to_string(sn->spriteHandle->m_tint.x) + ", " + std::to_string(sn->spriteHandle->m_tint.y) + ", " + std::to_string(sn->spriteHandle->m_tint.z) + " });\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetFlip(" + std::to_string(sn->spriteHandle->m_flipX) + ", " + std::to_string(sn->spriteHandle->m_flipY) + ");\n";
+
+                    std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
+
+                    command_queue << "   this->sprite_" + node->m_ID + "->m_texture.Filter_Min = " + filtering + ";\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n";
+
+                    if (sn->lock_in_place)
+                        update_queue << "   this->sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"sprite_billboard\");\n";
+
+                    //physics bodies
+
+                    if (sn->HasComponent("Physics"))
+                    {
+                        for (int i = 0; i < sn->bodies.size(); i++) 
+                        {
+    
+                            if (sn->bodies[i].second == "static")
+                                command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
+                            
+                            if (sn->bodies[i].second == "dynamic")
+                                command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n";
+                        }    
+
+                        command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
+
+                    }
+                        
+                    //animator
+
+                    if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size()) {
+                        command_queue << "   this->sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n";
+                        command_queue << "   this->sprite_" + node->m_ID + "->ReadSpritesheetData();\n"; 
+                    } 
+
+                    //shader
+
+                    if (sn->HasComponent("Shader") && sn->shader.first.length()) 
+                        command_queue << "   this->sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + sn->shader.first + "\");\n";
+
 
                 }
-                    
-                //animator
 
-                if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size()) {
-                    command_queue << "   sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n";
-                    command_queue << "   sprite_" + node->m_ID + "->ReadSpritesheetData();\n"; 
-                } 
+            }
+
+            //--------------- text
+
+            if (node->m_type == "Text")
+            {
+
+                auto tn = std::dynamic_pointer_cast<TextNode>(node);
+
+                if (tn->textHandle != nullptr)
+                {
+                    global_queue << "   std::shared_ptr<Text> text_" + node->m_ID + ";\n\t";
+
+                    command_queue << "   this->text_" + node->m_ID + " = Game::CreateText(\"" + tn->textHandle->content + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+
+                    command_queue << "   this->text_" + node->m_ID + "->SetScale(" + std::to_string(tn->textHandle->m_scale.x) + ", " + std::to_string(tn->textHandle->m_scale.y) + ");\n";
+                    command_queue << "   this->text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->textHandle->m_position.x) + ", " + std::to_string(tn->textHandle->m_position.y) + ");\n";
+                    command_queue << "   this->text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->textHandle->m_rotation) + ");\n";
+                    command_queue << "   this->text_" + node->m_ID + "->SetTint({ " + std::to_string(tn->textHandle->m_tint.x) + ", " + std::to_string(tn->textHandle->m_tint.y) + ", " + std::to_string(tn->textHandle->m_tint.z) + " });\n";
+                    command_queue << "   this->text_" + node->m_ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
+
+                }
+
+            }
+
+            //--------------- empty
+
+            if (node->m_type == "Empty")
+            {
+    
+                auto en = std::dynamic_pointer_cast<EmptyNode>(node);
+
+                global_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n\t";
+
+                if (en->currentShape.length()) {
+                    command_queue << "   this->empty_" + node->m_ID + "->SetTint({" + std::to_string(en->m_debugGraphic->m_tint.r) + ", " + std::to_string(en->m_debugGraphic->m_tint.g) + ", " + std::to_string(en->m_debugGraphic->m_tint.b) + "});\n";
+                    command_queue << "   this->empty_" + node->m_ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->m_alpha) + ");\n";
+                }
+
+                //TODO: set shape
+
+                if (en->currentShape == "rectangle") {
+                    command_queue << "   this->empty_" + node->m_ID + " = Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
+                    command_queue << "   this->empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
+                }
 
                 //shader
 
-                if (sn->HasComponent("Shader") && sn->shader.first.length()) 
-                    command_queue << "   sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + sn->shader.first + "\");\n";
-
+                if (en->HasComponent("Shader") && en->shader.first.length()) 
+                    command_queue << "   this->empty_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + en->shader.first + "\");\n";
 
             }
 
-        }
+            //--------------- tilemap
 
-        //--------------- text
-
-        if (node->m_type == "Text")
-        {
-
-            auto tn = std::dynamic_pointer_cast<TextNode>(node);
-
-            if (tn->textHandle != nullptr)
+            if (node->m_type == "Tilemap")
             {
-                global_queue << "   std::shared_ptr<Text> text_" + node->m_ID + ";\n\t";
 
-                command_queue << "   text_" + node->m_ID + " = CreateText(\"" + tn->textHandle->content + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+                auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
 
-                command_queue << "   text_" + node->m_ID + "->SetScale(" + std::to_string(tn->textHandle->m_scale.x) + ", " + std::to_string(tn->textHandle->m_scale.y) + ");\n";
-                command_queue << "   text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->textHandle->m_position.x) + ", " + std::to_string(tn->textHandle->m_position.y) + ");\n";
-                command_queue << "   text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->textHandle->m_rotation) + ");\n";
-                command_queue << "   text_" + node->m_ID + "->SetTint({ " + std::to_string(tn->textHandle->m_tint.x) + ", " + std::to_string(tn->textHandle->m_tint.y) + ", " + std::to_string(tn->textHandle->m_tint.z) + " });\n";
-                command_queue << "   text_" + node->m_ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
+                //load frames
 
-            }
+                std::ostringstream offset_oss;
+                std::vector<std::string> offsetsToLoad;
 
-        }
+                for (const auto &offset : tmn->offset)
+                    offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + ", " + std::to_string(offset[4]) + ", " + std::to_string(offset[5]) + "}");
+                
+                if (!offsetsToLoad.empty()) {
+                    std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
+                    offset_oss << offsetsToLoad.back();
+                } 
 
-        //--------------- empty
+                if (tmn->layers.size())
+                    for (int i = 0; i < tmn->layer; i++)
+                    {
+                        asset_queue << "   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
+                        asset_queue << "   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
+                        
+                        command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
+                    }
 
-        if (node->m_type == "Empty")
-        {
- 
-            auto en = std::dynamic_pointer_cast<EmptyNode>(node);
+                //static physics bodies
 
-            global_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n\t";
+                if (tmn->HasComponent("Physics"))
+                    for (int i = 0; i < tmn->bodies.size(); i++)    
+                    command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
 
-            if (en->currentShape.length()) {
-                command_queue << "   empty_" + node->m_ID + "->SetTint({" + std::to_string(en->m_debugGraphic->m_tint.r) + ", " + std::to_string(en->m_debugGraphic->m_tint.g) + ", " + std::to_string(en->m_debugGraphic->m_tint.b) + "});\n";
-                command_queue << "   empty_" + node->m_ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->m_alpha) + ");\n";
-            }
-
-            //TODO: set shape
-
-            if (en->currentShape == "rectangle") {
-                command_queue << "   empty_" + node->m_ID + " = CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
-                command_queue << "   empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
-            }
-
-            //shader
-
-            if (en->HasComponent("Shader") && en->shader.first.length()) 
-                command_queue << "   empty_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + en->shader.first + "\");\n";
-
-        }
-
-        //--------------- tilemap
-
-        if (node->m_type == "Tilemap")
-        {
-
-            auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
-
-            //load frames
-
-            std::ostringstream offset_oss;
-            std::vector<std::string> offsetsToLoad;
-
-            for (const auto &offset : tmn->offset)
-                offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + ", " + std::to_string(offset[4]) + ", " + std::to_string(offset[5]) + "}");
-            
-            if (!offsetsToLoad.empty()) {
-                std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
-                offset_oss << offsetsToLoad.back();
             } 
 
-            if (tmn->layers.size())
-                for (int i = 0; i < tmn->layer; i++)
-                {
-                    asset_queue << "   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
-                    asset_queue << "   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
-                    
-                    command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
-                }
+            //--------------- audio
 
-            //static physics bodies
+            if (node->m_type == "Audio")
+            {
 
-            if (tmn->HasComponent("Physics"))
-                for (int i = 0; i < tmn->bodies.size(); i++)    
-                   command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
+                auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
-        } 
+                std::string loop = an->loop ? "true" : "false";
 
-        //--------------- audio
+                command_queue << "   System::Audio::play(" + an->audio_source_name + ", " + loop + ", " + std::to_string(an->volume) + ");\n";
 
-        if (node->m_type == "Audio")
-        {
+            }
 
-            auto an = std::dynamic_pointer_cast<AudioNode>(node);
+            //define behaviors
 
-            std::string loop = an->loop ? "true" : "false";
+            for (const auto& behavior : node->behaviors) {
 
-            command_queue << "   System::Audio::play(" + an->audio_source_name + ", " + loop + ", " + std::to_string(an->volume) + ");\n";
+                std::string entity = (node->m_type + "_" + node->m_ID);
+
+                transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
+
+                command_queue << "   Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
+
+            }
 
         }
+    
+        //convert data string stream to string
 
-        //define behaviors
+        std::string globalData = global_queue.str(); 
+        std::string commandData = command_queue.str(); 
+        std::string preloadData = asset_queue.str();
+        std::string updateData = update_queue.str();
 
-        for (const auto& behavior : node->behaviors) {
+        std::string name_upper = currentProject;
 
-            std::string entity = (node->m_type + "_" + node->m_ID);
+        transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
-            transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
+        //project source template
 
-            command_queue << "   CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
+        game_src << "\n\nclass " + name_upper + " : public Scene {\n\n"; 
+        game_src << "    public:\n";
+        game_src << "       " + name_upper + "(const Process::Context& context):\n\t\tScene(context, \"" + name_upper + "\") { }\n";
+        game_src << "           void Preload() override;\n";
+        game_src << "           void Run() override;\n";
+        game_src << "           void Update() override;\n";
+        game_src << "    private:\n";
+        game_src << "    " + globalData + "\n";
+        game_src <<"};\n\n\n"; 
 
-        }
+        game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
+        game_src << "void " + name_upper + "::Run() {\n" + commandData + "}\n\n";
+        game_src << "void " + name_upper + "::Update() {\n"      + updateData +            "\n}\n\n\n";
 
-    }
-  
-    //convert data string stream to string
+    }   
 
-    std::string globalData = global_queue.str(); 
-    std::string commandData = command_queue.str(); 
-    std::string preloadData = asset_queue.str();
-    std::string updateData = update_queue.str();
-
-    std::string name_upper = currentProject;
-    transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
-
-    //project source template
-
-    game_src << "\n\nclass " + name_upper + " : public Game {\n\n";
-    game_src << "    public:\n";
-    game_src << "    " + name_upper + "() { System::Application::name = \"" + name_upper + "\"; }\n";
-    game_src << "        void Preload() override;\n";
-    game_src << "        void Run() override;\n";
-    game_src << "        void Update() override;\n";
-    game_src << "    private:\n";
-    game_src << "    " + globalData + "\n";
-    game_src <<"};\n\n\n"; 
-
-    game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
-    game_src << "void " + name_upper + "::Run() {\n" + commandData + "}\n\n";
-    game_src << "void " + name_upper + "::Update() {\n"      + updateData +            "\n}\n\n\n";
+    std::string game_name = "Test Game";
 
     game_src << "#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";
@@ -805,7 +819,17 @@ void EventListener::BuildAndRun()
     game_src <<	"   #elif _ISMOBILE == 1\n";
     game_src <<	"       System::Application::isMobile = true;\n";
     game_src <<	"   #endif\n";
-    game_src <<	"       " + name_upper + " game;\n";
+    game_src <<	"       Game game;\n";
+    game_src << "       System::Application::name = \"" + game_name + "\";\n";
+
+    for (const auto& scene : Editor::scenes) 
+    {
+        std::string className = scene;
+        transform(className.begin(), className.end(), className.begin(), ::toupper); 
+
+        game_src << "       Game::LoadScene<" + className + ">(&game);\n";
+    }
+    
     game_src << "       System::Application app { &game };\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       emscripten_exit_with_live_runtime();\n";

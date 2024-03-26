@@ -86,7 +86,7 @@ b2Body* Physics::CreateDynamicBody(
     b2CircleShape circle;
     b2PolygonShape box;
 
-    if (type == "circle") {
+    if (type == "circle") { 
 	    circle.m_radius = 0.3f;
         body.fixtureDef.shape = &circle;
     }

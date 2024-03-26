@@ -3,39 +3,41 @@
 #include <mutex>
 #include <algorithm>
 
-#include "../../build/include/game.h"
+#include "../../build/include/scene.h"
 
 
 //game instance
-class MeatballMadness : public Game {
+class MeatballMadness : public Scene {
 
     public: 
 
-        int score, fails;
-
         static inline std::mutex chef_lock;
 
-        static inline std::shared_ptr<Text> menuText;  
-        static inline std::shared_ptr<Text> scoreText;
-        static inline std::shared_ptr<Text> creditsText;
-        static inline std::shared_ptr<Text> gameOverText;
-        static inline std::shared_ptr<Sprite> chef; 
-        static inline std::shared_ptr<Sprite> player;
+        MeatballMadness(const Process::Context& context):
+		    Scene(context, "MEATBALL MADNESS!") { }
 
-        static inline b2Body* playerHitBox;
-        static inline std::vector<std::shared_ptr<Sprite>> meatballs;
-    
-        MeatballMadness() { name = "MEATBALL MADNESS!"; }
+        ~MeatballMadness() = default;
 
+        void Preload() override;
+        void Run() override;
+        void Update() override;
+
+        void MoveChef();
         void GameOver();
         void Reset();
 
-        void Preload() override;
-		void Run(Inputs* inputs, Camera* camera, Physics* physics) override;
-		void Update(Inputs* inputs, Camera* camera, Physics* physics) override;
-
     private:
 
+        int score, fails;
 
+        b2Body* playerHitBox;
+        std::vector<std::shared_ptr<Sprite>> meatballs;
+
+        std::shared_ptr<Text> menuText;  
+        std::shared_ptr<Text> scoreText;
+        std::shared_ptr<Text> creditsText;
+        std::shared_ptr<Text> gameOverText;
+        std::shared_ptr<Sprite> chef; 
+        std::shared_ptr<Sprite> player;
 }; 
 

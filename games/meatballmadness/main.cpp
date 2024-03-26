@@ -73,10 +73,10 @@ static void ThrowMeatball()
 //---------------------------------
 
 
-static void MoveChef()
+void MeatballMadness::MoveChef()
 { 
 
-    if (MeatballMadness::chef->m_position.x <= 1145 && canThrow)
+    if (this->chef->m_position.x <= 1145 && canThrow)
     {
         chefMoveLeft = true;
         chefMoveRight = false;
@@ -85,7 +85,7 @@ static void MoveChef()
         ThrowMeatball();
     }
 
-    if (MeatballMadness::chef->m_position.x >= 1270)
+    if (this->chef->m_position.x >= 1270)
     {
         chefMoveLeft = false;
         chefMoveRight = true;
@@ -94,16 +94,16 @@ static void MoveChef()
 
     if (chefMoveLeft)
     {
-        MeatballMadness::chef->SetVelocityX(1.5f);
-        MeatballMadness::chef->SetFlipX(true);
-        MeatballMadness::chef->Animate("move with meatball", false, 4);
+        this->chef->SetVelocityX(1.5f);
+        this->chef->SetFlipX(true);
+        this->chef->Animate("move with meatball", false, 4);
     }
     
     if (chefMoveRight)
     {
-        MeatballMadness::chef->SetVelocityX(-1.5f);
-        MeatballMadness::chef->SetFlipX(false);
-        MeatballMadness::chef->Animate("move", false, 4);
+        this->chef->SetVelocityX(-1.5f);
+        this->chef->SetFlipX(false);
+        this->chef->Animate("move", false, 4);
     }
 
 }
@@ -113,39 +113,39 @@ static void MoveChef()
 
 
 
-void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
+void MeatballMadness::Update()
 {   
     
     //set control states
 
     if (System::Application::isMobile)
-        for (int i = 0; i < virtual_buttons.size(); i++)
+        for (int i = 0; i < System::Application::game->virtual_buttons.size(); i++)
         {
-            virtual_buttons[i]->SetScale(4.0f);
+            System::Application::game->virtual_buttons[i]->SetScale(4.0f);
             
             switch (i) {
-                case 0: inputs->m_left = UIListenForInput(0); break;
-                case 1: inputs->m_right = UIListenForInput(1); break;
-                case 2: inputs->m_up = UIListenForInput(2); break;
+                case 0: this->context->inputs->m_left = Game::UIListenForInput(0); break;
+                case 1: this->context->inputs->m_right = Game::UIListenForInput(1); break;
+                case 2: this->context->inputs->m_up = Game::UIListenForInput(2); break;
             }
         }
 
     //platter hitbox
 
-    if (playerHitBox)
-        playerHitBox->SetTransform(b2Vec2(player->m_flipX ? player->m_position.x : player->m_position.x + 60, player->m_position.y), 0); 
+    if (this->playerHitBox)
+        this->playerHitBox->SetTransform(b2Vec2(this->player->m_flipX ? this->player->m_position.x : this->player->m_position.x + 60, this->player->m_position.y), 0); 
 
     //game over
 
-    if (fails >= 3 && !game_over) 
+    if (this->fails >= 3 && !game_over) 
         this->GameOver();
     
     else if (paused)
     {
 
-        if (inputs->isDown && canRestart == true) {
+        if (this->context->inputs->isDown && canRestart == true) {
             
-            gameOverText->SetAlpha(0.0f);
+            this->gameOverText->SetAlpha(0.0f);
     
             game_over = false;
             paused = false;
@@ -156,7 +156,7 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
     else if (!started)
     {
 
-        if (inputs->isDown)
+        if (this->context->inputs->isDown)
         {
 
             #ifdef __EMSCRIPTEN__
@@ -164,7 +164,7 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
                     System::Audio::play("music", true);
             #endif
 
-            entity_behaviors::Behavior::GetBehavior<Waiter>(behaviors)->canMove = true;
+            entity_behaviors::Behavior::GetBehavior<Waiter>(this->behaviors)->canMove = true;
             
             started = true;
         }
@@ -175,10 +175,10 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
     else if (!game_over)
     {
 
-        menuText->SetAlpha(0.0f);
-        creditsText->SetAlpha(0.0f);
+        this->menuText->SetAlpha(0.0f);
+        this->creditsText->SetAlpha(0.0f);
 
-        if (meatballs.size())
+        if (this->meatballs.size())
         {
             
             auto it = meatballs.begin();
@@ -197,7 +197,7 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
 
                     meatball->m_alive = false;
 
-                    RemoveFromVector(meatballs, meatball);
+                    Game::RemoveFromVector(this->meatballs, meatball);
 
                     score += 1;
 
@@ -219,7 +219,7 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
                         meatball->m_active = false;
                         meatball->RemoveBodies();   
 
-                        fails += 1; 
+                        this->fails += 1; 
                     }
 
                 }
@@ -228,7 +228,7 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
 
                 else if (
                     meatball->m_active &&
-                    b2TestOverlap(meatball->bodies[0].first->GetFixtureList()->GetAABB(0), playerHitBox->GetFixtureList()->GetAABB(0))
+                    b2TestOverlap(meatball->bodies[0].first->GetFixtureList()->GetAABB(0), this->playerHitBox->GetFixtureList()->GetAABB(0))
                 )
                 {
                     meatball->SetRotation(0);
@@ -244,10 +244,10 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
                     const int meatballPosition = meatball->GetData<int>("platter position");
                     
                     meatball->SetPosition(
-                        player->m_flipX ? 
-                            playerHitBox->GetTransform().p.x - meatballPosition : 
-                            playerHitBox->GetTransform().p.x + meatballPosition,
-                        playerHitBox->GetTransform().p.y - 25
+                        this->player->m_flipX ? 
+                            this->playerHitBox->GetTransform().p.x - meatballPosition : 
+                            this->playerHitBox->GetTransform().p.x + meatballPosition,
+                        this->playerHitBox->GetTransform().p.y - 25
                     );
                 }
 
@@ -262,23 +262,23 @@ void MeatballMadness::Update(Inputs* inputs, Camera* camera, Physics* physics)
             }
         }
 
-        MoveChef();
+        this->MoveChef();
 
         //set depth  
 
-        for (const auto &entity : entities) {
+        for (const auto& entity : System::Application::game->entities) {
             
-            if (scoreText != nullptr) {
-                scoreText->content = "SCORE: " + std::to_string(score);
-                scoreText->SetDepth(entity->m_depth + 1);
+            if (this->scoreText != nullptr) {
+                this->scoreText->content = "SCORE: " + std::to_string(this->score);
+                this->scoreText->SetDepth(entity->m_depth + 1);
             }
 
             
-            for (const auto &button : virtual_buttons)
+            for (const auto& button : System::Application::game->virtual_buttons)
                 if (button)
                     button->SetDepth(entity->m_depth + 1);
 
-            gameOverText->SetDepth(entity->m_depth + 1);
+            this->gameOverText->SetDepth(entity->m_depth + 1);
         }
     }
 
@@ -371,58 +371,60 @@ void MeatballMadness::Run()
 
     //sprites
 
-    auto background = CreateSprite("background", 450.0f, 280.0f);
+    auto background = Game::CreateSprite("background", 450.0f, 280.0f);
     background->SetScale(2.5f, 2.42f);
 
-    auto patron = CreateSprite("patron", 165.0f, 640.0f);               
+    auto patron = Game::CreateSprite("patron", 165.0f, 640.0f);               
     patron->SetScale(3.0f);
     patron->SetAnimation("idle");
 
-    chef = CreateSprite("chef", 1250.0f, 640.0f);
-    chef->SetScale(2.0f);
-    chef->SetFrame(2);
+    this->chef = Game::CreateSprite("chef", 1250.0f, 640.0f);
+    this->chef->SetScale(2.0f);
+    this->chef->SetFrame(2);
 
     //player
 
-    player = CreateSprite("waiter", 450.0f, 760.0f, 1, 2.5);
+    this->player = Game::CreateSprite("waiter", 450.0f, 760.0f, 1, 2.5);
 
-    player->bodies.push_back({ Physics::CreateDynamicBody("box", 450.0f, 760.0f, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 70.0f } });
-    player->bodies[0].first->SetFixedRotation(true);
+    this->player->bodies.push_back({ Physics::CreateDynamicBody("box", 450.0f, 760.0f, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 70.0f } });
+    this->player->bodies[0].first->SetFixedRotation(true);
 
-    CreateBehavior<Waiter>(player, this);
-    playerHitBox = Physics::CreateDynamicBody("box", 0.0f, 0.0f, 40.0f, 10.0f, true, 1);
+    Game::CreateBehavior<Waiter>(this->player, this);
+    this->playerHitBox = Physics::CreateDynamicBody("box", 0.0f, 0.0f, 40.0f, 10.0f, true, 1);
 
     //UI
 
-    scoreText = CreateText("", 30.0f, -10.0f);
-    scoreText->SetScale(3.0f);
-    scoreText->SetTint(glm::vec3(1.0f, 1.0f, 0.0f));
+    this->scoreText = Game::CreateText("", 30.0f, -10.0f);
+    this->scoreText->SetScale(3.0f);
+    this->scoreText->SetTint(glm::vec3(1.0f, 1.0f, 0.0f));
 
-    gameOverText = CreateText("GAME OVER", 500.0f, 300.0f);
-    gameOverText->SetScale(5.0f);
-    gameOverText->SetTint(glm::vec3(1.0f, 0.0f, 0.0f));
-    gameOverText->SetAlpha(0.0f);
+    this->gameOverText = Game::CreateText("GAME OVER", 500.0f, 300.0f);
+    this->gameOverText->SetScale(5.0f);
+    this->gameOverText->SetTint({1.0f, 0.0f, 0.0f});
+    this->gameOverText->SetAlpha(0.0f);
 
-    menuText = CreateText("MEATBALL MADNESS", 290.0f, 300.0f);
-    menuText->SetScale(7.0f);
-    menuText->SetTint(glm::vec3(1.0f, 0.5f, 0.0f));
+    this->menuText = Game::CreateText("MEATBALL MADNESS", 290.0f, 300.0f);
+    this->menuText->SetScale(7.0f);
+    this->menuText->SetTint({1.0f, 0.5f, 0.0f});
 
-    creditsText = CreateText("DEVELOPED BY PASTABOSS ENTERPRISE", 360.0f, 495.0f);
-    creditsText->SetScale(3.0f);
-    creditsText->SetTint(glm::vec3(1.0f, 0.5f, 0.0f));
+    this->creditsText = Game::CreateText("DEVELOPED BY PASTABOSS ENTERPRISE", 360.0f, 495.0f);
+    this->creditsText->SetScale(3.0f);
+    this->creditsText->SetTint({1.0f, 0.5f, 0.0f});
+
+    //virtual on screen inputs (mobile only)
 
     if (System::Application::isMobile)
     {
 
-        virtual_buttons = {
+        System::Application::game->virtual_buttons = {
 
-            CreateUI("arrow_button", 130.0f, 500.0f), //left
-            CreateUI("arrow_button", 250.0f, 500.0f), //right
-            CreateUI("circle_button", 1400.0f, 500.0f) //action
+            Game::CreateUI("arrow_button", 130.0f, 500.0f), //left
+            Game::CreateUI("arrow_button", 250.0f, 500.0f), //right
+            Game::CreateUI("circle_button", 1400.0f, 500.0f) //action
 
         };
             
-        virtual_buttons[1]->SetRotation(180);
+        System::Application::game->virtual_buttons[1]->SetRotation(180);
 
     }
 
@@ -442,10 +444,10 @@ void MeatballMadness::GameOver()
     game_over = true;
     paused = true;
 
-    gameOverText->SetAlpha(1.0f);  
+    this->gameOverText->SetAlpha(1.0f);  
 
-    chef->SetFlipX(false);
-    chef->SetFrame(2);
+    this->chef->SetFlipX(false);
+    this->chef->SetFrame(2);
 
     System::Audio::play("error");
     this->Reset();
@@ -459,13 +461,13 @@ void MeatballMadness::GameOver()
 void MeatballMadness::Reset()
 {
 
-    for (auto &meatball : meatballs)
+    for (auto& meatball : this->meatballs)
         DestroyEntity(meatball);
 
-    meatballs.clear(); 
+    this->meatballs.clear(); 
     
-    score = 0;
-    fails = 0;
+    this->score = 0;
+    this->fails = 0;
     
     chefMoveLeft = true;
     chefMoveRight = false;
@@ -529,7 +531,10 @@ int main(int argc, char* args[])
 
     //main application process
 
-    MeatballMadness game;
+    Game game;
+    
+    Game::LoadScene<MeatballMadness>(&game);
+
     System::Application app { &game }; 
 
     #ifdef __EMSCRIPTEN__

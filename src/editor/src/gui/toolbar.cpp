@@ -6,6 +6,61 @@
 void GUI::ShowSettings()
 {
 
+    //scenes
+
+    if (ImGui::BeginMenu("Scenes")) {
+
+        if (ImGui::BeginMenu("scenes in queue"))
+        {
+            if (!Editor::scenes.size())
+                ImGui::Text("none selected.");
+
+            else
+                for (int i = 0; i < Editor::scenes.size(); i++) 
+                    ImGui::Text(("scene " + std::to_string(i) + ": " + Editor::scenes[i]).c_str());
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("add")) 
+        {
+            for (const auto& filename : std::filesystem::directory_iterator(Editor::projectPath)) 
+                if (System::Utils::str_endsWith(filename.path().string(), ".SPAGHYETI") || System::Utils::str_endsWith(filename.path().string(), ".spaghyeti"))
+                {
+                    std::string scene = " " + System::Utils::ReplaceFrom(filename.path().filename().string(), ".", ""); 
+                  
+                    if (ImGui::MenuItem((scene).c_str())) 
+                    {
+                        if (std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == scene; }) == Editor::scenes.end()) 
+                            Editor::scenes.push_back(scene);
+                        
+                        else 
+                            ImGui::Text("scene already selected.");
+                    }
+                }
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("remove")) 
+        {
+            for (const auto& filename : std::filesystem::directory_iterator(Editor::projectPath)) 
+                if (System::Utils::str_endsWith(filename.path().string(), ".SPAGHYETI") || System::Utils::str_endsWith(filename.path().string(), ".spaghyeti"))
+                {
+                    std::string scene = " " + System::Utils::ReplaceFrom(filename.path().filename().string(), ".", ""); 
+                    if (ImGui::MenuItem((scene).c_str())) {
+                        auto it = std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == scene; });
+                        if (it != Editor::scenes.end())
+                            Editor::scenes.erase(it);
+                    } 
+                }
+
+            ImGui::EndMenu();
+        }
+    
+        ImGui::EndMenu();
+    }
+
     //scene global vars
 
     if (ImGui::BeginMenu("Globals"))
@@ -57,7 +112,7 @@ void GUI::ShowSettings()
 
         ImGui::SameLine();
 
-        if (ImGui::Button("delete")) 
+        if (ImGui::Button("delete"))
         {
 
             std::string type = Editor::globals.back().second,
@@ -132,17 +187,17 @@ void GUI::ShowSettings()
 void GUI::ShowMenu()
 {
 
-    ImGui::MenuItem("File Select", NULL, false, false); ImGui::SameLine(); 
-    
+    ImGui::MenuItem("File Select", NULL, false, false); ImGui::SameLine();
+
     ImGui::Text(("Platform: " + Editor::platform).c_str());
 
-    if (ImGui::MenuItem("Build / Run")) 
+    if (ImGui::MenuItem("Build / Run"))
         Editor::events.BuildAndRun();
 
-    if (ImGui::MenuItem("New")) 
+    if (ImGui::MenuItem("New"))
         Editor::events.NewProject();
 
-    if (ImGui::MenuItem("Open", "Ctrl+O")) 
+    if (ImGui::MenuItem("Open", "Ctrl+O"))
         Editor::events.OpenProject();
 
     // if (ImGui::BeginMenu("Open Recent"))
@@ -165,15 +220,15 @@ void GUI::ShowMenu()
     //     ImGui::EndMenu();
     // }
 
-    if (ImGui::MenuItem("Save", "Ctrl+S")) 
+    if (ImGui::MenuItem("Save", "Ctrl+S"))
         Editor::events.SaveProject();
 
-    if (ImGui::MenuItem("Save As..")) 
+    if (ImGui::MenuItem("Save As.."))
         Editor::events.SaveProject(true);
 
     ImGui::Separator();
 
-    if (ImGui::MenuItem("Quit", "Alt+F4")) 
+    if (ImGui::MenuItem("Quit", "Alt+F4"))
         show_quit = true;
 
 
@@ -189,7 +244,7 @@ void GUI::ShowMenu()
                 Editor::platform = "WebGL";
 
             ImGui::EndMenu();
-        } 
+        }
 
         if (ImGui::BeginMenu("Change Theme"))
         {
@@ -203,7 +258,7 @@ void GUI::ShowMenu()
                 ImGui::StyleColorsDark();
 
             ImGui::EndMenu();
-        } 
+        }
 
         // ImGui::Checkbox("Options", &show_demo_window);      // Edit bools storing our window open/close state
         // static bool enabled = true;

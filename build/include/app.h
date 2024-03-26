@@ -19,7 +19,6 @@
 
 #include "./audio.h"
 #include "./window.h"       
-#include "./inputs.h"
 #include "./utils.h"
 #include "./time.h"
 #include "./game.h"
@@ -39,12 +38,9 @@ namespace SPAGHYETI_CORE System {
     		static inline std::string name = "";
 			static inline bool isMobile = false;
 
-			static inline Game* game;
-			static inline Inputs* inputs; 
+			static inline Game* game; 
 
-			static inline Resources::Manager* resources;
-
-			static inline std::vector<Game*> layers;   
+			static inline Resources::Manager* resources;   
 
 			static void Init(Game* layer);
 			static void Update(Camera* camera);

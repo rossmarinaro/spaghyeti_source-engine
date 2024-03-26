@@ -5,13 +5,7 @@ void System::Application::Init(Game* layer)
 {
 
     #if STANDALONE == 0
-
-        Inputs i;
-        inputs = &i;
-
         game = layer;
-        layers.push_back(game);
-
     #endif
     
     Shader::InitBaseShaders();
@@ -20,7 +14,7 @@ void System::Application::Init(Game* layer)
     
     Game::Boot();
 
-    //init input callbacks
+    //init input callbacks 
 
     glfwSetKeyCallback(Window::s_instance, Inputs::key_callback); 
     glfwSetCursorPosCallback(Window::s_instance, Inputs::cursor_callback); 
@@ -48,9 +42,9 @@ void System::Application::Update(Camera* camera)
   
         glfwPollEvents();  
         
-        if (inputs != nullptr)
-            inputs->ProcessInput(Window::s_instance);
-  
+        if (game != nullptr)
+            game->inputs->ProcessInput(Window::s_instance);
+
         glViewport(0, 0, Window::m_width, Window::m_height);
         glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback); 
         glfwSwapBuffers(Window::s_instance);
@@ -81,12 +75,8 @@ System::Application::Application(Game* layer)
         }
 
         game = layer;
-        layers.push_back(game);
 
         Window::Init();    
-
-        Inputs i;
-        inputs = &i;
 
         //run main app process
 
@@ -122,8 +112,6 @@ System::Application::~Application()
         if (Window::s_instance != nullptr)
             delete Window::s_instance;   
     #endif
-
-    layers.clear();
 
     delete resources;
 
