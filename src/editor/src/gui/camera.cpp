@@ -2,7 +2,7 @@
 #include "../editor.h"
 
 
-void GUI::RenderCamera()
+void editor::GUI::RenderCamera()
 {
 
     ImGui::Text("viewport");

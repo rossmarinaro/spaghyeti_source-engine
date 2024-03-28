@@ -3,24 +3,28 @@
 #include <string>
 #include "../gui/gui.h" 
 
-class Component {
 
-    public:
+namespace editor {
 
-        std::string 
-                   m_ID, 
-                   m_name,
-                   filename,
-                   m_type, 
-                   m_nodeType;
+    class Component {
 
-        void Make();
+        public:
 
-        Component(const std::string &id, const std::string &type, const std::string &node_type);
-        ~Component();
-    
+            std::string 
+                    m_ID, 
+                    m_name,
+                    filename,
+                    m_type, 
+                    m_nodeType;
 
-    private:
+            void Make();
 
-        static inline int count = 0;
-};
+            Component(const std::string &id, const std::string &type, const std::string &node_type);
+            ~Component();
+        
+
+        private:
+
+            static inline int count = 0;
+    };
+}

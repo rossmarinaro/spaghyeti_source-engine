@@ -21,7 +21,7 @@ namespace entity_behaviors {
                 Time::setInterval(3000, [&]() { 
                     float x = System::Utils::floatBetween(0.0f, 1000.0f);
                     float y = System::Utils::floatBetween(0.0f, 1000.0f);
-                    auto spr = Game::CreateSprite("test3.png", x, y);
+                    auto spr = System::Game::CreateSprite("test3.png", x, y);
                 }, m_lock);
 
             }

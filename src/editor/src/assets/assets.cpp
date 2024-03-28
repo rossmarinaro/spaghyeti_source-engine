@@ -1,7 +1,7 @@
 #include "./assets.h"
 #include "../../../../build/include/app.h"
 
-
+using namespace editor;
 
 std::string AssetManager::GetFolder(const std::string &asset)
 {

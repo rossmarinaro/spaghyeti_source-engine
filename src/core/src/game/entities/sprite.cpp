@@ -119,7 +119,7 @@ void Sprite::SetTexture(const std::string& key)
     this->m_texture.FrameHeight = texture.Height;
     this->m_texture.ID = texture.ID;
 
-    this->currentAnim = nullptr;
+    this->currentAnim = {};
 }
 
 
@@ -169,7 +169,7 @@ void Sprite::ReadSpritesheetData()
 void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
 { 
 
-    uint32_t seconds = System::Application::game->time->m_delta * rate;
+    uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
 
     try {
 
@@ -214,7 +214,7 @@ void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
 
             else    
             {
-                for (int i = anim->second.first; i < anim->second.second + 1; i++) 
+                for (int i = anim->second.first; i < anim->second.second; i++) 
                     frames.push_back(i);
                 
                 uint32_t elapsed = seconds % frames.size();
@@ -222,11 +222,11 @@ void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
                 this->SetFrame(m_currentFrame != anim->second.second ? frames[elapsed] : anim->second.first);
             }
 
-            this->currentAnim = animKey.c_str();
+            this->currentAnim = { animKey, { yoyo, rate } };
 
             int frame = yoyo ? 
-                this->m_anims.find(this->currentAnim)->second.first : 
-                this->m_anims.find(this->currentAnim)->second.second;
+                this->m_anims.find(this->currentAnim.first)->second.first : 
+                this->m_anims.find(this->currentAnim.first)->second.second;
 
 			this->m_animComplete = frame == this->m_currentFrame;
 
@@ -332,8 +332,8 @@ void Sprite::Render()
 
     //play current animation
 
-    if (this->m_isSpritesheet && this->currentAnim != nullptr)
-        this->Animate(this->currentAnim); 
+    if (this->m_isSpritesheet && this->currentAnim.first.length())
+        this->Animate(this->currentAnim.first, this->currentAnim.second.first, this->currentAnim.second.second); 
 
 }
 
@@ -351,8 +351,10 @@ Sprite::Sprite(const std::string &key, float x, float y, int frame, bool isTile)
         velocityX(0.0f),
         velocityY(0.0f)
 { 
-    if (!isTile)
-        std::cout << "Sprite: " + this->m_key + " Created.\n"; 
+    #if DEVELOPMENT == 1
+        if (!isTile)
+            std::cout << "Sprite: " + this->m_key + " Created.\n"; 
+    #endif
 }
 
 
@@ -367,17 +369,24 @@ Sprite::Sprite(const std::string &key, float x, float y, const char* type)
         m_shader(Shader::GetShader(type)), 
         m_texture(Graphics::Texture2D::GetTexture(key))
 
-{ std::cout << "Sprite: UI " + this->m_key + " created.\n"; }
+{
+    #if DEVELOPMENT == 1
+        std::cout << "Sprite: UI " + this->m_key + " created.\n"; 
+    #endif
+}
 
 
 
 //-------------------------------------------
 
 
-Sprite::~Sprite() {
+Sprite::~Sprite() 
+{
 
-    if (strcmp(this->type, "tile") != 0)
-        std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; 
+    #if DEVELOPMENT == 1
+        if (strcmp(this->type, "tile") != 0)
+            std::cout << "Sprite: " + this->m_key + " Destroyed.\n"; 
+    #endif
 }
 
 

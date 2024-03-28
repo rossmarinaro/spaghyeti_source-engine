@@ -9,9 +9,9 @@ namespace entity_behaviors {
     class Waiter : public Behavior {
 
         public: 
-        
-            bool canMove;
 
+            bool canMove;
+        
             Waiter(std::shared_ptr<Entity> entity): 
                 Behavior(entity, "Waiter") 
             {
@@ -30,12 +30,15 @@ namespace entity_behaviors {
                 if (!this->canMove)
                     return;
 
+                //jump
+
                 if (context.inputs->m_up && this->canJump && this->player->bodies[0].first->GetLinearVelocity().y == 0) 
                 {
-                    this->player->SetImpulseY(-10000);
-                    this->player->SetFrame(0);
                     this->canJump = false;
+                    this->player->SetImpulseY(-150);
                 }
+
+                //walk
                 
                 else if (this->player->IsContacting())
                 {    
@@ -45,14 +48,14 @@ namespace entity_behaviors {
                     if (context.inputs->m_right) 
                     {
                         this->player->SetFlipX(false);
-                        this->player->Animate("run", true, 7);
+                        this->player->Animate("run", true, 5);
                         this->player->SetVelocityX(320);
                     } 
                     
                     else if (context.inputs->m_left)
                     {
                         this->player->SetFlipX(true);
-                        this->player->Animate("run", true, 7);
+                        this->player->Animate("run", true, 5);
                         this->player->SetVelocityX(-320);
                     }
 
@@ -63,11 +66,17 @@ namespace entity_behaviors {
 
                 }
 
+                else //mid air
+                    this->player->SetFrame(0);
+
             }
 
         private:
 
+            float speed_x;
             bool canJump;
+
+            std::shared_ptr<Sprite> player;
 
     };
 

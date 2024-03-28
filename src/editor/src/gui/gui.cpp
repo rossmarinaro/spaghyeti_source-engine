@@ -8,7 +8,7 @@
 #include "../assets/embedded/images/icon_large.h"
 
 using namespace /* SPAGHYETI_CORE */ System;
-
+using namespace editor;
 
 //------------------------------------- launch GUI
 

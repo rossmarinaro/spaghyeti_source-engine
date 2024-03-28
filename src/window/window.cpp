@@ -105,7 +105,9 @@ void Window::Init()
     glfwShowWindow(s_instance);
     glfwMakeContextCurrent(s_instance);
 
-    std::cout << "window initialized.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "window initialized.\n";
+    #endif
 
     #ifndef __EMSCRIPTEN__
 
@@ -116,8 +118,9 @@ void Window::Init()
 
     #endif
 
-    std::cout <<  "GL Version: " << glGetString(GL_VERSION) << "\n";
-
+    #if DEVELOPMENT == 1
+        std::cout <<  "GL Version: " << glGetString(GL_VERSION) << "\n";
+    #endif
 
 }
 

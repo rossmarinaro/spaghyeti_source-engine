@@ -204,8 +204,6 @@ class Sprite : public Entity {
 
 		float velocityX, velocityY;
 
-		const char* currentAnim = nullptr;
-
 		Shader m_shader; 
 	
 		Graphics::Texture2D m_texture; 
@@ -232,8 +230,8 @@ class Sprite : public Entity {
 
 		inline void SetData(const std::string& key, const std::any& value) { this->data.insert({key, value}); }
 		inline void SetFrame(int frame) { this->m_currentFrame = frame; }
-		inline void SetAnimation(const char* key) { this->currentAnim = key; }
-		inline void StopAnimation() { this->currentAnim = nullptr; }
+		inline void SetAnimation(const char* key) { this->currentAnim = { key, { false, 2 } }; }
+		inline void StopAnimation() { this->currentAnim = {}; }
 
 		inline void SetContact(bool isContact) { this->m_contacting = isContact; }
 		inline bool IsContacting() { return this->m_contacting; }
@@ -276,6 +274,8 @@ class Sprite : public Entity {
 			 anim_yoyo = false;
 
 		glm::vec2 m_velocity;
+
+		std::pair<std::string, std::pair<bool, int>> currentAnim;
 		
 		//internal spritesheet data
 

@@ -1,7 +1,7 @@
 #include "./gui.h"
 #include "../editor.h"
 
-void GUI::RenderLogs()
+void editor::GUI::RenderLogs()
 {
     
     ImGui::Text("Performance Average: %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

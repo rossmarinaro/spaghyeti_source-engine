@@ -73,7 +73,10 @@ Geometry::Geometry(float x, float y, float width, float height):
         height(height)
 { 
     this->m_tint = glm::vec3(0.0f, 0.0f, 1.0f);
-    std::cout << "Entity: quad created.\n"; 
+    
+    #if DEVELOPMENT == 1
+        std::cout << "Entity: quad created.\n"; 
+    #endif
 }
 
 //quad
@@ -86,7 +89,10 @@ Geometry::Geometry(float x, float y, const glm::vec2& start, const glm::vec2& en
         end(end)
 {
     this->m_tint = glm::vec3(0.0f, 1.0f, 0.0f);
-    std::cout << "Entity: line created.\n"; 
+
+    #if DEVELOPMENT == 1
+        std::cout << "Entity: line created.\n"; 
+    #endif
 }
 
 
@@ -264,14 +270,19 @@ void Texture2D::Load(const std::string &key)
 
     if (!success) {
 
-        std::cout << "Texture2D: Image of key: " + key + " not found.\n";    
+        #if DEVELOPMENT == 1
+            std::cout << "Texture2D: Image of key: " + key + " not found.\n";    
+        #endif
         
         return;
     }
     
-    else
-        std::cout << "Texture2D: " + key + " loaded.\n";
-
+    else {
+        #if DEVELOPMENT == 1
+            std::cout << "Texture2D: " + key + " loaded.\n";
+        #endif
+    }
+      
 
     //assign texture in manager
 
@@ -297,7 +308,9 @@ void Texture2D::UnLoad(const std::string &key)
 
     System::Resources::Manager::textures.erase(key);
 
-    std::cout << "Texture2D: Deleted texture " + key + "\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Texture2D: Deleted texture " + key + "\n";
+    #endif
 }
 
 

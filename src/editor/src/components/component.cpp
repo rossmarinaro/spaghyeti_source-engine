@@ -1,11 +1,13 @@
 #include "string.h"
 
 #include "./component.h"
-#include "../gui/nodes/node.h"
+#include "../nodes/node.h"
 #include "../assets/assets.h"
 #include "../editor.h"
 #include "../../../../build/include/app.h"
 
+
+using namespace editor;
 
 //------------------------------------
 

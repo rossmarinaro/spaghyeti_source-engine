@@ -4,14 +4,16 @@
 #include "./events.h"
 #include "../editor.h"
 #include "../assets/assets.h"
-#include "../gui/nodes/node.h"
+#include "../nodes/node.h"
 #include "../../../../build/include/app.h"
 
+
+using namespace editor;
 
 //--------------------------------------- Save / Load Projects
 
 //project de-serialization
-void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &result)
+void EventListener::Deserialize(std::ifstream& JSON)
 {
 
     if (!JSON.good()) {
@@ -29,7 +31,7 @@ void EventListener::Deserialize(std::ifstream &JSON, std::filesystem::path &resu
     Editor::game->camera->m_backgroundColor.x = data["camera"]["color"]["x"];
     Editor::game->camera->m_backgroundColor.y = data["camera"]["color"]["y"];
     Editor::game->camera->m_backgroundColor.z = data["camera"]["color"]["z"];
-    Editor::game->camera->m_backgroundColor.w = data["camera"]["color"]["w"];
+    Editor::game->camera->m_backgroundColor.w = data["camera"]["color"]["w"]; 
 
     Editor::game->camera->SetBounds(
         data["camera"]["bounds"]["width"]["begin"], data["camera"]["bounds"]["width"]["end"],

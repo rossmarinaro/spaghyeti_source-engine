@@ -51,7 +51,9 @@ void Shader::InitBaseShaders()
 
     //...
 
-    std::cout << "Base shaders initialized.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Shader: Base shaders initialized.\n";
+    #endif
 }
 
 
@@ -138,8 +140,11 @@ void checkCompileErrors(unsigned int shader, const std::string &type)
 
                 std::cout << log.data() << "\n";
             }
-            else
-                std::cout << "SHADER: " + type + " COMPILED SUCESSFULLY.\n";  
+            else {
+                #if DEVELOPMENT == 1
+                     std::cout << "SHADER: " + type + " COMPILED SUCESSFULLY.\n";  
+                #endif
+            }
         }
 
     #else
@@ -152,8 +157,13 @@ void checkCompileErrors(unsigned int shader, const std::string &type)
         {
             if (!success)
                 std::cout << "ERROR1::SHADER_COMPILATION_ERROR of type: " + type + "\nINFO System::Log::" + infoLog + "\n";
-            else
-                std::cout << "SHADER: " + type + " COMPILED SUCESSFULLY.\n";  
+
+            else {
+                #if DEVELOPMENT == 1
+                    std::cout << "SHADER: " + type + " COMPILED SUCESSFULLY.\n";  
+                #endif
+            }
+                
         }
         else
         {
@@ -162,8 +172,11 @@ void checkCompileErrors(unsigned int shader, const std::string &type)
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
                 std::cout << "ERROR2::SHADER_COMPILATION_ERROR of type: " + type + "\nINFO System::Log::" + infoLog + "\n";
             }
-            else
-                std::cout << "SHADER: " + type + " LINKED SUCESSFULLY.\n";
+            else {
+                #if DEVELOPMENT == 1
+                    std::cout << "SHADER: " + type + " LINKED SUCESSFULLY.\n";  
+                #endif
+            }
         };
 
     #endif
@@ -178,7 +191,13 @@ void Shader::Load(const std::string &key, const char* vertShader, const char* fr
 {
 
     if (std::find_if(System::Resources::Manager::shaders.begin(), System::Resources::Manager::shaders.end(), [&](auto s) { return s.first == key; }) != System::Resources::Manager::shaders.end())
-        std::cout << "shader already exists.\n";
+    {
+        #if DEVELOPMENT == 1
+            std::cout << "shader already exists.\n";
+        #endif
+
+        return;
+    } 
 
     Shader shader; 
 
@@ -235,7 +254,9 @@ void Shader::Load(const std::string &key, const char* vertShader, const char* fr
         const char* fs = fragmentCode.c_str();
         const char* gs = geometryCode.c_str();
 
-        std::cout << "Loading shader from file.\n";
+        #if DEVELOPMENT == 1
+            std::cout << "Loading shader from file.\n";
+        #endif
 
         shader.Generate(vs, fs,/*  gShaderStream ? gs : */ nullptr);
  
@@ -247,12 +268,19 @@ void Shader::Load(const std::string &key, const char* vertShader, const char* fr
     {
         if (vertShader)
         {
-            std::cout << "Loading raw shader.\n";
+            #if DEVELOPMENT == 1
+                std::cout << "Loading raw shader.\n";
+            #endif
         
             shader.Generate(vertShader, fragShader, nullptr);
         }
-        else 
-            std::cout << "ERROR::SHADER: NO VERTEX OR FRAGMENT.\n";
+        
+        else {
+            #if DEVELOPMENT == 1
+                std::cout << "ERROR::SHADER: NO VERTEX OR FRAGMENT.\n";
+            #endif
+        }
+      
     
     }
 

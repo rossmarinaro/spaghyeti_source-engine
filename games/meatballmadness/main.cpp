@@ -34,36 +34,38 @@
 #include "./resources/assets/atlas/chef.h"
 #include "./resources/assets/atlas/patron.h"
 
-bool chefMoveLeft = true;
-bool chefMoveRight = false;
-bool game_over = false;
-bool started = false;
-bool paused = false;
-bool canThrow = true;
-bool canRestart = false;
+static bool chefMoveLeft = true;
+static bool chefMoveRight = false;
+static bool game_over = false;
+static bool started = false;
+static bool paused = false;
+static bool canThrow = true;
+static bool canRestart = false;
 
 //--------------------------------
 
 
-static void ThrowMeatball()
+void MeatballMadness::ThrowMeatball()
 {
 
-    auto meatball = Game::CreateSprite("meatball", 960.0f, 530.0f, 0, 2.0f);
- 
-    const float speedX = System::Utils::floatBetween(0.0f, 1.0f) > 0.5f ? 
-                            System::Utils::floatBetween(0.0f, -500.0f) : 
-                            System::Utils::floatBetween(-500.0f, -1500.0f);
+    auto meatball = System::Game::CreateSprite("meatball", 960.0f, 530.0f, 0, 2.0f);
 
-    meatball->SetData("velX", round(speedX));
-    meatball->SetData("velY", System::Utils::intBetween(200, 7000));
     meatball->SetData("platter position", System::Utils::intBetween(0, 50));
-    meatball->SetDepth(10);
 
     meatball->bodies.push_back({ Physics::CreateDynamicBody("box", meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f) ), { 0.0f, 5.0f } });
     meatball->bodies[0].first->SetFixedRotation(true);
-    meatball->SetVelocity(round(System::Utils::floatBetween(-500.0f, -1000.0f)), System::Utils::floatBetween(100.0f, -200.0f));
 
-    MeatballMadness::meatballs.push_back(meatball); 
+    const float speedX = System::Utils::intBetween(0, 10) > 5 ? 
+                        System::Utils::floatBetween(-0.01f, -0.25) : 
+                        System::Utils::floatBetween(-0.1f, -0.2),
+
+                speedY = System::Utils::intBetween(0, 10) > 5 ? 
+                        System::Utils::floatBetween(-0.2f, 0.32f) : 
+                        System::Utils::floatBetween(0.0f, 0.3f);
+
+    meatball->SetImpulse(speedX, speedY);
+
+    this->meatballs.push_back(meatball); 
 
     System::Audio::play("fire_sound");
 
@@ -82,7 +84,7 @@ void MeatballMadness::MoveChef()
         chefMoveRight = false;
         canThrow = false;
 
-        ThrowMeatball();
+        this->ThrowMeatball();
     }
 
     if (this->chef->m_position.x >= 1270)
@@ -96,14 +98,14 @@ void MeatballMadness::MoveChef()
     {
         this->chef->SetVelocityX(1.5f);
         this->chef->SetFlipX(true);
-        this->chef->Animate("move with meatball", false, 4);
+        this->chef->Animate("move with meatball", false, 3);
     }
     
     if (chefMoveRight)
     {
         this->chef->SetVelocityX(-1.5f);
         this->chef->SetFlipX(false);
-        this->chef->Animate("move", false, 4);
+        this->chef->Animate("move", false, 3);
     }
 
 }
@@ -114,19 +116,18 @@ void MeatballMadness::MoveChef()
 
 
 void MeatballMadness::Update()
-{   
-    
+{ 
     //set control states
 
     if (System::Application::isMobile)
-        for (int i = 0; i < System::Application::game->virtual_buttons.size(); i++)
+        for (int i = 0; i < System::Game::virtual_buttons.size(); i++)
         {
-            System::Application::game->virtual_buttons[i]->SetScale(4.0f);
+            System::Game::virtual_buttons[i]->SetScale(4.0f);
             
             switch (i) {
-                case 0: this->context->inputs->m_left = Game::UIListenForInput(0); break;
-                case 1: this->context->inputs->m_right = Game::UIListenForInput(1); break;
-                case 2: this->context->inputs->m_up = Game::UIListenForInput(2); break;
+                case 0: this->context.inputs->m_left = System::Game::UIListenForInput(0); break;
+                case 1: this->context.inputs->m_right = System::Game::UIListenForInput(1); break;
+                case 2: this->context.inputs->m_up = System::Game::UIListenForInput(2); break;
             }
         }
 
@@ -140,23 +141,23 @@ void MeatballMadness::Update()
     if (this->fails >= 3 && !game_over) 
         this->GameOver();
     
-    else if (paused)
+    else if (paused && (this->context.inputs->isDown && canRestart)) 
     {
-
-        if (this->context->inputs->isDown && canRestart == true) {
             
-            this->gameOverText->SetAlpha(0.0f);
-    
-            game_over = false;
-            paused = false;
-            canRestart = false;
-        }
+        this->gameOverText->SetAlpha(0.0f);
+
+        game_over = false;
+        paused = false;
+        canRestart = false;
+        
+        entity_behaviors::Behavior::GetBehavior<entity_behaviors::Waiter>("Waiter", this->behaviors)->canMove = true;
+        
     }
 
     else if (!started)
     {
 
-        if (this->context->inputs->isDown)
+        if (this->context.inputs->isDown)
         {
 
             #ifdef __EMSCRIPTEN__
@@ -164,7 +165,7 @@ void MeatballMadness::Update()
                     System::Audio::play("music", true);
             #endif
 
-            entity_behaviors::Behavior::GetBehavior<Waiter>(this->behaviors)->canMove = true;
+            entity_behaviors::Behavior::GetBehavior<entity_behaviors::Waiter>("Waiter", this->behaviors)->canMove = true;
             
             started = true;
         }
@@ -189,7 +190,7 @@ void MeatballMadness::Update()
                 auto meatball = *it;
 
                 if (!meatball.get())
-                    return;
+                    continue;
 
                 //score point
 
@@ -197,7 +198,7 @@ void MeatballMadness::Update()
 
                     meatball->m_alive = false;
 
-                    Game::RemoveFromVector(this->meatballs, meatball);
+                    System::Game::DestroyEntity(meatball);
 
                     score += 1;
 
@@ -251,14 +252,9 @@ void MeatballMadness::Update()
                     );
                 }
 
-                else {   
-
-                    const float fX = meatball->GetData<float>("velX");
-                    const int fY = meatball->GetData<int>("velY");
-
-                    meatball->bodies[0].first->ApplyForceToCenter(b2Vec2(fX, fY), true);
-                    meatball->m_rotation -= System::Utils::floatBetween(5.0f, 13.0f);
-                }
+                 else   
+                    meatball->m_rotation -= System::Utils::floatBetween(5.0f, 15.0f);
+                
             }
         }
 
@@ -272,9 +268,8 @@ void MeatballMadness::Update()
                 this->scoreText->content = "SCORE: " + std::to_string(this->score);
                 this->scoreText->SetDepth(entity->m_depth + 1);
             }
-
             
-            for (const auto& button : System::Application::game->virtual_buttons)
+            for (const auto& button : System::Game::virtual_buttons)
                 if (button)
                     button->SetDepth(entity->m_depth + 1);
 
@@ -371,43 +366,47 @@ void MeatballMadness::Run()
 
     //sprites
 
-    auto background = Game::CreateSprite("background", 450.0f, 280.0f);
+    auto background = System::Game::CreateSprite("background", 450.0f, 280.0f);
     background->SetScale(2.5f, 2.42f);
+    background->SetDepth(0);
 
-    auto patron = Game::CreateSprite("patron", 165.0f, 640.0f);               
+    auto patron = System::Game::CreateSprite("patron", 165.0f, 640.0f);               
     patron->SetScale(3.0f);
     patron->SetAnimation("idle");
+    patron->SetDepth(1);
 
-    this->chef = Game::CreateSprite("chef", 1250.0f, 640.0f);
+    this->chef = System::Game::CreateSprite("chef", 1250.0f, 640.0f);
     this->chef->SetScale(2.0f);
     this->chef->SetFrame(2);
+    this->chef->SetDepth(1);
 
     //player
 
-    this->player = Game::CreateSprite("waiter", 450.0f, 760.0f, 1, 2.5);
+    this->player = System::Game::CreateSprite("waiter", 450.0f, 760.0f, 1, 2.5);
+    this->player->SetDepth(1);
 
     this->player->bodies.push_back({ Physics::CreateDynamicBody("box", 450.0f, 760.0f, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 70.0f } });
     this->player->bodies[0].first->SetFixedRotation(true);
 
-    Game::CreateBehavior<Waiter>(this->player, this);
-    this->playerHitBox = Physics::CreateDynamicBody("box", 0.0f, 0.0f, 40.0f, 10.0f, true, 1);
+    System::Game::CreateBehavior<entity_behaviors::Waiter>(this->player, this);
+    this->playerHitBox = Physics::CreateDynamicBody("box", 0.0f, 0.0f, 40.0f, 10.0f, true, 1);  
 
     //UI
 
-    this->scoreText = Game::CreateText("", 30.0f, -10.0f);
+    this->scoreText = System::Game::CreateText("", 30.0f, -10.0f);
     this->scoreText->SetScale(3.0f);
-    this->scoreText->SetTint(glm::vec3(1.0f, 1.0f, 0.0f));
+    this->scoreText->SetTint({1.0f, 1.0f, 0.0f});
 
-    this->gameOverText = Game::CreateText("GAME OVER", 500.0f, 300.0f);
+    this->gameOverText = System::Game::CreateText("GAME OVER", 500.0f, 300.0f);
     this->gameOverText->SetScale(5.0f);
     this->gameOverText->SetTint({1.0f, 0.0f, 0.0f});
     this->gameOverText->SetAlpha(0.0f);
 
-    this->menuText = Game::CreateText("MEATBALL MADNESS", 290.0f, 300.0f);
+    this->menuText = System::Game::CreateText("MEATBALL MADNESS", 290.0f, 300.0f);
     this->menuText->SetScale(7.0f);
     this->menuText->SetTint({1.0f, 0.5f, 0.0f});
 
-    this->creditsText = Game::CreateText("DEVELOPED BY PASTABOSS ENTERPRISE", 360.0f, 495.0f);
+    this->creditsText = System::Game::CreateText("DEVELOPED BY PASTABOSS ENTERPRISE", 360.0f, 495.0f);
     this->creditsText->SetScale(3.0f);
     this->creditsText->SetTint({1.0f, 0.5f, 0.0f});
 
@@ -416,15 +415,15 @@ void MeatballMadness::Run()
     if (System::Application::isMobile)
     {
 
-        System::Application::game->virtual_buttons = {
+        System::Game::virtual_buttons = {
 
-            Game::CreateUI("arrow_button", 130.0f, 500.0f), //left
-            Game::CreateUI("arrow_button", 250.0f, 500.0f), //right
-            Game::CreateUI("circle_button", 1400.0f, 500.0f) //action
+            System::Game::CreateUI("arrow_button", 130.0f, 500.0f), //left
+            System::Game::CreateUI("arrow_button", 250.0f, 500.0f), //right
+            System::Game::CreateUI("circle_button", 1400.0f, 500.0f) //action
 
         };
             
-        System::Application::game->virtual_buttons[1]->SetRotation(180);
+        System::Game::virtual_buttons[1]->SetRotation(180);
 
     }
 
@@ -444,9 +443,15 @@ void MeatballMadness::GameOver()
     game_over = true;
     paused = true;
 
+    entity_behaviors::Behavior::GetBehavior<entity_behaviors::Waiter>("Waiter", this->behaviors)->canMove = false;
+    this->player->StopAnimation();
+    this->player->SetFrame(1);
+    this->player->SetVelocityX(0);
+
     this->gameOverText->SetAlpha(1.0f);  
 
     this->chef->SetFlipX(false);
+    this->chef->StopAnimation();
     this->chef->SetFrame(2);
 
     System::Audio::play("error");
@@ -462,7 +467,7 @@ void MeatballMadness::Reset()
 {
 
     for (auto& meatball : this->meatballs)
-        DestroyEntity(meatball);
+        System::Game::DestroyEntity(meatball);
 
     this->meatballs.clear(); 
     
@@ -472,7 +477,7 @@ void MeatballMadness::Reset()
     chefMoveLeft = true;
     chefMoveRight = false;
 
-    System::Application::game->time->delayedCall(3000, [&]() { canRestart = true; });
+    Time::delayedCall(2000, [&]() { canRestart = true; });
 
 }
 
@@ -531,9 +536,11 @@ int main(int argc, char* args[])
 
     //main application process
 
-    Game game;
-    
-    Game::LoadScene<MeatballMadness>(&game);
+    System::Game game;
+
+    System::Application::name = "MEATBALL MADNESS!";
+
+    System::Game::LoadScene<MeatballMadness>(&game);
 
     System::Application app { &game }; 
 

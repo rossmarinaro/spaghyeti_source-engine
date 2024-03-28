@@ -3,7 +3,7 @@
 #include "../../../../build/include/app.h"
 
 using namespace System;
-
+using namespace editor;
 
 static void HelpMarker(const char* desc)
 {
@@ -250,6 +250,10 @@ void GUI::RenderDockSpace()
             ShowMenu();
             ImGui::EndMenu();
         }
+
+        ImGui::SameLine();
+
+        ImGui::Text(("Scene: " + Editor::events.currentScene).c_str());
 
     ImGui::End();
 

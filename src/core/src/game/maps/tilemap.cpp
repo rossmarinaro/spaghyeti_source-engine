@@ -30,7 +30,9 @@ void MapManager::CreateLayer (
 
     if (!data.size()) {
 
-        std::cout << "Tilemap: layer data not found.\n";
+        #if DEVELOPMENT == 1
+            std::cout << "Tilemap: layer data not found.\n";
+        #endif
 
         return;
     }
@@ -96,7 +98,9 @@ void MapManager::CreateLayer (
 
     app::game->maps->layers.push_back(layer);
 
-    std::cout << "Tilemap: Initialized layer: " + (std::string)data_key + "\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Tilemap: Initialized layer: " + (std::string)data_key + "\n";
+    #endif
 
 }
 
@@ -122,7 +126,9 @@ void MapManager::RemoveLayer(const std::string& key)
             return strcmp(t->type, "tile") == 0 && t->ID == key; }), 
                 app::game->entities.end());
 
-    std::cout << "Tilemap: layer " + key + " cleared.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Tilemap: layer " + key + " cleared.\n";
+    #endif
 
 }
 
@@ -140,6 +146,8 @@ void MapManager::ClearMap()
             return strcmp(t->type, "tile") == 0; }), 
                 app::game->entities.end());
 
-    std::cout << "Tilemap: layers cleared.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Tilemap: layers cleared.\n";
+    #endif
 
 }

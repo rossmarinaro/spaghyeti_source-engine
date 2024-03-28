@@ -32,43 +32,47 @@
 
 /****** Base Editor *****/
 
-class Editor 
-{
+namespace editor {
 
-	public:
+	class Editor 
+	{
 
-		static inline int worldWidth = 2000, 
-						  worldHeight = 2000;
+		public:
 
-		static inline float gravityX = 0.0f,
-						    gravityY = 500.0f;
+			static inline int worldWidth = 2000, 
+							  worldHeight = 2000;
 
-		static inline bool globals_applied = false,
-						   gravity_continuous = true,
-						   gravity_sleeping = true;
+			static inline float gravityX = 0.0f,
+								gravityY = 500.0f;
 
-		static inline EventListener events;
-		
-		static inline Game* game;
-		
-		static inline std::vector<std::pair<std::string, std::string>> globals;
-		static inline std::vector<std::string> scenes;
-        static inline std::string selectedAsset;
-		static inline std::string platform = "Windows";
-        static inline std::string projectPath = "";
-		static inline std::string rootPath;
+			static inline bool globals_applied = false,
+							   gravity_continuous = true,
+							   gravity_sleeping = true;
 
-		Editor();
-		~Editor();
+			static inline EventListener events;
+			
+			static inline System::Game* game;
+			
+			static inline std::vector<std::pair<std::string, std::string>> globals;
+			static inline std::vector<std::string> scenes;
 
-		static void Log(const std::string& message);
-		static void Reset();
+			static inline std::string selectedAsset,
+									  platform = "Windows",
+									  projectPath = "",
+									  rootPath;
+
+			Editor();
+			~Editor();
+
+			static void Log(const std::string& message);
+			static void Reset();
 
 
-	private:
+		private:
 
-		static void Update();
-};
+			static void Update();
+	};
 
+}
 
 

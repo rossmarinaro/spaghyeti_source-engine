@@ -93,7 +93,9 @@ Inputs::Inputs()
 
     #endif
 
-    std::cout << "initialized inputs.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Inputs: initialized.\n";
+    #endif
 }
 
 
@@ -102,16 +104,6 @@ Inputs::Inputs()
 
 void Inputs::ProcessInput(GLFWwindow* window)
 {
-
-    this->isDown = this->m_left_click == true ||
-                   this->m_left == true ||
-                   this->m_right == true ||
-                   this->m_down == true ||
-                   this->m_up == true ||
-                   this->m_SHIFT == true ||
-                   this->m_TAB == true ||
-                   this->m_ENTER == true ||
-                   this->m_SPACE == true;
 
     //gamepad
 
@@ -124,7 +116,10 @@ void Inputs::ProcessInput(GLFWwindow* window)
     {
 
         glfwSetWindowShouldClose(window, true);
-        std::cout << "Application exit called.\n";
+
+        #if DEVELOPMENT == 1
+            std::cout << "Application exit called.\n";
+        #endif
 
         return;
     }
@@ -273,11 +268,15 @@ void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
 void Inputs::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 
-    if (action == GLFW_PRESS)
-        Application::game->inputs->SetKeyInputs(true, key, window);
+    if (action == GLFW_PRESS) {
+        Application::game->inputs->SetKeyInputs(true, key, window);  
+        Application::game->inputs->isDown = true;
+    }
 
-    if (action == GLFW_RELEASE)
-        Application::game->inputs->SetKeyInputs(false, key, window);
+    if (action == GLFW_RELEASE) {
+        Application::game->inputs->SetKeyInputs(false, key, window);  
+        Application::game->inputs->isDown = false;
+    }
 
 }
 
@@ -299,11 +298,15 @@ void Inputs::SetGamepadInputs(unsigned int joystick)
 
     const unsigned char* buttons = glfwGetJoystickButtons(joystick, &buttonCount);
 
-    if (GLFW_PRESS == buttons[0])
+    if (GLFW_PRESS == buttons[0]) {
+        this->isDown = true;
         this->m_ENTER = true;
+    }
 
-    else if (GLFW_RELEASE == buttons[0])
+    else if (GLFW_RELEASE == buttons[0]) {
+        this->isDown = false;
         this->m_ENTER = false;
+    }
 
     if (
         GLFW_PRESS == buttons[1] ||
@@ -396,8 +399,15 @@ void Inputs::input_callback(GLFWwindow* window, int input, int action, int mods)
         else
             Application::game->inputs->ResetControls();
     }
+
     else
        Application::game->inputs->ResetControls();
+
+    if (action == GLFW_PRESS)
+        Application::game->inputs->isDown = true;
+
+    if (action == GLFW_RELEASE)
+        Application::game->inputs->isDown = false;
 
 }
 
@@ -423,7 +433,9 @@ void Inputs::ShutDown()
             }
     }
 
-    std::cout << "inputs shutdown.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Inputs: shutdown.\n";
+    #endif
 }
 
 

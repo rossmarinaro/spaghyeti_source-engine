@@ -14,7 +14,9 @@ Camera::Camera():
     m_position(glm::vec2(0.0f, 0.0f)),
     m_backgroundColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f))
 {
-    std::cout << "Camera: initialized.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Camera: initialized.\n";
+    #endif
 }
 
 //--------------------------------

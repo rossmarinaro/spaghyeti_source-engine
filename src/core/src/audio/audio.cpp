@@ -31,8 +31,12 @@ void read_frames(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint3
 
     ma_decoder* pDecoder = (ma_decoder*)pDevice->pUserData; 
 
-    if (pDecoder == NULL) {
-        std::cout << "Audio: There was a problem decoding audio.\n";
+    if (pDecoder == NULL) 
+    {
+        #if DEVELOPMENT == 1
+            std::cout << "Audio: There was a problem decoding audio.\n";
+        #endif
+
         return;
     }
  
@@ -61,7 +65,9 @@ void process_audio(const char* key, bool loop, float volume)
 
     if (result != MA_SUCCESS) {
 
-        std::cout << "Audio: Failed to init sound.\n";
+        #if DEVELOPMENT == 1
+            std::cout << "Audio: Failed to init sound.\n";
+        #endif
 
         return;
     }
@@ -91,7 +97,9 @@ void process_audio(const char* key, bool loop, float volume)
     if (ma_device_init(NULL, &deviceConfig, loop ? &music_device : &sound_device) != MA_SUCCESS) 
     {
 
-        std::cout << "Audio: Failed to open playback device.\n";
+        #if DEVELOPMENT == 1
+            std::cout << "Audio: Failed to open playback device.\n";
+        #endif
         
         ma_decoder_uninit(loop ? &music_decoder : &sound_decoder);
         
@@ -101,7 +109,9 @@ void process_audio(const char* key, bool loop, float volume)
     if (ma_device_start(loop ? &music_device : &sound_device) != MA_SUCCESS) 
     {
 
-        std::cout << "Audio: Failed to start playback device.\n";
+        #if DEVELOPMENT == 1
+            std::cout << "Audio: Failed to start playback device.\n";
+        #endif
 
         ma_device_uninit(loop ? &music_device : &sound_device);
         ma_decoder_uninit(loop ? &music_decoder : &sound_decoder);
@@ -148,7 +158,9 @@ void System::Audio::stop()
     if (ma_device_get_state(&sound_device) == ma_device_state_started) 
         ma_data_source_set_looping(&sound_decoder, MA_FALSE);
 
-    std::cout << "Audio: audio stopped.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Audio: audio stopped.\n";
+    #endif
 
     musicPlaying = false;
 }

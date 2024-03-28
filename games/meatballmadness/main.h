@@ -7,7 +7,7 @@
 
 
 //game instance
-class MeatballMadness : public Scene {
+class MeatballMadness : public System::Scene {
 
     public: 
 
@@ -23,15 +23,17 @@ class MeatballMadness : public Scene {
         void Update() override;
 
         void MoveChef();
+        void ThrowMeatball();
         void GameOver();
         void Reset();
+
+        std::vector<std::shared_ptr<Sprite>> meatballs;
 
     private:
 
         int score, fails;
 
         b2Body* playerHitBox;
-        std::vector<std::shared_ptr<Sprite>> meatballs;
 
         std::shared_ptr<Text> menuText;  
         std::shared_ptr<Text> scoreText;

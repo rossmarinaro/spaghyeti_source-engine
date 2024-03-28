@@ -1,5 +1,6 @@
 #include "../../../../build/include/app.h"
-                                
+
+using namespace System;                           
   
 //------------------------- backend game layer functionality   
 
@@ -29,7 +30,7 @@ Game::Game()
 void Game::Boot()   
 {   
 
-    Game* game = System::Application::game;
+    Game* game = Application::game;
 
     game->text->Init(); 
 
@@ -51,15 +52,15 @@ void Game::Boot()
 
     game->currentScene->Preload();
 
-    System::Resources::Manager::RegisterAssets();
+    Resources::Manager::RegisterAssets();
 
     game->currentScene->Run(); 
 
-    System::Application::game->inputs->CreateCursor();
+    Application::game->inputs->CreateCursor();
 
-    glfwSetWindowTitle(System::Window::s_instance, System::Application::name.c_str());
+    glfwSetWindowTitle(Window::s_instance, Application::name.c_str());
 
-    std::cout << "Game: " + System::Application::name + " initialized.\n";
+    std::cout << "Game: " + Application::name + " initialized.\n";
 
     gameState = true;
        
@@ -72,7 +73,7 @@ void Game::Boot()
 void Game::StartScene(const std::string& key) 
 {
 
-    Game* game = System::Application::game;
+    Game* game = Application::game;
 
     auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](std::shared_ptr<Scene> scene) { return scene->key == key; });
 
@@ -90,7 +91,7 @@ void Game::StartScene(const std::string& key)
 
         game->currentScene->Preload();
 
-        System::Resources::Manager::RegisterAssets();
+        Resources::Manager::RegisterAssets();
 
         game->currentScene->Run();
     }
@@ -105,7 +106,7 @@ void Game::Exit()
 
     gameState = false;
 
-    Game* game = System::Application::game;
+    Game* game = Application::game;
 
     game->entities.clear();
 
@@ -145,7 +146,7 @@ void Game::UpdateFrame()
     if (!gameState)
         return;
 
-    Game* game = System::Application::game;
+    Game* game = Application::game;
 
     game->physics->Update();
 
@@ -162,7 +163,7 @@ void Game::UpdateFrame()
             
     //render input cursor
 
-    System::Application::game->inputs->RenderCursor();
+    Application::game->inputs->RenderCursor();
 
     //update behaviors, pass game process context to subclasses
 
@@ -196,57 +197,15 @@ void Game::UpdateFrame()
 void Game::DestroyUI()
 {
 
-    for (const auto& UI : System::Application::game->entities)
+    for (const auto& UI : Application::game->entities)
     {
-        std::vector<std::shared_ptr<Entity>>::iterator it = std::find(System::Application::game->entities.begin() - 1, System::Application::game->entities.end() - 1, UI);
+        std::vector<std::shared_ptr<Entity>>::iterator it = std::find(Application::game->entities.begin() - 1, Application::game->entities.end() - 1, UI);
 
-        if (it != System::Application::game->entities.end())
-            System::Application::game->entities.erase(it);
+        if (it != Application::game->entities.end())
+            Application::game->entities.erase(it);
 
         DestroyEntity(UI);
     }
-
-}
-
-
-//---------------------
-
-
-void Game::RemoveFromVector(std::vector<std::shared_ptr<Sprite>>& vector, std::shared_ptr<Sprite> sprite)
-{
-    
-    std::vector<std::shared_ptr<Sprite>>::iterator v_it = std::find(vector.begin() - 1, vector.end(), sprite);
-
-    if (v_it != vector.end())
-        vector.erase(v_it);
-
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(System::Application::game->entities.begin() - 1, System::Application::game->entities.end(), sprite);
-
-    if (it != System::Application::game->entities.end())
-        System::Application::game->entities.erase(it);
-
-    DestroyEntity(sprite);
-
-}
-
-
-//----------------------------
-
-
-void Game::RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::shared_ptr<Text> text)
-{
-
-    std::vector<std::shared_ptr<Text>>::iterator v_it = std::find(vector.begin() - 1, vector.end(), text);
-
-    if (v_it != vector.end())
-        vector.erase(v_it);
-
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(System::Application::game->entities.begin() - 1, System::Application::game->entities.end(), text);
-
-    if (it != System::Application::game->entities.end())
-        System::Application::game->entities.erase(it);
-
-    DestroyEntity(text);
 
 }
 
@@ -257,10 +216,10 @@ void Game::RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::sha
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
 
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(System::Application::game->entities.begin() - 1, System::Application::game->entities.end(), entity);
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(Application::game->entities.begin() - 1, Application::game->entities.end(), entity);
 
-    if (it != System::Application::game->entities.end())
-       System::Application::game->entities.erase(it);
+    if (it != Application::game->entities.end())
+       Application::game->entities.erase(it);
 
     entity->m_renderable = false;
 
@@ -300,7 +259,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
 
     sprite->SetScale(scale);
 
-    System::Application::game->entities.push_back(sprite);
+    Application::game->entities.push_back(sprite);
 
     return sprite;
 }
@@ -321,7 +280,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y,
     
     element->SetFrame(frame);
 
-    System::Application::game->entities.push_back(element);
+    Application::game->entities.push_back(element);
 
     return element;
 }
@@ -339,7 +298,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
     //ts->m_shader = Shader::GetShader("sprite_batch");
     ts->ReadSpritesheetData(); 
 
-    System::Application::game->entities.push_back(ts);
+    Application::game->entities.push_back(ts);
 
     return ts;
 
@@ -354,7 +313,7 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 
     auto text = std::make_shared<Text>(content, x, y); 
 
-    System::Application::game->entities.push_back(text);
+    Application::game->entities.push_back(text);
 
     return text;
 }
@@ -367,7 +326,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 {
     auto geom = std::make_shared<Geometry>(x, y, width, height);
 
-    System::Application::game->entities.push_back(geom);
+    Application::game->entities.push_back(geom);
 
     return geom;
 }
@@ -380,7 +339,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &st
 {
     auto geom = std::make_shared<Geometry>(x, y, start, end);
 
-    System::Application::game->entities.push_back(geom);
+    Application::game->entities.push_back(geom);
 
     return geom;
 }

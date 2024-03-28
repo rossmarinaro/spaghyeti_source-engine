@@ -1,35 +1,54 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Mar 25 20:25:49 2024
-IMGui Version:  @ Mon Mar 25 20:25:49 2024
-GUI launched. @ Mon Mar 25 20:25:49 2024
-Workspace reset. @ Mon Mar 25 20:25:54 2024
-sprite node Untitled created. @ Mon Mar 25 20:25:57 2024
-Animator component added. @ Mon Mar 25 20:25:57 2024
-Physics component added. @ Mon Mar 25 20:25:57 2024
-Script component added. @ Mon Mar 25 20:25:57 2024
-sprite node Untitled created. @ Mon Mar 25 20:25:57 2024
-sprite node Untitled created. @ Mon Mar 25 20:25:57 2024
-sprite node Untitled created. @ Mon Mar 25 20:25:57 2024
-sprite node Untitled created. @ Mon Mar 25 20:25:57 2024
-sprite node Untitled created. @ Mon Mar 25 20:25:57 2024
-Tilemap node Untitled created. @ Mon Mar 25 20:25:57 2024
-Physics component added. @ Mon Mar 25 20:25:57 2024
-Text node Untitled created. @ Mon Mar 25 20:25:57 2024
-Script component added. @ Mon Mar 25 20:25:57 2024
-Project scene2 opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Mon Mar 25 20:25:57 2024
-Project scene2 built successfully. @ Mon Mar 25 20:27:21 2024
-Sprite node player deleted. @ Mon Mar 25 20:27:21 2024
-Animator component removed. @ Mon Mar 25 20:27:21 2024
-Physics component removed. @ Mon Mar 25 20:27:21 2024
-Script component removed. @ Mon Mar 25 20:27:21 2024
-Sprite node background deleted. @ Mon Mar 25 20:27:21 2024
-Sprite node elf deleted. @ Mon Mar 25 20:27:21 2024
-Sprite node heart1 deleted. @ Mon Mar 25 20:27:21 2024
-Sprite node heart2 deleted. @ Mon Mar 25 20:27:21 2024
-Sprite node heart3 deleted. @ Mon Mar 25 20:27:21 2024
-Tilemap node map deleted. @ Mon Mar 25 20:27:22 2024
-Physics component removed. @ Mon Mar 25 20:27:22 2024
-Text node FPS deleted. @ Mon Mar 25 20:27:22 2024
-Script component removed. @ Mon Mar 25 20:27:22 2024
-GUI exited @ Mon Mar 25 20:27:22 2024
-Editor closed. @ Mon Mar 25 20:27:22 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Thu Mar 28 18:32:55 2024
+IMGui Version:  @ Thu Mar 28 18:32:56 2024
+GUI launched. @ Thu Mar 28 18:32:56 2024
+Workspace reset. @ Thu Mar 28 18:33:01 2024
+sprite node Untitled created. @ Thu Mar 28 18:33:04 2024
+Animator component added. @ Thu Mar 28 18:33:04 2024
+Physics component added. @ Thu Mar 28 18:33:04 2024
+Script component added. @ Thu Mar 28 18:33:04 2024
+sprite node Untitled created. @ Thu Mar 28 18:33:04 2024
+sprite node Untitled created. @ Thu Mar 28 18:33:04 2024
+sprite node Untitled created. @ Thu Mar 28 18:33:04 2024
+sprite node Untitled created. @ Thu Mar 28 18:33:04 2024
+sprite node Untitled created. @ Thu Mar 28 18:33:04 2024
+Tilemap node Untitled created. @ Thu Mar 28 18:33:04 2024
+Physics component added. @ Thu Mar 28 18:33:04 2024
+Text node Untitled created. @ Thu Mar 28 18:33:04 2024
+Script component added. @ Thu Mar 28 18:33:04 2024
+Project TestGame opened.
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Thu Mar 28 18:33:04 2024
+Animator component added. @ Thu Mar 28 18:33:08 2024
+Physics component added. @ Thu Mar 28 18:33:08 2024
+Script component added. @ Thu Mar 28 18:33:08 2024
+Physics component added. @ Thu Mar 28 18:33:08 2024
+Script component added. @ Thu Mar 28 18:33:08 2024
+Scene parsed. @ Thu Mar 28 18:33:08 2024
+Sprite node player deleted. @ Thu Mar 28 18:33:08 2024
+Animator component removed. @ Thu Mar 28 18:33:08 2024
+Physics component removed. @ Thu Mar 28 18:33:08 2024
+Script component removed. @ Thu Mar 28 18:33:08 2024
+Sprite node background deleted. @ Thu Mar 28 18:33:08 2024
+Sprite node elf deleted. @ Thu Mar 28 18:33:08 2024
+Sprite node heart1 deleted. @ Thu Mar 28 18:33:08 2024
+Sprite node heart2 deleted. @ Thu Mar 28 18:33:08 2024
+Sprite node heart3 deleted. @ Thu Mar 28 18:33:08 2024
+Tilemap node map deleted. @ Thu Mar 28 18:33:08 2024
+Physics component removed. @ Thu Mar 28 18:33:08 2024
+Text node FPS deleted. @ Thu Mar 28 18:33:08 2024
+Script component removed. @ Thu Mar 28 18:33:08 2024
+Project TestGame built successfully. @ Thu Mar 28 18:33:23 2024
+Sprite node player deleted. @ Thu Mar 28 18:33:29 2024
+Animator component removed. @ Thu Mar 28 18:33:29 2024
+Physics component removed. @ Thu Mar 28 18:33:29 2024
+Script component removed. @ Thu Mar 28 18:33:29 2024
+Sprite node background deleted. @ Thu Mar 28 18:33:29 2024
+Sprite node elf deleted. @ Thu Mar 28 18:33:29 2024
+Sprite node heart1 deleted. @ Thu Mar 28 18:33:29 2024
+Sprite node heart2 deleted. @ Thu Mar 28 18:33:29 2024
+Sprite node heart3 deleted. @ Thu Mar 28 18:33:29 2024
+Tilemap node map deleted. @ Thu Mar 28 18:33:29 2024
+Physics component removed. @ Thu Mar 28 18:33:29 2024
+Text node FPS deleted. @ Thu Mar 28 18:33:29 2024
+Script component removed. @ Thu Mar 28 18:33:29 2024
+GUI exited @ Thu Mar 28 18:33:29 2024
+Editor closed. @ Thu Mar 28 18:33:29 2024

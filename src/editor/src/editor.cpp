@@ -5,12 +5,12 @@
 
 #include "./editor.h"
 #include "./assets/assets.h"
-#include "../src/gui/gui.h"
-#include "../src/gui/nodes/node.h"
+#include "./gui/gui.h"
+#include "./nodes/node.h"
 #include "../../../build/include/app.h"
 
 using namespace /* SPAGHYETI_CORE */ System;
-
+using namespace editor;
 
 //-----------------------------
 
@@ -54,7 +54,7 @@ Editor::Editor()
 
     //init base sandox scene
 
-    Game::LoadScene<Scene>(game);
+    Game::LoadScene<System::Scene>(game);
 
     Application::name = "SPAGHYETITOR";
 

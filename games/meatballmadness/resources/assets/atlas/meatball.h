@@ -7,10 +7,10 @@ namespace Assets {
 
         //x, y, w, h
 
-        std::vector<std::array<int, 4>> meatball = { 
+        std::vector<std::array<int, 6>> meatball = { 
 
-            { 0, 0, 15, 16 },
-            { 1, 0, 15, 16 }
+            { 0, 0, 15, 16, 1, 1 },
+            { 15, 0, 15, 16, 1, 1 }
         };
 
     } 

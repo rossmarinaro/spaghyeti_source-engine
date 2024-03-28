@@ -1,8 +1,10 @@
 #include "./gui.h"
 #include "../editor.h"
-#include "../gui/nodes/node.h"
+#include "../nodes/node.h"
 #include "../assets/assets.h"
 #include "../../../../build/include/app.h"
+
+using namespace editor;
 
 //----------------------- shaders
 

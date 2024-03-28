@@ -15,7 +15,7 @@ using namespace System;
 #ifdef _WIN32
 
 	LONG UnhandledExceptionFilter(EXCEPTION_POINTERS *ExceptionInfo) {
-		Editor::Log("Crash Report Exception Record: " + std::to_string(ExceptionInfo->ExceptionRecord->ExceptionCode));
+		editor::Editor::Log("Crash Report Exception Record: " + std::to_string(ExceptionInfo->ExceptionRecord->ExceptionCode));
 	}
 
 #endif
@@ -37,7 +37,7 @@ int main(int argc, char* args[])
 	#endif
 	
 	Application app;
-	Editor editor;
+	editor::Editor editor;
 
 	return 0; 
 }

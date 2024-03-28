@@ -32,11 +32,15 @@ namespace System {
 
 			static inline int intBetween(int min, int max) { return rand() % (min - max + 1) + min; } 
 			
-			static inline bool str_includes(const std::string &str, const std::string &sub) { 
-				return str.find(sub) != std::string::npos; 
+			static inline bool str_includes(const std::string& str, const std::string& sub) 
+			{ 
+				std::string sub_upper = sub;
+				transform(sub_upper.begin(), sub_upper.end(), sub_upper.begin(), ::toupper); 
+				
+				return str.find(sub) != std::string::npos || str.find(sub_upper) != std::string::npos; 
 			}
 
-			static inline bool str_endsWith(std::string_view str, std::string_view suff) {
+			static inline bool str_endsWith(const std::string_view& str, const std::string_view& suff) {
 				return str.size() >= suff.size() && 0 == str.compare(str.size() - suff.size(), suff.size(), suff);
 			}
 

@@ -4,13 +4,18 @@
 void Text::Init()
 {
 
-    if (!gltInit()) {
-        std::cout << stderr << "Text: Failed to initialize text: " << EXIT_FAILURE << "\n";
+    if (!gltInit()) 
+    {
+        #if DEVELOPMENT == 1
+            std::cout << stderr << "Text: Failed to initialize text: " << EXIT_FAILURE << "\n";
+        #endif
 
         return;
 	}
 
-    std::cout << "Text: initialized.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Text: initialized.\n";
+    #endif
 }
 
 
@@ -21,7 +26,9 @@ void Text::ShutDown() {
 
     gltTerminate();
 
-    std::cout << "Text: uninitialized.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Text: uninitialized.\n";
+    #endif
 }
 
 
@@ -40,7 +47,9 @@ Text::Text(std::string content, float x, float y, float scale, glm::vec3 tint)
 
     this->SetText(content);
 
-    std::cout << "Text: text " + (std::string)content + " created.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Text: text " + (std::string)content + " created.\n";
+    #endif
 
 }
 
@@ -52,7 +61,9 @@ Text::~Text() {
 
     gltDeleteText(this->buffer);
 
-    std::cout << "Text: text deleted.\n";
+    #if DEVELOPMENT == 1
+        std::cout << "Text: text deleted.\n";
+    #endif
 
 }
 

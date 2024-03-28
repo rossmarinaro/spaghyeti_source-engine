@@ -13,72 +13,74 @@
 #include "./scene.h"
 #include "./inputs.h"
 
-//game base class
-class Game {
+namespace System {
+    
+    //game base class
+    class Game {
 
-    public:  
- 
-        Time* time;
-        Text* text;
-        Camera* camera;
-        Physics* physics; 
-        Inputs* inputs;
+        public:  
+    
+            Time* time;
+            Text* text;
+            Camera* camera;
+            Physics* physics; 
+            Inputs* inputs;
 
-        Game();
-        virtual ~Game() = default;
+            Game();
+            virtual ~Game() = default;
 
-        static inline MapManager* maps;
+            static inline MapManager* maps;
 
-        static void Boot();
-        static void Exit();
-        static void UpdateFrame();
-        static void StartScene(const std::string& key);
+            static void Boot();
+            static void Exit();
+            static void UpdateFrame();
+            static void StartScene(const std::string& key);
 
-        static std::shared_ptr<Sprite> CreateUI(const std::string& key, float x, float y, int frame = 0);
-        static std::shared_ptr<Sprite> CreateSprite(const std::string& key, float x, float y, int frame = 0, float scale = 1.0f);
-        static std::shared_ptr<Sprite> CreateTileSprite(const std::string& key, float x, float y, int frame);
-        static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y);
-        static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
-        static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2& start, const glm::vec2& end);
-        
-        template <typename T>
-        static inline void CreateBehavior(std::shared_ptr<Entity> entity, Scene* scene) {
+            static std::shared_ptr<Sprite> CreateUI(const std::string& key, float x, float y, int frame = 0);
+            static std::shared_ptr<Sprite> CreateSprite(const std::string& key, float x, float y, int frame = 0, float scale = 1.0f);
+            static std::shared_ptr<Sprite> CreateTileSprite(const std::string& key, float x, float y, int frame);
+            static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y);
+            static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
+            static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2& start, const glm::vec2& end);
+            
+            template <typename T>
+            static inline void CreateBehavior(std::shared_ptr<Entity> entity, Scene* scene) {
 
-            auto behavior = std::make_shared<T>(entity);
-            scene->behaviors.push_back(behavior); 
-        }
+                auto behavior = std::make_shared<T>(entity);
+                scene->behaviors.push_back(behavior); 
+            }
 
-        template <typename T>
-        static inline void LoadScene(Game* game) {
-            auto scene = std::make_shared<T>(game->context);
-            game->scenes.push_back(scene);
-        }
+            template <typename T>
+            static inline void LoadScene(Game* game) {
+                auto scene = std::make_shared<T>(game->context);
+                game->scenes.push_back(scene);
+            }
 
-        static void DestroyEntity(std::shared_ptr<Entity> entity);
-        static void DestroyUI();
+            static void DestroyEntity(std::shared_ptr<Entity> entity);
+            static void DestroyUI();
 
-        static void RemoveFromVector(std::vector<std::shared_ptr<Sprite>>& vector, std::shared_ptr<Sprite> sprite);
-        static void RemoveFromVector(std::vector<std::shared_ptr<Text>>& vector, std::shared_ptr<Text> text);
+            //render queues
 
-        //render queues
+            std::vector<std::shared_ptr<Entity>> entities;
+            std::vector<std::shared_ptr<Scene>> scenes;
+            std::shared_ptr<Scene> currentScene;
 
-        std::vector<std::shared_ptr<Entity>> entities;
-        std::vector<std::shared_ptr<Scene>> scenes;
-        std::shared_ptr<Scene> currentScene;
+            //ui
+    
+            static inline std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
+            std::shared_ptr<Geometry> cursor = nullptr;
 
-        //ui
- 
-        std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
-        std::shared_ptr<Geometry> cursor = nullptr;
+            static inline bool UIListenForInput(int index) {
+                return virtual_buttons[index]->m_tint != glm::vec3(1.0f);
+            }
+            
+        private:
 
-        inline bool UIListenForInput(int index) {
-            return this->virtual_buttons[index]->m_tint != glm::vec3(1.0f);
-        }
-        
-    private:
+            Process::Context context;
 
-        Process::Context context;
+            static inline bool gameState = false;
+    }; 
 
-        static inline bool gameState = false;
-}; 
+}
+
 

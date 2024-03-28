@@ -7,11 +7,11 @@ namespace Assets {
 
         //x, y, w, h
 
-        std::vector<std::array<int, 4>> waiter = { 
+        std::vector<std::array<int, 6>> waiter = { 
 
-            { 0, 0, 70, 70 },
-            { 1, 0, 70, 70 },
-            { 2, 0, 70, 70 },
+            { 0, 0, 70, 70, 1, 1 },
+            { 70, 0, 70, 70, 1, 1 },
+            { 140, 0, 70, 70, 1, 1 },
 
         }; 
 
