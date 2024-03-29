@@ -1,5 +1,8 @@
 #include <bitset>
-#include <bits/stdc++.h>
+
+#ifndef __EMSCRIPTEN__
+    #include <bits/stdc++.h>
+#endif
 
 #include "../../../../../build/include/tilemap.h"
 #include "../../../../../build/include/app.h"
@@ -71,14 +74,16 @@ void MapManager::CreateLayer (
                     //1=flipX, 2=flipY, 3=diagonal
 
                     std::bitset<32> bin(tileType);
-                    const char* flags = bin.to_string().substr(0, 3).c_str();
-                    std::string bin_reset = bin.to_string();
+
+                    std::string flags = bin.to_string().substr(0, 3),
+                                bin_reset = bin.to_string();
 
                     bin_reset[0] = '0';
                     bin_reset[1] = '0';
                     bin_reset[2] = '0';
                   
-                    tileType = System::Utils::BinToDec(atoi(bin_reset.c_str()));                   
+                    tileType = System::Utils::BinToDec(atoi(bin_reset.c_str()));       
+                                
                     flipX = static_cast<std::string>(flags).substr(0, 1) == "1";
                     flipY = static_cast<std::string>(flags).substr(1, 1) == "1";
                 }

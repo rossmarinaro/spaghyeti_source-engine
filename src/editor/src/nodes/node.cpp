@@ -9,7 +9,15 @@
 using namespace editor;
 
 
-Node::Node(const std::string &id, std::string type, std::string name): 
+Node::Node(const std::string& type): 
+    m_type(type) {}
+
+
+
+//-------------------------------
+
+
+Node::Node(const std::string &id, const std::string& type, const std::string& name): 
     m_name(name),
     m_ID(id),
     m_type(type),
@@ -23,7 +31,7 @@ Node::Node(const std::string &id, std::string type, std::string name):
     rotation(0.0f)
 {
 
-    for (const auto &node : nodes)
+    for (const auto& node : nodes)
         if (node->m_name == this->m_name)
             this->m_name = this->m_name + "_" + std::to_string(count); 
 }

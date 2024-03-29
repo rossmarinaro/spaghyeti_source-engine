@@ -31,25 +31,23 @@ void System::Application::Init(Game* layer)
 //----------------------------- 
 
 
-void System::Application::Update(Camera* camera) 
+void System::Application::Update() 
 {
 
-    Renderer::Update(camera);
+    if (game == nullptr)
+        return;
 
-    #if STANDALONE == 1 
+    Renderer::Update(game->camera);
 
-        Time::Update(glfwGetTime()); 
-  
-        glfwPollEvents();  
-        
-        if (game != nullptr)
-            game->inputs->ProcessInput(Window::s_instance);
+    Time::Update(glfwGetTime()); 
 
-        glViewport(0, 0, Window::m_width, Window::m_height);
-        glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback); 
-        glfwSwapBuffers(Window::s_instance);
+    glfwPollEvents();  
+    
+    game->inputs->ProcessInput(Window::s_instance);
 
-    #endif
+    glViewport(0, 0, Window::m_width, Window::m_height);
+    glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback); 
+    glfwSwapBuffers(Window::s_instance);
 
 }
 
@@ -87,7 +85,7 @@ System::Application::Application(Game* layer)
         #else
 
             while (!glfwWindowShouldClose(Window::s_instance))
-                Update(game->camera);
+                Update();
     
         #endif
  

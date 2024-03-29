@@ -6,7 +6,7 @@
 
 using namespace editor;
 
-EmptyNode::EmptyNode(const std::string &id): 
+EmptyNode::EmptyNode(const std::string& id): 
     Node(id, "Empty"),
         rectWidth(0.0f),
         rectHeight(0.0f),

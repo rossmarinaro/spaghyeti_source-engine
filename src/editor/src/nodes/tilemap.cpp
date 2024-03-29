@@ -9,6 +9,7 @@ using namespace editor;
 TilemapNode::TilemapNode(const std::string &id): 
     Node(id, "Tilemap"),
         layersApplied(false),
+        mapApplied(false),
         layer(1),
         map_width(10),
         map_height(10),
@@ -20,9 +21,11 @@ TilemapNode::TilemapNode(const std::string &id):
 //---------------------------
  
 
-TilemapNode::~TilemapNode() {
+TilemapNode::~TilemapNode() 
+{
 
-    MapManager::ClearMap();
+    if (this->mapApplied)
+        MapManager::ClearMap();
 
     Editor::Log("Tilemap node " + this->m_name + " deleted.");
 }
@@ -48,18 +51,21 @@ void TilemapNode::Reset(const char* component_type)
 
         this->bodies.clear();
     }
+
+    this->mapApplied = false;
 }
 
 
 //---------------------------
 
 
-void TilemapNode::ApplyTilemap()
+void TilemapNode::ApplyTilemap(bool clearPrevious)
 {
 
-    MapManager::ClearMap(); 
+    if (clearPrevious)
+        MapManager::ClearMap();
 
-    //for every layer, iterate over widths and heights, decrementing height each iteration by 1 until 0
+    //for every layer, iterate over widths and heights by index, decrementing height each iteration by 1 until 0
 
     for (int i = 0; i < this->layer; i++) 
     { 
@@ -81,12 +87,15 @@ void TilemapNode::ApplyTilemap()
                     w++;
                 }
             }
+            
+        if (!clearPrevious)
+            return;
 
         //load atlas frames from csv offsets
 
-        std::string key = this->layers[i][0];
-        std::string path = this->layers[i][1];
-        std::string texture = this->layers[i][2];
+        std::string key = this->layers[i][0],
+                    path = this->layers[i][1],
+                    texture = this->layers[i][2];
 
         System::Resources::Manager::LoadFrames(texture, this->offset);
         System::Resources::Manager::LoadFile(key.c_str(), path.c_str());
@@ -99,19 +108,11 @@ void TilemapNode::ApplyTilemap()
 
             System::Resources::Manager::LoadTilemap(key, data);
 
-            MapManager::CreateLayer(
-                key.c_str(), 
-                texture.c_str(), 
-                this->map_width, 
-                this->map_height, 
-                this->tile_width,  
-                this->tile_height, 
-                this->depth[i]
-            );
+            MapManager::CreateLayer(key.c_str(), texture.c_str(), this->map_width, this->map_height, this->tile_width, this->tile_height, this->depth[i]);
 
-           this->layersApplied = true;
+            this->layersApplied = true;
+            this->mapApplied = true;
         }
-
     }
 }
 

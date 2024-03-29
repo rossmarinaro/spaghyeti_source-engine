@@ -18,7 +18,7 @@ using namespace editor;
 void Editor::Update()
 {
 
-    Application::Update(game->camera);
+    Renderer::Update(game->camera);
 
     if (GUI::grid)
         GUI::grid->Render();

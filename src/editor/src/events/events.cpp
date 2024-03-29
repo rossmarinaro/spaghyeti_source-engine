@@ -216,7 +216,7 @@ bool EventListener::SaveProject(bool saveAs)
 
     try {
 
-        std::string project_root = Editor::projectPath + currentProject + ".spaghyeti";
+        std::string project_root = Editor::projectPath + currentScene + ".spaghyeti";
 
         std::ifstream file(project_root);
 
@@ -423,7 +423,6 @@ void EventListener::InsertTo(const std::string &code, const std::string &directo
 void EventListener::BuildAndRun()
 {
 
-#ifdef _WIN32
 
     //temp files: asset and command lists
 
@@ -480,6 +479,10 @@ void EventListener::BuildAndRun()
                     Editor::Log("There was a problem parsing scene.");
 
                 JSON.close();
+                
+                //remove temp json file
+
+                remove(tmp.c_str()); 
             }
         }
 
@@ -520,21 +523,20 @@ void EventListener::BuildAndRun()
                     global_queue << "   " + type + " " + var + ";\n";
                 }
 
-            glm::vec4 backgroundColor = Editor::game->camera->GetBackgroundColor(); 
 
-            command_queue << "   this->SetWorldDimensions(" + std::to_string(Editor::worldWidth) + ", " + std::to_string(Editor::worldHeight) + ");\n";
+            command_queue << "   this->SetWorldDimensions(" + std::to_string(target.second.worldWidth) + ", " + std::to_string(target.second.worldHeight) + ");\n";
 
-            command_queue << "   this->context.camera->SetBounds(" + std::to_string(Editor::game->camera->currentBoundsWidthBegin) + ", " + std::to_string(Editor::game->camera->currentBoundsWidthEnd) + ", " + std::to_string(Editor::game->camera->currentBoundsHeightBegin) + ", " + std::to_string(Editor::game->camera->currentBoundsHeightEnd) + ");\n";
-            command_queue << "   this->context.camera->SetBackgroundColor({ " + std::to_string(backgroundColor.x) + ", " + std::to_string(backgroundColor.y) + ", " + std::to_string(backgroundColor.z) + ", " + std::to_string(backgroundColor.w) + " });\n";
-            command_queue << "   this->context.camera->SetZoom(" + std::to_string(Editor::game->camera->GetZoom()) + ");\n";
-            command_queue << "   this->context.camera->SetPosition({ " + std::to_string(Editor::game->camera->m_position.x) + ", " + std::to_string(Editor::game->camera->m_position.y) + " });\n";
+            command_queue << "   this->context.camera->SetBounds(" + std::to_string(target.second.currentBoundsWidthBegin) + ", " + std::to_string(target.second.currentBoundsWidthEnd) + ", " + std::to_string(target.second.currentBoundsHeightBegin) + ", " + std::to_string(target.second.currentBoundsHeightEnd) + ");\n";
+            command_queue << "   this->context.camera->SetBackgroundColor({ " + std::to_string(target.second.cameraBackgroundColor.x) + ", " + std::to_string(target.second.cameraBackgroundColor.y) + ", " + std::to_string(target.second.cameraBackgroundColor.z) + ", " + std::to_string(target.second.cameraBackgroundColor.w) + " });\n";
+            command_queue << "   this->context.camera->SetZoom(" + std::to_string(target.second.cameraZoom) + ");\n";
+            command_queue << "   this->context.camera->SetPosition({ " + std::to_string(target.second.cameraPosition.x) + ", " + std::to_string(target.second.cameraPosition.y) + " });\n";
         
-            std::string phys_isCont = Editor::gravity_continuous ? "true" : "false",
-                        phys_isSleeping = Editor::gravity_sleeping ? "true" : "false";
+            std::string phys_isCont = target.second.gravity_continuous ? "true" : "false",
+                        phys_isSleeping = target.second.gravity_sleeping ? "true" : "false";
 
             command_queue << "   this->context.physics->continuous = " + phys_isCont + ";\n";
             command_queue << "   this->context.physics->sleeping = " + phys_isSleeping + ";\n";
-            command_queue << "   this->context.physics->SetGravity(" + std::to_string(Editor::gravityX) + ", " + std::to_string(Editor::gravityY) + ");\n";
+            command_queue << "   this->context.physics->SetGravity(" + std::to_string(target.second.gravityX) + ", " + std::to_string(target.second.gravityY) + ");\n";
 
             for (const auto& asset : AssetManager::loadedAssets)
             {
@@ -563,118 +565,109 @@ void EventListener::BuildAndRun()
 
                     auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
-                    if (sn->spriteHandle != nullptr)
+                    //load frames
+
+                    std::ostringstream frame_oss;
+                    std::vector<std::string> framesToLoad;
+
+                    for (const auto& frame : sn->frames)
+                        framesToLoad.push_back("{" + std::to_string(frame.x) + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + ", " + std::to_string(frame.factorX) + ", " + std::to_string(frame.factorY) + "}");
+
+                    if (!framesToLoad.empty()) 
                     {
+                        std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
+                        frame_oss << framesToLoad.back();
 
-                        //load frames
-
-                        std::ostringstream frame_oss;
-                        std::vector<std::string> framesToLoad;
-
-                        for (const auto& frame : sn->frames)
-                            framesToLoad.push_back("{" + std::to_string(frame.x) + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + ", " + std::to_string(frame.factorX) + ", " + std::to_string(frame.factorY) + "}");
-
-                        if (!framesToLoad.empty()) 
-                        {
-                            std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
-                            frame_oss << framesToLoad.back();
-
-                            if (sn->frames.size() > 1)
-                                asset_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->spriteHandle->m_key + "\", {" + frame_oss.str() + "});\n";
-                        }
-
-                        //load animations
-
-                        std::ostringstream anim_oss;
-                        std::vector<std::string> animsToLoad;
-
-                        for (const auto& anim : sn->animations)
-                            animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
-
-                        if (!animsToLoad.empty()) {
-                            std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
-                            anim_oss << animsToLoad.back();
-
-                            asset_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->spriteHandle->m_key + "\", {" + anim_oss.str() + "});\n";
-                        }
-
-                        global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n\t";
-
-                        command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateSprite(\"" + sn->spriteHandle->m_key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
-                                                
-                        //sprite configurations
-
-                        command_queue << "   this->sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->spriteHandle->m_scale.x) + ", " + std::to_string(sn->spriteHandle->m_scale.y) + ");\n";
-                        command_queue << "   this->sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ");\n";
-                        command_queue << "   this->sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->spriteHandle->m_rotation) + ");\n";
-                        command_queue << "   this->sprite_" + node->m_ID + "->SetTint({ " + std::to_string(sn->spriteHandle->m_tint.x) + ", " + std::to_string(sn->spriteHandle->m_tint.y) + ", " + std::to_string(sn->spriteHandle->m_tint.z) + " });\n";
-                        command_queue << "   this->sprite_" + node->m_ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
-                        command_queue << "   this->sprite_" + node->m_ID + "->SetFlip(" + std::to_string(sn->spriteHandle->m_flipX) + ", " + std::to_string(sn->spriteHandle->m_flipY) + ");\n";
-
-                        std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
-
-                        command_queue << "   this->sprite_" + node->m_ID + "->m_texture.Filter_Min = " + filtering + ";\n";
-                        command_queue << "   this->sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n";
-
-                        if (sn->lock_in_place)
-                            update_queue << "   this->sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"sprite_billboard\");\n";
-
-                        //physics bodies
-
-                        if (sn->HasComponent("Physics"))
-                        {
-                            for (int i = 0; i < sn->bodies.size(); i++) 
-                            {
-        
-                                if (sn->bodies[i].second == "static")
-                                    command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateStaticBody(" + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
-                                
-                                if (sn->bodies[i].second == "dynamic")
-                                    command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->spriteHandle->m_position.x) + ", " + std::to_string(sn->spriteHandle->m_position.y) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n";
-                            }    
-
-                            command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
-
-                        }
-                            
-                        //animator
-
-                        if (sn->HasComponent("Animator") && sn->spriteHandle->m_anims.size()) {
-                            command_queue << "   this->sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->spriteHandle->m_key + "\");\n";
-                            command_queue << "   this->sprite_" + node->m_ID + "->ReadSpritesheetData();\n"; 
-                        } 
-
-                        //shader
-
-                        if (sn->HasComponent("Shader") && sn->shader.first.length()) 
-                            command_queue << "   this->sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + sn->shader.first + "\");\n";
-
-
+                        if (sn->frames.size() > 1)
+                            asset_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->key + "\", {" + frame_oss.str() + "});\n";
                     }
 
+                    //load animations
+
+                    std::ostringstream anim_oss;
+                    std::vector<std::string> animsToLoad;
+
+                    for (const auto& anim : sn->animations)
+                        animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
+
+                    if (!animsToLoad.empty()) {
+                        std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
+                        anim_oss << animsToLoad.back();
+
+                        asset_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->key + "\", {" + anim_oss.str() + "});\n";
+                    }
+
+                    global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n\t";
+
+                    command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+                                            
+                    //sprite configurations
+
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->rotation) + ");\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetTint({ " + std::to_string(sn->tint.x) + ", " + std::to_string(sn->tint.y) + ", " + std::to_string(sn->tint.z) + " });\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
+
+                    std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
+
+                    command_queue << "   this->sprite_" + node->m_ID + "->m_texture.Filter_Min = " + filtering + ";\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n";
+
+                    if (sn->lock_in_place)
+                        update_queue << "   this->sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"sprite_billboard\");\n";
+
+                    //physics bodies
+
+                    if (sn->HasComponent("Physics"))
+                    {
+                        for (int i = 0; i < sn->bodies.size(); i++) 
+                        {
+    
+                            if (sn->bodies[i].second == "static")
+                                command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateStaticBody(" + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
+                            
+                            if (sn->bodies[i].second == "dynamic")
+                                command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n";
+                        }    
+
+                        command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
+
+                    }
+         
+                    //animator
+
+                    if (sn->HasComponent("Animator") && sn->animations.size()) {
+                        command_queue << "   this->sprite_" + node->m_ID + "->m_anims = System::Resources::Manager::GetAnimations(\"" + sn->key + "\");\n";
+                        command_queue << "   this->sprite_" + node->m_ID + "->ReadSpritesheetData();\n"; 
+                    } 
+     
+                    //shader
+
+                    if (sn->HasComponent("Shader") && sn->shader.first.length()) 
+                        command_queue << "   this->sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + sn->shader.first + "\");\n";
+  
                 }
 
                 //--------------- text
 
                 if (node->m_type == "Text")
-                {
+                {          
 
                     auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
-                    if (tn->textHandle != nullptr)
-                    {
-                        global_queue << "   std::shared_ptr<Text> text_" + node->m_ID + ";\n\t";
+                    global_queue << "   std::shared_ptr<Text> text_" + node->m_ID + ";\n\t";
 
-                        command_queue << "   this->text_" + node->m_ID + " = System::Game::CreateText(\"" + tn->textHandle->content + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+                    command_queue << "   this->text_" + node->m_ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
 
-                        command_queue << "   this->text_" + node->m_ID + "->SetScale(" + std::to_string(tn->textHandle->m_scale.x) + ", " + std::to_string(tn->textHandle->m_scale.y) + ");\n";
-                        command_queue << "   this->text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->textHandle->m_position.x) + ", " + std::to_string(tn->textHandle->m_position.y) + ");\n";
-                        command_queue << "   this->text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->textHandle->m_rotation) + ");\n";
-                        command_queue << "   this->text_" + node->m_ID + "->SetTint({ " + std::to_string(tn->textHandle->m_tint.x) + ", " + std::to_string(tn->textHandle->m_tint.y) + ", " + std::to_string(tn->textHandle->m_tint.z) + " });\n";
-                        command_queue << "   this->text_" + node->m_ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
-
-                    }
-
+                    command_queue << "   this->text_" + node->m_ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
+                    command_queue << "   this->text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ");\n";
+                    command_queue << "   this->text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";
+                    command_queue << "   this->text_" + node->m_ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
+                    command_queue << "   this->text_" + node->m_ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
+                    command_queue << "   this->text_" + node->m_ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
+     
                 }
 
                 //--------------- empty
@@ -717,7 +710,7 @@ void EventListener::BuildAndRun()
                     std::ostringstream offset_oss;
                     std::vector<std::string> offsetsToLoad;
 
-                    for (const auto &offset : tmn->offset)
+                    for (const auto& offset : tmn->offset)
                         offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + ", " + std::to_string(offset[4]) + ", " + std::to_string(offset[5]) + "}");
                     
                     if (!offsetsToLoad.empty()) {
@@ -728,8 +721,8 @@ void EventListener::BuildAndRun()
                     if (tmn->layers.size())
                         for (int i = 0; i < tmn->layer; i++)
                         {
-                            asset_queue << "   System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
-                            asset_queue << "   System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
+                            asset_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
+                            asset_queue << "  System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
                             
                             command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
                         }
@@ -738,7 +731,7 @@ void EventListener::BuildAndRun()
 
                     if (tmn->HasComponent("Physics"))
                         for (int i = 0; i < tmn->bodies.size(); i++)    
-                        command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
+                            command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
 
                 } 
 
@@ -804,10 +797,6 @@ void EventListener::BuildAndRun()
 
     }  
 
-    //remove temp json file
-
-    remove(tmp.c_str()); 
-
     //game template
 
     game_src << "\n#ifdef __EMSCRIPTEN__\n";
@@ -869,7 +858,7 @@ void EventListener::BuildAndRun()
  
     Editor::Log("Project " + currentProject + " built successfully.");
 
-#endif
+
 }
 
 

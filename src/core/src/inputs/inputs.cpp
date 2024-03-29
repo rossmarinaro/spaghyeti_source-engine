@@ -14,11 +14,15 @@ using namespace System;
         if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE && (event->movementX != 0 || event->movementY != 0))
             Inputs::cursor_callback(Window::s_instance, event->targetX, event->targetY);
 
-        if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
+        if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
+            Application::game->inputs->numInputs++;
             Inputs::input_callback(Window::s_instance, 1, 1, 0);
+        }
 
-        if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
+        if (eventType == EMSCRIPTEN_EVENT_MOUSEUP) {
+            Application::game->inputs->numInputs--;
             Inputs::input_callback(Window::s_instance, 0, 0, 0);
+        }
 
         if (eventType == EMSCRIPTEN_EVENT_CLICK)
             Application::game->inputs->m_left_click = true;
@@ -48,6 +52,7 @@ using namespace System;
 
                 Inputs::cursor_callback(Window::s_instance, touch->targetX, touch->targetY);
                 Inputs::input_callback(Window::s_instance, 1, 1, 0);
+                Application::game->inputs->numInputs++;
             }
         }
 
@@ -55,6 +60,7 @@ using namespace System;
         {
             Application::game->inputs->cursorReset = true;
             Inputs::input_callback(Window::s_instance, 0, 0, 0);
+            Application::game->inputs->numInputs--;
         }
 
         (void)eventType;
@@ -70,6 +76,8 @@ using namespace System;
 
 Inputs::Inputs()
 {
+
+    this->numInputs = 0;
 
     ResetControls();
 
@@ -104,6 +112,10 @@ Inputs::Inputs()
 
 void Inputs::ProcessInput(GLFWwindow* window)
 {
+
+    //input state
+
+    this->isDown = this->numInputs > 0 ? true : false;
 
     //gamepad
 
@@ -270,12 +282,12 @@ void Inputs::key_callback(GLFWwindow* window, int key, int scancode, int action,
 
     if (action == GLFW_PRESS) {
         Application::game->inputs->SetKeyInputs(true, key, window);  
-        Application::game->inputs->isDown = true;
+        Application::game->inputs->numInputs++;
     }
 
     if (action == GLFW_RELEASE) {
         Application::game->inputs->SetKeyInputs(false, key, window);  
-        Application::game->inputs->isDown = false;
+        Application::game->inputs->numInputs--;
     }
 
 }
@@ -291,22 +303,19 @@ void Inputs::SetGamepadInputs(unsigned int joystick)
 
     const float* axes = glfwGetJoystickAxes(joystick, &axesCount);
 
-    m_left = axes[0] > 1;
-    m_right = axes[1] > 1;
+    this->m_left = axes[0] > 1;
+    this->m_right = axes[1] > 1;
 
     int buttonCount;
 
     const unsigned char* buttons = glfwGetJoystickButtons(joystick, &buttonCount);
 
-    if (GLFW_PRESS == buttons[0]) {
-        this->isDown = true;
+    if (GLFW_PRESS == buttons[0]) 
         this->m_ENTER = true;
-    }
+    
 
-    else if (GLFW_RELEASE == buttons[0]) {
-        this->isDown = false;
+    else if (GLFW_RELEASE == buttons[0]) 
         this->m_ENTER = false;
-    }
 
     if (
         GLFW_PRESS == buttons[1] ||
@@ -382,7 +391,13 @@ void Inputs::SetGamepadInputs(unsigned int joystick)
     else if (GLFW_RELEASE == buttons[13])
         this->m_left = false;
 
+    for (int i = 0; i < sizeof(buttons); i++) 
 
+        if (buttons[i] == GLFW_PRESS)
+            this->numInputs++;
+
+        else if (buttons[i] == GLFW_RELEASE)
+            this->numInputs--;
 }
 
 
@@ -404,10 +419,10 @@ void Inputs::input_callback(GLFWwindow* window, int input, int action, int mods)
        Application::game->inputs->ResetControls();
 
     if (action == GLFW_PRESS)
-        Application::game->inputs->isDown = true;
+        Application::game->inputs->numInputs++;
 
     if (action == GLFW_RELEASE)
-        Application::game->inputs->isDown = false;
+        Application::game->inputs->numInputs--;
 
 }
 

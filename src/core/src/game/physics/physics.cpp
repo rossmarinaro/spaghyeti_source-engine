@@ -18,7 +18,9 @@ Physics::Physics():
     m_flags += b2Draw::e_aabbBit;
     m_flags += b2Draw::e_centerOfMassBit;
 
-    std::cout << "Physics: world enabled.\n"; 
+    #if DEVELOPMENT == 1
+        std::cout << "Physics: world enabled.\n"; 
+    #endif
 } 
 
 

@@ -7,7 +7,7 @@
 
 namespace Process {
 
-    typedef struct Context {
+    struct Context {
         Inputs* inputs; 
         Camera* camera;
         Physics* physics;

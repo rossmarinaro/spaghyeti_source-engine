@@ -27,7 +27,7 @@
 
 /****** Application *****/
 
-namespace SPAGHYETI_CORE System {
+namespace /* SPAGHYETI_CORE */ System {
 
 
 	class Application 
@@ -43,7 +43,7 @@ namespace SPAGHYETI_CORE System {
 			static inline Resources::Manager* resources;   
 
 			static void Init(Game* layer);
-			static void Update(Camera* camera);
+			static void Update();
 
 			template<typename T>
 			static inline const T &GetData(std::string key) { return std::any_cast<T>(data.at(key)); }

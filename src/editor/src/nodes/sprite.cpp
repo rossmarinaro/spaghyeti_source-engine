@@ -8,6 +8,8 @@ using namespace editor;
 
 SpriteNode::SpriteNode(const std::string& id): 
     Node(id, "Sprite"),
+        key(""),
+        tint(glm::vec3(1.0f)),
         show_sprite_texture(false),
         framesApplied(false),
         filter_nearest(true),
@@ -19,7 +21,12 @@ SpriteNode::SpriteNode(const std::string& id):
         depth(1),
         restitution(0.0f),
         density(0.0f), 
-        friction(0.0f)
+        friction(0.0f),
+        alpha(1.0f),
+        U1(0.0f),
+        V1(0.0f),
+        U2(1.0f),
+        V2(1.0f)
 
 {
 
@@ -28,7 +35,7 @@ SpriteNode::SpriteNode(const std::string& id):
     Editor::Log("sprite node " + this->m_name + " created.");   
 }
 
-
+         
 //---------------------------
 
 
@@ -128,6 +135,21 @@ void SpriteNode::CreateBody(
 }
 
 
+//---------------------------------
+
+
+void SpriteNode::RegisterFrames()
+{
+    std::vector<std::array<int, 6>> framesToPush;
+
+    for (const auto& frame : this->frames)
+        framesToPush.push_back({ frame.x, frame.y, frame.width, frame.height, frame.factorX, frame.factorY });
+
+    System::Resources::Manager::UnLoadFrames(this->key);
+    System::Resources::Manager::LoadFrames(this->key, framesToPush);
+}
+
+
 //--------------------------------- applies texture to current seleted node 
 
 
@@ -144,6 +166,7 @@ void SpriteNode::ApplyTexture(const std::string& asset)
        this->spriteHandle->SetTexture(asset); 
 
     this->currentTexture = this->spriteHandle->m_texture.GetTexture(asset).ID;  
+    this->key = asset;
 
 }
 
@@ -158,17 +181,19 @@ void SpriteNode::ApplyAnimation(const std::string& key, int start, int end)
 
         std::map<std::string, std::pair<int, int>> animsToLoad;
 
-        this->animations.insert({ key, { key, start, end }  });
+        this->animations.insert({ key, { key, start, end } });
 
         for (const auto& anim : this->animations)
             animsToLoad.insert({ { anim.second.key, { anim.second.start, anim.second.end } } });
         
-        System::Resources::Manager::UnLoadAnims(this->spriteHandle->m_key);
-        System::Resources::Manager::LoadAnims(this->spriteHandle->m_key, animsToLoad);
+        System::Resources::Manager::UnLoadAnims(this->key);
+        System::Resources::Manager::LoadAnims(this->key, animsToLoad);
 
-        this->spriteHandle->m_anims = System::Resources::Manager::GetAnimations(this->spriteHandle->m_key);
-
-        this->spriteHandle->ReadSpritesheetData();     
+        if (this->spriteHandle) {
+            this->spriteHandle->m_anims = System::Resources::Manager::GetAnimations(this->key);
+            this->spriteHandle->ReadSpritesheetData();   
+        }
+  
     }
 
     catch (std::runtime_error& err) { 
@@ -465,13 +490,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                                 for (int i = 0; i < this->frame; i++) 
                                     this->frames.push_back({ this->frameBuf1[i], this->frameBuf2[i], this->frameBuf3[i], this->frameBuf4[i] , this->frameBuf5[i], this->frameBuf6[i]}); 
 
-                                std::vector<std::array<int, 6>> framesToPush;
-
-                                for (const auto& fr : this->frames) 
-                                    framesToPush.push_back({ fr.x, fr.y, fr.width, fr.height , fr.factorX, fr.factorY});
-                                
-                                System::Resources::Manager::UnLoadFrames(this->spriteHandle->m_key);
-                                System::Resources::Manager::LoadFrames(this->spriteHandle->m_key, framesToPush);
+                                this->RegisterFrames();
 
                                 this->framesApplied = true; 
                                 this->spriteHandle->ReadSpritesheetData();
@@ -594,10 +613,10 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                         if (ImGui::BeginMenu("UVs"))
                         {
-                            ImGui::SliderFloat("U1", &this->spriteHandle->m_texture.U1, 0.0f, 1.0f); 
-                            ImGui::SliderFloat("V1", &this->spriteHandle->m_texture.V1, 0.0f, 1.0f);
-                            ImGui::SliderFloat("U2", &this->spriteHandle->m_texture.U2, 0.0f, 1.0f);
-                            ImGui::SliderFloat("V2", &this->spriteHandle->m_texture.V2, 0.0f, 1.0f);
+                            ImGui::SliderFloat("U1", &this->U1, 0.0f, 1.0f); 
+                            ImGui::SliderFloat("V1", &this->V1, 0.0f, 1.0f);
+                            ImGui::SliderFloat("U2", &this->U2, 0.0f, 1.0f);
+                            ImGui::SliderFloat("V2", &this->V2, 0.0f, 1.0f);
 
                             ImGui::EndMenu();
                         }
@@ -612,6 +631,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                             this->spriteHandle->m_texture.Filter_Min = GL_NEAREST;
                             this->spriteHandle->m_texture.Filter_Max = GL_NEAREST;
                         }
+                        
                         else {
                             this->spriteHandle->m_texture.Filter_Min = GL_LINEAR;
                             this->spriteHandle->m_texture.Filter_Max = GL_LINEAR;
@@ -619,8 +639,8 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                         this->spriteHandle->m_texture.SetFiltering();
 
-                        ImGui::ColorEdit3("tint", (float*)&this->spriteHandle->m_tint); 
-                        ImGui::SliderFloat("alpha", &this->spriteHandle->m_alpha, 0.0f, 1.0f); 
+                        ImGui::ColorEdit3("tint", (float*)&this->tint); 
+                        ImGui::SliderFloat("alpha", &this->alpha, 0.0f, 1.0f); 
 
                     }
 
@@ -647,11 +667,18 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
         if (this->spriteHandle)
         {
 
+            this->spriteHandle->m_texture.U1 = this->U1;
+            this->spriteHandle->m_texture.V1 = this->V1;
+            this->spriteHandle->m_texture.U2 = this->U2;
+            this->spriteHandle->m_texture.V2 = this->V2;
+            
             this->spriteHandle->SetScale(this->scaleX, this->scaleY);
             this->spriteHandle->SetPosition(this->positionX, this->positionY);
             this->spriteHandle->SetRotation(this->rotation); 
             this->spriteHandle->SetDepth(this->depth);
             this->spriteHandle->SetFlip(this->flippedX, this->flippedY);
+            this->spriteHandle->SetAlpha(this->alpha);
+            this->spriteHandle->SetTint(this->tint);
 
             if (this->currentAnim.first.length())   
                 this->spriteHandle->Animate(this->currentAnim.first, this->currentAnim.second.first, this->currentAnim.second.second);

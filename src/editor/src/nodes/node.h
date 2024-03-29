@@ -32,23 +32,17 @@ namespace editor {
                                bodyX, 
                                bodyY;
 
-            std::vector<std::shared_ptr<Component>> components;
             std::pair<std::string, std::pair<std::string, std::string>> shader;
             std::map<std::string, std::string> behaviors;
             
-            Node() = default;
-            Node(const std::string& id, std::string type, std::string name = "Untitled");
+            Node(const std::string& type);
+            Node(const std::string& id, const std::string& type, const std::string& name = "Untitled");
 
             virtual ~Node() = default;
             virtual void Render(std::shared_ptr<Node> node) = 0;
             virtual void Reset(const char* component = "") = 0;
 
-            static inline int count = 0, 
-                            MAX_NODES = 100; 
-
             static inline std::vector<std::shared_ptr<Node>> nodes;
-
-            static const char* Assign();
 
             static inline std::shared_ptr<Node> GetNode(const std::string& id) {
                 return *std::find_if(nodes.begin(), nodes.end(), [&](std::shared_ptr<Node> n) { 
@@ -84,6 +78,15 @@ namespace editor {
             struct StringContainer { std::string s = ""; };
             struct BoolContainer { bool b = false; };
 
+        private:
+
+            std::vector<std::shared_ptr<Component>> components;
+
+            static inline int count = 0, 
+                              MAX_NODES = 100; 
+
+            static const char* Assign();
+
     };
 
     //---------------------------------
@@ -99,14 +102,22 @@ namespace editor {
                 depth;
 
             bool framesApplied,       
-                filter_nearest,
-                flippedX,
-                flippedY,
-                lock_in_place;
+                 filter_nearest,
+                 flippedX,
+                 flippedY,
+                 lock_in_place;
 
-            float restitution,
-                density, 
-                friction;
+            float U1,
+                  V1,
+                  U2,
+                  V2,
+                  alpha,
+                  restitution,
+                  density, 
+                  friction;
+
+            std::string key;
+            glm::vec3 tint;
 
             typedef struct Frames { int x, y, width, height, factorX, factorY; };
             typedef struct Anims { std::string key; int start, end; };
@@ -119,27 +130,28 @@ namespace editor {
             std::vector<BoolContainer> is_sensor;
 
             std::vector<int> frameBuf1,
-                            frameBuf2,
-                            frameBuf3,
-                            frameBuf4,
-                            frameBuf5,
-                            frameBuf6,
+                             frameBuf2,
+                             frameBuf3,
+                             frameBuf4,
+                             frameBuf5,
+                             frameBuf6,
 
-                            animBuf2,
-                            animBuf3,
-                            animBuf4,
+                             animBuf2,
+                             animBuf3,
+                             animBuf4,
                             
-                            body_pointer;
+                             body_pointer;
 
             std::vector<std::pair<b2Body*, std::string>> bodies;
 
-            SpriteNode() = default;
+            SpriteNode(): Node("Sprite") {}
             SpriteNode(const std::string& id);
             ~SpriteNode();      
 
             void Render(std::shared_ptr<Node> node) override;
             void Reset(const char* component_type = "") override;
 
+            void RegisterFrames();
             void ApplyTexture(const std::string& key);
             void ApplyAnimation(const std::string& key, int start, int end);
 
@@ -156,7 +168,7 @@ namespace editor {
         private:
 
             bool show_sprite_options,
-                show_sprite_texture;
+                 show_sprite_texture;
 
             std::pair<std::string, std::pair<bool, int>> currentAnim;
             std::vector<BoolContainer> do_yoyo;
@@ -172,39 +184,36 @@ namespace editor {
 
         public:
 
-            int 
-                layer, 
+            int layer, 
                 map_width, 
                 map_height,
                 tile_width, 
                 tile_height;
 
             std::vector<int> spr_sheet_width,
-                            spr_sheet_height,
-                            depth;
+                             spr_sheet_height,
+                             depth;
 
             std::vector<std::array<std::string, 3>> layers;
             std::vector<std::array<int, 6>> offset;
             std::vector<b2Body*> bodies;
 
-            TilemapNode() = default;
+            TilemapNode(): 
+                Node("Tilemap"),
+                    mapApplied(false) {}
+
             TilemapNode(const std::string& id);
             ~TilemapNode();
 
             void Render(std::shared_ptr<Node> node) override;
             void Reset(const char* component_type = "") override;
 
-            void ApplyTilemap();
-            void CreateBody(
-                float x = 0.0f, 
-                float y = 0.0f, 
-                float width = 0.0f, 
-                float height = 0.0f
-            );
+            void ApplyTilemap(bool clearPrevious = true);
+            void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
 
         private: 
 
-            bool layersApplied;
+            bool layersApplied, mapApplied;
 
 
     };
@@ -226,7 +235,7 @@ namespace editor {
 
             std::string textBuf;
 
-            TextNode() = default;
+            TextNode(): Node("Text") {}
             TextNode(const std::string& id);
             ~TextNode();     
 
@@ -248,7 +257,7 @@ namespace editor {
             
             std::string audio_source_name;
           
-            AudioNode() = default;
+            AudioNode();
             AudioNode(const std::string& id);
             ~AudioNode();
 
@@ -281,7 +290,7 @@ namespace editor {
             std::string currentShape;
             std::shared_ptr<Geometry> m_debugGraphic;
 
-            EmptyNode() = default;
+            EmptyNode(): Node("Empty") {}
             EmptyNode(const std::string& id);
             ~EmptyNode();      
 
@@ -292,3 +301,4 @@ namespace editor {
 
     };
 }
+

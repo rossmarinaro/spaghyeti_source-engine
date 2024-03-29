@@ -6,45 +6,39 @@
 namespace editor {
 
     //scene copy template
-    class Scene {
+    struct Scene {
 
-        public:
+        int worldWidth = 2000,
+            worldHeight = 2000;
 
-			int worldWidth = 2000,
-				worldHeight = 2000,
-                GUIGridQuantity;
+        float gravityX = 0.0f,
+              gravityY = 500.0f,
+              cameraZoom = 1,
+              currentBoundsWidthBegin,
+              currentBoundsWidthEnd,
+              currentBoundsHeightBegin,
+              currentBoundsHeightEnd;
 
-			float gravityX = 0.0f,
-				  gravityY = 500.0f,
-                  cameraZoom = 1,
-                  GUIGridAlpha = 1.0f,
-                  currentBoundsWidthBegin,
-                  currentBoundsWidthEnd,
-                  currentBoundsHeightBegin,
-                  currentBoundsHeightEnd;
+        bool globals_applied = false,
+             gravity_continuous = true,
+             gravity_sleeping = true;
 
-			bool globals_applied = false,
-				 gravity_continuous = true,
-				 gravity_sleeping = true;
+        glm::vec2 cameraPosition;
+        glm::vec4 cameraBackgroundColor;
 
-            glm::vec2 cameraPosition;
-            glm::vec4 cameraBackgroundColor;
+        std::vector<std::pair<std::string, std::string>> globals;
+        std::vector<std::shared_ptr<editor::Node>> nodes;
 
-			std::vector<std::pair<std::string, std::string>> globals;
-            std::vector<std::shared_ptr<editor::Node>> nodes;
+        template <typename T>
+        static inline std::shared_ptr<T> CreateObject(Scene* scene) {
 
-            Scene() = default;
+            auto node = std::make_shared<T>();
 
-            template <typename T>
-            static inline std::shared_ptr<T> MakeNode(Scene* scene) {
+            scene->nodes.push_back(node);
 
-                auto node = std::make_shared<T>();
+            return node;
 
-                scene->nodes.push_back(node);
-
-                return node;
-
-            }
+        }
 
     };
 }

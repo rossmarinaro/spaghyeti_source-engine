@@ -7,6 +7,8 @@ class Inputs {
 
     public:
 
+        int numInputs;
+
         bool cursorReset,
              isDown = false,
              m_left_click,

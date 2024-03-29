@@ -33,7 +33,7 @@ void Shader::InitBaseShaders()
     //raw char array
 
     Load("sprite", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
-    Load("sprite_batch", Shaders::batchQuadShader_vertex, Shaders::batchQuadShader_fragment, nullptr);
+    Load("sprite_batch", Shaders::spriteBatchShader_vertex, Shaders::spriteBatchShader_fragment, nullptr);
     Load("sprite_billboard", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("UI", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("graphics", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);

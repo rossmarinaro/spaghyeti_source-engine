@@ -42,6 +42,7 @@ static bool paused = false;
 static bool canThrow = true;
 static bool canRestart = false;
 
+
 //--------------------------------
 
 
@@ -130,7 +131,7 @@ void MeatballMadness::Update()
                 case 2: this->context.inputs->m_up = System::Game::UIListenForInput(2); break;
             }
         }
-
+ 
     //platter hitbox
 
     if (this->playerHitBox)
@@ -140,7 +141,7 @@ void MeatballMadness::Update()
 
     if (this->fails >= 3 && !game_over) 
         this->GameOver();
-    
+  
     else if (paused && (this->context.inputs->isDown && canRestart)) 
     {
             
@@ -175,6 +176,8 @@ void MeatballMadness::Update()
 
     else if (!game_over)
     {
+
+        canRestart = false;
 
         this->menuText->SetAlpha(0.0f);
         this->creditsText->SetAlpha(0.0f);
@@ -444,6 +447,7 @@ void MeatballMadness::GameOver()
     paused = true;
 
     entity_behaviors::Behavior::GetBehavior<entity_behaviors::Waiter>("Waiter", this->behaviors)->canMove = false;
+
     this->player->StopAnimation();
     this->player->SetFrame(1);
     this->player->SetVelocityX(0);
@@ -478,6 +482,7 @@ void MeatballMadness::Reset()
     chefMoveRight = false;
 
     Time::delayedCall(2000, [&]() { canRestart = true; });
+    
 
 }
 

@@ -6,10 +6,20 @@
 
 using namespace editor;
 
-AudioNode::AudioNode(const std::string &id): 
+
+AudioNode::AudioNode(): 
+    Node("Audio"),
+        audioTexture(Graphics::Texture2D::GetTexture("audio src"))
+{}
+
+
+//--------------------------
+
+
+AudioNode::AudioNode(const std::string& id): 
     Node(id, "Audio"),
         audio_source_name(""),
-        audioTexture(System::Resources::Manager::texture2D->GetTexture("audio src")),
+        audioTexture(Graphics::Texture2D::GetTexture("audio src")),
         loop(false),
         volume(1)
 {
