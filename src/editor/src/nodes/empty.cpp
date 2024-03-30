@@ -25,7 +25,8 @@ EmptyNode::~EmptyNode() {
     if (this->m_debugGraphic)
         System::Game::DestroyEntity(this->m_debugGraphic);
 
-    Editor::Log("Empty node " + this->m_name + " deleted.");
+    if (!this->virtual_node)
+        Editor::Log("Empty node " + this->m_name + " deleted.");
 }
 
 

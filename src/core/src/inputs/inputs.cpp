@@ -124,17 +124,6 @@ void Inputs::ProcessInput(GLFWwindow* window)
     if (1 == present)
         SetGamepadInputs(GLFW_JOYSTICK_1);
 
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-
-        glfwSetWindowShouldClose(window, true);
-
-        #if DEVELOPMENT == 1
-            std::cout << "Application exit called.\n";
-        #endif
-
-        return;
-    }
 
     CheckOverlap();
 }

@@ -46,7 +46,8 @@ SpriteNode::~SpriteNode()
     if (this->spriteHandle != nullptr)
         System::Game::DestroyEntity(this->spriteHandle);
     
-    Editor::Log("Sprite node " + this->m_name + " deleted.");
+    if (!this->virtual_node)
+        Editor::Log("Sprite node " + this->m_name + " deleted.");
 }
 
 

@@ -9,6 +9,9 @@ namespace editor {
 
         public:
 
+            static inline bool exitFlag = false,
+                               saveFlag = false,
+                               shouldSave = false;
             
             static inline std::string currentProject = "",
                                       currentScene = "";

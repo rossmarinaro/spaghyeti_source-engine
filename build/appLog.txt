@@ -1,54 +1,16 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Mar 29 18:59:16 2024
-IMGui Version:  @ Fri Mar 29 18:59:17 2024
-GUI launched. @ Fri Mar 29 18:59:17 2024
-Workspace reset. @ Fri Mar 29 18:59:21 2024
-sprite node Untitled created. @ Fri Mar 29 18:59:24 2024
-Animator component added. @ Fri Mar 29 18:59:24 2024
-Physics component added. @ Fri Mar 29 18:59:24 2024
-Script component added. @ Fri Mar 29 18:59:24 2024
-sprite node Untitled created. @ Fri Mar 29 18:59:24 2024
-sprite node Untitled created. @ Fri Mar 29 18:59:24 2024
-sprite node Untitled created. @ Fri Mar 29 18:59:24 2024
-sprite node Untitled created. @ Fri Mar 29 18:59:24 2024
-sprite node Untitled created. @ Fri Mar 29 18:59:24 2024
-Tilemap node Untitled created. @ Fri Mar 29 18:59:24 2024
-Physics component added. @ Fri Mar 29 18:59:24 2024
-Text node Untitled created. @ Fri Mar 29 18:59:24 2024
-Script component added. @ Fri Mar 29 18:59:24 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sat Mar 30 15:35:20 2024
+IMGui Version: 1 @ Sat Mar 30 15:35:20 2024
+GUI launched. @ Sat Mar 30 15:35:20 2024
+Workspace reset. @ Sat Mar 30 15:35:32 2024
+sprite node Untitled created. @ Sat Mar 30 15:35:35 2024
+Animator component added. @ Sat Mar 30 15:35:35 2024
+sprite node Untitled created. @ Sat Mar 30 15:35:35 2024
+sprite node Untitled created. @ Sat Mar 30 15:35:35 2024
+sprite node Untitled created. @ Sat Mar 30 15:35:35 2024
+sprite node Untitled created. @ Sat Mar 30 15:35:35 2024
+sprite node Untitled created. @ Sat Mar 30 15:35:35 2024
+Tilemap node Untitled created. @ Sat Mar 30 15:35:35 2024
+Text node Untitled created. @ Sat Mar 30 15:35:35 2024
 Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Mar 29 18:59:24 2024
-Animator component added. @ Fri Mar 29 18:59:26 2024
-Physics component added. @ Fri Mar 29 18:59:26 2024
-Script component added. @ Fri Mar 29 18:59:26 2024
-Physics component added. @ Fri Mar 29 18:59:26 2024
-Script component added. @ Fri Mar 29 18:59:26 2024
-Scene parsed. @ Fri Mar 29 18:59:26 2024
-Sprite node player deleted. @ Fri Mar 29 18:59:26 2024
-Animator component removed. @ Fri Mar 29 18:59:26 2024
-Physics component removed. @ Fri Mar 29 18:59:26 2024
-Script component removed. @ Fri Mar 29 18:59:26 2024
-Sprite node background deleted. @ Fri Mar 29 18:59:26 2024
-Sprite node elf deleted. @ Fri Mar 29 18:59:26 2024
-Sprite node heart1 deleted. @ Fri Mar 29 18:59:26 2024
-Sprite node heart2 deleted. @ Fri Mar 29 18:59:26 2024
-Sprite node heart3 deleted. @ Fri Mar 29 18:59:26 2024
-Tilemap node map deleted. @ Fri Mar 29 18:59:26 2024
-Physics component removed. @ Fri Mar 29 18:59:26 2024
-Text node FPS deleted. @ Fri Mar 29 18:59:26 2024
-Script component removed. @ Fri Mar 29 18:59:26 2024
-Project TestGame built successfully. @ Fri Mar 29 18:59:37 2024
-Sprite node player deleted. @ Fri Mar 29 18:59:40 2024
-Animator component removed. @ Fri Mar 29 18:59:40 2024
-Physics component removed. @ Fri Mar 29 18:59:40 2024
-Script component removed. @ Fri Mar 29 18:59:40 2024
-Sprite node background deleted. @ Fri Mar 29 18:59:40 2024
-Sprite node elf deleted. @ Fri Mar 29 18:59:40 2024
-Sprite node heart1 deleted. @ Fri Mar 29 18:59:40 2024
-Sprite node heart2 deleted. @ Fri Mar 29 18:59:40 2024
-Sprite node heart3 deleted. @ Fri Mar 29 18:59:40 2024
-Tilemap node map deleted. @ Fri Mar 29 18:59:40 2024
-Physics component removed. @ Fri Mar 29 18:59:40 2024
-Text node FPS deleted. @ Fri Mar 29 18:59:40 2024
-Script component removed. @ Fri Mar 29 18:59:40 2024
-GUI exited @ Fri Mar 29 18:59:40 2024
-Editor closed. @ Fri Mar 29 18:59:40 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Sat Mar 30 15:35:35 2024
+copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\images\cave.png to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\cave.png @ Sat Mar 30 15:35:43 2024

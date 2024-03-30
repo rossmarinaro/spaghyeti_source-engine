@@ -13,25 +13,31 @@ using namespace editor;
 
 
 Component::Component(
-    const std::string &id, 
-    const std::string &type, 
-    const std::string &node_type
+    const std::string& id, 
+    const std::string& type, 
+    const std::string& node_type,
+    bool init
 ):
     m_ID(id),
     m_type(type),
     m_nodeType(node_type),
-    m_name("")
+    m_name(""),
+    init(init)
 {
     count++;
 
-    Editor::Log((std::string)type + " component added.");
+    if (this->init)
+        Editor::Log((std::string)type + " component added.");
 }
+
 
 //-------------------------------------
 
 
 Component::~Component() {
-    Editor::Log((std::string)this->m_type + " component" + " removed.");
+
+    if (this->init)
+        Editor::Log((std::string)this->m_type + " component" + " removed.");
 }
 
 
@@ -146,7 +152,7 @@ void Component::Make()
     if (this->m_type == "Animator")
     {
 
-        for (const auto &node : Node::nodes)
+        for (const auto& node : Node::nodes)
             if (node->m_ID == m_ID)
             {
 
@@ -166,7 +172,7 @@ void Component::Make()
     if (this->m_type == "Physics")
     {
 
-        for (const auto &node : Node::nodes)
+        for (const auto& node : Node::nodes)
             if (node->m_ID == m_ID)
             {
 

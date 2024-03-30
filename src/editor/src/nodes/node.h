@@ -65,7 +65,6 @@ namespace editor {
 
             static void ClearAll();
             static void DeleteNode (std::shared_ptr<Node> node);
-            static int ChangeName(ImGuiInputTextCallbackData* data);
             static void ApplyShader(std::shared_ptr<Node> node, const std::string& name);
             static void LoadShader(std::shared_ptr<Node> node, const std::string& name, const std::string& vertPath, const std::string& fragPath);
             
@@ -78,14 +77,19 @@ namespace editor {
             struct StringContainer { std::string s = ""; };
             struct BoolContainer { bool b = false; };
 
+        protected:
+
+            bool virtual_node = false;
+            
+            static int ChangeName(ImGuiInputTextCallbackData* data);
+
         private:
+                std::vector<std::shared_ptr<Component>> components;
 
-            std::vector<std::shared_ptr<Component>> components;
+                static inline int count = 0, 
+                                MAX_NODES = 100; 
 
-            static inline int count = 0, 
-                              MAX_NODES = 100; 
-
-            static const char* Assign();
+                static const char* Assign();
 
     };
 

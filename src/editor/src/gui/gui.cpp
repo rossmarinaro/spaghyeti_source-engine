@@ -21,9 +21,11 @@ void GUI::Launch()
     //- When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
     //Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 
-    Editor::Log(" IMGui Version: " + (int)IMGUI_CHECKVERSION());
+    Editor::Log("IMGui Version: " + std::to_string((int)IMGUI_CHECKVERSION()));
+
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+    
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -156,6 +158,9 @@ void GUI::Render()
     if (show_quit)
         ShowOptionsQuit();
 
+    if (Editor::events.saveFlag)
+        ShowOptionsSaveQuit();
+
     ImGui::Render();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -273,7 +278,20 @@ void GUI::ShowOptionsQuit()
 
 
 
+//---------------------
 
+
+void GUI::ShowOptionsSaveQuit()
+{
+    ImGui::Text("Do You Want To Save?");
+
+    if (ImGui::MenuItem("Yes")) 
+        if(Editor::events.SaveProject())
+            Editor::events.exitFlag = true;
+
+    if (ImGui::MenuItem("No"))
+        Editor::events.exitFlag = true;
+}
 
 
 

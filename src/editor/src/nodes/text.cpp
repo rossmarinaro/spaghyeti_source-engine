@@ -30,7 +30,8 @@ TextNode::~TextNode() {
     if (this->textHandle != nullptr)
         System::Game::DestroyEntity(this->textHandle);
 
-    Editor::Log("Text node " + this->m_name + " deleted.");
+    if (!this->virtual_node)
+        Editor::Log("Text node " + this->m_name + " deleted.");
 }
 
 

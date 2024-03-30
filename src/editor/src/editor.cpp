@@ -77,7 +77,13 @@ Editor::Editor()
     //main update loop
 
     while (!glfwWindowShouldClose(Window::s_instance))
-       Update();
+        Update();
+
+    while (!Editor::events.exitFlag) 
+        if (Editor::events.shouldSave) 
+            Editor::events.saveFlag = true;
+        else 
+            Editor::events.exitFlag = true;
 
     Node::ClearAll();
 
@@ -153,10 +159,6 @@ void Editor::Reset()
 
     Log("Workspace reset.");
 }
-
-
-
-
 
 
 

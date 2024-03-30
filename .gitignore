@@ -5,8 +5,7 @@
 /build/imgui.ini
 /build/Logs.txt
 
-/games/TestGame/TestGame.exe
-/games/TestGame/spaghyeti_source-engine_runtime-core.dll
+/games/TestGame/build
 
 /games/swankybubbles.exe
 /games/swankybubbles/dist

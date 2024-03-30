@@ -3,7 +3,26 @@
 
 using namespace editor;
 
-std::string AssetManager::GetFolder(const std::string &asset)
+
+void AssetManager::LoadAsset(const std::string& asset, const std::string& path)
+{
+
+    const std::string folder = GetFolder(asset),
+                      texture = GetThumbnail(asset),
+                      key = "\"" + asset + "\"",
+                      developmentPath = "\"" + path + "resources\\assets" + folder + asset + "\"",
+                      productionPath = "\"" + path + "build\\assets" + "\"";
+
+    loadedAssets.insert({ key, developmentPath });
+    productionAssets.insert({ key, productionPath });
+
+}
+
+
+//----------------------------
+
+
+std::string AssetManager::GetFolder(const std::string& asset)
 {
     std::string folder;
 
@@ -23,7 +42,7 @@ std::string AssetManager::GetFolder(const std::string &asset)
 //-----------------------------
 
 
-std::string AssetManager::GetThumbnail(const std::string &asset)
+std::string AssetManager::GetThumbnail(const std::string& asset)
 {
     std::string texture;
 

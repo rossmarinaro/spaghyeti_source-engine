@@ -340,7 +340,7 @@ void Sprite::Render()
 //-------------------------------------- standard sprite / tile
 
 
-Sprite::Sprite(const std::string &key, float x, float y, int frame, bool isTile)
+Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
 : 
     Entity("sprite", x, y),
         m_key(key),  
@@ -362,7 +362,7 @@ Sprite::Sprite(const std::string &key, float x, float y, int frame, bool isTile)
 //-------------------------------------- UI sprite
 
  
-Sprite::Sprite(const std::string &key, float x, float y, const char* type)
+Sprite::Sprite(const std::string& key, float x, float y, const char* type)
 : 
     Entity("sprite", x, y),
         m_key(key),  

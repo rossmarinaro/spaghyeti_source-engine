@@ -6,7 +6,7 @@
 using namespace editor;
 
 
-TilemapNode::TilemapNode(const std::string &id): 
+TilemapNode::TilemapNode(const std::string& id): 
     Node(id, "Tilemap"),
         layersApplied(false),
         mapApplied(false),
@@ -27,7 +27,8 @@ TilemapNode::~TilemapNode()
     if (this->mapApplied)
         MapManager::ClearMap();
 
-    Editor::Log("Tilemap node " + this->m_name + " deleted.");
+    if (!this->virtual_node)
+        Editor::Log("Tilemap node " + this->m_name + " deleted.");
 }
 
 

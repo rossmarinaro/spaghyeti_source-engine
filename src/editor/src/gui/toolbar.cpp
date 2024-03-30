@@ -203,16 +203,17 @@ void editor::GUI::ShowMenu()
         Editor::events.OpenProject();
 
     if (ImGui::MenuItem("Save", "Ctrl+S"))
-        Editor::events.SaveProject();
+        if(Editor::events.SaveProject())
+            Editor::events.exitFlag = true;
 
     if (ImGui::MenuItem("Save As.."))
-        Editor::events.SaveProject(true);
+        if (Editor::events.SaveProject(true))
+            Editor::events.exitFlag = true;
 
     ImGui::Separator();
 
     if (ImGui::MenuItem("Quit", "Alt+F4"))
         show_quit = true;
-
 
     if (ImGui::BeginMenu("Options"))
     {

@@ -10,7 +10,8 @@ using namespace editor;
 
 
 Node::Node(const std::string& type): 
-    m_type(type) {}
+    m_type(type),
+    virtual_node(true) {}
 
 
 
@@ -148,7 +149,7 @@ void Node::AddComponent(const char* type, bool init)
             return;
         }
         
-    auto component = std::make_shared<Component>(this->m_ID, type, this->m_type);
+    const auto component = std::make_shared<Component>(this->m_ID, type, this->m_type, init);
 
     this->components.push_back(component); 
 

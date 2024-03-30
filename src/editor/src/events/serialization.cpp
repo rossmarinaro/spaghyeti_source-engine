@@ -785,7 +785,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
         //animator
 
         if (sprite["components"]["animator"]["exists"])
-            sn->AddComponent("Animator");
+            sn->AddComponent("Animator", false);
 
         for (const auto& anim : sprite["components"]["animator"]["animations"]) 
         { 
@@ -861,7 +861,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
         tmn->map_width = tilemap["map_width"];
         tmn->map_height = tilemap["map_height"];
-        tmn->tile_width = tilemap["tile_width"];
+        tmn->tile_width = tilemap["tile_width"];            
         tmn->tile_height = tilemap["tile_height"];
         tmn->layer = tilemap["layer"];
 

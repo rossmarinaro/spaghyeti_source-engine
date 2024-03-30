@@ -77,8 +77,6 @@ namespace entity_behaviors {
 
             std::shared_ptr<Sprite> player;
 
-
-
         private:
 
             bool 
@@ -124,7 +122,7 @@ namespace entity_behaviors {
             {
 
                 if (inputs->m_left || inputs->m_right)
-                    this->player->SetImpulse(this->flipX ? -900 : 900, -900);
+                    this->player->SetImpulse(this->flipX ? -900 : 900, -1600);
 
                 else
                     this->player->SetImpulseY(-1500);  

@@ -19,12 +19,19 @@ namespace editor {
 
             void Make();
 
-            Component(const std::string &id, const std::string &type, const std::string &node_type);
+            Component(
+                const std::string& id, 
+                const std::string& type, 
+                const std::string& node_type,
+                bool init = true
+            );
+
             ~Component();
         
 
         private:
 
+            bool init;
             static inline int count = 0;
     };
 }

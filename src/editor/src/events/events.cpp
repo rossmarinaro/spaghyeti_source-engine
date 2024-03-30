@@ -137,44 +137,35 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             Editor::projectPath = std::filesystem::path{ result.string() }.parent_path().string() + "\\"; //result path
 
-            //trim filename extension
+            //project name and current scene
 
             currentProject = std::filesystem::path(Editor::projectPath).parent_path().filename().string();
             currentScene = System::Utils::ReplaceFrom(result.filename().string(), ".", "");
 
             //temporary file for decoding
 
-            std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
+            const std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
 
             this->DecodeFile(tmp, result);
 
             Editor::Reset();
 
-            //load all assets to menu from root folder
-
             const std::string asset_folders[] = { "images", "audio", "data" };
 
-            for (const std::string &type : asset_folders)
-                for (const auto &entry : std::filesystem::directory_iterator(Editor::projectPath + "resources\\assets\\" + type))
+            for (const std::string& type : asset_folders)
+                for (const auto& entry : std::filesystem::directory_iterator(Editor::projectPath + "resources\\assets\\" + type))
                 {
 
-                    const std::string dir = entry.path().string(); //includes filename
-
-                    const std::string asset = entry.path().filename().string();
+                    const std::string asset = entry.path().filename().string(),
+                                      dir = entry.path().string(), //includes filename
+                                      texture = AssetManager::GetThumbnail(asset);
 
                     System::Resources::Manager::LoadFile(asset.c_str(), dir.c_str());
                     System::Resources::Manager::RegisterAssets();
 
-                    const std::string folder = AssetManager::GetFolder(asset);
-                    const std::string texture = AssetManager::GetThumbnail(asset);
+                    AssetManager::LoadAsset(asset, Editor::projectPath);
 
-                    const std::string key = "\"" + asset + "\"";
-
-                    const std::string productionPath = "\"" +  Editor::projectPath + "resources\\assets" + folder + asset + "\"";
-
-                    AssetManager::loadedAssets.insert({ key, productionPath });
-
-                    unsigned int id = System::Resources::Manager::texture2D->GetTexture(texture).ID;
+                    unsigned int id = Graphics::Texture2D::GetTexture(texture).ID;
 
                     AssetManager::images.push_back({ asset, id });
                 }
@@ -345,46 +336,37 @@ void EventListener::OpenFile()
 
             std::filesystem::path result((const char*)ofn.lpstrFile);
 
-            const char* dir = result.string().c_str();
-
             std::string asset = result.filename().string();
 
             //load asset in sandbox
 
-            System::Resources::Manager::LoadFile(asset.c_str(), dir);
+            System::Resources::Manager::LoadFile(asset.c_str(), result.string().c_str());
             System::Resources::Manager::RegisterAssets();
 
             //copy asset to game template
 
-            const auto options = std::filesystem::copy_options::update_existing |
-                                 std::filesystem::copy_options::recursive;
+            const auto options = std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive;
 
-            const std::string folder = AssetManager::GetFolder(asset);
-            const std::string texture = AssetManager::GetThumbnail(asset);
+            const std::string folder = AssetManager::GetFolder(asset),
+                              texture = AssetManager::GetThumbnail(asset);
 
             std::ifstream file(Editor::projectPath + "resources\\assets" + folder + asset);
 
             //copy asset reference to respective project folder
 
             if (!file.good())
-                std::filesystem::copy(result.string(), Editor::projectPath + "resources\\assets" + folder + asset, options);
+                std::filesystem::copy_file(result.string(), Editor::projectPath + "resources\\assets" + folder + asset, options);
 
             //register asset into temp cache
 
             std::map<std::string, std::string>::iterator iterator = AssetManager::loadedAssets.find(asset);
 
-            if (iterator == AssetManager::loadedAssets.end() || Editor::selectedAsset.length() < 0) {
-
-                const std::string key = "\"" + asset + "\"";
-
-                const std::string productionPath = "\"" + Editor::projectPath + "resources\\assets" + folder + asset + "\"";
-
-                AssetManager::loadedAssets.insert({ key, productionPath });
-            }
+            if (iterator == AssetManager::loadedAssets.end() || Editor::selectedAsset.length() < 0) 
+                AssetManager::LoadAsset(asset, Editor::projectPath);
 
             //apply image to assets menu if not there already
 
-            unsigned int id = System::Resources::Manager::texture2D->GetTexture(texture).ID;
+            unsigned int id = Graphics::Texture2D::GetTexture(texture).ID;
 
             if (
                 std::find_if( 
@@ -403,7 +385,7 @@ void EventListener::OpenFile()
 //--------------------------------- embed calls to temp file for compilation
 
 
-void EventListener::InsertTo(const std::string &code, const std::string &directory)
+void EventListener::InsertTo(const std::string& code, const std::string& directory)
 {
 
     std::ofstream src;
@@ -411,6 +393,7 @@ void EventListener::InsertTo(const std::string &code, const std::string &directo
     src.open(directory, std::ofstream::app | std::ofstream::out);
 
     src << code;
+
     src.close();
 }
 
@@ -423,6 +406,30 @@ void EventListener::InsertTo(const std::string &code, const std::string &directo
 void EventListener::BuildAndRun()
 {
 
+    //copy assets from development to build folder
+
+    const auto options = std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive;
+
+    const std::string asset_folders[] = { "images", "audio", "data" };
+
+    for (const std::string& type : asset_folders)
+        for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath + "resources\\assets\\" + type)) 
+        {
+            const std::string name = file.path().filename().string(),
+                              srcPath = file.path().string(),
+                              copiedFile = Editor::projectPath + "build\\assets\\" + name;
+
+            Editor::Log("copying: " + srcPath + " to: " + copiedFile);
+
+            if (file.exists())
+                std::filesystem::copy_file(srcPath, copiedFile, options);
+        }
+
+    //copy runtime dll to build folder
+
+    const std::string dll = "spaghyeti_source_runtime-core.dll";
+    
+    std::filesystem::copy_file(dll, Editor::projectPath + "build\\" + dll, options);
 
     //temp files: asset and command lists
 
@@ -430,11 +437,13 @@ void EventListener::BuildAndRun()
 
     //set game source input file stream
 
-    std::string srcPath = Editor::projectPath + "\\src\\game.cpp";
+    const std::string srcPath = Editor::projectPath + "\\src\\game.cpp";
 
     remove(srcPath.c_str());
 
     std::ofstream game_src(srcPath, std::ofstream::trunc);
+
+    //include core funtions
 
     std::string root_path = Editor::rootPath;
     std::replace(root_path.begin(), root_path.end(), '\\', '/');
@@ -538,7 +547,7 @@ void EventListener::BuildAndRun()
             command_queue << "   this->context.physics->sleeping = " + phys_isSleeping + ";\n";
             command_queue << "   this->context.physics->SetGravity(" + std::to_string(target.second.gravityX) + ", " + std::to_string(target.second.gravityY) + ");\n";
 
-            for (const auto& asset : AssetManager::loadedAssets)
+            for (const auto& asset : AssetManager::productionAssets)
             {
                 std::string path = asset.second;
 
@@ -876,13 +885,16 @@ void EventListener::GenerateProject()
 
     transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
-    std::string src = Editor::projectPath + "\\src";
-    std::string resources = Editor::projectPath + "\\resources";
-    std::string web = Editor::projectPath + "\\web";
+    std::string src = Editor::projectPath + "\\src",
+                resources = Editor::projectPath + "\\resources",
+                web = Editor::projectPath + "\\web",
+                build = Editor::projectPath + "\\build";
 
     std::filesystem::create_directory(src);
     std::filesystem::create_directory(resources);
+    std::filesystem::create_directory(build);
 
+    std::filesystem::create_directory(build + "\\assets");
     std::filesystem::create_directory(resources + "\\icon");
     std::filesystem::create_directory(resources + "\\scripts");
     std::filesystem::create_directory(resources + "\\shaders");
@@ -911,9 +923,9 @@ void EventListener::GenerateProject()
     main_makeFile << "  $(wildcard ./src/*.cpp) \\" << "\n";
     main_makeFile << "  $(wildcard ./src/**/*.cpp) \\" << "\n";
     main_makeFile << "  $(wildcard ./resources/scripts/*.cpp) \\" << "\n";
-    main_makeFile << "  spaghyeti_source_runtime-core.dll" << "\n\n";
+    main_makeFile << "  ./build/spaghyeti_source_runtime-core.dll" << "\n\n";
     main_makeFile << "all : $(OBJS)" << "\n";
-    main_makeFile << "      g++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o $(PROJECT).exe";
+    main_makeFile << "      g++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o ./build/$(PROJECT).exe";
 
     main_h << "#pragma once" << "\n";
     main_h << "\n#include \"" + root_path + "/include/game.h\"\n\n";

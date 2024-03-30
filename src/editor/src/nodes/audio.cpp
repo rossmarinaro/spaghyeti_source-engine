@@ -33,7 +33,8 @@ AudioNode::AudioNode(const std::string& id):
 
 AudioNode::~AudioNode() {
 
-    Editor::Log("audio node " + this->m_name + " deleted.");
+    if (!this->virtual_node)  
+        Editor::Log("audio node " + this->m_name + " deleted.");
 }
 
 

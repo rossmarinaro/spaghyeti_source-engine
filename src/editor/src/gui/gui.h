@@ -49,6 +49,7 @@ namespace editor {
             static void ShowMenu();
             static void ShowOptionsInit();
             static void ShowOptionsQuit();
+            static void ShowOptionsSaveQuit();
             static void AlignForWidth(float width, float alignment = 0.5f);
     };
 
