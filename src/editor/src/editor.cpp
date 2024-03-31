@@ -119,15 +119,12 @@ void Editor::Log(const std::string& message)
 
     std::filesystem::current_path(Editor::rootPath);
 
-    std::ofstream src;
+    std::ofstream src("appLog.txt", std::ofstream::app | std::ofstream::out);
 
     std::time_t time_stamp = std::time(nullptr);
 
-    src.open("appLog.txt", std::ofstream::app | std::ofstream::out);
-
     src << message << " @ " << std::ctime(&time_stamp);
 
-    src.close();
 }
 
 

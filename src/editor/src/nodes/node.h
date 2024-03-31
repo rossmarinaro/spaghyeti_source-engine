@@ -146,7 +146,7 @@ namespace editor {
                             
                              body_pointer;
 
-            std::vector<std::pair<b2Body*, std::string>> bodies;
+            std::vector<std::pair<b2Body*, std::string>> bodies; 
 
             SpriteNode(): Node("Sprite") {}
             SpriteNode(const std::string& id);

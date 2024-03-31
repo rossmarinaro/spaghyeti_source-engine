@@ -654,8 +654,8 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                 ImGui::SliderFloat("rotation", &this->rotation, 0.0f, 360.0f); 
 
-                ImGui::SliderFloat("scale x", &this->scaleX, -2.0f, 100.0f); 
-                ImGui::SliderFloat("scale y", &this->scaleY, -2.0f, 100.0f); 
+                ImGui::SliderFloat("scale x", &this->scaleX, 1.0f, 100.0f); 
+                ImGui::SliderFloat("scale y", &this->scaleY, 1.0f, 100.0f); 
 
 
             }

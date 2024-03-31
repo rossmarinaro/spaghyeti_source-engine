@@ -71,7 +71,7 @@ void TilemapNode::ApplyTilemap(bool clearPrevious)
     for (int i = 0; i < this->layer; i++) 
     { 
 
-        int w = 0, 
+        int w = 0,  
             h = this->spr_sheet_height[i] - 1; 
 
         for (int y = 0; y < this->map_height; ++y)

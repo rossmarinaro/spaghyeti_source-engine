@@ -149,8 +149,10 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
         //animator
 
-        if (sprite["components"]["animator"]["exists"])
-            sn->AddComponent("Animator");
+        if (sprite["components"]["animator"]["exists"]) {
+            sn->AddComponent("Animator", false);
+            sn->anim++;
+        }
 
         for (const auto& anim : sprite["components"]["animator"]["animations"]) 
         { 
@@ -811,15 +813,20 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
             if (sprite["components"]["physics"]["bodies"].size())
                 for (const auto& body : sprite["components"]["physics"]["bodies"]) 
-                    sn->CreateBody(
-                        static_cast<std::string>(body["type"]).c_str(), 
-                        body["bodyX"], 
-                        body["bodyY"], 
-                        body["body_width"], 
-                        body["body_height"],
-                        body["sensor"], 
-                        body["pointer"]
-                    );
+                {
+                    sn->bodyX.push_back(body["bodyX"]);
+                    sn->bodyY.push_back(body["bodyY"]);
+                    sn->body_width.push_back(body["body_width"]);
+                    sn->body_height.push_back(body["body_height"]);
+
+                    SpriteNode::BoolContainer bc;
+                    bc.b = body["sensor"];
+
+                    sn->is_sensor.push_back(bc);
+                    sn->body_pointer.push_back(body["pointer"]);
+                    
+                    sn->bodies.push_back({nullptr, body["type"] });
+                }
         }
 
         //script
@@ -880,7 +887,13 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
         if (tilemap["components"]["physics"]["bodies"].size())
             for (const auto& body : tilemap["components"]["physics"]["bodies"]) 
-                tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+            {
+                tmn->bodyX.push_back(body["bodyX"]);
+                tmn->bodyY.push_back(body["bodyY"]);
+                tmn->body_width.push_back(body["body_width"]);
+                tmn->body_height.push_back(body["body_height"]);
+                tmn->bodies.push_back(nullptr);
+            }
 
         if (tilemap["layers"].size())
             tmn->ApplyTilemap(false);

@@ -43,7 +43,6 @@ namespace /* SPAGHYETI_CORE */ System {
 			static inline Resources::Manager* resources;   
 
 			static void Init(Game* layer);
-			static void Update();
 
 			template<typename T>
 			static inline const T &GetData(std::string key) { return std::any_cast<T>(data.at(key)); }
@@ -57,6 +56,8 @@ namespace /* SPAGHYETI_CORE */ System {
 		private:
 
 			static std::map<std::string, std::any> data;
+
+			static void Update();
 
 	};
 }

@@ -3,6 +3,8 @@
 
 using namespace editor;
 
+//---------------------------
+
 
 void AssetManager::LoadAsset(const std::string& asset, const std::string& path)
 {
@@ -11,7 +13,7 @@ void AssetManager::LoadAsset(const std::string& asset, const std::string& path)
                       texture = GetThumbnail(asset),
                       key = "\"" + asset + "\"",
                       developmentPath = "\"" + path + "resources\\assets" + folder + asset + "\"",
-                      productionPath = "\"" + path + "build\\assets" + "\"";
+                      productionPath = "\"" + path + "build\\assets\\" + asset + "\"";
 
     loadedAssets.insert({ key, developmentPath });
     productionAssets.insert({ key, productionPath });

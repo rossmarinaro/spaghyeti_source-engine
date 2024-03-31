@@ -364,7 +364,7 @@ void Shader::Generate(const char* vertexPath, const char* fragmentPath, const ch
 // ---------------------------------------------------------- unload
 
 
-void Shader::UnLoad(const std::string &key)
+void Shader::UnLoad(const std::string& key)
 { 
     std::map<std::string, Shader>::iterator it = System::Resources::Manager::shaders.find(key);
     
@@ -410,7 +410,7 @@ void Shader::SetVec2f(const char* name, float x, float y, bool useShader)
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec2f(const char* name, const glm::vec2 &value, bool useShader)
+void Shader::SetVec2f(const char* name, const glm::vec2& value, bool useShader)
 {
     if (useShader)
         this->Use();
@@ -432,7 +432,7 @@ void Shader::SetVec3f(const char* name, float x, float y, float z, bool useShade
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec3f(const char* name, const glm::vec3 &value, bool useShader)
+void Shader::SetVec3f(const char* name, const glm::vec3& value, bool useShader)
 {
     if (useShader)
         this->Use();
@@ -455,7 +455,7 @@ void Shader::SetVec4f(const char* name, float x, float y, float z, float w, bool
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec4f(const char* name, const glm::vec4 &value, bool useShader)
+void Shader::SetVec4f(const char* name, const glm::vec4& value, bool useShader)
 {
     if (useShader)
         this->Use();
@@ -466,7 +466,7 @@ void Shader::SetVec4f(const char* name, const glm::vec4 &value, bool useShader)
 
 // -----------------------------------------------------------------------
 
-void Shader::SetMat4(const char* name, const glm::mat4 &matrix, bool useShader)
+void Shader::SetMat4(const char* name, const glm::mat4& matrix, bool useShader)
 {
     if (useShader)
         this->Use();

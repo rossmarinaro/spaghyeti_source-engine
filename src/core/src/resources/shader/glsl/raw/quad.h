@@ -64,7 +64,7 @@ namespace Shaders {
 
             "void main()\n"
             "{\n"
-            "   gl_Position = projection * model * view * vec4(pos.xy + offset.xy, 0.0, 1.0);\n"
+            "   gl_Position = projection * model * view * vec4((vert.xy * scale) + offset.xy, 0.0, 1.0);\n"
             "}";
 
         static const char* debugGraphicShader_fragment = 
@@ -94,6 +94,7 @@ namespace Shaders {
 
             "out vec2 uv;\n"
 
+            "uniform vec2 scale;\n"
             "uniform vec2 offset;\n"
             "uniform mat4 model;\n"
             "uniform mat4 view;\n"
@@ -102,7 +103,7 @@ namespace Shaders {
             "void main()\n"
             "{\n"            
                 "uv = UV;\n"
-                "gl_Position = projection * model * view * vec4(vert.xy + offset.xy, 0.0, 1.0);\n" 
+                "gl_Position = projection * model * view * vec4((vert.xy * scale) + offset.xy, 0.0, 1.0);\n" 
             "}\n"; 
 
 

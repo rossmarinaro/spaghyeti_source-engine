@@ -421,15 +421,17 @@ void EventListener::BuildAndRun()
 
             Editor::Log("copying: " + srcPath + " to: " + copiedFile);
 
-            if (file.exists())
+            if (!std::filesystem::exists(copiedFile))
                 std::filesystem::copy_file(srcPath, copiedFile, options);
         }
 
     //copy runtime dll to build folder
 
-    const std::string dll = "spaghyeti_source_runtime-core.dll";
+    const std::string dll = "spaghyeti_source_runtime-core.dll",
+                      copy_dll = Editor::projectPath + "build\\" + dll;
     
-    std::filesystem::copy_file(dll, Editor::projectPath + "build\\" + dll, options);
+    if (!std::filesystem::exists(copy_dll))
+        std::filesystem::copy_file(dll, copy_dll, options);
 
     //temp files: asset and command lists
 
@@ -457,7 +459,6 @@ void EventListener::BuildAndRun()
 
     for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
         game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
-
 
     //iterate over scenes to include
 
@@ -546,6 +547,8 @@ void EventListener::BuildAndRun()
             command_queue << "   this->context.physics->continuous = " + phys_isCont + ";\n";
             command_queue << "   this->context.physics->sleeping = " + phys_isSleeping + ";\n";
             command_queue << "   this->context.physics->SetGravity(" + std::to_string(target.second.gravityX) + ", " + std::to_string(target.second.gravityY) + ");\n";
+
+            //preload assets
 
             for (const auto& asset : AssetManager::productionAssets)
             {
