@@ -94,7 +94,7 @@ void Manager::Init()
         #endif
     };
 
-    ATLASES = {
+    atlases = {
         
         { "pixel_text", Spritesheets::pixel_text },
         { "elf", Spritesheets::elf },
@@ -107,7 +107,7 @@ void Manager::Init()
         { "elf", Anims::elf }
     };
 
-    ATLAS_PATH = {
+    atlas_paths = {
    
         { "pixel_text", "raw atlas" },
         { "elf", "raw atlas" },
@@ -117,7 +117,7 @@ void Manager::Init()
         { "another json atlas", "/path_to_spritesheet.json" }
     };
 
-    IMAGE_DIMENSIONS_AND_CHANNELS = {
+    image_dimensions_and_channels = {
         
         { "menu", { 500, 334, 3 } },
         { "cave", { 600, 400, 3 } },
@@ -133,7 +133,7 @@ void Manager::Init()
 
     };
 
-    AUDIO_SIZE = {
+    audio_size = {
 
         { "fire_sound", 13332 },
         { "bubble_pop", 17089 },

@@ -50,7 +50,7 @@ namespace /* SPAGHYETI_CORE */ System {
 			static inline void SetData(std::string key, std::any value) { data.insert({key, value}); }
 			static inline void ClearData() { data.clear(); }
 		
-			Application(Game* layer = nullptr);
+			Application(Game* layer = nullptr, const std::string& key = "");
 		    ~Application();
 
 		private:

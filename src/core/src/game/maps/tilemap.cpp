@@ -68,10 +68,8 @@ void MapManager::CreateLayer (
                 //convert to binary to extract bit flags
 
                 if ((tileType < -1) || (tileType > mapWidth * mapHeight)) 
-                {
-
-                    //flags: 
-                    //1=flipX, 2=flipY, 3=diagonal
+                { 
+                    //flags: 1=flipX, 2=flipY, 3=diagonal
 
                     std::bitset<32> bin(tileType);
 
@@ -88,11 +86,13 @@ void MapManager::CreateLayer (
                     flipY = static_cast<std::string>(flags).substr(1, 1) == "1";
                 }
 
-                auto tile = app::game->CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType); 
+                //create tilesprite entity
+
+                auto tile = System::Game::CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType); 
                 
                 tile->ID = (std::string)data_key;
                 tile->SetDepth(depth); 
-                tile->SetFlip(flipX, flipY);
+                tile->SetFlip(flipX, flipY); 
 
                 //add layer to stack
 
@@ -126,10 +126,10 @@ void MapManager::RemoveLayer(const std::string& key)
             }), layer.end());
     }
 
-    app::game->entities.erase(
-        std::remove_if(app::game->entities.begin(), app::game->entities.end(), [&](auto t) { 
+    app::game->currentScene->entities.erase(
+        std::remove_if(app::game->currentScene->entities.begin(), app::game->currentScene->entities.end(), [&](auto t) { 
             return strcmp(t->type, "tile") == 0 && t->ID == key; }), 
-                app::game->entities.end());
+                app::game->currentScene->entities.end());
 
     #if DEVELOPMENT == 1
         std::cout << "Tilemap: layer " + key + " cleared.\n";
@@ -146,10 +146,10 @@ void MapManager::ClearMap()
 
     app::game->maps->layers.clear();
 
-    app::game->entities.erase(
-        std::remove_if(app::game->entities.begin(), app::game->entities.end(), [](auto t) { 
+    app::game->currentScene->entities.erase(
+        std::remove_if(app::game->currentScene->entities.begin(), app::game->currentScene->entities.end(), [](auto t) { 
             return strcmp(t->type, "tile") == 0; }), 
-                app::game->entities.end());
+                app::game->currentScene->entities.end());
 
     #if DEVELOPMENT == 1
         std::cout << "Tilemap: layers cleared.\n";

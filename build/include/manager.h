@@ -24,65 +24,50 @@ namespace System {
 
             public:
 
-                std::map<std::string, std::vector<std::string>> TILEMAP;
-                std::map<std::string, unsigned int> AUDIO_SIZE;
-                std::map<std::string, std::vector<std::array<int, 6>>> ATLASES;
-                std::map<std::string, std::map<std::string, std::pair<int, int>>> ANIMS;
-                std::map<std::string, const char*> ATLAS_PATH;
-                std::map<std::string, std::array<int, 3>> IMAGE_DIMENSIONS_AND_CHANNELS;
+                //asset storage
 
+                std::map<std::string, std::vector<std::string>> tilemap;
+                std::map<std::string, unsigned int> audio_size;
+                std::map<std::string, std::vector<std::array<int, 6>>> atlases;
+                std::map<std::string, std::map<std::string, std::pair<int, int>>> anims;
+                std::map<std::string, const char*> atlas_paths;
+                std::map<std::string, std::array<int, 3>> image_dimensions_and_channels;
+
+                //resource storage
+
+                std::map<std::string, Shader> shaders;
+                std::map<std::string, Graphics::Texture2D> textures;
 
                 Manager() = default;
                 ~Manager() = default;
-                
-                static inline Shader* shader;
-                static inline Graphics::Texture2D* texture2D;
-                static inline Graphics::Primitive* primitive;
 
-                // resource storage
-
-                static inline std::map<unsigned int, Graphics::Primitive> primitives;
-                static inline std::map<std::string, Shader> shaders;
-                static inline std::map<std::string, Graphics::Texture2D> textures;
-
-                static const char* GetFilePath(const std::string &name);
- 
-                static const char* GetRawData(const std::string &key);  
-
-                static const char* GetSpritesheetPath(const std::string &key);
-
-                static const unsigned int GetSizeOfRawAudio(const std::string &key); 
-
-                static const std::map<std::string, std::pair<int, int>> GetAnimations(const std::string &key);
-
-                static const std::array<int, 3> GetRawDimensionsAndChannels(const std::string &key);
-
-                static std::vector<std::array<int, 6>> GetRawSpritesheetData(const std::string &key);
-                
-                static const std::vector<std::string> GetRawTilemapData(const std::string &key);
+                static const char* GetFilePath(const std::string& name);
+                static const char* GetRawData(const std::string& key);  
+                static const char* GetSpritesheetPath(const std::string& key);
+                static const unsigned int GetSizeOfRawAudio(const std::string& key); 
+                static const std::map<std::string, std::pair<int, int>> GetAnimations(const std::string& key);
+                static const std::array<int, 3> GetRawDimensionsAndChannels(const std::string& key);
+                static std::vector<std::array<int, 6>> GetRawSpritesheetData(const std::string& key);
+                static const std::vector<std::string> GetRawTilemapData(const std::string& key);
 
                 static void RegisterAssets();
+                static void Clear(bool all = true);
                 static void LoadFile(const char* key, const char* path);
                 static void LoadRawImage(const char* key, const char* arr, int width, int height, int channel);
                 static void LoadRawAudio(const char* key, const char* arr, unsigned int bytes);
-                static void LoadAnims(const std::string &key, const std::map<std::string, std::pair<int, int>> &anims);
-                static void LoadFrames(const std::string &key, const std::vector<std::array<int, 6>> &frames); 
-                static void LoadAtlas(const std::string &key, const char* path); 
-                static void LoadTilemap(const std::string &key, const std::vector<std::string> &data);
+                static void LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims);
+                static void LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames); 
+                static void LoadAtlas(const std::string& key, const char* path); 
+                static void LoadTilemap(const std::string& key, const std::vector<std::string>& data);
 
                 static void UnLoadFile(const char* key);
                 static void UnLoadRawImage(const char* key);
                 static void UnLoadRawAudio(const char* key);
-                static void UnLoadAnims(const std::string &key);
-                static void UnLoadFrames(const std::string &key); 
-                static void UnLoadAtlas(const std::string &key); 
-                static void UnLoadTilemap(const std::string &key);
-                
-                static std::vector<std::string> ParseCSV(const std::string &key);
-
-                // properly de-allocates all loaded resources
-
-                static void Clear();
+                static void UnLoadAnims(const std::string& key);
+                static void UnLoadFrames(const std::string& key); 
+                static void UnLoadAtlas(const std::string& key); 
+                static void UnLoadTilemap(const std::string& key);
+                static std::vector<std::string> ParseCSV(const std::string& key);
 
             private:
 

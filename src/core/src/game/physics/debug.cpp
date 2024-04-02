@@ -18,7 +18,7 @@ void Points::Create()
 
 	m_maxVertices = points;
 
-	m_shader = Resources::Manager::shader->GetShader("Points");
+	m_shader = Shader::GetShader("Points");
 
 	m_vertexAttribute = 0;
     m_colorAttribute = 1;
@@ -99,7 +99,7 @@ void Lines::Create()
 {
 
 	m_maxVertices = lines;
-    m_shader = Resources::Manager::shader->GetShader("Lines");
+    m_shader = Shader::GetShader("Lines");
 
     m_vertexAttribute = 0;
     m_colorAttribute = 1;
@@ -169,7 +169,7 @@ void Triangles::Create()
 {
 
 	m_maxVertices = triangles;
-   	m_shader = Resources::Manager::shader->GetShader("Triangles");
+   	m_shader = Shader::GetShader("Triangles");
 
     m_vertexAttribute = 0;
     m_colorAttribute = 1;

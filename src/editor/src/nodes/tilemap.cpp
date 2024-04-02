@@ -292,7 +292,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                         ImGui::Text(csv_name.c_str()); 
 
-                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)System::Resources::Manager::texture2D->GetTexture(this->layers[i][2]).ID, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image") 
+                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::GetTexture(this->layers[i][2]).ID, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image") 
                         {
                             this->layers[i][2] = Editor::selectedAsset;
                             this->layersApplied = false;

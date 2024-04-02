@@ -54,7 +54,7 @@ Editor::Editor()
 
     //init base sandox scene
 
-    Game::LoadScene<System::Scene>(game);
+    game->LoadScene<System::Scene>();
 
     Application::name = "SPAGHYETITOR";
 

@@ -97,6 +97,12 @@ void EventListener::Deserialize(std::ifstream& JSON)
         for (const auto& global : data["globals"])
             Editor::globals.push_back({ global["key"], global["type"] });
 
+    //scenes
+    
+    for (const auto& scene : data["scenes"])
+        if (scene != currentScene)
+            Editor::scenes.push_back(scene);
+
     //sprites
 
     for (const auto& sprite : data["nodes"]["sprites"])
@@ -414,6 +420,17 @@ void EventListener::Serialize(json& data)
             });
 
     data["globals"] = globals;
+
+    //scenes
+
+    json scenes = json::array();
+    
+    for (const auto& scene : Editor::scenes)
+        scenes.push_back(scene);
+
+    data["scenes"] = scenes;
+
+    //nodes
 
     for (const auto& node : Node::nodes)
     {
@@ -824,7 +841,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
                     sn->is_sensor.push_back(bc);
                     sn->body_pointer.push_back(body["pointer"]);
-                    
+
                     sn->bodies.push_back({nullptr, body["type"] });
                 }
         }

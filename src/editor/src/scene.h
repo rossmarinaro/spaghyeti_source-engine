@@ -22,12 +22,14 @@ namespace editor {
         bool globals_applied = false,
              gravity_continuous = true,
              gravity_sleeping = true;
-
+ 
         glm::vec2 cameraPosition;
         glm::vec4 cameraBackgroundColor;
 
         std::vector<std::pair<std::string, std::string>> globals;
         std::vector<std::shared_ptr<editor::Node>> nodes;
+
+        std::map<std::string, std::string> sceneAssets;
 
         template <typename T>
         static inline std::shared_ptr<T> CreateObject(Scene* scene) {

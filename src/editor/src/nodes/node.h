@@ -87,7 +87,7 @@ namespace editor {
                 std::vector<std::shared_ptr<Component>> components;
 
                 static inline int count = 0, 
-                                MAX_NODES = 100; 
+                                  MAX_NODES = 100; 
 
                 static const char* Assign();
 

@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iostream>
 
-
 #include "../../../../vendors/imgui/imgui.h"
 #include "../../../../vendors/imgui/imgui_impl_glfw.h"
 #include "../../../../vendors/imgui/imgui_impl_opengl3.h"
@@ -28,8 +27,8 @@ namespace editor {
             static void Render();
             static void Close();
 
-            static void RenderShaderOptions(const std::string &nodeId);
-            static void RenderScriptOptions(const std::string &nodeId);
+            static void RenderShaderOptions(const std::string& nodeId);
+            static void RenderScriptOptions(const std::string& nodeId);
 
             static inline std::unique_ptr<Geometry> grid;
             
@@ -49,7 +48,7 @@ namespace editor {
             static void ShowMenu();
             static void ShowOptionsInit();
             static void ShowOptionsQuit();
-            static void ShowOptionsSaveQuit();
+            static void ShowOptionsSave(bool quit);
             static void AlignForWidth(float width, float alignment = 0.5f);
     };
 

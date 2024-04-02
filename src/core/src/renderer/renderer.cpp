@@ -26,7 +26,7 @@ GLuint texture_id;
 void System::Renderer::CreateFrameBuffer()
 {
 
-    for (auto &tex : System::Resources::Manager::textures)
+    for (auto &tex : System::Application::resources->textures)
     {
         //tex.second.ID
     }

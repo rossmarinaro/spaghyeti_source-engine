@@ -9,10 +9,6 @@
  <tileset firstgid="101" name="cave" tilewidth="64" tileheight="64" tilecount="300" columns="25">
   <image source="../../../../../../../The_Funky_Adventures_Of_Swanky_Velvet/client/src/assets/maps/platformer/cave.png" width="1646" height="828"/>
  </tileset>
- <objectgroup id="4" name="bounds" visible="0">
-  <object id="2" x="-9.09091" y="445.455" width="2460.61" height="184.848"/>
-  <object id="3" x="293.939" y="775.758" width="3.0303"/>
- </objectgroup>
  <layer id="5" name="background2" width="86" height="19">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -105,4 +101,8 @@
 89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90
 </data>
  </layer>
+ <objectgroup id="4" name="bounds">
+  <object id="2" x="-9.09091" y="445.455" width="2460.61" height="184.848"/>
+  <object id="3" x="293.939" y="775.758" width="3.0303"/>
+ </objectgroup>
 </map>

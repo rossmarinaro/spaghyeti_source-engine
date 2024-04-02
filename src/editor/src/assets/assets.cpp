@@ -20,6 +20,26 @@ void AssetManager::LoadAsset(const std::string& asset, const std::string& path)
 
 }
 
+//----------------------------
+
+
+void AssetManager::SetIcon(const std::string& key)
+{
+    //splash image
+
+    #ifndef __EMSCRIPTEN__
+
+        GLFWimage image; 
+        
+        image.width = 70;
+        image.height = 70;
+        image.pixels = reinterpret_cast<unsigned char*>(const_cast<char*>(System::Resources::Manager::GetRawData(key)));
+    
+        glfwSetWindowIcon(System::Window::s_instance, 1, &image);
+
+    #endif
+}
+
 
 //----------------------------
 

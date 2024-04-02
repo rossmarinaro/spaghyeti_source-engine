@@ -265,7 +265,7 @@ void MeatballMadness::Update()
 
         //set depth  
 
-        for (const auto& entity : System::Application::game->entities) {
+        for (const auto& entity : System::Application::game->currentScene->entities) {
             
             if (this->scoreText != nullptr) {
                 this->scoreText->content = "SCORE: " + std::to_string(this->score);
@@ -542,12 +542,8 @@ int main(int argc, char* args[])
     //main application process
 
     System::Game game;
-
-    System::Application::name = "MEATBALL MADNESS!";
-
-    System::Game::LoadScene<MeatballMadness>(&game);
-
-    System::Application app { &game }; 
+    game.LoadScene<MeatballMadness>();
+    System::Application app { &game, "MEATBALL MADNESS!" }; 
 
     #ifdef __EMSCRIPTEN__
         emscripten_exit_with_live_runtime();

@@ -158,8 +158,11 @@ void GUI::Render()
     if (show_quit)
         ShowOptionsQuit();
 
-    if (Editor::events.saveFlag)
-        ShowOptionsSaveQuit();
+    if (Editor::events.buildFlag)
+        ShowOptionsSave(false);
+
+    else if (Editor::events.saveFlag)
+        ShowOptionsSave(true);
 
     ImGui::Render();
 
@@ -212,48 +215,48 @@ void GUI::ShowOptionsInit()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::Begin("Welcome", &pOpen, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize);
 
-        // ImGuiStyle& style = ImGui::GetStyle();
-        // float width = 0.0f;
-        // width += ImGui::CalcTextSize("New").x;
-        // width += style.ItemSpacing.x;
-        // width += 150.0f;
-        // width += style.ItemSpacing.x;
-        // width += ImGui::CalcTextSize("Open").x;
+    // ImGuiStyle& style = ImGui::GetStyle();
+    // float width = 0.0f;
+    // width += ImGui::CalcTextSize("New").x;
+    // width += style.ItemSpacing.x;
+    // width += 150.0f;
+    // width += style.ItemSpacing.x;
+    // width += ImGui::CalcTextSize("Open").x;
 
-        // AlignForWidth(width);
+    // AlignForWidth(width);
 
-        if (ImGui::Button("New", ImVec2(System::Window::m_width, 0.0f))) {
-            if (Editor::events.NewProject())
-                show_init = false;
-        }
+    if (ImGui::Button("New", ImVec2(System::Window::m_width, 0.0f))) {
+        if (Editor::events.NewProject())
+            show_init = false;
+    }
 
-        if (ImGui::Button("Open", ImVec2(System::Window::m_width, 0.0f))) {
-            if (Editor::events.OpenProject())
-                show_init = false;
-        }
+    if (ImGui::Button("Open", ImVec2(System::Window::m_width, 0.0f))) {
+        if (Editor::events.OpenProject())
+            show_init = false;
+    }
 
-        //render backsplash image to framebuffer
+    //render backsplash image to framebuffer
 
-        const float window_width = ImGui::GetContentRegionAvail().x;
-        const float window_height = ImGui::GetContentRegionAvail().y;
+    const float window_width = ImGui::GetContentRegionAvail().x;
+    const float window_height = ImGui::GetContentRegionAvail().y;
 
-        Renderer::RescaleFrameBuffer(window_width, window_height);
+    Renderer::RescaleFrameBuffer(window_width, window_height);
 
-        ImVec2 pos = ImGui::GetCursorScreenPos();
+    ImVec2 pos = ImGui::GetCursorScreenPos();
 
-        ImGui::GetWindowDrawList()->AddImage(
-            (void*)System::Resources::Manager::texture2D->GetTexture("icon large").ID,
-            ImVec2(pos.x, pos.y),
-            ImVec2(pos.x + window_width, pos.y + window_height),
-            ImVec2(0, 1),
-            ImVec2(1, 0)
-        );
+    ImGui::GetWindowDrawList()->AddImage(
+        (void*)Graphics::Texture2D::GetTexture("icon large").ID,
+        ImVec2(pos.x, pos.y),
+        ImVec2(pos.x + window_width, pos.y + window_height),
+        ImVec2(0, 1),
+        ImVec2(1, 0)
+    );
 
-        Renderer::BindFrameBuffer();
+    Renderer::BindFrameBuffer();
 
-        Renderer::UnbindFrameBuffer();
+    Renderer::UnbindFrameBuffer();
 
-        ImGui::SetCursorPos((ImVec2((ImGui::GetWindowSize().x * 0.5f) - 270, (ImGui::GetWindowSize().y * 0.5f) - 230)));
+    ImGui::SetCursorPos((ImVec2((ImGui::GetWindowSize().x * 0.5f) - 270, (ImGui::GetWindowSize().y * 0.5f) - 230)));
 
 
     ImGui::End();
@@ -278,19 +281,36 @@ void GUI::ShowOptionsQuit()
 
 
 
-//---------------------
+//--------------------- save and quit or save prior to build
 
 
-void GUI::ShowOptionsSaveQuit()
+void GUI::ShowOptionsSave(bool quit)
 {
+
     ImGui::Text("Do You Want To Save?");
 
     if (ImGui::MenuItem("Yes")) 
-        if(Editor::events.SaveProject())
-            Editor::events.exitFlag = true;
+        if(Editor::events.SaveScene()) 
+        {
+            if (quit) 
+                Editor::events.exitFlag = true;
+            else 
+                Editor::events.BuildAndRun();
 
-    if (ImGui::MenuItem("No"))
-        Editor::events.exitFlag = true;
+            Editor::events.buildFlag = false;
+        }
+
+    if (ImGui::MenuItem("No")) 
+    {
+        
+        if (quit)
+            Editor::events.exitFlag = true;
+        else 
+            Editor::events.BuildAndRun();
+
+        Editor::events.buildFlag = false;
+    }
+       
 }
 
 

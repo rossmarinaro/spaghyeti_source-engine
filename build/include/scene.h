@@ -12,9 +12,10 @@ namespace System {
 
             std::string key;
             
+            std::vector<std::shared_ptr<Entity>> entities;
             std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
 
-            Scene(const Process::Context& context):
+            Scene(const Process::Context& context): 
                 context(context),
                 key("Untitled" + std::to_string(g_ID)) { g_ID++; }
 

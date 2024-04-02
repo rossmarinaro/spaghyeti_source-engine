@@ -308,7 +308,7 @@ void Sprite::Render()
         this->m_shader.SetInt("repeat", this->m_texture.Repeat, true);
     #endif
 
-    this->m_shader.SetVec2f("scale", glm::vec2(this->m_scale.x * 0.1f, this->m_scale.y * 0.1f), true); 
+    this->m_shader.SetVec2f("scale", glm::vec2(this->m_scale.x, this->m_scale.y), true); 
     this->m_shader.SetFloat("alphaVal", this->m_alpha, true); 
     this->m_shader.SetVec3f("tint", this->m_tint, true);
     this->m_shader.SetMat4("model", this->m_model, true);

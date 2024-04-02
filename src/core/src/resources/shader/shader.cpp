@@ -10,7 +10,7 @@
 
 
 Shader& Shader::GetShader(const std::string &key) {
-    return System::Resources::Manager::shaders[key];
+    return System::Application::resources->shaders[key];
 } 
 
 
@@ -72,7 +72,7 @@ void Shader::Update(Camera* camera)
 
     //custom shaders
 
-    for (auto it = System::Resources::Manager::shaders.begin(); it != System::Resources::Manager::shaders.end(); ++it)
+    for (auto it = System::Application::resources->shaders.begin(); it != System::Application::resources->shaders.end(); ++it)
     {
         
         auto shader = *it;
@@ -190,10 +190,10 @@ void checkCompileErrors(unsigned int shader, const std::string &type)
 void Shader::Load(const std::string &key, const char* vertShader, const char* fragShader, const char* geomShader)
 {
 
-    if (std::find_if(System::Resources::Manager::shaders.begin(), System::Resources::Manager::shaders.end(), [&](auto s) { return s.first == key; }) != System::Resources::Manager::shaders.end())
+    if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&](auto s) { return s.first == key; }) != System::Application::resources->shaders.end())
     {
         #if DEVELOPMENT == 1
-            std::cout << "shader already exists.\n";
+            std::cout << "Shader: already exists.\n";
         #endif
 
         return;
@@ -284,8 +284,7 @@ void Shader::Load(const std::string &key, const char* vertShader, const char* fr
     
     }
 
-
-    System::Resources::Manager::shaders[key] = shader; 
+    System::Application::resources->shaders[key] = shader; 
 }
 
 //--------------------------- generate
@@ -366,10 +365,10 @@ void Shader::Generate(const char* vertexPath, const char* fragmentPath, const ch
 
 void Shader::UnLoad(const std::string& key)
 { 
-    std::map<std::string, Shader>::iterator it = System::Resources::Manager::shaders.find(key);
+    std::map<std::string, Shader>::iterator it = System::Application::resources->shaders.find(key);
     
-    if (it != System::Resources::Manager::shaders.end())
-        System::Resources::Manager::shaders.erase(it);
+    if (it != System::Application::resources->shaders.end())
+        System::Application::resources->shaders.erase(it);
 }
 
 

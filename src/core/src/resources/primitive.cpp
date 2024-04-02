@@ -179,15 +179,15 @@ void Geometry::Render()
 //--------------------------------- Texture 2D
 
 
-Texture2D& Texture2D::GetTexture(const std::string &key) {
-    return System::Resources::Manager::textures[key];
+Texture2D& Texture2D::GetTexture(const std::string& key) {
+    return System::Application::resources->textures[key];
 }
 
 
 //-----------------------------------
 
 
-void Texture2D::SetChannels(Texture2D &texture, unsigned int channels) 
+void Texture2D::SetChannels(Texture2D& texture, unsigned int channels) 
 {
     
     texture.Channels = channels;
@@ -215,8 +215,9 @@ void Texture2D::SetFiltering()
 //-----------------------------------
 
 
-void Texture2D::Load(const std::string &key) 
+void Texture2D::Load(const std::string& key) 
 {
+
 
     bool success = false;
 
@@ -278,6 +279,7 @@ void Texture2D::Load(const std::string &key)
     }
     
     else {
+
         #if DEVELOPMENT == 1
             std::cout << "Texture2D: " + key + " loaded.\n";
         #endif
@@ -286,7 +288,7 @@ void Texture2D::Load(const std::string &key)
 
     //assign texture in manager
 
-    System::Resources::Manager::textures[key] = texture;  
+    System::Application::resources->textures[key] = texture;  
 
 
 }
@@ -295,10 +297,10 @@ void Texture2D::Load(const std::string &key)
 //--------------------------------------
 
 
-void Texture2D::UnLoad(const std::string &key) 
+void Texture2D::UnLoad(const std::string& key) 
 {
     
-    Texture2D* texture = &System::Resources::Manager::textures[key];
+    Texture2D* texture = &System::Application::resources->textures[key];
 
     glDeleteTextures(1, &texture->ID);   
     glBindTexture(GL_TEXTURE_2D, 0); 
@@ -306,7 +308,10 @@ void Texture2D::UnLoad(const std::string &key)
     glDeleteBuffers(1, &texture->VBO);
     glDeleteBuffers(1, &texture->UVBO);
 
-    System::Resources::Manager::textures.erase(key);
+    auto it = System::Application::resources->textures.find(key);
+
+    if (it != System::Application::resources->textures.end())
+        System::Application::resources->textures.erase(it);
 
     #if DEVELOPMENT == 1
         std::cout << "Texture2D: Deleted texture " + key + "\n";

@@ -1,41 +1,24 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sat Mar 30 21:31:45 2024
-IMGui Version: 1 @ Sat Mar 30 21:31:45 2024
-GUI launched. @ Sat Mar 30 21:31:45 2024
-Workspace reset. @ Sat Mar 30 21:31:50 2024
-sprite node Untitled created. @ Sat Mar 30 21:31:53 2024
-sprite node Untitled created. @ Sat Mar 30 21:31:53 2024
-sprite node Untitled created. @ Sat Mar 30 21:31:53 2024
-sprite node Untitled created. @ Sat Mar 30 21:31:53 2024
-sprite node Untitled created. @ Sat Mar 30 21:31:53 2024
-sprite node Untitled created. @ Sat Mar 30 21:31:53 2024
-Tilemap node Untitled created. @ Sat Mar 30 21:31:53 2024
-Text node Untitled created. @ Sat Mar 30 21:31:53 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Apr 01 20:31:37 2024
+IMGui Version: 1 @ Mon Apr 01 20:31:38 2024
+GUI launched. @ Mon Apr 01 20:31:38 2024
+Workspace reset. @ Mon Apr 01 20:31:42 2024
+sprite node Untitled created. @ Mon Apr 01 20:31:42 2024
+sprite node Untitled created. @ Mon Apr 01 20:31:42 2024
+sprite node Untitled created. @ Mon Apr 01 20:31:42 2024
+sprite node Untitled created. @ Mon Apr 01 20:31:42 2024
+sprite node Untitled created. @ Mon Apr 01 20:31:42 2024
+sprite node Untitled created. @ Mon Apr 01 20:31:42 2024
+Tilemap node Untitled created. @ Mon Apr 01 20:31:42 2024
+Text node Untitled created. @ Mon Apr 01 20:31:42 2024
 Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Sat Mar 30 21:31:53 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\images\cave.png to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\cave.png @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\images\grunt.png to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\grunt.png @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\images\heart.png to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\heart.png @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\images\map.png to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\map.png @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\images\platformer.png to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\platformer.png @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\images\player.png to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\player.png @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\images\test3.png to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\test3.png @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\audio\boing.ogg to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\boing.ogg @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\audio\ring.flac to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\ring.flac @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\audio\swipe.flac to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\swipe.flac @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\audio\swipe.ogg to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\swipe.ogg @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\cave_background.csv to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\cave_background.csv @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\cave_background2.csv to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\cave_background2.csv @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\cave_background3.csv to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\cave_background3.csv @ Sat Mar 30 21:32:05 2024
-copying: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\cave_ground.csv to: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\build\assets\cave_ground.csv @ Sat Mar 30 21:32:05 2024
-Scene parsed. @ Sat Mar 30 21:32:05 2024
-Project TestGame built successfully. @ Sat Mar 30 21:32:16 2024
-Tilemap node map deleted. @ Sat Mar 30 21:32:23 2024
-Sprite node player deleted. @ Sat Mar 30 21:32:25 2024
-Sprite node background deleted. @ Sat Mar 30 21:32:25 2024
-Sprite node elf deleted. @ Sat Mar 30 21:32:25 2024
-Sprite node heart1 deleted. @ Sat Mar 30 21:32:25 2024
-Sprite node heart2 deleted. @ Sat Mar 30 21:32:25 2024
-Sprite node heart3 deleted. @ Sat Mar 30 21:32:25 2024
-Text node FPS deleted. @ Sat Mar 30 21:32:25 2024
-GUI exited @ Sat Mar 30 21:32:25 2024
-Editor closed. @ Sat Mar 30 21:32:25 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Mon Apr 01 20:31:42 2024
+Sprite node player deleted. @ Mon Apr 01 20:31:52 2024
+Sprite node background deleted. @ Mon Apr 01 20:31:52 2024
+Sprite node elf deleted. @ Mon Apr 01 20:31:52 2024
+Sprite node heart1 deleted. @ Mon Apr 01 20:31:52 2024
+Sprite node heart2 deleted. @ Mon Apr 01 20:31:52 2024
+Sprite node heart3 deleted. @ Mon Apr 01 20:31:52 2024
+Tilemap node map deleted. @ Mon Apr 01 20:31:52 2024
+Text node FPS deleted. @ Mon Apr 01 20:31:52 2024
+GUI exited @ Mon Apr 01 20:31:52 2024
+Editor closed. @ Mon Apr 01 20:31:52 2024

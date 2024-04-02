@@ -11,7 +11,7 @@ void System::Application::Init(Game* layer)
     Shader::InitBaseShaders();
 
     //run game layer
-    
+     
     Game::Boot();
 
     //init input callbacks 
@@ -56,8 +56,10 @@ void System::Application::Update()
 //-----------------------------
 
 
-System::Application::Application(Game* layer)
+System::Application::Application(Game* layer, const std::string& key)
 { 
+
+    name = key;
 
     std::cout << "PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌\n";  
 
@@ -113,6 +115,7 @@ System::Application::~Application()
 
     delete resources;
 
-    std::cout << "Application terminated. 👌\n";
-
+    #if DEVELOPMENT == 1
+        std::cout << "Application terminated. 👌\n";
+    #endif
 };

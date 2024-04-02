@@ -23,12 +23,12 @@ void editor::GUI::ShowSettings()
             for (const auto& filename : std::filesystem::directory_iterator(Editor::projectPath)) 
                 if (System::Utils::str_endsWith(filename.path().string(), ".spaghyeti"))
                 {
-                    std::string scene = System::Utils::ReplaceFrom(filename.path().filename().string(), ".", ""); 
+                    const std::string scene = System::Utils::ReplaceFrom(filename.path().filename().string(), ".", ""); 
                   
-                  if (Editor::events.currentProject != scene)
-                    if (ImGui::MenuItem((scene).c_str())) 
-                        if (std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == scene; }) == Editor::scenes.end()) 
-                            Editor::scenes.push_back(scene);
+                    if (Editor::events.currentScene != scene)
+                        if (ImGui::MenuItem((scene).c_str())) 
+                            if (std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == scene; }) == Editor::scenes.end()) 
+                                Editor::scenes.push_back(scene);
                 }
 
             ImGui::EndMenu();
@@ -38,7 +38,7 @@ void editor::GUI::ShowSettings()
         {
             for (const auto& scene : Editor::scenes) 
             {
-                if (Editor::events.currentProject != scene)
+                if (Editor::events.currentScene != scene)
                 {
                     if (ImGui::MenuItem((scene).c_str())) {
 
@@ -49,7 +49,7 @@ void editor::GUI::ShowSettings()
                     }
                 } 
 
-                else if (Editor::scenes.size() == 1)
+                if (Editor::scenes.size() == 1)
                     ImGui::Text("cannot remove base scene.");
             }
 
@@ -194,7 +194,7 @@ void editor::GUI::ShowMenu()
     ImGui::Text(("Platform: " + Editor::platform).c_str());
 
     if (ImGui::MenuItem("Build / Run"))
-        Editor::events.BuildAndRun();
+        Editor::events.buildFlag = true;
 
     if (ImGui::MenuItem("New"))
         Editor::events.NewProject();
@@ -203,11 +203,11 @@ void editor::GUI::ShowMenu()
         Editor::events.OpenProject();
 
     if (ImGui::MenuItem("Save", "Ctrl+S"))
-        if(Editor::events.SaveProject())
+        if(Editor::events.SaveScene())
             Editor::events.exitFlag = true;
 
     if (ImGui::MenuItem("Save As.."))
-        if (Editor::events.SaveProject(true))
+        if (Editor::events.SaveScene(true))
             Editor::events.exitFlag = true;
 
     ImGui::Separator();

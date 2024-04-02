@@ -51,18 +51,15 @@ void Game::Boot()
     game->currentScene = game->scenes[0]; 
 
     game->currentScene->Preload();
-
-    Resources::Manager::RegisterAssets();
-
     game->currentScene->Run(); 
 
-    Application::game->inputs->CreateCursor();
+    game->inputs->CreateCursor();
 
     glfwSetWindowTitle(Window::s_instance, Application::name.c_str());
 
     std::cout << "Game: " + Application::name + " initialized.\n";
 
-    gameState = true;
+    game->gameState = true;
        
 }
 
@@ -75,25 +72,24 @@ void Game::StartScene(const std::string& key)
 
     Game* game = Application::game;
 
+    game->gameState = false;
+
     auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](std::shared_ptr<Scene> scene) { return scene->key == key; });
 
     if (it != game->scenes.end())
     {
 
-        gameState = false;
-
-        game->entities.clear();
+        game->currentScene->entities.clear();
         game->currentScene->behaviors.clear();
         
-        auto scene = *it;
+        game->currentScene = *it; 
 
-        game->currentScene = scene; 
+        System::Resources::Manager::Clear(false);
 
         game->currentScene->Preload();
-
-        Resources::Manager::RegisterAssets();
-
         game->currentScene->Run();
+
+        game->gameState = true;
     }
 }
 
@@ -104,12 +100,11 @@ void Game::StartScene(const std::string& key)
 void Game::Exit() 
 {
 
-    gameState = false;
-
     Game* game = Application::game;
 
-    game->entities.clear();
+    game->gameState = false;
 
+    game->currentScene->entities.clear();
     game->currentScene->behaviors.clear();
 
     #if DEVELOPMENT == 1 
@@ -143,16 +138,16 @@ void Game::Exit()
 void Game::UpdateFrame()
 {
 
-    if (!gameState)
-        return;
-
     Game* game = Application::game;
+
+    if (!game->gameState)
+        return;
 
     game->physics->Update();
 
     //render queues
 
-    for (const auto& entity : game->entities)
+    for (const auto& entity : game->currentScene->entities)
         if ((entity.get() && entity) && entity.get()->m_renderable) {
 
             if (game->cursor != nullptr)
@@ -173,7 +168,7 @@ void Game::UpdateFrame()
 
     //depth sort
 
-    std::sort(game->entities.begin(), game->entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
+    std::sort(game->currentScene->entities.begin(), game->currentScene->entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
 
     #if DEVELOPMENT == 1 
 
@@ -197,12 +192,12 @@ void Game::UpdateFrame()
 void Game::DestroyUI()
 {
 
-    for (const auto& UI : Application::game->entities)
+    for (const auto& UI : Application::game->currentScene->entities)
     {
-        std::vector<std::shared_ptr<Entity>>::iterator it = std::find(Application::game->entities.begin() - 1, Application::game->entities.end() - 1, UI);
+        std::vector<std::shared_ptr<Entity>>::iterator it = std::find(Application::game->currentScene->entities.begin() - 1, Application::game->currentScene->entities.end() - 1, UI);
 
-        if (it != Application::game->entities.end())
-            Application::game->entities.erase(it);
+        if (it != Application::game->currentScene->entities.end())
+            Application::game->currentScene->entities.erase(it);
 
         DestroyEntity(UI);
     }
@@ -216,10 +211,10 @@ void Game::DestroyUI()
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
 
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(Application::game->entities.begin() - 1, Application::game->entities.end(), entity);
+    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(Application::game->currentScene->entities.begin() - 1, Application::game->currentScene->entities.end(), entity);
 
-    if (it != Application::game->entities.end())
-       Application::game->entities.erase(it);
+    if (it != Application::game->currentScene->entities.end())
+       Application::game->currentScene->entities.erase(it);
 
     entity->m_renderable = false;
 
@@ -259,7 +254,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
 
     sprite->SetScale(scale);
 
-    Application::game->entities.push_back(sprite);
+    Application::game->currentScene->entities.push_back(sprite);
 
     return sprite;
 }
@@ -280,7 +275,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y,
     
     element->SetFrame(frame);
 
-    Application::game->entities.push_back(element);
+    Application::game->currentScene->entities.push_back(element);
 
     return element;
 }
@@ -298,7 +293,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
     //ts->m_shader = Shader::GetShader("sprite_batch");
     ts->ReadSpritesheetData(); 
 
-    Application::game->entities.push_back(ts);
+    Application::game->currentScene->entities.push_back(ts);
 
     return ts;
 
@@ -313,7 +308,7 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 
     auto text = std::make_shared<Text>(content, x, y); 
 
-    Application::game->entities.push_back(text);
+    Application::game->currentScene->entities.push_back(text);
 
     return text;
 }
@@ -326,7 +321,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 {
     auto geom = std::make_shared<Geometry>(x, y, width, height);
 
-    Application::game->entities.push_back(geom);
+    Application::game->currentScene->entities.push_back(geom);
 
     return geom;
 }
@@ -339,7 +334,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &st
 {
     auto geom = std::make_shared<Geometry>(x, y, start, end);
 
-    Application::game->entities.push_back(geom);
+    Application::game->currentScene->entities.push_back(geom);
 
     return geom;
 }

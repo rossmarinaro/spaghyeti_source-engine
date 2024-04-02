@@ -29,12 +29,20 @@ namespace System {
             Game();
             virtual ~Game() = default;
 
-            static inline MapManager* maps;
+            template <typename T>
+            inline void LoadScene() {
+                auto scene = std::make_shared<T>(this->context);
+                this->scenes.push_back(scene);
+            }
+
+            //game lifecycle
 
             static void Boot();
             static void Exit();
             static void UpdateFrame();
             static void StartScene(const std::string& key);
+
+            //create objects
 
             static std::shared_ptr<Sprite> CreateUI(const std::string& key, float x, float y, int frame = 0);
             static std::shared_ptr<Sprite> CreateSprite(const std::string& key, float x, float y, int frame = 0, float scale = 1.0f);
@@ -50,18 +58,15 @@ namespace System {
                 scene->behaviors.push_back(behavior); 
             }
 
-            template <typename T>
-            static inline void LoadScene(Game* game) {
-                auto scene = std::make_shared<T>(game->context);
-                game->scenes.push_back(scene);
-            }
-
             static void DestroyEntity(std::shared_ptr<Entity> entity);
             static void DestroyUI();
 
-            //render queues
+            //map manager
 
-            std::vector<std::shared_ptr<Entity>> entities;
+            static inline MapManager* maps;
+
+            //render queues
+            
             std::vector<std::shared_ptr<Scene>> scenes;
             std::shared_ptr<Scene> currentScene;
 
@@ -76,9 +81,9 @@ namespace System {
             
         private:
 
-            Process::Context context;
+            bool gameState;
 
-            static inline bool gameState = false;
+            Process::Context context;
     }; 
 
 }

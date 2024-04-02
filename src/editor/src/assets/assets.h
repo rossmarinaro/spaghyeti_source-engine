@@ -14,8 +14,9 @@ namespace editor {
 
             static inline std::vector<std::pair<std::string, GLuint>> images; 
             static inline std::map<std::string, std::string> loadedAssets,
-                                                            productionAssets;
+                                                             productionAssets;
 
+            static void SetIcon(const std::string& key);
             static void LoadAsset(const std::string& asset, const std::string& path);
             static void SavePrefab(void* node);
 

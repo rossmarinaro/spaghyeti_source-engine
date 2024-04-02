@@ -11,6 +11,7 @@ namespace editor {
 
             static inline bool exitFlag = false,
                                saveFlag = false,
+                               buildFlag = false,
                                shouldSave = false;
             
             static inline std::string currentProject = "",
@@ -19,7 +20,7 @@ namespace editor {
             static inline std::map<std::string, Scene> compileQueue;
 
             bool NewProject(const char* root_path = "C:\\");
-            bool SaveProject(bool saveAs = false);
+            bool SaveScene(bool saveAs = false);
             bool OpenProject();
             
             void GenerateProject();

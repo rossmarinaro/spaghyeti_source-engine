@@ -15,7 +15,7 @@ void CollisionManager::BeginContact(b2Contact* contact)
     b2Fixture* bodyFixtureA = contact->GetFixtureA()->GetBody()->GetFixtureList();
     b2Fixture* bodyFixtureB = contact->GetFixtureA()->GetBody()->GetFixtureList();
 
-    for (const auto& entity : System::Application::game->entities)
+    for (const auto& entity : System::Application::game->currentScene->entities)
     {
         if (strcmp(entity->type, "sprite") != 0) 
             continue;       
@@ -52,7 +52,7 @@ void CollisionManager::EndContact(b2Contact* contact)
     b2Fixture* bodyFixtureA = contact->GetFixtureA()->GetBody()->GetFixtureList();
     b2Fixture* bodyFixtureB = contact->GetFixtureA()->GetBody()->GetFixtureList();
 
-    for (const auto& entity : System::Application::game->entities)
+    for (const auto& entity : System::Application::game->currentScene->entities)
     {
 
         if (strcmp(entity->type, "sprite") != 0) 

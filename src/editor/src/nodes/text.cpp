@@ -117,11 +117,11 @@ void TextNode::Render(std::shared_ptr<Node> node)
                 ImGui::ColorEdit3("tint", (float*)&this->tint); 
                 ImGui::SliderInt("depth", &this->depth, 0, 1000);
                 ImGui::SliderFloat("alpha", &this->alpha, 0.0f, 1.0f);
-                ImGui::SliderFloat("position x", &this->positionX, 0.0f, System::Window::m_width); 
-                ImGui::SliderFloat("position y", &this->positionY, 0.0f, System::Window::m_height); 
+                ImGui::SliderFloat("position x", &this->positionX, -System::Window::m_width, System::Window::m_width); 
+                ImGui::SliderFloat("position y", &this->positionY, -System::Window::m_height, System::Window::m_height); 
                 ImGui::SliderFloat("rotation", &this->rotation, 0.0f, 360.0f); 
-                ImGui::SliderFloat("scale x", &this->scaleX, -2.0f, 100.0f); 
-                ImGui::SliderFloat("scale y", &this->scaleY, -2.0f, 100.0f);
+                ImGui::SliderFloat("scale x", &this->scaleX, -100.0f, 100.0f); 
+                ImGui::SliderFloat("scale y", &this->scaleY, -100.0f, 100.0f);
             }
 
             ImGui::TreePop();
