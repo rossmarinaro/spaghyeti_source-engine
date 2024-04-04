@@ -302,7 +302,6 @@ void Inputs::SetGamepadInputs(unsigned int joystick)
     if (GLFW_PRESS == buttons[0]) 
         this->m_ENTER = true;
     
-
     else if (GLFW_RELEASE == buttons[0]) 
         this->m_ENTER = false;
 

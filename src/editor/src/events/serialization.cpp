@@ -94,14 +94,13 @@ void EventListener::Deserialize(std::ifstream& JSON)
     //global variables
     
     if (data["globals"].size())
+    {
         for (const auto& global : data["globals"])
             Editor::globals.push_back({ global["key"], global["type"] });
 
-    //scenes
-    
-    for (const auto& scene : data["scenes"])
-        if (scene != currentScene)
-            Editor::scenes.push_back(scene);
+        if (data["globals_applied"])
+            Editor::globals_applied = true;
+    }
 
     //sprites
 
@@ -253,8 +252,13 @@ void EventListener::Deserialize(std::ifstream& JSON)
             tmn->AddComponent("Physics", false);
 
         if (tilemap["components"]["physics"]["bodies"].size())
-            for (const auto& body : tilemap["components"]["physics"]["bodies"]) 
+            for (const auto& body : tilemap["components"]["physics"]["bodies"]) {
+
                 tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+
+                for (int i = 0; i < tmn->bodies.size(); i++)
+                    tmn->UpdateBody(i);
+            }
         
         if (tilemap["layers"].size())
             tmn->ApplyTilemap();
@@ -282,6 +286,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
         auto en = Node::MakeNode<EmptyNode>(); 
 
+        en->m_ID = empty["ID"];
         en->show_debug = empty["debug graphics"]; 
         en->debug_fill = empty["fill"];
         en->rectWidth = empty["width"];  
@@ -412,23 +417,13 @@ void EventListener::Serialize(json& data)
 
     json globals = json::array();
 
+    data["globals_applied"] = Editor::globals_applied;
+ 
     if (Editor::globals_applied)
         for (const auto& global : Editor::globals)
-            globals.push_back({
-                { "key", global.first },
-                { "type", global.second }
-            });
+            globals.push_back({{ "key", global.first }, { "type", global.second } });
 
     data["globals"] = globals;
-
-    //scenes
-
-    json scenes = json::array();
-    
-    for (const auto& scene : Editor::scenes)
-        scenes.push_back(scene);
-
-    data["scenes"] = scenes;
 
     //nodes
 
@@ -640,7 +635,7 @@ void EventListener::Serialize(json& data)
             auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
             empty.push_back({
-
+                { "ID", node->m_ID },
                 { "debug graphics", en->show_debug },
                 { "fill", en->debug_fill },
                 { "width", en->rectWidth },
@@ -650,12 +645,12 @@ void EventListener::Serialize(json& data)
                 { "position x", en->positionX },
                 { "position y", en->positionY },
                 { "m_tint", {
-                        { "x", en->m_debugGraphic->m_tint.x },
-                        { "y", en->m_debugGraphic->m_tint.y },
-                        { "z", en->m_debugGraphic->m_tint.z }
+                        { "x", en->m_debugGraphic ? en->m_debugGraphic->m_tint.x : 0 },
+                        { "y", en->m_debugGraphic ? en->m_debugGraphic->m_tint.y : 0 },
+                        { "z", en->m_debugGraphic ? en->m_debugGraphic->m_tint.z : 0 }
                     }
                 },
-                { "m_alpha", en->m_debugGraphic->m_alpha },
+                { "m_alpha", en->m_debugGraphic ? en->m_debugGraphic->m_alpha : 0 },
                 { "components", {
                         { "script", {
                                 { "exists", en->HasComponent("Script") },
@@ -758,8 +753,12 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
     //global variables
     
     if (data["globals"].size())
+    {
         for (const auto& global : data["globals"])
             scene.globals.push_back({ global["key"], global["type"] });
+
+        scene.globals_applied = true;
+    }
 
     //sprites
 
@@ -939,6 +938,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
         auto en = Scene::CreateObject<EmptyNode>(&scene); 
 
+        en->m_ID = empty["ID"];
         en->show_debug = empty["debug graphics"]; 
         en->debug_fill = empty["fill"];
         en->rectWidth = empty["width"];  

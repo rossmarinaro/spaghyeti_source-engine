@@ -214,6 +214,7 @@ namespace editor {
 
             void ApplyTilemap(bool clearPrevious = true);
             void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
+            void UpdateBody(int index);
 
         private: 
 

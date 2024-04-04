@@ -54,6 +54,8 @@ void TilemapNode::Reset(const char* component_type)
     }
 
     this->mapApplied = false;
+
+    MapManager::ClearMap();
 }
 
 
@@ -138,6 +140,24 @@ void TilemapNode::CreateBody(float x, float y, float width, float height)
 //---------------------------
 
 
+void TilemapNode::UpdateBody(int index) 
+{
+
+    b2PolygonShape body; 
+    body.SetAsBox(this->body_width[index] / 2, this->body_height[index] / 2);
+
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &body; 
+
+    this->bodies[index]->DestroyFixture(this->bodies[index]->GetFixtureList());
+    this->bodies[index]->CreateFixture(&fixtureDef);
+    this->bodies[index]->SetTransform(b2Vec2(this->bodyX[index] + this->body_width[index] / 2, this->bodyY[index] + this->body_height[index] / 2), 0);
+}
+
+
+//---------------------------
+
+
 void TilemapNode::Render(std::shared_ptr<Node> node)
 {
 
@@ -169,49 +189,96 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                 if (physics_component)
                 {
-                    
-                    ImGui::Text("manual input: CTRL + click");
 
-                    for (int i = 0; i < this->bodies.size(); i++)
+                    if (ImGui::BeginMenu("bodies"))
                     {
+                        ImGui::Text("manual input: CTRL + click");
 
-                        ImGui::PushID(i);
-
-                        ImGui::Text("body: %d", i);
-
-                        ImGui::SameLine();
-
-                        if (ImGui::Button("remove") && this->bodies.size() > 1) 
+                        for (int i = 0; i < this->bodies.size(); i++)
                         {
-                            auto it = std::find(this->bodies.begin(), this->bodies.end(), this->bodies[i]);
-                            if (it != this->bodies.end()) {
-                                Physics::DestroyBody(*it); 
-                                this->bodies.erase(it);
+
+                            ImGui::PushID(i);
+
+                            ImGui::Text("body: %d", i);
+
+                            ImGui::SameLine();
+
+                            if (ImGui::Button("remove") && this->bodies.size() > 1) 
+                            {
+                                auto it = std::find(this->bodies.begin(), this->bodies.end(), this->bodies[i]);
+                                if (it != this->bodies.end()) {
+                                    Physics::DestroyBody(*it); 
+                                    this->bodies.erase(it);
+                                }
                             }
+
+                            ImGui::SliderFloat("width", &this->body_width[i], 0.0f, this->map_width * this->tile_width, NULL, ImGuiSliderFlags_AlwaysClamp); 
+                            ImGui::SliderFloat("height", &this->body_height[i], 0.0f, this->map_height * this->tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
+
+                            ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, this->map_width * this->tile_width, NULL, ImGuiSliderFlags_AlwaysClamp);  
+                            ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, this->map_height * this->tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
+
+                            ImGui::Separator();             
+                            
+                            this->UpdateBody(i);
+                            
+                            ImGui::PopID();
+
                         }
-    
-                        ImGui::SliderFloat("width", &this->body_width[i], 0.0f, this->map_width * this->tile_width, NULL, ImGuiSliderFlags_AlwaysClamp); 
-                        ImGui::SliderFloat("height", &this->body_height[i], 0.0f, this->map_height * this->tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
 
-                        ImGui::SliderFloat("x", &this->bodyX[i], 0.0f, this->map_width * this->tile_width, NULL, ImGuiSliderFlags_AlwaysClamp);  
-                        ImGui::SliderFloat("y", &this->bodyY[i], 0.0f, this->map_height * this->tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
-
-                        ImGui::Separator();             
-                        
-                        b2PolygonShape body; 
-                        body.SetAsBox(this->body_width[i], this->body_height[i]);
-
-                        b2FixtureDef fixtureDef;
-                        fixtureDef.shape = &body; 
-
-                        this->bodies[i]->DestroyFixture(this->bodies[i]->GetFixtureList());
-                        this->bodies[i]->CreateFixture(&fixtureDef);
-                        this->bodies[i]->SetTransform(b2Vec2(this->bodyX[i], this->bodyY[i]), 0);
-                        
-                        ImGui::PopID();
-
+                        ImGui::EndMenu();
                     }
 
+                    //load collision data from file
+
+                    if (ImGui::BeginMenu("load collision data"))
+                    {
+                        for (const auto& asset : AssetManager::loadedAssets)
+                        {
+
+                            std::string key = asset.first;
+                            std::string path = asset.second;
+
+                            key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
+                            path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+
+                            if (System::Utils::str_endsWith(path, ".json")) 
+                            {
+
+                                if (ImGui::MenuItem(key.c_str())) 
+                                {
+
+                                    for (const auto& body : this->bodies)
+                                        Physics::DestroyBody(body);
+
+                                    this->bodyX.clear();
+                                    this->bodyY.clear();
+                                    this->body_width.clear();
+                                    this->body_height.clear();
+
+                                    this->bodies.clear();
+
+                                    //parse json to extract body data
+
+                                    std::ifstream JSON(path);
+
+                                    json data = json::parse(JSON);
+
+                                    for (const auto& body : data["objects"])
+                                    {
+                                        this->CreateBody(body["x"], body["y"], body["width"], body["height"]);
+                                        
+                                        for (int i = 0; i < this->bodies.size(); i++)
+                                            this->UpdateBody(i);
+                                    }
+             
+                                    this->layersApplied = false;
+                                }
+                            }
+                        }
+                        ImGui::EndMenu();
+                    }
+                    
                     if (ImGui::Button("add")) 
                         this->CreateBody();
 
@@ -275,6 +342,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                                         this->layers[i][0] = key;
                                         this->layers[i][1] = path;
+
                                         this->layersApplied = false;
                                     }
                                 }

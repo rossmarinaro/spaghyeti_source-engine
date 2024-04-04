@@ -48,6 +48,24 @@ class Entity {
 
 		std::string ID;
 
+		//key val data to be assigned to entity object
+
+		std::map<std::string, std::any> data;
+
+		template<typename T>
+		inline T GetData(const std::string& key) { return std::any_cast<T>(this->data.at(key)); }
+
+		inline void SetData(const std::string& key, const std::any& value) 
+		{ 
+
+			auto it = this->data.find(key);
+
+			if (it != this->data.end())
+				this->data.erase(it);
+
+			this->data.insert({ key, value }); 
+		}
+
 		inline bool IsSprite() {
 			return strcmp(this->type, "sprite") == 0 || 
 				   strcmp(this->type, "tile") == 0;
@@ -211,10 +229,6 @@ class Sprite : public Entity {
 		std::string m_key;
 		std::map<std::string, std::pair<int, int>> m_anims;
 
-		//key val data to be assigned to sprite object
-
-		std::map<std::string, std::any> data;
-
 		//physics body
 
 		std::vector<std::pair<b2Body*, glm::vec2>> bodies;
@@ -225,10 +239,6 @@ class Sprite : public Entity {
 			return 0;
 		}
 
-		template<typename T>
-		inline T GetData(const std::string& key) { return std::any_cast<T>(this->data.at(key)); }
-
-		inline void SetData(const std::string& key, const std::any& value) { this->data.insert({key, value}); }
 		inline void SetFrame(int frame) { this->m_currentFrame = frame; }
 		inline void SetAnimation(const char* key) { this->currentAnim = { key, { false, 2 } }; }
 		inline void StopAnimation() { this->currentAnim = {}; }

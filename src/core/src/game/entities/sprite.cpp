@@ -23,7 +23,7 @@ void Sprite::SetVelocity(float velX, float velY)
         this->m_position.y += this->velocityY /* * System::Application::game->time->GetSeconds() */; 
     }
 
-};
+}
 
 
 //--------------------------------
@@ -42,7 +42,7 @@ void Sprite::SetVelocityX(float velX)
 
     else
         this->m_position.x += this->velocityX; // System::Application::game->time->GetSeconds();     
-};
+}
 
 
 //---------------------------------
@@ -61,7 +61,7 @@ void Sprite::SetVelocityY(float velY)
     
     else
         this->m_position.y += this->velocityY; // System::Application::game->time->GetSeconds(); 
-};
+}
 
 
 //----------------------------- set impulse x
@@ -97,12 +97,20 @@ void Sprite::SetImpulseY(float y) {
 //----------------------------- remove bodies
 
 
-void Sprite::RemoveBodies() {
+void Sprite::RemoveBodies() 
+{
+
+    //reset texture position to normal coords
+
+    float x = this->bodies[0].first->GetPosition().x / 2,
+          y = this->bodies[0].first->GetPosition().y / 2;
 
     for (auto it = this->bodies.begin(); it != this->bodies.end(); ++it) 
         Physics::DestroyBody((*it).first);
 
     this->bodies.clear();
+
+    this->SetPosition(x, y);
 }
 
 
@@ -293,7 +301,12 @@ void Sprite::Render()
     this->m_model = glm::mat4(1.0f);       
 
     this->m_model = glm::translate(this->m_model, { 0.5f * this->m_texture.FrameWidth + this->m_position.x, 0.5f * this->m_texture.FrameHeight + this->m_position.y, 0.0f }); 
-    //this->m_model = glm::scale(this->m_model, glm::vec3(this->m_scale, 1.0f));   
+    
+    //apply scaling to sprites that have bodies
+    
+    if (this->bodies.size())
+        this->m_model = glm::scale(this->m_model, glm::vec3(this->m_scale, 1.0f));   
+
     this->m_model = glm::rotate(this->m_model, glm::radians(this->m_rotation), { 0.0f, 0.0f, 1.0f }); 
     this->m_model = glm::translate(this->m_model, { -0.5f * this->m_texture.FrameWidth - this->m_position.x, -0.5f * this->m_texture.FrameHeight - this->m_position.y, 0.0f });
 
@@ -308,7 +321,11 @@ void Sprite::Render()
         this->m_shader.SetInt("repeat", this->m_texture.Repeat, true);
     #endif
 
-    this->m_shader.SetVec2f("scale", glm::vec2(this->m_scale.x, this->m_scale.y), true); 
+    this->m_shader.SetVec2f("scale", glm::vec2(
+        this->bodies.size() ? 1.0f : this->m_scale.x, 
+        this->bodies.size() ? 1.0f : this->m_scale.y
+    ), true); 
+    
     this->m_shader.SetFloat("alphaVal", this->m_alpha, true); 
     this->m_shader.SetVec3f("tint", this->m_tint, true);
     this->m_shader.SetMat4("model", this->m_model, true);

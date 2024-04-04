@@ -44,12 +44,12 @@ void editor::GUI::ShowSettings()
 
                         auto it = std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == scene; });
 
-                        if (it != Editor::scenes.end() && Editor::scenes.size() > 1)
+                        if (it != Editor::scenes.end())
                             Editor::scenes.erase(it);
                     }
                 } 
 
-                if (Editor::scenes.size() == 1)
+                else if (Editor::scenes.size() == 1)
                     ImGui::Text("cannot remove base scene.");
             }
 

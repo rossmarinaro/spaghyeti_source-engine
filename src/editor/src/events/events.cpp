@@ -419,10 +419,10 @@ void EventListener::BuildAndRun()
                               rsrcPath = file.path().string(),
                               copiedFile = Editor::projectPath + "build\\assets\\" + name;
 
-            Editor::Log("copying: " + rsrcPath + " to: " + copiedFile);
-
-            if (!std::filesystem::exists(copiedFile))
+            if (!std::filesystem::exists(copiedFile)) {
+                Editor::Log("copying: " + rsrcPath + " to: " + copiedFile);
                 std::filesystem::copy_file(rsrcPath, copiedFile, options);
+            }
         }
 
     //copy runtime dll to build folder
@@ -433,9 +433,21 @@ void EventListener::BuildAndRun()
     if (!std::filesystem::exists(copy_dll))
         std::filesystem::copy_file(dll, copy_dll, options);
 
-    //temp files: asset and command lists
+    //generate MakeFile
 
-    std::ostringstream asset_queue, global_queue, command_queue, update_queue;
+    // std::string makefile_path = Editor::projectPath + "\\Makefile";
+    // std::replace(makefile_path.begin(), makefile_path.end(), '\\', '/');
+    // remove(makefile_path.c_str());
+    
+    // std::ofstream main_makeFile(makefile_path);
+
+    // main_makeFile << "OBJS = \\" << "\n";
+    // main_makeFile << "    $(wildcard ./src/*.cpp) \\" << "\n";
+    // main_makeFile << "    $(wildcard ./src/**/*.cpp) \\" << "\n";
+    // main_makeFile << "    $(wildcard ./resources/scripts/*.cpp) \\" << "\n";
+    // main_makeFile << "    ./build/spaghyeti_source_runtime-core.dll" << "\n\n";
+    // main_makeFile << "all : $(OBJS)" << "\n";
+    // main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o ./build/$(PROJECT).exe";
 
     //set game source input file stream
 
@@ -460,47 +472,50 @@ void EventListener::BuildAndRun()
     for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
         game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
 
-    //iterate over scenes to include
-
-    for (const auto& scene : Editor::scenes)
-    {
         //parse scene files
 
-        for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath)) 
-        {
+    for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath)) 
+    {
+        //iterate over scenes to include
 
-            if (!System::Utils::str_endsWith(file.path().string(), ".spaghyeti")) 
-                continue;
-            
-            if (scene == System::Utils::ReplaceFrom(file.path().filename().string(), ".", ""))
+        if (System::Utils::str_endsWith(file.path().string(), ".spaghyeti")) 
+
+            for (const auto& scene : Editor::scenes)
             {
-                std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
+                if (scene == System::Utils::ReplaceFrom(file.path().filename().string(), ".", ""))
+                {
+                    std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
 
-                this->DecodeFile(tmp, file);
+                    this->DecodeFile(tmp, file);
 
-                std::ifstream JSON(tmp);
+                    std::ifstream JSON(tmp);
 
-                if (JSON.good()) {
-                    this->ParseScene(scene, JSON);
-                    Editor::Log("Scene parsed.");
+                    if (JSON.good()) {
+                        this->ParseScene(scene, JSON);
+                        Editor::Log("Scene parsed.");
+                    }
+
+                    else 
+                        Editor::Log("There was a problem parsing scene.");
+
+                    JSON.close();
+                    
+                    //remove temp json file
+
+                    remove(tmp.c_str()); 
                 }
-
-                else 
-                    Editor::Log("There was a problem parsing scene.");
-
-                JSON.close();
-                
-                //remove temp json file
-
-                remove(tmp.c_str()); 
             }
-        }
     }
 
     //now compile each scene
 
     for (const auto& target : compileQueue)
     {
+
+        //temp files: asset and command lists
+
+        std::ostringstream asset_queue, global_queue, command_queue, update_queue;
+
         //set global vars
 
         if (target.second.globals_applied)
@@ -516,24 +531,24 @@ void EventListener::BuildAndRun()
                     break;
                 }
 
-                std::string type = global.second, 
-                            var = "GLOBALVAR_" + global.first;
+                std::string type = global.second;
 
                 if (global.second == "string")
                     type = "std::string";
 
-                if (global.second == "int[]")
+                else if (global.second == "int[]")
                     type = "std::vector<int>";
 
-                if (global.second == "float[]")
+                else if (global.second == "float[]")
                     type = "std::vector<float>";
 
-                if (global.second == "string[]")
+                else if (global.second == "string[]")
                     type = "std::vector<std::string>";
 
-                global_queue << "   " + type + " " + var + ";\n";
-            }
+                else break;
 
+                global_queue << "   " + type + " " + "GLOBALVAR_" + global.first + ";\n";
+            }
 
         command_queue << "   this->SetWorldDimensions(" + std::to_string(target.second.worldWidth) + ", " + std::to_string(target.second.worldHeight) + ");\n";
 
@@ -568,7 +583,7 @@ void EventListener::BuildAndRun()
             //load shaders
 
             if (node->HasComponent("Shader") && node->shader.first.length())
-                asset_queue << "  System::Resources::Manager::shader->Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\");\n";
+                asset_queue << "  Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\");\n";
 
 
             //--------------- sprite
@@ -612,12 +627,11 @@ void EventListener::BuildAndRun()
 
                 global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n\t";
 
-                command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+                command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
                                         
                 //sprite configurations
 
                 command_queue << "   this->sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
-                command_queue << "   this->sprite_" + node->m_ID + "->SetPosition(" + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
                 command_queue << "   this->sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->rotation) + ");\n";
                 command_queue << "   this->sprite_" + node->m_ID + "->SetTint({ " + std::to_string(sn->tint.x) + ", " + std::to_string(sn->tint.y) + ", " + std::to_string(sn->tint.z) + " });\n";
                 command_queue << "   this->sprite_" + node->m_ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
@@ -629,7 +643,7 @@ void EventListener::BuildAndRun()
                 command_queue << "   this->sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n";
 
                 if (sn->lock_in_place)
-                    update_queue << "   this->sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"sprite_billboard\");\n";
+                    update_queue << "   this->sprite_" + node->m_ID + "->m_shader = Shader::GetShader(\"sprite_billboard\");\n";
 
                 //physics bodies
 
@@ -659,7 +673,7 @@ void EventListener::BuildAndRun()
                 //shader
 
                 if (sn->HasComponent("Shader") && sn->shader.first.length()) 
-                    command_queue << "   this->sprite_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + sn->shader.first + "\");\n";
+                    command_queue << "   this->sprite_" + node->m_ID + "->m_shader = Shader::GetShader(\"" + sn->shader.first + "\");\n";
 
             }
 
@@ -672,10 +686,9 @@ void EventListener::BuildAndRun()
 
                 global_queue << "   std::shared_ptr<Text> text_" + node->m_ID + ";\n\t";
 
-                command_queue << "   this->text_" + node->m_ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ");\n";
+                command_queue << "   this->text_" + node->m_ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ");\n";
 
                 command_queue << "   this->text_" + node->m_ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
-                command_queue << "   this->text_" + node->m_ID + "->SetPosition(" + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ");\n";
                 command_queue << "   this->text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";
                 command_queue << "   this->text_" + node->m_ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
                 command_queue << "   this->text_" + node->m_ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
@@ -692,9 +705,12 @@ void EventListener::BuildAndRun()
 
                 global_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n\t";
 
-                if (en->currentShape.length()) {
-                    command_queue << "   this->empty_" + node->m_ID + "->SetTint({" + std::to_string(en->m_debugGraphic->m_tint.r) + ", " + std::to_string(en->m_debugGraphic->m_tint.g) + ", " + std::to_string(en->m_debugGraphic->m_tint.b) + "});\n";
-                    command_queue << "   this->empty_" + node->m_ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->m_alpha) + ");\n";
+                if (en->m_debugGraphic)
+                {
+                    if (en->currentShape.length()) {
+                        command_queue << "   this->empty_" + node->m_ID + "->SetTint({" + std::to_string(en->m_debugGraphic->m_tint.r) + ", " + std::to_string(en->m_debugGraphic->m_tint.g) + ", " + std::to_string(en->m_debugGraphic->m_tint.b) + "});\n";
+                        command_queue << "   this->empty_" + node->m_ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->m_alpha) + ");\n";
+                    }
                 }
 
                 //TODO: set shape
@@ -707,7 +723,7 @@ void EventListener::BuildAndRun()
                 //shader
 
                 if (en->HasComponent("Shader") && en->shader.first.length()) 
-                    command_queue << "   this->empty_" + node->m_ID + "->m_shader = System::Resources::Manager::shader->GetShader(\"" + en->shader.first + "\");\n";
+                    command_queue << "   this->empty_" + node->m_ID + "->m_shader = Shader::GetShader(\"" + en->shader.first + "\");\n";
 
             }
 
@@ -744,7 +760,7 @@ void EventListener::BuildAndRun()
 
                 if (tmn->HasComponent("Physics"))
                     for (int i = 0; i < tmn->bodies.size(); i++)    
-                        command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i]) + ", " + std::to_string(tmn->bodyY[i]) + ", " + std::to_string(tmn->body_width[i]) + ", " + std::to_string(tmn->body_height[i]) + ");\n";
+                        command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i] + tmn->body_width[i] / 2) + ", " + std::to_string(tmn->bodyY[i] + tmn->body_height[i] / 2) + ", " + std::to_string(tmn->body_width[i] / 2) + ", " + std::to_string(tmn->body_height[i] / 2) + ");\n";
 
             } 
 
@@ -774,20 +790,6 @@ void EventListener::BuildAndRun()
             }
         }
 
-        //generate MakeFile
-
-        std::ofstream main_makeFile(Editor::projectPath + "\\Makefile");
-
-        main_makeFile << "\n";
-        main_makeFile << "OBJS = \\" << "\n";
-        main_makeFile << "  $(wildcard ./src/*.cpp) \\" << "\n";
-        main_makeFile << "  $(wildcard ./src/**/*.cpp) \\" << "\n";
-        main_makeFile << "  $(wildcard ./resources/scripts/*.cpp) \\" << "\n";
-        main_makeFile << "  ./build/spaghyeti_source_runtime-core.dll" << "\n\n";
-        main_makeFile << "all : $(OBJS)" << "\n";
-        main_makeFile << "      g++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o ./build/$(PROJECT).exe";
-
-
         //convert data string stream to string
 
         const std::string globalData = global_queue.str(), 
@@ -813,8 +815,8 @@ void EventListener::BuildAndRun()
 
         game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
         game_src << "void " + name_upper + "::Run() {\n" + commandData + "}\n\n";
-        game_src << "void " + name_upper + "::Update() {\n"      + updateData +            "\n}\n\n";
-        game_src << "//-----------------------------------------------------------------------------\n\n";
+        game_src << "void " + name_upper + "::Update() {\n"      + updateData +            "\n}\n\n\n";
+        
 
         //remove scene template after parsed
 
@@ -822,8 +824,9 @@ void EventListener::BuildAndRun()
         
         if (it != compileQueue.end())
             compileQueue.erase(it);
-    }
 
+
+    }
 
     //game template
 
@@ -877,13 +880,13 @@ void EventListener::BuildAndRun()
 
     ShowWindow(GetConsoleWindow(), SW_SHOW);
 
-        system(Editor::platform == "Windows" ?
-            ("buildGame.bat " + Editor::projectPath + " " + currentProject).c_str() :
-            ("buildWebGL.bat " + Editor::projectPath).c_str()
-        );
+    system(Editor::platform == "Windows" ?
+        ("buildGame.bat " + Editor::projectPath + " " + currentProject).c_str() :
+        ("buildWebGL.bat " + Editor::projectPath).c_str()
+    );
 
     remove(srcPath.c_str());
-    remove((Editor::projectPath + "\\Makefile").c_str());
+    //remove(makefile_path.c_str());
 
  
     Editor::Log("Project " + currentProject + " built successfully.");

@@ -206,12 +206,13 @@ void GUI::RenderScriptOptions(const std::string &nodeId)
                         if (System::Utils::str_endsWith(filename, ".h"))
                             if (ImGui::MenuItem(System::Utils::ReplaceFrom(filename, ".", "").c_str())) 
                             {
-
+                                std::string assetDir = AssetManager::script_dir;
+                                
                                 std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
-                                std::replace(AssetManager::script_dir.begin(), AssetManager::script_dir.end(), '\\', '/');
+                                std::replace(assetDir.begin(), assetDir.end(), '\\', '/');
 
                                 std::string line,
-                                            path = Editor::projectPath + AssetManager::script_dir + '/';
+                                            path = Editor::projectPath + assetDir + '/';
                                         
                                 std::ifstream src(path + filename);
 

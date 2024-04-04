@@ -51,18 +51,17 @@ void MeatballMadness::ThrowMeatball()
 
     auto meatball = System::Game::CreateSprite("meatball", 960.0f, 530.0f, 0, 2.0f);
 
-    meatball->SetData("platter position", System::Utils::intBetween(0, 50));
+    meatball->SetData("platter position", System::Utils::intBetween(0, 10));
+    meatball->SetData("dead", false);
 
-    meatball->bodies.push_back({ Physics::CreateDynamicBody("box", meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f) ), { 0.0f, 5.0f } });
+    meatball->bodies.push_back({ Physics::CreateDynamicBody("box", meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f)), { 0.0f, 5.0f } });
     meatball->bodies[0].first->SetFixedRotation(true);
 
     const float speedX = System::Utils::intBetween(0, 10) > 5 ? 
-                        System::Utils::floatBetween(-0.01f, -0.25) : 
-                        System::Utils::floatBetween(-0.1f, -0.2),
+                         System::Utils::floatBetween(-0.01f, -0.25) : System::Utils::floatBetween(-0.1f, -0.2),
 
                 speedY = System::Utils::intBetween(0, 10) > 5 ? 
-                        System::Utils::floatBetween(-0.2f, 0.32f) : 
-                        System::Utils::floatBetween(0.0f, 0.3f);
+                         System::Utils::floatBetween(-0.2f, 0.32f) : System::Utils::floatBetween(0.0f, 0.3f);
 
     meatball->SetImpulse(speedX, speedY);
 
@@ -79,7 +78,7 @@ void MeatballMadness::ThrowMeatball()
 void MeatballMadness::MoveChef()
 { 
 
-    if (this->chef->m_position.x <= 1145 && canThrow)
+    if (this->chef->m_position.x <= 545 && canThrow)
     {
         chefMoveLeft = true;
         chefMoveRight = false;
@@ -88,7 +87,7 @@ void MeatballMadness::MoveChef()
         this->ThrowMeatball();
     }
 
-    if (this->chef->m_position.x >= 1270)
+    if (this->chef->m_position.x >= 670)
     {
         chefMoveLeft = false;
         chefMoveRight = true;
@@ -97,14 +96,14 @@ void MeatballMadness::MoveChef()
 
     if (chefMoveLeft)
     {
-        this->chef->SetVelocityX(1.5f);
+        this->chef->SetVelocityX(1.0f);
         this->chef->SetFlipX(true);
         this->chef->Animate("move with meatball", false, 3);
     }
     
     if (chefMoveRight)
     {
-        this->chef->SetVelocityX(-1.5f);
+        this->chef->SetVelocityX(-1.0f);
         this->chef->SetFlipX(false);
         this->chef->Animate("move", false, 3);
     }
@@ -135,7 +134,7 @@ void MeatballMadness::Update()
     //platter hitbox
 
     if (this->playerHitBox)
-        this->playerHitBox->SetTransform(b2Vec2(this->player->m_flipX ? this->player->m_position.x : this->player->m_position.x + 60, this->player->m_position.y), 0); 
+        this->playerHitBox->SetTransform(b2Vec2(this->player->m_flipX ? this->player->bodies[0].first->GetPosition().x - 55 : this->player->bodies[0].first->GetPosition().x + 55, this->player->bodies[0].first->GetPosition().y - 50), 0); 
 
     //game over
 
@@ -197,7 +196,7 @@ void MeatballMadness::Update()
 
                 //score point
 
-                else if (meatball->m_alive && meatball->m_position.x <= 290.0f) {
+                else if (meatball->m_alive && meatball->m_position.x <= 150.0f) {
 
                     meatball->m_alive = false;
 
@@ -220,10 +219,14 @@ void MeatballMadness::Update()
                     if (meatball->m_active) {
 
                         meatball->bodies[0].first->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+
                         meatball->m_active = false;
-                        meatball->RemoveBodies();   
+                        
+                        meatball->RemoveBodies(); 
 
                         this->fails += 1; 
+
+                        meatball->SetData("dead", true);
                     }
 
                 }
@@ -241,7 +244,7 @@ void MeatballMadness::Update()
                     meatball->m_active = false;
                 }
 
-                else if (!meatball->m_active) {
+                else if (!meatball->m_active && !meatball->GetData<bool>("dead")) {
 
                     //meatball on platter
 
@@ -249,15 +252,15 @@ void MeatballMadness::Update()
                     
                     meatball->SetPosition(
                         this->player->m_flipX ? 
-                            this->playerHitBox->GetTransform().p.x - meatballPosition : 
-                            this->playerHitBox->GetTransform().p.x + meatballPosition,
-                        this->playerHitBox->GetTransform().p.y - 25
+                            this->playerHitBox->GetTransform().p.x / 2 - meatballPosition : 
+                            this->playerHitBox->GetTransform().p.x / 2 + meatballPosition,
+                        this->playerHitBox->GetTransform().p.y / 2 - 15
                     );
                 }
 
-                 else   
+                else if (!meatball->GetData<bool>("dead"))  
                     meatball->m_rotation -= System::Utils::floatBetween(5.0f, 15.0f);
-                
+    
             }
         }
 
@@ -335,6 +338,8 @@ void MeatballMadness::Preload()
     System::Resources::Manager::LoadAnims("chef", Assets::Anims::chef);
     System::Resources::Manager::LoadAnims("patron", Assets::Anims::patron);
 
+    System::Resources::Manager::RegisterAssets();
+
 }
 
 
@@ -369,30 +374,30 @@ void MeatballMadness::Run()
 
     //sprites
 
-    auto background = System::Game::CreateSprite("background", 450.0f, 280.0f);
+    auto background = System::Game::CreateSprite("background", 0.0f, 0.0f);
     background->SetScale(2.5f, 2.42f);
     background->SetDepth(0);
 
-    auto patron = System::Game::CreateSprite("patron", 165.0f, 640.0f);               
+    auto patron = System::Game::CreateSprite("patron", 25.0f, 180.0f);               
     patron->SetScale(3.0f);
     patron->SetAnimation("idle");
     patron->SetDepth(1);
 
-    this->chef = System::Game::CreateSprite("chef", 1250.0f, 640.0f);
+    this->chef = System::Game::CreateSprite("chef", 600.0f, 300.0f);
     this->chef->SetScale(2.0f);
     this->chef->SetFrame(2);
     this->chef->SetDepth(1);
 
     //player
 
-    this->player = System::Game::CreateSprite("waiter", 450.0f, 760.0f, 1, 2.5);
-    this->player->SetDepth(1);
+    this->player = System::Game::CreateSprite("waiter", 450.0f, 760.0f, 1, 2.25);
+    this->player->SetDepth(1);   
 
-    this->player->bodies.push_back({ Physics::CreateDynamicBody("box", 450.0f, 760.0f, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 70.0f } });
+    this->player->bodies.push_back({ Physics::CreateDynamicBody("box", this->player->m_position.x, this->player->m_position.y, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 50.0f } });
     this->player->bodies[0].first->SetFixedRotation(true);
 
     System::Game::CreateBehavior<entity_behaviors::Waiter>(this->player, this);
-    this->playerHitBox = Physics::CreateDynamicBody("box", 0.0f, 0.0f, 40.0f, 10.0f, true, 1);  
+    this->playerHitBox = Physics::CreateDynamicBody("box", 0.0f, 0.0f, 30.0f, 5.0f, true, 1);  
 
     //UI
 

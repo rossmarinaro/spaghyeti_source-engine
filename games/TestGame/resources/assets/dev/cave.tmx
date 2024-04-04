@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="86" height="19" tilewidth="64" tileheight="64" infinite="0" backgroundcolor="#ffbc5e" nextlayerid="7" nextobjectid="4">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="86" height="19" tilewidth="64" tileheight="64" infinite="0" backgroundcolor="#ffbc5e" nextlayerid="9" nextobjectid="14">
  <editorsettings>
-  <export target="../data/cave.csv" format="csv"/>
+  <export target="../data/cave.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" name="platformer" tilewidth="64" tileheight="64" tilecount="100" columns="10">
   <image source="../../../../../../../The_Funky_Adventures_Of_Swanky_Velvet/client/src/assets/maps/platformer/platformer.png" width="640" height="640"/>
@@ -101,8 +101,13 @@
 89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90,89,90
 </data>
  </layer>
- <objectgroup id="4" name="bounds">
-  <object id="2" x="-9.09091" y="445.455" width="2460.61" height="184.848"/>
-  <object id="3" x="293.939" y="775.758" width="3.0303"/>
+ <objectgroup id="8" name="bounds">
+  <object id="4" x="2.78788" y="514.061" width="119.636" height="85.697"/>
+  <object id="6" x="124" y="580" width="5252" height="32"/>
+  <object id="7" x="1472" y="518" width="128" height="54"/>
+  <object id="8" x="2690" y="512" width="124" height="62"/>
+  <object id="9" x="-12" y="-28" width="28" height="572"/>
+  <object id="12" x="3906" y="513" width="124" height="62"/>
+  <object id="13" x="5376" y="511" width="124" height="62"/>
  </objectgroup>
 </map>
