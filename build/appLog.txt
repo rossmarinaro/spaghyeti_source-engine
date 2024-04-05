@@ -1,17 +1,21 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Thu Apr 04 21:57:33 2024
-IMGui Version: 1 @ Thu Apr 04 21:57:33 2024
-GUI launched. @ Thu Apr 04 21:57:33 2024
-Workspace reset. @ Thu Apr 04 21:57:39 2024
-Empty node Untitled created. @ Thu Apr 04 21:57:39 2024
-Text node Untitled_2 created. @ Thu Apr 04 21:57:39 2024
-Text node Untitled_3 created. @ Thu Apr 04 21:57:39 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Apr 05 15:45:45 2024
+IMGui Version: 1 @ Fri Apr 05 15:45:45 2024
+GUI launched. @ Fri Apr 05 15:45:45 2024
+Workspace reset. @ Fri Apr 05 15:45:49 2024
+sprite node Untitled created. @ Fri Apr 05 15:45:49 2024
+Text node Untitled created. @ Fri Apr 05 15:45:49 2024
+Text node Untitled created. @ Fri Apr 05 15:45:49 2024
 Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Thu Apr 04 21:57:39 2024
-Scene parsed. @ Thu Apr 04 21:57:51 2024
-Scene parsed. @ Thu Apr 04 21:57:51 2024
-Project TestGame built successfully. @ Thu Apr 04 21:59:07 2024
-Empty node Untitled deleted. @ Thu Apr 04 22:03:13 2024
-Text node Untitled_2 deleted. @ Thu Apr 04 22:03:13 2024
-Text node Untitled_3 deleted. @ Thu Apr 04 22:03:13 2024
-GUI exited @ Thu Apr 04 22:03:13 2024
-Editor closed. @ Thu Apr 04 22:03:13 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Apr 05 15:45:49 2024
+sprite node Untitled created. @ Fri Apr 05 15:45:57 2024
+Current asset selected: sv_icon.png @ Fri Apr 05 15:46:05 2024
+Current asset selected: sv.png @ Fri Apr 05 15:46:12 2024
+Sprite node image deleted. @ Fri Apr 05 15:47:28 2024
+Script component added. @ Fri Apr 05 15:47:41 2024
+Project saved: C:/project_data/projects/c++/spaghyeti_source_engine/games/TestGame\menu.spaghyeti @ Fri Apr 05 15:47:57 2024
+Text node top text deleted. @ Fri Apr 05 15:48:03 2024
+Text node bottom text deleted. @ Fri Apr 05 15:48:03 2024
+Sprite node Untitled deleted. @ Fri Apr 05 15:48:03 2024
+Script component removed. @ Fri Apr 05 15:48:03 2024
+GUI exited @ Fri Apr 05 15:48:03 2024
+Editor closed. @ Fri Apr 05 15:48:03 2024

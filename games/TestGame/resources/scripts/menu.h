@@ -15,20 +15,24 @@ namespace entity_behaviors {
                Behavior(entity, "MENU")
            {
                 this->hasStarted = false;
+                this->player = std::static_pointer_cast<Sprite>(this->entity);
            }
 
            //update every frame
 
            void Update(Process::Context context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {
 
+                this->player->SetAnimation("dance");
+
                 if (context.inputs->m_SPACE && !this->hasStarted) {
                     this->hasStarted = true;
-                    Time::delayedCall(1000, [&]() { System::Game::StartScene("SCENE2"); });
+                    Time::delayedCall(1000, [&]() { System::Game::StartScene("CAVE"); });
                 }
            }
 
         private:
 
             bool hasStarted;
+            std::shared_ptr<Sprite> player;
    };
 };

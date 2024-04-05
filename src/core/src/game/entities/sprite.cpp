@@ -123,6 +123,8 @@ void Sprite::SetTexture(const std::string& key)
     auto texture = this->m_texture.GetTexture(key); 
         
     this->m_key = key; 
+    this->m_texture.Width = texture.Width;        
+    this->m_texture.Height = texture.Height;
     this->m_texture.FrameWidth = texture.Width;
     this->m_texture.FrameHeight = texture.Height;
     this->m_texture.ID = texture.ID;

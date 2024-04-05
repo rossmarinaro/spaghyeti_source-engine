@@ -22,7 +22,7 @@ namespace entity_behaviors {
                     float x = System::Utils::floatBetween(0.0f, 1000.0f);
                     float y = System::Utils::floatBetween(0.0f, 1000.0f);
                     auto spr = System::Game::CreateSprite("test3.png", x, y);
-                }, m_lock);
+                }, this->m_lock);
                 Time::delayedCall(3000, [&]() { System::Game::StartScene("SCENE2"); });
             }
 

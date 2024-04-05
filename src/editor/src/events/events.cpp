@@ -428,8 +428,8 @@ void EventListener::BuildAndRun()
             for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath + "resources\\assets\\" + type)) 
             {
                 const std::string name = file.path().filename().string(),
-                                rsrcPath = file.path().string(),
-                                copiedFile = Editor::projectPath + "build\\assets\\" + name;
+                                  rsrcPath = file.path().string(),
+                                  copiedFile = Editor::projectPath + "build\\assets\\" + name;
 
                 if (!std::filesystem::exists(copiedFile)) {
                     Editor::Log("copying: " + rsrcPath + " to: " + copiedFile);
@@ -800,7 +800,7 @@ void EventListener::BuildAndRun()
 
                     transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
 
-                    command_queue << "   System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
+                    command_queue << "   System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(this->" + entity + ", this);\n";
 
                 }
             }

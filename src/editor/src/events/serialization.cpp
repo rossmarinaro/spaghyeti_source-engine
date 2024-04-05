@@ -287,6 +287,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
         auto en = Node::MakeNode<EmptyNode>(); 
 
         en->m_ID = empty["ID"];
+        en->m_name = empty["name"];
         en->show_debug = empty["debug graphics"]; 
         en->debug_fill = empty["fill"];
         en->rectWidth = empty["width"];  
@@ -636,6 +637,7 @@ void EventListener::Serialize(json& data)
 
             empty.push_back({
                 { "ID", node->m_ID },
+                { "name", node->m_name },
                 { "debug graphics", en->show_debug },
                 { "fill", en->debug_fill },
                 { "width", en->rectWidth },

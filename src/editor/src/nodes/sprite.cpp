@@ -146,7 +146,6 @@ void SpriteNode::RegisterFrames()
     for (const auto& frame : this->frames)
         framesToPush.push_back({ frame.x, frame.y, frame.width, frame.height, frame.factorX, frame.factorY });
 
-    System::Resources::Manager::UnLoadFrames(this->key);
     System::Resources::Manager::LoadFrames(this->key, framesToPush);
 }
 
