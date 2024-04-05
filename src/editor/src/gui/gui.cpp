@@ -292,23 +292,23 @@ void GUI::ShowOptionsSave(bool quit)
     if (ImGui::MenuItem("Yes")) 
         if(Editor::events.SaveScene()) 
         {
+            Editor::events.buildFlag = false;
+
             if (quit) 
                 Editor::events.exitFlag = true;
             else 
                 Editor::events.BuildAndRun();
-
-            Editor::events.buildFlag = false;
         }
 
     if (ImGui::MenuItem("No")) 
     {
+
+        Editor::events.buildFlag = false;
         
         if (quit)
             Editor::events.exitFlag = true;
         else 
             Editor::events.BuildAndRun();
-
-        Editor::events.buildFlag = false;
     }
        
 }
