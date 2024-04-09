@@ -74,17 +74,17 @@ void Game::StartScene(const std::string& key)
 
     game->gameState = false;
 
+
     auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](std::shared_ptr<Scene> scene) { return scene->key == key; });
 
     if (it != game->scenes.end())
     {
-
+    //for (const auto& entity : game->currentScene->entities) DestroyEntity(entity);
         game->currentScene->entities.clear();
         game->currentScene->behaviors.clear();
-        
         game->currentScene = *it; 
 
-        System::Resources::Manager::Clear(false);
+        Resources::Manager::Clear(false); 
 
         game->currentScene->Preload();
         game->currentScene->Run();
@@ -106,6 +106,8 @@ void Game::Exit()
 
     game->currentScene->entities.clear();
     game->currentScene->behaviors.clear();
+
+    game->text->ShutDown();
 
     #if DEVELOPMENT == 1 
         delete game->physics->debug;
@@ -155,7 +157,7 @@ void Game::UpdateFrame()
 
             entity->Render();
         }
-            
+
     //render input cursor
 
     Application::game->inputs->RenderCursor();
@@ -240,7 +242,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
 
 
-//-----------------------------
+//----------------------------- sprite
 
 
 std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, float y, int frame, float scale)
@@ -261,7 +263,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
 
 
 
-//-----------------------------
+//----------------------------- ui sprite
 
 
 std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y, int frame)
@@ -281,7 +283,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y,
 }
 
 
-//-----------------------------
+//----------------------------- tile
 
 
 std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, float y, int frame)
@@ -300,7 +302,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
 }
 
 
-//-----------------------------
+//----------------------------- debug text
 
 
 std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, float y)
@@ -314,25 +316,12 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 }
 
 
-//----------------------------- (rect)
+//----------------------------- (quad)
 
 
 std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height)
 {
     auto geom = std::make_shared<Geometry>(x, y, width, height);
-
-    Application::game->currentScene->entities.push_back(geom);
-
-    return geom;
-}
-
-
-//----------------------------- (line)
-
-
-std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, const glm::vec2 &start, const glm::vec2 &end)
-{
-    auto geom = std::make_shared<Geometry>(x, y, start, end);
 
     Application::game->currentScene->entities.push_back(geom);
 

@@ -123,8 +123,8 @@ void Sprite::SetTexture(const std::string& key)
     auto texture = this->m_texture.GetTexture(key); 
         
     this->m_key = key; 
-    this->m_texture.Width = texture.Width;        
-    this->m_texture.Height = texture.Height;
+    //this->m_texture.Width = texture.Width;        
+    //this->m_texture.Height = texture.Height;
     this->m_texture.FrameWidth = texture.Width;
     this->m_texture.FrameHeight = texture.Height;
     this->m_texture.ID = texture.ID;
@@ -332,7 +332,7 @@ void Sprite::Render()
     this->m_shader.SetVec3f("tint", this->m_tint, true);
     this->m_shader.SetMat4("model", this->m_model, true);
 
-    this->m_texture.Update(this->m_position, this->m_flipX, this->m_flipY);  
+    this->m_texture.Update(this->m_position, this->m_flipX, this->m_flipY, GL_FILL);  
 
     //update physics bodies if exists
 
@@ -364,12 +364,14 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     Entity("sprite", x, y),
         m_key(key),  
         m_currentFrame(frame),
-        m_shader(Shader::GetShader("sprite")), 
-        m_texture(Graphics::Texture2D::GetTexture(key)), 
         m_anims(System::Resources::Manager::GetAnimations(key)),
         velocityX(0.0f),
         velocityY(0.0f)
 { 
+
+    this->m_texture = Graphics::Texture2D::GetTexture(key);
+    this->m_shader = Shader::GetShader("sprite");
+
     #if DEVELOPMENT == 1
         if (!isTile)
             std::cout << "Sprite: " + this->m_key + " Created.\n"; 
@@ -384,11 +386,13 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
 Sprite::Sprite(const std::string& key, float x, float y, const char* type)
 : 
     Entity("sprite", x, y),
-        m_key(key),  
-        m_shader(Shader::GetShader(type)), 
-        m_texture(Graphics::Texture2D::GetTexture(key))
+        m_key(key)
 
 {
+
+    this->m_texture = Graphics::Texture2D::GetTexture(key);
+    this->m_shader = Shader::GetShader("sprite");
+    
     #if DEVELOPMENT == 1
         std::cout << "Sprite: UI " + this->m_key + " created.\n"; 
     #endif

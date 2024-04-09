@@ -159,7 +159,7 @@ namespace entity_behaviors {
                 if (this->shootFireball)
                 {
                     //todo: implement fireball
-                    Time::delayedCall(1000, [&]() { });
+                    //Time::delayedCall(1000, [&]() { });
                 }           
             }
 

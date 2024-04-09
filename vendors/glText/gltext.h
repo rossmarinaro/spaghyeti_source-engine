@@ -244,14 +244,14 @@ GLT_API GLTtext* gltCreateText(void)
 	_GLT_ASSERT(text->_vbo);
 
 	if (!text->_vao || !text->_vbo)
-	{
+	{ 
 		gltDeleteText(text);
 		return GLT_NULL;
 	}
 
 	glBindVertexArray(text->_vao);
 
-	glBindBuffer(GL_ARRAY_BUFFER, text->_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, text->_vbo); 
 
 	glEnableVertexAttribArray(_GLT_TEXT2D_POSITION_LOCATION);
 	glVertexAttribPointer(_GLT_TEXT2D_POSITION_LOCATION, _GLT_TEXT2D_POSITION_SIZE, GL_FLOAT, GL_FALSE, (_GLT_TEXT2D_VERTEX_SIZE * sizeof(GLfloat)), (const void*)(_GLT_TEXT2D_POSITION_OFFSET * sizeof(GLfloat)));
@@ -380,6 +380,7 @@ GLT_API void gltViewport(GLsizei width, GLsizei height)
 
 GLT_API void gltBeginDraw()
 {
+    
 	glUseProgram(_gltText2DShader);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -920,7 +921,7 @@ GLT_API GLboolean _gltCreateText2DShader(void)
 		gltTerminate();
 
 #ifdef GLT_DEBUG
-		_GLT_ASSERT(compileStatus == GL_TRUE);
+		_GLT_ASSERT(compileStatus == GL_TRUE);  
 		return GL_FALSE;
 #else
 		return GL_FALSE;

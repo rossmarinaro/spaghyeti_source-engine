@@ -10,7 +10,7 @@ namespace entity_behaviors {
        public:
 
            //constructor, called on start
-
+void makeTxt(){ System::Game::CreateText("PASTABOSS ENTERPRISE 2024", 623, 637);}
            SCROLLTEXT(std::shared_ptr<Entity> entity):
                Behavior(entity, "SCROLLTEXT")
            {
@@ -23,6 +23,8 @@ namespace entity_behaviors {
                     else 
                         Time::exitFlag = true;
                 }, this->m_lock);
+
+                //Time::delayedCall(1000, [&]() {  makeTxt(); });
            }
 
            //update every frame

@@ -1,4 +1,4 @@
-🍝 ::SPAGHYETI SOUЯCE ЭNGINE:: 🍝 
+🍝 <::SPAGHYETI SOUЯCE ЭNGINE::> 🍝 
 
 ----------------------------------------------------------
 
@@ -28,7 +28,7 @@ Written by Ross Marinaro - Pastaboss Enterprise 🍝👌
 
 ----------------------------------------------------------
 
-Libraries used: GLFW, GLAD, GLM, GLText, STB_IMAGE, MiniAudio, DearIMGUI, Box2D, nlohmann JSON
+Libraries used: GLFW / GLAD, GLM, GLText (embedded debug text), FreeType (in-app fonts) STB_IMAGE, MiniAudio, DearIMGUI, Box2D, nlohmann JSON
 
 Requires install of MingW compiler for Windows
 

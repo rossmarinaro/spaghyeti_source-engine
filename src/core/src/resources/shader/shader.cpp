@@ -4,7 +4,7 @@
 #include "./glsl/raw/batch.h"
 #include "./glsl/raw/particles.h"
 #include "./glsl/raw/physics_debug.h"
-
+#include "./glsl/raw/text.h"
 
 //---------------------------------
 
@@ -38,6 +38,7 @@ void Shader::InitBaseShaders()
     Load("UI", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("graphics", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
     Load("cursor", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
+    Load("text", Shaders::textVertex, Shaders::textFragment, nullptr);
      
     #if DEVELOPMENT == 1
 
@@ -113,7 +114,7 @@ void Shader::Update(Camera* camera)
 //--------------------------------- 
 
 
-void checkCompileErrors(unsigned int shader, const std::string &type)
+void checkCompileErrors(unsigned int shader, const std::string& type)
 {
 
     #ifdef __EMSCRIPTEN__
@@ -187,7 +188,7 @@ void checkCompileErrors(unsigned int shader, const std::string &type)
 //-------------------------------------------- load shader
 
 
-void Shader::Load(const std::string &key, const char* vertShader, const char* fragShader, const char* geomShader)
+void Shader::Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomShader)
 {
 
     if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&](auto s) { return s.first == key; }) != System::Application::resources->shaders.end())
@@ -255,7 +256,7 @@ void Shader::Load(const std::string &key, const char* vertShader, const char* fr
         const char* gs = geometryCode.c_str();
 
         #if DEVELOPMENT == 1
-            std::cout << "Loading shader from file.\n";
+            std::cout << "Shader: Loading " << key << " from file.\n";
         #endif
 
         shader.Generate(vs, fs,/*  gShaderStream ? gs : */ nullptr);
@@ -269,7 +270,7 @@ void Shader::Load(const std::string &key, const char* vertShader, const char* fr
         if (vertShader)
         {
             #if DEVELOPMENT == 1
-                std::cout << "Loading raw shader.\n";
+                std::cout << "Shader: Loading " << key << " from char.\n";
             #endif
         
             shader.Generate(vertShader, fragShader, nullptr);

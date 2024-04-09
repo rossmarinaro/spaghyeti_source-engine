@@ -64,9 +64,9 @@ void Time::Update(double t)
 //--------------- delayed call (setTimeout)
 
 
-void Time::delayedCall(int milliseconds, std::function<void()> &&fn_ptr)
+void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
 {
-
+ 
     std::thread ([=] (){
         
         std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
@@ -74,14 +74,14 @@ void Time::delayedCall(int milliseconds, std::function<void()> &&fn_ptr)
         fn_ptr();
 
     }).detach();
-
+ 
 }
 
 
 //-------------- recursive interval timeout
 
 
-void Time::setInterval(int milliseconds, std::function<void()> &&fn_ptr, std::mutex& m)
+void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr, std::mutex& m)
 {
 
     if (exitFlag.load())

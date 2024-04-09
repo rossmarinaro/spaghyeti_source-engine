@@ -11,7 +11,7 @@ namespace entity_behaviors {
 
            //constructor, called on start
 
-            TEXT_Behavior (/* Scene* scene,  */std::shared_ptr<Entity> entity):
+            TEXT_Behavior (std::shared_ptr<Entity> entity):
                 Behavior(entity, "TEXT")
             {
                 this->text = std::static_pointer_cast<Text>(this->entity);

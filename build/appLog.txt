@@ -1,21 +1,20 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Apr 05 15:45:45 2024
-IMGui Version: 1 @ Fri Apr 05 15:45:45 2024
-GUI launched. @ Fri Apr 05 15:45:45 2024
-Workspace reset. @ Fri Apr 05 15:45:49 2024
-sprite node Untitled created. @ Fri Apr 05 15:45:49 2024
-Text node Untitled created. @ Fri Apr 05 15:45:49 2024
-Text node Untitled created. @ Fri Apr 05 15:45:49 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Tue Apr 09 16:31:19 2024
+IMGui Version: 1 @ Tue Apr 09 16:31:20 2024
+GUI launched. @ Tue Apr 09 16:31:20 2024
+Workspace reset. @ Tue Apr 09 16:31:27 2024
+sprite node Untitled created. @ Tue Apr 09 16:31:27 2024
+Text node Untitled created. @ Tue Apr 09 16:31:27 2024
+Text node Untitled created. @ Tue Apr 09 16:31:27 2024
 Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Apr 05 15:45:49 2024
-sprite node Untitled created. @ Fri Apr 05 15:45:57 2024
-Current asset selected: sv_icon.png @ Fri Apr 05 15:46:05 2024
-Current asset selected: sv.png @ Fri Apr 05 15:46:12 2024
-Sprite node image deleted. @ Fri Apr 05 15:47:28 2024
-Script component added. @ Fri Apr 05 15:47:41 2024
-Project saved: C:/project_data/projects/c++/spaghyeti_source_engine/games/TestGame\menu.spaghyeti @ Fri Apr 05 15:47:57 2024
-Text node top text deleted. @ Fri Apr 05 15:48:03 2024
-Text node bottom text deleted. @ Fri Apr 05 15:48:03 2024
-Sprite node Untitled deleted. @ Fri Apr 05 15:48:03 2024
-Script component removed. @ Fri Apr 05 15:48:03 2024
-GUI exited @ Fri Apr 05 15:48:03 2024
-Editor closed. @ Fri Apr 05 15:48:03 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Tue Apr 09 16:31:27 2024
+Project saved: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\menu.spaghyeti @ Tue Apr 09 16:31:45 2024
+Scene parsed. @ Tue Apr 09 16:31:51 2024
+Project TestGame built successfully. @ Tue Apr 09 16:32:10 2024
+Scene parsed. @ Tue Apr 09 16:32:17 2024
+Scene parsed. @ Tue Apr 09 16:32:17 2024
+Project TestGame built successfully. @ Tue Apr 09 16:32:43 2024
+Sprite node sv deleted. @ Tue Apr 09 16:32:45 2024
+Text node top text deleted. @ Tue Apr 09 16:32:45 2024
+Text node bottom text deleted. @ Tue Apr 09 16:32:45 2024
+GUI exited @ Tue Apr 09 16:32:45 2024
+Editor closed. @ Tue Apr 09 16:32:45 2024

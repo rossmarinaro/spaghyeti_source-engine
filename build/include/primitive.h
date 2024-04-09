@@ -88,7 +88,7 @@ namespace Graphics {
             
             void SetFiltering();
             void Generate(unsigned int width, unsigned int height, auto &data);  // generates texture from image data
-            void Update(const glm::vec2 &position, bool flipX, bool flipY);
+            void Update(const glm::vec2 &position, bool flipX, bool flipY, int drawStyle);
             void Bind() const { glBindTexture(GL_TEXTURE_2D, this->ID); }; // binds the texture as the current active GL_TEXTURE_2D texture object
 
         private: 

@@ -33,13 +33,12 @@
 #include "../../vendors/glm/gtc/type_ptr.hpp"
 #include "../../vendors/glm/gtc/matrix_transform.hpp" 
 
-
 #ifndef GLT_IMPLEMENTATION
 
     #if defined(_MSC_VER) && (_MSC_VER >= 1310)
     #	pragma warning(disable: 4996) // Disable the fopen, strcpy, sprintf being unsafe warning
     #endif
-
+#define GLT_MANUAL_VIEWPORT
     #define GLT_IMPLEMENTATION
     #include "../../vendors/glText/gltext.h"
 #endif

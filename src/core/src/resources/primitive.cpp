@@ -44,6 +44,7 @@ void Primitive::Bind_Buffer(
 }
 
 
+
 //--------------------------------
 
 
@@ -63,37 +64,22 @@ void Primitive::Draw (int shape, int dimension, int slot, int vertices, int draw
 //------------------------------- generic shape container
 
 
-//line
+//quad
 Geometry::Geometry(float x, float y, float width, float height): 
     Entity("geometry", x, y),
-        primitive(std::make_shared<Graphics::Primitive>()),
-        m_shader(Shader::GetShader("graphics")),
         m_type("quad"),
         width(width),
         height(height)
 { 
     this->m_tint = glm::vec3(0.0f, 0.0f, 1.0f);
+    this->m_texture = Graphics::Texture2D::GetTexture("base");
+    this->m_shader = Shader::GetShader("graphics");
     
     #if DEVELOPMENT == 1
         std::cout << "Entity: quad created.\n"; 
     #endif
 }
 
-//quad
-Geometry::Geometry(float x, float y, const glm::vec2& start, const glm::vec2& end): 
-    Entity("geometry", x, y),
-        primitive(std::make_shared<Graphics::Primitive>()),
-        m_shader(Shader::GetShader("graphics")),
-        m_type("line"),
-        start(start),
-        end(end)
-{
-    this->m_tint = glm::vec3(0.0f, 1.0f, 0.0f);
-
-    #if DEVELOPMENT == 1
-        std::cout << "Entity: line created.\n"; 
-    #endif
-}
 
 
 //------------------------------------- 
@@ -110,28 +96,14 @@ void Geometry::Render()
         this->m_shader.SetFloat("alphaVal", this->m_alpha, true);
     };
 
-    //line
-
-    if (strcmp(this->m_type, "line") == 0)
-    {
-
-        float vertices[6] = { this->start.x, this->start.y, 0.0f, this->end.x, this->end.y, 0.0f };
-
-        SetShader();
-        
-        this->primitive->Bind_Buffer(vertices, this->primitive->VBO, this->primitive->VAO, 0, 2, GL_FLOAT, GL_FALSE, GL_STATIC_DRAW, 2 * sizeof(float));
-        
-        #ifdef __EMSCRIPTEN__
-            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, 0);
-        #else
-            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 2, this->drawStyle == 0 ? GL_FILL : GL_LINE); 
-        #endif
-    }
-
-    //quad
+    //quad or line
 
     if (strcmp(this->m_type, "quad") == 0)
     {
+
+        this->m_texture.FrameWidth = this->width;
+        this->m_texture.FrameHeight = this->height;
+
         this->m_model = glm::translate(this->m_model, glm::vec3(this->m_position, 0.0f));  
 
         this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->m_position.x, 0.5f * this->height + this->m_position.y, 0.0f)); 
@@ -143,33 +115,8 @@ void Geometry::Render()
         
         SetShader();
 
-        short vertices[12];
-        
-        //triangle A
+        this->m_texture.Update(this->m_position, false, false, this->drawStyle); 
 
-        vertices[0] = this->m_position.x + this->width;  
-        vertices[1] = this->m_position.y;
-        vertices[2] = this->m_position.x + this->width;
-        vertices[3] = this->m_position.y + this->height;
-        vertices[4] = this->m_position.x;
-        vertices[5] = this->m_position.y;
-
-        //triangle B
-
-        vertices[6] = this->m_position.x + this->width;
-        vertices[7] = this->m_position.y + this->height;
-        vertices[8] = this->m_position.x;
-        vertices[9] = this->m_position.y + this->height;
-        vertices[10] = this->m_position.x;
-        vertices[11] = this->m_position.y;
-
-        this->primitive->Bind_Buffer(vertices, this->primitive->VBO, this->primitive->VAO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
-
-        #ifdef __EMSCRIPTEN__
-            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
-        #else
-            Primitive::Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, this->drawStyle == 0 ? GL_FILL : GL_LINE); 
-        #endif
     }
 
 
@@ -291,7 +238,7 @@ void Texture2D::Load(const std::string& key)
     System::Application::resources->textures[key] = texture;  
 
 
-}
+} 
 
 
 //--------------------------------------
@@ -357,7 +304,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, auto &data)
 //----------------------------------------
 
 
-void Texture2D::Update(const glm::vec2 &position, bool flipX, bool flipY) 
+void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int drawStyle) 
 {   
 
     //---------------- format texture
@@ -463,6 +410,7 @@ void Texture2D::Update(const glm::vec2 &position, bool flipX, bool flipY)
     #ifdef __EMSCRIPTEN__
         Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);
     #else
-        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, GL_FILL); 
+        Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, drawStyle); 
     #endif
 }
+

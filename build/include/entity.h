@@ -141,7 +141,8 @@ class Geometry : public Entity {
 
     public:
 
-	  	Shader m_shader;
+        Shader m_shader;
+        Graphics::Texture2D m_texture;
 
 		float width, height, radius;
 
@@ -158,23 +159,16 @@ class Geometry : public Entity {
 
 		Geometry(float x, float y, float width, float height);
 
-		//line
-
-		Geometry(float x, float y, const glm::vec2& start, const glm::vec2& end);
-
 		~Geometry() = default;
 
 		void Render();
 
 	private:
 
-		glm::vec2 start, end;
-
-		int drawStyle = 0;
+		GLint drawStyle = GL_FILL;
 
 		const char* m_type;
 		
-		std::shared_ptr<Graphics::Primitive> primitive;
 };
 
 
@@ -183,27 +177,25 @@ class Geometry : public Entity {
 
 class Text : public Entity {
 
-    public:
+    public:	
 
-        GLTtext* buffer;
         std::string content; 
 
         static void Init();
         static void ShutDown();
  
         void Render();
-		void SetText(const std::string &content);
+		void SetText(const std::string& content);
  
-        Text (
-			std::string content, 
-			float x, 
-			float y, 
-			float scale = 1, 
-			glm::vec3 tint = glm::vec3(1.0f)
-		);
+        Text (const std::string& content, float x, float y, float scale = 1, glm::vec3 tint = glm::vec3(1.0f));
 		
         Text() = default;
        ~Text();
+
+    private:
+
+        static inline GLTtext* buffer;
+        GLTtext* handle;
 
 };
 
@@ -215,16 +207,15 @@ class Sprite : public Entity {
 
 	public:  
 
+        Shader m_shader;
+        Graphics::Texture2D m_texture;
+
 		int
 			m_frames, 
 			m_currentFrame, 
 			num_contacts = 0;
 
 		float velocityX, velocityY;
-
-		Shader m_shader; 
-	
-		Graphics::Texture2D m_texture; 
 
 		std::string m_key;
 		std::map<std::string, std::pair<int, int>> m_anims;

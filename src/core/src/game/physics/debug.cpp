@@ -308,7 +308,7 @@ DebugDraw::DebugDraw():
 	m_triangles = new Triangles;
 	m_triangles->Create();
 
-	std::cout << "physics graphic debug primitives initialized.\n";
+	std::cout << "Physics Debug: graphic debug primitives initialized.\n";
 }
 
 
@@ -330,7 +330,7 @@ DebugDraw::~DebugDraw()
 	delete m_triangles;
 	m_triangles = nullptr;
 
-	std::cout << "physics graphic debug primitives destroyed.\n";
+	std::cout << "Physics Debug: graphic debug primitives destroyed.\n";
 
 }
 

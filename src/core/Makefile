@@ -19,11 +19,11 @@ CC = g++ -g -std=c++17
 
 #INCLUDE_PATHS specifies the additional include paths we'll need
 
-INCLUDE_PATHS = -IC:\libs\glad\include\glad -IC:\libs\glfw-3.3.8\include\GLFW
+INCLUDE_PATHS = -IC:\libs\glad\include\glad 
 
 #LIBRARY_PATHS specifies the additional library paths we'll need
 
-LIBRARY_PATHS = -LC:\libs\glad #-LC:\libs\openAL\Win32
+LIBRARY_PATHS = -LC:\libs\glad  #-LC:\libs\openAL\Win32
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
@@ -38,7 +38,7 @@ COMPILER_FLAGS = \
 
 #LINKER_FLAGS specifies the libraries we're linking against
 
-LINKER_FLAGS = -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 -mwindows -lm 
+LINKER_FLAGS = -lmingw32 -lopengl32 -lglfw3 -lfreetype -lgdi32 -luser32 -lkernel32 -mwindows -lm  
 
 #OBJ_NAME specifies the name of our exectuable
 
