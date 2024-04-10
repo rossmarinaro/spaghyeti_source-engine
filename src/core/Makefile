@@ -38,7 +38,7 @@ COMPILER_FLAGS = \
 
 #LINKER_FLAGS specifies the libraries we're linking against
 
-LINKER_FLAGS = -lmingw32 -lopengl32 -lglfw3 -lfreetype -lgdi32 -luser32 -lkernel32 -mwindows -lm  
+LINKER_FLAGS = -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 -mwindows -lm  
 
 #OBJ_NAME specifies the name of our exectuable
 

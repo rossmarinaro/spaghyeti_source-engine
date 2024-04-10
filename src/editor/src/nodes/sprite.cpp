@@ -472,6 +472,8 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                     else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && Editor::selectedAsset.length() && System::Utils::GetFileType(Editor::selectedAsset) != "image")
                         ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
+
+                    //if texture applied to sprite
                         
                     if (this->currentTexture)
                     {
@@ -482,17 +484,15 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                         {
                             //apply frames
 
-                            if (ImGui::Button("apply"))
+                            if (ImGui::Button("apply") && !this->framesApplied)
                             {
-
+                                this->framesApplied = true;
                                 this->frames.clear();
 
                                 for (int i = 0; i < this->frame; i++) 
-                                    this->frames.push_back({ this->frameBuf1[i], this->frameBuf2[i], this->frameBuf3[i], this->frameBuf4[i] , this->frameBuf5[i], this->frameBuf6[i]}); 
+                                    this->frames.push_back({ this->frameBuf1[i], this->frameBuf2[i], this->frameBuf3[i], this->frameBuf4[i], this->frameBuf5[i], this->frameBuf6[i]}); 
 
-                                this->RegisterFrames();
-
-                                this->framesApplied = true; 
+                                this->RegisterFrames(); 
                                 this->spriteHandle->ReadSpritesheetData();
                                 this->spriteHandle->SetFrame(0);
 
@@ -519,14 +519,14 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                                         
                                         ImGui::PushID(i);
                                         
-                                        this->frameBuf1.push_back(i);
-                                        this->frameBuf2.push_back(i);
-                                        this->frameBuf3.push_back(i);
-                                        this->frameBuf4.push_back(i);
-                                        this->frameBuf5.push_back(i);
-                                        this->frameBuf6.push_back(i);
+                                        this->frameBuf1.push_back(0);
+                                        this->frameBuf2.push_back(0);
+                                        this->frameBuf3.push_back(0);
+                                        this->frameBuf4.push_back(0);
+                                        this->frameBuf5.push_back(1);
+                                        this->frameBuf6.push_back(1);
 
-                                        if (ImGui::Button("+x") && this->frameBuf5[i] > 1) {
+                                        if (ImGui::Button("-x") && this->frameBuf5[i] > 1) {
                                             this->framesApplied = false;
                                             this->frameBuf5[i]--;
                                         }
@@ -591,7 +591,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                             }
 
-                            if (ImGui::Button("add frame"))
+                            if (ImGui::Button("add frame")) 
                                 this->frame++;
 
                             ImGui::SameLine();
@@ -604,7 +604,8 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                                 this->frameBuf2.pop_back();
                                 this->frameBuf3.pop_back();
                                 this->frameBuf4.pop_back();
-
+                                this->frameBuf5.pop_back();
+                                this->frameBuf6.pop_back();
                                 this->frame--;
                             }
 

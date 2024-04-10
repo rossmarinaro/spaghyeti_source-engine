@@ -122,7 +122,7 @@ void Manager::LoadFile(const char* key, const char* path)
 //------------------------------------
 
 //load frames from vector of int arrays
-void Manager::LoadFrames(const std::string &key, const std::vector<std::array<int, 6>>& frames) {
+void Manager::LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames) {
 
     if (System::Application::resources->atlases.find(key) == System::Application::resources->atlases.end())
         System::Application::resources->atlases.insert( { key, frames } );
@@ -134,7 +134,7 @@ void Manager::LoadFrames(const std::string &key, const std::vector<std::array<in
 
 
 //load frames from file
-void Manager::LoadAtlas(const std::string &key, const char* path) {
+void Manager::LoadAtlas(const std::string& key, const char* path) {
 
     if (System::Application::resources->atlas_paths.find(key) == System::Application::resources->atlas_paths.end())
         System::Application::resources->atlas_paths.insert( { key, path } );
@@ -145,7 +145,7 @@ void Manager::LoadAtlas(const std::string &key, const char* path) {
 
 
 //load animations from map of start / end pairs defined by key
-void Manager::LoadAnims(const std::string &key, const std::map<std::string, std::pair<int, int>> &anims) {
+void Manager::LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims) {
 
     if (System::Application::resources->anims.find(key) == System::Application::resources->anims.end())
         System::Application::resources->anims.insert( { key, anims } );
@@ -155,7 +155,7 @@ void Manager::LoadAnims(const std::string &key, const std::map<std::string, std:
 
 
 //load tilemaps
-void Manager::LoadTilemap(const std::string &key, const std::vector<std::string> &data) {
+void Manager::LoadTilemap(const std::string& key, const std::vector<std::string>& data) {
     
     if (System::Application::resources->tilemap.find(key) == System::Application::resources->tilemap.end())
         System::Application::resources->tilemap.insert({ key, data });
@@ -337,7 +337,7 @@ const unsigned int Manager::GetSizeOfRawAudio(const std::string& key)
 //-------------------------------- 
 
 //get raw atlas
-std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::string& key)
+std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::string& key) 
 {
 
     const std::map<std::string, std::vector<std::array<int, 6>>>::iterator it = System::Application::resources->atlases.find(key);

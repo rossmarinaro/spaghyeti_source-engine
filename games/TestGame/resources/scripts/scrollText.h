@@ -29,7 +29,7 @@ void makeTxt(){ System::Game::CreateText("PASTABOSS ENTERPRISE 2024", 623, 637);
 
            //update every frame
 
-           void Update(Process::Context context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {
+           void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {
                 this->text->SetText("SWANKY VELVET" + this->exclamations);
            }
 

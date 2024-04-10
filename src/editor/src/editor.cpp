@@ -64,6 +64,8 @@ Editor::Editor()
 
     GUI::Launch();
 
+    glfwSetScrollCallback(Window::s_instance, scroll_callback);
+
     //set top-left header and bottom toolbar icon
 
     GLFWimage image;
@@ -156,8 +158,6 @@ void Editor::Reset()
 
     Log("Workspace reset.");
 }
-
-
 
 
 

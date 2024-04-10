@@ -231,7 +231,7 @@ class Sprite : public Entity {
 		}
 
 		inline void SetFrame(int frame) { this->m_currentFrame = frame; }
-		inline void SetAnimation(const char* key) { this->currentAnim = { key, { false, 2 } }; }
+		inline void SetAnimation(const char* key, bool yoyo = false, int rate = 2) { this->currentAnim = { key, { yoyo, rate } }; }
 		inline void StopAnimation() { this->currentAnim = {}; }
 
 		inline void SetContact(bool isContact) { this->m_contacting = isContact; }

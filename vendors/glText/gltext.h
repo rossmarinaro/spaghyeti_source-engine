@@ -160,11 +160,11 @@ GLT_API GLint gltCountNewLines(const char *str);
 
 #define _GLT_TEXT2D_POSITION_OFFSET 0
 #define _GLT_TEXT2D_TEXCOORD_OFFSET _GLT_TEXT2D_POSITION_SIZE
-
+ 
 #define _GLT_MAT4_INDEX(row, column) ((row) + (column) * 4)
 
-static const char *_gltFontGlyphCharacters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`*#=[]\"";
-#define _gltFontGlyphCount 83
+static const char *_gltFontGlyphCharacters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`*#=[]$\"";
+#define _gltFontGlyphCount 85
 
 #define _gltFontGlyphMinChar ' '
 #define _gltFontGlyphMaxChar 'z'

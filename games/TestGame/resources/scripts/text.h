@@ -9,20 +9,23 @@ namespace entity_behaviors {
 
         public: 
 
+            int score;
+
            //constructor, called on start
 
             TEXT_Behavior (std::shared_ptr<Entity> entity):
                 Behavior(entity, "TEXT")
             {
                 this->text = std::static_pointer_cast<Text>(this->entity);
+                this->score = 0;
             }
 
             //update every frame
 
-            void Update(Process::Context context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {
+            void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {
 
                 float fps = 60.0f - context.time->m_delta;
-                this->text->SetText("FPS: " + std::to_string(fps));
+                this->text->SetText("score: " + std::to_string(this->score));
             }
 
         private:

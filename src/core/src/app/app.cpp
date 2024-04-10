@@ -21,7 +21,7 @@ void System::Application::Init(Game* layer)
     
     #ifndef __EMSCRIPTEN__
         glfwSetMouseButtonCallback(Window::s_instance, Inputs::input_callback);
-    #else 
+    //#else 
         //emscripten_set_canvas_element_size("#canvas", m_width, m_height); 
     #endif
 
@@ -114,6 +114,7 @@ System::Application::~Application()
     #endif
 
     delete resources;
+    resources = nullptr;
 
     #if DEVELOPMENT == 1
         std::cout << "Application terminated. 👌\n";

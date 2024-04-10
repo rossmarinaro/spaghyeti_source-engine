@@ -270,7 +270,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         if (vertShader)
         {
             #if DEVELOPMENT == 1
-                std::cout << "Shader: Loading " << key << " from char.\n";
+                std::cout << "Shader: Loading " << key << " from string.\n";
             #endif
         
             shader.Generate(vertShader, fragShader, nullptr);

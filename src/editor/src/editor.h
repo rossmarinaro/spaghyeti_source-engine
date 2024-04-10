@@ -71,6 +71,18 @@ namespace editor {
 		private:
 
 			static void Update();
+
+            static inline void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) 
+            {
+                //X:
+
+                game->camera->SetPosition({ game->camera->m_position.x + xOffset, game->camera->m_position.y });
+
+                //Y: zoom
+
+                float zoom = game->camera->GetZoom();
+                game->camera->SetZoom(yOffset > -1 ? zoom += 0.1 : zoom -= 0.1);
+            }
 	};
 
 }

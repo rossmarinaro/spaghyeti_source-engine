@@ -1,5 +1,12 @@
 #include "../../../../build/include/app.h"
 
+#if DEVELOPMENT == 1 && STANDALONE == 1
+
+    #include "../../../../build/include/displayInfo.h"
+    DisplayInfo* displayInfo;
+
+#endif
+
 using namespace System;                           
   
 //------------------------- backend game layer functionality   
@@ -34,33 +41,31 @@ void Game::Boot()
 
     game->text->Init(); 
 
+    //preload / run game layer
+
+    StartScene(game->scenes[0]->key); 
+
+    glfwSetWindowTitle(Window::s_instance, Application::name.c_str());
+
+    game->inputs->CreateCursor();
+
+    game->physics->world.SetContactListener(&game->physics->collisions);
+    
     //physics listener and debug
-    
-	game->physics->world.SetContactListener(&game->physics->collisions);
-    
+
     #if DEVELOPMENT == 1 
     
         game->physics->debug = new DebugDraw;
 	    game->physics->world.SetDebugDraw(game->physics->debug);
 
-    #endif 
+        #if STANDALONE == 1
+            displayInfo = new DisplayInfo;
+        #endif
 
-
-    //preload / run game layer
-
-    game->currentScene = game->scenes[0]; 
-
-    game->currentScene->Preload();
-    game->currentScene->Run(); 
-
-    game->inputs->CreateCursor();
-
-    glfwSetWindowTitle(Window::s_instance, Application::name.c_str());
+    #endif
 
     std::cout << "Game: " + Application::name + " initialized.\n";
-
-    game->gameState = true;
-       
+    
 }
 
 
@@ -79,9 +84,12 @@ void Game::StartScene(const std::string& key)
 
     if (it != game->scenes.end())
     {
-    //for (const auto& entity : game->currentScene->entities) DestroyEntity(entity);
-        game->currentScene->entities.clear();
-        game->currentScene->behaviors.clear();
+
+        if (game->currentScene) {
+            game->currentScene->entities.clear();
+            game->currentScene->behaviors.clear();
+        }
+
         game->currentScene = *it; 
 
         Resources::Manager::Clear(false); 
@@ -110,8 +118,17 @@ void Game::Exit()
     game->text->ShutDown();
 
     #if DEVELOPMENT == 1 
+
         delete game->physics->debug;
         game->physics->debug = nullptr;
+
+        #if STANDALONE == 1
+
+            delete displayInfo;
+            displayInfo = nullptr;
+
+        #endif
+
     #endif
 
     delete game->camera;
@@ -178,6 +195,10 @@ void Game::UpdateFrame()
             game->physics->world.DebugDraw();
             game->physics->debug->Flush();
         }
+
+        #if STANDALONE == 1
+            displayInfo->Update(game->context);
+        #endif
 
     #endif
 

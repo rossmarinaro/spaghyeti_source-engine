@@ -20,7 +20,7 @@ namespace entity_behaviors {
             }
 
             virtual ~Behavior() = default;
-            virtual void Update(Process::Context context, const std::vector<std::shared_ptr<Behavior>>& behaviors) = 0;
+            virtual void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) = 0;
 
             template <typename T>
             static inline std::shared_ptr<T> GetBehavior(const std::string& key, const std::vector<std::shared_ptr<Behavior>>& behaviors) {
