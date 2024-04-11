@@ -1,7 +1,7 @@
 #include "./node.h"
 #include "../gui/gui.h"
 #include "../editor.h"
-#include "../../../../build/include/app.h"
+#include "../../../../build/sdk/include/app.h"
 
 using namespace editor;
 

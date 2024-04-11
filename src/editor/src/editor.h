@@ -19,13 +19,13 @@
 #include <algorithm>
 #include <memory>
 
-#include "../../../build/include/audio.h"
-#include "../../../build/include/window.h"      
-#include "../../../build/include/inputs.h"
-#include "../../../build/include/utils.h" 
-#include "../../../build/include/time.h"
-#include "../../../build/include/game.h"
-#include "../../../build/include/camera.h"
+#include "../../../build/sdk/include/audio.h"
+#include "../../../build/sdk/include/window.h"      
+#include "../../../build/sdk/include/inputs.h"
+#include "../../../build/sdk/include/utils.h" 
+#include "../../../build/sdk/include/time.h"
+#include "../../../build/sdk/include/game.h"
+#include "../../../build/sdk/include/camera.h"
 
 #include "./events/events.h"
 
@@ -71,18 +71,6 @@ namespace editor {
 		private:
 
 			static void Update();
-
-            static inline void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) 
-            {
-                //X:
-
-                game->camera->SetPosition({ game->camera->m_position.x + xOffset, game->camera->m_position.y });
-
-                //Y: zoom
-
-                float zoom = game->camera->GetZoom();
-                game->camera->SetZoom(yOffset > -1 ? zoom += 0.1 : zoom -= 0.1);
-            }
 	};
 
 }

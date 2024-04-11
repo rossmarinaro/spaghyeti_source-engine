@@ -1,8 +1,8 @@
-#include "../../../../build/include/app.h"
+#include "../../../../build/sdk/include/app.h"
 
 #if DEVELOPMENT == 1 && STANDALONE == 1
 
-    #include "../../../../build/include/displayInfo.h"
+    #include "../../../../build/sdk/include/displayInfo.h"
     DisplayInfo* displayInfo;
 
 #endif
@@ -78,17 +78,23 @@ void Game::StartScene(const std::string& key)
     Game* game = Application::game;
 
     game->gameState = false;
+    game->time->exitFlag = game->time->exitFlag.exchange(1);
 
+    //find loaded scene
 
     auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](std::shared_ptr<Scene> scene) { return scene->key == key; });
 
     if (it != game->scenes.end())
     {
 
+        //clear entities if applicable
+
         if (game->currentScene) {
             game->currentScene->entities.clear();
             game->currentScene->behaviors.clear();
         }
+
+        //assign / load current scene
 
         game->currentScene = *it; 
 
@@ -98,6 +104,7 @@ void Game::StartScene(const std::string& key)
         game->currentScene->Run();
 
         game->gameState = true;
+        game->time->exitFlag = game->time->exitFlag.exchange(0);
     }
 }
 
@@ -111,6 +118,7 @@ void Game::Exit()
     Game* game = Application::game;
 
     game->gameState = false;
+    game->time->exitFlag = game->time->exitFlag.exchange(1);
 
     game->currentScene->entities.clear();
     game->currentScene->behaviors.clear();

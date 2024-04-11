@@ -1,4 +1,4 @@
-#include "../../../../build/include/app.h"
+#include "../../../../build/sdk/include/app.h"
 
 Camera::Camera():
     rotation(0.0f),

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../build/include/behaviors.h"
+#include "../../build/sdk/include/behaviors.h"
 
 //player script
 

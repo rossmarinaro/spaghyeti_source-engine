@@ -1,4 +1,4 @@
-#include "../../../../build/include/app.h"
+#include "../../../../build/sdk/include/app.h"
 #include "./gui.h"
 #include "../editor.h"
 
@@ -60,6 +60,8 @@ void GUI::Launch()
     System::Resources::Manager::LoadRawImage("data src", Assets::Images::data_src, 75, 70, 4);
 
     System::Resources::Manager::RegisterAssets();
+
+    glfwSetScrollCallback(System::Window::s_instance, scroll_callback);
 
     Editor::Log("GUI launched.");
 
@@ -314,4 +316,32 @@ void GUI::ShowOptionsSave(bool quit)
 }
 
 
+//-------------------------------- mouse scroll
+
+
+void GUI::scroll_callback(GLFWwindow* window, double xOffset, double yOffset) 
+{
+
+    if (!ImGui::IsAnyItemHovered()) 
+    {
+
+        //zoom camera
+
+        float zoom = Editor::game->camera->GetZoom();
+
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+            Editor::game->camera->SetZoom(yOffset > -1 ? zoom += 0.1 : zoom -= 0.1);
+        
+        //position camera
+
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+            Editor::game->camera->SetPosition({ Editor::game->camera->m_position.x + yOffset * 10, Editor::game->camera->m_position.y });
+        
+        else 
+            Editor::game->camera->SetPosition({ Editor::game->camera->m_position.x, Editor::game->camera->m_position.y + yOffset * 10 });
+
+        if (xOffset != 0)
+            Editor::game->camera->SetPosition({ Editor::game->camera->m_position.x + xOffset * 10, Editor::game->camera->m_position.y });
+    }
+}
 

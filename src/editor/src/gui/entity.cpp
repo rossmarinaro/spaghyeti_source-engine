@@ -2,7 +2,7 @@
 #include "../editor.h"
 #include "../nodes/node.h"
 #include "../assets/assets.h"
-#include "../../../../build/include/app.h"
+#include "../../../../build/sdk/include/app.h"
 
 using namespace editor;
 
@@ -198,8 +198,11 @@ void GUI::RenderScriptOptions(const std::string &nodeId)
                     ImGui::Text("no scripts in directory.");
 
                 else
-                    for (const auto &script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                    {
+                {
+
+                    //load the script from dir
+
+                    auto loadScript = [&](auto& script) -> void {
 
                         std::string filename = script.path().filename().string();
 
@@ -214,7 +217,7 @@ void GUI::RenderScriptOptions(const std::string &nodeId)
                                 std::string line,
                                             path = Editor::projectPath + assetDir + '/';
                                         
-                                std::ifstream src(path + filename);
+                                std::ifstream src(script.path().string());
 
                                 while (src >> line)
                                     if (line == "class")  
@@ -222,8 +225,15 @@ void GUI::RenderScriptOptions(const std::string &nodeId)
                                             node->behaviors.insert({ line, filename });  
 
                             }
+                    }; 
 
-                    }
+                    //iterate over script dirs
+
+                    for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
+                        if (!script.is_directory())
+                            loadScript(script);
+
+                }                    
 
                 ImGui::EndMenu();
             }

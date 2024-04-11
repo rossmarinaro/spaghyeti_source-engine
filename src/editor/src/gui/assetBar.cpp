@@ -2,7 +2,7 @@
 #include "../assets/assets.h"
 #include "../editor.h"
 
-#include "../../../../vendors/IconsFontAwesome5.h"
+#include "../../../../build/sdk/include/vendors/IconsFontAwesome5.h"
 
 
 void editor::GUI::RenderAssets()

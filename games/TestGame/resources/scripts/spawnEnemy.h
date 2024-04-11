@@ -2,7 +2,7 @@
 
 #include <mutex>
 
-#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/include/behaviors.h"
+#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/behaviors.h"
 
 namespace entity_behaviors {
 

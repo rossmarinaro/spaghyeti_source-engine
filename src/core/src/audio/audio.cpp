@@ -3,14 +3,14 @@
 #endif
 
 #define MINIAUDIO_IMPLEMENTATION
-#include "../../../../vendors/miniaudio.h"
+#include "../../../../build/sdk/include/vendors/miniaudio.h"
 
 #include <stdio.h>
 #include <thread>
 
-#include "../../../../build/include/audio.h"
-#include "../../../../build/include/time.h"
-#include "../../../../build/include/manager.h"
+#include "../../../../build/sdk/include/audio.h"
+#include "../../../../build/sdk/include/time.h"
+#include "../../../../build/sdk/include/manager.h"
 
 #define DEVICE_FORMAT       ma_format_f32
 #define DEVICE_CHANNELS     2

@@ -440,7 +440,7 @@ void Game::Update()
                 }
             }
 
-        }exitFla
+        }
         
     }
 
@@ -577,7 +577,7 @@ void Game::Init()
 void Game::Run()
 {
 
-    System::Application::time.exitFlag = false;
+    System::Application::time.exitFlag = false; 
 
     SwankyBubbles::started = false;
     SwankyBubbles::restart = false;

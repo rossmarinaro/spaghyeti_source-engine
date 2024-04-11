@@ -4,13 +4,13 @@
 #include <fstream>
 #include <iostream>
 
-#include "../../../../vendors/imgui/imgui.h"
-#include "../../../../vendors/imgui/imgui_impl_glfw.h"
-#include "../../../../vendors/imgui/imgui_impl_opengl3.h"
-#include "../../../../vendors/imgui/imgui_internal.h"
-#include "../../../../vendors/imgui/imgui_stdlib.h"
+#include "../../vendors/imgui/imgui.h"
+#include "../../vendors/imgui/imgui_impl_glfw.h"
+#include "../../vendors/imgui/imgui_impl_opengl3.h"
+#include "../../vendors/imgui/imgui_internal.h"
+#include "../../vendors/imgui/imgui_stdlib.h"
 
-#include "../../../../build/include/entity.h"
+#include "../../../../build/sdk/include/entity.h"
 
 namespace editor {
 
@@ -50,6 +50,7 @@ namespace editor {
             static void ShowOptionsQuit();
             static void ShowOptionsSave(bool quit);
             static void AlignForWidth(float width, float alignment = 0.5f);
+            static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
     };
 
 }

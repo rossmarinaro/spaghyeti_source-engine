@@ -6,7 +6,7 @@ OBJS = \
 	$(wildcard src/**/**/*.cpp) \
 	$(wildcard src/**/**/**/*.cpp) \
 	$(wildcard ../window/*.cpp) \
-	$(wildcard ../../vendors/imgui/*.cpp) \
+	$(wildcard ./vendors/imgui/*.cpp) \
 	../../build/spaghyeti_source_runtime-editor.dll
 
 CC = g++ -g -std=c++17 

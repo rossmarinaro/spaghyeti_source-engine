@@ -8,10 +8,10 @@ OBJS = \
 	$(wildcard src/**/**/**/*.cpp) \
 	$(wildcard src/**/**/**/**/*.cpp) \
 	$(wildcard ../window/*.cpp) \
-	$(wildcard ../../vendors/box2d/src/**/*.cpp) \
-	$(wildcard ../../vendors/glad/src/*.c) \
-	$(wildcard ../../vendors/glm/*.cpp) \
-	$(wildcard ../../vendors/GLFW/*.cpp) 
+	$(wildcard ./vendors/box2d/src/**/*.cpp) \
+	$(wildcard ./vendors/glad/src/*.c) \
+	$(wildcard ./vendors/glm/*.cpp) \
+	$(wildcard ./vendors/GLFW/*.cpp) 
 
 #CC specifies which compiler we're using
 

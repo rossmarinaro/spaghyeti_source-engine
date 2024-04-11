@@ -1,6 +1,6 @@
 
-#include "../../../../../../build/include/app.h"
-#include "../../../../../../build/include/collisionManager.h"
+#include "../../../../../../build/sdk/include/app.h"
+#include "../../../../../../build/sdk/include/collisionManager.h"
 
 
 //---------------- box2d overlaps

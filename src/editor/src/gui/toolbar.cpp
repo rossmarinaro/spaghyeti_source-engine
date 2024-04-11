@@ -1,4 +1,4 @@
-#include "../../../../build/include/app.h"
+#include "../../../../build/sdk/include/app.h"
 #include "../editor.h"
 #include "./gui.h"
 

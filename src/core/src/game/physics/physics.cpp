@@ -1,6 +1,6 @@
 
-#include "../../../../../build/include/app.h"
-#include "../../../../../build/include/physics.h"
+#include "../../../../../build/sdk/include/app.h"
+#include "../../../../../build/sdk/include/physics.h"
 
 //------------------------------
 

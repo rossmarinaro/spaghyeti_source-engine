@@ -1,8 +1,8 @@
 /build/games
-/build/vendors
+/build/include/vendors
 /build/spaghyeti_source-engine-full.exe
 /build/spaghyeti_source-engine_runtime-editor.dll
-/build/spaghyeti_source-engine_runtime-core.dll
+/build/sdk/spaghyeti_source-engine_runtime-core.dll
 /build/imgui.ini
 /build/Logs.txt
 

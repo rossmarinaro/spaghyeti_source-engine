@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../../build/include/entity.h"
+#include "../../../../build/sdk/include/entity.h"
 #include "../scene.h"
 
 namespace editor {

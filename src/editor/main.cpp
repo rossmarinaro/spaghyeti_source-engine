@@ -1,6 +1,6 @@
 /******* MAIN ******/
 
-#include "../../build/include/app.h"
+#include "../../build/sdk/include/app.h"
 #include "./src/editor.h"
 
 #ifdef _WIN32

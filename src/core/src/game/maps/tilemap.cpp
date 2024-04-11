@@ -4,8 +4,8 @@
     #include <bits/stdc++.h>
 #endif
 
-#include "../../../../../build/include/tilemap.h"
-#include "../../../../../build/include/app.h"
+#include "../../../../../build/sdk/include/tilemap.h"
+#include "../../../../../build/sdk/include/app.h"
 
 using app = System::Application;
 

@@ -7,8 +7,8 @@
 #include <iomanip>
 #include <thread>
 
-#include "../../../../build/include/app.h"
-#include "../../../../build/include/renderer.h"
+#include "../../../../build/sdk/include/app.h"
+#include "../../../../build/sdk/include/renderer.h"
 
 using namespace std::chrono_literals;
 
@@ -84,23 +84,22 @@ void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
 void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr, std::mutex& m)
 {
 
-    if (exitFlag.load())
+    if (System::Application::game->time->exitFlag.load())
         return;
 
-    std::thread ([=, &m]
-    (){
+    std::thread ([=, &m] (){
 
         m.lock();
 
-        while(!exitFlag.load())
-        {
+        while(!System::Application::game->time->exitFlag.load())
+        { 
  
-            if (exitFlag.load())
+            if (System::Application::game->time->exitFlag.load())
                 return;
 
             std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
     
-            if (exitFlag.load())
+            if (System::Application::game->time->exitFlag.load())
                 return;
 
             fn_ptr();

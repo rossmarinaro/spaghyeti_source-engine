@@ -7,7 +7,7 @@
 #include "./assets/assets.h"
 #include "./gui/gui.h"
 #include "./nodes/node.h"
-#include "../../../build/include/app.h"
+#include "../../../build/sdk/include/app.h"
 
 using namespace /* SPAGHYETI_CORE */ System;
 using namespace editor;
@@ -63,8 +63,6 @@ Editor::Editor()
     Application::Init(game);
 
     GUI::Launch();
-
-    glfwSetScrollCallback(Window::s_instance, scroll_callback);
 
     //set top-left header and bottom toolbar icon
 
@@ -158,7 +156,5 @@ void Editor::Reset()
 
     Log("Workspace reset.");
 }
-
-
 
 

@@ -1,6 +1,6 @@
   
-#include "../../../../../build/include/app.h"
-#include "../../../../../build/include/manager.h"
+#include "../../../../../build/sdk/include/app.h"
+#include "../../../../../build/sdk/include/manager.h"
 
 
 //------------------------------------ velocity, use physics if available / else default to position update

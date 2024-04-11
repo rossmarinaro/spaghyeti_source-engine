@@ -17,7 +17,7 @@
 #include "../editor.h"
 #include "../assets/assets.h" 
 #include "../nodes/node.h"
-#include "../../../../build/include/app.h"
+#include "../../../../build/sdk/include/app.h"
 
 using namespace editor;
 
@@ -457,7 +457,10 @@ void EventListener::BuildAndRun()
         main_makeFile << "OBJS = \\" << "\n";
         main_makeFile << "    $(wildcard ./src/*.cpp) \\" << "\n";
         main_makeFile << "    $(wildcard ./src/**/*.cpp) \\" << "\n";
-        main_makeFile << "    $(wildcard ./resources/scripts/*.cpp) \\" << "\n";
+        main_makeFile << "    $(wildcard ./resources/scripts/**/*.cpp) \\" << "\n";
+        main_makeFile << "    $(wildcard ./resources/scripts/**/**/*.cpp) \\" << "\n";
+        main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/*.cpp) \\" << "\n";
+        main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/**/*.cpp) \\" << "\n";
         main_makeFile << "    ./build/spaghyeti_source_runtime-core.dll" << "\n\n";
         main_makeFile << "all : $(OBJS)" << "\n";
         main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o ./build/$(PROJECT).exe";
@@ -480,14 +483,18 @@ void EventListener::BuildAndRun()
         game_src << "#ifdef _WIN32\n";
         game_src <<	"#include <windows.h>\n";
         game_src << "#endif\n";
-        game_src << "\n#include \"" + root_path + "/include/app.h\"\n\n";
+        game_src << "\n#include \"" + root_path + "/sdk/include/app.h\"\n\n";
 
         //include scripts
 
         for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
-            game_src << "#include " << "\"../resources/scripts/" + script.path().filename().string() + "\"\n";
-
-            //parse scene files
+            if (!script.is_directory()) {
+                std::string path = script.path().string();
+                std::replace(path.begin(), path.end(), '\\', '/');
+                game_src << "#include " << "\"" + path + "\"\n";
+            }
+        
+        //parse scene files
 
         for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath)) 
         {
@@ -890,8 +897,8 @@ void EventListener::BuildAndRun()
         ShowWindow(GetConsoleWindow(), SW_SHOW);
 
         system(Editor::platform == "Windows" ?
-            ("buildGame.bat " + Editor::projectPath + " " + currentProject).c_str() :
-            ("buildWebGL.bat " + Editor::projectPath).c_str()
+            ("chdir sdk && buildGame.bat " + Editor::projectPath + " " + currentProject).c_str() :
+            ("chdir sdk && buildWebGL.bat " + Editor::projectPath).c_str()
         );
 
         remove(srcPath.c_str());
