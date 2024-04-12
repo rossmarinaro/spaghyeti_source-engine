@@ -24,15 +24,18 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
         if (sprite->bodies.size())  
         {
-            sprite->num_contacts++;
+            sprite->num_contacts++; 
 
             for (const auto& body : sprite->bodies)
             {
                 b2BodyUserData data = body.first->GetFixtureList()->GetBody()->GetUserData();
 
-                if ((data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer) && 
-                    !bodyFixtureA->IsSensor() || !bodyFixtureB->IsSensor())
-                        sprite->SetContact(true);
+                if (
+                    body.first->IsEnabled() &&
+                    (data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer) && 
+                    (bodyFixtureA->IsSensor() || bodyFixtureB->IsSensor()) 
+                )
+                    sprite->SetContact(true);
             }
         }
     }
@@ -71,9 +74,12 @@ void CollisionManager::EndContact(b2Contact* contact)
             {
                 b2BodyUserData data = body.first->GetFixtureList()->GetBody()->GetUserData();
 
-                if ((data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer) && 
-                    !bodyFixtureA->IsSensor() || !bodyFixtureB->IsSensor())
-                        sprite->SetContact(false); 
+                if (
+                    body.first->IsEnabled() &&
+                    (data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer) && 
+                    (bodyFixtureA->IsSensor() || bodyFixtureB->IsSensor()) 
+                )
+                    sprite->SetContact(false);
             }
         }        
     }

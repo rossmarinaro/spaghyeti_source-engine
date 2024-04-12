@@ -146,7 +146,7 @@ namespace editor {
                             
                              body_pointer;
 
-            std::vector<std::pair<b2Body*, std::string>> bodies; 
+            std::vector<b2Body*> bodies; 
 
             SpriteNode(): Node("Sprite") {}
             SpriteNode(const std::string& id);
@@ -160,7 +160,6 @@ namespace editor {
             void ApplyAnimation(const std::string& key, int start, int end);
 
             void CreateBody(
-                const char* type, 
                 float x = 0.0f, 
                 float y = 0.0f, 
                 float width = 0.0f, 

@@ -79,7 +79,7 @@ void SpriteNode::Reset(const char* component_type)
     {
 
         for (const auto& body : this->bodies)
-            Physics::DestroyBody(body.first);
+            Physics::DestroyBody(body);
         
         this->bodyX.clear();
         this->bodyY.clear(); 
@@ -101,15 +101,7 @@ void SpriteNode::Reset(const char* component_type)
 //---------------------------------
 
 
-void SpriteNode::CreateBody(
-    const char* type, 
-    float x, 
-    float y, 
-    float width, 
-    float height,
-    bool isSensor,
-    int pointerType
-) 
+void SpriteNode::CreateBody(float x, float y, float width, float height, bool isSensor, int pointerType) 
 {
 
     BoolContainer bc;
@@ -123,15 +115,9 @@ void SpriteNode::CreateBody(
     this->is_sensor.push_back(bc);
     this->body_pointer.push_back(pointerType);
 
-    b2Body* body;
+    b2Body* body = Physics::CreateDynamicBody("box", x, y, width, height); 
 
-    if (strcmp("static", type) == 0) 
-        body = Physics::CreateStaticBody(x, y, width, height); 
-
-    if (strcmp("dynamic", type) == 0) 
-        body = Physics::CreateDynamicBody("box", x, y, width, height); 
-
-    this->bodies.push_back({ body, type });
+    this->bodies.push_back(body);
     
 }
 
@@ -398,15 +384,15 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                         ImGui::Separator();     
 
-                        if (this->bodies[i].first != nullptr)
+                        if (this->bodies[i] != nullptr)
                         {
                             b2PolygonShape body;
                             body.SetAsBox(this->body_width[i], this->body_height[i]);
                             b2FixtureDef fixtureDef;
                             fixtureDef.shape = &body;
 
-                            this->bodies[i].first->DestroyFixture(this->bodies[i].first->GetFixtureList());
-                            this->bodies[i].first->CreateFixture(&fixtureDef);    
+                            this->bodies[i]->DestroyFixture(this->bodies[i]->GetFixtureList());
+                            this->bodies[i]->CreateFixture(&fixtureDef);    
 
                         }
 
@@ -423,12 +409,12 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                     ImGui::Separator();     
 
                     if (ImGui::Button("add")) 
-                        this->CreateBody("static");
+                        this->CreateBody();
 
                     ImGui::SameLine();
 
                     if (ImGui::Button("remove") && this->bodies.size() > 1) {
-                        Physics::DestroyBody(this->bodies.back().first);
+                        Physics::DestroyBody(this->bodies.back());
                         this->bodies.pop_back();
                     }
 
@@ -688,7 +674,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
             
             if (this->bodies.size())
                 for (int i = 0; i < this->bodies.size(); i++)   
-                    this->bodies[i].first->SetTransform(
+                    this->bodies[i]->SetTransform(
                         b2Vec2(
                             this->spriteHandle->m_position.x + this->bodyX[i], 
                             this->spriteHandle->m_position.y + this->bodyY[i]

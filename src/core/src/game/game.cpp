@@ -78,7 +78,7 @@ void Game::StartScene(const std::string& key)
     Game* game = Application::game;
 
     game->gameState = false;
-    game->time->exitFlag = game->time->exitFlag.exchange(1);
+    game->time->exitFlag = true;
 
     //find loaded scene
 
@@ -98,13 +98,14 @@ void Game::StartScene(const std::string& key)
 
         game->currentScene = *it; 
 
-        Resources::Manager::Clear(false); 
+        Resources::Manager::Clear(false);
 
         game->currentScene->Preload();
         game->currentScene->Run();
-
+        
+        game->time->exitFlag = false; 
         game->gameState = true;
-        game->time->exitFlag = game->time->exitFlag.exchange(0);
+
     }
 }
 

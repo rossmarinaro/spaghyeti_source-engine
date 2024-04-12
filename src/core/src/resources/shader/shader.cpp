@@ -143,7 +143,7 @@ void checkCompileErrors(unsigned int shader, const std::string& type)
             }
             else {
                 #if DEVELOPMENT == 1
-                     std::cout << "SHADER: " + type + " COMPILED SUCESSFULLY.\n";  
+                     std::cout << "Shader: " + type + " compiled successfully.\n";  
                 #endif
             }
         }
@@ -161,7 +161,7 @@ void checkCompileErrors(unsigned int shader, const std::string& type)
 
             else {
                 #if DEVELOPMENT == 1
-                    std::cout << "SHADER: " + type + " COMPILED SUCESSFULLY.\n";  
+                    std::cout << "Shader: " + type + " compiled successfully.\n";  
                 #endif
             }
                 
@@ -175,7 +175,7 @@ void checkCompileErrors(unsigned int shader, const std::string& type)
             }
             else {
                 #if DEVELOPMENT == 1
-                    std::cout << "SHADER: " + type + " LINKED SUCESSFULLY.\n";  
+                    std::cout << "Shader: " + type + " linked successfully.\n";  
                 #endif
             }
         };

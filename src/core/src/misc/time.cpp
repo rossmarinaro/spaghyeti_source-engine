@@ -77,33 +77,40 @@ void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
  
 }
 
-
 //-------------- recursive interval timeout
+
+
+void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr)
+{
+
+    std::thread ([=] (){
+
+        while(!System::Application::game->time->exitFlag.load()) {
+
+            std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
+            fn_ptr();
+
+        }
+
+    }).detach();     
+
+}
+
+
+//-------------- recursive interval timeout with mutex
 
 
 void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr, std::mutex& m)
 {
 
-    if (System::Application::game->time->exitFlag.load())
-        return;
-
-    std::thread ([=, &m] (){
+    std::thread ([=, &m] () {
 
         m.lock();
 
-        while(!System::Application::game->time->exitFlag.load())
-        { 
- 
-            if (System::Application::game->time->exitFlag.load())
-                return;
+        while(!System::Application::game->time->exitFlag.load()) {
 
             std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
-    
-            if (System::Application::game->time->exitFlag.load())
-                return;
-
             fn_ptr();
-
         }
 
         m.unlock();

@@ -46,7 +46,7 @@ namespace entity_behaviors {
 
                 else if (this->player->IsContacting()) {      
                     this->canJump = true;
-                    this->Move(context.inputs);
+                    this->Move(context.inputs); 
                 }
 
                 //attack

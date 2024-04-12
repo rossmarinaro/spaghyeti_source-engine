@@ -46,7 +46,7 @@ void TextNode::Reset(const char* component_type)
     {}
 
     if (strcmp(component_type, "Script") == 0 || passAll)
-    {}
+      this->behaviors.clear();
 }
 
 

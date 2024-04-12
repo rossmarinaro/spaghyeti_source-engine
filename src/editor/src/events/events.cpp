@@ -672,14 +672,7 @@ void EventListener::BuildAndRun()
                     if (sn->HasComponent("Physics"))
                     {
                         for (int i = 0; i < sn->bodies.size(); i++) 
-                        {
-
-                            if (sn->bodies[i].second == "static")
-                                command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateStaticBody(" + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " });\n";
-                            
-                            if (sn->bodies[i].second == "dynamic")
-                                command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n";
-                        }    
+                            command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n"; 
 
                         command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
 
@@ -815,11 +808,14 @@ void EventListener::BuildAndRun()
             //convert data string stream to string
 
             const std::string globalData = global_queue.str(), 
-                            commandData = command_queue.str(),  
-                            preloadData = asset_queue.str(),
-                            updateData = update_queue.str();
+                              commandData = command_queue.str(),  
+                              preloadData = asset_queue.str(),
+                              updateData = update_queue.str();
 
             std::string name_upper = target.first;
+
+            std::replace(name_upper.begin(), name_upper.end(), '-', '_');
+            std::replace(name_upper.begin(), name_upper.end(), ' ', '_');
 
             transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
@@ -878,6 +874,9 @@ void EventListener::BuildAndRun()
         for (const auto& scene : Editor::scenes) 
         {
             std::string className = scene;
+
+            std::replace(className.begin(), className.end(), '-', '_');
+            std::replace(className.begin(), className.end(), ' ', '_');
             transform(className.begin(), className.end(), className.begin(), ::toupper); 
 
             game_src << "       game.LoadScene<" + className + ">();\n";

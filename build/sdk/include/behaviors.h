@@ -10,15 +10,19 @@ namespace entity_behaviors {
 
         public:
 
-            std::string key;
+            std::string key; 
             
             inline Behavior(std::shared_ptr<Entity> entity, const std::string& key) 
             {
                 this->key = key; 
                 this->entity = entity;
+                this->isActive = true;
             }
 
-            virtual ~Behavior() = default;
+            virtual ~Behavior() {
+                this->isActive = false;
+            };
+
             virtual void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) {};
 
             template <typename T>
@@ -29,6 +33,8 @@ namespace entity_behaviors {
             }
 
         protected:
+
+            bool isActive;
 
             std::shared_ptr<Entity> entity;
 

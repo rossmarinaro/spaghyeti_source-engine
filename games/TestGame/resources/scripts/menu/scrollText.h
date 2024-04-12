@@ -5,28 +5,30 @@
 
 namespace entity_behaviors {
 
-   class SCROLLTEXT : public Behavior {
+   class Menu_ScrollText : public Behavior {
 
        public:
 
            //constructor, called on start
 
-           SCROLLTEXT(std::shared_ptr<Entity> entity):
-               Behavior(entity, "SCROLLTEXT")
+            Menu_ScrollText(std::shared_ptr<Entity> entity):
+               Behavior(entity, "ScrollText")
            {
                 this->text = std::static_pointer_cast<Text>(this->entity);
                 this->exclamations = "";
 
-                Time::setInterval(500, [&]() { 
+                Time::setInterval(500, [=]() { 
+                    
+                    if (this->isActive) 
+                        return;
+                        
                     if (this->exclamations.length() < 3) 
-                        this->exclamations += "!"; 
-                  //  else 
-                   //     Time::exitFlag = true;
-                }, this->m_lock);
+                       this->exclamations += "!"; 
+                }); 
 
            }
 
-           //update every frame
+           //update every frame 
 
            void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {
                 this->text->SetText("SWANKY VELVET" + this->exclamations);
@@ -36,7 +38,6 @@ namespace entity_behaviors {
 
             std::shared_ptr<Text> text;
             std::string exclamations;
-            static inline std::mutex m_lock;
 
    };
 };

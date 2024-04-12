@@ -41,6 +41,9 @@ void EmptyNode::Reset(const char* component_type)
     if (strcmp(component_type, "Shader") == 0 || passAll)
         if (this->m_debugGraphic.get())
                 this->m_debugGraphic->m_shader = Shader::GetShader("graphics");
+
+    if (strcmp(component_type, "Script") == 0 || passAll)
+        this->behaviors.clear();
 }
 
 

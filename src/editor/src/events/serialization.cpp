@@ -14,6 +14,24 @@ using namespace editor;
 //-----------------------------------
 
 
+std::string GetScriptName(const std::string& path)
+{
+
+    std::ifstream src(path);
+    std::string line, scriptName;
+
+    while (src >> line)
+        if (line == "class")  
+            if (src >> line)
+                scriptName = line;
+    
+    return scriptName;  
+}
+
+
+//-----------------------------------
+
+
 void EventListener::DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath)
 {
 
@@ -184,15 +202,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
             if (sprite["components"]["physics"]["bodies"].size())
                 for (const auto& body : sprite["components"]["physics"]["bodies"]) 
-                    sn->CreateBody(
-                        static_cast<std::string>(body["type"]).c_str(), 
-                        body["bodyX"], 
-                        body["bodyY"], 
-                        body["body_width"], 
-                        body["body_height"],
-                        body["sensor"], 
-                        body["pointer"]
-                    );
+                    sn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"], body["sensor"], body["pointer"]);
         }
 
         //script
@@ -203,7 +213,9 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
             if (sprite["components"]["script"]["scripts"].size())
                 for (const auto& scripts : sprite["components"]["script"]["scripts"])
-                    sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+                    for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                        if (file.exists() && static_cast<std::string>(scripts["key"]) == GetScriptName(file.path().string()))
+                            sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });   
         }
 
         //shader
@@ -316,7 +328,9 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
             if (empty["components"]["script"]["scripts"].size())
                 for (const auto& scripts : empty["components"]["script"]["scripts"])
-                    en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
+                    for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                        if (file.exists() && static_cast<std::string>(scripts["key"]) == GetScriptName(file.path().string()))
+                            en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
         }
 
         //shader
@@ -364,7 +378,9 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
             if (text["components"]["script"]["scripts"].size())
                 for (const auto& scripts : text["components"]["script"]["scripts"])
-                    tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+                    for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                        if (file.exists() && static_cast<std::string>(scripts["key"]) == GetScriptName(file.path().string()))
+                            tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
 
         }
 
@@ -491,7 +507,6 @@ void EventListener::Serialize(json& data)
 
             for (int i = 0; i < sn->bodies.size(); ++i)
                 bodies.push_back({
-                    { "type", sn->bodies[i].second },
                     { "body_width", sn->body_width.size() ? sn->body_width[i] : 0 },
                     { "body_height", sn->body_height.size() ? sn->body_height[i] : 0 },
                     { "bodyX", sn->bodyX.size() ? sn->bodyX[i] : 0 },
@@ -843,7 +858,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
                     sn->is_sensor.push_back(bc);
                     sn->body_pointer.push_back(body["pointer"]);
 
-                    sn->bodies.push_back({nullptr, body["type"] });
+                    sn->bodies.push_back(nullptr);
                 }
         }
 
@@ -855,7 +870,9 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
             if (sprite["components"]["script"]["scripts"].size())
                 for (const auto& scripts : sprite["components"]["script"]["scripts"])
-                    sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+                    for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                        if (file.exists() && static_cast<std::string>(scripts["key"]) == GetScriptName(file.path().string()))
+                            sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
         }
 
         //shader
@@ -968,8 +985,10 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
             en->AddComponent("Script", false);
 
             if (empty["components"]["script"]["scripts"].size())
-                for (const auto &scripts : empty["components"]["script"]["scripts"])
-                    en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
+                for (const auto& scripts : empty["components"]["script"]["scripts"])
+                    for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                        if (file.exists() && static_cast<std::string>(scripts["key"]) == GetScriptName(file.path().string()))
+                            en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
         }
 
         //shader
@@ -1016,8 +1035,10 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
             tn->AddComponent("Script", false);
 
             if (text["components"]["script"]["scripts"].size())
-                for (const auto &scripts : text["components"]["script"]["scripts"])
-                    tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
+                for (const auto& scripts : text["components"]["script"]["scripts"])
+                    for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                        if (file.exists() && static_cast<std::string>(scripts["key"]) == GetScriptName(file.path().string()))
+                            tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
 
         }
 

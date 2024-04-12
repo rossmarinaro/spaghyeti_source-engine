@@ -126,7 +126,7 @@ void Component::Make()
         transform(this->filename.begin(), this->filename.end(), this->filename.begin(), ::toupper);
 
         src << "#pragma once\n\n";
-        src << "#include \"" + root_path + "/include/behaviors.h\"\n\n\n";
+        src << "#include \"" + root_path + "/sdk/include/behaviors.h\"\n\n\n";
         src << "namespace entity_behaviors {\n\n";
         src <<  "   class " + this->filename + " : public Behavior {\n\n";
         src <<  "       public:\n\n";
@@ -180,7 +180,7 @@ void Component::Make()
 
                     auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::GetNode(this->m_ID));
 
-                    sn->CreateBody("dynamic");
+                    sn->CreateBody();
                 }
 
                 if (this->m_nodeType == "Tilemap") {
