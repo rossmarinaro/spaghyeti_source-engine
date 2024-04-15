@@ -15,7 +15,7 @@ namespace entity_behaviors {
                Behavior(entity, "MenuStart")
            {
                 this->startText = std::static_pointer_cast<Text>(this->entity);
-//std::mutex m; std::unique_lock<std::mutex> lk(m);
+
                 Time::delayedCall(3000, [&]() {  
                     Time::setInterval(500, [&]() { 
 

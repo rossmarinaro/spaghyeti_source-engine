@@ -1,21 +1,26 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sun Apr 14 21:33:06 2024
-IMGui Version: 1 @ Sun Apr 14 21:33:06 2024
-GUI launched. @ Sun Apr 14 21:33:06 2024
-Workspace reset. @ Sun Apr 14 21:33:13 2024
-sprite node Untitled created. @ Sun Apr 14 21:33:14 2024
-Text node Untitled created. @ Sun Apr 14 21:33:14 2024
-Text node Untitled created. @ Sun Apr 14 21:33:14 2024
-Text node Untitled created. @ Sun Apr 14 21:33:14 2024
-Text node Untitled created. @ Sun Apr 14 21:33:14 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Apr 15 15:26:08 2024
+IMGui Version: 1 @ Mon Apr 15 15:26:09 2024
+GUI launched. @ Mon Apr 15 15:26:09 2024
+Workspace reset. @ Mon Apr 15 15:26:15 2024
+sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
+sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
+sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
+sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
+sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
+sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
+Tilemap node Untitled created. @ Mon Apr 15 15:26:16 2024
+Text node Untitled created. @ Mon Apr 15 15:26:16 2024
 Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Sun Apr 14 21:33:14 2024
-sprite node Untitled created. @ Sun Apr 14 21:33:22 2024
-Prefab loaded. @ Sun Apr 14 21:33:22 2024
-Sprite node sv deleted. @ Sun Apr 14 21:34:00 2024
-Text node the funky adventures deleted. @ Sun Apr 14 21:34:00 2024
-Text node swanky velvet deleted. @ Sun Apr 14 21:34:00 2024
-Text node press start deleted. @ Sun Apr 14 21:34:00 2024
-Text node pastaboss enterprise deleted. @ Sun Apr 14 21:34:00 2024
-Sprite node player deleted. @ Sun Apr 14 21:34:00 2024
-GUI exited @ Sun Apr 14 21:34:00 2024
-Editor closed. @ Sun Apr 14 21:34:00 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Mon Apr 15 15:26:16 2024
+Scene parsed. @ Mon Apr 15 15:26:50 2024
+Project TestGame built successfully. @ Mon Apr 15 15:27:04 2024
+Sprite node player deleted. @ Mon Apr 15 15:27:06 2024
+Sprite node background deleted. @ Mon Apr 15 15:27:06 2024
+Sprite node elf deleted. @ Mon Apr 15 15:27:06 2024
+Sprite node heart1 deleted. @ Mon Apr 15 15:27:06 2024
+Sprite node heart2 deleted. @ Mon Apr 15 15:27:06 2024
+Sprite node heart3 deleted. @ Mon Apr 15 15:27:06 2024
+Tilemap node map deleted. @ Mon Apr 15 15:27:06 2024
+Text node score deleted. @ Mon Apr 15 15:27:06 2024
+GUI exited @ Mon Apr 15 15:27:06 2024
+Editor closed. @ Mon Apr 15 15:27:06 2024

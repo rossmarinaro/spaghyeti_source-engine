@@ -97,6 +97,11 @@ void EmptyNode::Render(std::shared_ptr<Node> node)
                 ImGui::EndMenu();
             }
 
+            //save prefab
+
+            if (ImGui::Button("Save prefab")) 
+                this->SavePrefab();
+
             //component options
 
             //------------------------------ script
