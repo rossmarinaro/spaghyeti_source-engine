@@ -14,7 +14,7 @@ using namespace editor;
 //-----------------------------------
 
 
-std::string GetScriptName(const std::string& path)
+std::string EventListener::GetScriptName(const std::string& path)
 {
 
     std::ifstream src(path);

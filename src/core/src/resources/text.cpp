@@ -95,6 +95,7 @@ void Text::Render()
 
     gltEndDraw();
 
+
 }
 
 

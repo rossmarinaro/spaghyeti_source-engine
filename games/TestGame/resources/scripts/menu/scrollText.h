@@ -13,19 +13,20 @@ namespace entity_behaviors {
 
             Menu_ScrollText(std::shared_ptr<Entity> entity):
                Behavior(entity, "ScrollText")
-           {
+            {
                 this->text = std::static_pointer_cast<Text>(this->entity);
                 this->exclamations = "";
 
-                Time::setInterval(500, [=]() { 
+                Time::delayedCall(500,[&]() { 
+                    Time::setInterval(500, [=]() { 
                     
-                    if (this->isActive) 
-                        return;
-                        
-                    if (this->exclamations.length() < 3) 
-                       this->exclamations += "!"; 
-                }); 
-
+                        if (!this->isActive) 
+                            return;
+                            
+                        if (this->exclamations.length() < 3) 
+                            this->exclamations += "!"; 
+                    }); 
+                });
            }
 
            //update every frame 

@@ -76,7 +76,7 @@ void MapManager::CreateLayer (
                     std::string flags = bin.to_string().substr(0, 3),
                                 bin_reset = bin.to_string();
 
-                    bin_reset[0] = '0';
+                    bin_reset[0] = '0'; 
                     bin_reset[1] = '0';
                     bin_reset[2] = '0';
                   

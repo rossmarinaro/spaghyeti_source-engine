@@ -20,6 +20,17 @@ namespace entity_behaviors {
                 this->r = 1.0f; 
                 this->g = 0;
                 this->b = 1.0f;
+                this->a = 1.0f;
+                
+                Time::delayedCall(100,[&]() { 
+                    Time::setInterval(1500, [=]() { 
+
+                        if (!this->isActive) 
+                            return;
+
+                        this->rev = !this->rev; 
+                    }); 
+                });
            }
 
            //update every frame
@@ -29,21 +40,17 @@ namespace entity_behaviors {
 
                 //cycle background color
 
-                if (this->r == 0)
-                    this->rev = false;
-
-                if (this->r > 0 && !this->rev) {
+                if (!this->rev) {
                     this->r -= 0.01f;
                     this->b += 0.01f;
                 }
                 
-                else if (this->r < 1) {
-                    this->rev = true;
+                else {
                     this->r += 0.01f;
-                    this->b -= 0.01f;
+                    this->b -= 0.01f; 
                 }
 
-                context.camera->SetBackgroundColor({ r, g, b, 1 });
+                context.camera->SetBackgroundColor({ r, g, b, a });
 
                 //set player animation
 
@@ -57,7 +64,7 @@ namespace entity_behaviors {
 
         private:
 
-            float r, g, b;
+            float r, g, b, a;
             bool hasStarted, rev;
             std::shared_ptr<Sprite> player; 
    };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../../../build/sdk/include/renderer.h"
-
+#include "../nodes/node.h"
 
 namespace editor {
 
@@ -18,7 +18,8 @@ namespace editor {
 
             static void SetIcon(const std::string& key);
             static void LoadAsset(const std::string& asset, const std::string& path);
-            static void SavePrefab(void* node);
+            static bool SavePrefab(const std::string& type, const std::string& nodeId);
+            static bool LoadPrefab();
 
             static std::string GetFolder(const std::string& asset);
             static std::string GetThumbnail(const std::string& asset);

@@ -85,12 +85,16 @@ void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr)
 
     std::thread ([=] (){
 
+        if (System::Application::game->time->exitFlag.load())
+            return;
+
         while(!System::Application::game->time->exitFlag.load()) {
 
             std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
             fn_ptr();
-
         }
+
+        System::Application::game->time->exitFlag = false;
 
     }).detach();     
 
@@ -105,6 +109,9 @@ void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr, std::mu
 
     std::thread ([=, &m] () {
 
+        if (System::Application::game->time->exitFlag.load())
+            return;
+
         m.lock();
 
         while(!System::Application::game->time->exitFlag.load()) {
@@ -114,6 +121,8 @@ void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr, std::mu
         }
 
         m.unlock();
+
+        System::Application::game->time->exitFlag = false;
 
     }).detach();     
 

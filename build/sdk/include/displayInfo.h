@@ -14,6 +14,9 @@ class DisplayInfo {
         {
             this->fps_text = std::make_shared<Text>("", 10, 0);
             this->fps_text->SetScale(2.0f, 1.0f);
+
+            this->cam_text = std::make_shared<Text>("", 10, 50);
+            this->cam_text->SetScale(2.0f, 1.0f);
         }
 
         //update every frame
@@ -25,11 +28,18 @@ class DisplayInfo {
             float fps = 60.0f - context.time->m_delta;
             this->fps_text->SetText("FPS: " + std::to_string(fps));
             this->fps_text->Render();
+
+            //camera stats
+            
+            const std::string camInfo = "CAMERA: x: " + std::to_string(-context.camera->m_position.x) + " y: " + std::to_string(-context.camera->m_position.y);
+            this->cam_text->SetText(camInfo);
+            this->cam_text->Render();
         }
 
     private:
         
         std::shared_ptr<Text> fps_text;
+        std::shared_ptr<Text> cam_text;
 
 };
 

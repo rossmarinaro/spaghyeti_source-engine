@@ -231,8 +231,10 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                 ImGui::EndMenu();
             }
 
-            //if (ImGui::Button("Save prefab"))
-                //AssetManager::SavePrefab(node);
+            //save prefab
+
+            if (ImGui::Button("Save prefab")) 
+                this->SavePrefab(); 
 
             //component options
 
@@ -299,7 +301,6 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                             }
 
                         }
-                    
 
                         ImGui::InputText("key", &this->animBuf1[i].s);
                         ImGui::InputInt("start", &this->animBuf2[i]); 
@@ -547,8 +548,8 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                                         if (
                                             ImGui::InputInt("position x", &this->frameBuf1[i]) ||
                                             ImGui::InputInt("position y", &this->frameBuf2[i]) || 
-                                            ImGui::InputInt("width", &this->frameBuf3[i]) || 
-                                            ImGui::InputInt("height", &this->frameBuf4[i]) 
+                                            ImGui::InputFloat("width", &this->frameBuf3[i]) || 
+                                            ImGui::InputFloat("height", &this->frameBuf4[i]) 
                                         ) 
                                             this->framesApplied = false;
 
@@ -669,6 +670,9 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
             if (this->currentAnim.first.length())   
                 this->spriteHandle->Animate(this->currentAnim.first, this->currentAnim.second.first, this->currentAnim.second.second);
+
+            else
+                this->spriteHandle->StopAnimation();
 
             //entity physics body transform
             

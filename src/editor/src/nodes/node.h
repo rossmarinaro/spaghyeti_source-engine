@@ -82,14 +82,17 @@ namespace editor {
             bool virtual_node = false;
             
             static int ChangeName(ImGuiInputTextCallbackData* data);
+            
+            void SavePrefab();
 
         private:
-                std::vector<std::shared_ptr<Component>> components;
+        
+            std::vector<std::shared_ptr<Component>> components;
 
-                static inline int count = 0, 
-                                  MAX_NODES = 100; 
+            static inline int count = 0, 
+                                MAX_NODES = 100; 
 
-                static const char* Assign();
+            static const char* Assign();
 
     };
 
@@ -135,16 +138,15 @@ namespace editor {
 
             std::vector<int> frameBuf1,
                              frameBuf2,
-                             frameBuf3,
-                             frameBuf4,
-                             frameBuf5,
-                             frameBuf6,
-
                              animBuf2,
                              animBuf3,
                              animBuf4,
-                            
                              body_pointer;
+
+            std::vector<float> frameBuf3,
+                               frameBuf4,
+                               frameBuf5,
+                               frameBuf6;
 
             std::vector<b2Body*> bodies; 
 

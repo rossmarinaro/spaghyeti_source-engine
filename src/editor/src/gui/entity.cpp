@@ -9,7 +9,7 @@ using namespace editor;
 //----------------------- shaders
 
 
-void GUI::RenderShaderOptions(const std::string &nodeId)
+void GUI::RenderShaderOptions(const std::string& nodeId)
 {
     
     auto node = Node::GetNode(nodeId);
@@ -130,7 +130,7 @@ void GUI::RenderShaderOptions(const std::string &nodeId)
 //----------------------- scripts
 
 
-void GUI::RenderScriptOptions(const std::string &nodeId)
+void GUI::RenderScriptOptions(const std::string& nodeId)
 {
         
     auto node = Node::GetNode(nodeId);
@@ -260,6 +260,14 @@ void GUI::RenderNodes()
 
     if (!m_running)
         return;
+
+    if (ImGui::Button("Load Prefab")) 
+    {
+        if (AssetManager::LoadPrefab())
+            Editor::Log("Prefab loaded.");
+        else 
+            Editor::Log("There was a problem loading prefab.");
+    }
 
     if (ImGui::BeginMenu("New Game Object"))
     {

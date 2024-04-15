@@ -243,3 +243,15 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
             en->m_debugGraphic->m_shader = Shader::GetShader(name);
     }
 }
+
+
+//---------------------------------- save prefab
+
+
+void Node::SavePrefab() {
+
+    if (AssetManager::SavePrefab("Sprite", this->m_ID))
+        Editor::Log("Prefab " + this->m_name + " saved.");
+    else    
+        Editor::Log("There was a problem saving prefab.");
+}

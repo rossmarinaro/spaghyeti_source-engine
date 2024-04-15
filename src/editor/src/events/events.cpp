@@ -1049,6 +1049,7 @@ void EventListener::GenerateProject()
     std::filesystem::create_directory(resources + "\\scripts");
     std::filesystem::create_directory(resources + "\\shaders");
     std::filesystem::create_directory(resources + "\\assets");
+    std::filesystem::create_directory(resources + "\\prefabs");
 
     std::filesystem::create_directory(resources + "\\assets\\images");
     std::filesystem::create_directory(resources + "\\assets\\audio");

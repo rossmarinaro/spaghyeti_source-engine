@@ -26,12 +26,13 @@ namespace editor {
             void GenerateProject();
             void BuildAndRun();
             void OpenFile();
+            void DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath);
+            std::string GetScriptName(const std::string& path);
 
         private:
             
             void Serialize(json& data); 
             void Deserialize(std::ifstream& JSON);
-            void DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath);
             void InsertTo(const std::string& code, const std::string& directory);
             void ParseScene(const std::string& sceneKey, std::ifstream& JSON);
     };

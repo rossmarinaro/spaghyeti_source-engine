@@ -24,6 +24,7 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
         if (sprite->bodies.size())  
         {
+
             sprite->num_contacts++; 
 
             for (const auto& body : sprite->bodies)
@@ -33,7 +34,7 @@ void CollisionManager::BeginContact(b2Contact* contact)
                 if (
                     body.first->IsEnabled() &&
                     (data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer) && 
-                    (bodyFixtureA->IsSensor() || bodyFixtureB->IsSensor()) 
+                    (!bodyFixtureA->IsSensor() || !bodyFixtureB->IsSensor()) 
                 )
                     sprite->SetContact(true);
             }
@@ -65,6 +66,7 @@ void CollisionManager::EndContact(b2Contact* contact)
 
         if (sprite->bodies.size()) 
         {        
+
             sprite->num_contacts--;
 
             if (sprite->num_contacts > 0)
@@ -77,7 +79,7 @@ void CollisionManager::EndContact(b2Contact* contact)
                 if (
                     body.first->IsEnabled() &&
                     (data.pointer == bodyUserDataA.pointer || data.pointer == bodyUserDataB.pointer) && 
-                    (bodyFixtureA->IsSensor() || bodyFixtureB->IsSensor()) 
+                    (!bodyFixtureA->IsSensor() || !bodyFixtureB->IsSensor()) 
                 )
                     sprite->SetContact(false);
             }

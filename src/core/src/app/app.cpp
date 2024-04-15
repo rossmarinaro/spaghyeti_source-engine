@@ -119,4 +119,5 @@ System::Application::~Application()
     #if DEVELOPMENT == 1
         std::cout << "Application terminated. 👌\n";
     #endif
+
 };

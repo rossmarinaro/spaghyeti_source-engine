@@ -37,13 +37,13 @@ namespace entity_behaviors {
 
                 //jump
 
-                if (context.inputs->m_up && this->canJump) {               
+                if (context.inputs->m_up && this->canJump && this->player->bodies[0].first->GetLinearVelocity().y == 0) {               
                     this->canJump = false;
                     this->Jump(context.inputs);
                 }
 
                 //move   
-
+ //b2TestOverlap(this->bodies[0].first->GetFixtureList()->GetAABB(0), this->playerHitBox->GetFixtureList()->GetAABB(0))
                 else if (this->player->IsContacting()) {      
                     this->canJump = true;
                     this->Move(context.inputs); 
@@ -122,10 +122,10 @@ namespace entity_behaviors {
             {
 
                 if (inputs->m_left || inputs->m_right)
-                    this->player->SetImpulse(this->flipX ? -900 : 900, -1600);
+                    this->player->SetImpulse(this->flipX ? -900 : 900, -2600);
 
                 else
-                    this->player->SetImpulseY(-1500);  
+                    this->player->SetImpulseY(-2500);  
 
                 //this->player->Animate(this->flipX ? "jump-left" : "jump-right");
                 this->player->SetFrame(this->flipX ? 14 : 12);
