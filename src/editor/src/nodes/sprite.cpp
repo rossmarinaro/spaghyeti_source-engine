@@ -207,6 +207,11 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
         
             static char name_buf[32] = ""; ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->m_ID);
 
+            //save prefab
+
+            if (ImGui::Button("Save prefab")) 
+                this->SavePrefab(); 
+            
             if (ImGui::BeginMenu("Add Component"))
             {
                 if (this->spriteHandle) 
@@ -230,11 +235,6 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                 
                 ImGui::EndMenu();
             }
-
-            //save prefab
-
-            if (ImGui::Button("Save prefab")) 
-                this->SavePrefab(); 
 
             //component options
 

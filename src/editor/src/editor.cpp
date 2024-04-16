@@ -98,7 +98,7 @@ Editor::Editor()
 Editor::~Editor()
 {
 
-    remove((projectPath + "\\src\\game.cpp").c_str());
+    remove((projectPath + "\\game.cpp").c_str());
     remove((projectPath + "\\spaghyeti_parse.json").c_str());
 
     Resources::Manager::UnLoadRawImage("editor logo");
@@ -134,7 +134,7 @@ void Editor::Log(const std::string& message)
 void Editor::Reset()
 {
 
-    remove((projectPath + "\\src\\game.cpp").c_str());
+    remove((projectPath + "\\game.cpp").c_str());
 
     Node::ClearAll();
 

@@ -132,11 +132,11 @@ void Component::Make()
         src <<  "       public:\n\n";
         src <<  "           //constructor, called on start\n\n";
         src <<  "           " + this->filename + "(std::shared_ptr<Entity> entity):\n";
-        src <<  "               Behavior(entity, \""+ this->filename + "\")\n";
+        src <<  "            inline Behavior(entity, \""+ this->filename + "\")\n";
         src <<  "           {\n\n";
         src <<  "           }\n\n";
         src <<  "           //update every frame\n\n";
-        src <<  "           void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {\n\n";
+        src <<  "           inline void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {\n\n";
         src <<  "           }\n\n";
         src <<  "   };\n";
         src <<  "};";

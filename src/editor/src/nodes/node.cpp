@@ -833,7 +833,7 @@ void Node::readData(json& data, const std::string& type, bool makeNode, void* sc
 
     if (type == "Text")
     {
-        std::shared_ptr<EmptyNode> tn;
+        std::shared_ptr<TextNode> tn;
 
         if (makeNode)
             tn = Node::MakeNode<TextNode>(); 

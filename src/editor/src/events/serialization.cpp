@@ -269,8 +269,8 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     //global variables
     
-    if (data["globals"].size())
-    {
+    if (data["globals"].size()) {
+        
         for (const auto& global : data["globals"])
             scene.globals.push_back({ global["key"], global["type"] });
 
@@ -284,22 +284,22 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     //tilemaps
 
-    for (const auto& tilemap : data["nodes"]["tilemaps"])
+    for (auto& tilemap : data["nodes"]["tilemaps"])
         Node::readData(tilemap, "Tilemap", false, &scene);
 
     //audio
 
-    for (const auto& audio : data["nodes"]["audio"])
+    for (auto& audio : data["nodes"]["audio"])
         Node::readData(audio, "Audio", false, &scene);
 
     //empty
 
-    for (const auto& empty : data["nodes"]["empty"])
+    for (auto& empty : data["nodes"]["empty"])
         Node::readData(empty, "Empty", false, &scene);
 
     //text
 
-    for (const auto& text : data["nodes"]["text"])
+    for (auto& text : data["nodes"]["text"])
         Node::readData(text, "Text", false, &scene);
 
     //scene ready for compilation

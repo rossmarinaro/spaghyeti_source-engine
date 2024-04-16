@@ -51,17 +51,17 @@ namespace editor {
             }
 
             template <typename T>
-                static inline std::shared_ptr<T> MakeNode() {
+            static inline std::shared_ptr<T> MakeNode() {
 
-                    auto uuid = Assign();
-                    
-                    auto node = std::make_shared<T>(uuid);
+                auto uuid = Assign();
+                
+                auto node = std::make_shared<T>(uuid);
 
-                    nodes.push_back(node);
+                nodes.push_back(node);
 
-                    return node;
+                return node;
 
-                }
+            }
 
             static void ClearAll();
             static void DeleteNode (std::shared_ptr<Node> node);

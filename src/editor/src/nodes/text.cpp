@@ -67,6 +67,11 @@ void TextNode::Render(std::shared_ptr<Node> node)
         
             static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->m_ID);
 
+            //save prefab
+
+            if (ImGui::Button("Save prefab")) 
+                this->SavePrefab();
+            
             if (ImGui::BeginMenu("Add Component"))
             {
                 if (ImGui::MenuItem("Scripts")) 
@@ -77,11 +82,6 @@ void TextNode::Render(std::shared_ptr<Node> node)
             
                 ImGui::EndMenu();
             }
-
-            //save prefab
-
-            if (ImGui::Button("Save prefab")) 
-                this->SavePrefab();
 
             //component options
 

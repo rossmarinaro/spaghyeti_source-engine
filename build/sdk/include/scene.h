@@ -29,6 +29,10 @@ namespace System {
             virtual void Run() {}
             virtual void Update() {}
 
+            inline bool IsPaused() {
+                return this->paused;
+            }
+
         protected:
             
             ma_device music;     
@@ -52,12 +56,18 @@ namespace System {
                 this->worldHeight = height;
             }
 
+            inline void SetPause(bool isPaused) {
+                this->paused = isPaused;
+            }
+
         private:
 
             static inline int g_ID = 0;
 
             int worldWidth = 0, 
                 worldHeight = 0;
+
+            bool paused;
 
             std::map<const char*, std::any> data;
 

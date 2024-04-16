@@ -455,12 +455,12 @@ void EventListener::BuildAndRun()
         main_makeFile.open(makefile_path, std::ofstream::trunc);
 
         main_makeFile << "OBJS = \\" << "\n";
-        main_makeFile << "    $(wildcard ./src/*.cpp) \\" << "\n";
-        main_makeFile << "    $(wildcard ./src/**/*.cpp) \\" << "\n";
+        main_makeFile << "    $(wildcard ./resources/scripts/*.cpp) \\" << "\n";
         main_makeFile << "    $(wildcard ./resources/scripts/**/*.cpp) \\" << "\n";
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/*.cpp) \\" << "\n";
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/*.cpp) \\" << "\n";
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/**/*.cpp) \\" << "\n";
+        main_makeFile << "    ./game.cpp \\" << "\n";
         main_makeFile << "    ./build/spaghyeti_source_runtime-core.dll" << "\n\n";
         main_makeFile << "all : $(OBJS)" << "\n";
         main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o ./build/$(PROJECT).exe";
@@ -469,7 +469,7 @@ void EventListener::BuildAndRun()
 
         //set game source input file stream
 
-        const std::string srcPath = Editor::projectPath + "\\src\\game.cpp";
+        const std::string srcPath = Editor::projectPath + "\\game.cpp";
 
         std::ofstream game_src;
         
@@ -1034,23 +1034,19 @@ void EventListener::GenerateProject()
     std::string root_path = Editor::rootPath;
     std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
-    const std::string src = Editor::projectPath + "\\src",
-                      resources = Editor::projectPath + "\\resources";
+    const std::string resources = Editor::projectPath + "\\resources";
 
-    if (std::filesystem::exists(src) || std::filesystem::exists(resources)) {
+    if (std::filesystem::exists(resources)) {
         Editor::Log("Project " + currentProject + " already exists.");
         return;
     }
 
-    std::filesystem::create_directory(src);
     std::filesystem::create_directory(resources);
-
     std::filesystem::create_directory(resources + "\\icon");
     std::filesystem::create_directory(resources + "\\scripts");
     std::filesystem::create_directory(resources + "\\shaders");
     std::filesystem::create_directory(resources + "\\assets");
     std::filesystem::create_directory(resources + "\\prefabs");
-
     std::filesystem::create_directory(resources + "\\assets\\images");
     std::filesystem::create_directory(resources + "\\assets\\audio");
     std::filesystem::create_directory(resources + "\\assets\\data");

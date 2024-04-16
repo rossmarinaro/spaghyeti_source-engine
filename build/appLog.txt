@@ -1,26 +1,49 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Apr 15 15:26:08 2024
-IMGui Version: 1 @ Mon Apr 15 15:26:09 2024
-GUI launched. @ Mon Apr 15 15:26:09 2024
-Workspace reset. @ Mon Apr 15 15:26:15 2024
-sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
-sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
-sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
-sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
-sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
-sprite node Untitled created. @ Mon Apr 15 15:26:16 2024
-Tilemap node Untitled created. @ Mon Apr 15 15:26:16 2024
-Text node Untitled created. @ Mon Apr 15 15:26:16 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Tue Apr 16 13:08:18 2024
+IMGui Version: 1 @ Tue Apr 16 13:08:18 2024
+GUI launched. @ Tue Apr 16 13:08:18 2024
+Workspace reset. @ Tue Apr 16 13:08:26 2024
+sprite node Untitled created. @ Tue Apr 16 13:08:27 2024
+sprite node Untitled created. @ Tue Apr 16 13:08:27 2024
+sprite node Untitled created. @ Tue Apr 16 13:08:27 2024
+sprite node Untitled created. @ Tue Apr 16 13:08:27 2024
+sprite node Untitled created. @ Tue Apr 16 13:08:27 2024
+sprite node Untitled created. @ Tue Apr 16 13:08:27 2024
+Tilemap node Untitled created. @ Tue Apr 16 13:08:27 2024
+Text node Untitled created. @ Tue Apr 16 13:08:27 2024
 Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Mon Apr 15 15:26:16 2024
-Scene parsed. @ Mon Apr 15 15:26:50 2024
-Project TestGame built successfully. @ Mon Apr 15 15:27:04 2024
-Sprite node player deleted. @ Mon Apr 15 15:27:06 2024
-Sprite node background deleted. @ Mon Apr 15 15:27:06 2024
-Sprite node elf deleted. @ Mon Apr 15 15:27:06 2024
-Sprite node heart1 deleted. @ Mon Apr 15 15:27:06 2024
-Sprite node heart2 deleted. @ Mon Apr 15 15:27:06 2024
-Sprite node heart3 deleted. @ Mon Apr 15 15:27:06 2024
-Tilemap node map deleted. @ Mon Apr 15 15:27:06 2024
-Text node score deleted. @ Mon Apr 15 15:27:06 2024
-GUI exited @ Mon Apr 15 15:27:06 2024
-Editor closed. @ Mon Apr 15 15:27:06 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Tue Apr 16 13:08:27 2024
+Sprite node player deleted. @ Tue Apr 16 13:08:55 2024
+Sprite node background deleted. @ Tue Apr 16 13:08:55 2024
+Sprite node elf deleted. @ Tue Apr 16 13:08:55 2024
+Sprite node heart1 deleted. @ Tue Apr 16 13:08:55 2024
+Sprite node heart2 deleted. @ Tue Apr 16 13:08:55 2024
+Sprite node heart3 deleted. @ Tue Apr 16 13:08:55 2024
+Tilemap node map deleted. @ Tue Apr 16 13:08:55 2024
+Text node score deleted. @ Tue Apr 16 13:08:55 2024
+Workspace reset. @ Tue Apr 16 13:08:55 2024
+sprite node Untitled created. @ Tue Apr 16 13:08:55 2024
+Text node Untitled created. @ Tue Apr 16 13:08:55 2024
+Text node Untitled created. @ Tue Apr 16 13:08:55 2024
+Text node Untitled created. @ Tue Apr 16 13:08:55 2024
+Text node Untitled created. @ Tue Apr 16 13:08:55 2024
+Project TestGame opened.
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Tue Apr 16 13:08:55 2024
+Scene parsed. @ Tue Apr 16 13:09:06 2024
+Scene parsed. @ Tue Apr 16 13:09:06 2024
+Scene parsed. @ Tue Apr 16 13:09:06 2024
+Project TestGame built successfully. @ Tue Apr 16 13:09:22 2024
+Scene parsed. @ Tue Apr 16 13:09:26 2024
+Scene parsed. @ Tue Apr 16 13:09:26 2024
+Scene parsed. @ Tue Apr 16 13:09:26 2024
+Project TestGame built successfully. @ Tue Apr 16 13:09:39 2024
+Scene parsed. @ Tue Apr 16 13:10:20 2024
+Scene parsed. @ Tue Apr 16 13:10:20 2024
+Scene parsed. @ Tue Apr 16 13:10:20 2024
+Project TestGame built successfully. @ Tue Apr 16 13:10:52 2024
+Sprite node sv deleted. @ Tue Apr 16 13:10:54 2024
+Text node the funky adventures deleted. @ Tue Apr 16 13:10:54 2024
+Text node swanky velvet deleted. @ Tue Apr 16 13:10:54 2024
+Text node press start deleted. @ Tue Apr 16 13:10:54 2024
+Text node pastaboss enterprise deleted. @ Tue Apr 16 13:10:54 2024
+GUI exited @ Tue Apr 16 13:10:54 2024
+Editor closed. @ Tue Apr 16 13:10:54 2024

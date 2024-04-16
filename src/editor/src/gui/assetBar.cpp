@@ -2,7 +2,7 @@
 #include "../assets/assets.h"
 #include "../editor.h"
 
-#include "../../../../build/sdk/include/vendors/IconsFontAwesome5.h"
+//#include "../../vendors/IconsFontAwesome5.h"
 
 
 void editor::GUI::RenderAssets()
@@ -17,7 +17,7 @@ void editor::GUI::RenderAssets()
     if (ImGui::MenuItem("Open", "Ctrl+A"))
         Editor::events.OpenFile();
     
-    ImGui::Separator();
+    ImGui::Separator(); 
 
     for (int i = 0; i < AssetManager::images.size(); i++)  
         if (AssetManager::images[i].second != NULL)

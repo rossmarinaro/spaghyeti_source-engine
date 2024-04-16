@@ -191,7 +191,7 @@ void Game::UpdateFrame()
     //update behaviors, pass game process context to subclasses
 
     for (const auto& behavior : game->currentScene->behaviors)
-        if (behavior.get() && behavior)
+        if (!game->currentScene->IsPaused() && behavior.get() && behavior)
             behavior->Update(game->context, game->currentScene->behaviors); 
 
     //depth sort

@@ -26,6 +26,10 @@ namespace System {
             Physics* physics; 
             Inputs* inputs;
 
+            std::vector<std::shared_ptr<Scene>> scenes;
+            std::shared_ptr<Scene> currentScene;
+            std::shared_ptr<Geometry> cursor = nullptr;
+
             Game();
             virtual ~Game() = default;
 
@@ -64,17 +68,9 @@ namespace System {
             //map manager
 
             static inline MapManager* maps;
-
-            //render queues
-            
-            std::vector<std::shared_ptr<Scene>> scenes;
-            std::shared_ptr<Scene> currentScene;
-
-            //ui
     
             static inline std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
-            std::shared_ptr<Geometry> cursor = nullptr;
-
+            
             static inline bool UIListenForInput(int index) {
                 return virtual_buttons[index]->m_tint != glm::vec3(1.0f);
             }

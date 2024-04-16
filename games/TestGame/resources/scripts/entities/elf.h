@@ -10,21 +10,20 @@ namespace entity_behaviors {
 
             int health;
 
+            std::shared_ptr<Sprite> sprite;
+            b2Body* hb;
+
             //constructor, called on start
 
-            Elf(std::shared_ptr<Entity> entity):
-                Behavior(entity, "Elf")
-            {
-                this->health = 3; 
-            }
+            inline Elf(std::shared_ptr<Entity> entity);
 
             //update every frame
 
-            void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override 
-            { 
+            inline void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override;
 
-                //Game::GetBehavior("PlayerController");
-            }
+        private:
+
+            bool rev;
 
     };
 }
