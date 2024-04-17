@@ -13,6 +13,7 @@ namespace System {
             std::string key;
             
             std::vector<std::shared_ptr<Entity>> entities;
+            std::vector<std::shared_ptr<Entity>> UI;
             std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
 
             Scene(const Process::Context& context): 

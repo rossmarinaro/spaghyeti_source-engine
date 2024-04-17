@@ -131,7 +131,7 @@ void Inputs::ProcessInput(GLFWwindow* window)
 
 //------------------------------------- cursor object
 
-
+ 
 void Inputs::CreateCursor() 
 {
     Application::game->cursor = System::Game::CreateGeom(100.0f, 100.0f, 30.0f, 30.0f);

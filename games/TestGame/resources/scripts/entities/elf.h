@@ -1,7 +1,7 @@
 #pragma once
 
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/behaviors.h"
-
+//SPAGHYETI_RUNTIME
 namespace entity_behaviors {
     
     class Elf : public Behavior {

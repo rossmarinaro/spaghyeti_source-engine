@@ -359,6 +359,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
             { "flipY", sn->flippedY },
             { "depth", sn->depth },
             { "lock", sn->lock_in_place },
+            { "makeUI", sn->make_UI },
             { "frames", frames },
             { "components", {
                     { "physics", {
@@ -576,6 +577,7 @@ void Node::readData(json& data, const std::string& type, bool makeNode, void* sc
         sn->flippedY = data["flipY"];
         sn->depth = data["depth"];
         sn->lock_in_place = data["lock"];
+        sn->make_UI = data["makeUI"];
         sn->U1 = data["U1"]; 
         sn->V1 = data["V1"];
         sn->U2 = data["U2"]; 
@@ -816,8 +818,9 @@ void Node::readData(json& data, const std::string& type, bool makeNode, void* sc
 
         //shader
 
-        if (data["components"]["shader"]["exists"]) {
-            
+        if (data["components"]["shader"]["exists"]) 
+        {
+             
             en->AddComponent("Shader", false);
 
             if (data["components"]["shader"]["shaders"].size())

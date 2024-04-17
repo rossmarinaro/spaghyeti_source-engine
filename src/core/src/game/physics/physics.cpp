@@ -53,6 +53,8 @@ b2Body* Physics::CreateStaticBody(
     box.SetAsBox(width, height);       
     body.self->CreateFixture(&box, 0.0f); 
 
+    System::Application::game->physics->active_bodies.push_back(body.self);
+
     return body.self;
 }
 
@@ -109,6 +111,8 @@ b2Body* Physics::CreateDynamicBody(
     body.fixtureDef.isSensor = isSensor;
 
     body.self->CreateFixture(&body.fixtureDef);
+
+    System::Application::game->physics->active_bodies.push_back(body.self);
     
     return body.self;
 }
@@ -120,6 +124,16 @@ b2Body* Physics::CreateDynamicBody(
 //does not destroy body immediately. body will be destroyed after next timestep
 void Physics::DestroyBody(b2Body* b) {
     System::Application::game->physics->bodiesToRemove.insert(b);
+}
+
+
+//------------------------------
+
+
+void Physics::ClearBodies() {
+
+    for (const auto& body : this->active_bodies)
+        DestroyBody(body);
 }
 
 

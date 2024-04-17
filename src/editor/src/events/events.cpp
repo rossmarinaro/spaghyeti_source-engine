@@ -649,7 +649,11 @@ void EventListener::BuildAndRun()
 
                     global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n\t";
 
-                    command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                    if (sn->make_UI == true) 
+                        command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                    
+                    else 
+                        command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
                                             
                     //sprite configurations
 
@@ -665,7 +669,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   this->sprite_" + node->m_ID + "->m_texture.Filter_Max = " + filtering + ";\n";
 
                     if (sn->lock_in_place)
-                        update_queue << "   this->sprite_" + node->m_ID + "->m_shader = Shader::GetShader(\"sprite_billboard\");\n";
+                        command_queue << "   this->sprite_" + node->m_ID + "->m_shader = Shader::GetShader(\"UI\");\n";
 
                     //physics bodies
 

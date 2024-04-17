@@ -1,7 +1,6 @@
 #include "../../../../build/sdk/include/app.h"
 
 
-
 void Text::Init()
 {
 

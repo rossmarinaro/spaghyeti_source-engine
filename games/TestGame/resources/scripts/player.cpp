@@ -19,9 +19,9 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
     this->player = std::static_pointer_cast<Sprite>(this->entity);
     this->hb = Physics::CreateDynamicBody("box", 0, 0, 10, 10, true, 1);     
 
-    this->heart1 = System::Game::CreateSprite("heart.png", 1056.821, 30);
-    this->heart2 = System::Game::CreateSprite("heart.png", 1120.538, 30);
-    this->heart3 = System::Game::CreateSprite("heart.png", 1184.253, 30);
+    this->heart1 = System::Game::CreateUI("heart.png", 1056.821, 30);
+    this->heart2 = System::Game::CreateUI("heart.png", 1120.538, 30);
+    this->heart3 = System::Game::CreateUI("heart.png", 1184.253, 30);
 
 }
 
@@ -148,17 +148,19 @@ void PlayerController::DoDamage(int amount)
 
     this->health -= amount;
 
-    if (this->health < 4 && this->health > 2)
-        this->heart1->SetTint({ 0.0f, 0.0f, 0.0f });
+    // if (this->health < 4 && this->health > 2)
+    //     this->heart1->SetTint({ 0.0f, 0.0f, 0.0f });
 
-    else if (this->health < 3 && this->health > 1)
-        this->heart2->SetTint({ 0.0f, 0.0f, 0.0f });
+    // else if (this->health < 3 && this->health > 1)
+    //     this->heart2->SetTint({ 0.0f, 0.0f, 0.0f });
 
-    else 
-        this->heart3->SetTint({ 0.0f, 0.0f, 0.0f });
+    // else 
+    //     this->heart3->SetTint({ 0.0f, 0.0f, 0.0f });
 
-    if (this->health <= 0)
+    if (this->health <= 0) {
+        this->health = 1;
         System::Game::StartScene("GAMEOVER"); 
+    }
 
     this->player->SetAlpha(0.75f);
     this->player->SetTint({ 1.0f, 0.0f, 0.0f });

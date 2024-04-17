@@ -19,9 +19,7 @@ class Physics {
              subStep = false,
              clearForces = false;
 
-        b2Vec2 gravity;
         b2World world;
-        std::set<b2Body*> bodiesToRemove;
         
         CollisionManager collisions;
         
@@ -57,6 +55,7 @@ class Physics {
         static void DestroyBody(b2Body* b);
 
         void Update();
+        void ClearBodies();
 
         Physics();
         ~Physics() = default;
@@ -76,6 +75,10 @@ class Physics {
             b2Fixture* fixture;
             b2FixtureDef fixtureDef;
         };
+
+        b2Vec2 gravity;
+        std::set<b2Body*> bodiesToRemove;
+        std::vector<b2Body*> active_bodies;
 
 };
 

@@ -255,15 +255,8 @@ class Sprite : public Entity {
 		void Animate(const std::string& animKey, bool yoyo = false, int rate = 2); 
 		void Render();
 
-		Sprite(const std::string& key, float x, float y, const char* type);
-
-		Sprite(
-			const std::string& key, 
-			float x = 0.0f, 
-			float y = 0.0f, 
-			int frame = 0, 
-			bool isTile = false
-		);
+		Sprite(const std::string& key, const glm::vec2& position);
+		Sprite(const std::string& key, float x = 0.0f, float y = 0.0f, int frame = 0, bool isTile = false);
 	   
 	   ~Sprite();
 

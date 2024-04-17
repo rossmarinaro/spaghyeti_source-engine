@@ -89,9 +89,14 @@ void Game::StartScene(const std::string& key)
 
         //clear entities if applicable
 
-        if (game->currentScene) {
+        if (game->currentScene) 
+        {
             game->currentScene->entities.clear();
+            game->currentScene->UI.clear();
             game->currentScene->behaviors.clear();
+
+            game->maps->layers.clear();
+            game->physics->ClearBodies();
         }
 
         //assign / load current scene
@@ -122,6 +127,7 @@ void Game::Exit()
     game->time->exitFlag = game->time->exitFlag.exchange(1);
 
     game->currentScene->entities.clear();
+    game->currentScene->UI.clear();
     game->currentScene->behaviors.clear();
 
     game->text->ShutDown();
@@ -176,13 +182,17 @@ void Game::UpdateFrame()
     //render queues
 
     for (const auto& entity : game->currentScene->entities)
-        if ((entity.get() && entity) && entity.get()->m_renderable) {
-
+        if ((entity.get() && entity) && entity.get()->m_renderable) 
+        {
             if (game->cursor != nullptr)
                 game->cursor->SetDepth(entity->m_depth + 1);
 
             entity->Render();
         }
+
+    for (const auto& UI : game->currentScene->UI)
+        if ((UI.get() && UI) && UI.get()->m_renderable) 
+            UI->Render();
 
     //render input cursor
 
@@ -210,8 +220,6 @@ void Game::UpdateFrame()
         #endif
 
     #endif
-
-    //propagate input functionality to game instance
     
     game->currentScene->Update();
 
@@ -299,7 +307,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
 std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y, int frame)
 {
 
-    auto element = std::make_shared<Sprite>(key, x, y, "UI");
+    auto element = std::make_shared<Sprite>(key, glm::vec2(x, y));
 
     #if STANDALONE == 1
         element->ReadSpritesheetData(); 
@@ -307,7 +315,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y,
     
     element->SetFrame(frame);
 
-    Application::game->currentScene->entities.push_back(element);
+    Application::game->currentScene->UI.push_back(element);
 
     return element;
 }
@@ -322,7 +330,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
     auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
 
     ts->type = "tile";
-    //ts->m_shader = Shader::GetShader("sprite_batch");
+    //ts->m_shader = Shader::GetShader("batch");
     ts->ReadSpritesheetData(); 
 
     Application::game->currentScene->entities.push_back(ts);

@@ -33,9 +33,8 @@ void Shader::InitBaseShaders()
     //raw char array
 
     Load("sprite", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
-    Load("sprite_batch", Shaders::spriteBatchShader_vertex, Shaders::spriteBatchShader_fragment, nullptr);
-    Load("sprite_billboard", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
     Load("UI", Shaders::spriteQuadShader_vertex, Shaders::spriteQuadShader_fragment, nullptr);
+    Load("batch", Shaders::spriteBatchShader_vertex, Shaders::spriteBatchShader_fragment, nullptr);
     Load("graphics", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
     Load("cursor", Shaders::debugGraphicShader_vertex, Shaders::debugGraphicShader_fragment, nullptr);
     Load("text", Shaders::textVertex, Shaders::textFragment, nullptr);
@@ -80,7 +79,7 @@ void Shader::Update(Camera* camera)
 
         //offset
 
-        if (shader.first == "cursor" || shader.first == "UI" || shader.first == "sprite_billboard")             
+        if (shader.first == "cursor" || shader.first == "UI")             
             GetShader(shader.first).SetVec2f("offset", glm::vec2(0.0f), true);
 
         else            
@@ -91,7 +90,7 @@ void Shader::Update(Camera* camera)
         if (shader.first != "Points" && shader.first != "Lines" && shader.first != "Triangles")
         {
 
-            if (shader.first == "cursor" || shader.first == "UI" || shader.first == "sprite_billboard")                 
+            if (shader.first == "cursor" || shader.first == "UI")                 
                 GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::m_width * 2), static_cast<float>(System::Window::m_height * 2)), true);  
 
             else                 
@@ -101,7 +100,7 @@ void Shader::Update(Camera* camera)
 
         //view
       
-        if (shader.first == "cursor" || shader.first == "UI" || shader.first == "sprite_billboard")             
+        if (shader.first == "cursor" || shader.first == "UI")             
             GetShader(shader.first).SetMat4("view", glm::mat4(1.0f), true);
 
         else             

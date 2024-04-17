@@ -2,7 +2,7 @@
 
 #include "./entity.h"
 #include "./context.h"
-
+//#define SPAGHYETI_RUNTIME "#include \"./app.h\""
 namespace entity_behaviors {
 
     //base interactivity which all behaviors are derived

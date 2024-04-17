@@ -154,8 +154,10 @@ void Sprite::ReadSpritesheetData()
                 for (auto &array : data)
                     for (auto &element : array)
                             this->m_resourceData.push_back({ element["x"], element["y"], element["w"], element["h"] });
-        #else
-            std::cout << "Sprite: An attempt to load JSON failed, because JSON has not been enabled.\n";
+        #else 
+            #if DEVELOPMENT == 1
+                std::cout << "Sprite: An attempt to load JSON failed, because JSON has not been enabled.\n";
+            #endif
         #endif
 
     }
@@ -244,7 +246,9 @@ void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
     }
 
     catch (std::runtime_error& err) { 
-        std::cout << "Sprite: error playing animation: " << err.what() << "\n"; 
+        #if DEVELOPMENT == 1
+            std::cout << "Sprite: error playing animation: " << err.what() << "\n"; 
+        #endif
     }
 }
 
@@ -362,8 +366,8 @@ void Sprite::Render()
 Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
 : 
     Entity("sprite", x, y),
-        m_key(key),  
-        m_currentFrame(frame),
+        m_key(key),
+        m_currentFrame(frame),    
         m_anims(System::Resources::Manager::GetAnimations(key)),
         velocityX(0.0f),
         velocityY(0.0f)
@@ -383,15 +387,14 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
 //-------------------------------------- UI sprite
 
  
-Sprite::Sprite(const std::string& key, float x, float y, const char* type)
+Sprite::Sprite(const std::string& key, const glm::vec2& position)
 : 
-    Entity("sprite", x, y),
+    Entity("UI", position.x, position.y),
         m_key(key)
-
 {
 
     this->m_texture = Graphics::Texture2D::GetTexture(key);
-    this->m_shader = Shader::GetShader("sprite");
+    this->m_shader = Shader::GetShader("UI");
     
     #if DEVELOPMENT == 1
         std::cout << "Sprite: UI " + this->m_key + " created.\n"; 

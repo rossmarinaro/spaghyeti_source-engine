@@ -114,7 +114,8 @@ namespace editor {
                  filter_nearest,
                  flippedX,
                  flippedY,
-                 lock_in_place;
+                 lock_in_place,
+                 make_UI;
 
             float U1,
                   V1,

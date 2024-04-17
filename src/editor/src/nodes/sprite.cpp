@@ -16,6 +16,7 @@ SpriteNode::SpriteNode(const std::string& id):
         flippedX(false),
         flippedY(false),
         lock_in_place(false),
+        make_UI(false),
         frame(1),
         anim(1),
         depth(1),
@@ -611,6 +612,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                         ImGui::Checkbox("filter nearest", &this->filter_nearest);
                         ImGui::Checkbox("lock image", &this->lock_in_place);
+                        ImGui::Checkbox("make UI", &this->make_UI);
 
                         ImGui::Checkbox("flipX", &this->flippedX); 
                         ImGui::Checkbox("flipY", &this->flippedY);
