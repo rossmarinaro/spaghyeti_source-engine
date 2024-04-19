@@ -203,12 +203,12 @@ void editor::GUI::ShowMenu()
         Editor::events.OpenProject();
 
     if (ImGui::MenuItem("Save", "Ctrl+S"))
-        if(Editor::events.SaveScene())
-            Editor::events.exitFlag = true;
-
+        if(!Editor::events.SaveScene())
+            Editor::Log("could not save scene.");
+ 
     if (ImGui::MenuItem("Save As.."))
-        if (Editor::events.SaveScene(true))
-            Editor::events.exitFlag = true;
+        if (!Editor::events.SaveScene(true))
+            Editor::Log("could not save scene.");
 
     ImGui::Separator();
 

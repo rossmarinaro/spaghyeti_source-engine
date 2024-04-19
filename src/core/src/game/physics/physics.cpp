@@ -112,7 +112,7 @@ b2Body* Physics::CreateDynamicBody(
 
     body.self->CreateFixture(&body.fixtureDef);
 
-    System::Application::game->physics->active_bodies.push_back(body.self);
+    System::Application::game->physics->active_bodies.push_back(body.self); 
     
     return body.self;
 }

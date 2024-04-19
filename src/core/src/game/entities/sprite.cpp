@@ -344,9 +344,12 @@ void Sprite::Render()
         for (int i = 0; i < this->bodies.size(); i++)
             if (this->bodies[i].first->IsEnabled()) 
             {
-                if (i == 0 && this->bodies[i].first->GetType() == b2_dynamicBody) { 
-                    b2Vec2 position = this->bodies[0].first->GetPosition();
-                    this->SetPosition(glm::vec2(position.x - this->bodies[0].second.x, position.y - this->bodies[0].second.y)); 
+                if (i == 0 && this->bodies[i].first->GetType() == b2_dynamicBody) 
+                { 
+                    b2Vec2 position = this->bodies[0].first->GetPosition(); 
+                    position.y += this->bodies[0].second.w; //apply y offset
+
+                    this->SetPosition(glm::vec2(position.x - this->bodies[0].second.x, position.y - this->bodies[0].second.y - this->bodies[0].second.w)); 
                 }
                 else
                     this->bodies[i].first->SetTransform(b2Vec2(this->m_position.x + this->bodies[i].second.x, this->m_position.y + this->bodies[i].second.y), 0);

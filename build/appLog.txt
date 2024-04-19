@@ -1,18 +1,31 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Thu Apr 18 22:51:02 2024
-IMGui Version: 1 @ Thu Apr 18 22:51:02 2024
-GUI launched. @ Thu Apr 18 22:51:02 2024
-Workspace reset. @ Thu Apr 18 22:51:06 2024
-sprite node Untitled created. @ Thu Apr 18 22:51:07 2024
-sprite node Untitled created. @ Thu Apr 18 22:51:07 2024
-sprite node Untitled created. @ Thu Apr 18 22:51:07 2024
-Tilemap node Untitled created. @ Thu Apr 18 22:51:07 2024
-Text node Untitled created. @ Thu Apr 18 22:51:07 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Apr 19 12:50:28 2024
+IMGui Version: 1 @ Fri Apr 19 12:50:29 2024
+GUI launched. @ Fri Apr 19 12:50:29 2024
+Workspace reset. @ Fri Apr 19 12:50:52 2024
+sprite node Untitled created. @ Fri Apr 19 12:50:53 2024
+Text node Untitled created. @ Fri Apr 19 12:50:53 2024
+Text node Untitled created. @ Fri Apr 19 12:50:53 2024
+Text node Untitled created. @ Fri Apr 19 12:50:53 2024
+Text node Untitled created. @ Fri Apr 19 12:50:53 2024
 Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Thu Apr 18 22:51:07 2024
-Scene parsed. @ Thu Apr 18 22:56:15 2024
-Project TestGame built successfully. @ Thu Apr 18 22:56:27 2024
-Sprite node player deleted. @ Thu Apr 18 22:56:36 2024
-Sprite node background deleted. @ Thu Apr 18 22:56:36 2024
-Sprite node elf deleted. @ Thu Apr 18 22:56:36 2024
-Tilemap node map deleted. @ Thu Apr 18 22:56:36 2024
-Text node score deleted. @ Thu Apr 18 22:56:36 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Apr 19 12:50:53 2024
+Sprite node sv deleted. @ Fri Apr 19 12:51:29 2024
+Text node the funky adventures deleted. @ Fri Apr 19 12:51:29 2024
+Text node swanky velvet deleted. @ Fri Apr 19 12:51:29 2024
+Text node press start deleted. @ Fri Apr 19 12:51:29 2024
+Text node pastaboss enterprise deleted. @ Fri Apr 19 12:51:29 2024
+Workspace reset. @ Fri Apr 19 12:51:29 2024
+sprite node Untitled created. @ Fri Apr 19 12:51:30 2024
+sprite node Untitled created. @ Fri Apr 19 12:51:30 2024
+sprite node Untitled created. @ Fri Apr 19 12:51:30 2024
+Tilemap node Untitled created. @ Fri Apr 19 12:51:30 2024
+Text node Untitled created. @ Fri Apr 19 12:51:30 2024
+Project TestGame opened.
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Apr 19 12:51:30 2024
+Sprite node player deleted. @ Fri Apr 19 12:52:08 2024
+Sprite node background deleted. @ Fri Apr 19 12:52:08 2024
+Sprite node elf deleted. @ Fri Apr 19 12:52:08 2024
+Tilemap node map deleted. @ Fri Apr 19 12:52:08 2024
+Text node score deleted. @ Fri Apr 19 12:52:08 2024
+GUI exited @ Fri Apr 19 12:52:08 2024
+Editor closed. @ Fri Apr 19 12:52:08 2024

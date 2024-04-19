@@ -223,7 +223,7 @@ class Sprite : public Entity {
 
 		//physics body
 
-		std::vector<std::pair<b2Body*, glm::vec2>> bodies;
+		std::vector<std::pair<b2Body*, glm::vec4>> bodies; 
 
 		inline int GetBodyDataType() const { 
 			for (const auto &body : this->bodies)
