@@ -680,12 +680,15 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
             
             if (this->bodies.size())
                 for (int i = 0; i < this->bodies.size(); i++)   
+                {
                     this->bodies[i]->SetTransform(
                         b2Vec2(
                             this->spriteHandle->m_position.x + this->bodyX[i], 
                             this->spriteHandle->m_position.y + this->bodyY[i]
                         ), 0);
-
+                           
+                    this->spriteHandle->SetPosition(this->spriteHandle->m_position.x + this->bodyX[i],this->spriteHandle->m_position.y + this->bodyY[i]/* this->positionX, this->positionY */);
+                }
         }
 
         ImGui::PopID();

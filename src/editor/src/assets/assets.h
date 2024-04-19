@@ -9,10 +9,17 @@ namespace editor {
 
         public:
 
-            static inline const std::string script_dir = "resources\\scripts";
-            static inline const std::string shader_dir = "resources\\shaders";
+            static inline const std::string script_dir = "resources\\scripts",
+                                            shader_dir = "resources\\shaders";
+
+            static inline std::string currentFolder;
+
+            static inline bool folderSelected = false;
 
             static inline std::vector<std::pair<std::string, GLuint>> images; 
+            static inline std::vector<std::pair<std::string, GLuint>> audio; 
+            static inline std::vector<std::pair<std::string, GLuint>> data; 
+
             static inline std::map<std::string, std::string> loadedAssets,
                                                              productionAssets;
 

@@ -1,20 +1,18 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Wed Apr 17 15:13:30 2024
-IMGui Version: 1 @ Wed Apr 17 15:13:31 2024
-GUI launched. @ Wed Apr 17 15:13:31 2024
-Workspace reset. @ Wed Apr 17 15:15:27 2024
-sprite node Untitled created. @ Wed Apr 17 15:15:27 2024
-sprite node Untitled created. @ Wed Apr 17 15:15:27 2024
-sprite node Untitled created. @ Wed Apr 17 15:15:27 2024
-Tilemap node Untitled created. @ Wed Apr 17 15:15:27 2024
-Text node Untitled created. @ Wed Apr 17 15:15:27 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Thu Apr 18 22:51:02 2024
+IMGui Version: 1 @ Thu Apr 18 22:51:02 2024
+GUI launched. @ Thu Apr 18 22:51:02 2024
+Workspace reset. @ Thu Apr 18 22:51:06 2024
+sprite node Untitled created. @ Thu Apr 18 22:51:07 2024
+sprite node Untitled created. @ Thu Apr 18 22:51:07 2024
+sprite node Untitled created. @ Thu Apr 18 22:51:07 2024
+Tilemap node Untitled created. @ Thu Apr 18 22:51:07 2024
+Text node Untitled created. @ Thu Apr 18 22:51:07 2024
 Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Wed Apr 17 15:15:27 2024
-Scene parsed. @ Wed Apr 17 15:15:35 2024
-Project TestGame built successfully. @ Wed Apr 17 15:15:52 2024
-Sprite node player deleted. @ Wed Apr 17 15:15:54 2024
-Sprite node background deleted. @ Wed Apr 17 15:15:54 2024
-Sprite node elf deleted. @ Wed Apr 17 15:15:54 2024
-Tilemap node map deleted. @ Wed Apr 17 15:15:54 2024
-Text node score deleted. @ Wed Apr 17 15:15:54 2024
-GUI exited @ Wed Apr 17 15:15:54 2024
-Editor closed. @ Wed Apr 17 15:15:54 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Thu Apr 18 22:51:07 2024
+Scene parsed. @ Thu Apr 18 22:56:15 2024
+Project TestGame built successfully. @ Thu Apr 18 22:56:27 2024
+Sprite node player deleted. @ Thu Apr 18 22:56:36 2024
+Sprite node background deleted. @ Thu Apr 18 22:56:36 2024
+Sprite node elf deleted. @ Thu Apr 18 22:56:36 2024
+Tilemap node map deleted. @ Thu Apr 18 22:56:36 2024
+Text node score deleted. @ Thu Apr 18 22:56:36 2024

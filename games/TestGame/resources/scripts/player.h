@@ -13,15 +13,10 @@ namespace entity_behaviors {
             std::shared_ptr<Sprite> player;
             b2Body* hb;
 
-            //constructor, called on start
-
             inline PlayerController(std::shared_ptr<Entity> entity);
             inline ~PlayerController();
 
-            //update every frame
-
-            inline void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors); 
-
+            inline void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override; 
             inline void DoDamage(int amount);
 
         private:
@@ -29,6 +24,7 @@ namespace entity_behaviors {
             bool 
                 canJump, 
                 canAttack, 
+                canDamage,
                 follow, 
                 flipX,
                 attacking,

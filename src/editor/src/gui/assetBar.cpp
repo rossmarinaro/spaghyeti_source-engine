@@ -2,45 +2,112 @@
 #include "../assets/assets.h"
 #include "../editor.h"
 
-//#include "../../vendors/IconsFontAwesome5.h"
+//-------------- apply currently opened folder
+
+
+void SetFolder(bool isOpen, const std::string& type = "") 
+{
+    editor::AssetManager::folderSelected = isOpen;
+
+    if (type.length())
+        editor::AssetManager::currentFolder = type;
+}
+
+
+//--------------- display thumbnail
+
+
+void displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec) 
+{
+
+    for (int i = 0; i < vec.size(); i++)  
+    {
+        if (vec[i].second != NULL)
+        {
+            std::string folder = editor::AssetManager::GetFolder(vec[i].first);
+            folder.erase(remove(folder.begin(), folder.end(), '\\'), folder.end());
+
+            if (folder == editor::AssetManager::currentFolder)
+            {
+                ImGui::PushID(i);
+
+                if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec[i].second, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0))) {
+                    editor::Editor::selectedAsset = vec[i].first;
+                    editor::Editor::Log("Current asset selected: " + editor::Editor::selectedAsset);
+                }
+
+                //asset tool tip
+
+                if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                    ImGui::SetTooltip(vec[i].first.c_str());
+
+                if (i != 0 && i % 10 == 0) {
+                    ImGui::PopID();
+                    continue;
+                }
+                
+                else
+                    ImGui::SameLine(); 
+
+                ImGui::PopID();
+            }
+        }
+
+        else break;
+    }
+}
+
+
+//--------------- render folder contents
 
 
 void editor::GUI::RenderAssets()
 {
- 
-
-    //float arr[] = { 0.6f, 0.1f, 1.0f };
-    //const char* labels[] = { "a", "b", "c" };
-    //ImGui::PlotHistogram("Histogram", arr, IM_ARRAYSIZE(arr), 0, NULL, 0.0f, 1.0f, ImVec2(0, 60), 0);
-    //ImGui::Image((void*)(intptr_t) ICON_FA_FILE , ImVec2(131, 183));
 
     if (ImGui::MenuItem("Open", "Ctrl+A"))
         Editor::events.OpenFile();
+
+    if (AssetManager::folderSelected)
+        if (ImGui::MenuItem("Go Back"))
+            SetFolder(false);
     
     ImGui::Separator(); 
 
-    for (int i = 0; i < AssetManager::images.size(); i++)  
-        if (AssetManager::images[i].second != NULL)
-        {
+    if (AssetManager::folderSelected)
+    {
+        if (AssetManager::currentFolder == "images")
+            displayThumbnail(AssetManager::images);
 
-            ImGui::PushID(i);
+        if (AssetManager::currentFolder == "audio")
+            displayThumbnail(AssetManager::audio);
 
-            if (i % 12)
-                ImGui::SameLine(); 
+        if (AssetManager::currentFolder == "data")
+            displayThumbnail(AssetManager::data);
+    }
 
-            if (ImGui::ImageButton("asset icon", (void*)(intptr_t) AssetManager::images[i].second, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0))) {
-                Editor::selectedAsset = AssetManager::images[i].first;
-                Editor::Log("Current asset selected: " + Editor::selectedAsset);
-            }
+    else 
+    {
+        if (ImGui::ImageButton("image", (void*)(intptr_t) Graphics::Texture2D::GetTexture("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
+            SetFolder(true, "images");
 
-            //asset tool tip
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+            ImGui::SetTooltip("images");
 
-            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-                ImGui::SetTooltip(AssetManager::images[i].first.c_str());
+        ImGui::SameLine(); 
 
-            ImGui::PopID();
-        }
+        if (ImGui::ImageButton("audio", (void*)(intptr_t) Graphics::Texture2D::GetTexture("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
+            SetFolder(true, "audio");
 
-        else break;
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+            ImGui::SetTooltip("audio");
+
+        ImGui::SameLine(); 
+
+        if (ImGui::ImageButton("data", (void*)(intptr_t) Graphics::Texture2D::GetTexture("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
+            SetFolder(true, "data");
+
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+            ImGui::SetTooltip("data");
+    }
 
 }

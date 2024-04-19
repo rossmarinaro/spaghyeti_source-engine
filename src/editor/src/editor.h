@@ -45,8 +45,9 @@ namespace editor {
 			static inline float gravityX = 0.0f,
 								gravityY = 500.0f;
 
-			static inline bool globals_applied = false,
-							   gravity_continuous = true,
+			static inline bool projectOpen = false,
+                               globals_applied = false,
+							   gravity_continuous = true, 
 							   gravity_sleeping = true;
 
 			static inline EventListener events;

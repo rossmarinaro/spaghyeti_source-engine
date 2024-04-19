@@ -33,6 +33,16 @@ void Editor::Update()
 	glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);
 	glfwSwapBuffers(Window::s_instance);
 
+    //save and close editor
+
+    if (glfwWindowShouldClose(Window::s_instance))
+    {
+        if (projectOpen)
+            Editor::events.saveFlag = true;
+        else 
+            Editor::events.exitFlag = true;
+    }
+
 }
 
 
@@ -76,19 +86,12 @@ Editor::Editor()
 
     //main update loop
 
-    while (!glfwWindowShouldClose(Window::s_instance))
-        Update();
-
     while (!Editor::events.exitFlag) 
-        if (Editor::events.shouldSave) 
-            Editor::events.saveFlag = true;
-        else 
-            Editor::events.exitFlag = true;
-
+        Update();
+        
     Node::ClearAll();
 
     GUI::Close();
-
 }
 
 
@@ -105,6 +108,7 @@ Editor::~Editor()
     Resources::Manager::UnLoadRawImage("icon large");
     Resources::Manager::UnLoadRawImage("audio src");
     Resources::Manager::UnLoadRawImage("data src");
+    Resources::Manager::UnLoadRawImage("folder src");
 
     Editor::Log("Editor closed.");
 
@@ -152,6 +156,8 @@ void Editor::Reset()
     scenes.clear();
 
     AssetManager::images.clear();
+    AssetManager::audio.clear();
+    AssetManager::data.clear();
     AssetManager::loadedAssets.clear();
 
     Log("Workspace reset.");

@@ -65,7 +65,7 @@ void Game::Boot()
     #endif
 
     std::cout << "Game: " + Application::name + " initialized.\n";
-    
+
 }
 
 
@@ -348,7 +348,7 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 
     auto text = std::make_shared<Text>(content, x, y); 
 
-    Application::game->currentScene->entities.push_back(text);
+    Application::game->currentScene->UI.push_back(text);
 
     return text;
 }

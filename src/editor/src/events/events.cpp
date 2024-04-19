@@ -167,7 +167,14 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
                     unsigned int id = Graphics::Texture2D::GetTexture(texture).ID;
 
-                    AssetManager::images.push_back({ asset, id });
+                    if (type == "images")
+                        AssetManager::images.push_back({ asset, id });
+
+                    if (type == "audio")
+                        AssetManager::audio.push_back({ asset, id });
+
+                    if (type == "data")
+                        AssetManager::data.push_back({ asset, id });
                 }
 
             //load entity nodes
@@ -187,6 +194,8 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
             Editor::scenes.push_back(currentScene);
 
             remove(tmp.c_str());
+
+            Editor::projectOpen = true;
 
             return true;
 
@@ -347,8 +356,8 @@ void EventListener::OpenFile()
 
             const auto options = std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive;
 
-            const std::string folder = AssetManager::GetFolder(asset),
-                              texture = AssetManager::GetThumbnail(asset);
+            std::string folder = AssetManager::GetFolder(asset);
+            const std::string texture = AssetManager::GetThumbnail(asset);
 
             std::ifstream file(Editor::projectPath + "resources\\assets" + folder + asset);
 
@@ -368,13 +377,27 @@ void EventListener::OpenFile()
 
             unsigned int id = Graphics::Texture2D::GetTexture(texture).ID;
 
-            if (
-                std::find_if( 
-                    AssetManager::images.begin(), AssetManager::images.end(),
-                    [&](std::pair<std::string, GLuint> pair) { return pair.first == asset; }
-                ) == AssetManager::images.end()
-            )
-                AssetManager::images.push_back({ asset, id });
+            auto insertAsset = [&](std::vector<std::pair<std::string, GLuint>>& vec) 
+            {
+                if (
+                    std::find_if( 
+                        AssetManager::images.begin(), AssetManager::images.end(),
+                        [&](std::pair<std::string, GLuint> pair) { return pair.first == asset; }
+                    ) == AssetManager::images.end()
+                )
+                    AssetManager::images.push_back({ asset, id });
+            };
+
+            folder.erase(remove(folder.begin(), folder.end(), '\\'), folder.end());
+
+            if (folder == "images")
+                insertAsset(AssetManager::images);
+
+            if (folder == "audio")
+                insertAsset(AssetManager::audio);
+
+            if (folder == "data")
+                insertAsset(AssetManager::data);
 
         }
 
@@ -440,7 +463,7 @@ void EventListener::BuildAndRun()
         //copy runtime dll to build folder
 
         const std::string dll = "spaghyeti_source_runtime-core.dll",
-                        copy_dll = Editor::projectPath + "build\\" + dll;
+                          copy_dll = Editor::projectPath + "build\\" + dll;
         
         if (!std::filesystem::exists(copy_dll))
             std::filesystem::copy_file(dll, copy_dll, options);
@@ -649,12 +672,12 @@ void EventListener::BuildAndRun()
 
                     global_queue << "   std::shared_ptr<Sprite> sprite_" + node->m_ID + ";\n\t";
 
-                    if (sn->make_UI == true) 
-                        command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                    if (sn->make_UI) 
+                       command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
                     
-                    else 
+                    else  
                         command_queue << "   this->sprite_" + node->m_ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
-                                            
+            
                     //sprite configurations
 
                     command_queue << "   this->sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
@@ -676,7 +699,7 @@ void EventListener::BuildAndRun()
                     if (sn->HasComponent("Physics"))
                     {
                         for (int i = 0; i < sn->bodies.size(); i++) 
-                            command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n"; 
+                            command_queue << "   this->sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX + sn->bodyX[i]) + ", " + std::to_string(sn->positionY + sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + " } });\n"; 
 
                         command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
 

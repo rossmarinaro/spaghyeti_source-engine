@@ -13,12 +13,7 @@ namespace entity_behaviors {
             std::shared_ptr<Sprite> sprite;
             b2Body* hb;
 
-            //constructor, called on start
-
             inline Elf(std::shared_ptr<Entity> entity);
-
-            //update every frame
-
             inline void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override;
 
         private:

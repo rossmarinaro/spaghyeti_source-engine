@@ -9,10 +9,11 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
 {
     this->health = 4;
 
-    this->canJump = true;
     this->follow = true;  
     this->flipX = false; 
+    this->canJump = true;
     this->canAttack = true;
+    this->canDamage = true;
     this->attacking = false;
     this->shootFireball = false; 
 
@@ -146,16 +147,20 @@ void PlayerController::Attack(Physics* physics)
 void PlayerController::DoDamage(int amount)
 {
 
+    if (!this->canDamage) 
+        return;
+
+    this->canDamage = false;
     this->health -= amount;
 
-    // if (this->health < 4 && this->health > 2)
-    //     this->heart1->SetTint({ 0.0f, 0.0f, 0.0f });
+    if (this->health < 4 && this->health > 2)
+        this->heart1->SetTint({ 0.0f, 0.0f, 0.0f });
 
-    // else if (this->health < 3 && this->health > 1)
-    //     this->heart2->SetTint({ 0.0f, 0.0f, 0.0f });
+    else if (this->health < 3 && this->health > 1)
+        this->heart2->SetTint({ 0.0f, 0.0f, 0.0f });
 
-    // else 
-    //     this->heart3->SetTint({ 0.0f, 0.0f, 0.0f });
+    else 
+        this->heart3->SetTint({ 0.0f, 0.0f, 0.0f });
 
     if (this->health <= 0) {
         this->health = 1;
@@ -168,6 +173,7 @@ void PlayerController::DoDamage(int amount)
     Time::delayedCall(500, [&]() { 
         this->player->ClearTint(); 
         this->player->SetAlpha(1.0f);
+        this->canDamage = true;
     });
     
 }   

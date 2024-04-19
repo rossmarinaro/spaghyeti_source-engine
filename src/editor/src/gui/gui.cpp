@@ -6,6 +6,7 @@
 #include "../assets/embedded/images/audio_src.h"
 #include "../assets/embedded/images/editor_logo.h"
 #include "../assets/embedded/images/icon_large.h"
+#include "../assets/embedded/images/folder_src.h"
 
 using namespace /* SPAGHYETI_CORE */ System;
 using namespace editor;
@@ -58,6 +59,7 @@ void GUI::Launch()
     System::Resources::Manager::LoadRawImage("icon large", Assets::Images::icon_large, 211, 126, 4);
     System::Resources::Manager::LoadRawImage("audio src", Assets::Images::audio_src, 75, 70, 3);
     System::Resources::Manager::LoadRawImage("data src", Assets::Images::data_src, 75, 70, 4);
+    System::Resources::Manager::LoadRawImage("folder src", Assets::Images::folder_src, 202, 202, 4);
 
     System::Resources::Manager::RegisterAssets();
 
