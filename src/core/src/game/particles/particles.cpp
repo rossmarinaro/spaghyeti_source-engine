@@ -3,8 +3,8 @@
 
 // ParticleGenerator::ParticleGenerator(const char* key, unsigned int amount)
 // : 
-//   m_shader(System::Resources::Manager::shader->GetShader("sprite")), 
-//   m_texture(System::Resources::Manager::texture2D->GetTexture(key)), 
+//   shader(System::Resources::Manager::shader->GetShader("sprite")), 
+//   texture(System::Resources::Manager::texture2D->GetTexture(key)), 
 //   amount(amount)
 // {
 //     for (unsigned int i = 0; i < this->amount; ++i)
@@ -49,19 +49,19 @@
 
 //     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-//     this->m_shader.Use();
+//     this->shader.Use();
 
 //     for (Particle particle : this->particles)
 //     {
 //         if (particle.Life > 0.0f)
-//         { glm::mat4 m_model = glm::mat4(1.0f); 
-//     this->m_shader.SetInt("image", 0, true);
-//     this->m_shader.SetInt("repeat", this->m_texture.Repeat, true);
-//     this->m_shader.SetFloat("alphaVal", 1.0f, true); 
-//     this->m_shader.SetMat4("model", m_model, true);
-//     this->m_shader.SetVec3f("spriteTint", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), true);
+//         { glm::mat4 model = glm::mat4(1.0f); 
+//     this->shader.SetInt("image", 0, true);
+//     this->shader.SetInt("repeat", this->texture.Repeat, true);
+//     this->shader.SetFloat("alphaVal", 1.0f, true); 
+//     this->shader.SetMat4("model", model, true);
+//     this->shader.SetVec3f("spriteTint", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), true);
  
-//     this->m_texture.Update(glm::vec2(50.0f), false, false, GL_FILL); 
+//     this->texture.Update(glm::vec2(50.0f), false, false, GL_FILL); 
 //             // this->shader.SetVec2f("offset", particle.Position, true);
 //             // this->shader.SetVec4f("color", particle.Color, true);
 //             // this->texture.Bind();
@@ -116,7 +116,7 @@
 //     float random = ((rand() % 100) - 50) / 10.0f;
 //     float rColor = 0.5f + ((rand() % 100) / 100.0f);
 
-//     particle.Position = glm::vec2(50.0f);//sprite.m_position + random + offset;
+//     particle.Position = glm::vec2(50.0f);//sprite.position + random + offset;
 //     particle.Color = glm::vec4(rColor, rColor, rColor, 1.0f);
 //     particle.Life = 1.0f;
 //     particle.Velocity = glm::vec2(0.0f);//sprite.m_velocity * 0.1f;

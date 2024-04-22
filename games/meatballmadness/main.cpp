@@ -54,7 +54,7 @@ void MeatballMadness::ThrowMeatball()
     meatball->SetData("platter position", System::Utils::intBetween(0, 10));
     meatball->SetData("dead", false);
 
-    meatball->bodies.push_back({ Physics::CreateDynamicBody("box", meatball->m_position.x, meatball->m_position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f)), { 0.0f, 5.0f } });
+    meatball->bodies.push_back({ Physics::CreateDynamicBody("box", meatball->position.x, meatball->position.y, 1.0f, 1.0f, false, 3, System::Utils::floatBetween(1.0f, 10.0f)), { 0.0f, 5.0f } });
     meatball->bodies[0].first->SetFixedRotation(true);
 
     const float speedX = System::Utils::intBetween(0, 10) > 5 ? 
@@ -78,7 +78,7 @@ void MeatballMadness::ThrowMeatball()
 void MeatballMadness::MoveChef()
 { 
 
-    if (this->chef->m_position.x <= 545 && canThrow)
+    if (this->chef->position.x <= 545 && canThrow)
     {
         chefMoveLeft = true;
         chefMoveRight = false;
@@ -87,7 +87,7 @@ void MeatballMadness::MoveChef()
         this->ThrowMeatball();
     }
 
-    if (this->chef->m_position.x >= 670)
+    if (this->chef->position.x >= 670)
     {
         chefMoveLeft = false;
         chefMoveRight = true;
@@ -125,16 +125,16 @@ void MeatballMadness::Update()
             System::Game::virtual_buttons[i]->SetScale(4.0f);
             
             switch (i) {
-                case 0: this->context.inputs->m_left = System::Game::UIListenForInput(0); break;
-                case 1: this->context.inputs->m_right = System::Game::UIListenForInput(1); break;
-                case 2: this->context.inputs->m_up = System::Game::UIListenForInput(2); break;
+                case 0: this->context.inputs->LEFT = System::Game::UIListenForInput(0); break;
+                case 1: this->context.inputs->RIGHT = System::Game::UIListenForInput(1); break;
+                case 2: this->context.inputs->UP = System::Game::UIListenForInput(2); break;
             }
         }
  
     //platter hitbox
 
     if (this->playerHitBox)
-        this->playerHitBox->SetTransform(b2Vec2(this->player->m_flipX ? this->player->bodies[0].first->GetPosition().x - 55 : this->player->bodies[0].first->GetPosition().x + 55, this->player->bodies[0].first->GetPosition().y - 50), 0); 
+        this->playerHitBox->SetTransform(b2Vec2(this->player->flipX ? this->player->bodies[0].first->GetPosition().x - 55 : this->player->bodies[0].first->GetPosition().x + 55, this->player->bodies[0].first->GetPosition().y - 50), 0); 
 
     //game over
 
@@ -196,9 +196,9 @@ void MeatballMadness::Update()
 
                 //score point
 
-                else if (meatball->m_alive && meatball->m_position.x <= 150.0f) {
+                else if (meatball->alive && meatball->position.x <= 150.0f) {
 
-                    meatball->m_alive = false;
+                    meatball->alive = false;
 
                     System::Game::DestroyEntity(meatball);
 
@@ -211,16 +211,16 @@ void MeatballMadness::Update()
 
                 //fail
 
-                else if (meatball->m_position.y >= 830) {
+                else if (meatball->position.y >= 830) {
 
                     meatball->SetFrame(1);
                     meatball->SetRotation(0);
 
-                    if (meatball->m_active) {
+                    if (meatball->active) {
 
                         meatball->bodies[0].first->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
 
-                        meatball->m_active = false;
+                        meatball->active = false;
                         
                         meatball->RemoveBodies(); 
 
@@ -234,24 +234,24 @@ void MeatballMadness::Update()
             //overlap hitbox
 
                 else if (
-                    meatball->m_active &&
+                    meatball->active &&
                     b2TestOverlap(meatball->bodies[0].first->GetFixtureList()->GetAABB(0), this->playerHitBox->GetFixtureList()->GetAABB(0))
                 )
                 {
                     meatball->SetRotation(0);
                     meatball->SetFrame(1);
                     meatball->RemoveBodies();
-                    meatball->m_active = false;
+                    meatball->active = false;
                 }
 
-                else if (!meatball->m_active && !meatball->GetData<bool>("dead")) {
+                else if (!meatball->active && !meatball->GetData<bool>("dead")) {
 
                     //meatball on platter
 
                     const int meatballPosition = meatball->GetData<int>("platter position");
                     
                     meatball->SetPosition(
-                        this->player->m_flipX ? 
+                        this->player->flipX ? 
                             this->playerHitBox->GetTransform().p.x / 2 - meatballPosition : 
                             this->playerHitBox->GetTransform().p.x / 2 + meatballPosition,
                         this->playerHitBox->GetTransform().p.y / 2 - 15
@@ -259,7 +259,7 @@ void MeatballMadness::Update()
                 }
 
                 else if (!meatball->GetData<bool>("dead"))  
-                    meatball->m_rotation -= System::Utils::floatBetween(5.0f, 15.0f);
+                    meatball->rotation -= System::Utils::floatBetween(5.0f, 15.0f);
     
             }
         }
@@ -272,14 +272,14 @@ void MeatballMadness::Update()
             
             if (this->scoreText != nullptr) {
                 this->scoreText->content = "SCORE: " + std::to_string(this->score);
-                this->scoreText->SetDepth(entity->m_depth + 1);
+                this->scoreText->SetDepth(entity->depth + 1);
             }
             
             for (const auto& button : System::Game::virtual_buttons)
                 if (button)
-                    button->SetDepth(entity->m_depth + 1);
+                    button->SetDepth(entity->depth + 1);
 
-            this->gameOverText->SetDepth(entity->m_depth + 1);
+            this->gameOverText->SetDepth(entity->depth + 1);
         }
     }
 
@@ -393,7 +393,7 @@ void MeatballMadness::Run()
     this->player = System::Game::CreateSprite("waiter", 450.0f, 760.0f, 1, 2.25);
     this->player->SetDepth(1);   
 
-    this->player->bodies.push_back({ Physics::CreateDynamicBody("box", this->player->m_position.x, this->player->m_position.y, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 50.0f } });
+    this->player->bodies.push_back({ Physics::CreateDynamicBody("box", this->player->position.x, this->player->position.y, 10.0f, 35.0f, false, 3, 3.5), { 30.0f, 50.0f } });
     this->player->bodies[0].first->SetFixedRotation(true);
 
     System::Game::CreateBehavior<entity_behaviors::Waiter>(this->player, this);

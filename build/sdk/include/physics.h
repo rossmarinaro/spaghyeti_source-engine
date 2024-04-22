@@ -76,9 +76,9 @@ class Physics {
             b2FixtureDef fixtureDef;
         };
 
-        b2Vec2 gravity;
-        std::set<b2Body*> bodiesToRemove;
-        std::vector<b2Body*> active_bodies;
+        b2Vec2 m_gravity;
+        std::set<b2Body*> m_bodiesToRemove;
+        std::vector<b2Body*> m_active_bodies;
 
 };
 

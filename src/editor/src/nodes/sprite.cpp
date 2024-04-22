@@ -10,7 +10,7 @@ SpriteNode::SpriteNode(const std::string& id):
     Node(id, "Sprite"),
         key(""),
         tint(glm::vec3(1.0f)),
-        show_sprite_texture(false),
+        m_show_sprite_texture(false),
         framesApplied(false),
         filter_nearest(true),
         flippedX(false),
@@ -42,7 +42,7 @@ SpriteNode::SpriteNode(const std::string& id):
 
 SpriteNode::~SpriteNode()
 {
-    this->currentTexture = NULL;
+    this->m_currentTexture = NULL;
 
     if (this->spriteHandle != nullptr)
         System::Game::DestroyEntity(this->spriteHandle);
@@ -62,7 +62,7 @@ void SpriteNode::Reset(const char* component_type)
 
     if (strcmp(component_type, "Shader") == 0 || passAll)
         if (this->spriteHandle.get())
-            this->spriteHandle->m_shader = Shader::GetShader("sprite");
+            this->spriteHandle->shader = Shader::GetShader("sprite");
 
     if (strcmp(component_type, "Script") == 0 || passAll)
         this->behaviors.clear();
@@ -152,7 +152,7 @@ void SpriteNode::ApplyTexture(const std::string& asset)
     else 
        this->spriteHandle->SetTexture(asset); 
 
-    this->currentTexture = this->spriteHandle->m_texture.GetTexture(asset).ID;  
+    this->m_currentTexture = this->spriteHandle->texture.GetTexture(asset).ID;  
     this->key = asset;
 
 }
@@ -177,7 +177,7 @@ void SpriteNode::ApplyAnimation(const std::string& key, int start, int end)
         System::Resources::Manager::LoadAnims(this->key, animsToLoad);
 
         if (this->spriteHandle) {
-            this->spriteHandle->m_anims = System::Resources::Manager::GetAnimations(this->key);
+            this->spriteHandle->anims = System::Resources::Manager::GetAnimations(this->key);
             this->spriteHandle->ReadSpritesheetData();   
         }
   
@@ -199,7 +199,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
     {
 
-        assert(this->m_active);
+        assert(this->active);
 
         ImGui::PushID(("(Sprite) " + this->m_name).c_str());
 
@@ -258,7 +258,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                         StringContainer sc;
                         BoolContainer bc;
 
-                        this->do_yoyo.push_back(bc);
+                        this->m_do_yoyo.push_back(bc);
                         this->animBuf1.push_back(sc);
                         this->animBuf2.push_back(i);
                         this->animBuf3.push_back(i);
@@ -268,12 +268,12 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                         {
 
                             if (ImGui::Button("play")) 
-                                this->currentAnim = { this->animBuf1[i].s, { this->do_yoyo[i].b, this->animBuf4[i] } };
+                                this->m_currentAnim = { this->animBuf1[i].s, { this->m_do_yoyo[i].b, this->animBuf4[i] } };
                                 
                             ImGui::SameLine(); 
 
                             if (ImGui::Button("stop")) 
-                                this->currentAnim = { "", {} };
+                                this->m_currentAnim = { "", {} };
 
                         }
 
@@ -307,7 +307,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                         ImGui::InputInt("start", &this->animBuf2[i]); 
                         ImGui::InputInt("end", &this->animBuf3[i]);
                         ImGui::InputInt("rate", &this->animBuf4[i]);
-                        ImGui::Checkbox("yoyo", &this->do_yoyo[i].b);
+                        ImGui::Checkbox("yoyo", &this->m_do_yoyo[i].b);
 
                         ImGui::Separator();
 
@@ -373,10 +373,10 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                         ImGui::Text((i == 0) ? "anchor: %d" : "body: %d", i);
 
-                        ImGui::SliderFloat("offset x", &this->bodyX[i], 0.0f, System::Window::m_width); 
-                        ImGui::SliderFloat("offset y", &this->bodyY[i], 0.0f, System::Window::m_height);
-                        ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::m_width); 
-                        ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::m_height);   
+                        ImGui::SliderFloat("offset x", &this->bodyX[i], 0.0f, System::Window::s_width); 
+                        ImGui::SliderFloat("offset y", &this->bodyY[i], 0.0f, System::Window::s_height);
+                        ImGui::SliderFloat("width", &this->body_width[i], 0.0f, System::Window::s_width); 
+                        ImGui::SliderFloat("height", &this->body_height[i], 0.0f, System::Window::s_height);   
                         ImGui::InputInt("type", &this->body_pointer[i]); 
 
                         //sensor available for static body only
@@ -448,14 +448,14 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
             if (this->show_options)
             {
             
-                ImGui::Checkbox("texture", &this->show_sprite_texture); 
+                ImGui::Checkbox("texture", &this->m_show_sprite_texture); 
 
-                if (this->show_sprite_texture)
+                if (this->m_show_sprite_texture)
                 {
 
                     //texture
         
-                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->currentTexture, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image")
+                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->m_currentTexture, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image")
                         this->ApplyTexture(Editor::selectedAsset);
 
                     else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && Editor::selectedAsset.length() && System::Utils::GetFileType(Editor::selectedAsset) != "image")
@@ -463,7 +463,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                     //if texture applied to sprite
                         
-                    if (this->currentTexture)
+                    if (this->m_currentTexture)
                     {
 
                     //spritesheet / atlas
@@ -561,17 +561,17 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                                     ImGui::EndMenu();
                                 }
 
-                                if (ImGui::Button("-") && this->spriteHandle->m_currentFrame > 0) 
-                                    this->spriteHandle->m_currentFrame--;                    
+                                if (ImGui::Button("-") && this->spriteHandle->currentFrame > 0) 
+                                    this->spriteHandle->currentFrame--;                    
                                 
                                 ImGui::SameLine();
 
-                                if (ImGui::Button("+") && this->spriteHandle->m_currentFrame < this->spriteHandle->m_frames - 1) 
-                                    this->spriteHandle->m_currentFrame++; 
+                                if (ImGui::Button("+") && this->spriteHandle->currentFrame < this->spriteHandle->frames - 1) 
+                                    this->spriteHandle->currentFrame++; 
 
                                 ImGui::SameLine();
 
-                                ImGui::Text("frame: %d", this->spriteHandle->m_currentFrame);
+                                ImGui::Text("frame: %d", this->spriteHandle->currentFrame);
 
                                 ImGui::SameLine();
 
@@ -618,16 +618,16 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                         ImGui::Checkbox("flipY", &this->flippedY);
  
                         if (this->filter_nearest) {
-                            this->spriteHandle->m_texture.Filter_Min = GL_NEAREST;
-                            this->spriteHandle->m_texture.Filter_Max = GL_NEAREST;
+                            this->spriteHandle->texture.Filter_Min = GL_NEAREST;
+                            this->spriteHandle->texture.Filter_Max = GL_NEAREST;
                         }
                         
                         else {
-                            this->spriteHandle->m_texture.Filter_Min = GL_LINEAR;
-                            this->spriteHandle->m_texture.Filter_Max = GL_LINEAR;
+                            this->spriteHandle->texture.Filter_Min = GL_LINEAR;
+                            this->spriteHandle->texture.Filter_Max = GL_LINEAR;
                         }
 
-                        this->spriteHandle->m_texture.SetFiltering();
+                        this->spriteHandle->texture.SetFiltering();
 
                         ImGui::ColorEdit3("tint", (float*)&this->tint); 
                         ImGui::SliderFloat("alpha", &this->alpha, 0.0f, 1.0f); 
@@ -638,8 +638,8 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                 ImGui::SliderInt("depth", &this->depth, 0, 1000);
 
-                ImGui::SliderFloat("position x", &this->positionX, -System::Window::m_width, System::Window::m_width); 
-                ImGui::SliderFloat("position y", &this->positionY, -System::Window::m_height, System::Window::m_height); 
+                ImGui::SliderFloat("position x", &this->positionX, -System::Window::s_width, System::Window::s_width); 
+                ImGui::SliderFloat("position y", &this->positionY, -System::Window::s_height, System::Window::s_height); 
 
                 ImGui::SliderFloat("rotation", &this->rotation, 0.0f, 360.0f); 
 
@@ -657,10 +657,10 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
         if (this->spriteHandle)
         {
 
-            this->spriteHandle->m_texture.U1 = this->U1;
-            this->spriteHandle->m_texture.V1 = this->V1;
-            this->spriteHandle->m_texture.U2 = this->U2;
-            this->spriteHandle->m_texture.V2 = this->V2;
+            this->spriteHandle->texture.U1 = this->U1;
+            this->spriteHandle->texture.V1 = this->V1;
+            this->spriteHandle->texture.U2 = this->U2;
+            this->spriteHandle->texture.V2 = this->V2;
             
             this->spriteHandle->SetScale(this->scaleX, this->scaleY);
             this->spriteHandle->SetPosition(this->positionX, this->positionY);
@@ -670,8 +670,8 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
             this->spriteHandle->SetAlpha(this->alpha);
             this->spriteHandle->SetTint(this->tint);
 
-            if (this->currentAnim.first.length())   
-                this->spriteHandle->Animate(this->currentAnim.first, this->currentAnim.second.first, this->currentAnim.second.second);
+            if (this->m_currentAnim.first.length())   
+                this->spriteHandle->Animate(this->m_currentAnim.first, this->m_currentAnim.second.first, this->m_currentAnim.second.second);
 
             else
                 this->spriteHandle->StopAnimation();
@@ -682,8 +682,8 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                 for (int i = 0; i < this->bodies.size(); i++)   
                     this->bodies[i]->SetTransform(
                         b2Vec2(
-                            this->spriteHandle->m_position.x + this->bodyX[i], 
-                            this->spriteHandle->m_position.y + this->bodyY[i]
+                            this->spriteHandle->position.x + this->bodyX[i], 
+                            this->spriteHandle->position.y + this->bodyY[i]
                         ), 0);
 
         }

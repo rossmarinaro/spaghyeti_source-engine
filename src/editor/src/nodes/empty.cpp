@@ -40,7 +40,7 @@ void EmptyNode::Reset(const char* component_type)
 
     if (strcmp(component_type, "Shader") == 0 || passAll)
         if (this->m_debugGraphic.get())
-                this->m_debugGraphic->m_shader = Shader::GetShader("graphics");
+                this->m_debugGraphic->shader = Shader::GetShader("graphics");
 
     if (strcmp(component_type, "Script") == 0 || passAll)
         this->behaviors.clear();
@@ -155,8 +155,8 @@ void EmptyNode::Render(std::shared_ptr<Node> node)
 
                     if (this->currentShape != "") {
                         ImGui::Checkbox("fill", &this->debug_fill); 
-                        ImGui::ColorEdit3("tint", (float*)&this->m_debugGraphic->m_tint); ImGui::SameLine();
-                        ImGui::SliderFloat("alpha", &this->m_debugGraphic->m_alpha, 0.0f, 1.0f);
+                        ImGui::ColorEdit3("tint", (float*)&this->m_debugGraphic->tint); ImGui::SameLine();
+                        ImGui::SliderFloat("alpha", &this->m_debugGraphic->alpha, 0.0f, 1.0f);
                         ImGui::SliderFloat("position x", &this->positionX, 10.0f, 1000.0f); 
                         ImGui::SliderFloat("position y", &this->positionY, 10.0f, 1000.0f);
                     }
@@ -176,7 +176,7 @@ void EmptyNode::Render(std::shared_ptr<Node> node)
                         this->m_debugGraphic->SetSize(this->radius);
                     }
 
-                    this->m_debugGraphic->m_renderable = this->show_debug ? true : false;
+                    this->m_debugGraphic->renderable = this->show_debug ? true : false;
 
                     this->m_debugGraphic->SetPosition(this->positionX, this->positionY);
 

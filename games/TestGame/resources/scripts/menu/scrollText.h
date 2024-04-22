@@ -14,31 +14,31 @@ namespace entity_behaviors {
             Menu_ScrollText(std::shared_ptr<Entity> entity):
                Behavior(entity, "ScrollText")
             {
-                this->text = std::static_pointer_cast<Text>(this->entity);
-                this->exclamations = "";
+                this->m_text = std::static_pointer_cast<Text>(entity);
+                this->m_exclamations = "";
 
                 Time::delayedCall(500,[&]() { 
                     Time::setInterval(500, [=]() { 
                     
-                        if (!this->isActive) 
+                        if (!this->m_isActive) 
                             return;
                             
-                        if (this->exclamations.length() < 3) 
-                            this->exclamations += "!"; 
+                        if (this->m_exclamations.length() < 3) 
+                            this->m_exclamations += "!"; 
                     }); 
                 });
            }
 
            //update every frame 
 
-           void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {
-                this->text->SetText("SWANKY VELVET" + this->exclamations);
+           void Update(Process::Context& context, void* scene) override {
+                this->m_text->SetText("SWANKY VELVET" + this->m_exclamations);
            }
 
         private:
 
-            std::shared_ptr<Text> text;
-            std::string exclamations;
+            std::shared_ptr<Text> m_text;
+            std::string m_exclamations;
 
    };
 };

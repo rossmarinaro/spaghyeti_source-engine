@@ -15,11 +15,10 @@ using namespace System::Resources;
 void Manager::Clear(bool all)
 {
     
-    System::Application::resources->raw_assets.clear();
-    System::Application::resources->file_assets.clear();
-
-    System::Application::resources->file_image_assets.clear();
-    System::Application::resources->raw_image_assets.clear();
+    System::Application::resources->m_raw_assets.clear();
+    System::Application::resources->m_file_assets.clear();
+    System::Application::resources->m_file_image_assets.clear();
+    System::Application::resources->m_raw_image_assets.clear();
 
     System::Application::resources->atlases.clear();
     System::Application::resources->atlas_paths.clear();
@@ -71,11 +70,11 @@ void Manager::RegisterAssets()
 
     //load textures
 
-    for (const auto& texture : System::Application::resources->file_image_assets)
+    for (const auto& texture : System::Application::resources->m_file_image_assets)
         if (System::Application::resources->textures.find(texture.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(texture.first);
 
-    for (const auto& texture : System::Application::resources->raw_image_assets)
+    for (const auto& texture : System::Application::resources->m_raw_image_assets)
         if (System::Application::resources->textures.find(texture.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(texture.first);
 
@@ -93,28 +92,28 @@ void Manager::LoadFile(const char* key, const char* path)
 
     if (
         System::Utils::GetFileType(path) == "image" &&
-        System::Application::resources->file_image_assets.find(key) == System::Application::resources->file_image_assets.end()
+        System::Application::resources->m_file_image_assets.find(key) == System::Application::resources->m_file_image_assets.end()
     )
-        System::Application::resources->file_image_assets.insert({ key, path });
+        System::Application::resources->m_file_image_assets.insert({ key, path });
 
     else if (
         System::Utils::GetFileType(path) == "audio" && 
-        System::Application::resources->file_audio_assets.find(key) == System::Application::resources->file_audio_assets.end()
+        System::Application::resources->m_file_audio_assets.find(key) == System::Application::resources->m_file_audio_assets.end()
 
     )
-        System::Application::resources->file_audio_assets.insert({ key, path });
+        System::Application::resources->m_file_audio_assets.insert({ key, path });
 
     else if (
         System::Utils::GetFileType(path) == "data" && 
-        System::Application::resources->file_text_assets.find(key) == System::Application::resources->file_text_assets.end()
+        System::Application::resources->m_file_text_assets.find(key) == System::Application::resources->m_file_text_assets.end()
     )
-        System::Application::resources->file_text_assets.insert({ key, path });
+        System::Application::resources->m_file_text_assets.insert({ key, path });
 
     else
         return;
 
-    if (System::Application::resources->file_assets.find(key) == System::Application::resources->file_assets.end())
-        System::Application::resources->file_assets.insert({ key, path });
+    if (System::Application::resources->m_file_assets.find(key) == System::Application::resources->m_file_assets.end())
+        System::Application::resources->m_file_assets.insert({ key, path });
 
 } 
 
@@ -171,8 +170,8 @@ void Manager::LoadRawImage(const char* key, const char* arr, int width, int heig
     if (System::Application::resources->image_dimensions_and_channels.find(key) == System::Application::resources->image_dimensions_and_channels.end())
     {
         System::Application::resources->image_dimensions_and_channels.insert( { key, { width, height, channel } } );
-        System::Application::resources->raw_image_assets.insert({ key, arr });
-        System::Application::resources->raw_assets.insert({key, arr});
+        System::Application::resources->m_raw_image_assets.insert({ key, arr });
+        System::Application::resources->m_raw_assets.insert({key, arr});
     }
 
 }
@@ -185,9 +184,9 @@ void Manager::LoadRawAudio(const char* key, const char* arr, unsigned int bytes)
 {
     if (System::Application::resources->audio_size.find(key) == System::Application::resources->audio_size.end())
     {
-        System::Application::resources->audio_size.insert( { key, bytes } );
-        System::Application::resources->raw_audio_assets.insert({ key, arr });
-        System::Application::resources->raw_assets.insert({ key, arr });
+        System::Application::resources->audio_size.insert( { key, bytes } ); 
+        System::Application::resources->m_raw_audio_assets.insert({ key, arr });
+        System::Application::resources->m_raw_assets.insert({ key, arr });
     } 
 
 }
@@ -199,20 +198,20 @@ void Manager::LoadRawAudio(const char* key, const char* arr, unsigned int bytes)
 void Manager::UnLoadFile(const char* key)
 {
 
-    if (System::Application::resources->file_image_assets.find(key) != System::Application::resources->file_image_assets.end())
-        System::Application::resources->file_image_assets.erase(System::Application::resources->file_image_assets.find(key));
+    if (System::Application::resources->m_file_image_assets.find(key) != System::Application::resources->m_file_image_assets.end())
+        System::Application::resources->m_file_image_assets.erase(System::Application::resources->m_file_image_assets.find(key));
 
-    else if (System::Application::resources->file_audio_assets.find(key) != System::Application::resources->file_audio_assets.end() )
-        System::Application::resources->file_audio_assets.erase(System::Application::resources->file_audio_assets.find(key));
+    else if (System::Application::resources->m_file_audio_assets.find(key) != System::Application::resources->m_file_audio_assets.end() )
+        System::Application::resources->m_file_audio_assets.erase(System::Application::resources->m_file_audio_assets.find(key));
 
-    else if (System::Application::resources->file_text_assets.find(key) != System::Application::resources->file_text_assets.end())
-        System::Application::resources->file_text_assets.erase(System::Application::resources->file_text_assets.find(key));
+    else if (System::Application::resources->m_file_text_assets.find(key) != System::Application::resources->m_file_text_assets.end())
+        System::Application::resources->m_file_text_assets.erase(System::Application::resources->m_file_text_assets.find(key));
 
     else
         return;
 
-    if (System::Application::resources->file_assets.find(key) != System::Application::resources->file_assets.end())
-        System::Application::resources->file_assets.erase(System::Application::resources->file_assets.find(key));
+    if (System::Application::resources->m_file_assets.find(key) != System::Application::resources->m_file_assets.end())
+        System::Application::resources->m_file_assets.erase(System::Application::resources->m_file_assets.find(key));
 
 } 
 
@@ -265,8 +264,8 @@ void Manager::UnLoadRawImage(const char* key) {
     if (System::Application::resources->image_dimensions_and_channels.find(key) != System::Application::resources->image_dimensions_and_channels.end())
     {
         System::Application::resources->image_dimensions_and_channels.erase(System::Application::resources->image_dimensions_and_channels.find(key));
-        System::Application::resources->raw_image_assets.erase(System::Application::resources->raw_image_assets.find(key));
-        System::Application::resources->raw_assets.erase(System::Application::resources->raw_assets.find(key));
+        System::Application::resources->m_raw_image_assets.erase(System::Application::resources->m_raw_image_assets.find(key));
+        System::Application::resources->m_raw_assets.erase(System::Application::resources->m_raw_assets.find(key));
     }
 
 }
@@ -279,8 +278,8 @@ void Manager::UnLoadRawAudio(const char* key) {
     if (System::Application::resources->audio_size.find(key) != System::Application::resources->audio_size.end())
     {
         System::Application::resources->audio_size.erase(System::Application::resources->audio_size.find(key));
-        System::Application::resources->raw_audio_assets.erase(System::Application::resources->raw_audio_assets.find(key));
-        System::Application::resources->raw_assets.erase(System::Application::resources->raw_assets.find(key));
+        System::Application::resources->m_raw_audio_assets.erase(System::Application::resources->m_raw_audio_assets.find(key));
+        System::Application::resources->m_raw_assets.erase(System::Application::resources->m_raw_assets.find(key));
     } 
 
 }
@@ -292,7 +291,7 @@ void Manager::UnLoadRawAudio(const char* key) {
 const char* Manager::GetRawData(const std::string& key)
 {
 
-    const auto resource = System::Application::resources->raw_assets.find(key.c_str());
+    const auto resource = System::Application::resources->m_raw_assets.find(key.c_str());
 
     return resource->second;
 
@@ -404,9 +403,9 @@ const std::map<std::string, std::pair<int, int>> Manager::GetAnimations(const st
 const char* Manager::GetFilePath(const std::string& key)
 {
 
-   const std::map<std::string, std::string>::iterator it = System::Application::resources->file_assets.find(key);
+   const std::map<std::string, std::string>::iterator it = System::Application::resources->m_file_assets.find(key);
 
-    return it != System::Application::resources->file_assets.end() ?
+    return it != System::Application::resources->m_file_assets.end() ?
         it->second.c_str() : "";
 
 }
@@ -421,9 +420,9 @@ std::vector<std::string> Manager::ParseCSV(const std::string& key)
     std::vector<std::string> result;
     std::string line;
 
-    const std::map<std::string, std::string>::iterator it = System::Application::resources->file_text_assets.find(key);
+    const std::map<std::string, std::string>::iterator it = System::Application::resources->m_file_text_assets.find(key);
 
-    if (it != System::Application::resources->file_text_assets.end()) { 
+    if (it != System::Application::resources->m_file_text_assets.end()) { 
 
         std::ifstream in(it->second);
 

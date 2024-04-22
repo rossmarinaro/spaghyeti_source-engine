@@ -14,7 +14,7 @@ namespace editor {
         public:
 
             bool created, 
-                 m_active, 
+                 active, 
                  show_options;
 
             float scaleX, 
@@ -92,7 +92,7 @@ namespace editor {
             std::vector<std::shared_ptr<Component>> components;
 
             static inline int count = 0, 
-                                MAX_NODES = 100; 
+                              MAX_NODES = 100; 
 
             static const char* Assign();
 
@@ -175,13 +175,12 @@ namespace editor {
 
         private:
 
-            bool show_sprite_options,
-                 show_sprite_texture;
+            bool m_show_sprite_texture;
 
-            std::pair<std::string, std::pair<bool, int>> currentAnim;
-            std::vector<BoolContainer> do_yoyo;
+            std::pair<std::string, std::pair<bool, int>> m_currentAnim;
+            std::vector<BoolContainer> m_do_yoyo;
 
-            GLuint currentTexture = NULL;
+            GLuint m_currentTexture = NULL;
 
     };
 
@@ -208,7 +207,7 @@ namespace editor {
 
             TilemapNode(): 
                 Node("Tilemap"),
-                    mapApplied(false) {}
+                    m_mapApplied(false) {}
 
             TilemapNode(const std::string& id);
             ~TilemapNode();
@@ -222,7 +221,7 @@ namespace editor {
 
         private: 
 
-            bool layersApplied, mapApplied;
+            bool m_layersApplied, m_mapApplied;
 
 
     };
@@ -275,7 +274,7 @@ namespace editor {
 
         private:
 
-            Graphics::Texture2D& audioTexture;
+            Graphics::Texture2D& m_audioTexture;
     };
 
 

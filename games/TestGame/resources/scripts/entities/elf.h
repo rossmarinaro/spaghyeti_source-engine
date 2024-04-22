@@ -1,7 +1,7 @@
 #pragma once
 
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/behaviors.h"
-//SPAGHYETI_RUNTIME
+
 namespace entity_behaviors {
     
     class Elf : public Behavior {
@@ -14,11 +14,11 @@ namespace entity_behaviors {
             b2Body* hb;
 
             inline Elf(std::shared_ptr<Entity> entity);
-            inline void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override;
+            inline void Update(Process::Context& context, void* scene) override;
 
         private:
 
-            bool rev;
+            bool m_rev;
 
     };
 }

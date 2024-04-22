@@ -7,7 +7,23 @@
 
 #endif
 
-using namespace System;                           
+using namespace System;      
+
+
+//-----------------------
+
+
+void FlushGame(Game* game)
+{
+    game->currentScene->entities.clear();
+    game->currentScene->UI.clear();
+    game->currentScene->behaviors.clear();
+
+    game->maps->layers.clear();
+    game->physics->ClearBodies(); 
+
+}
+
   
 //------------------------- backend game layer functionality   
 
@@ -26,7 +42,7 @@ Game::Game()
 
     //scene context handles
 
-    this->context = { this->inputs, this->camera, this->physics, this->time };
+    this->m_context = { this->inputs, this->camera, this->physics, this->time };
 
 }
 
@@ -36,6 +52,8 @@ Game::Game()
 
 void Game::Boot()   
 {   
+
+    std::cout << "Game: " + Application::name + " initializing.\n";
 
     Game* game = Application::game;
 
@@ -64,8 +82,6 @@ void Game::Boot()
 
     #endif
 
-    std::cout << "Game: " + Application::name + " initialized.\n";
-
 }
 
 
@@ -77,7 +93,7 @@ void Game::StartScene(const std::string& key)
 
     Game* game = Application::game;
 
-    game->gameState = false;
+    game->m_gameState = false;
     game->time->exitFlag = true;
 
     //find loaded scene
@@ -87,17 +103,10 @@ void Game::StartScene(const std::string& key)
     if (it != game->scenes.end())
     {
 
-        //clear entities if applicable
+        //clear entities if applicable (after first initialization)
 
         if (game->currentScene) 
-        {
-            game->currentScene->entities.clear();
-            game->currentScene->UI.clear();
-            game->currentScene->behaviors.clear();
-
-            game->maps->layers.clear();
-            game->physics->ClearBodies();
-        }
+            FlushGame(game);    
 
         //assign / load current scene
 
@@ -106,13 +115,18 @@ void Game::StartScene(const std::string& key)
         Resources::Manager::Clear(false);
 
         game->currentScene->Preload();
-        game->currentScene->Run();
+        game->currentScene->Run();  
         
         game->time->exitFlag = false; 
-        game->gameState = true;
+        game->m_gameState = true; 
+
+        #if DEVELOPMENT == 1
+            std::cout << "Scene: " + game->currentScene->key + " started.\n";
+        #endif
 
     }
 }
+
 
 
 //-----------------------------
@@ -123,19 +137,18 @@ void Game::Exit()
 
     Game* game = Application::game;
 
-    game->gameState = false;
+    game->m_gameState = false;
     game->time->exitFlag = game->time->exitFlag.exchange(1);
 
-    game->currentScene->entities.clear();
-    game->currentScene->UI.clear();
-    game->currentScene->behaviors.clear();
-
+    FlushGame(game);
+    
+    game->scenes.clear();    
     game->text->ShutDown();
 
     #if DEVELOPMENT == 1 
 
-        delete game->physics->debug;
-        game->physics->debug = nullptr;
+       delete game->physics->debug;
+       game->physics->debug = nullptr;
 
         #if STANDALONE == 1
 
@@ -174,7 +187,7 @@ void Game::UpdateFrame()
 
     Game* game = Application::game;
 
-    if (!game->gameState)
+    if (!game->m_gameState)
         return;
 
     game->physics->Update();
@@ -182,16 +195,16 @@ void Game::UpdateFrame()
     //render queues
 
     for (const auto& entity : game->currentScene->entities)
-        if ((entity.get() && entity) && entity.get()->m_renderable) 
+        if ((entity.get() && entity) && entity.get()->renderable) 
         {
             if (game->cursor != nullptr)
-                game->cursor->SetDepth(entity->m_depth + 1);
+                game->cursor->SetDepth(entity->depth + 1);
 
             entity->Render();
         }
 
     for (const auto& UI : game->currentScene->UI)
-        if ((UI.get() && UI) && UI.get()->m_renderable) 
+        if ((UI.get() && UI) && UI.get()->renderable) 
             UI->Render();
 
     //render input cursor
@@ -201,12 +214,12 @@ void Game::UpdateFrame()
     //update behaviors, pass game process context to subclasses
 
     for (const auto& behavior : game->currentScene->behaviors)
-        if (!game->currentScene->IsPaused() && behavior.get() && behavior)
-            behavior->Update(game->context, game->currentScene->behaviors); 
+        if (!game->currentScene->IsPaused() && behavior.get() && behavior) 
+            behavior->Update(game->m_context, game->currentScene.get()); 
 
     //depth sort
 
-    std::sort(game->currentScene->entities.begin(), game->currentScene->entities.end(), [](auto a, auto b){ return a->m_depth < b->m_depth; });
+    std::sort(game->currentScene->entities.begin(), game->currentScene->entities.end(), [](auto a, auto b){ return a->depth < b->depth; });
 
     #if DEVELOPMENT == 1 
 
@@ -216,33 +229,13 @@ void Game::UpdateFrame()
         }
 
         #if STANDALONE == 1
-            displayInfo->Update(game->context);
+            displayInfo->Update(game->m_context);
         #endif
 
     #endif
-    
-    game->currentScene->Update();
 
 }  
 
-
-//---------------------------
-
-
-void Game::DestroyUI()
-{
-
-    for (const auto& UI : Application::game->currentScene->entities)
-    {
-        std::vector<std::shared_ptr<Entity>>::iterator it = std::find(Application::game->currentScene->entities.begin() - 1, Application::game->currentScene->entities.end() - 1, UI);
-
-        if (it != Application::game->currentScene->entities.end())
-            Application::game->currentScene->entities.erase(it);
-
-        DestroyEntity(UI);
-    }
-
-}
 
 
 //-----------------------------
@@ -251,15 +244,15 @@ void Game::DestroyUI()
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
 
-    std::vector<std::shared_ptr<Entity>>::iterator it = std::find(Application::game->currentScene->entities.begin() - 1, Application::game->currentScene->entities.end(), entity);
+    auto it = std::find(Application::game->currentScene->entities.begin() - 1, Application::game->currentScene->entities.end(), entity);
 
     if (it != Application::game->currentScene->entities.end())
-       Application::game->currentScene->entities.erase(it);
+        Application::game->currentScene->entities.erase(it);
+    
+    entity->renderable = false;
 
-    entity->m_renderable = false;
-
-    entity->m_active = false;
-    entity->m_alive = false;
+    entity->active = false;
+    entity->alive = false;
 
     if (entity->IsSprite()) {
 
@@ -273,8 +266,8 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         }
     }
 
-    entity.reset();
-    entity = nullptr; 
+    if (!Application::game->currentScene->entities.size())
+        entity.reset();
 
 } 
 
@@ -294,7 +287,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
 
     sprite->SetScale(scale);
 
-    Application::game->currentScene->entities.push_back(sprite);
+    Application::game->currentScene->entities.push_back(sprite); 
 
     return sprite;
 }
@@ -330,7 +323,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
     auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
 
     ts->type = "tile";
-    //ts->m_shader = Shader::GetShader("batch");
+    //ts->shader = Shader::GetShader("batch");
     ts->ReadSpritesheetData(); 
 
     Application::game->currentScene->entities.push_back(ts);

@@ -64,10 +64,10 @@ void Shader::Update(Camera* camera)
 {
 
     glClearColor(
-        camera->m_backgroundColor.x * camera->m_backgroundColor.w,
-        camera->m_backgroundColor.y * camera->m_backgroundColor.w,
-        camera->m_backgroundColor.z * camera->m_backgroundColor.w, 
-        camera->m_backgroundColor.w 
+        camera->backgroundColor.x * camera->backgroundColor.w,
+        camera->backgroundColor.y * camera->backgroundColor.w,
+        camera->backgroundColor.z * camera->backgroundColor.w, 
+        camera->backgroundColor.w 
     ); 
 
     //custom shaders
@@ -83,7 +83,7 @@ void Shader::Update(Camera* camera)
             GetShader(shader.first).SetVec2f("offset", glm::vec2(0.0f), true);
 
         else            
-            GetShader(shader.first).SetVec2f("offset", camera->m_position, true);
+            GetShader(shader.first).SetVec2f("offset", camera->position, true);
 
         //projection
 
@@ -91,10 +91,10 @@ void Shader::Update(Camera* camera)
         {
 
             if (shader.first == "cursor" || shader.first == "UI")                 
-                GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::m_width * 2), static_cast<float>(System::Window::m_height * 2)), true);  
+                GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::s_width * 2), static_cast<float>(System::Window::s_height * 2)), true);  
 
             else                 
-                GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight), true);
+                GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight), true);
        
         }
 
@@ -104,7 +104,7 @@ void Shader::Update(Camera* camera)
             GetShader(shader.first).SetMat4("view", glm::mat4(1.0f), true);
 
         else             
-            GetShader(shader.first).SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(camera->m_position, 0.0f)), true);
+            GetShader(shader.first).SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(camera->position, 0.0f)), true);
 
     }
 }
@@ -201,7 +201,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
 
     Shader shader; 
 
-    shader.m_key = key.c_str();
+    shader.key = key.c_str();
 
     if (
         System::Utils::str_includes(vertShader, ".vert") && System::Utils::str_includes(fragShader, ".frag") ||

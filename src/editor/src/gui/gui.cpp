@@ -49,7 +49,7 @@ void GUI::Launch()
     //setup platform/renderer backends
 
     ImGui_ImplGlfw_InitForOpenGL(Window::s_instance, true);
-    ImGui_ImplOpenGL3_Init(Window::m_glsl_version);
+    ImGui_ImplOpenGL3_Init(Window::s_glsl_version);
 
     CreateGrid();
 
@@ -134,7 +134,7 @@ void GUI::CreateGrid()
     Shader::Load("grid", checker_vertex, checker_fragment, nullptr); 
 
     grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    grid->m_shader = Shader::GetShader("grid");
+    grid->shader = Shader::GetShader("grid");
 
 }
 
@@ -173,7 +173,7 @@ void GUI::Render()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     if (grid)
-       grid->m_shader.SetFloat("pitch", grid_quantity, true);
+       grid->shader.SetFloat("pitch", grid_quantity, true);
         
     //Renderer::CreateFrameBuffer();
 }
@@ -229,12 +229,12 @@ void GUI::ShowOptionsInit()
 
     // AlignForWidth(width);
 
-    if (ImGui::Button("New", ImVec2(System::Window::m_width, 0.0f))) {
+    if (ImGui::Button("New", ImVec2(System::Window::s_width, 0.0f))) {
         if (Editor::events.NewProject())
             show_init = false;
     }
 
-    if (ImGui::Button("Open", ImVec2(System::Window::m_width, 0.0f))) {
+    if (ImGui::Button("Open", ImVec2(System::Window::s_width, 0.0f))) {
         if (Editor::events.OpenProject())
             show_init = false;
     }
@@ -337,13 +337,13 @@ void GUI::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
         //position camera
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            Editor::game->camera->SetPosition({ Editor::game->camera->m_position.x + yOffset * 10, Editor::game->camera->m_position.y });
+            Editor::game->camera->SetPosition({ Editor::game->camera->position.x + yOffset * 10, Editor::game->camera->position.y });
         
         else 
-            Editor::game->camera->SetPosition({ Editor::game->camera->m_position.x, Editor::game->camera->m_position.y + yOffset * 10 });
+            Editor::game->camera->SetPosition({ Editor::game->camera->position.x, Editor::game->camera->position.y + yOffset * 10 });
 
         if (xOffset != 0)
-            Editor::game->camera->SetPosition({ Editor::game->camera->m_position.x + xOffset * 10, Editor::game->camera->m_position.y });
+            Editor::game->camera->SetPosition({ Editor::game->camera->position.x + xOffset * 10, Editor::game->camera->position.y });
     }
 }
 

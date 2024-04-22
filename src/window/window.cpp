@@ -48,20 +48,20 @@ void Window::Init()
     // Decide GL+GLSL versions
     #if defined(IMGUI_IMPL_OPENGL_ES2)
         // GL ES 2.0 + GLSL 100
-        m_glsl_version = "#version 100";
+        s_glsl_version = "#version 100";
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     #elif defined(__APPLE__)
         // GL 3.2 + GLSL 150
-        m_glsl_version = "#version 150";
+        s_glsl_version = "#version 150";
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
     #else
         // GL 3.0 + GLSL 130
-        m_glsl_version = "#version 330"; //"#version 330";
+        s_glsl_version = "#version 330"; //"#version 330";
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
@@ -82,14 +82,14 @@ void Window::Init()
 
     //set window dimensions for desktop builds
 
-    m_width = Application::isMobile ? 800.0f : 1200.0f;
-    m_height = Application::isMobile ? 400.0f : 600.0f;
+    s_width = Application::isMobile ? 800.0f : 1200.0f;
+    s_height = Application::isMobile ? 400.0f : 600.0f;
 
     //create window
 
     s_instance = glfwCreateWindow(
-            m_width, 
-            m_height,
+            s_width, 
+            s_height,
             (Application::name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2024 🍝👌").c_str(), 
             isFullScreen, 
             NULL

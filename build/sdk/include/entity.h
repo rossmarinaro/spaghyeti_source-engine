@@ -25,27 +25,27 @@ class Entity {
 
 	public: 
 
-		static inline int DEPTH, 
-						  g_count = 0;
+		static inline int s_depth = 0, 
+						  s_count = 0;
 
-		int m_depth;
+		int depth;
 
 		float 
-			m_rotation, 
-			m_alpha;  
+			rotation, 
+			alpha;  
 		bool 
 			m_isSpritesheet, 
-			m_flipX, 
-			m_flipY, 
-			m_active, 
-			m_renderable, 
-			m_alive;
+			flipX, 
+			flipY, 
+			active, 
+			renderable, 
+			alive;
 
 		const char* type;
 
-		glm::vec3 m_tint; 
-		glm::mat4 m_model; 
-		glm::vec2 m_position, m_scale;
+		glm::vec3 tint; 
+
+		glm::vec2 position, scale;
 
 		std::string ID;
 
@@ -72,65 +72,69 @@ class Entity {
 				   strcmp(this->type, "tile") == 0;
 		}
 
-		inline void SetDepth(int depth) { this->m_depth = depth; }
-		inline void SetAlpha(float alpha) { this->m_alpha = alpha; }
-		inline void SetRotation(float rotation) { this->m_rotation = rotation; }
-		inline void SetPosition(const glm::vec2& position) { this->m_position = position; }
+		inline void SetDepth(int depth) { this->depth = depth; }
+		inline void SetAlpha(float alpha) { this->alpha = alpha; }
+		inline void SetRotation(float rotation) { this->rotation = rotation; }
+		inline void SetPosition(const glm::vec2& position) { this->position = position; }
 
 		inline void SetPosition(float x, float y) { 
-			this->m_position.x = x;
-			this->m_position.y = y; 
+			this->position.x = x;
+			this->position.y = y; 
 		}
 		
-		inline void ClearTint() { this->m_tint = glm::vec3(1.0f); }
-		inline void SetTint(const glm::vec3& tint) { this->m_tint = tint; }
-		inline void SetFlipX(bool flipX) { this->m_flipX = flipX; };
-		inline void SetFlipY(bool flipY) { this->m_flipY = flipY; };
+		inline void ClearTint() { this->tint = glm::vec3(1.0f); }
+		inline void SetTint(const glm::vec3& tint) { this->tint = tint; }
+		inline void SetFlipX(bool flipX) { this->flipX = flipX; };
+		inline void SetFlipY(bool flipY) { this->flipY = flipY; };
 
 		inline void SetFlip(bool flipX, bool flipY) { 
-			this->m_flipX = flipX; 
-			this->m_flipY = flipY; 
+			this->flipX = flipX; 
+			this->flipY = flipY; 
 		}
 		
 		inline void SetScale(float scaleX, float scaleY = 1.0f) { 
-			this->m_scale.x = scaleX;
-			this->m_scale.y = scaleY != 1.0f ? 
+			this->scale.x = scaleX;
+			this->scale.y = scaleY != 1.0f ? 
 				scaleY : scaleX; 
 		}
 
 		inline void SetEnabled(bool isEnabled) {
-			this->m_active = isEnabled;
-			this->m_renderable = isEnabled;
+			this->active = isEnabled;
+			this->renderable = isEnabled;
 		}
 
 		inline void StartFollow(Camera* camera, float offset) {
 
-			camera->targetX = this->m_position.x;
-			camera->targetY = this->m_position.y;
+			camera->targetX = this->position.x;
+			camera->targetY = this->position.y;
 
 			if (camera->InBounds())
-				camera->m_position.x = (-this->m_position.x + offset) / 2;  
+				camera->position.x = (-this->position.x + offset) / 2;  
 		}
 		 
 		virtual void Render() = 0;
  
 		Entity() = default;
 		Entity(const char* type, float x, float y):
+        	m_model(glm::mat4(1.0f)),
 			type(type),
-			m_model(glm::mat4(1.0f)),
-			m_position(glm::vec2(x, y)),
-			m_scale(glm::vec2(1.0f)), 
-			m_rotation(0.0f),  
-			m_alpha(1.0f),
-			m_tint(glm::vec3(1.0f, 1.0f, 1.0f)),
-			m_active(true),
-			m_alive(true),
-			m_renderable(true),
-			m_flipX(false),
-			m_flipY(false), 
-			m_depth(DEPTH + 1){ g_count++; };
+			position(glm::vec2(x, y)),
+			scale(glm::vec2(1.0f)), 
+			rotation(0.0f),  
+			alpha(1.0f),
+			tint(glm::vec3(1.0f, 1.0f, 1.0f)),
+			active(true),
+			alive(true),
+			renderable(true),
+			flipX(false),
+			flipY(false), 
+			depth(s_depth + 1){ s_count++; };
 
-		virtual ~Entity() { g_count--; };
+		virtual ~Entity() { s_count--; };
+
+    protected:
+
+        glm::mat4 m_model; 
 
 };
 
@@ -142,12 +146,12 @@ class Geometry : public Entity {
 
     public:
 
-        Shader m_shader;
-        Graphics::Texture2D m_texture;
+        Shader shader;
+        Graphics::Texture2D texture;
 
 		float width, height, radius;
 
-		inline void SetDrawStyle(int style) { this->drawStyle = style; } 
+		inline void SetDrawStyle(int style) { this->m_drawStyle = style; } 
 
 		inline void SetSize(float width, float height) { 
 			this->width = width; 
@@ -166,7 +170,7 @@ class Geometry : public Entity {
 
 	private:
 
-		GLint drawStyle = GL_FILL;
+		GLint m_drawStyle = GL_FILL;
 
 		const char* m_type;
 		
@@ -195,8 +199,8 @@ class Text : public Entity {
 
     private:
 
-        static inline GLTtext* buffer;
-        GLTtext* handle;
+        static inline GLTtext* s_buffer;
+        GLTtext* m_handle;
 
 };
 
@@ -208,18 +212,18 @@ class Sprite : public Entity {
 
 	public:  
 
-        Shader m_shader;
-        Graphics::Texture2D m_texture;
+        Shader shader;
+        Graphics::Texture2D texture;
 
 		int
-			m_frames, 
-			m_currentFrame, 
+			frames, 
+			currentFrame, 
 			num_contacts = 0;
 
 		float velocityX, velocityY;
 
-		std::string m_key;
-		std::map<std::string, std::pair<int, int>> m_anims;
+		std::string key;
+		std::map<std::string, std::pair<int, int>> anims;
 
 		//physics body
 
@@ -231,9 +235,9 @@ class Sprite : public Entity {
 			return 0;
 		}
 
-		inline void SetFrame(int frame) { this->m_currentFrame = frame; }
-		inline void SetAnimation(const char* key, bool yoyo = false, int rate = 2) { this->currentAnim = { key, { yoyo, rate } }; }
-		inline void StopAnimation() { this->currentAnim = {}; }
+		inline void SetFrame(int frame) { this->currentFrame = frame; }
+		inline void SetAnimation(const char* key, bool yoyo = false, int rate = 2) { this->m_currentAnim = { key, { yoyo, rate } }; }
+		inline void StopAnimation() { this->m_currentAnim = {}; }
 
 		inline void SetContact(bool isContact) { this->m_contacting = isContact; }
 		inline bool IsContacting() { return this->m_contacting; }
@@ -266,11 +270,11 @@ class Sprite : public Entity {
 		bool m_contacting, 
 			 m_isSpritesheet = false, 
 			 m_animComplete = true,
-			 anim_yoyo = false;
+			 m_anim_yoyo = false;
 
 		glm::vec2 m_velocity;
 
-		std::pair<std::string, std::pair<bool, int>> currentAnim;
+		std::pair<std::string, std::pair<bool, int>> m_currentAnim;
 		
 		//internal spritesheet data
 

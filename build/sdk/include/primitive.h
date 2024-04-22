@@ -61,6 +61,9 @@ namespace Graphics {
 
             Texture2D() :  
                 Primitive(), 
+                    m_channels(3),
+                    m_internal_format(GL_RGB), 
+                    m_image_format(GL_RGB),
                     Width(0.0f),
                     Height(0.0f),
                     FrameWidth(0.0f),
@@ -69,13 +72,10 @@ namespace Graphics {
                     V1(0.0f),
                     U2(1.0f),
                     V2(1.0f),
-                    Internal_Format(GL_RGB), 
-                    Image_Format(GL_RGB),
                     Wrap_S(GL_REPEAT),
                     Wrap_T(GL_REPEAT), 
                     Filter_Min(GL_NEAREST),   
                     Filter_Max(GL_NEAREST),
-                    Channels(3),
                     Repeat(1)
             { glGenTextures(1, &this->ID);  };
             
@@ -93,10 +93,10 @@ namespace Graphics {
 
         private: 
 
-            unsigned int Channels;
-            unsigned int Internal_Format; // format of texture object RGB, RGBA
-            unsigned int Image_Format; // format of loaded image
-            float UVs[12];
+            unsigned int m_channels;
+            unsigned int m_internal_format; // format of texture object RGB, RGBA
+            unsigned int m_image_format; // format of loaded image
+            float m_UVs[12];
     }; 
 
 }

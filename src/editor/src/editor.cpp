@@ -29,7 +29,7 @@ void Editor::Update()
 
     GUI::Render();
 
-    glViewport(0, 0, Window::m_width, Window::m_height);
+    glViewport(0, 0, Window::s_width, Window::s_height);
 	glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);
 	glfwSwapBuffers(Window::s_instance);
 

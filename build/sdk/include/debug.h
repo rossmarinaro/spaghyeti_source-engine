@@ -39,7 +39,7 @@ class DebugGraphic {
         GLint m_colorAttribute;
         GLint m_sizeAttribute;
 
-        Shader m_shader;
+        Shader shader;
 
 };
 

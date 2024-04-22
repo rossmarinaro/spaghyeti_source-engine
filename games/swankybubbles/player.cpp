@@ -28,16 +28,16 @@ void SwankyVelvet::Move(const char* direction)
 void SwankyVelvet::Update()
 {
 
-    if (System::Application::inputs.m_right && this->m_position.x < 650)   
-        this->Move(System::Application::inputs.m_left ? "left" : "right");
+    if (System::Application::inputs.RIGHT && this->position.x < 650)   
+        this->Move(System::Application::inputs.LEFT ? "left" : "right");
     
-    if (System::Application::inputs.m_left && this->m_position.x > 0)
-        this->Move(System::Application::inputs.m_right ? "right" : "left");
+    if (System::Application::inputs.LEFT && this->position.x > 0)
+        this->Move(System::Application::inputs.RIGHT ? "right" : "left");
 
-    if (System::Application::inputs.m_down && this->m_position.y > 0)
-        this->Move(System::Application::inputs.m_up ? "up" : "down");
+    if (System::Application::inputs.DOWN && this->position.y > 0)
+        this->Move(System::Application::inputs.UP ? "up" : "down");
     
-    if (System::Application::inputs.m_up && this->m_position.y < 380)
-        this->Move(System::Application::inputs.m_down ? "down" : "up");
+    if (System::Application::inputs.UP && this->position.y < 380)
+        this->Move(System::Application::inputs.DOWN ? "down" : "up");
 
 }

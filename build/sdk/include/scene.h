@@ -18,20 +18,19 @@ namespace System {
 
             Scene(const Process::Context& context): 
                 context(context),
-                key("Untitled" + std::to_string(g_ID)) { g_ID++; }
+                key("Untitled" + std::to_string(s_ID)) { s_ID++; }
 
             Scene(const Process::Context& context, const std::string& key): 
                 context(context),
-                key(key) { g_ID++; }
+                key(key) { s_ID++; }
 
-            virtual ~Scene() { g_ID--; };
+            virtual ~Scene() { s_ID--; };
 
             virtual void Preload() {}
             virtual void Run() {}
-            virtual void Update() {}
 
             inline bool IsPaused() {
-                return this->paused;
+                return this->m_paused;
             }
 
         protected:
@@ -41,36 +40,36 @@ namespace System {
 
             template<typename T>
             inline T GetData(const char* key) const { 
-                return std::any_cast<T>(this->data.at(key));
+                return std::any_cast<T>(this->m_data.at(key));
             }
 
             inline void SetData(const char* key, std::any value) { 
-                this->data.insert({key, value}); 
+                this->m_data.insert({key, value}); 
             }
 
             inline const glm::vec2 GetWorldDimensions() { 
-                return glm::vec2(this->worldWidth, this->worldHeight);
+                return glm::vec2(this->m_worldWidth, this->m_worldHeight);
             }
 
             inline void SetWorldDimensions(float width, float height) { 
-                this->worldWidth = width;
-                this->worldHeight = height;
+                this->m_worldWidth = width;
+                this->m_worldHeight = height;
             }
 
             inline void SetPause(bool isPaused) {
-                this->paused = isPaused;
+                this->m_paused = isPaused;
             }
 
         private:
 
-            static inline int g_ID = 0;
+            static inline int s_ID = 0;
 
-            int worldWidth = 0, 
-                worldHeight = 0;
+            int m_worldWidth = 0, 
+                m_worldHeight = 0;
 
-            bool paused;
+            bool m_paused;
 
-            std::map<const char*, std::any> data;
+            std::map<const char*, std::any> m_data;
 
     };
 }

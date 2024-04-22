@@ -125,7 +125,7 @@ void Game::Update()
     for (auto &text : SwankyBubbles::scoreText)
     {
 
-        if (text->m_active)
+        if (text->active)
         {
 
             if (text == SwankyBubbles::scoreText[6])
@@ -169,24 +169,24 @@ void Game::Update()
 
         for (auto &heart : SwankyBubbles::hearts)
             if (heart)
-                heart->m_renderable = false;
+                heart->renderable = false;
 
-        if (SwankyBubbles::menu->m_active)
-            SwankyBubbles::menu->m_renderable = true;
+        if (SwankyBubbles::menu->active)
+            SwankyBubbles::menu->renderable = true;
 
         if (
-            System::Application::inputs.m_SHIFT || 
-            System::Application::inputs.m_SPACE ||
-            System::Application::inputs.m_left_click    
+            System::Application::inputs.SHIFT || 
+            System::Application::inputs.SPACE ||
+            System::Application::inputs.LEFT_CLICK    
         )
         {
 
             SwankyBubbles::started = true;
             
-            System::Application::inputs.m_SHIFT = false;
-            System::Application::inputs.m_SPACE = false;
-            System::Application::inputs.m_left_click = false;
-            player->m_renderable = true;
+            System::Application::inputs.SHIFT = false;
+            System::Application::inputs.SPACE = false;
+            System::Application::inputs.LEFT_CLICK = false;
+            player->renderable = true;
 
            //wasm build requires user guesture to play sound
            
@@ -214,19 +214,19 @@ void Game::Update()
     {   
         
 
-        if (SwankyBubbles::menu->m_active)
-            SwankyBubbles::menu->m_renderable = false;
+        if (SwankyBubbles::menu->active)
+            SwankyBubbles::menu->renderable = false;
 
     //update background
 
-        if (SwankyBubbles::background->m_active)
-           SwankyBubbles:: background->m_renderable = true;
+        if (SwankyBubbles::background->active)
+           SwankyBubbles:: background->renderable = true;
 
     //update health / hearts
 
         for (auto &heart : SwankyBubbles::hearts)
             if (heart)
-                heart->m_renderable = true;
+                heart->renderable = true;
 
         switch (SwankyBubbles::health)
         {
@@ -261,13 +261,13 @@ void Game::Update()
         {
 
             SwankyBubbles::hitBox->SetPosition(
-                player->m_flipX ? player->m_position.x + 50 : player->m_position.x + 10,
-                player->m_position.y + 10
+                player->flipX ? player->position.x + 50 : player->position.x + 10,
+                player->position.y + 10
             );
 
             SwankyBubbles::attackBox->SetPosition(
-                player->m_flipX ? player->m_position.x : player->m_position.x + 90,
-                player->m_position.y + 40 
+                player->flipX ? player->position.x : player->position.x + 90,
+                player->position.y + 40 
             );
 
             #ifndef __EMSCRIPTEN__
@@ -297,7 +297,7 @@ void Game::Update()
             if (!bubble)
                 continue;
 
-            if (bubble && bubble->m_active)
+            if (bubble && bubble->active)
             {
 
                 bubble->SetVelocityY(bubble->m_velocity.y);
@@ -306,13 +306,13 @@ void Game::Update()
             
                 if (physics.collisions.CheckCollisions(bubble, SwankyBubbles::attackBox))
                 {
-                    SwankyBubbles::PopBubble(bubble->m_currentFrame); 
+                    SwankyBubbles::PopBubble(bubble->currentFrame); 
                     RemoveFromVector(SwankyBubbles::bubbles, bubble);
                 } 
 
             //or bottom of viewport
 
-                else if (bubble->m_position.y >= 500)
+                else if (bubble->position.y >= 500)
                     RemoveFromVector(SwankyBubbles::bubbles, bubble);
             }
         }
@@ -325,7 +325,7 @@ void Game::Update()
             if (!elf)
                 continue;
 
-            if (elf && elf->m_active)
+            if (elf && elf->active)
             {
 
                 elf->SetVelocityX(elf->m_velocity.x); 
@@ -365,7 +365,7 @@ void Game::Update()
                     
             //destroy when out of viewport
 
-            else if (elf->m_position.x >= 750)
+            else if (elf->position.x >= 750)
                 RemoveFromVector(SwankyBubbles::elves, elf);
             }
             
@@ -376,7 +376,7 @@ void Game::Update()
         for (auto &fireball : SwankyBubbles::fireballs)
         {
 
-            if (fireball != nullptr && fireball->m_active)
+            if (fireball != nullptr && fireball->active)
             {
 
                 fireball->SetVelocityX(fireball->m_velocity.x); 
@@ -389,10 +389,10 @@ void Game::Update()
                     if (!elf)
                         continue;
 
-                    if (elf == nullptr && !elf->m_active && fireball == nullptr && !fireball->m_active)
+                    if (elf == nullptr && !elf->active && fireball == nullptr && !fireball->active)
                         return;
                         
-                    if (elf->m_active && fireball->m_active && physics.collisions.CheckCollisions(fireball, elf))
+                    if (elf->active && fireball->active && physics.collisions.CheckCollisions(fireball, elf))
                     {
 
                         RemoveFromVector(SwankyBubbles::fireballs, fireball); 
@@ -405,7 +405,7 @@ void Game::Update()
 
                             System::Application::time.delayedCall(250, [&](){ 
 
-                                if (elf->m_active)
+                                if (elf->active)
                                 {
                                     RemoveFromVector(SwankyBubbles::elves, elf);
                                     SwankyBubbles::destroyElfCallbackSound("fire_sound", false);
@@ -416,7 +416,7 @@ void Game::Update()
                     }
                 }
 
-                if (fireball && fireball->m_active && fireball->m_position.x <= 0 || fireball->m_position.x >= 750)
+                if (fireball && fireball->active && fireball->position.x <= 0 || fireball->position.x >= 750)
                     RemoveFromVector(SwankyBubbles::fireballs, fireball);
             }
                                 
@@ -428,13 +428,13 @@ void Game::Update()
                 if (!bubble)
                     continue;
                 
-                if (bubble->m_active && physics.collisions.CheckCollisions(fireball, bubble))
+                if (bubble->active && physics.collisions.CheckCollisions(fireball, bubble))
                 {
 
-                    SwankyBubbles::PopBubble(bubble->m_currentFrame);    
+                    SwankyBubbles::PopBubble(bubble->currentFrame);    
                     RemoveFromVector(SwankyBubbles::bubbles, bubble);
 
-                    if (fireball != nullptr && fireball->m_active)
+                    if (fireball != nullptr && fireball->active)
                         RemoveFromVector(SwankyBubbles::fireballs, fireball); 
                 
                 }
@@ -451,7 +451,7 @@ void Game::Update()
 
         for (auto &bubble : SwankyBubbles::bubbles)
         {
-            if (!bubble && bubble->m_alive)
+            if (!bubble && bubble->alive)
                 continue;
             
             bubble->SetAlpha(0.0f);
@@ -459,7 +459,7 @@ void Game::Update()
 
         for (auto &elf : SwankyBubbles::elves)
         {
-            if (!elf && elf->m_alive)
+            if (!elf && elf->alive)
                 continue;
 
             elf->SetAlpha(0.0f);
@@ -467,7 +467,7 @@ void Game::Update()
 
         for (auto &fb : SwankyBubbles::fireballs)
         {
-            if (!fb && fb->m_alive)
+            if (!fb && fb->alive)
                 continue;
 
             fb->SetAlpha(0.0f);
@@ -478,13 +478,13 @@ void Game::Update()
            
         //game over text
 
-        if (SwankyBubbles::gameOverText->m_active)
+        if (SwankyBubbles::gameOverText->active)
         {
 
             SwankyBubbles::gameOverText->SetAlpha(1.0f);
-            SwankyBubbles::gameOverText->m_renderable = true;
+            SwankyBubbles::gameOverText->renderable = true;
 
-            player->m_renderable = false;
+            player->renderable = false;
 
             if (!SwankyBubbles::canRestart)
                 System::Application::time.delayedCall(2000, [&](){ SwankyBubbles::canRestart = true; }); 
@@ -496,9 +496,9 @@ void Game::Update()
             System::Application::audio.play("error"); 
 
             if (     
-                System::Application::inputs.m_SHIFT || 
-                System::Application::inputs.m_SPACE ||
-                System::Application::inputs.m_left_click 
+                System::Application::inputs.SHIFT || 
+                System::Application::inputs.SPACE ||
+                System::Application::inputs.LEFT_CLICK 
             )
             {
                 ShutDown(); 
@@ -647,7 +647,7 @@ void Game::Run()
         {
 
             if (
-                System::Application::inputs.m_SPACE && 
+                System::Application::inputs.SPACE && 
                 SwankyBubbles::canFire &&
                 static_cast<SwankyVelvet*>(player)->canFire
             )
@@ -658,15 +658,15 @@ void Game::Run()
 
                     SwankyBubbles::canFire = true; 
 
-                    Sprite* fb = CreateSprite("fire", player->m_flipX ? 
-                        player->m_position.x - 20 : 
-                        player->m_position.x + 110, 
-                        player->m_position.y + 35
+                    Sprite* fb = CreateSprite("fire", player->flipX ? 
+                        player->position.x - 20 : 
+                        player->position.x + 110, 
+                        player->position.y + 35
                     ); 
 
                     fb->SetScale(2.0f);  
 
-                    fb->m_velocity.x = player->m_flipX ? -5.0f : 5.0f;
+                    fb->m_velocity.x = player->flipX ? -5.0f : 5.0f;
 
                     SwankyBubbles::fireballs.push_back(fb);
                 });
@@ -696,7 +696,7 @@ void Game::Run()
     //player 
 
     player = CreatePlayer<SwankyVelvet>("swanky_bubble", 250.0f, 100.0f); 
-    player->m_renderable = false;
+    player->renderable = false;
 
     SwankyBubbles::attackBox = CreateRect(0.0f, 0.0f, 50.0f, 10.0f);  
     SwankyBubbles::hitBox = CreateRect(0.0f, 0.0f, 100.0f, 100.0f); 

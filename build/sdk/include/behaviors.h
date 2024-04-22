@@ -2,7 +2,7 @@
 
 #include "./entity.h"
 #include "./context.h"
-//#define SPAGHYETI_RUNTIME "#include \"./app.h\""
+
 namespace entity_behaviors {
 
     //base interactivity which all behaviors are derived
@@ -15,15 +15,15 @@ namespace entity_behaviors {
             inline Behavior(std::shared_ptr<Entity> entity, const std::string& key) 
             {
                 this->key = key; 
-                this->entity = entity;
-                this->isActive = true;
+                this->m_entity = entity;
+                this->m_isActive = true;
             }
 
             virtual ~Behavior() {
-                this->isActive = false;
+                this->m_isActive = false;
             };
 
-            virtual void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) {};
+            virtual void Update(Process::Context& context, void* scene) {};
 
             template <typename T>
             static inline const std::shared_ptr<T> GetBehavior(const std::string& key, const std::vector<std::shared_ptr<Behavior>>& behaviors) {
@@ -34,25 +34,20 @@ namespace entity_behaviors {
 
         protected:
 
-            bool isActive;
+            bool m_isActive; 
 
-            std::shared_ptr<Entity> entity;
+            std::shared_ptr<Entity> m_entity;
 
             template <typename T>
             inline std::shared_ptr<T> GetHandle(const char* type) {
 
-                if (strcmp(this->entity->type, type) == 0)
-                    return std::dynamic_pointer_cast<T>(entity);
+                if (strcmp(this->m_entity->type, type) == 0)
+                    return std::dynamic_pointer_cast<T>(this->m_entity);
 
                 else 
                     return nullptr; 
             }            
       
-        private:
-
-            const char* type;
-
-
     };
 
 }

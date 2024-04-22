@@ -1,5 +1,6 @@
 #include "./elf.h"
 #include "../player.h"
+#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/scene.h"
 
 using namespace entity_behaviors;
 
@@ -7,30 +8,31 @@ Elf::Elf(std::shared_ptr<Entity> entity):
     Behavior(entity, "Elf")
 {
     this->health = 3; 
-    this->rev = false;
+    this->m_rev = false;
     this->hb = Physics::CreateDynamicBody("box", 0, 0, 30, 50, true, 1);
-    this->sprite = std::static_pointer_cast<Sprite>(this->entity);
+    this->sprite = std::static_pointer_cast<Sprite>(entity);
     this->sprite->SetAnimation("walk", false, 4);
 
     Time::delayedCall(100,[&]() { 
         Time::setInterval(2000, [=]() { 
 
-            if (!this->isActive) 
+            if (!this->m_isActive) 
                 return;
 
-            this->rev = !this->rev; 
+            this->m_rev = !this->m_rev; 
         }); 
     });
 }
 
-void Elf::Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) 
+void Elf::Update(Process::Context& context, void* scene) 
 { 
 
-    this->sprite->SetVelocityX(this->rev ? -1 : 1); 
-    this->sprite->SetFlipX(this->rev);
-    this->hb->SetTransform(b2Vec2(this->sprite->m_position.x + 180, this->sprite->m_position.y + 130), 0);
+    this->sprite->SetVelocityX(this->m_rev ? -1 : 1); 
+    this->sprite->SetFlipX(this->m_rev);
+    this->hb->SetTransform(b2Vec2(this->sprite->position.x + 180, this->sprite->position.y + 130), 0);
 
-    auto playerBehavior = Behavior::GetBehavior<PlayerController>("PlayerController", behaviors);
+    auto s = static_cast<System::Scene*>(scene);
+    auto playerBehavior = Behavior::GetBehavior<PlayerController>("PlayerController", s->behaviors);
 
     if (b2TestOverlap(this->hb->GetFixtureList()->GetAABB(0), playerBehavior->player->bodies[0].first->GetFixtureList()->GetAABB(0)))
         playerBehavior->DoDamage(1);

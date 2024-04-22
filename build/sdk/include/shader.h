@@ -14,7 +14,7 @@ class Shader {
     public:
 
         unsigned int ID;
-        const char* m_key;
+        const char* key;
 
         void SetFloat(const char* name, float value, bool useShader = false);
         void SetInt(const char* name, int value, bool useShader = false);
@@ -36,8 +36,6 @@ class Shader {
         ~Shader() = default;
 
     private:
-            
-        GLint transform_location;
 
         void Generate(const char* vertexPath, const char* fragmentPath, const char* geomPath = nullptr);
         Shader& Use();

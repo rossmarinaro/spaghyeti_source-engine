@@ -22,7 +22,7 @@ Node::Node(const std::string &id, const std::string& type, const std::string& na
     m_ID(id),
     m_type(type),
     created(false),
-    m_active(true),
+    active(true),
     show_options(false),
     positionX(0.0f),
     positionY(0.0f), 
@@ -95,7 +95,7 @@ const char* Node::Assign()
 void Node::DeleteNode (std::shared_ptr<Node> node)
 {
 
-    node->m_active = false;
+    node->active = false;
 
     //delete all attached components
 
@@ -232,14 +232,14 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
         auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
         if (sn->spriteHandle)
-            sn->spriteHandle->m_shader = Shader::GetShader(name);
+            sn->spriteHandle->shader = Shader::GetShader(name);
     }
 
     if (node->m_type == "Empty") {
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
         if (en->m_debugGraphic)
-            en->m_debugGraphic->m_shader = Shader::GetShader(name);
+            en->m_debugGraphic->shader = Shader::GetShader(name);
     }
 }
 
@@ -343,13 +343,13 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
             { "U2", sn->U2 },
             { "V2", sn->V2 },
             { "currentTexture", sn->key },
-            { "m_tint", {
+            { "tint", {
                     { "x", sn->tint.x },
                     { "y", sn->tint.y },
                     { "z", sn->tint.z }
                 }
             },
-            { "m_alpha", sn->alpha },
+            { "alpha", sn->alpha },
             { "positionX", sn->positionX },
             { "positionY", sn->positionY },
             { "rotation", sn->rotation },
@@ -479,13 +479,13 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
             { "shape", en->currentShape },
             { "position x", en->positionX },
             { "position y", en->positionY },
-            { "m_tint", {
-                    { "x", en->m_debugGraphic ? en->m_debugGraphic->m_tint.x : 0 },
-                    { "y", en->m_debugGraphic ? en->m_debugGraphic->m_tint.y : 0 },
-                    { "z", en->m_debugGraphic ? en->m_debugGraphic->m_tint.z : 0 }
+            { "tint", {
+                    { "x", en->m_debugGraphic ? en->m_debugGraphic->tint.x : 0 },
+                    { "y", en->m_debugGraphic ? en->m_debugGraphic->tint.y : 0 },
+                    { "z", en->m_debugGraphic ? en->m_debugGraphic->tint.z : 0 }
                 }
             },
-            { "m_alpha", en->m_debugGraphic ? en->m_debugGraphic->m_alpha : 0 },
+            { "alpha", en->m_debugGraphic ? en->m_debugGraphic->alpha : 0 },
             { "components", {
                     { "script", {
                             { "exists", en->HasComponent("Script") },
@@ -551,324 +551,332 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
 void Node::readData(json& data, const std::string& type, bool makeNode, void* scene)
 {
 
-    Scene* _scene = static_cast<Scene*>(scene);
-
-    //sprite
-
-    if (type == "Sprite")
-    {
-
-        std::shared_ptr<SpriteNode> sn;
-
-        if (makeNode)
-            sn = Node::MakeNode<SpriteNode>(); 
+    try {
         
-        else 
-            sn = Scene::CreateObject<SpriteNode>(_scene); 
+        Scene* _scene = static_cast<Scene*>(scene);
 
-        sn->m_ID = data["ID"];
-        sn->m_name = data["name"];
-        sn->positionX = data["positionX"];
-        sn->positionY = data["positionY"];
-        sn->rotation = data["rotation"];
-        sn->scaleX = data["scaleX"];
-        sn->scaleY = data["scaleY"];
-        sn->flippedX = data["flipX"];
-        sn->flippedY = data["flipY"];
-        sn->depth = data["depth"];
-        sn->lock_in_place = data["lock"];
-        sn->make_UI = data["makeUI"];
-        sn->U1 = data["U1"]; 
-        sn->V1 = data["V1"];
-        sn->U2 = data["U2"]; 
-        sn->V2 = data["V2"];
-        sn->key = data["currentTexture"];
-        sn->tint = { data["m_tint"]["x"], data["m_tint"]["y"], data["m_tint"]["z"] };
-        sn->alpha = data["m_alpha"];
+        //sprite
 
-        if (makeNode) {
-            sn->ApplyTexture(data["currentTexture"]);  
-            sn->spriteHandle->SetTexture(data["currentTexture"]);
-        }
-            
-        for (const auto& frame : data["frames"]) {
-            sn->frameBuf1.push_back(frame["offset x"]);
-            sn->frameBuf2.push_back(frame["offset y"]);
-            sn->frameBuf3.push_back(frame["width"]);
-            sn->frameBuf4.push_back(frame["height"]);
-            sn->frameBuf5.push_back(frame["factor x"]);
-            sn->frameBuf6.push_back(frame["factor y"]);
-            sn->frames.push_back({ frame["offset x"], frame["offset y"], frame["width"], frame["height"], frame["factor x"], frame["factor y"] });
-        }
-
-        sn->frame = sn->frames.size();
-
-        sn->RegisterFrames();
-
-        if (makeNode)
-            if (sn->frames.size() > 1) {
-                sn->framesApplied = true; 
-                sn->spriteHandle->ReadSpritesheetData();
-                sn->spriteHandle->SetFrame(0);
-            }
-
-        //animator
-
-        if (data["components"]["animator"]["exists"]) 
-            sn->AddComponent("Animator", false);
-
-        for (const auto& anim : data["components"]["animator"]["animations"]) 
-        { 
-
-            SpriteNode::StringContainer sc = { anim["key"] };
-
-            sn->animBuf1.push_back(sc);
-            sn->animBuf2.push_back(anim["start"]); 
-            sn->animBuf3.push_back(anim["end"]);
-        
-            sn->ApplyAnimation(anim["key"], anim["start"], anim["end"]);
-        }
-
-        sn->anim = sn->animations.size();   
-
-        //physics 
-
-        if (data["components"]["physics"]["exists"]) 
+        if (type == "Sprite")
         {
-            sn->AddComponent("Physics", false);
 
-            sn->friction = data["components"]["physics"]["friction"];
-            sn->restitution = data["components"]["physics"]["restitution"];
-            sn->density = data["components"]["physics"]["density"]; 
+            std::shared_ptr<SpriteNode> sn;
 
-            if (data["components"]["physics"]["bodies"].size()) 
-                for (const auto& body : data["components"]["physics"]["bodies"]) 
-                    if (makeNode)
-                        sn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"], body["sensor"], body["pointer"]);
-                    else 
-                    {
-                        sn->bodyX.push_back(body["bodyX"]);
-                        sn->bodyY.push_back(body["bodyY"]);
-                        sn->body_width.push_back(body["body_width"]);
-                        sn->body_height.push_back(body["body_height"]);
-
-                        SpriteNode::BoolContainer bc;
-                        bc.b = body["sensor"];
-
-                        sn->is_sensor.push_back(bc);
-                        sn->body_pointer.push_back(body["pointer"]);
-
-                        sn->bodies.push_back(nullptr);
-                    }
-        }
-
-        //script
-
-        if (data["components"]["script"]["exists"]) {
+            if (makeNode)
+                sn = Node::MakeNode<SpriteNode>(); 
             
-            sn->AddComponent("Script", false);
+            else 
+                sn = Scene::CreateObject<SpriteNode>(_scene); 
 
-            if (data["components"]["script"]["scripts"].size())
-                for (const auto& scripts : data["components"]["script"]["scripts"])
-                    for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                        if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
-                            sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });   
-        }
+            sn->m_ID = data["ID"];
+            sn->m_name = data["name"];
+            sn->positionX = data["positionX"];
+            sn->positionY = data["positionY"];
+            sn->rotation = data["rotation"];
+            sn->scaleX = data["scaleX"];
+            sn->scaleY = data["scaleY"];
+            sn->flippedX = data["flipX"];
+            sn->flippedY = data["flipY"];
+            sn->depth = data["depth"];
+            sn->lock_in_place = data["lock"]; 
+            sn->make_UI = data["makeUI"];
+            sn->U1 = data["U1"]; 
+            sn->V1 = data["V1"];
+            sn->U2 = data["U2"]; 
+            sn->V2 = data["V2"];
+            sn->key = data["currentTexture"];
+            sn->tint = { data["tint"]["x"], data["tint"]["y"], data["tint"]["z"] };
+            sn->alpha = data["alpha"];
 
-        //shader
-
-        if (data["components"]["shader"]["exists"]) {
-
-            sn->AddComponent("Shader", false); 
-
-            if (data["components"]["shader"]["shaders"].size())
-                Node::LoadShader(sn, 
-                    static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]).c_str(),
-                    static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]).c_str(),
-                    static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
-                );
-        }
-    }
-
-    //tilemap
-
-    if (type == "Tilemap")
-    {
-
-        std::shared_ptr<TilemapNode> tmn;
-
-        if (makeNode)
-            tmn = Node::MakeNode<TilemapNode>(); 
-        
-        else 
-            tmn = Scene::CreateObject<TilemapNode>(_scene); 
-
-        tmn->m_ID = data["ID"];
-        tmn->m_name = data["name"];
-
-        tmn->map_width = data["map_width"];
-        tmn->map_height = data["map_height"];
-        tmn->tile_width = data["tile_width"];
-        tmn->tile_height = data["tile_height"];
-        tmn->layer = data["layer"];
-
-        if (data["layers"].size())
-            for (const auto& layer : data["layers"]) {
-                tmn->layers.push_back({ layer["csv"]["key"], layer["csv"]["path"], layer["csv"]["texture"] });
-                tmn->spr_sheet_width.push_back(layer["frames x"]);
-                tmn->spr_sheet_height.push_back(layer["frames y"]);
-                tmn->depth.push_back(layer["depth"]);
+            if (makeNode) {
+                sn->ApplyTexture(data["currentTexture"]);  
+                sn->spriteHandle->SetTexture(data["currentTexture"]);
+            }
+                
+            for (const auto& frame : data["frames"]) {
+                sn->frameBuf1.push_back(frame["offset x"]);
+                sn->frameBuf2.push_back(frame["offset y"]);
+                sn->frameBuf3.push_back(frame["width"]);
+                sn->frameBuf4.push_back(frame["height"]);
+                sn->frameBuf5.push_back(frame["factor x"]);
+                sn->frameBuf6.push_back(frame["factor y"]);
+                sn->frames.push_back({ frame["offset x"], frame["offset y"], frame["width"], frame["height"], frame["factor x"], frame["factor y"] });
             }
 
-        //physics 
-        
-        if (data["components"]["physics"]["exists"]) 
-            tmn->AddComponent("Physics", false);
+            sn->frame = sn->frames.size();
 
-        if (data["components"]["physics"]["bodies"].size())
-            for (const auto& body : data["components"]["physics"]["bodies"]) 
+            sn->RegisterFrames();
+
+            if (makeNode)
+                if (sn->frames.size() > 1) {
+                    sn->framesApplied = true; 
+                    sn->spriteHandle->ReadSpritesheetData();
+                    sn->spriteHandle->SetFrame(0);
+                }
+
+            //animator
+
+            if (data["components"]["animator"]["exists"]) 
+                sn->AddComponent("Animator", false);
+
+            for (const auto& anim : data["components"]["animator"]["animations"]) 
+            { 
+
+                SpriteNode::StringContainer sc = { anim["key"] };
+
+                sn->animBuf1.push_back(sc);
+                sn->animBuf2.push_back(anim["start"]); 
+                sn->animBuf3.push_back(anim["end"]);
+            
+                sn->ApplyAnimation(anim["key"], anim["start"], anim["end"]);
+            }
+
+            sn->anim = sn->animations.size();   
+
+            //physics 
+
+            if (data["components"]["physics"]["exists"]) 
             {
-                if (makeNode) 
+                sn->AddComponent("Physics", false);
+
+                sn->friction = data["components"]["physics"]["friction"];
+                sn->restitution = data["components"]["physics"]["restitution"];
+                sn->density = data["components"]["physics"]["density"]; 
+
+                if (data["components"]["physics"]["bodies"].size()) 
+                    for (const auto& body : data["components"]["physics"]["bodies"]) 
+                        if (makeNode)
+                            sn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"], body["sensor"], body["pointer"]);
+                        else 
+                        {
+                            sn->bodyX.push_back(body["bodyX"]);
+                            sn->bodyY.push_back(body["bodyY"]);
+                            sn->body_width.push_back(body["body_width"]);
+                            sn->body_height.push_back(body["body_height"]);
+
+                            SpriteNode::BoolContainer bc;
+                            bc.b = body["sensor"];
+
+                            sn->is_sensor.push_back(bc);
+                            sn->body_pointer.push_back(body["pointer"]);
+
+                            sn->bodies.push_back(nullptr);
+                        }
+            }
+
+            //script
+
+            if (data["components"]["script"]["exists"]) {
+                
+                sn->AddComponent("Script", false);
+
+                if (data["components"]["script"]["scripts"].size())
+                    for (const auto& scripts : data["components"]["script"]["scripts"])
+                        for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                            if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
+                                sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });   
+            }
+
+            //shader
+
+            if (data["components"]["shader"]["exists"]) {
+
+                sn->AddComponent("Shader", false); 
+
+                if (data["components"]["shader"]["shaders"].size())
+                    Node::LoadShader(sn, 
+                        static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]).c_str(),
+                        static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]).c_str(),
+                        static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
+                    );
+            }
+        }
+
+        //tilemap
+
+        if (type == "Tilemap")
+        {
+
+            std::shared_ptr<TilemapNode> tmn;
+
+            if (makeNode)
+                tmn = Node::MakeNode<TilemapNode>(); 
+            
+            else 
+                tmn = Scene::CreateObject<TilemapNode>(_scene); 
+
+            tmn->m_ID = data["ID"];
+            tmn->m_name = data["name"];
+
+            tmn->map_width = data["map_width"];
+            tmn->map_height = data["map_height"];
+            tmn->tile_width = data["tile_width"];
+            tmn->tile_height = data["tile_height"];
+            tmn->layer = data["layer"];
+
+            if (data["layers"].size())
+                for (const auto& layer : data["layers"]) {
+                    tmn->layers.push_back({ layer["csv"]["key"], layer["csv"]["path"], layer["csv"]["texture"] });
+                    tmn->spr_sheet_width.push_back(layer["frames x"]);
+                    tmn->spr_sheet_height.push_back(layer["frames y"]);
+                    tmn->depth.push_back(layer["depth"]);
+                }
+
+            //physics 
+            
+            if (data["components"]["physics"]["exists"]) 
+                tmn->AddComponent("Physics", false);
+
+            if (data["components"]["physics"]["bodies"].size())
+                for (const auto& body : data["components"]["physics"]["bodies"]) 
                 {
-                    tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+                    if (makeNode) 
+                    {
+                        tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
 
-                    for (int i = 0; i < tmn->bodies.size(); i++)
-                        tmn->UpdateBody(i);
+                        for (int i = 0; i < tmn->bodies.size(); i++)
+                            tmn->UpdateBody(i);
+                    }
+                    else {
+                        tmn->bodyX.push_back(body["bodyX"]);
+                        tmn->bodyY.push_back(body["bodyY"]);
+                        tmn->body_width.push_back(body["body_width"]);
+                        tmn->body_height.push_back(body["body_height"]);
+                        tmn->bodies.push_back(nullptr);
+                    }
+
                 }
-                else {
-                    tmn->bodyX.push_back(body["bodyX"]);
-                    tmn->bodyY.push_back(body["bodyY"]);
-                    tmn->body_width.push_back(body["body_width"]);
-                    tmn->body_height.push_back(body["body_height"]);
-                    tmn->bodies.push_back(nullptr);
+            
+            if (data["layers"].size())
+                tmn->ApplyTilemap(makeNode);
+        }
+
+        //audio
+
+        if (type == "Audio")
+        {
+            std::shared_ptr<AudioNode> an;
+
+            if (makeNode)
+                an = Node::MakeNode<AudioNode>(); 
+            
+            else 
+                an = Scene::CreateObject<AudioNode>(_scene);  
+
+            an->m_ID = data["ID"];
+            an->m_name = data["name"];
+            an->audio_source_name = data["source name"];
+            an->volume = data["volume"];
+            an->loop = data["loop"];
+        }
+
+        //empty
+
+        if (type == "Empty")
+        {
+
+            std::shared_ptr<EmptyNode> en;
+
+            if (makeNode)
+                en = Node::MakeNode<EmptyNode>(); 
+            
+            else 
+                en = Scene::CreateObject<EmptyNode>(_scene);   
+
+            en->m_ID = data["ID"];
+            en->m_name = data["name"];
+            en->show_debug = data["debug graphics"]; 
+            en->debug_fill = data["fill"];
+            en->rectWidth = data["width"];  
+            en->rectHeight = data["height"]; 
+            en->radius = data["radius"]; 
+            en->positionX = data["position x"]; 
+            en->positionY = data["position y"];
+
+            if (static_cast<std::string>(data["shape"]).length()) {
+
+                en->CreateShape(data["shape"]);
+
+                if (en->m_debugGraphic) {
+                    en->m_debugGraphic->tint.x = data["tint"]["x"];
+                    en->m_debugGraphic->tint.y = data["tint"]["y"];
+                    en->m_debugGraphic->tint.z = data["tint"]["z"];
+                    en->m_debugGraphic->alpha = data["alpha"];
                 }
+            }
+
+            //script
+
+            if (data["components"]["script"]["exists"]) {
+
+                en->AddComponent("Script", false);
+
+                if (data["components"]["script"]["scripts"].size())
+                    for (const auto& scripts : data["components"]["script"]["scripts"])
+                        for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                            if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
+                                en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
+            }
+
+            //shader
+
+            if (data["components"]["shader"]["exists"]) 
+            {
+                
+                en->AddComponent("Shader", false);
+
+                if (data["components"]["shader"]["shaders"].size())
+                    Node::LoadShader(en, 
+                        static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]).c_str(),
+                        static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]).c_str(),
+                        static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
+                    );
+            }
+        }
+
+        //text
+
+        if (type == "Text")
+        {
+            std::shared_ptr<TextNode> tn;
+
+            if (makeNode)
+                tn = Node::MakeNode<TextNode>(); 
+            
+            else 
+                tn = Scene::CreateObject<TextNode>(_scene);
+
+            tn->m_ID = data["ID"];
+            tn->m_name = data["name"];
+
+            tn->textBuf = data["content"];
+            tn->tint = glm::vec3(data["tint"]["x"], data["tint"]["y"], data["tint"]["z"]);     
+            tn->alpha = data["alpha"];       
+            tn->positionX = data["position x"];        
+            tn->positionY = data["position y"];   
+            tn->rotation = data["rotation"];      
+            tn->scaleX = data["scale x"];      
+            tn->scaleY = data["scale y"];
+            tn->depth = data["depth"];    
+
+            //script
+
+            if (data["components"]["script"]["exists"]) 
+            {
+                tn->AddComponent("Script", false);
+
+                if (data["components"]["script"]["scripts"].size())
+                    for (const auto& scripts : data["components"]["script"]["scripts"])
+                        for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                            if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
+                                tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
 
             }
-        
-        if (data["layers"].size())
-            tmn->ApplyTilemap(makeNode);
-    }
-
-    //audio
-
-    if (type == "Audio")
-    {
-        std::shared_ptr<AudioNode> an;
-
-        if (makeNode)
-            an = Node::MakeNode<AudioNode>(); 
-        
-        else 
-            an = Scene::CreateObject<AudioNode>(_scene);  
-
-        an->m_ID = data["ID"];
-        an->m_name = data["name"];
-        an->audio_source_name = data["source name"];
-        an->volume = data["volume"];
-        an->loop = data["loop"];
-    }
-
-    //empty
-
-    if (type == "Empty")
-    {
-
-        std::shared_ptr<EmptyNode> en;
-
-        if (makeNode)
-            en = Node::MakeNode<EmptyNode>(); 
-        
-        else 
-            en = Scene::CreateObject<EmptyNode>(_scene);   
-
-        en->m_ID = data["ID"];
-        en->m_name = data["name"];
-        en->show_debug = data["debug graphics"]; 
-        en->debug_fill = data["fill"];
-        en->rectWidth = data["width"];  
-        en->rectHeight = data["height"]; 
-        en->radius = data["radius"]; 
-        en->positionX = data["position x"]; 
-        en->positionY = data["position y"];
-
-        if (static_cast<std::string>(data["shape"]).length()) {
-
-            en->CreateShape(data["shape"]);
-
-            if (en->m_debugGraphic) {
-                en->m_debugGraphic->m_tint.x = data["m_tint"]["x"];
-                en->m_debugGraphic->m_tint.y = data["m_tint"]["y"];
-                en->m_debugGraphic->m_tint.z = data["m_tint"]["z"];
-                en->m_debugGraphic->m_alpha = data["m_alpha"];
-            }
-        }
-
-        //script
-
-        if (data["components"]["script"]["exists"]) {
-
-            en->AddComponent("Script", false);
-
-            if (data["components"]["script"]["scripts"].size())
-                for (const auto& scripts : data["components"]["script"]["scripts"])
-                    for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                        if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
-                            en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
-        }
-
-        //shader
-
-        if (data["components"]["shader"]["exists"]) 
-        {
-             
-            en->AddComponent("Shader", false);
-
-            if (data["components"]["shader"]["shaders"].size())
-                Node::LoadShader(en, 
-                    static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]).c_str(),
-                    static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]).c_str(),
-                    static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
-                );
         }
     }
 
-    //text
-
-    if (type == "Text")
-    {
-        std::shared_ptr<TextNode> tn;
-
-        if (makeNode)
-            tn = Node::MakeNode<TextNode>(); 
+    catch (std::runtime_error& err) {
         
-        else 
-            tn = Scene::CreateObject<TextNode>(_scene);
-
-        tn->m_ID = data["ID"];
-        tn->m_name = data["name"];
-
-        tn->textBuf = data["content"];
-        tn->tint = glm::vec3(data["tint"]["x"], data["tint"]["y"], data["tint"]["z"]);     
-        tn->alpha = data["alpha"];       
-        tn->positionX = data["position x"];        
-        tn->positionY = data["position y"];   
-        tn->rotation = data["rotation"];      
-        tn->scaleX = data["scale x"];      
-        tn->scaleY = data["scale y"];
-        tn->depth = data["depth"];    
-
-        //script
-
-        if (data["components"]["script"]["exists"]) 
-        {
-            tn->AddComponent("Script", false);
-
-            if (data["components"]["script"]["scripts"].size())
-                for (const auto& scripts : data["components"]["script"]["scripts"])
-                    for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                        if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
-                            tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
-
-        }
+        std::cout << "error reading data: " << err.what() << "\n";
     }
 }

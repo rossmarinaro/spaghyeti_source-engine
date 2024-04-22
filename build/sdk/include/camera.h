@@ -10,7 +10,7 @@ class Camera {
 
         float 
             rotation, 
-            m_zoom,
+            zoom,
             targetX,
             targetY,
             currentBoundsWidthBegin,
@@ -18,8 +18,8 @@ class Camera {
             currentBoundsHeightBegin,
             currentBoundsHeightEnd;
 
-        glm::vec2 m_position;
-        glm::vec4 m_backgroundColor;
+        glm::vec2 position;
+        glm::vec4 backgroundColor;
 
         inline void Reset() {
             
@@ -33,14 +33,16 @@ class Camera {
             this->rotation = 0.0f;
         }
 
-        inline void SetPosition(const glm::vec2 &position) { this->m_position = position; }
-        inline void SetBackgroundColor(const glm::vec4 &color) { this->m_backgroundColor = color; }
-        inline const glm::vec4 &GetBackgroundColor() { return this->m_backgroundColor; }
-        inline void SetZoom(float zoom) { this->m_zoom = zoom; }
-        inline float const GetZoom() { return this->m_zoom; }
+        inline void SetPosition(const glm::vec2 &position) { this->position = position; }
+        inline void SetBackgroundColor(const glm::vec4 &color) { this->backgroundColor = color; }
+        inline const glm::vec4 &GetBackgroundColor() { return this->backgroundColor; }
+        inline void SetZoom(float zoom) { this->zoom = zoom; }
+        inline float const GetZoom() { return this->zoom; }
+        inline void Pan(float rateX, float rateY) {
+            this->SetPosition(glm::vec2(this->position.x + rateX, this->position.y + rateY));
+        }
         
         bool InBounds();
-        void Pan(float rateX, float rateY);
         void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd); 
         glm::highp_mat4 GetProjectionMatrix(float width, float height);
 

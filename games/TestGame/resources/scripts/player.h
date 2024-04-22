@@ -16,23 +16,23 @@ namespace entity_behaviors {
             inline PlayerController(std::shared_ptr<Entity> entity);
             inline ~PlayerController();
 
-            inline void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override; 
+            inline void Update(Process::Context& context, void* scene) override; 
             inline void DoDamage(int amount);
 
         private:
 
             bool 
-                canJump, 
-                canAttack, 
-                canDamage,
-                follow, 
-                flipX,
-                attacking,
-                shootFireball;
+                m_canJump, 
+                m_canAttack, 
+                m_canDamage,
+                m_follow, 
+                m_flipX,
+                m_attacking,
+                m_shootFireball;
 
-            std::shared_ptr<Sprite> heart1;
-            std::shared_ptr<Sprite> heart2;
-            std::shared_ptr<Sprite> heart3;
+            std::shared_ptr<Sprite> m_heart1;
+            std::shared_ptr<Sprite> m_heart2;
+            std::shared_ptr<Sprite> m_heart3;
 
             inline void Move(Inputs* inputs);
             inline void Jump(Inputs* inputs);

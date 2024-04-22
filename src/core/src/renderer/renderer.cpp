@@ -5,7 +5,7 @@
 void System::Renderer::Update(Camera* camera)
 {
 
-    glfwSwapInterval(m_vsync); // Enable vsync
+    glfwSwapInterval(s_vsync); // Enable vsync
 
     glEnable(GL_TEXTURE_2D); 
     glEnable(GL_BLEND);
@@ -31,8 +31,8 @@ void System::Renderer::CreateFrameBuffer()
         //tex.second.ID
     }
 
-    glGenFramebuffers(1, &FBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+    glGenFramebuffers(1, &s_FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, s_FBO);
     glGenTextures(1, &texture_id);
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 400, 400, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -40,9 +40,9 @@ void System::Renderer::CreateFrameBuffer()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
 
-    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, s_RBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_RBO);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Error::FRAMEBUFFER:: Incomplete Buffer.\n";
@@ -65,9 +65,9 @@ void System::Renderer::RescaleFrameBuffer(float width, float height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
 
-    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, s_RBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_RBO);
 }
 
 

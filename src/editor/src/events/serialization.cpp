@@ -85,16 +85,16 @@ void EventListener::Serialize(json& data)
 
     //camera
 
-    data["camera"]["x"] = Editor::game->camera->m_position.x;
-    data["camera"]["y"] = Editor::game->camera->m_position.y;
+    data["camera"]["x"] = Editor::game->camera->position.x;
+    data["camera"]["y"] = Editor::game->camera->position.y;
     data["camera"]["width"] = Editor::worldWidth;
     data["camera"]["height"] = Editor::worldHeight;
-    data["camera"]["zoom"] = Editor::game->camera->m_zoom; 
-    data["camera"]["color"]["x"] = Editor::game->camera->m_backgroundColor.x;
-    data["camera"]["color"]["y"] = Editor::game->camera->m_backgroundColor.y;
-    data["camera"]["color"]["z"] = Editor::game->camera->m_backgroundColor.z;
-    data["camera"]["color"]["w"] = Editor::game->camera->m_backgroundColor.w;
-    data["camera"]["alpha"] = GUI::grid->m_alpha;
+    data["camera"]["zoom"] = Editor::game->camera->zoom; 
+    data["camera"]["color"]["x"] = Editor::game->camera->backgroundColor.x;
+    data["camera"]["color"]["y"] = Editor::game->camera->backgroundColor.y;
+    data["camera"]["color"]["z"] = Editor::game->camera->backgroundColor.z;
+    data["camera"]["color"]["w"] = Editor::game->camera->backgroundColor.w;
+    data["camera"]["alpha"] = GUI::grid->alpha;
     data["camera"]["pitch"] = GUI::grid_quantity;
     data["camera"]["bounds"]["width"]["begin"] = Editor::game->camera->currentBoundsWidthBegin;
     data["camera"]["bounds"]["width"]["end"] = Editor::game->camera->currentBoundsWidthEnd;
@@ -167,20 +167,20 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     //camera 
 
-    Editor::game->camera->m_position.x = data["camera"]["x"];
-    Editor::game->camera->m_position.y = data["camera"]["y"];
-    Editor::game->camera->m_zoom = data["camera"]["zoom"];
-    Editor::game->camera->m_backgroundColor.x = data["camera"]["color"]["x"];
-    Editor::game->camera->m_backgroundColor.y = data["camera"]["color"]["y"];
-    Editor::game->camera->m_backgroundColor.z = data["camera"]["color"]["z"];
-    Editor::game->camera->m_backgroundColor.w = data["camera"]["color"]["w"]; 
+    Editor::game->camera->position.x = data["camera"]["x"];
+    Editor::game->camera->position.y = data["camera"]["y"];
+    Editor::game->camera->zoom = data["camera"]["zoom"];
+    Editor::game->camera->backgroundColor.x = data["camera"]["color"]["x"];
+    Editor::game->camera->backgroundColor.y = data["camera"]["color"]["y"];
+    Editor::game->camera->backgroundColor.z = data["camera"]["color"]["z"];
+    Editor::game->camera->backgroundColor.w = data["camera"]["color"]["w"]; 
 
     Editor::game->camera->SetBounds(
         data["camera"]["bounds"]["width"]["begin"], data["camera"]["bounds"]["width"]["end"],
         data["camera"]["bounds"]["height"]["begin"], data["camera"]["bounds"]["height"]["end"]
     );
 
-    GUI::grid->m_alpha = data["camera"]["alpha"];
+    GUI::grid->alpha = data["camera"]["alpha"];
     GUI::grid_quantity = data["camera"]["pitch"];
     
     Editor::worldWidth = data["camera"]["width"];

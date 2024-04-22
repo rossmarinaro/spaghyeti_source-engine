@@ -56,19 +56,19 @@ namespace /* SPAGHYETI_CORE */ System {
             static void CreateFrameBuffer();
             static void RescaleFrameBuffer(float width, float height);
             
-            static inline void BindFrameBuffer() { glBindBuffer(GL_FRAMEBUFFER, FBO); }
+            static inline void BindFrameBuffer() { glBindBuffer(GL_FRAMEBUFFER, s_FBO); }
             static inline void UnbindFrameBuffer() { glBindBuffer(GL_FRAMEBUFFER, 0); }
 
-            static inline void SetVSync(int rate) { m_vsync = rate; }
-            static inline int GetVSync() { return m_vsync; }
+            static inline void SetVSync(int rate) { s_vsync = rate; }
+            static inline int GetVSync() { return s_vsync; }
 
             static void Update(Camera* camera);
 
         private:
 
-            static inline GLuint FBO, RBO;
+            static inline GLuint s_FBO, s_RBO;
         
-            static inline int m_vsync = 1;
+            static inline int s_vsync = 1;
     };
 }
 

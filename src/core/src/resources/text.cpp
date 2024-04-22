@@ -13,7 +13,7 @@ void Text::Init()
         return;
 	}
 
-    buffer = gltCreateText();
+    s_buffer = gltCreateText();
 
     #if DEVELOPMENT == 1
         std::cout << "Text: initialized.\n";
@@ -27,7 +27,7 @@ void Text::Init()
 void Text::ShutDown() 
 {
     
-    gltDeleteText(buffer);
+    gltDeleteText(s_buffer);
     gltTerminate();
 
     #if DEVELOPMENT == 1
@@ -45,14 +45,14 @@ Text::Text(const std::string& content, float x, float y, float scale, glm::vec3 
         content(content)
 {
 
-    this->m_scale = glm::vec2(scale);
-    this->m_tint = tint;
-    this->handle = buffer;
+    this->scale = glm::vec2(scale);
+    this->tint = tint;
+    this->m_handle = s_buffer;
 
     this->SetText(content);
 
     #if DEVELOPMENT == 1
-        std::cout << "Text: text " + (std::string)content + " created.\n";
+        std::cout << "Text: " + (std::string)content + " created.\n";
     #endif
 
 
@@ -66,7 +66,7 @@ Text::~Text()
 {
 
     #if DEVELOPMENT == 1
-        std::cout << "Text: text deleted.\n";
+        std::cout << "Text: " + (std::string)content + " deleted.\n";
     #endif
 
 }
@@ -82,16 +82,16 @@ void Text::Render()
 
     gltBeginDraw();
 
-    gltColor(this->m_tint.x, this->m_tint.y, this->m_tint.z, this->m_alpha);
+    gltColor(this->tint.x, this->tint.y, this->tint.z, this->alpha);
 
     this->m_model = glm::mat4(1.0f);
 
-    this->m_model = glm::translate(this->m_model, glm::vec3(this->m_position.x, this->m_position.y + gltGetTextHeight(this->handle, this->m_scale.y), 0.0f));
-    this->m_model = glm::scale(this->m_model, glm::vec3(this->m_scale.x, this->m_scale.y, 1.0f));
+    this->m_model = glm::translate(this->m_model, glm::vec3(this->position.x, this->position.y + gltGetTextHeight(this->m_handle, this->scale.y), 0.0f));
+    this->m_model = glm::scale(this->m_model, glm::vec3(this->scale.x, this->scale.y, 1.0f));
 
-    glm::highp_mat4 mvp = System::Application::game->camera->GetProjectionMatrix(System::Window::m_scaleWidth, System::Window::m_scaleHeight) * this->m_model;
+    glm::highp_mat4 mvp = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * this->m_model;
 
-    gltDrawText(this->handle, (GLfloat*)&mvp);
+    gltDrawText(this->m_handle, (GLfloat*)&mvp);
 
     gltEndDraw();
 
@@ -104,5 +104,5 @@ void Text::Render()
 void Text::SetText(const std::string& content) {
 
     this->content = content;
-    gltSetText(this->handle, this->content.c_str());
+    gltSetText(this->m_handle, this->content.c_str());
 }

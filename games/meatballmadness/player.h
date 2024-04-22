@@ -16,15 +16,15 @@ namespace entity_behaviors {
                 Behavior(entity, "Waiter") 
             {
                 this->canMove = false;
-                this->canJump = false;
-                this->speed_x = 0.0f;
+                this->m_canJump = false;
+                this->m_speed_x = 0.0f;
 
-                this->player = std::static_pointer_cast<Sprite>(this->entity);
+                this->m_player = std::static_pointer_cast<Sprite>(entity);
             };
             
             ~Waiter() = default;
 
-            void Update(Process::Context context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override
+            void Update(Process::Context context, void* scene) override
             {
 
                 if (!this->canMove)
@@ -32,51 +32,51 @@ namespace entity_behaviors {
 
                 //jump
 
-                if (context.inputs->m_up && this->canJump && this->player->bodies[0].first->GetLinearVelocity().y == 0) 
+                if (context.inputs->UP && this->canJump && this->player->bodies[0].first->GetLinearVelocity().y == 0) 
                 {
-                    this->canJump = false;
-                    this->player->SetImpulseY(-150);
+                    this->m_canJump = false;
+                    this->m_player->SetImpulseY(-150);
                 }
 
                 //walk
                 
-                else if (this->player->IsContacting())
+                else if (this->m_player->IsContacting())
                 {    
                 
-                    this->canJump = true;
+                    this->m_canJump = true;
             
-                    if (context.inputs->m_right) 
+                    if (context.inputs->RIGHT) 
                     {
-                        this->player->SetFlipX(false);
-                        this->player->Animate("run", true, 5);
-                        this->player->SetVelocityX(320);
+                        this->m_player->SetFlipX(false);
+                        this->m_player->Animate("run", true, 5);
+                        this->m_player->SetVelocityX(320);
                     } 
                     
-                    else if (context.inputs->m_left)
+                    else if (context.inputs->LEFT)
                     {
-                        this->player->SetFlipX(true);
-                        this->player->Animate("run", true, 5);
-                        this->player->SetVelocityX(-320);
+                        this->m_player->SetFlipX(true);
+                        this->m_player->Animate("run", true, 5);
+                        this->m_player->SetVelocityX(-320);
                     }
 
                     else {
-                        this->player->SetFrame(1);
-                        this->player->SetVelocityX(0);
+                        this->m_player->SetFrame(1);
+                        this->m_player->SetVelocityX(0);
                     }
 
                 }
 
                 else //mid air
-                    this->player->SetFrame(0);
+                    this->m_player->SetFrame(0);
 
             }
 
         private:
 
-            float speed_x;
-            bool canJump;
+            float m_speed_x;
+            bool m_canJump;
 
-            std::shared_ptr<Sprite> player;
+            std::shared_ptr<Sprite> m_player;
 
     };
 

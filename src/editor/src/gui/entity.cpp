@@ -145,7 +145,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
 
         if (node->behaviors.size())
         {
-            ImGui::Text("Assigned Scripts:");
+            ImGui::Text("Assigned Behaviors:");
 
             for (const auto &behavior : node->behaviors)
                 if (ImGui::BeginMenu(behavior.first.c_str()))
@@ -155,7 +155,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
                             system((Editor::projectPath + AssetManager::script_dir + "/" + behavior.second).c_str());
                         #endif
 
-                    if (ImGui::BeginMenu("remove script?")) 
+                    if (ImGui::BeginMenu("remove behavior?")) 
                     {
                         if (ImGui::MenuItem("yes")) {
 
@@ -173,13 +173,13 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
         }
 
         else
-            ImGui::Text("Assigned Scripts: (none)");
+            ImGui::Text("Assigned Behaviors: (none)");
 
         ImGui::Separator();
 
-        if (ImGui::BeginMenu("script library"))
+        if (ImGui::BeginMenu("behavior library"))
         {
-            if (ImGui::BeginMenu("new script")) 
+            if (ImGui::BeginMenu("new behavior")) 
             {
                 
                 ImGui::InputText("name", &component->filename);
@@ -191,11 +191,11 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
                 ImGui::EndMenu();
             }
 
-            if (ImGui::BeginMenu("select script"))
+            if (ImGui::BeginMenu("select behavior"))
             {
 
                 if (std::filesystem::is_empty(Editor::projectPath + AssetManager::script_dir))
-                    ImGui::Text("no scripts in directory.");
+                    ImGui::Text("no behaviors in directory.");
 
                 else
                 {
@@ -241,7 +241,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("remove scripts?"))
+        if (ImGui::BeginMenu("remove script?"))
         {
             if (ImGui::MenuItem("yes"))
                 node->RemoveComponent(component); 
@@ -294,7 +294,7 @@ void GUI::RenderNodes()
         
     if (Node::nodes.size())
         for (auto &node : Node::nodes)
-            if (node && node->m_active)
+            if (node && node->active)
                 node->Render(node);
         
 }

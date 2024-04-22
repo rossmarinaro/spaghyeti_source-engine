@@ -9,21 +9,20 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
 {
     this->health = 4;
 
-    this->follow = true;  
-    this->flipX = false; 
-    this->canJump = true;
-    this->canAttack = true;
-    this->canDamage = true;
-    this->attacking = false;
-    this->shootFireball = false; 
+    this->m_follow = true;  
+    this->m_flipX = false; 
+    this->m_canJump = true;
+    this->m_canAttack = true;
+    this->m_canDamage = true;
+    this->m_attacking = false;
+    this->m_shootFireball = false; 
 
-    this->player = std::static_pointer_cast<Sprite>(this->entity);
+    this->m_heart1 = System::Game::CreateUI("heart.png", 1056.821, 30);
+    this->m_heart2 = System::Game::CreateUI("heart.png", 1120.538, 30);
+    this->m_heart3 = System::Game::CreateUI("heart.png", 1184.253, 30);
+
+    this->player = std::static_pointer_cast<Sprite>(entity);
     this->hb = Physics::CreateDynamicBody("box", 0, 0, 10, 10, true, 1);     
-
-    this->heart1 = System::Game::CreateUI("heart.png", 1056.821, 30);
-    this->heart2 = System::Game::CreateUI("heart.png", 1120.538, 30);
-    this->heart3 = System::Game::CreateUI("heart.png", 1184.253, 30);
-
 }
 
 //-------------------------------------
@@ -34,38 +33,38 @@ PlayerController::~PlayerController() {
 
 //-------------------------------------
 
-void PlayerController::Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) 
+void PlayerController::Update(Process::Context& context, void* scene) 
 { 
 
-    if (this->follow)
+    if (this->m_follow)
         this->player->StartFollow(context.camera, 500);
 
     //jump
 
-    if (context.inputs->m_up && this->canJump && this->player->bodies[0].first->GetLinearVelocity().y == 0) {               
-        this->canJump = false;
+    if (context.inputs->UP && this->m_canJump && this->player->bodies[0].first->GetLinearVelocity().y == 0) {               
+        this->m_canJump = false;
         this->Jump(context.inputs);
     }
 
     //move   
 
     else if (this->player->IsContacting()) {      
-        this->canJump = true;
+        this->m_canJump = true;
         this->Move(context.inputs); 
     }
 
     //attack
 
-    if (context.inputs->m_SPACE && this->canAttack) {
-        this->canAttack = false;
-        this->attacking = true;
+    if (context.inputs->SPACE && this->m_canAttack) {
+        this->m_canAttack = false;
+        this->m_attacking = true;
     }
 
-    if (this->attacking) 
+    if (this->m_attacking) 
         this->Attack(context.physics);
 
     else {
-        this->hb->SetTransform(b2Vec2(this->player->m_position.x + 20, this->player->m_position.y + 20), 0);
+        this->hb->SetTransform(b2Vec2(this->player->position.x + 20, this->player->position.y + 20), 0);
         this->hb->SetEnabled(false);  
     }
 
@@ -76,24 +75,24 @@ void PlayerController::Update(Process::Context& context, const std::vector<std::
 void PlayerController::Move(Inputs* inputs)
 {
 
-    if (this->attacking)
+    if (this->m_attacking)
         return;
 
-    if (inputs->m_left) {       
+    if (inputs->LEFT) {       
         this->player->SetVelocityX(-300); 
         this->player->Animate("walk-left", false, 5); 
-        this->flipX = true;
+        this->m_flipX = true;
     }
 
-    else if (inputs->m_right) {
+    else if (inputs->RIGHT) {
         this->player->SetVelocityX(300); 
         this->player->Animate("walk-right", false, 5); 
-        this->flipX = false;
+        this->m_flipX = false;
     }
 
     else {
         this->player->SetVelocityX(0); 
-        this->player->Animate(this->flipX ? "idle-left" : "idle-right", true);
+        this->player->Animate(this->m_flipX ? "idle-left" : "idle-right", true);
     }
 }
 
@@ -102,14 +101,14 @@ void PlayerController::Move(Inputs* inputs)
 void PlayerController::Jump(Inputs* inputs)
 {
 
-    if (inputs->m_left || inputs->m_right)
-        this->player->SetImpulse(this->flipX ? -900 : 900, -2600);
+    if (inputs->LEFT || inputs->RIGHT)
+        this->player->SetImpulse(this->m_flipX ? -900 : 900, -2600);
 
     else
         this->player->SetImpulseY(-2500);  
 
-    //this->player->Animate(this->flipX ? "jump-left" : "jump-right");
-    this->player->SetFrame(this->flipX ? 14 : 12);
+    //this->player->Animate(this->m_flipX ? "jump-left" : "jump-right");
+    this->player->SetFrame(this->m_flipX ? 14 : 12);
 }
 
 //-------------------------------------
@@ -119,23 +118,23 @@ void PlayerController::Attack(Physics* physics)
 
     this->hb->SetEnabled(true);
     
-    if (this->flipX) {
+    if (this->m_flipX) {
         this->player->Animate("attack-left", true, 4);
-        this->hb->SetTransform(b2Vec2(this->player->m_position.x - 10, this->player->m_position.y + 45), 0);
+        this->hb->SetTransform(b2Vec2(this->player->position.x - 10, this->player->position.y + 45), 0);
     }
 
     else {
         this->player->Animate("attack-right", true, 4);
-        this->hb->SetTransform(b2Vec2(this->player->m_position.x + 90, this->player->m_position.y + 45), 0);
+        this->hb->SetTransform(b2Vec2(this->player->position.x + 90, this->player->position.y + 45), 0);
     }
 
     if (this->player->IsAnimComplete()) 
     {
-        this->canAttack = true; 
-        this->attacking = false;
+        this->m_canAttack = true; 
+        this->m_attacking = false;
     } 
 
-    if (this->shootFireball)
+    if (this->m_shootFireball)
     {
         //todo: implement fireball
         //Time::delayedCall(1000, [&]() { });
@@ -147,24 +146,24 @@ void PlayerController::Attack(Physics* physics)
 void PlayerController::DoDamage(int amount)
 {
 
-    if (!this->canDamage) 
+    if (!this->m_canDamage) 
         return;
 
-    this->canDamage = false;
+    this->m_canDamage = false;
     this->health -= amount;
 
     if (this->health < 4 && this->health > 2)
-        this->heart1->SetTint({ 0.0f, 0.0f, 0.0f });
+        this->m_heart1->SetTint({ 0.0f, 0.0f, 0.0f });
 
     else if (this->health < 3 && this->health > 1)
-        this->heart2->SetTint({ 0.0f, 0.0f, 0.0f });
+        this->m_heart2->SetTint({ 0.0f, 0.0f, 0.0f });
 
     else 
-        this->heart3->SetTint({ 0.0f, 0.0f, 0.0f });
+        this->m_heart3->SetTint({ 0.0f, 0.0f, 0.0f });
 
     if (this->health <= 0) {
         this->health = 1;
-        System::Game::StartScene("GAMEOVER"); 
+        Time::delayedCall(500, [&]() { System::Game::StartScene("GAMEOVER"); });
     }
 
     this->player->SetAlpha(0.75f);
@@ -173,7 +172,7 @@ void PlayerController::DoDamage(int amount)
     Time::delayedCall(500, [&]() { 
         this->player->ClearTint(); 
         this->player->SetAlpha(1.0f);
-        this->canDamage = true;
+        this->m_canDamage = true;
     });
     
 }   

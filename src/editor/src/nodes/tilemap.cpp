@@ -8,8 +8,8 @@ using namespace editor;
 
 TilemapNode::TilemapNode(const std::string& id): 
     Node(id, "Tilemap"),
-        layersApplied(false),
-        mapApplied(false),
+        m_layersApplied(false),
+        m_mapApplied(false),
         layer(1),
         map_width(10),
         map_height(10),
@@ -24,7 +24,7 @@ TilemapNode::TilemapNode(const std::string& id):
 TilemapNode::~TilemapNode() 
 {
 
-    if (this->mapApplied)
+    if (this->m_mapApplied)
         MapManager::ClearMap();
 
     if (!this->virtual_node)
@@ -53,7 +53,7 @@ void TilemapNode::Reset(const char* component_type)
         this->bodies.clear();
     }
 
-    this->mapApplied = false;
+    this->m_mapApplied = false;
 
     MapManager::ClearMap();
 }
@@ -113,8 +113,8 @@ void TilemapNode::ApplyTilemap(bool clearPrevious)
 
             MapManager::CreateLayer(key.c_str(), texture.c_str(), this->map_width, this->map_height, this->tile_width, this->tile_height, this->depth[i]);
 
-            this->layersApplied = true;
-            this->mapApplied = true;
+            this->m_layersApplied = true;
+            this->m_mapApplied = true;
         }
     }
 }
@@ -272,7 +272,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                                             this->UpdateBody(i);
                                     }
              
-                                    this->layersApplied = false;
+                                    this->m_layersApplied = false;
                                 }
                             }
                         }
@@ -343,7 +343,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                                         this->layers[i][0] = key;
                                         this->layers[i][1] = path;
 
-                                        this->layersApplied = false;
+                                        this->m_layersApplied = false;
                                     }
                                 }
                             }
@@ -363,7 +363,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                         if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::GetTexture(this->layers[i][2]).ID, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image") 
                         {
                             this->layers[i][2] = Editor::selectedAsset;
-                            this->layersApplied = false;
+                            this->m_layersApplied = false;
                         }
 
                         else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(Editor::selectedAsset) != "image")
@@ -378,15 +378,15 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                             ImGui::InputInt("frames y", &this->spr_sheet_height[i]) ||
                             ImGui::SliderInt("depth", &this->depth[i], 0, 1000)
                         )
-                            this->layersApplied = false;
+                            this->m_layersApplied = false;
  
                         ImGui::PopID();
                     } 
 
-                    if (ImGui::Button("apply") && !this->layersApplied)
+                    if (ImGui::Button("apply") && !this->m_layersApplied)
                         this->ApplyTilemap();
 
-                    if (this->layersApplied) { 
+                    if (this->m_layersApplied) { 
                         ImGui::SameLine(); 
                         ImGui::Text("applied");
                     }

@@ -14,45 +14,45 @@ namespace entity_behaviors {
            COLORSHIFTSPRITE(std::shared_ptr<Entity> entity):
                Behavior(entity, "COLORSHIFTSPRITE")
            {
-                this->r = 1.0f; 
-                this->g = 1.0f;
-                this->b = 1.0f;
-                this->rev = false;
-                this->sprite = std::static_pointer_cast<Sprite>(this->entity);
+                this->m_r = 1.0f; 
+                this->m_g = 1.0f;
+                this->m_b = 1.0f;
+                this->m_rev = false;
+                this->m_sprite = std::static_pointer_cast<Sprite>(entity);
                 
                 Time::delayedCall(100,[&]() { 
                     Time::setInterval(3000, [=]() { 
 
-                        if (!this->isActive) 
+                        if (!this->m_isActive) 
                             return;
 
-                        this->rev = !this->rev; 
+                        this->m_rev = !this->m_rev; 
                     }); 
                 });
            }
 
            //update every frame
 
-           void Update(Process::Context& context, const std::vector<std::shared_ptr<Behavior>>& behaviors) override {
+           void Update(Process::Context& context, void* scene) override {
                 
-                if (!this->rev) {
-                    this->r -= 0.01f;
-                    this->b += 0.01f;
+                if (!this->m_rev) {
+                    this->m_r -= 0.01f;
+                    this->m_b += 0.01f;
                 }
                 
                 else {
-                    this->r += 0.01f;
-                    this->b -= 0.01f; 
+                    this->m_r += 0.01f;
+                    this->m_b -= 0.01f; 
                 }
 
-                this->sprite->SetTint({r, g, b});
+                this->m_sprite->SetTint({ m_r, m_g, m_b });
            }
 
         private:
 
-            float r, g, b;
-            bool rev;
-            std::shared_ptr<Sprite> sprite;
+            float m_r, m_g, m_b;
+            bool m_rev;
+            std::shared_ptr<Sprite> m_sprite;
 
    };
 };

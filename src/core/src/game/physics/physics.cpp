@@ -5,10 +5,10 @@
 //------------------------------
 
 Physics::Physics():
+    m_gravity(b2Vec2(this->gravityX, this->gravityY)), 
     gravityX(0.0f),
     gravityY(500.0f),
-    gravity(b2Vec2(this->gravityX, this->gravityY)), 
-    world(gravity)  
+    world(m_gravity)  
 { 
 
     m_flags = 0;
@@ -53,7 +53,7 @@ b2Body* Physics::CreateStaticBody(
     box.SetAsBox(width, height);       
     body.self->CreateFixture(&box, 0.0f); 
 
-    System::Application::game->physics->active_bodies.push_back(body.self);
+    System::Application::game->physics->m_active_bodies.push_back(body.self);
 
     return body.self;
 }
@@ -112,7 +112,7 @@ b2Body* Physics::CreateDynamicBody(
 
     body.self->CreateFixture(&body.fixtureDef);
 
-    System::Application::game->physics->active_bodies.push_back(body.self); 
+    System::Application::game->physics->m_active_bodies.push_back(body.self); 
     
     return body.self;
 }
@@ -123,17 +123,20 @@ b2Body* Physics::CreateDynamicBody(
 
 //does not destroy body immediately. body will be destroyed after next timestep
 void Physics::DestroyBody(b2Body* b) {
-    System::Application::game->physics->bodiesToRemove.insert(b);
+    System::Application::game->physics->m_bodiesToRemove.insert(b);
 }
 
 
 //------------------------------
 
 
-void Physics::ClearBodies() {
-
-    for (const auto& body : this->active_bodies)
-        DestroyBody(body);
+void Physics::ClearBodies() 
+{
+    if (this->m_active_bodies.size())
+        for (const auto& body : this->m_active_bodies)
+            DestroyBody(body);
+            
+    this->m_active_bodies.clear();
 }
 
 
@@ -170,8 +173,8 @@ void Physics::Update()
 
     //cleanup removed bodies
 
-    std::set<b2Body*>::iterator it = System::Application::game->physics->bodiesToRemove.begin();
-    std::set<b2Body*>::iterator end = System::Application::game->physics->bodiesToRemove.end();
+    std::set<b2Body*>::iterator it = System::Application::game->physics->m_bodiesToRemove.begin();
+    std::set<b2Body*>::iterator end = System::Application::game->physics->m_bodiesToRemove.end();
 
     for (; it != end; ++it) 
     {
@@ -183,7 +186,7 @@ void Physics::Update()
         }
     }
 
-    System::Application::game->physics->bodiesToRemove.clear();
+    System::Application::game->physics->m_bodiesToRemove.clear();
 
     world.SetGravity(b2Vec2(gravityX, gravityY));
 }

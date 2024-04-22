@@ -9,7 +9,7 @@ using namespace editor;
 
 AudioNode::AudioNode(): 
     Node("Audio"),
-        audioTexture(Graphics::Texture2D::GetTexture("audio src"))
+        m_audioTexture(Graphics::Texture2D::GetTexture("audio src"))
 {}
 
 
@@ -19,7 +19,7 @@ AudioNode::AudioNode():
 AudioNode::AudioNode(const std::string& id): 
     Node(id, "Audio"),
         audio_source_name(""),
-        audioTexture(Graphics::Texture2D::GetTexture("audio src")),
+        m_audioTexture(Graphics::Texture2D::GetTexture("audio src")),
         loop(false),
         volume(1)
 {
@@ -75,7 +75,7 @@ void AudioNode::Render(std::shared_ptr<Node> node)
             if (this->show_options)
             {
 
-                if (ImGui::ImageButton("audio source", (void*)(intptr_t)this->audioTexture.ID, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0))) {
+                if (ImGui::ImageButton("audio source", (void*)(intptr_t)this->m_audioTexture.ID, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0))) {
                     if (System::Utils::GetFileType(Editor::selectedAsset) == "audio")
                         this->audio_source_name = Editor::selectedAsset;
                 }

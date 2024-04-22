@@ -33,6 +33,6 @@ class Time {
     private:
 
         float m_now;
-        static inline float m_last = 0.0f;
+        static inline float s_last = 0.0f;
         
 };

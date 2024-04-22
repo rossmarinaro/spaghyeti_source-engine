@@ -25,7 +25,7 @@ using namespace System;
         }
 
         if (eventType == EMSCRIPTEN_EVENT_CLICK)
-            Application::game->inputs->m_left_click = true;
+            Application::game->inputs->LEFT_CLICK = true;
 
         (void)eventType;
         (void)pUserData;
@@ -42,9 +42,9 @@ using namespace System;
         if (eventType == EMSCRIPTEN_EVENT_TOUCHSTART)
         {
 
-            Application::game->inputs->m_left_click = true;
+            Application::game->inputs->LEFT_CLICK = true;
 
-            Application::game->inputs->cursorReset = false;
+            Application::game->inputs->m_cursorReset = false;
 
             for (int i = 0; i < event->numTouches; ++i)
             {
@@ -58,7 +58,7 @@ using namespace System;
 
         else
         {
-            Application::game->inputs->cursorReset = true;
+            Application::game->inputs->m_cursorReset = true;
             Inputs::input_callback(Window::s_instance, 0, 0, 0);
             Application::game->inputs->numInputs--;
         }
@@ -74,7 +74,11 @@ using namespace System;
 
 //----------------------------------------
 
-Inputs::Inputs()
+Inputs::Inputs():
+    m_cursorX(0), 
+    m_cursorY(0),
+    m_cursorReset(false), 
+    m_initVirtualControls(false)
 {
 
     this->numInputs = 0;
@@ -137,7 +141,7 @@ void Inputs::CreateCursor()
     Application::game->cursor = System::Game::CreateGeom(100.0f, 100.0f, 30.0f, 30.0f);
     Application::game->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
     Application::game->cursor->SetAlpha(0.0f); 
-    Application::game->cursor->m_shader = Shader::GetShader("cursor");
+    Application::game->cursor->shader = Shader::GetShader("cursor");
 }
 
 
@@ -150,9 +154,9 @@ void Inputs::RenderCursor()
     if (Application::game->cursor != nullptr)
     {
 
-        Application::game->cursor->SetPosition(this->cursorX, this->cursorY);
+        Application::game->cursor->SetPosition(this->m_cursorX, this->m_cursorY);
 
-        if (Application::isMobile && cursorReset)
+        if (Application::isMobile && this->m_cursorReset)
             cursor_callback(Window::s_instance, -100.0f, -100.0f);
 
         CheckOverlap();
@@ -177,7 +181,7 @@ void Inputs::CheckOverlap()
 
         auto button = Application::game->virtual_buttons[i];
 
-        if (!button->m_active && !button->m_renderable)
+        if (!button->active && !button->renderable)
             continue;
 
         bool isOverlapping = Application::game->physics->collisions.CheckCollisions(button, Application::game->cursor, 2);
@@ -212,35 +216,35 @@ void Inputs::SetKeyInputs(bool boolean, int key, GLFWwindow* window)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         break;
         case GLFW_KEY_LEFT:
-            this->m_left = boolean;
+            this->LEFT = boolean;
         break;
         case GLFW_KEY_RIGHT:
-            this->m_right = boolean;
+            this->RIGHT = boolean;
         break;
         case GLFW_KEY_UP:
-            this->m_up = boolean;
+            this->UP = boolean;
         break;
         case GLFW_KEY_DOWN:
-           this->m_down = boolean;
+           this->DOWN = boolean;
         break;
         case GLFW_KEY_LEFT_SHIFT:
         case GLFW_KEY_RIGHT_SHIFT:
-            this->m_SHIFT = boolean;
+            this->SHIFT = boolean;
         break;
         case GLFW_KEY_SPACE:
-            this->m_SPACE = boolean;
+            this->SPACE = boolean;
         break;
         case GLFW_KEY_ENTER:
-            this->m_ENTER = boolean;
+            this->ENTER = boolean;
         break;
         case GLFW_MOUSE_BUTTON_LEFT:
-            this->m_left_click = boolean;
+            this->LEFT_CLICK = boolean;
         break;
         case GLFW_KEY_TAB:
-            this->m_TAB = boolean;
+            this->TAB = boolean;
         break;
         case GLFW_KEY_G:
-            this->m_G = boolean;
+            this->G = boolean;
         break;
     }
 }
@@ -257,8 +261,8 @@ void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
 
     //set cursor object to movement
 
-    Application::game->inputs->cursorX = (float)xPos;
-    Application::game->inputs->cursorY = (float)yPos;
+    Application::game->inputs->m_cursorX = (float)xPos;
+    Application::game->inputs->m_cursorY = (float)yPos;
 
 }
 
@@ -292,92 +296,92 @@ void Inputs::SetGamepadInputs(unsigned int joystick)
 
     const float* axes = glfwGetJoystickAxes(joystick, &axesCount);
 
-    this->m_left = axes[0] > 1;
-    this->m_right = axes[1] > 1;
+    this->LEFT = axes[0] > 1;
+    this->RIGHT = axes[1] > 1;
 
     int buttonCount;
 
     const unsigned char* buttons = glfwGetJoystickButtons(joystick, &buttonCount);
 
     if (GLFW_PRESS == buttons[0]) 
-        this->m_ENTER = true;
+        this->ENTER = true;
     
     else if (GLFW_RELEASE == buttons[0]) 
-        this->m_ENTER = false;
+        this->ENTER = false;
 
     if (
         GLFW_PRESS == buttons[1] ||
         GLFW_PRESS == buttons[2]
     )
-        this->m_SPACE = true;
+        this->SPACE = true;
 
     else if (
         GLFW_RELEASE == buttons[1] ||
         GLFW_RELEASE == buttons[2]
     )
-        this->m_SPACE = false;
+        this->SPACE = false;
 
     if (
         GLFW_PRESS == buttons[3] ||
         GLFW_PRESS == buttons[4]
     )
-        this->m_SHIFT = true;
+        this->SHIFT = true;
 
     else if (
         GLFW_RELEASE == buttons[3] ||
         GLFW_RELEASE == buttons[4]
     )
-        this->m_SHIFT = false;
+        this->SHIFT = false;
 
     if (
         GLFW_PRESS == buttons[5] ||
         GLFW_PRESS == buttons[6]
     )
-        this->m_TAB = true;
+        this->TAB = true;
 
     else if (
         GLFW_RELEASE == buttons[5] ||
         GLFW_RELEASE == buttons[6]
     )
-        this->m_TAB = false;
+        this->TAB = false;
 
     if (
         GLFW_PRESS == buttons[7] ||
         GLFW_PRESS == buttons[8] ||
         GLFW_PRESS == buttons[9]
     )
-        this->m_left_click = true;
+        this->LEFT_CLICK = true;
 
     else if (
         GLFW_RELEASE == buttons[7] ||
         GLFW_PRESS == buttons[8] ||
         GLFW_PRESS == buttons[9]
     )
-        this->m_left_click = false;
+        this->LEFT_CLICK = false;
 
     if (GLFW_PRESS == buttons[10])
-        this->m_down = true;
+        this->DOWN = true;
 
     else if (GLFW_RELEASE == buttons[10])
-        this->m_down = false;
+        this->DOWN = false;
 
     if (GLFW_PRESS == buttons[11])
-        this->m_right = true;
+        this->RIGHT = true;
 
     else if (GLFW_RELEASE == buttons[11])
-        this->m_right = false;
+        this->RIGHT = false;
 
     if (GLFW_PRESS == buttons[12])
-        this->m_up = true;
+        this->UP = true;
 
     else if (GLFW_RELEASE == buttons[12])
-        this->m_up = false;
+        this->UP = false;
 
     if (GLFW_PRESS == buttons[13])
-        this->m_left = true;
+        this->LEFT = true;
 
     else if (GLFW_RELEASE == buttons[13])
-        this->m_left = false;
+        this->LEFT = false;
 
     for (int i = 0; i < sizeof(buttons); i++) 
 
@@ -427,7 +431,7 @@ void Inputs::ShutDown()
 
     if (Application::isMobile)
     {
-        this->initVirtualControls = false;
+        this->m_initVirtualControls = false;
 
         for (auto &button : Application::game->virtual_buttons)
             if (button) {
@@ -448,24 +452,24 @@ void Inputs::ShutDown()
 void Inputs::ResetControls()
 {
 
-    this->cursorReset = true;
+    this->m_cursorReset = true;
 
     if (!Application::isMobile) {
-        this->cursorX = -100.0f;
-        this->cursorY = -100.0f;
+        this->m_cursorX = -100.0f;
+        this->m_cursorY = -100.0f;
     }
 
     else
-        this->m_left_click = false;
+        this->LEFT_CLICK = false;
 
-    this->m_left = false;
-    this->m_right = false;
-    this->m_down = false;
-    this->m_up = false;
-    this->m_SHIFT = false;
-    this->m_TAB = false;
-    this->m_SPACE = false;
-    this->m_ENTER = false;
+    this->LEFT = false;
+    this->RIGHT = false;
+    this->DOWN = false;
+    this->UP = false;
+    this->SHIFT = false;
+    this->TAB = false;
+    this->SPACE = false;
+    this->ENTER = false;
 }
 
 

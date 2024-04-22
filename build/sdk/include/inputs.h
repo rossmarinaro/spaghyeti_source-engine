@@ -9,18 +9,17 @@ class Inputs {
 
         int numInputs;
 
-        bool cursorReset,
-             isDown = false,
-             m_left_click,
-             m_SPACE, 
-             m_SHIFT, 
-             m_ENTER,
-             m_TAB, 
-             m_left,
-             m_right,
-             m_up,
-             m_down,
-             m_G;
+        bool isDown = false,
+             LEFT_CLICK,
+             SPACE, 
+             SHIFT, 
+             ENTER,
+             TAB, 
+             LEFT,
+             RIGHT,
+             UP,
+             DOWN,
+             G;
 
         void ShutDown();
         void CreateCursor();
@@ -37,9 +36,9 @@ class Inputs {
 
     private:
 
-        float cursorX, cursorY;
+        float m_cursorX, m_cursorY;
 
-        bool initVirtualControls = false;
+        bool m_cursorReset, m_initVirtualControls;
 
         void CheckOverlap();
         void ResetControls();

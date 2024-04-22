@@ -12,10 +12,10 @@ class DisplayInfo {
 
         inline DisplayInfo()
         {
-            this->fps_text = std::make_shared<Text>("", 10, 0);
+            this->fps_text = std::make_shared<Text>("FPS", 10, 0);
             this->fps_text->SetScale(2.0f, 1.0f);
 
-            this->cam_text = std::make_shared<Text>("", 10, 50);
+            this->cam_text = std::make_shared<Text>("CAMERA", 10, 50);
             this->cam_text->SetScale(2.0f, 1.0f);
         }
 
@@ -31,7 +31,7 @@ class DisplayInfo {
 
             //camera stats
             
-            const std::string camInfo = "CAMERA: x: " + std::to_string(-context.camera->m_position.x) + " y: " + std::to_string(-context.camera->m_position.y);
+            const std::string camInfo = "CAMERA: x: " + std::to_string(-context.camera->position.x) + " y: " + std::to_string(-context.camera->position.y);
             this->cam_text->SetText(camInfo);
             this->cam_text->Render();
         }

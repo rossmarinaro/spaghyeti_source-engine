@@ -24,9 +24,9 @@ void Primitive::GenBuffer()
 
 
 void Primitive::Bind_Buffer(
-    const auto &data, 
-    const GLuint &buffer, 
-    const GLuint &VAO,
+    const auto& data, 
+    const GLuint& buffer, 
+    const GLuint& VAO,
     GLuint location, 
     GLint vecCount, 
     GLenum type, 
@@ -71,9 +71,9 @@ Geometry::Geometry(float x, float y, float width, float height):
         width(width),
         height(height)
 { 
-    this->m_tint = glm::vec3(0.0f, 0.0f, 1.0f);
-    this->m_texture = Graphics::Texture2D::GetTexture("base");
-    this->m_shader = Shader::GetShader("graphics");
+    this->tint = glm::vec3(0.0f, 0.0f, 1.0f);
+    this->texture = Graphics::Texture2D::GetTexture("base");
+    this->shader = Shader::GetShader("graphics");
     
     #if DEVELOPMENT == 1
         std::cout << "Entity: quad created.\n"; 
@@ -91,9 +91,9 @@ void Geometry::Render()
     this->m_model = glm::mat4(1.0f); 
 
     auto SetShader = [&](){
-        this->m_shader.SetVec3f("tint", this->m_tint, true);
-        this->m_shader.SetMat4("model", this->m_model, true);  
-        this->m_shader.SetFloat("alphaVal", this->m_alpha, true);
+        this->shader.SetVec3f("tint", this->tint, true);
+        this->shader.SetMat4("model", this->m_model, true);  
+        this->shader.SetFloat("alphaVal", this->alpha, true);
     };
 
     //quad or line
@@ -101,21 +101,21 @@ void Geometry::Render()
     if (strcmp(this->m_type, "quad") == 0)
     {
 
-        this->m_texture.FrameWidth = this->width;
-        this->m_texture.FrameHeight = this->height;
+        this->texture.FrameWidth = this->width;
+        this->texture.FrameHeight = this->height;
 
-        this->m_model = glm::translate(this->m_model, glm::vec3(this->m_position, 0.0f));  
+        this->m_model = glm::translate(this->m_model, glm::vec3(this->position, 0.0f));  
 
-        this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->m_position.x, 0.5f * this->height + this->m_position.y, 0.0f)); 
+        this->m_model = glm::translate(this->m_model, glm::vec3(0.5f * this->width + this->position.x, 0.5f * this->height + this->position.y, 0.0f)); 
 
-        if (this->m_rotation > 0)
-            this->m_model = glm::rotate(this->m_model, glm::radians(this->m_rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
+        if (this->rotation > 0)
+            this->m_model = glm::rotate(this->m_model, glm::radians(this->rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
 
-        this->m_model = glm::translate(this->m_model, glm::vec3(-0.5f * this->width - this->m_position.x, -0.5f * this->height - this->m_position.y, 0.0f));
+        this->m_model = glm::translate(this->m_model, glm::vec3(-0.5f * this->width - this->position.x, -0.5f * this->height - this->position.y, 0.0f));
         
         SetShader();
 
-        this->m_texture.Update(this->m_position, false, false, this->drawStyle); 
+        this->texture.Update(this->position, false, false, this->m_drawStyle); 
 
     }
 
@@ -137,11 +137,11 @@ Texture2D& Texture2D::GetTexture(const std::string& key) {
 void Texture2D::SetChannels(Texture2D& texture, unsigned int channels) 
 {
     
-    texture.Channels = channels;
+    texture.m_channels = channels;
 
-    if (texture.Channels == 4) { 
-        texture.Internal_Format = GL_RGBA;
-        texture.Image_Format = GL_RGBA;
+    if (texture.m_channels == 4) { 
+        texture.m_internal_format = GL_RGBA;
+        texture.m_image_format = GL_RGBA;
     }
 }
 
@@ -287,7 +287,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, auto &data)
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
  
-    glTexImage2D(GL_TEXTURE_2D, 0, this->Internal_Format, this->Width, this->Height, 0, this->Image_Format, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, this->m_internal_format, this->Width, this->Height, 0, this->m_image_format, GL_UNSIGNED_BYTE, data);
 
     //set Texture wrap and filter modes
 
@@ -374,38 +374,38 @@ void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int dr
         
     //top right
 
-        this->UVs[0] = texture.format.u2;
-        this->UVs[1] = texture.format.v2;
+        this->m_UVs[0] = texture.format.u2;
+        this->m_UVs[1] = texture.format.v2;
 
     //bottom right
 
-        this->UVs[2] = texture.format.u2;
-        this->UVs[3] = texture.format.v1;
+        this->m_UVs[2] = texture.format.u2;
+        this->m_UVs[3] = texture.format.v1;
 
     //top left
 
-        this->UVs[4] = texture.format.u1;
-        this->UVs[5] = texture.format.v2;
+        this->m_UVs[4] = texture.format.u1;
+        this->m_UVs[5] = texture.format.v2;
 
     //bottom right
 
-        this->UVs[6] = texture.format.u2;
-        this->UVs[7] = texture.format.v1;
+        this->m_UVs[6] = texture.format.u2;
+        this->m_UVs[7] = texture.format.v1;
 
     //bottom left
 
-        this->UVs[8] = texture.format.u1;
-        this->UVs[9] = texture.format.v1;
+        this->m_UVs[8] = texture.format.u1;
+        this->m_UVs[9] = texture.format.v1;
 
     //top left
 
-        this->UVs[10] = texture.format.u1;
-        this->UVs[11] = texture.format.v2;
+        this->m_UVs[10] = texture.format.u1;
+        this->m_UVs[11] = texture.format.v2;
 
     this->Bind();
 
     this->Bind_Buffer(vertices, this->VBO, this->VAO, 0, 2, GL_SHORT, GL_FALSE, GL_DYNAMIC_DRAW, 2 * sizeof(short)); 
-    this->Bind_Buffer(this->UVs, this->UVBO, this->VAO, 1, 2, GL_FLOAT, GL_TRUE, GL_STATIC_DRAW, 2 * sizeof(GLfloat));
+    this->Bind_Buffer(this->m_UVs, this->UVBO, this->VAO, 1, 2, GL_FLOAT, GL_TRUE, GL_STATIC_DRAW, 2 * sizeof(GLfloat));
 
     #ifdef __EMSCRIPTEN__
         Draw(GL_TRIANGLES, GL_TEXTURE_2D, GL_TEXTURE0, 6, 0);

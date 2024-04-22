@@ -22,9 +22,9 @@ void Time::Update(double t)
 
     time->m_now = (float)t; //glQueryCounter
 
-    Time delta = time->m_now - m_last;
+    Time delta = time->m_now - s_last;
     
-    m_last = time->m_now;
+    s_last = time->m_now;
 
     time->m_delta = delta;
 
@@ -71,7 +71,8 @@ void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
         
         std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
     
-        fn_ptr();
+        if (!System::Application::game->time->exitFlag)
+            fn_ptr();
 
     }).detach();
  
@@ -91,7 +92,9 @@ void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr)
         while(!System::Application::game->time->exitFlag.load()) {
 
             std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
-            fn_ptr();
+
+            if (!System::Application::game->time->exitFlag)
+                fn_ptr();
         }
 
         System::Application::game->time->exitFlag = false;

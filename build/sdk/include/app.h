@@ -1,9 +1,9 @@
 #ifdef _WIN32
 
 	#ifdef SPAGHYETI_CORE
-	#  define SPAGHYETI_CORE __declspec(dllexport)
+	    #define SPAGHYETI_CORE __declspec(dllexport)
 	#else
-	#  define SPAGHYETI_CORE __declspec(dllimport)
+	    #define SPAGHYETI_CORE __declspec(dllimport)
 	#endif
 	
 #endif
@@ -36,6 +36,7 @@ namespace /* SPAGHYETI_CORE */ System {
 		public:
 
     		static inline std::string name = "";
+            
 			static inline bool isMobile = false;
 
 			static inline Game* game; 
@@ -57,7 +58,7 @@ namespace /* SPAGHYETI_CORE */ System {
 
 			static std::map<std::string, std::any> data;
 
-			static void Update();
+			void Update();
 
 	};
 }

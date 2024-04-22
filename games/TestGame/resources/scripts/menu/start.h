@@ -14,22 +14,33 @@ namespace entity_behaviors {
            Menu_Start(std::shared_ptr<Entity> entity):
                Behavior(entity, "MenuStart")
            {
-                this->startText = std::static_pointer_cast<Text>(this->entity);
+                this->m_hasStarted = false;
+                this->m_startText = std::static_pointer_cast<Text>(entity);
 
-                Time::delayedCall(3000, [&]() {  
-                    Time::setInterval(500, [&]() { 
+                // Time::delayedCall(3000, [&]() {  
+                //     Time::setInterval(500, [&]() { 
 
-                        if (!this->isActive)
-                            return;
+                //         if (!this->m_isActive)
+                //             return;
 
-                        this->startText->SetAlpha(this->startText->m_alpha == 1 ? 0.0f : 1.0f);
+                //         this->m_startText->SetAlpha(this->m_startText->alpha == 1 ? 0.0f : 1.0f);
 
-                    });
-                });
+                //     });
+
+                // });
            }
 
-        private:
+            inline void Update(Process::Context& context, void* scene) override
+            {
+                if (!this->m_hasStarted && this->m_startText->content == "GAME OVER" && context.inputs->SPACE) 
+                {
+                    this->m_hasStarted = true;
+                    System::Game::StartScene("MENU");
+                }
+            }
 
-            std::shared_ptr<Text> startText;
+        private:
+            bool m_hasStarted;
+            std::shared_ptr<Text> m_startText;
    };
 };

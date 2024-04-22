@@ -19,7 +19,7 @@ namespace System {
     class Game {
 
         public:  
-    
+
             Time* time;
             Text* text;
             Camera* camera;
@@ -35,7 +35,7 @@ namespace System {
 
             template <typename T>
             inline void LoadScene() {
-                auto scene = std::make_shared<T>(this->context);
+                auto scene = std::make_shared<T>(this->m_context);
                 this->scenes.push_back(scene);
             }
 
@@ -63,7 +63,7 @@ namespace System {
             }
 
             static void DestroyEntity(std::shared_ptr<Entity> entity);
-            static void DestroyUI();
+
 
             //map manager
 
@@ -72,14 +72,13 @@ namespace System {
             static inline std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
             
             static inline bool UIListenForInput(int index) {
-                return virtual_buttons[index]->m_tint != glm::vec3(1.0f);
+                return virtual_buttons[index]->tint != glm::vec3(1.0f);
             }
             
         private:
 
-            bool gameState;
-
-            Process::Context context;
+            bool m_gameState;
+            Process::Context m_context;
     }; 
 
 }

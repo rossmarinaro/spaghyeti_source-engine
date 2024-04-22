@@ -73,19 +73,19 @@ namespace System {
 
                 //file assets
 
-                std::map<std::string, std::string> file_image_assets;
-                std::map<std::string, std::string> file_audio_assets;
-                std::map<std::string, std::string> file_text_assets;
+                std::map<std::string, std::string> m_file_image_assets;
+                std::map<std::string, std::string> m_file_audio_assets;
+                std::map<std::string, std::string> m_file_text_assets;
 
                 //raw assets
 
-                std::map<std::string, const char*> raw_image_assets;
-                std::map<std::string, const char*> raw_audio_assets;
+                std::map<std::string, const char*> m_raw_image_assets;
+                std::map<std::string, const char*> m_raw_audio_assets;
 
                 //all assets
 
-                std::map<std::string, std::string> file_assets;
-                std::map<std::string, const char*> raw_assets;
+                std::map<std::string, std::string> m_file_assets;
+                std::map<std::string, const char*> m_raw_assets;
 
         };
     }
