@@ -8,6 +8,10 @@
 	
 #endif
 
+#ifndef THREAD_COUNT
+    #define THREAD_COUNT 10
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -23,7 +27,7 @@
 #include "./time.h"
 #include "./game.h"
 #include "./camera.h"
-
+#include "./events.h"
 
 /****** Application *****/
 
@@ -40,7 +44,7 @@ namespace /* SPAGHYETI_CORE */ System {
 			static inline bool isMobile = false;
 
 			static inline Game* game; 
-
+            static inline EventPool* eventPool;
 			static inline Resources::Manager* resources;   
 
 			static void Init(Game* layer);

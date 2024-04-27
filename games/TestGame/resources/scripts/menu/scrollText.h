@@ -12,22 +12,18 @@ namespace entity_behaviors {
            //constructor, called on start
 
             Menu_ScrollText(std::shared_ptr<Entity> entity):
-               Behavior(entity, "ScrollText")
+               Behavior(entity, "ScrollText"),
+                    m_text(std::static_pointer_cast<Text>(entity)),
+                    m_exclamations("")
             {
-                this->m_text = std::static_pointer_cast<Text>(entity);
-                this->m_exclamations = "";
+                
+                Time::setInterval(500, [this] { 
+                
+                    if (this->m_exclamations.length() < 3) 
+                        this->m_exclamations += "!"; 
+                }); 
 
-                Time::delayedCall(500,[&]() { 
-                    Time::setInterval(500, [=]() { 
-                    
-                        if (!this->m_isActive) 
-                            return;
-                            
-                        if (this->m_exclamations.length() < 3) 
-                            this->m_exclamations += "!"; 
-                    }); 
-                });
-           }
+           } 
 
            //update every frame 
 

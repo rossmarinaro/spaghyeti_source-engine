@@ -12,30 +12,22 @@ namespace entity_behaviors {
            //constructor, called on start
 
            Menu_Player(std::shared_ptr<Entity> entity):
-               Behavior(entity, "Menu_Player")
+               Behavior(entity, "Menu_Player"),
+                    m_hasStarted(false),
+                    m_rev(false),
+                    m_player(std::static_pointer_cast<Sprite>(entity)),
+                    m_r(1.0f),
+                    m_g(0.0f),
+                    m_b(1.0f),
+                    m_a(1.0f)
            {
-                this->m_hasStarted = false;
-                this->m_rev = false;
-                this->m_player = std::static_pointer_cast<Sprite>(entity);
-                this->m_r = 1.0f; 
-                this->m_g = 0;
-                this->m_b = 1.0f;
-                this->m_a = 1.0f;
-                
-                Time::delayedCall(100,[&]() { 
-                    Time::setInterval(1500, [=]() { 
 
-                        if (!this->m_isActive) 
-                            return;
-
-                        this->m_rev = !this->m_rev; 
-                    }); 
-                });
+                Time::setInterval(1500, [this] { this->m_rev = !this->m_rev; });
            }
 
            //update every frame
 
-           void Update(Process::Context& context, void* scene) override 
+           void Update(Process::Context& context, void* scene) override
            {
 
                 //cycle background color
@@ -44,10 +36,10 @@ namespace entity_behaviors {
                     this->m_r -= 0.01f;
                     this->m_b += 0.01f;
                 }
-                
+
                 else {
                     this->m_r += 0.01f;
-                    this->m_b -= 0.01f; 
+                    this->m_b -= 0.01f;
                 }
 
                 context.camera->SetBackgroundColor({ this->m_r, this->m_g, this->m_b, this->m_a });
@@ -58,7 +50,7 @@ namespace entity_behaviors {
 
                 if (context.inputs->SPACE && !this->m_hasStarted) {
                     this->m_hasStarted = true;
-                    Time::delayedCall(1000, [&]() { System::Game::StartScene("CAVE"); });
+                   /*  Time::delayedCall(1000, []() { */ System::Game::StartScene("CAVE"); /* }); */
                 }
            }
 
@@ -66,6 +58,6 @@ namespace entity_behaviors {
 
             float m_r, m_g, m_b, m_a;
             bool m_hasStarted, m_rev;
-            std::shared_ptr<Sprite> m_player; 
+            std::shared_ptr<Sprite> m_player;
    };
 };

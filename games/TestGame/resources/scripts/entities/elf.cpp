@@ -5,23 +5,15 @@
 using namespace entity_behaviors;
 
 Elf::Elf(std::shared_ptr<Entity> entity):
-    Behavior(entity, "Elf")
+    Behavior(entity, "Elf"),
+        m_rev(false)
 {
     this->health = 3; 
-    this->m_rev = false;
     this->hb = Physics::CreateDynamicBody("box", 0, 0, 30, 50, true, 1);
     this->sprite = std::static_pointer_cast<Sprite>(entity);
     this->sprite->SetAnimation("walk", false, 4);
-
-    Time::delayedCall(100,[&]() { 
-        Time::setInterval(2000, [=]() { 
-
-            if (!this->m_isActive) 
-                return;
-
-            this->m_rev = !this->m_rev; 
-        }); 
-    });
+ 
+    Time::setInterval(2000, [this] { this->m_rev = !this->m_rev; }); 
 }
 
 void Elf::Update(Process::Context& context, void* scene) 

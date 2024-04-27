@@ -14,9 +14,9 @@ namespace entity_behaviors {
            //constructor, called on start
 
             TEXT_Behavior (std::shared_ptr<Entity> entity):
-                Behavior(entity, "TEXT")
+                Behavior(entity, "TEXT"),
+                    m_text(std::static_pointer_cast<Text>(entity))
             {
-                this->m_text = std::static_pointer_cast<Text>(entity);
                 this->score = 0;
             }
 

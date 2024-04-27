@@ -8,8 +8,6 @@ namespace entity_behaviors {
 
         public:
 
-            int health;
-
             std::shared_ptr<Sprite> player;
             b2Body* hb;
 
@@ -21,7 +19,10 @@ namespace entity_behaviors {
 
         private:
 
-            bool 
+            int m_health; 
+
+            bool
+                m_alive,
                 m_canJump, 
                 m_canAttack, 
                 m_canDamage,

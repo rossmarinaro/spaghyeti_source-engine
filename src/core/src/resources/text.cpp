@@ -1,6 +1,7 @@
 #include "../../../../build/sdk/include/app.h"
 
 
+
 void Text::Init()
 {
 
@@ -94,6 +95,7 @@ void Text::Render()
     gltDrawText(this->m_handle, (GLfloat*)&mvp);
 
     gltEndDraw();
+
 
 }
 

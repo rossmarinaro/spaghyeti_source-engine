@@ -5,22 +5,20 @@ using namespace entity_behaviors;
     
 
 PlayerController::PlayerController(std::shared_ptr<Entity> entity):
-    Behavior(entity, "PlayerController")
+    Behavior(entity, "PlayerController"),
+        m_alive(true),
+        m_follow(true),  
+        m_flipX(false), 
+        m_canJump(true),
+        m_canAttack(true),
+        m_canDamage(true),
+        m_attacking(false),
+        m_shootFireball(false),
+        m_health(4),
+        m_heart1(System::Game::CreateUI("heart.png", 1056.821, 30)),
+        m_heart2(System::Game::CreateUI("heart.png", 1120.538, 30)),
+        m_heart3(System::Game::CreateUI("heart.png", 1184.253, 30))
 {
-    this->health = 4;
-
-    this->m_follow = true;  
-    this->m_flipX = false; 
-    this->m_canJump = true;
-    this->m_canAttack = true;
-    this->m_canDamage = true;
-    this->m_attacking = false;
-    this->m_shootFireball = false; 
-
-    this->m_heart1 = System::Game::CreateUI("heart.png", 1056.821, 30);
-    this->m_heart2 = System::Game::CreateUI("heart.png", 1120.538, 30);
-    this->m_heart3 = System::Game::CreateUI("heart.png", 1184.253, 30);
-
     this->player = std::static_pointer_cast<Sprite>(entity);
     this->hb = Physics::CreateDynamicBody("box", 0, 0, 10, 10, true, 1);     
 }
@@ -150,30 +148,32 @@ void PlayerController::DoDamage(int amount)
         return;
 
     this->m_canDamage = false;
-    this->health -= amount;
+    this->m_health -= amount;
 
-    if (this->health < 4 && this->health > 2)
+    if (this->m_health < 4 && this->m_health > 2)
         this->m_heart1->SetTint({ 0.0f, 0.0f, 0.0f });
 
-    else if (this->health < 3 && this->health > 1)
+    else if (this->m_health < 3 && this->m_health > 1)
         this->m_heart2->SetTint({ 0.0f, 0.0f, 0.0f });
 
     else 
         this->m_heart3->SetTint({ 0.0f, 0.0f, 0.0f });
 
-    if (this->health <= 0) {
-        this->health = 1;
+    if (this->m_health <= 0 && this->m_alive) {
+        this->m_alive = false;
         Time::delayedCall(500, [&]() { System::Game::StartScene("GAMEOVER"); });
     }
 
+    else if (this->m_health > 0)
+        Time::delayedCall(500, [&]() { 
+            
+            this->player->ClearTint(); 
+            this->player->SetAlpha(1.0f);
+            this->m_canDamage = true;
+        });
+    
     this->player->SetAlpha(0.75f);
     this->player->SetTint({ 1.0f, 0.0f, 0.0f });
-
-    Time::delayedCall(500, [&]() { 
-        this->player->ClearTint(); 
-        this->player->SetAlpha(1.0f);
-        this->m_canDamage = true;
-    });
     
 }   
 

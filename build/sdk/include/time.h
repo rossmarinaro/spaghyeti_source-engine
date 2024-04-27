@@ -16,16 +16,14 @@ class Time {
         float m_delta;
 
         std::chrono::duration<double> time_left;
-        std::atomic<bool> exitFlag { false };
 
         operator float() const { return this->m_now; }
 
         inline float GetSeconds() const { return this->m_now; }
         inline float GetMilliseconds() const { return this->m_now * 1000; }
-
+        
         static void delayedCall(int milliseconds, std::function<void()>&& fn_ptr);
         static void setInterval(int milliseconds, std::function<void()>&& fn_ptr);
-        static void setInterval(int milliseconds, std::function<void()>&& fn_ptr, std::mutex&);
 
         static void Update(double t);
         //static void RunClock(int milliseconds);

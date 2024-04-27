@@ -12,15 +12,30 @@ using namespace System;
 
 //-----------------------
 
-
 void FlushGame(Game* game)
 {
+
+    if (Application::eventPool) {
+        delete Application::eventPool; 
+        Application::eventPool = nullptr;
+    }
+
+    for (auto& entity : game->currentScene->entities) 
+        entity.reset();
+
+    for (auto& ui : game->currentScene->UI) 
+        ui.reset();
+
+    for (auto& behavior : game->currentScene->behaviors) 
+        behavior.reset();
+
     game->currentScene->entities.clear();
     game->currentScene->UI.clear();
     game->currentScene->behaviors.clear();
 
     game->maps->layers.clear();
-    game->physics->ClearBodies(); 
+    game->physics->ClearBodies();     
+
 
 }
 
@@ -56,6 +71,8 @@ void Game::Boot()
     std::cout << "Game: " + Application::name + " initializing.\n";
 
     Game* game = Application::game;
+
+    game->currentScene = nullptr;
 
     game->text->Init(); 
 
@@ -93,12 +110,11 @@ void Game::StartScene(const std::string& key)
 
     Game* game = Application::game;
 
-    game->m_gameState = false;
-    game->time->exitFlag = true;
+    game->m_gameState = false; 
 
     //find loaded scene
 
-    auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](std::shared_ptr<Scene> scene) { return scene->key == key; });
+    auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](Scene* scene) { return scene->key == key; });
 
     if (it != game->scenes.end())
     {
@@ -106,25 +122,31 @@ void Game::StartScene(const std::string& key)
         //clear entities if applicable (after first initialization)
 
         if (game->currentScene) 
-            FlushGame(game);    
+           FlushGame(game);     
+
+        Resources::Manager::Clear(false);
+        Application::eventPool = new EventPool(THREAD_COUNT);
 
         //assign / load current scene
 
-        game->currentScene = *it; 
-
-        Resources::Manager::Clear(false);
+        game->currentScene = *it;
 
         game->currentScene->Preload();
         game->currentScene->Run();  
-        
-        game->time->exitFlag = false; 
+
         game->m_gameState = true; 
 
         #if DEVELOPMENT == 1
-            std::cout << "Scene: " + game->currentScene->key + " started.\n";
+            std::cout << "Scene: " + key + " started.\n";
         #endif
-
     }
+
+    else {
+        #if DEVELOPMENT == 1
+            std::cout << "Scene: key not found.\n";
+        #endif
+    }
+
 }
 
 
@@ -138,10 +160,14 @@ void Game::Exit()
     Game* game = Application::game;
 
     game->m_gameState = false;
-    game->time->exitFlag = game->time->exitFlag.exchange(1);
 
     FlushGame(game);
-    
+
+    for (auto& scene : game->scenes) {
+        delete scene;
+        scene = nullptr;
+    }
+
     game->scenes.clear();    
     game->text->ShutDown();
 
@@ -210,12 +236,12 @@ void Game::UpdateFrame()
     //render input cursor
 
     Application::game->inputs->RenderCursor();
-
+ 
     //update behaviors, pass game process context to subclasses
 
     for (const auto& behavior : game->currentScene->behaviors)
         if (!game->currentScene->IsPaused() && behavior.get() && behavior) 
-            behavior->Update(game->m_context, game->currentScene.get()); 
+            behavior->Update(game->m_context, game->currentScene);  
 
     //depth sort
 

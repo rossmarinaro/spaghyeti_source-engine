@@ -1,5 +1,7 @@
 #pragma once
 
+#include <mutex>
+
 #include "./camera.h"
 #include "./inputs.h"
 #include "./physics.h"

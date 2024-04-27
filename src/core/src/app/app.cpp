@@ -82,12 +82,12 @@ System::Application::Application(Game* layer, const std::string& key)
         //run main app process
 
         Init(game);
-
+ 
         #ifdef __EMSCRIPTEN__
             emscripten_set_main_loop(Update, 0, 1);
         #else
             while (!glfwWindowShouldClose(Window::s_instance))
-                Update(); 
+                Update();
         #endif
 
     #endif
@@ -100,7 +100,7 @@ System::Application::Application(Game* layer, const std::string& key)
 
 System::Application::~Application()
 {
-    
+
     #if STANDALONE == 1
         Game::Exit();
     #endif

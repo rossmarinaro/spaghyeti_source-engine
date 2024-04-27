@@ -26,8 +26,9 @@ namespace System {
             Physics* physics; 
             Inputs* inputs;
 
-            std::vector<std::shared_ptr<Scene>> scenes;
-            std::shared_ptr<Scene> currentScene;
+            Scene* currentScene;
+
+            std::vector<Scene*> scenes;
             std::shared_ptr<Geometry> cursor = nullptr;
 
             Game();
@@ -35,7 +36,7 @@ namespace System {
 
             template <typename T>
             inline void LoadScene() {
-                auto scene = std::make_shared<T>(this->m_context);
+                T* scene = new T(this->m_context);
                 this->scenes.push_back(scene);
             }
 

@@ -66,16 +66,14 @@ void Time::Update(double t)
 
 void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
 {
- 
-    std::thread ([=] (){
-        
-        std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
-    
-        if (!System::Application::game->time->exitFlag)
-            fn_ptr();
 
-    }).detach();
- 
+    System::Application::eventPool->Enqueue([=]() { 
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+    
+        if (System::Application::eventPool->active.load())
+            fn_ptr();
+    });
 }
 
 //-------------- recursive interval timeout
@@ -84,50 +82,17 @@ void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
 void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr)
 {
 
-    std::thread ([=] (){
+    System::Application::eventPool->Enqueue([=]() { 
 
-        if (System::Application::game->time->exitFlag.load())
-            return;
+        while(System::Application::eventPool->active.load()) 
+        { 
+            if (System::Application::eventPool->active.load())
+                std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 
-        while(!System::Application::game->time->exitFlag.load()) {
-
-            std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
-
-            if (!System::Application::game->time->exitFlag)
-                fn_ptr();
+            if (System::Application::eventPool->active.load())
+                fn_ptr(); 
         }
 
-        System::Application::game->time->exitFlag = false;
-
-    }).detach();     
+    }); 
 
 }
-
-
-//-------------- recursive interval timeout with mutex
-
-
-void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr, std::mutex& m)
-{
-
-    std::thread ([=, &m] () {
-
-        if (System::Application::game->time->exitFlag.load())
-            return;
-
-        m.lock();
-
-        while(!System::Application::game->time->exitFlag.load()) {
-
-            std::this_thread::sleep_for(std::chrono::milliseconds((milliseconds)));
-            fn_ptr();
-        }
-
-        m.unlock();
-
-        System::Application::game->time->exitFlag = false;
-
-    }).detach();     
-
-}
-

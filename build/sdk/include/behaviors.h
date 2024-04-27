@@ -12,16 +12,16 @@ namespace entity_behaviors {
 
             std::string key; 
             
-            inline Behavior(std::shared_ptr<Entity> entity, const std::string& key) 
+            inline Behavior(std::shared_ptr<Entity> entity, const std::string& key):
+                m_entity(entity),
+                m_isActive(true)
             {
                 this->key = key; 
-                this->m_entity = entity;
-                this->m_isActive = true;
             }
 
             virtual ~Behavior() {
                 this->m_isActive = false;
-            };
+            }
 
             virtual void Update(Process::Context& context, void* scene) {};
 
@@ -31,12 +31,14 @@ namespace entity_behaviors {
                     return behavior->key == key; 
                 }));
             }
-
+         
         protected:
 
-            bool m_isActive; 
+            std::atomic_char m_isActive;
 
             std::shared_ptr<Entity> m_entity;
+
+            std::mutex m_lock;
 
             template <typename T>
             inline std::shared_ptr<T> GetHandle(const char* type) {
