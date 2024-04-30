@@ -21,6 +21,7 @@ namespace entity_behaviors {
 
             virtual ~Behavior() {
                 this->m_isActive = false;
+                this->m_entity = nullptr;
             }
 
             virtual void Update(Process::Context& context, void* scene) {};
@@ -37,8 +38,6 @@ namespace entity_behaviors {
             std::atomic_char m_isActive;
 
             std::shared_ptr<Entity> m_entity;
-
-            std::mutex m_lock;
 
             template <typename T>
             inline std::shared_ptr<T> GetHandle(const char* type) {

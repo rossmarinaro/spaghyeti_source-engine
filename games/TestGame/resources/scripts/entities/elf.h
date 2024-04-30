@@ -18,7 +18,10 @@ namespace entity_behaviors {
 
         private:
 
-            bool m_rev;
+            bool m_rev, 
+                 m_canDamage, 
+                 m_canHit,
+                 m_canDestroy;
 
     };
 }

@@ -122,8 +122,15 @@ b2Body* Physics::CreateDynamicBody(
 
 
 //does not destroy body immediately. body will be destroyed after next timestep
-void Physics::DestroyBody(b2Body* b) {
-    System::Application::game->physics->m_bodiesToRemove.insert(b);
+void Physics::DestroyBody(b2Body* b) 
+{
+
+    auto b_it = std::find(System::Application::game->physics->m_active_bodies.begin(), System::Application::game->physics->m_active_bodies.end(), b);
+
+    if (b_it != System::Application::game->physics->m_active_bodies.end()) {
+        System::Application::game->physics->m_bodiesToRemove.insert(*b_it);
+        System::Application::game->physics->m_active_bodies.erase(b_it);
+    }
 }
 
 
@@ -135,8 +142,6 @@ void Physics::ClearBodies()
     if (this->m_active_bodies.size())
         for (const auto& body : this->m_active_bodies)
             DestroyBody(body);
-            
-    this->m_active_bodies.clear();
 }
 
 
@@ -187,7 +192,7 @@ void Physics::Update()
     }
 
     System::Application::game->physics->m_bodiesToRemove.clear();
-
+ 
     world.SetGravity(b2Vec2(gravityX, gravityY));
 }
 

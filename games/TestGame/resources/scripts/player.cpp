@@ -67,14 +67,18 @@ void PlayerController::Update(Process::Context& context, void* scene)
         this->hb->SetEnabled(false);  
     }
 
-    if (!this->m_active.load())
+    if (!this->m_active.load()) {
+        this->m_active = true;
         System::Game::StartScene("GAMEOVER");
+        return;
+    }
 
     if (!this->m_alive) {
         this->player->SetVelocity(0.0f, 0.0f);
         context.camera->Fade(0.1f, "in");
 
     }
+
         
 }
 
@@ -172,10 +176,10 @@ void PlayerController::DoDamage(int amount)
     this->player->SetAlpha(0.75f);
     this->player->SetTint({ 1.0f, 0.0f, 0.0f });
 
-    if (this->m_health <= 0) 
+    if (this->m_health <= 0 && this->m_alive) 
     {
         this->m_alive = false;   
-        System::Audio::play("ring.flac", false, 1.000000);
+        System::Audio::play("error.flac", false, 1.000000);
         this->player->SetTint({ 0.0f, 0.0f, 0.0f });
         Time::delayedCall(500, [this] { this->m_active = false; });
     }

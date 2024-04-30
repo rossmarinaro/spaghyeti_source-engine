@@ -18,6 +18,7 @@ namespace entity_behaviors {
            {
 
                Time::delayedCall(3000, [this] {  
+                    this->m_hasStarted = true;
                     Time::setInterval(500, [this] { this->m_startText->SetAlpha(this->m_startText->alpha == 1 ? 0.0f : 1.0f); });
                 });  
            }
@@ -25,9 +26,9 @@ namespace entity_behaviors {
             inline void Update(Process::Context& context, void* scene) override
             {
  
-                if (!this->m_hasStarted && this->m_startText->content == "GAME OVER" && context.inputs->SPACE) 
+                if (this->m_hasStarted && this->m_startText->content == "GAME OVER" && context.inputs->SPACE) 
                 {
-                    this->m_hasStarted = true;
+                    this->m_hasStarted = false;
                     System::Game::StartScene("MENU"); 
                 }
             }
