@@ -115,8 +115,6 @@ System::Application::~Application()
     delete resources;
     resources = nullptr;
 
-    #if DEVELOPMENT == 1
-        std::cout << "Application terminated. 👌\n";
-    #endif
+    std::cout << "Application terminated successfully. 👌\n";
 
 };

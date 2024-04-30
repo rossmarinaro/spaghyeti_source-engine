@@ -43,6 +43,7 @@ namespace editor {
 							  worldHeight = 2000;
 
 			static inline float gravityX = 0.0f,
+                                vignetteVisibility = 0.0f,
 								gravityY = 500.0f;
 
 			static inline bool projectOpen = false,

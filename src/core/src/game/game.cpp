@@ -66,7 +66,7 @@ Game::Game()
 
 
 void Game::Boot()   
-{   
+{     
 
     std::cout << "Game: " + Application::name + " initializing.\n";
 
@@ -132,6 +132,9 @@ void Game::StartScene(const std::string& key)
         game->currentScene = *it;
 
         game->currentScene->Preload();
+        game->currentScene->vignette = std::make_unique<Sprite>("base", 0.0f, 0.0f);
+        game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
+        game->currentScene->vignette->SetAlpha(0.0f);
         game->currentScene->Run();  
 
         game->m_gameState = true; 
@@ -232,6 +235,12 @@ void Game::UpdateFrame()
     for (const auto& UI : game->currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
             UI->Render();
+
+    //vignette overlay
+
+    game->currentScene->vignette->texture.FrameWidth = Window::s_currentWidth * 2;
+    game->currentScene->vignette->texture.FrameHeight = Window::s_currentWidth * 2;
+    game->currentScene->vignette->Render();
 
     //render input cursor
 

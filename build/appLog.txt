@@ -1,21 +1,22 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Apr 26 18:40:40 2024
-IMGui Version: 1 @ Fri Apr 26 18:40:41 2024
-GUI launched. @ Fri Apr 26 18:40:41 2024
-Workspace reset. @ Fri Apr 26 18:40:45 2024
-sprite node Untitled created. @ Fri Apr 26 18:40:45 2024
-Text node Untitled created. @ Fri Apr 26 18:40:45 2024
-Text node Untitled created. @ Fri Apr 26 18:40:45 2024
-Text node Untitled created. @ Fri Apr 26 18:40:45 2024
-Text node Untitled created. @ Fri Apr 26 18:40:45 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Tue Apr 30 10:27:40 2024
+IMGui Version: 1 @ Tue Apr 30 10:27:41 2024
+GUI launched. @ Tue Apr 30 10:27:41 2024
+Workspace reset. @ Tue Apr 30 10:27:46 2024
+sprite node Untitled created. @ Tue Apr 30 10:27:46 2024
+Text node Untitled created. @ Tue Apr 30 10:27:46 2024
+Text node Untitled created. @ Tue Apr 30 10:27:46 2024
+Text node Untitled created. @ Tue Apr 30 10:27:46 2024
+Text node Untitled created. @ Tue Apr 30 10:27:46 2024
 Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Fri Apr 26 18:40:45 2024
-Scene parsed. @ Fri Apr 26 18:40:56 2024
-Scene parsed. @ Fri Apr 26 18:40:56 2024
-Project TestGame built successfully. @ Fri Apr 26 18:41:33 2024
-Sprite node sv deleted. @ Fri Apr 26 18:41:37 2024
-Text node the funky adventures deleted. @ Fri Apr 26 18:41:37 2024
-Text node swanky velvet deleted. @ Fri Apr 26 18:41:37 2024
-Text node press start deleted. @ Fri Apr 26 18:41:37 2024
-Text node pastaboss enterprise deleted. @ Fri Apr 26 18:41:37 2024
-GUI exited @ Fri Apr 26 18:41:37 2024
-Editor closed. @ Fri Apr 26 18:41:37 2024
+Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Tue Apr 30 10:27:46 2024
+Scene parsed. @ Tue Apr 30 10:27:54 2024
+Scene parsed. @ Tue Apr 30 10:27:54 2024
+Scene parsed. @ Tue Apr 30 10:27:54 2024
+Project TestGame built successfully. @ Tue Apr 30 10:28:13 2024
+Sprite node sv deleted. @ Tue Apr 30 10:28:15 2024
+Text node the funky adventures deleted. @ Tue Apr 30 10:28:15 2024
+Text node swanky velvet deleted. @ Tue Apr 30 10:28:15 2024
+Text node press start deleted. @ Tue Apr 30 10:28:15 2024
+Text node pastaboss enterprise deleted. @ Tue Apr 30 10:28:15 2024
+GUI exited @ Tue Apr 30 10:28:15 2024
+Editor closed. @ Tue Apr 30 10:28:15 2024

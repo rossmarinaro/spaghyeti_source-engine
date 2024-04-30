@@ -113,7 +113,7 @@ void Shader::Update(Camera* camera)
 //--------------------------------- 
 
 
-void checkCompileErrors(unsigned int shader, const std::string& type)
+bool checkCompileErrors(unsigned int shader, const std::string& type)
 {
 
     #ifdef __EMSCRIPTEN__
@@ -139,11 +139,13 @@ void checkCompileErrors(unsigned int shader, const std::string& type)
                 glGetShaderInfoLog(shader, log.size(), &length, log.data());
 
                 std::cout << log.data() << "\n";
+                return false;
             }
             else {
                 #if DEVELOPMENT == 1
                      std::cout << "Shader: " + type + " compiled successfully.\n";  
                 #endif
+                return true;
             }
         }
 
@@ -155,13 +157,16 @@ void checkCompileErrors(unsigned int shader, const std::string& type)
 
         if (type != "PROGRAM")
         {
-            if (!success)
+            if (!success) {
                 std::cout << "ERROR1::SHADER_COMPILATION_ERROR of type: " + type + "\nINFO System::Log::" + infoLog + "\n";
+                return false;
 
+            }
             else {
                 #if DEVELOPMENT == 1
                     std::cout << "Shader: " + type + " compiled successfully.\n";  
                 #endif
+                return true;
             }
                 
         }
@@ -171,11 +176,13 @@ void checkCompileErrors(unsigned int shader, const std::string& type)
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
                 std::cout << "ERROR2::SHADER_COMPILATION_ERROR of type: " + type + "\nINFO System::Log::" + infoLog + "\n";
+                return false;
             }
             else {
                 #if DEVELOPMENT == 1
                     std::cout << "Shader: " + type + " linked successfully.\n";  
                 #endif
+                return true;
             }
         };
 
@@ -303,7 +310,9 @@ void Shader::Generate(const char* vertexPath, const char* fragmentPath, const ch
 
     glShaderSource(vertex, 1, &vertexPath, NULL);
     glCompileShader(vertex);
-    checkCompileErrors(vertex, "VERTEX");
+
+    if (!checkCompileErrors(vertex, "VERTEX"))
+        return;
 
     // fragment Shader
 
@@ -313,7 +322,9 @@ void Shader::Generate(const char* vertexPath, const char* fragmentPath, const ch
 
         glShaderSource(fragment, 1, &fragmentPath, NULL);
         glCompileShader(fragment);
-        checkCompileErrors(fragment, "FRAGMENT");
+        
+        if (!checkCompileErrors(fragment, "FRAGMENT"))
+            return;
     }
 
     // if geometry shader
@@ -325,7 +336,9 @@ void Shader::Generate(const char* vertexPath, const char* fragmentPath, const ch
 
             glShaderSource(geometry, 1, &geomPath, NULL);
             glCompileShader(geometry);
-            checkCompileErrors(geometry, "GEOMETRY");
+
+            if (!checkCompileErrors(geometry, "GEOMETRY"))
+                return;
         }
     #endif
 
@@ -342,7 +355,9 @@ void Shader::Generate(const char* vertexPath, const char* fragmentPath, const ch
         glAttachShader(this->ID, geometry);
 
     glLinkProgram(this->ID);
-    checkCompileErrors(this->ID, "PROGRAM");
+
+    if (!checkCompileErrors(this->ID, "PROGRAM"))
+        return;
 
     // use program
 

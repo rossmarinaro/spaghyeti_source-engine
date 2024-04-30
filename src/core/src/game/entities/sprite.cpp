@@ -123,8 +123,7 @@ void Sprite::SetTexture(const std::string& key)
     auto texture = this->texture.GetTexture(key); 
         
     this->key = key; 
-    //this->texture.Width = texture.Width;        
-    //this->texture.Height = texture.Height;
+
     this->texture.FrameWidth = texture.Width;
     this->texture.FrameHeight = texture.Height;
     this->texture.ID = texture.ID;
@@ -165,7 +164,7 @@ void Sprite::ReadSpritesheetData()
     else if (System::Resources::Manager::GetRawSpritesheetData(this->key).size())
         this->m_resourceData = System::Resources::Manager::GetRawSpritesheetData(this->key);  
 
-    else
+    else 
         return;
     
     this->m_isSpritesheet = true;

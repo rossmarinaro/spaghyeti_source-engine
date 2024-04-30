@@ -67,7 +67,7 @@ void Time::Update(double t)
 void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
 {
 
-    System::Application::eventPool->Enqueue([=]() { 
+    System::Application::eventPool->Enqueue([=] { 
 
       std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
     
@@ -82,7 +82,7 @@ void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
 void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr)
 {
 
-    System::Application::eventPool->Enqueue([=]() { 
+    System::Application::eventPool->Enqueue([=] { 
 
         while(System::Application::eventPool->active.load()) 
         { 

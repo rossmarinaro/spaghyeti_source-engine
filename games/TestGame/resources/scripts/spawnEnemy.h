@@ -11,7 +11,7 @@ namespace entity_behaviors {
 
             //constructor, called on start
 
-            SpawnEnemy(std::shared_ptr<Entity> entity):
+            SpawnEnemy(std::shared_ptr<Entity> entity, Process::Context& context):
                 Behavior(entity, "SpawnEnemy")
             {
                 //interval spawn timer

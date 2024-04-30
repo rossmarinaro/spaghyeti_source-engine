@@ -85,6 +85,7 @@ void EventListener::Serialize(json& data)
 
     //camera
 
+    data["camera"]["vignetteVisibility"] = Editor::vignetteVisibility;
     data["camera"]["x"] = Editor::game->camera->position.x;
     data["camera"]["y"] = Editor::game->camera->position.y;
     data["camera"]["width"] = Editor::worldWidth;
@@ -167,6 +168,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     //camera 
 
+    Editor::vignetteVisibility = data["camera"]["vignetteVisibility"];
     Editor::game->camera->position.x = data["camera"]["x"];
     Editor::game->camera->position.y = data["camera"]["y"];
     Editor::game->camera->zoom = data["camera"]["zoom"];
@@ -246,6 +248,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     //camera
 
+    scene.vignetteVisibility = data["camera"]["vignetteVisibility"];
     scene.cameraPosition.x = data["camera"]["x"];
     scene.cameraPosition.y = data["camera"]["y"];
     scene.cameraZoom = data["camera"]["zoom"];

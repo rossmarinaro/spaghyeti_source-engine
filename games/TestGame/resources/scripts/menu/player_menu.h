@@ -29,7 +29,7 @@ namespace entity_behaviors {
 
            void Update(Process::Context& context, void* scene) override
            {
-
+      
                 //cycle background color
 
                 if (!this->m_rev) {
@@ -42,7 +42,8 @@ namespace entity_behaviors {
                     this->m_b -= 0.01f;
                 }
 
-                context.camera->SetBackgroundColor({ this->m_r, this->m_g, this->m_b, this->m_a });
+                context.camera->SetBackgroundColor({ this->m_r, this->m_g, this->m_b, this->m_a });  
+                context.camera->Fade(0.01f, "out");
 
                 //set player animation
 
@@ -50,7 +51,7 @@ namespace entity_behaviors {
 
                 if (context.inputs->SPACE && !this->m_hasStarted) {
                     this->m_hasStarted = true;
-                   /*  Time::delayedCall(1000, []() { */ System::Game::StartScene("CAVE"); /* }); */
+                    System::Game::StartScene("CAVE");
                 }
            }
 

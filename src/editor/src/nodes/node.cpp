@@ -334,7 +334,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
 
         //settings
 
-        data={
+        data = {
             { "type", type },
             { "ID", node->m_ID }, 
             { "name", node->m_name },
@@ -426,7 +426,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
                 { "bodyY", tmn->bodyY.size() ? tmn->bodyY[i] : 0 }
             });
 
-        data={
+        data = {
             { "ID", node->m_ID },
             { "name", node->m_name },
             { "layer", tmn->layer },
@@ -452,13 +452,13 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
     {
         auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
-        data.push_back({
+        data = {
             { "ID", node->m_ID },
             { "name", node->m_name },
             { "source name", an->audio_source_name },
             { "volume", an->volume },
             { "loop", an->loop }
-        });
+        };
     }
 
     //------------- empty
@@ -468,7 +468,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
 
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
-        data={
+        data = {
             { "ID", node->m_ID },
             { "name", node->m_name },
             { "debug graphics", en->show_debug },
@@ -511,7 +511,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
 
         auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
-        data={
+        data = {
             { "ID", node->m_ID },
             { "name", node->m_name },
             { "content", tn->textBuf },

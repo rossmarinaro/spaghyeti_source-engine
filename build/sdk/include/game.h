@@ -80,6 +80,7 @@ namespace System {
 
             bool m_gameState;
             Process::Context m_context;
+            
     }; 
 
 }

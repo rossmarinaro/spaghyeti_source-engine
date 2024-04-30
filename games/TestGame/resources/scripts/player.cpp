@@ -1,12 +1,13 @@
 #include "./player.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
+#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/audio.h"
 
 using namespace entity_behaviors;
-    
 
 PlayerController::PlayerController(std::shared_ptr<Entity> entity):
     Behavior(entity, "PlayerController"),
         m_alive(true),
+        m_active(true),
         m_follow(true),  
         m_flipX(false), 
         m_canJump(true),
@@ -18,9 +19,9 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
         m_heart1(System::Game::CreateUI("heart.png", 1056.821, 30)),
         m_heart2(System::Game::CreateUI("heart.png", 1120.538, 30)),
         m_heart3(System::Game::CreateUI("heart.png", 1184.253, 30))
-{
-    this->player = std::static_pointer_cast<Sprite>(entity);
-    this->hb = Physics::CreateDynamicBody("box", 0, 0, 10, 10, true, 1);     
+{ 
+    this->player = std::static_pointer_cast<Sprite>(entity); 
+    this->hb = Physics::CreateDynamicBody("box", 0, 0, 10, 10, true, 1);   
 }
 
 //-------------------------------------
@@ -32,7 +33,7 @@ PlayerController::~PlayerController() {
 //-------------------------------------
 
 void PlayerController::Update(Process::Context& context, void* scene) 
-{ 
+{
 
     if (this->m_follow)
         this->player->StartFollow(context.camera, 500);
@@ -66,6 +67,15 @@ void PlayerController::Update(Process::Context& context, void* scene)
         this->hb->SetEnabled(false);  
     }
 
+    if (!this->m_active.load())
+        System::Game::StartScene("GAMEOVER");
+
+    if (!this->m_alive) {
+        this->player->SetVelocity(0.0f, 0.0f);
+        context.camera->Fade(0.1f, "in");
+
+    }
+        
 }
 
 //-------------------------------------
@@ -73,7 +83,7 @@ void PlayerController::Update(Process::Context& context, void* scene)
 void PlayerController::Move(Inputs* inputs)
 {
 
-    if (this->m_attacking)
+    if (this->m_attacking || !this->m_alive)
         return;
 
     if (inputs->LEFT) {       
@@ -159,21 +169,23 @@ void PlayerController::DoDamage(int amount)
     else 
         this->m_heart3->SetTint({ 0.0f, 0.0f, 0.0f });
 
-    if (this->m_health <= 0 && this->m_alive) {
-        this->m_alive = false;
-        Time::delayedCall(500, [&]() { System::Game::StartScene("GAMEOVER"); });
+    this->player->SetAlpha(0.75f);
+    this->player->SetTint({ 1.0f, 0.0f, 0.0f });
+
+    if (this->m_health <= 0) 
+    {
+        this->m_alive = false;   
+        System::Audio::play("ring.flac", false, 1.000000);
+        this->player->SetTint({ 0.0f, 0.0f, 0.0f });
+        Time::delayedCall(500, [this] { this->m_active = false; });
     }
 
     else if (this->m_health > 0)
-        Time::delayedCall(500, [&]() { 
-            
+        Time::delayedCall(500, [this] { 
             this->player->ClearTint(); 
             this->player->SetAlpha(1.0f);
             this->m_canDamage = true;
         });
-    
-    this->player->SetAlpha(0.75f);
-    this->player->SetTint({ 1.0f, 0.0f, 0.0f });
     
 }   
 

@@ -13,6 +13,7 @@ namespace editor {
 
         float gravityX = 0.0f,
               gravityY = 500.0f,
+              vignetteVisibility = 0.0f,
               cameraZoom = 1,
               currentBoundsWidthBegin,
               currentBoundsWidthEnd,

@@ -24,7 +24,7 @@ void Editor::Update()
         GUI::grid->Render();
 
     Time::Update(glfwGetTime());
-    
+   
     glfwPollEvents();
 
     GUI::Render();
@@ -72,7 +72,7 @@ Editor::Editor()
 
     Application::Init(game);
 
-    GUI::Launch();
+    GUI::Launch();    
 
     //set top-left header and bottom toolbar icon
 

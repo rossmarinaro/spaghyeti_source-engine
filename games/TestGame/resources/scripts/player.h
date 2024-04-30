@@ -31,6 +31,8 @@ namespace entity_behaviors {
                 m_attacking,
                 m_shootFireball;
 
+            std::atomic_bool m_active;
+            
             std::shared_ptr<Sprite> m_heart1;
             std::shared_ptr<Sprite> m_heart2;
             std::shared_ptr<Sprite> m_heart3;

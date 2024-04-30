@@ -1,7 +1,6 @@
 #include "../../../../build/sdk/include/app.h"
 
 
-
 void Text::Init()
 {
 
@@ -55,6 +54,7 @@ Text::Text(const std::string& content, float x, float y, float scale, glm::vec3 
     #if DEVELOPMENT == 1
         std::cout << "Text: " + (std::string)content + " created.\n";
     #endif
+
 
 
 }

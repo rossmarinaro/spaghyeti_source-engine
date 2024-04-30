@@ -11,18 +11,20 @@ namespace System {
         public: 
 
             std::string key;
+
+            std::unique_ptr<Sprite> vignette;
             
             std::vector<std::shared_ptr<Entity>> entities;
             std::vector<std::shared_ptr<Entity>> UI;
             std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
 
             Scene(const Process::Context& context): 
-                context(context),
-                key("Untitled" + std::to_string(s_ID)) { s_ID++; }
+                m_context(context)
+                    { this->Init("Untitled" + std::to_string(s_ID)); }
 
             Scene(const Process::Context& context, const std::string& key): 
-                context(context),
-                key(key) { s_ID++; }
+                m_context(context)
+                    { this->Init(key); }
 
             virtual ~Scene() { s_ID--; };
 
@@ -35,8 +37,8 @@ namespace System {
 
         protected:
             
-            ma_device music;     
-            Process::Context context;   
+            ma_device m_music;     
+            Process::Context m_context;   
 
             template<typename T>
             inline T GetData(const char* key) const { 
@@ -70,6 +72,11 @@ namespace System {
             bool m_paused;
 
             std::map<const char*, std::any> m_data;
+
+            inline void Init(const std::string& key) {
+                s_ID++;
+                this->key = key;
+            }
 
     };
 }

@@ -33,21 +33,22 @@ class Camera {
             this->rotation = 0.0f;
         }
 
-        inline void SetPosition(const glm::vec2 &position) { this->position = position; }
-        inline void SetBackgroundColor(const glm::vec4 &color) { this->backgroundColor = color; }
-        inline const glm::vec4 &GetBackgroundColor() { return this->backgroundColor; }
+        inline const glm::vec4& GetBackgroundColor() { return this->backgroundColor; }
+        inline void SetPosition(const glm::vec2& position) { this->position = position; }
+        inline void SetBackgroundColor(const glm::vec4& color) { this->backgroundColor = color; }
         inline void SetZoom(float zoom) { this->zoom = zoom; }
+        inline void Pan(float rateX, float rateY) { this->SetPosition(glm::vec2(this->position.x + rateX, this->position.y + rateY)); }
         inline float const GetZoom() { return this->zoom; }
-        inline void Pan(float rateX, float rateY) {
-            this->SetPosition(glm::vec2(this->position.x + rateX, this->position.y + rateY));
-        }
         
-        bool InBounds();
+        bool InBounds(); 
+        void SetVignette(float alpha);
+        void Fade(float rate, const char* direction);
         void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd); 
         glm::highp_mat4 GetProjectionMatrix(float width, float height);
 
         Camera();
         ~Camera() = default;
+
 
     private:
     

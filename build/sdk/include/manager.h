@@ -72,7 +72,7 @@ namespace System {
             private:
 
                 //file assets
-
+ 
                 std::map<std::string, std::string> m_file_image_assets;
                 std::map<std::string, std::string> m_file_audio_assets;
                 std::map<std::string, std::string> m_file_text_assets;

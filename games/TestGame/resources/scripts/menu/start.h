@@ -17,18 +17,18 @@ namespace entity_behaviors {
                     m_startText(std::static_pointer_cast<Text>(entity))
            {
 
-               Time::delayedCall(3000, [this] { 
+               Time::delayedCall(3000, [this] {  
                     Time::setInterval(500, [this] { this->m_startText->SetAlpha(this->m_startText->alpha == 1 ? 0.0f : 1.0f); });
                 });  
            }
 
             inline void Update(Process::Context& context, void* scene) override
             {
-                
+ 
                 if (!this->m_hasStarted && this->m_startText->content == "GAME OVER" && context.inputs->SPACE) 
                 {
                     this->m_hasStarted = true;
-                    Time::delayedCall(500, [&]() { System::Game::StartScene("MENU"); });
+                    System::Game::StartScene("MENU"); 
                 }
             }
 
