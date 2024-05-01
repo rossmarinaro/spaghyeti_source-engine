@@ -10,21 +10,15 @@ using namespace editor;
 AudioNode::AudioNode(): 
     Node("Audio"),
         m_audioTexture(Graphics::Texture2D::GetTexture("audio src"))
-{}
-
-
-//--------------------------
-
-
-AudioNode::AudioNode(const std::string& id): 
-    Node(id, "Audio"),
-        audio_source_name(""),
-        m_audioTexture(Graphics::Texture2D::GetTexture("audio src")),
-        loop(false),
-        volume(1)
+     
 {
+    this->audio_source_name = "";
+    this->loop = false;
+    this->volume = 1.0f;
+
     System::Resources::Manager::RegisterAssets();
-    Editor::Log("Audio node " + this->m_name + " created.");   
+    
+    Editor::Log("Audio node " + this->name + " created.");   
 }
 
 
@@ -34,7 +28,7 @@ AudioNode::AudioNode(const std::string& id):
 AudioNode::~AudioNode() {
 
     if (!this->virtual_node)  
-        Editor::Log("audio node " + this->m_name + " deleted.");
+        Editor::Log("audio node " + this->name + " deleted.");
 }
 
 
@@ -55,12 +49,12 @@ void AudioNode::Render(std::shared_ptr<Node> node)
 
     {
 
-        ImGui::PushID(("(Audio) " + this->m_name).c_str());
+        ImGui::PushID(("(Audio) " + this->name).c_str());
 
-        if (ImGui::TreeNode(("(Audio) " + this->m_name).c_str()))
+        if (ImGui::TreeNode(("(Audio) " + this->name).c_str()))
         {
         
-            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->m_ID);
+            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->ID);
 
             if (ImGui::BeginMenu("Delete"))
             {

@@ -18,10 +18,10 @@ namespace editor {
 
         public:
 
-            static inline bool  m_running = true,
-                                show_init = true,
-                                show_quit = false,
-                                show_grid = false;
+            static inline bool s_running = true,
+                               s_show_init = true,
+                               s_show_quit = false,
+                               s_show_grid = false;
         
             static void Launch();
             static void Render();
@@ -30,13 +30,11 @@ namespace editor {
             static void RenderShaderOptions(const std::string& nodeId);
             static void RenderScriptOptions(const std::string& nodeId);
 
-            static inline std::unique_ptr<Geometry> grid;
+            static inline std::unique_ptr<Geometry> s_grid;
             
-            static inline float grid_quantity = 20.0f;
+            static inline float s_grid_quantity = 20.0f;
 
         private:
-
-            static inline ImGuiIO io;
 
             static void CreateGrid();
             static void RenderNodes();

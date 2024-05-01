@@ -6,15 +6,19 @@
 
 using namespace editor;
 
-EmptyNode::EmptyNode(const std::string& id): 
-    Node(id, "Empty"),
-        rectWidth(0.0f),
-        rectHeight(0.0f),
-        radius(0.0f),
-        show_debug(false),
-        debug_fill(false),
-        currentShape("")
-{ Editor::Log("Empty node " + this->m_name + " created."); }
+EmptyNode::EmptyNode(): 
+    Node("Empty")
+{ 
+
+    this->rectWidth = 0.0f;
+    this->rectHeight = 0.0f;
+    this->radius = 0.0f;
+    this->show_debug = false;
+    this->debug_fill = false;
+    this->currentShape = "";
+
+    Editor::Log("Empty node " + this->name + " created."); 
+}
 
 
 //---------------------------
@@ -26,7 +30,7 @@ EmptyNode::~EmptyNode() {
         System::Game::DestroyEntity(this->m_debugGraphic);
 
     if (!this->virtual_node)
-        Editor::Log("Empty node " + this->m_name + " deleted.");
+        Editor::Log("Empty node " + this->name + " deleted.");
 }
 
 
@@ -79,12 +83,12 @@ void EmptyNode::Render(std::shared_ptr<Node> node)
 
     {
 
-        ImGui::PushID(("(Empty) " + this->m_name).c_str());
+        ImGui::PushID(("(Empty) " + this->name).c_str());
  
-        if (ImGui::TreeNode(("(Empty) " + this->m_name).c_str()))
+        if (ImGui::TreeNode(("(Empty) " + this->name).c_str()))
         {
         
-            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->m_ID);
+            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->ID);
 
             //save prefab
 
@@ -109,7 +113,7 @@ void EmptyNode::Render(std::shared_ptr<Node> node)
 
             if (this->HasComponent("Script") && ImGui::BeginMenu("Script")) {
 
-                GUI::RenderScriptOptions(this->m_ID);
+                GUI::RenderScriptOptions(this->ID);
                 
                 ImGui::EndMenu();
             }
@@ -119,7 +123,7 @@ void EmptyNode::Render(std::shared_ptr<Node> node)
 
             if (this->HasComponent("Shader") && ImGui::BeginMenu("Shader")) {
 
-                GUI::RenderShaderOptions(this->m_ID);
+                GUI::RenderShaderOptions(this->ID);
                 
                 ImGui::EndMenu();
             }

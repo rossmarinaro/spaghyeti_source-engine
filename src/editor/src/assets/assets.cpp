@@ -218,8 +218,6 @@ bool AssetManager::LoadPrefab()
             if (JSON.good())
             {
                 json data = json::parse(JSON);
-                
-                data = data[0];
 
                 if (static_cast<std::string>(data["type"]) == "Sprite")
                     Node::readData(data, "Sprite", true, nullptr);

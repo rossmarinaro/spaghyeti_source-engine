@@ -20,8 +20,8 @@ void Editor::Update()
 
     Renderer::Update(game->camera);
 
-    if (GUI::grid)
-        GUI::grid->Render();
+    if (GUI::s_grid)
+        GUI::s_grid->Render();
 
     Time::Update(glfwGetTime());
    

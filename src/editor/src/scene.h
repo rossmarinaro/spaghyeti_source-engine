@@ -33,7 +33,8 @@ namespace editor {
         std::map<std::string, std::string> sceneAssets;
 
         template <typename T>
-        static inline std::shared_ptr<T> CreateObject(Scene* scene) {
+        static inline std::shared_ptr<T> CreateObject(Scene* scene) 
+        {
 
             auto node = std::make_shared<T>();
 

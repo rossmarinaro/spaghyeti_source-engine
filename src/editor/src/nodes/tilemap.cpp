@@ -6,16 +6,19 @@
 using namespace editor;
 
 
-TilemapNode::TilemapNode(const std::string& id): 
-    Node(id, "Tilemap"),
+TilemapNode::TilemapNode(): 
+    Node("Tilemap"),
         m_layersApplied(false),
-        m_mapApplied(false),
-        layer(1),
-        map_width(10),
-        map_height(10),
-        tile_width(64),
-        tile_height(64)
-{ Editor::Log("Tilemap node " + this->m_name + " created."); }
+        m_mapApplied(false)
+{ 
+    this->layer = 1;
+    this->map_width = 10;
+    this->map_height = 10;
+    this->tile_width = 64;
+    this->tile_height = 64;
+
+    Editor::Log("Tilemap node " + this->name + " created."); 
+}
 
 
 //---------------------------
@@ -28,7 +31,7 @@ TilemapNode::~TilemapNode()
         MapManager::ClearMap();
 
     if (!this->virtual_node)
-        Editor::Log("Tilemap node " + this->m_name + " deleted.");
+        Editor::Log("Tilemap node " + this->name + " deleted.");
 }
 
 
@@ -165,12 +168,12 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
     {
 
-        ImGui::PushID(("(Tilemap) " + this->m_name).c_str());
+        ImGui::PushID(("(Tilemap) " + this->name).c_str());
 
-        if (ImGui::TreeNode(("(Tilemap) " + this->m_name).c_str()))
+        if (ImGui::TreeNode(("(Tilemap) " + this->name).c_str()))
         {
         
-            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->m_ID);
+            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->ID);
 
             if (ImGui::BeginMenu("Add Component"))
             {
@@ -185,7 +188,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
             if (this->HasComponent("Physics") && ImGui::BeginMenu("Physics"))
             { 
 
-                auto physics_component = this->GetComponent("Physics", this->m_ID);
+                auto physics_component = this->GetComponent("Physics", this->ID);
 
                 if (physics_component)
                 {

@@ -133,8 +133,8 @@ void GUI::CreateGrid()
 
     Shader::Load("grid", checker_vertex, checker_fragment, nullptr); 
 
-    grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    grid->shader = Shader::GetShader("grid");
+    s_grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
+    s_grid->shader = Shader::GetShader("grid");
 
 }
 
@@ -145,7 +145,7 @@ void GUI::CreateGrid()
 void GUI::Render()
 {
 
-    if (!m_running)
+    if (!s_running)
         return;
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -153,13 +153,13 @@ void GUI::Render()
 
     ImGui::NewFrame();
 
-    if (show_init)
+    if (s_show_init)
         ShowOptionsInit();
 
     else
         RenderDockSpace();
 
-    if (show_quit)
+    if (s_show_quit)
         ShowOptionsQuit();
 
     if (Editor::events.buildFlag)
@@ -172,8 +172,8 @@ void GUI::Render()
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    if (grid)
-       grid->shader.SetFloat("pitch", grid_quantity, true);
+    if (s_grid)
+       s_grid->shader.SetFloat("pitch", s_grid_quantity, true);
         
     //Renderer::CreateFrameBuffer();
     
@@ -188,7 +188,7 @@ void GUI::Render()
 void GUI::Close()
 {
     
-    m_running = false;
+    s_running = false;
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -233,12 +233,12 @@ void GUI::ShowOptionsInit()
 
     if (ImGui::Button("New", ImVec2(System::Window::s_width, 0.0f))) {
         if (Editor::events.NewProject())
-            show_init = false;
+            s_show_init = false;
     }
 
     if (ImGui::Button("Open", ImVec2(System::Window::s_width, 0.0f))) {
         if (Editor::events.OpenProject())
-            show_init = false;
+            s_show_init = false;
     }
 
     //render backsplash image to framebuffer
@@ -282,7 +282,7 @@ void GUI::ShowOptionsQuit()
         glfwSetWindowShouldClose(System::Window::s_instance, true);
 
     if (ImGui::MenuItem("No"))
-        show_quit = false;
+        s_show_quit = false;
 }
 
 

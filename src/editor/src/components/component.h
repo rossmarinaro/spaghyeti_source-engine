@@ -10,28 +10,22 @@ namespace editor {
 
         public:
 
-            std::string 
-                    m_ID, 
-                    m_name,
-                    filename,
-                    m_type, 
-                    m_nodeType;
+            std::string ID, 
+                        name,
+                        filename,
+                        type, 
+                        nodeType;
 
             void Make();
 
-            Component(
-                const std::string& id, 
-                const std::string& type, 
-                const std::string& node_type,
-                bool init = true
-            );
+            Component(const std::string& id, const std::string& type, const std::string& node_type, bool init = true);
 
             ~Component();
         
 
         private:
 
-            bool init;
-            static inline int count = 0;
+            bool m_init;
+            static inline int s_count = 0;
     };
 }

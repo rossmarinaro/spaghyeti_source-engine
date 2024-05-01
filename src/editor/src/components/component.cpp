@@ -12,22 +12,18 @@ using namespace editor;
 //------------------------------------
 
 
-Component::Component(
-    const std::string& id, 
-    const std::string& type, 
-    const std::string& node_type,
-    bool init
-):
-    m_ID(id),
-    m_type(type),
-    m_nodeType(node_type),
-    m_name(""),
-    init(init)
+Component::Component(const std::string& id, const std::string& type, const std::string& node_type, bool init):
+    m_init(init)
 {
-    count++;
+    s_count++;
 
-    if (this->init)
-        Editor::Log((std::string)type + " component added.");
+    this->ID = id;
+    this->type = type;
+    this->nodeType = node_type;
+    this->name = "";
+
+    if (this->m_init)
+        Editor::Log((std::string)this->type + " component added.");
 }
 
 
@@ -36,8 +32,10 @@ Component::Component(
 
 Component::~Component() {
 
-    if (this->init)
-        Editor::Log((std::string)this->m_type + " component" + " removed.");
+    if (this->m_init) {
+        s_count--;
+        Editor::Log((std::string)this->type + " component" + " removed.");
+    }
 }
 
 
@@ -49,7 +47,7 @@ void Component::Make()
 
     //shader
 
-    if (this->m_type == "Shader")
+    if (this->type == "Shader")
     {
 
         if (!this->filename.size())
@@ -105,7 +103,7 @@ void Component::Make()
     //script
 
 
-    if (this->m_type == "Script")
+    if (this->type == "Script")
     {
 
         if (!this->filename.size())
@@ -149,16 +147,16 @@ void Component::Make()
 
     //animator
 
-    if (this->m_type == "Animator")
+    if (this->type == "Animator")
     {
 
         for (const auto& node : Node::nodes)
-            if (node->m_ID == m_ID)
+            if (node->ID == ID)
             {
 
-                if (this->m_nodeType == "Sprite") {
+                if (this->nodeType == "Sprite") {
 
-                    auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::GetNode(this->m_ID));
+                    auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::GetNode(this->ID));
 
                     sn->anim++;
                 }
@@ -169,23 +167,25 @@ void Component::Make()
     //physics
 
 
-    if (this->m_type == "Physics")
+    if (this->type == "Physics")
     {
 
         for (const auto& node : Node::nodes)
-            if (node->m_ID == m_ID)
+            if (node->ID == ID)
             {
 
-                if (this->m_nodeType == "Sprite") {
+                if (this->nodeType == "Sprite") 
+                {
 
-                    auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::GetNode(this->m_ID));
+                    auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::GetNode(this->ID));
 
                     sn->CreateBody();
                 }
 
-                if (this->m_nodeType == "Tilemap") {
+                if (this->nodeType == "Tilemap") 
+                {
 
-                    auto tmn = std::dynamic_pointer_cast<TilemapNode>(Node::GetNode(this->m_ID));
+                    auto tmn = std::dynamic_pointer_cast<TilemapNode>(Node::GetNode(this->ID));
 
                     tmn->CreateBody();
 

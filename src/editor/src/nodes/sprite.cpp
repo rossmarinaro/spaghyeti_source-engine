@@ -6,34 +6,32 @@
 using namespace editor;
 
 
-SpriteNode::SpriteNode(const std::string& id): 
-    Node(id, "Sprite"),
-        key(""),
-        tint(glm::vec3(1.0f)),
-        m_show_sprite_texture(false),
-        framesApplied(false),
-        filter_nearest(true),
-        flippedX(false),
-        flippedY(false),
-        lock_in_place(false),
-        make_UI(false),
-        frame(1),
-        anim(1),
-        depth(1),
-        restitution(0.0f),
-        density(0.0f), 
-        friction(0.0f),
-        alpha(1.0f),
-        U1(0.0f),
-        V1(0.0f),
-        U2(1.0f),
-        V2(1.0f)
-
+SpriteNode::SpriteNode():  
+    Node("Sprite"),
+        m_show_sprite_texture(false)
 {
-
+    this->key = "";
+    this->tint = glm::vec3(1.0f);
+    this->framesApplied = false;
+    this->filter_nearest = true;
+    this->flippedX = false;
+    this->flippedY = false;
+    this->lock_in_place = false;
+    this->make_UI = false;
+    this->frame = 1;
+    this->anim = 1;
+    this->depth = 1;
+    this->restitution = 0.0f;
+    this->density = 0.0f;
+    this->friction = 0.0f;
+    this->alpha = 1.0f;
+    this->U1 = 0.0f;
+    this->V1 = 0.0f;
+    this->U2 = 1.0f;
+    this->V2 = 1.0f;
     this->spriteHandle = nullptr;
 
-    Editor::Log("sprite node " + this->m_name + " created.");   
+    Editor::Log("sprite node " + this->name + " created.");   
 }
 
          
@@ -48,7 +46,7 @@ SpriteNode::~SpriteNode()
         System::Game::DestroyEntity(this->spriteHandle);
     
     if (!this->virtual_node)
-        Editor::Log("Sprite node " + this->m_name + " deleted.");
+        Editor::Log("Sprite node " + this->name + " deleted.");
 }
 
 
@@ -146,7 +144,7 @@ void SpriteNode::ApplyTexture(const std::string& asset)
     if (this->spriteHandle == nullptr) { 
 
         this->spriteHandle = System::Game::CreateSprite(asset, 0.0f, 0.0f);
-        this->spriteHandle->ID = this->m_ID;
+        this->spriteHandle->ID = this->ID;
     }
 
     else 
@@ -201,12 +199,12 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
         assert(this->active);
 
-        ImGui::PushID(("(Sprite) " + this->m_name).c_str());
+        ImGui::PushID(("(Sprite) " + this->name).c_str());
 
-        if (ImGui::TreeNode(("(Sprite) " + this->m_name).c_str()))
+        if (ImGui::TreeNode(("(Sprite) " + this->name).c_str()))
         {
         
-            static char name_buf[32] = ""; ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->m_ID);
+            static char name_buf[32] = ""; ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->ID);
 
             //save prefab
 
@@ -244,7 +242,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
             if (this->HasComponent("Animator") && ImGui::BeginMenu("Animator"))
             {
 
-                auto anim_component = this->GetComponent("Animator", this->m_ID);
+                auto anim_component = this->GetComponent("Animator", this->ID);
 
                 if (anim_component)
                 {
@@ -339,7 +337,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
             if (this->HasComponent("Shader") && ImGui::BeginMenu("Shader")) {
 
-                GUI::RenderShaderOptions(this->m_ID);
+                GUI::RenderShaderOptions(this->ID);
                 
                 ImGui::EndMenu();
             }
@@ -350,7 +348,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
             if (this->HasComponent("Script") && ImGui::BeginMenu("Script")) {
 
-                GUI::RenderScriptOptions(this->m_ID);
+                GUI::RenderScriptOptions(this->ID);
                 
                 ImGui::EndMenu();
             }
@@ -362,7 +360,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
             if (this->HasComponent("Physics") && ImGui::BeginMenu("Physics"))
             {
 
-                auto physics_component = this->GetComponent("Physics", this->m_ID);
+                auto physics_component = this->GetComponent("Physics", this->ID);
 
                 if (physics_component)
                 {

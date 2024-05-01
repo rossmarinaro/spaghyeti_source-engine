@@ -634,7 +634,7 @@ void EventListener::BuildAndRun()
 
                 //--------------- sprite
 
-                if (node->m_type == "Sprite")
+                if (node->type == "Sprite")
                 {
 
                     auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
@@ -672,103 +672,103 @@ void EventListener::BuildAndRun()
                     }
 
                     if (sn->make_UI) 
-                       command_queue << "   auto sprite_" + node->m_ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                       command_queue << "   auto sprite_" + node->ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
                     
                     else  
-                        command_queue << "   auto sprite_" + node->m_ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                        command_queue << "   auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
             
                     //sprite configurations
 
-                    command_queue << "   sprite_" + node->m_ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
-                    command_queue << "   sprite_" + node->m_ID + "->SetRotation(" + std::to_string(sn->rotation) + ");\n";
-                    command_queue << "   sprite_" + node->m_ID + "->SetTint({ " + std::to_string(sn->tint.x) + ", " + std::to_string(sn->tint.y) + ", " + std::to_string(sn->tint.z) + " });\n";
-                    command_queue << "   sprite_" + node->m_ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
-                    command_queue << "   sprite_" + node->m_ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetRotation(" + std::to_string(sn->rotation) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetTint({ " + std::to_string(sn->tint.x) + ", " + std::to_string(sn->tint.y) + ", " + std::to_string(sn->tint.z) + " });\n";
+                    command_queue << "   sprite_" + node->ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
 
                     std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
 
-                    command_queue << "   sprite_" + node->m_ID + "->texture.Filter_Min = " + filtering + ";\n";
-                    command_queue << "   sprite_" + node->m_ID + "->texture.Filter_Max = " + filtering + ";\n";
+                    command_queue << "   sprite_" + node->ID + "->texture.Filter_Min = " + filtering + ";\n";
+                    command_queue << "   sprite_" + node->ID + "->texture.Filter_Max = " + filtering + ";\n";
 
                     if (sn->lock_in_place)
-                        command_queue << "   sprite_" + node->m_ID + "->shader = Shader::GetShader(\"UI\");\n";
+                        command_queue << "   sprite_" + node->ID + "->shader = Shader::GetShader(\"UI\");\n";
 
                     //physics bodies
 
                     if (sn->HasComponent("Physics"))
                     {
                         for (int i = 0; i < sn->bodies.size(); i++) 
-                            command_queue << "   sprite_" + node->m_ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX + sn->bodyX[i]) + ", " + std::to_string(sn->positionY + sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + " } });\n"; 
+                            command_queue << "   sprite_" + node->ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX + sn->bodyX[i]) + ", " + std::to_string(sn->positionY + sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + " } });\n"; 
 
-                        command_queue << "   for (const auto& body : sprite_" + node->m_ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
+                        command_queue << "   for (const auto& body : sprite_" + node->ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
 
                     }
             
                     //animator
 
                     if (sn->HasComponent("Animator") && sn->animations.size()) {
-                        command_queue << "   sprite_" + node->m_ID + "->anims = System::Resources::Manager::GetAnimations(\"" + sn->key + "\");\n";
-                        command_queue << "   sprite_" + node->m_ID + "->ReadSpritesheetData();\n"; 
+                        command_queue << "   sprite_" + node->ID + "->anims = System::Resources::Manager::GetAnimations(\"" + sn->key + "\");\n";
+                        command_queue << "   sprite_" + node->ID + "->ReadSpritesheetData();\n"; 
                     } 
         
                     //shader
 
                     if (sn->HasComponent("Shader") && sn->shader.first.length()) 
-                        command_queue << "   sprite_" + node->m_ID + "->shader = Shader::GetShader(\"" + sn->shader.first + "\");\n";
+                        command_queue << "   sprite_" + node->ID + "->shader = Shader::GetShader(\"" + sn->shader.first + "\");\n";
 
                 }
 
                 //--------------- text
 
-                if (node->m_type == "Text")
+                if (node->type == "Text")
                 {          
 
                     auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
-                    command_queue << "   auto text_" + node->m_ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ");\n";
+                    command_queue << "   auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ");\n";
 
-                    command_queue << "   text_" + node->m_ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
-                    command_queue << "   text_" + node->m_ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";
-                    command_queue << "   text_" + node->m_ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
-                    command_queue << "   text_" + node->m_ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
-                    command_queue << "   text_" + node->m_ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
+                    command_queue << "   text_" + node->ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
         
                 }
 
                 //--------------- empty
 
-                if (node->m_type == "Empty")
+                if (node->type == "Empty")
                 {
 
                     auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
-                    command_queue << "   std::shared_ptr<Entity> empty_" + node->m_ID + ";\n\t";
+                    command_queue << "   std::shared_ptr<Entity> empty_" + node->ID + ";\n\t";
 
                     if (en->m_debugGraphic)
                     {
                         //TODO: set shape
 
                         if (en->currentShape == "rectangle") {
-                            command_queue << "   empty_" + node->m_ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
-                            command_queue << "   empty_" + node->m_ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
+                            command_queue << "   empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
+                            command_queue << "   empty_" + node->ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
                         }
 
                         if (en->currentShape.length()) {
-                            command_queue << "   empty_" + node->m_ID + "->SetTint({" + std::to_string(en->m_debugGraphic->tint.r) + ", " + std::to_string(en->m_debugGraphic->tint.g) + ", " + std::to_string(en->m_debugGraphic->tint.b) + "});\n";
-                            command_queue << "   empty_" + node->m_ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->alpha) + ");\n";
+                            command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->m_debugGraphic->tint.r) + ", " + std::to_string(en->m_debugGraphic->tint.g) + ", " + std::to_string(en->m_debugGraphic->tint.b) + "});\n";
+                            command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->alpha) + ");\n";
                         }
                     }
 
                     //shader
 
                     if (en->HasComponent("Shader") && en->shader.first.length()) 
-                        command_queue << "   empty_" + node->m_ID + "->shader = Shader::GetShader(\"" + en->shader.first + "\");\n";
+                        command_queue << "   empty_" + node->ID + "->shader = Shader::GetShader(\"" + en->shader.first + "\");\n";
 
                 }
 
                 //--------------- tilemap
 
-                if (node->m_type == "Tilemap")
+                if (node->type == "Tilemap")
                 {
 
                     auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
@@ -805,7 +805,7 @@ void EventListener::BuildAndRun()
 
                 //--------------- audio
 
-                if (node->m_type == "Audio")
+                if (node->type == "Audio")
                 {
 
                     auto an = std::dynamic_pointer_cast<AudioNode>(node);
@@ -820,7 +820,7 @@ void EventListener::BuildAndRun()
 
                 for (const auto& behavior : node->behaviors) {
 
-                    std::string entity = (node->m_type + "_" + node->m_ID);
+                    std::string entity = (node->type + "_" + node->ID);
 
                     transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
 

@@ -23,9 +23,9 @@ namespace editor {
                   positionY,
                   rotation;
 
-            std::string m_ID,
-                        m_name,
-                        m_type;
+            std::string ID,
+                        name,
+                        type;
 
             std::vector<float> body_width, 
                                body_height,  
@@ -35,8 +35,7 @@ namespace editor {
             std::pair<std::string, std::pair<std::string, std::string>> shader;
             std::map<std::string, std::string> behaviors;
             
-            Node(const std::string& type);
-            Node(const std::string& id, const std::string& type, const std::string& name = "Untitled");
+            Node(const std::string& type, const std::string& name = "Untitled");
 
             virtual ~Node() = default;
             virtual void Render(std::shared_ptr<Node> node) = 0;
@@ -46,16 +45,15 @@ namespace editor {
 
             static inline std::shared_ptr<Node> GetNode(const std::string& id) {
                 return *std::find_if(nodes.begin(), nodes.end(), [&](std::shared_ptr<Node> n) { 
-                    return n->m_ID == id; 
+                    return n->ID == id; 
                 });
             }
 
             template <typename T>
-            static inline std::shared_ptr<T> MakeNode() {
+            static inline std::shared_ptr<T> MakeNode() 
+            {
 
-                auto uuid = Assign();
-                
-                auto node = std::make_shared<T>(uuid);
+                auto node = std::make_shared<T>();
 
                 nodes.push_back(node);
 
@@ -91,10 +89,10 @@ namespace editor {
         
             std::vector<std::shared_ptr<Component>> components;
 
-            static inline int count = 0, 
-                              MAX_NODES = 100; 
+            static inline int s_count = 0, 
+                              s_MAX_NODES = 100; 
 
-            static const char* Assign();
+            static const char* s_Assign();
 
     };
 
@@ -153,8 +151,7 @@ namespace editor {
 
             std::vector<b2Body*> bodies; 
 
-            SpriteNode(): Node("Sprite") {}
-            SpriteNode(const std::string& id);
+            SpriteNode();
             ~SpriteNode();      
 
             void Render(std::shared_ptr<Node> node) override;
@@ -205,11 +202,7 @@ namespace editor {
             std::vector<std::array<int, 6>> offset;
             std::vector<b2Body*> bodies;
 
-            TilemapNode(): 
-                Node("Tilemap"),
-                    m_mapApplied(false) {}
-
-            TilemapNode(const std::string& id);
+            TilemapNode();
             ~TilemapNode();
 
             void Render(std::shared_ptr<Node> node) override;
@@ -243,8 +236,7 @@ namespace editor {
 
             std::string textBuf;
 
-            TextNode(): Node("Text") {}
-            TextNode(const std::string& id);
+            TextNode();
             ~TextNode();     
 
             void Render(std::shared_ptr<Node> node) override;
@@ -266,7 +258,6 @@ namespace editor {
             std::string audio_source_name;
           
             AudioNode();
-            AudioNode(const std::string& id);
             ~AudioNode();
 
             void Render(std::shared_ptr<Node> node) override;
@@ -298,8 +289,7 @@ namespace editor {
             std::string currentShape;
             std::shared_ptr<Geometry> m_debugGraphic;
 
-            EmptyNode(): Node("Empty") {}
-            EmptyNode(const std::string& id);
+            EmptyNode();
             ~EmptyNode();      
 
             void CreateShape(const std::string& shape);

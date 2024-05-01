@@ -7,18 +7,18 @@
 using namespace editor;
 
 
-TextNode::TextNode(const std::string &id): 
-    Node(id, "Text"),
-        size(1),
-        alpha(1),
-        tint(glm::vec3(1.0f)),
-        depth(1),
-        textBuf("")
+TextNode::TextNode(): 
+    Node("Text")
 {
 
+    this->size = 1;
+    this->alpha = 1,
+    this->tint = glm::vec3(1.0f);
+    this->depth = 1;
+    this->textBuf = "";
     this->textHandle = System::Game::CreateText(this->textBuf, this->positionX, this->positionY);
 
-    Editor::Log("Text node " + this->m_name + " created.");   
+    Editor::Log("Text node " + this->name + " created.");   
 }
 
 
@@ -31,7 +31,7 @@ TextNode::~TextNode() {
         System::Game::DestroyEntity(this->textHandle);
 
     if (!this->virtual_node)
-        Editor::Log("Text node " + this->m_name + " deleted.");
+        Editor::Log("Text node " + this->name + " deleted.");
 }
 
 
@@ -60,12 +60,12 @@ void TextNode::Render(std::shared_ptr<Node> node)
 
     {
 
-        ImGui::PushID(("(Text) " + this->m_name).c_str());
+        ImGui::PushID(("(Text) " + this->name).c_str());
 
-        if (ImGui::TreeNode(("(Text) " + this->m_name).c_str()))
+        if (ImGui::TreeNode(("(Text) " + this->name).c_str()))
         {
         
-            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->m_ID);
+            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &this->ID);
 
             //save prefab
 
@@ -90,7 +90,7 @@ void TextNode::Render(std::shared_ptr<Node> node)
 
             if (this->HasComponent("Script") && ImGui::BeginMenu("Script")) {
 
-                GUI::RenderScriptOptions(this->m_ID);
+                GUI::RenderScriptOptions(this->ID);
                 
                 ImGui::EndMenu();
             }
@@ -100,7 +100,7 @@ void TextNode::Render(std::shared_ptr<Node> node)
 
             if (this->HasComponent("Shader") && ImGui::BeginMenu("Shader")) {
 
-                GUI::RenderShaderOptions(this->m_ID);
+                GUI::RenderShaderOptions(this->ID);
                 
                 ImGui::EndMenu();
             }

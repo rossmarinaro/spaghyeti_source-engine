@@ -96,7 +96,7 @@ void EventListener::Serialize(json& data)
     data["camera"]["color"]["z"] = Editor::game->camera->backgroundColor.z;
     data["camera"]["color"]["w"] = Editor::game->camera->backgroundColor.w;
     data["camera"]["alpha"] = GUI::grid->alpha;
-    data["camera"]["pitch"] = GUI::grid_quantity;
+    data["camera"]["pitch"] = GUI::s_grid_quantity;
     data["camera"]["bounds"]["width"]["begin"] = Editor::game->camera->currentBoundsWidthBegin;
     data["camera"]["bounds"]["width"]["end"] = Editor::game->camera->currentBoundsWidthEnd;
     data["camera"]["bounds"]["height"]["begin"] = Editor::game->camera->currentBoundsHeightBegin;
@@ -124,19 +124,19 @@ void EventListener::Serialize(json& data)
     for (const auto& node : Node::nodes)
     {
 
-        if (node->m_type == "Sprite")
+        if (node->type == "Sprite")
             sprites.push_back(Node::writeData(node, "Sprite"));
 
-        if (node->m_type == "Tilemap")
+        if (node->type == "Tilemap")
             tilemaps.push_back(Node::writeData(node, "Tilemap"));
 
-        if (node->m_type == "Audio")
+        if (node->type == "Audio")
             audio.push_back(Node::writeData(node, "Audio"));
 
-        if (node->m_type == "Empty")
+        if (node->type == "Empty")
             empty.push_back(Node::writeData(node, "Empty"));
 
-        if (node->m_type == "Text")
+        if (node->type == "Text")
             text.push_back(Node::writeData(node, "Text"));
     }
 
@@ -183,7 +183,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
     );
 
     GUI::grid->alpha = data["camera"]["alpha"];
-    GUI::grid_quantity = data["camera"]["pitch"];
+    GUI::s_grid_quantity = data["camera"]["pitch"];
     
     Editor::worldWidth = data["camera"]["width"];
     Editor::worldHeight = data["camera"]["height"];

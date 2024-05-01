@@ -213,7 +213,7 @@ void editor::GUI::ShowMenu()
     ImGui::Separator();
 
     if (ImGui::MenuItem("Quit", "Alt+F4"))
-        show_quit = true;
+        s_show_quit = true;
 
     if (ImGui::BeginMenu("Options"))
     {

@@ -9,31 +9,26 @@
 using namespace editor;
 
 
-Node::Node(const std::string& type): 
-    m_type(type),
-    virtual_node(true) {}
 
 
-//-------------------------------
-
-
-Node::Node(const std::string &id, const std::string& type, const std::string& name): 
-    m_name(name),
-    m_ID(id),
-    m_type(type),
-    created(false),
-    active(true),
-    show_options(false),
-    positionX(0.0f),
-    positionY(0.0f), 
-    scaleX(1.0f),
-    scaleY(1.0f),
-    rotation(0.0f)
+Node::Node(const std::string& type, const std::string& name)
 {
 
+    this->ID = s_Assign();
+    this->name = name;
+    this->type = type;
+    this->created = false;
+    this->active = true;
+    this->show_options = false;
+    this->positionX = 0.0f;
+    this->positionY = 0.0f; 
+    this->scaleX = 1.0f;
+    this->scaleY = 1.0f;
+    this->rotation = 0.0f;
+
     for (const auto& node : nodes)
-        if (node->m_name == this->m_name)
-            this->m_name = this->m_name + "_" + std::to_string(count); 
+        if (node->name == this->name)
+            this->name = this->name + "_" + std::to_string(s_count); 
 }
 
 
@@ -51,8 +46,8 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
         std::string* id = static_cast<std::string*>(data->UserData); 
 
         for (auto &node : nodes)
-            if (node->m_ID == *id) 
-                node->m_name = input_text;
+            if (node->ID == *id) 
+                node->name = input_text;
         
         Editor::Log("Node name changed to " + input_text);
 
@@ -66,15 +61,15 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
 //--------------------------- assign UUID to node and increment global counter
 
 
-const char* Node::Assign()
+const char* Node::s_Assign()
 {
 
-    if (count > MAX_NODES) {
+    if (s_count > s_MAX_NODES) {
         Editor::Log("Max nodes reached.");
         return nullptr; 
     }
 
-    count++;
+    s_count++;
 
     //generate UUID and replace hyphens with underscores
 
@@ -109,8 +104,8 @@ void Node::DeleteNode (std::shared_ptr<Node> node)
     if (it != nodes.end())
         nodes.erase(it);
 
-    if (count > 0) 
-        count--;
+    if (s_count > 0) 
+        s_count--;
 
 }
 
@@ -128,7 +123,7 @@ void Node::ClearAll()
         node->Reset();
     
     nodes.clear();
-    count = 0;
+    s_count = 0;
     
 }
 
@@ -142,13 +137,13 @@ void Node::AddComponent(const char* type, bool init)
     //return if component exists 
     
     if (std::find_if(this->components.begin(), this->components.end(), 
-        [&](std::shared_ptr<Component> component){ return component->m_type == type; }) 
+        [&](std::shared_ptr<Component> component){ return component->type == type; }) 
         != this->components.end()) {
             Editor::Log("Component " + (std::string)type + " already exists!");
             return;
         }
         
-    const auto component = std::make_shared<Component>(this->m_ID, type, this->m_type, init);
+    const auto component = std::make_shared<Component>(this->ID, type, this->type, init);
 
     this->components.push_back(component); 
 
@@ -168,7 +163,7 @@ void Node::RemoveComponent(std::shared_ptr<Component> component)
 
     if (it != this->components.end()) {
 
-        this->Reset((*it)->m_type.c_str());
+        this->Reset((*it)->type.c_str());
         this->components.erase(it);
     }
 
@@ -181,11 +176,11 @@ void Node::RemoveComponent(std::shared_ptr<Component> component)
 const std::shared_ptr<Component> Node::GetComponent(const std::string &type, const std::string &id)
 {
 
-    for (auto it = this->components.begin(); it != this->components.end(); ++it) {
-
+    for (auto it = this->components.begin(); it != this->components.end(); ++it) 
+    {
         auto component = *it;
 
-        if (id == component->m_ID && type == component->m_type) 
+        if (id == component->ID && type == component->type) 
             return component;
     }
 
@@ -198,8 +193,9 @@ const std::shared_ptr<Component> Node::GetComponent(const std::string &type, con
 
 const bool Node::HasComponent(const char* type) {
     
-    return std::find_if(components.begin(), components.end(), [&](std::shared_ptr<Component> component) { 
-        return (std::string)type == component->m_type; }) != components.end(); 
+    return std::find_if(components.begin(), components.end(), [&](std::shared_ptr<Component> component) 
+        { return (std::string)type == component->type; }) 
+            != components.end(); 
 }
 
 
@@ -228,14 +224,14 @@ void Node::LoadShader(
 void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name) 
 {
 
-    if (node->m_type == "Sprite") {
+    if (node->type == "Sprite") {
         auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
         if (sn->spriteHandle)
             sn->spriteHandle->shader = Shader::GetShader(name);
     }
 
-    if (node->m_type == "Empty") {
+    if (node->type == "Empty") {
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
         if (en->m_debugGraphic)
@@ -249,8 +245,8 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
 
 void Node::SavePrefab() {
 
-    if (AssetManager::SavePrefab("Sprite", this->m_ID))
-        Editor::Log("Prefab " + this->m_name + " saved.");
+    if (AssetManager::SavePrefab("Sprite", this->ID))
+        Editor::Log("Prefab " + this->name + " saved.");
     else    
         Editor::Log("There was a problem saving prefab.");
 }
@@ -335,9 +331,8 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
         //settings
 
         data = {
-            { "type", type },
-            { "ID", node->m_ID }, 
-            { "name", node->m_name },
+            { "type", type }, 
+            { "name", node->name },
             { "U1", sn->U1 },
             { "V1", sn->V1 },
             { "U2", sn->U2 },
@@ -427,8 +422,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
             });
 
         data = {
-            { "ID", node->m_ID },
-            { "name", node->m_name },
+            { "name", node->name },
             { "layer", tmn->layer },
             { "layers", layers },
             { "map_width", tmn->map_width },
@@ -453,8 +447,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
         auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
         data = {
-            { "ID", node->m_ID },
-            { "name", node->m_name },
+            { "name", node->name },
             { "source name", an->audio_source_name },
             { "volume", an->volume },
             { "loop", an->loop }
@@ -469,8 +462,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
         data = {
-            { "ID", node->m_ID },
-            { "name", node->m_name },
+            { "name", node->name },
             { "debug graphics", en->show_debug },
             { "fill", en->debug_fill },
             { "width", en->rectWidth },
@@ -512,8 +504,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
         auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
         data = {
-            { "ID", node->m_ID },
-            { "name", node->m_name },
+            { "name", node->name },
             { "content", tn->textBuf },
             { "tint", {
                     { "x", tn->tint.x },
@@ -551,6 +542,17 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
 void Node::readData(json& data, const std::string& type, bool makeNode, void* scene)
 {
 
+    auto set_name = [&](const std::string& id) -> std::string 
+    {
+        for (int i = 0; i < nodes.size(); i++) 
+            if (data["name"] != nodes[i]->name) 
+                continue;
+            else 
+                return static_cast<std::string>(data["name"]) + "_" + id;
+        
+        return static_cast<std::string>(data["name"]);
+    };
+
     try {
         
         Scene* _scene = static_cast<Scene*>(scene);
@@ -568,8 +570,8 @@ void Node::readData(json& data, const std::string& type, bool makeNode, void* sc
             else 
                 sn = Scene::CreateObject<SpriteNode>(_scene); 
 
-            sn->m_ID = data["ID"];
-            sn->m_name = data["name"];
+            sn->name = set_name(sn->ID);
+
             sn->positionX = data["positionX"];
             sn->positionY = data["positionY"];
             sn->rotation = data["rotation"];
@@ -705,9 +707,7 @@ void Node::readData(json& data, const std::string& type, bool makeNode, void* sc
             else 
                 tmn = Scene::CreateObject<TilemapNode>(_scene); 
 
-            tmn->m_ID = data["ID"];
-            tmn->m_name = data["name"];
-
+            tmn->name = set_name(tmn->ID);
             tmn->map_width = data["map_width"];
             tmn->map_height = data["map_height"];
             tmn->tile_width = data["tile_width"];
@@ -763,8 +763,7 @@ void Node::readData(json& data, const std::string& type, bool makeNode, void* sc
             else 
                 an = Scene::CreateObject<AudioNode>(_scene);  
 
-            an->m_ID = data["ID"];
-            an->m_name = data["name"];
+            an->name = set_name(an->ID);
             an->audio_source_name = data["source name"];
             an->volume = data["volume"];
             an->loop = data["loop"];
@@ -783,8 +782,7 @@ void Node::readData(json& data, const std::string& type, bool makeNode, void* sc
             else 
                 en = Scene::CreateObject<EmptyNode>(_scene);   
 
-            en->m_ID = data["ID"];
-            en->m_name = data["name"];
+            en->name = set_name(en->ID);
             en->show_debug = data["debug graphics"]; 
             en->debug_fill = data["fill"];
             en->rectWidth = data["width"];  
@@ -846,9 +844,7 @@ void Node::readData(json& data, const std::string& type, bool makeNode, void* sc
             else 
                 tn = Scene::CreateObject<TextNode>(_scene);
 
-            tn->m_ID = data["ID"];
-            tn->m_name = data["name"];
-
+            tn->name = set_name(tn->ID);
             tn->textBuf = data["content"];
             tn->tint = glm::vec3(data["tint"]["x"], data["tint"]["y"], data["tint"]["z"]);     
             tn->alpha = data["alpha"];       

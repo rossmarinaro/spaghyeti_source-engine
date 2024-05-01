@@ -17,7 +17,7 @@ void GUI::RenderShaderOptions(const std::string& nodeId)
     if (node)
     {
 
-        auto component = node->GetComponent("Shader", node->m_ID);
+        auto component = node->GetComponent("Shader", node->ID);
 
         if (!component)
             return;
@@ -138,7 +138,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
     if (node)
     {
 
-        auto component = node->GetComponent("Script", node->m_ID);
+        auto component = node->GetComponent("Script", node->ID);
 
         if (!component)
             return; 
@@ -258,7 +258,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
 void GUI::RenderNodes()
 {
 
-    if (!m_running)
+    if (!s_running)
         return;
 
     if (ImGui::Button("Load Prefab")) 

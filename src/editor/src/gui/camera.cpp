@@ -20,7 +20,7 @@ void editor::GUI::RenderCamera()
     ImGui::Separator();
 
     ImGui::SliderFloat("alpha", (float*)&grid->alpha, 0.0f, 1.0f);
-    ImGui::SliderFloat("pitch", (float*)&grid_quantity, 0.0f, 200.0f);
+    ImGui::SliderFloat("pitch", (float*)&s_grid_quantity, 0.0f, 200.0f);
 
     //vignette visibility
 

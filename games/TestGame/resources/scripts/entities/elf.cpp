@@ -36,15 +36,19 @@ void Elf::Update(Process::Context& context, void* scene)
     if (this->hb && b2TestOverlap(this->hb->GetFixtureList()->GetAABB(0), playerBehavior->player->bodies[0].first->GetFixtureList()->GetAABB(0)))
        playerBehavior->DoDamage(1);
     
-    if (this->hb && playerBehavior->hb->IsEnabled())
-        if (b2TestOverlap(this->hb->GetFixtureList()->GetAABB(0), playerBehavior->hb->GetFixtureList()->GetAABB(0)) && this->health > 0 && this->m_canDamage) 
-        {
-            this->m_canDamage = false;
-            this->m_canHit = true;
-            this->health--;
-            this->sprite->SetAlpha(0.75f);
-            this->sprite->SetTint({ 1.0f, 0.0f, 0.0f });
-        }
+    if (
+        (this->hb && playerBehavior->hb->IsEnabled()) &&
+        b2TestOverlap(this->hb->GetFixtureList()->GetAABB(0), playerBehavior->hb->GetFixtureList()->GetAABB(0)) && 
+        this->health > 0 && 
+        this->m_canDamage
+    ) 
+    {
+        this->m_canDamage = false;
+        this->m_canHit = true;
+        this->health--;
+        this->sprite->SetAlpha(0.75f);
+        this->sprite->SetTint({ 1.0f, 0.0f, 0.0f });
+    }
     
     if (this->health <= 0)
     {
@@ -71,8 +75,10 @@ void Elf::Update(Process::Context& context, void* scene)
         this->m_isActive = false;
         this->m_canHit = false;
         this->m_canDestroy = false;
+
         System::Game::DestroyEntity(this->sprite);
         Physics::DestroyBody(this->hb);
+
         this->hb = nullptr;
     }
 

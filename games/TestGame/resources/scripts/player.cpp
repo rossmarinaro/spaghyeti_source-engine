@@ -52,6 +52,11 @@ void PlayerController::Update(Process::Context& context, void* scene)
         this->Move(context.inputs); 
     }
 
+    //in air
+
+    if (this->player->bodies[0].first->GetLinearVelocity().y != 0) 
+        this->player->SetFrame(this->m_flipX ? 14 : 12);
+
     //attack
 
     if (context.inputs->SPACE && this->m_canAttack) {
@@ -67,6 +72,8 @@ void PlayerController::Update(Process::Context& context, void* scene)
         this->hb->SetEnabled(false);  
     }
 
+    //player dead
+
     if (!this->m_active.load()) {
         this->m_active = true;
         System::Game::StartScene("GAMEOVER");
@@ -78,6 +85,12 @@ void PlayerController::Update(Process::Context& context, void* scene)
         context.camera->Fade(0.1f, "in");
 
     }
+
+    if (this->player->IsAnimComplete()) 
+    {
+        this->m_canAttack = true; 
+        this->m_attacking = false;
+    } 
 
         
 }
@@ -119,8 +132,7 @@ void PlayerController::Jump(Inputs* inputs)
     else
         this->player->SetImpulseY(-2500);  
 
-    //this->player->Animate(this->m_flipX ? "jump-left" : "jump-right");
-    this->player->SetFrame(this->m_flipX ? 14 : 12);
+    this->player->SetAnimation(this->m_flipX ? "jump-left" : "jump-right");
 }
 
 //-------------------------------------
@@ -131,20 +143,14 @@ void PlayerController::Attack(Physics* physics)
     this->hb->SetEnabled(true);
     
     if (this->m_flipX) {
-        this->player->Animate("attack-left", true, 4);
+        this->player->SetAnimation("attack-left", true, 7);
         this->hb->SetTransform(b2Vec2(this->player->position.x - 10, this->player->position.y + 45), 0);
     }
 
     else {
-        this->player->Animate("attack-right", true, 4);
-        this->hb->SetTransform(b2Vec2(this->player->position.x + 90, this->player->position.y + 45), 0);
+        this->player->SetAnimation("attack-right", true, 7);
+        this->hb->SetTransform(b2Vec2(this->player->position.x + 110, this->player->position.y + 45), 0);
     }
-
-    if (this->player->IsAnimComplete()) 
-    {
-        this->m_canAttack = true; 
-        this->m_attacking = false;
-    } 
 
     if (this->m_shootFireball)
     {
