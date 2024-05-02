@@ -25,10 +25,10 @@ namespace entity_behaviors {
                 });  
            }
 
-            inline void Update(Process::Context& context, void* scene) override
+            inline void Update() override
             {
  
-                if (this->m_hasStarted && this->m_startText->content == "GAME OVER" && context.inputs->SPACE) 
+                if (this->m_hasStarted && this->m_startText->content == "GAME OVER" && System::Game::GetScene()->GetContext().inputs->SPACE) 
                 {
                     this->m_hasStarted = false;
                     System::Game::StartScene("MENU"); 

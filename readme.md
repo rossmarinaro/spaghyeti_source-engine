@@ -33,3 +33,9 @@ Libraries used: GLFW / GLAD, GLM, GLText (embedded debug text), FreeType (in-app
 Requires install of MingW compiler for Windows
 
 ![image info](./stack.jpg)
+
+----------------------------------------------------------
+
+Notes:
+
+When targeting specific entity from script use "System::Game::GetScene()->GetEntity()", if targeting a method from another script use "Behavior::GetBehavior()".

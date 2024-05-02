@@ -5,24 +5,22 @@
 //------------------------------
 
 Physics::Physics():
-    m_gravity(b2Vec2(this->gravityX, this->gravityY)), 
-    gravityX(0.0f),
-    gravityY(500.0f),
-    world(m_gravity)  
+    m_gravity(b2Vec2(0.0f, 500.0f)),
+    m_world(m_gravity),
+    m_flags(0)
 { 
+    this->gravityX = this->m_gravity.x; 
+    this->gravityY = this->m_gravity.y;
 
-    m_flags = 0;
-
-    m_flags += b2Draw::e_shapeBit;
-    m_flags += b2Draw::e_jointBit;
-    m_flags += b2Draw::e_aabbBit;
-    m_flags += b2Draw::e_centerOfMassBit;
+    this->m_flags += b2Draw::e_shapeBit;
+    this->m_flags += b2Draw::e_jointBit;
+    this->m_flags += b2Draw::e_aabbBit;
+    this->m_flags += b2Draw::e_centerOfMassBit;
 
     #if DEVELOPMENT == 1
         std::cout << "Physics: world enabled.\n"; 
     #endif
 } 
-
 
 //----------------------------------
 
@@ -44,7 +42,7 @@ b2Body* Physics::CreateStaticBody(
 
     body.def.userData.pointer = pointer;
 
-    body.self = System::Application::game->physics->world.CreateBody(&body.def);
+    body.self = System::Application::game->physics->m_world.CreateBody(&body.def);
 
     body.fixtureDef.isSensor = isSensor;
 
@@ -85,7 +83,7 @@ b2Body* Physics::CreateDynamicBody(
  
     body.def.userData.pointer = pointer;
  
-    body.self = System::Application::game->physics->world.CreateBody(&body.def);
+    body.self = System::Application::game->physics->m_world.CreateBody(&body.def);
 
     b2CircleShape circle;
     b2PolygonShape box;
@@ -152,47 +150,42 @@ void Physics::Update()
 
     while (accumulator >= System::Application::game->time->timeStep) {
         
-        world.Step(
-            System::Application::game->time->timeStep, 
-            System::Application::game->physics->velocityIterations, 
-            System::Application::game->physics->positionIterations
-        );
+        this->m_world.Step(System::Application::game->time->timeStep, s_velocityIterations, s_positionIterations);
 
         accumulator -= System::Application::game->time->timeStep;
     }
 
     #if DEVELOPMENT == 1 
-        System::Application::game->physics->debug->SetFlags(System::Application::game->physics->m_flags);
+        this->debug->SetFlags(this->m_flags);
     #endif
 
-	world.SetAllowSleeping(System::Application::game->physics->sleeping);
-	world.SetWarmStarting(System::Application::game->physics->setWarmStart);
-	world.SetContinuousPhysics(System::Application::game->physics->continuous);
-	world.SetSubStepping(System::Application::game->physics->subStep);
-    world.SetAutoClearForces(System::Application::game->physics->clearForces);
+	this->m_world.SetAllowSleeping(this->sleeping);
+	this->m_world.SetWarmStarting(this->setWarmStart);
+	this->m_world.SetContinuousPhysics(this->continuous);
+	this->m_world.SetSubStepping(this->subStep);
+    this->m_world.SetAutoClearForces(this->clearForces);
 
     //cleanup removed bodies
 
-    std::set<b2Body*>::iterator it = System::Application::game->physics->m_bodiesToRemove.begin();
-    std::set<b2Body*>::iterator end = System::Application::game->physics->m_bodiesToRemove.end();
+    std::set<b2Body*>::iterator it = this->m_bodiesToRemove.begin();
+    std::set<b2Body*>::iterator end = this->m_bodiesToRemove.end();
 
     for (; it != end; ++it) 
     {
         auto b = *it;
+        auto b_it = std::find(this->m_active_bodies.begin(), this->m_active_bodies.end(), b);
 
-        auto b_it = std::find(System::Application::game->physics->m_active_bodies.begin(), System::Application::game->physics->m_active_bodies.end(), b);
-
-        if (b_it != System::Application::game->physics->m_active_bodies.end()) 
-            System::Application::game->physics->m_active_bodies.erase(b_it);
+        if (b_it != this->m_active_bodies.end()) 
+            this->m_active_bodies.erase(b_it);
 
         if (b != nullptr) {
-            world.DestroyBody(b);
+            this->m_world.DestroyBody(b);
             b = nullptr;
         }
     }
 
-    System::Application::game->physics->m_bodiesToRemove.clear();
+    this->m_bodiesToRemove.clear();
  
-    world.SetGravity(b2Vec2(gravityX, gravityY));
+    this->m_world.SetGravity(b2Vec2(this->gravityX, this->gravityY));
 }
 

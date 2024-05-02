@@ -31,7 +31,7 @@ SpriteNode::SpriteNode():
     this->V2 = 1.0f;
     this->spriteHandle = nullptr;
 
-    Editor::Log("sprite node " + this->name + " created.");   
+    Editor::Log("Sprite node " + this->name + " created.");   
 }
 
          
@@ -144,7 +144,7 @@ void SpriteNode::ApplyTexture(const std::string& asset)
     if (this->spriteHandle == nullptr) { 
 
         this->spriteHandle = System::Game::CreateSprite(asset, 0.0f, 0.0f);
-        this->spriteHandle->ID = this->ID;
+        this->spriteHandle->name = this->name;
     }
 
     else 

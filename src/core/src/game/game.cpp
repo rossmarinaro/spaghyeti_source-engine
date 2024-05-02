@@ -39,6 +39,23 @@ void FlushGame(Game* game)
 
 }
 
+
+//------------------------------
+
+
+Scene* Game::GetScene(const std::string& key) 
+{
+    if (!key.length())
+        return Application::game->currentScene;
+
+    auto it = std::find_if(Application::game->scenes.begin(), Application::game->scenes.end(), [&](auto scene) { return scene->key == key; });
+
+    if (it == Application::game->scenes.end()) 
+        return *it;
+
+    return nullptr;
+}
+
   
 //------------------------- backend game layer functionality   
 
@@ -84,14 +101,14 @@ void Game::Boot()
 
     game->inputs->CreateCursor();
 
-    game->physics->world.SetContactListener(&game->physics->collisions);
+    game->physics->GetWorld().SetContactListener(&game->physics->collisions);
     
     //physics listener and debug
 
     #if DEVELOPMENT == 1 
     
         game->physics->debug = new DebugDraw;
-	    game->physics->world.SetDebugDraw(game->physics->debug);
+	    game->physics->GetWorld().SetDebugDraw(game->physics->debug);
 
         #if STANDALONE == 1
             displayInfo = new DisplayInfo;
@@ -136,7 +153,7 @@ void Game::StartScene(const std::string& key)
         game->currentScene->vignette = std::make_unique<Sprite>("base", 0.0f, 0.0f);
         game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
         game->currentScene->vignette->SetAlpha(0.0f);
-        
+
         game->currentScene->Run();  
 
         game->m_gameState = true; 
@@ -240,8 +257,8 @@ void Game::UpdateFrame()
 
     //vignette overlay
 
-    game->currentScene->vignette->texture.FrameWidth = Window::s_currentWidth * 2;
-    game->currentScene->vignette->texture.FrameHeight = Window::s_currentWidth * 2;
+    game->currentScene->vignette->texture.FrameWidth = Window::s_currentWidth * 4;
+    game->currentScene->vignette->texture.FrameHeight = Window::s_currentWidth * 4;
     game->currentScene->vignette->Render();
 
     //render input cursor
@@ -252,7 +269,7 @@ void Game::UpdateFrame()
 
     for (const auto& behavior : game->currentScene->behaviors)
         if (!game->currentScene->IsPaused() && behavior.get() && behavior) 
-            behavior->Update(game->m_context, game->currentScene);  
+            behavior->Update();  
 
     //depth sort
 
@@ -261,7 +278,7 @@ void Game::UpdateFrame()
     #if DEVELOPMENT == 1 
 
         if (game->physics->debug->enable) {
-            game->physics->world.DebugDraw();
+            game->physics->GetWorld().DebugDraw();
             game->physics->debug->Flush();
         }
 
@@ -272,7 +289,6 @@ void Game::UpdateFrame()
     #endif
 
 }  
-
 
 
 //-----------------------------
@@ -308,7 +324,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
 } 
 
-
+//----------------------------- entity containers for instantiation
 
 //----------------------------- sprite
 
@@ -384,7 +400,7 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 }
 
 
-//----------------------------- (quad)
+//----------------------------- quad
 
 
 std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height)
@@ -395,3 +411,16 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 
     return geom;
 }
+
+
+//----------------------------- base entity wrapper
+
+
+std::shared_ptr<Entity> Game::CreateEntity(const std::string& type)
+{
+    auto entity = std::make_shared<Entity>(type.c_str());
+
+    Application::game->currentScene->entities.push_back(entity);
+
+    return entity;
+} 

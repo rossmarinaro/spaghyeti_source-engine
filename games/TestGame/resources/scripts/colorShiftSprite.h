@@ -24,7 +24,7 @@ namespace entity_behaviors {
 
            //update every frame
 
-           void Update(Process::Context& context, void* scene) override {
+           void Update() override {
                 
                 if (!this->m_rev) {
                     this->m_r -= 0.01f;

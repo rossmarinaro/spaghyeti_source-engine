@@ -95,7 +95,7 @@ void EventListener::Serialize(json& data)
     data["camera"]["color"]["y"] = Editor::game->camera->backgroundColor.y;
     data["camera"]["color"]["z"] = Editor::game->camera->backgroundColor.z;
     data["camera"]["color"]["w"] = Editor::game->camera->backgroundColor.w;
-    data["camera"]["alpha"] = GUI::grid->alpha;
+    data["camera"]["alpha"] = GUI::s_grid->alpha;
     data["camera"]["pitch"] = GUI::s_grid_quantity;
     data["camera"]["bounds"]["width"]["begin"] = Editor::game->camera->currentBoundsWidthBegin;
     data["camera"]["bounds"]["width"]["end"] = Editor::game->camera->currentBoundsWidthEnd;
@@ -125,19 +125,19 @@ void EventListener::Serialize(json& data)
     {
 
         if (node->type == "Sprite")
-            sprites.push_back(Node::writeData(node, "Sprite"));
+            sprites.push_back(Node::WriteData(node, "Sprite"));
 
         if (node->type == "Tilemap")
-            tilemaps.push_back(Node::writeData(node, "Tilemap"));
+            tilemaps.push_back(Node::WriteData(node, "Tilemap"));
 
         if (node->type == "Audio")
-            audio.push_back(Node::writeData(node, "Audio"));
+            audio.push_back(Node::WriteData(node, "Audio"));
 
         if (node->type == "Empty")
-            empty.push_back(Node::writeData(node, "Empty"));
+            empty.push_back(Node::WriteData(node, "Empty"));
 
         if (node->type == "Text")
-            text.push_back(Node::writeData(node, "Text"));
+            text.push_back(Node::WriteData(node, "Text"));
     }
 
     //embed node data
@@ -182,7 +182,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
         data["camera"]["bounds"]["height"]["begin"], data["camera"]["bounds"]["height"]["end"]
     );
 
-    GUI::grid->alpha = data["camera"]["alpha"];
+    GUI::s_grid->alpha = data["camera"]["alpha"];
     GUI::s_grid_quantity = data["camera"]["pitch"];
     
     Editor::worldWidth = data["camera"]["width"];
@@ -207,27 +207,27 @@ void EventListener::Deserialize(std::ifstream& JSON)
     //sprites
 
     for (auto& sprite : data["nodes"]["sprites"])
-        Node::readData(sprite, "Sprite", true, nullptr);
+        Node::ReadData(sprite, "Sprite", true, nullptr);
 
     //tilemaps
 
     for (auto& tilemap : data["nodes"]["tilemaps"])
-        Node::readData(tilemap, "Tilemap", true, nullptr);
+        Node::ReadData(tilemap, "Tilemap", true, nullptr);
 
     //audio
 
     for (auto& audio : data["nodes"]["audio"])
-        Node::readData(audio, "Audio", true, nullptr);
+        Node::ReadData(audio, "Audio", true, nullptr);
 
     //empty
 
     for (auto& empty : data["nodes"]["empty"])
-        Node::readData(empty, "Empty", true, nullptr);
+        Node::ReadData(empty, "Empty", true, nullptr);
 
     //text
 
     for (auto& text : data["nodes"]["text"])
-        Node::readData(text, "Text", true, nullptr);
+        Node::ReadData(text, "Text", true, nullptr);
 
     Editor::Log("Project " + currentProject + " opened.\nProject root path set: " + Editor::projectPath);
 
@@ -283,27 +283,27 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
     //sprites
 
     for (auto& sprite : data["nodes"]["sprites"])
-        Node::readData(sprite, "Sprite", false, &scene);
+        Node::ReadData(sprite, "Sprite", false, &scene);
 
     //tilemaps
 
     for (auto& tilemap : data["nodes"]["tilemaps"])
-        Node::readData(tilemap, "Tilemap", false, &scene);
+        Node::ReadData(tilemap, "Tilemap", false, &scene);
 
     //audio
 
     for (auto& audio : data["nodes"]["audio"])
-        Node::readData(audio, "Audio", false, &scene);
+        Node::ReadData(audio, "Audio", false, &scene);
 
     //empty
 
     for (auto& empty : data["nodes"]["empty"])
-        Node::readData(empty, "Empty", false, &scene);
+        Node::ReadData(empty, "Empty", false, &scene);
 
     //text
 
     for (auto& text : data["nodes"]["text"])
-        Node::readData(text, "Text", false, &scene);
+        Node::ReadData(text, "Text", false, &scene);
 
     //scene ready for compilation
 

@@ -15,10 +15,7 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
         m_canDamage(true),
         m_attacking(false),
         m_shootFireball(false),
-        m_health(4),
-        m_heart1(System::Game::CreateUI("heart.png", 1056.821, 30)),
-        m_heart2(System::Game::CreateUI("heart.png", 1120.538, 30)),
-        m_heart3(System::Game::CreateUI("heart.png", 1184.253, 30))
+        m_health(4)
 { 
     this->player = std::static_pointer_cast<Sprite>(entity); 
     this->hb = Physics::CreateDynamicBody("box", 0, 0, 10, 10, true, 1);   
@@ -32,8 +29,10 @@ PlayerController::~PlayerController() {
 
 //-------------------------------------
 
-void PlayerController::Update(Process::Context& context, void* scene) 
+void PlayerController::Update() 
 {
+
+    auto context = System::Game::GetScene()->GetContext();
 
     if (this->m_follow)
         this->player->StartFollow(context.camera, 500);
@@ -170,13 +169,13 @@ void PlayerController::DoDamage(int amount)
     this->m_health -= amount;
 
     if (this->m_health < 4 && this->m_health > 2)
-        this->m_heart1->SetTint({ 0.0f, 0.0f, 0.0f });
+        System::Game::GetScene()->GetEntity<Sprite>("heart1")->SetTint({ 0.0f, 0.0f, 0.0f });
 
     else if (this->m_health < 3 && this->m_health > 1)
-        this->m_heart2->SetTint({ 0.0f, 0.0f, 0.0f });
+        System::Game::GetScene()->GetEntity<Sprite>("heart2")->SetTint({ 0.0f, 0.0f, 0.0f });
 
     else 
-        this->m_heart3->SetTint({ 0.0f, 0.0f, 0.0f });
+        System::Game::GetScene()->GetEntity<Sprite>("heart3")->SetTint({ 0.0f, 0.0f, 0.0f });
 
     this->player->SetAlpha(0.75f);
     this->player->SetTint({ 1.0f, 0.0f, 0.0f });

@@ -21,8 +21,10 @@ Menu_Player::Menu_Player(std::shared_ptr<Entity> entity):
 
 //-----------------------------
 
-void Menu_Player::Update(Process::Context& context, void* scene) 
+void Menu_Player::Update() 
 {
+
+    auto context = System::Game::GetScene()->GetContext();
 
     //cycle background color
 

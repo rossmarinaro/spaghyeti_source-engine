@@ -134,7 +134,7 @@ void Component::Make()
         src <<  "           {\n\n";
         src <<  "           }\n\n";
         src <<  "           //update every frame\n\n";
-        src <<  "           inline void Update(Process::Context& context, void* scene) override {\n\n";
+        src <<  "           inline void Update() override {\n\n";
         src <<  "           }\n\n";
         src <<  "   };\n";
         src <<  "};";

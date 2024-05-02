@@ -25,21 +25,17 @@ class Entity {
 
 	public: 
 
-		static inline int s_depth = 0, 
-						  s_count = 0;
+		static inline int s_depth = 0, s_count = 0;
 
 		int depth;
 
-		float 
-			rotation, 
-			alpha;  
-		bool 
-			m_isSpritesheet, 
-			flipX, 
-			flipY, 
-			active, 
-			renderable, 
-			alive;
+		float rotation, alpha;  
+		
+        bool flipX, 
+			 flipY, 
+			 active, 
+			 renderable, 
+			 alive;
 
 		const char* type;
 
@@ -47,7 +43,7 @@ class Entity {
 
 		glm::vec2 position, scale;
 
-		std::string ID;
+		std::string name;
 
 		//key val data to be assigned to entity object
 
@@ -112,23 +108,33 @@ class Entity {
 				camera->position.x = (-this->position.x + offset) / 2;  
 		}
 		 
-		virtual void Render() = 0;
+		virtual void Render() {}
  
-		Entity() = default;
+		Entity(const char* type) {
+            this->type = type;
+            this->name = "Untitled_" + std::to_string(s_count);
+            s_count++;
+        }
+
 		Entity(const char* type, float x, float y):
-        	m_model(glm::mat4(1.0f)),
-			type(type),
-			position(glm::vec2(x, y)),
-			scale(glm::vec2(1.0f)), 
-			rotation(0.0f),  
-			alpha(1.0f),
-			tint(glm::vec3(1.0f, 1.0f, 1.0f)),
-			active(true),
-			alive(true),
-			renderable(true),
-			flipX(false),
-			flipY(false), 
-			depth(s_depth + 1){ s_count++; };
+        	m_model(glm::mat4(1.0f))
+		{ 
+            this->type = type;
+			this->position = glm::vec2(x, y);
+			this->scale = glm::vec2(1.0f); 
+			this->rotation = 0.0f;  
+			this->alpha = 1.0f;
+			this->tint = glm::vec3(1.0f, 1.0f, 1.0f);
+			this->active = true;
+			this->alive = true;
+			this->renderable = true;
+			this->flipX = false;
+			this->flipY = false;
+			this->depth = s_depth + 1;
+
+            this->name = "Untitled_" + std::to_string(s_count);
+            s_count++; 
+        };
 
 		virtual ~Entity() { s_count--; };
 
@@ -205,6 +211,7 @@ class Text : public Entity {
 };
 
 
+
 //----------------------------- base sprite class
 
 
@@ -215,8 +222,7 @@ class Sprite : public Entity {
         Shader shader;
         Graphics::Texture2D texture;
 
-		int
-			frames, 
+		int frames, 
 			currentFrame, 
 			num_contacts = 0;
 

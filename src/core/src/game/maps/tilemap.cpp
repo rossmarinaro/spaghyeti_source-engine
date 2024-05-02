@@ -90,7 +90,7 @@ void MapManager::CreateLayer (
 
                 auto tile = System::Game::CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType); 
                 
-                tile->ID = (std::string)data_key;
+                tile->name = (std::string)data_key;
                 tile->SetDepth(depth); 
                 tile->SetFlip(flipX, flipY); 
 
@@ -122,13 +122,13 @@ void MapManager::RemoveLayer(const std::string& key)
 
         layer.erase(
             std::remove_if(layer.begin(), layer.end(), [&](auto t) { 
-                return strcmp(t->type, "tile") == 0 && t->ID == key; 
+                return strcmp(t->type, "tile") == 0 && t->name == key; 
             }), layer.end());
     }
 
     app::game->currentScene->entities.erase(
         std::remove_if(app::game->currentScene->entities.begin(), app::game->currentScene->entities.end(), [&](auto t) { 
-            return strcmp(t->type, "tile") == 0 && t->ID == key; }), 
+            return strcmp(t->type, "tile") == 0 && t->name == key; }), 
                 app::game->currentScene->entities.end());
 
     #if DEVELOPMENT == 1

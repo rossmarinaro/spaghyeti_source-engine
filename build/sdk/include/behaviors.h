@@ -24,7 +24,7 @@ namespace entity_behaviors {
                 this->m_entity = nullptr;
             }
 
-            virtual void Update(Process::Context& context, void* scene) {};
+            virtual void Update() {}
 
             template <typename T>
             static inline const std::shared_ptr<T> GetBehavior(const std::string& key, const std::vector<std::shared_ptr<Behavior>>& behaviors) {
@@ -40,7 +40,8 @@ namespace entity_behaviors {
             std::shared_ptr<Entity> m_entity;
 
             template <typename T>
-            inline std::shared_ptr<T> GetHandle(const char* type) {
+            inline std::shared_ptr<T> GetHandle(const char* type)
+            {
 
                 if (strcmp(this->m_entity->type, type) == 0)
                     return std::dynamic_pointer_cast<T>(this->m_entity);

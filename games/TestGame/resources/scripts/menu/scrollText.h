@@ -27,7 +27,7 @@ namespace entity_behaviors {
 
            //update every frame 
 
-           void Update(Process::Context& context, void* scene) override {
+           void Update() override {
                 this->m_text->SetText("SWANKY VELVET" + this->m_exclamations);
            }
 

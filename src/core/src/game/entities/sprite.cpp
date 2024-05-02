@@ -363,16 +363,14 @@ void Sprite::Render()
 //-------------------------------------- standard sprite / tile
 
 
-Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
-: 
-    Entity("sprite", x, y),
-        key(key),
-        currentFrame(frame),    
-        anims(System::Resources::Manager::GetAnimations(key)),
-        velocityX(0.0f),
-        velocityY(0.0f)
-{ 
-
+Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile): 
+    Entity("sprite", x, y)
+{   
+    this->key = key;
+    this->currentFrame = frame;    
+    this->anims = System::Resources::Manager::GetAnimations(key);
+    this->velocityX = 0.0f;
+    this->velocityY = 0.0f;
     this->texture = Graphics::Texture2D::GetTexture(key);
     this->shader = Shader::GetShader("sprite");
 
@@ -387,12 +385,10 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
 //-------------------------------------- UI sprite
 
  
-Sprite::Sprite(const std::string& key, const glm::vec2& position)
-: 
-    Entity("UI", position.x, position.y),
-        key(key)
+Sprite::Sprite(const std::string& key, const glm::vec2& position): 
+    Entity("UI", position.x, position.y)
 {
-
+    this->key = key;
     this->texture = Graphics::Texture2D::GetTexture(key);
     this->shader = Shader::GetShader("UI");
     
@@ -406,8 +402,7 @@ Sprite::Sprite(const std::string& key, const glm::vec2& position)
 //-------------------------------------------
 
 
-Sprite::~Sprite() 
-{
+Sprite::~Sprite() {
 
     #if DEVELOPMENT == 1
         if (strcmp(this->type, "tile") != 0)

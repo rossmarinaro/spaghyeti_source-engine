@@ -693,6 +693,8 @@ void EventListener::BuildAndRun()
                     if (sn->lock_in_place)
                         command_queue << "   sprite_" + node->ID + "->shader = Shader::GetShader(\"UI\");\n";
 
+                    command_queue << "   sprite_" + node->ID + "->name = \"" + sn->name + "\";\n";
+
                     //physics bodies
 
                     if (sn->HasComponent("Physics"))
@@ -732,6 +734,8 @@ void EventListener::BuildAndRun()
                     command_queue << "   text_" + node->ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
                     command_queue << "   text_" + node->ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
+
+                    command_queue << "   text_" + node->ID + "->name = \"" + tn->name + "\";\n";
         
                 }
 
@@ -741,8 +745,6 @@ void EventListener::BuildAndRun()
                 {
 
                     auto en = std::dynamic_pointer_cast<EmptyNode>(node);
-
-                    command_queue << "   std::shared_ptr<Entity> empty_" + node->ID + ";\n\t";
 
                     if (en->m_debugGraphic)
                     {
@@ -758,6 +760,10 @@ void EventListener::BuildAndRun()
                             command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->alpha) + ");\n";
                         }
                     }
+                    else 
+                        command_queue << "   std::shared_ptr<Entity> empty_" + node->ID + " = System::Game::CreateEntity();\n\t";
+
+                    command_queue << "   empty_" + node->ID + "->name = \"" + en->name + "\";\n";
 
                     //shader
 
@@ -795,6 +801,9 @@ void EventListener::BuildAndRun()
                             command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
                         }
 
+                    command_queue << "   std::shared_ptr<Entity> map_" + node->ID + " = System::Game::CreateEntity(\"" + "tilemap" + "\");\n\t";
+                    command_queue << "   map_" + node->ID + "->name = \"" + tmn->name + "\";\n";
+
                     //static physics bodies
 
                     if (tmn->HasComponent("Physics"))
@@ -814,6 +823,9 @@ void EventListener::BuildAndRun()
 
                     command_queue << "   System::Audio::play(\"" + an->audio_source_name + "\", " + loop + ", " + std::to_string(an->volume) + ");\n";
 
+                    command_queue << "   std::shared_ptr<Entity> audio_" + node->ID + " = System::Game::CreateEntity(\"" + "audio" + "\");\n\t";
+                    command_queue << "   audio_" + node->ID + "->name = \"" + an->name + "\";\n";
+                    
                 }
 
                 //define behaviors

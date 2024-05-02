@@ -14,7 +14,7 @@ namespace entity_behaviors {
             b2Body* hb;
 
             inline Elf(std::shared_ptr<Entity> entity);
-            inline void Update(Process::Context& context, void* scene) override;
+            inline void Update() override;
 
         private:
 

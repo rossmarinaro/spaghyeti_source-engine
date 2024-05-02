@@ -15,7 +15,7 @@ namespace entity_behaviors {
 
            //update every frame
 
-           inline void Update(Process::Context& context, void* scene) override;
+           inline void Update() override;
 
         private:
 

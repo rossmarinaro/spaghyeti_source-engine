@@ -18,8 +18,6 @@ class Physics {
              continuous = true, 
              subStep = false,
              clearForces = false;
-
-        b2World world;
         
         CollisionManager collisions;
         
@@ -27,17 +25,7 @@ class Physics {
             DebugDraw* debug;
         #endif
 
-        static inline const int32 velocityIterations = 3;
-        static inline const int32 positionIterations = 2;
-
-        static b2Body* CreateStaticBody(
-            float x, 
-            float y, 
-            float width, 
-            float height, 
-            bool isSensor = false, 
-            int pointer = 0
-        );
+        static b2Body* CreateStaticBody(float x, float y, float width, float height, bool isSensor = false, int pointer = 0);
 
         static b2Body* CreateDynamicBody(
             const std::string& type,
@@ -63,13 +51,17 @@ class Physics {
         inline void SetGravity(float x, float y) {
             this->gravityX = x;
             this->gravityY = y;
-        };
+        }
+
+        inline b2World& GetWorld() { return this->m_world; }
 
     private:
 
         uint32 m_flags;
+        b2World m_world;
 
-        struct Body {
+        struct Body 
+        {
             b2BodyDef def;
             b2Body* self;
             b2Fixture* fixture;
@@ -79,6 +71,9 @@ class Physics {
         b2Vec2 m_gravity;
         std::set<b2Body*> m_bodiesToRemove;
         std::vector<b2Body*> m_active_bodies;
+
+        static inline const int32 s_velocityIterations = 3;
+        static inline const int32 s_positionIterations = 2;
 
 };
 

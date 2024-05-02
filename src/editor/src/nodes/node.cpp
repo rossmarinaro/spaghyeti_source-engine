@@ -255,7 +255,7 @@ void Node::SavePrefab() {
 //--------------------------------- record current captured editor settings per node
 
 
-json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
+json Node::WriteData(std::shared_ptr<Node> node, const std::string& type)
 {
 
     json data;
@@ -539,7 +539,7 @@ json Node::writeData(std::shared_ptr<Node> node, const std::string& type)
 
 
 
-void Node::readData(json& data, const std::string& type, bool makeNode, void* scene)
+void Node::ReadData(json& data, const std::string& type, bool makeNode, void* scene)
 {
 
     auto set_name = [&](const std::string& id) -> std::string 

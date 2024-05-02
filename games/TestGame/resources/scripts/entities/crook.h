@@ -20,7 +20,7 @@ namespace entity_behaviors {
 
             //update every frame
 
-            void Update(Process::Context& context, void* scene) override 
+            void Update() override 
             { 
 
                 //Game::GetBehavior("PlayerController");

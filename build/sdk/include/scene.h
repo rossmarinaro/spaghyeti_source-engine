@@ -35,6 +35,22 @@ namespace System {
                 return this->m_paused;
             }
 
+            inline const Process::Context& GetContext() { return this->m_context; }
+
+            template <typename T>
+            const inline std::shared_ptr<T> GetEntity(const std::string& key) 
+            {
+
+                auto entity_it = std::find_if(this->entities.begin(), this->entities.end(), [&](auto entity) { return entity->name == key; });
+                auto UI_it = std::find_if(this->UI.begin(), this->UI.end(), [&](auto UI) { return UI->name == key; });
+
+                if (entity_it != this->entities.end())
+                    return std::static_pointer_cast<T>(*entity_it);
+
+                if (UI_it != this->UI.end())
+                    return std::static_pointer_cast<T>(*UI_it);
+            }
+
         protected:
             
             ma_device m_music;     
@@ -46,7 +62,7 @@ namespace System {
             }
 
             inline void SetData(const char* key, std::any value) { 
-                this->m_data.insert({key, value}); 
+                this->m_data.insert({ key, value }); 
             }
 
             inline const glm::vec2 GetWorldDimensions() { 

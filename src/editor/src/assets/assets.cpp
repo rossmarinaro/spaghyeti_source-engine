@@ -109,16 +109,16 @@ bool AssetManager::SavePrefab(const std::string& type, const std::string& nodeId
             json data;
 
             if (type == "Sprite")
-                data = Node::writeData(node, "Sprite");
+                data = Node::WriteData(node, "Sprite");
 
             if (type == "Audio")
-                data = Node::writeData(node, "Audio");
+                data = Node::WriteData(node, "Audio");
 
             if (type == "Empty")
-                data = Node::writeData(node, "Empty");
+                data = Node::WriteData(node, "Empty");
 
             if (type == "Text")
-                data = Node::writeData(node, "Text");
+                data = Node::WriteData(node, "Text");
 
             std::string JSON = data.dump();
 
@@ -220,13 +220,13 @@ bool AssetManager::LoadPrefab()
                 json data = json::parse(JSON);
 
                 if (static_cast<std::string>(data["type"]) == "Sprite")
-                    Node::readData(data, "Sprite", true, nullptr);
+                    Node::ReadData(data, "Sprite", true, nullptr);
 
                 if (static_cast<std::string>(data["type"]) == "Text")
-                    Node::readData(data, "Text", true, nullptr);
+                    Node::ReadData(data, "Text", true, nullptr);
 
                 if (static_cast<std::string>(data["type"]) == "Empty")
-                    Node::readData(data, "Empty", true, nullptr);
+                    Node::ReadData(data, "Empty", true, nullptr);
             }
 
             JSON.close();

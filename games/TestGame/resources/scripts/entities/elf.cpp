@@ -1,5 +1,6 @@
 #include "./elf.h"
 #include "../player.h"
+#include "../ui.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
 
 using namespace entity_behaviors;
@@ -22,7 +23,7 @@ Elf::Elf(std::shared_ptr<Entity> entity):
 
 //-----------------------------------
 
-void Elf::Update(Process::Context& context, void* scene) 
+void Elf::Update() 
 {
 
     this->sprite->SetVelocityX(this->m_rev ? -2 : 2); 
@@ -31,8 +32,7 @@ void Elf::Update(Process::Context& context, void* scene)
     if (this->hb)
         this->hb->SetTransform(b2Vec2(this->sprite->position.x * this->sprite->scale.x + 50, this->sprite->position.y * this->sprite->scale.y + 80), 0);
 
-    auto s = static_cast<System::Scene*>(scene);
-    auto playerBehavior = Behavior::GetBehavior<PlayerController>("PlayerController", s->behaviors);
+    auto playerBehavior = Behavior::GetBehavior<PlayerController>("PlayerController", System::Game::GetScene()->behaviors);
 
     if (this->hb && b2TestOverlap(this->hb->GetFixtureList()->GetAABB(0), playerBehavior->player->bodies[0].first->GetFixtureList()->GetAABB(0)))
        playerBehavior->DoDamage(1);
@@ -56,6 +56,7 @@ void Elf::Update(Process::Context& context, void* scene)
         this->health = 1;
         this->sprite->SetAlpha(1.0f);
         this->sprite->SetTint({ 0.0f, 0.0f, 0.0f });
+        Behavior::GetBehavior<UI>("UI", System::Game::GetScene()->behaviors)->score++;
 
         Time::delayedCall(400, [this] { this->m_canDestroy = true; });
     }
