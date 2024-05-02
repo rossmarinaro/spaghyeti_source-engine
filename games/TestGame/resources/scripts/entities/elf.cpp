@@ -12,10 +12,11 @@ Elf::Elf(std::shared_ptr<Entity> entity):
         m_canHit(false)
 {
     this->health = 3; 
-    this->hb = Physics::CreateDynamicBody("box", 0, 0, 30, 50, true, 1);
     this->sprite = std::static_pointer_cast<Sprite>(entity);
     this->sprite->SetAnimation("walk", false, 4);
- 
+
+    this->hb = Physics::CreateDynamicBody("box", 0, 0, 30, 50, true, 1);
+
     Time::setInterval(2000, [this] { this->m_rev = !this->m_rev; }); 
 }
 
@@ -24,11 +25,11 @@ Elf::Elf(std::shared_ptr<Entity> entity):
 void Elf::Update(Process::Context& context, void* scene) 
 {
 
-    this->sprite->SetVelocityX(this->m_rev ? -1 : 1); 
+    this->sprite->SetVelocityX(this->m_rev ? -2 : 2); 
     this->sprite->SetFlipX(this->m_rev);
 
     if (this->hb)
-        this->hb->SetTransform(b2Vec2(this->sprite->position.x + 180, this->sprite->position.y + 130), 0);
+        this->hb->SetTransform(b2Vec2(this->sprite->position.x * this->sprite->scale.x + 50, this->sprite->position.y * this->sprite->scale.y + 80), 0);
 
     auto s = static_cast<System::Scene*>(scene);
     auto playerBehavior = Behavior::GetBehavior<PlayerController>("PlayerController", s->behaviors);

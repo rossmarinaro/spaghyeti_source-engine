@@ -329,8 +329,7 @@ void Sprite::Render()
     this->shader.SetVec2f("scale", glm::vec2(
         this->bodies.size() ? 1.0f : this->scale.x, 
         this->bodies.size() ? 1.0f : this->scale.y
-    ), true); 
-    
+    ), true);
     this->shader.SetFloat("alphaVal", this->alpha, true); 
     this->shader.SetVec3f("tint", this->tint, true);
     this->shader.SetMat4("model", this->m_model, true);
@@ -347,11 +346,10 @@ void Sprite::Render()
                 { 
                     b2Vec2 position = this->bodies[0].first->GetPosition(); 
                     position.y += this->bodies[0].second.w; //apply y offset
-
-                    this->SetPosition(glm::vec2(position.x - this->bodies[0].second.x, position.y - this->bodies[0].second.y - this->bodies[0].second.w)); 
+                    this->SetPosition(glm::vec2((position.x - this->bodies[0].second.x), ((position.y - this->bodies[0].second.y) - this->bodies[0].second.w)));
                 }
                 else
-                    this->bodies[i].first->SetTransform(b2Vec2(this->position.x + this->bodies[i].second.x, this->position.y + this->bodies[i].second.y), 0);
+                    this->bodies[i].first->SetTransform(b2Vec2((position.x - this->bodies[0].second.x), ((position.y - this->bodies[0].second.y) - this->bodies[0].second.w)), 0);
 
             }
 

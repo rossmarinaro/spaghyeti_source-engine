@@ -597,7 +597,7 @@ void EventListener::BuildAndRun()
 
             command_queue << "   this->SetWorldDimensions(" + std::to_string(target.second.worldWidth) + ", " + std::to_string(target.second.worldHeight) + ");\n";
             
-            command_queue << "   this->m_context.camera->SetVignette(" + std::to_string(target.second.vignetteVisibility) + ")\n;"; 
+            command_queue << "   this->m_context.camera->SetVignette(" + std::to_string(target.second.vignetteVisibility) + ");\n"; 
             command_queue << "   this->m_context.camera->SetBounds(" + std::to_string(target.second.currentBoundsWidthBegin) + ", " + std::to_string(target.second.currentBoundsWidthEnd) + ", " + std::to_string(target.second.currentBoundsHeightBegin) + ", " + std::to_string(target.second.currentBoundsHeightEnd) + ");\n";
             command_queue << "   this->m_context.camera->SetBackgroundColor({ " + std::to_string(target.second.cameraBackgroundColor.x) + ", " + std::to_string(target.second.cameraBackgroundColor.y) + ", " + std::to_string(target.second.cameraBackgroundColor.z) + ", " + std::to_string(target.second.cameraBackgroundColor.w) + " });\n";
             command_queue << "   this->m_context.camera->SetZoom(" + std::to_string(target.second.cameraZoom) + ");\n";

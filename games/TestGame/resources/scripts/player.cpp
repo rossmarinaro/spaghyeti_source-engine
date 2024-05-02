@@ -83,7 +83,6 @@ void PlayerController::Update(Process::Context& context, void* scene)
     if (!this->m_alive) {
         this->player->SetVelocity(0.0f, 0.0f);
         context.camera->Fade(0.1f, "in");
-
     }
 
     if (this->player->IsAnimComplete()) 

@@ -82,7 +82,7 @@ void Shader::Update(Camera* camera)
         if (shader.first == "cursor" || shader.first == "UI")             
             GetShader(shader.first).SetVec2f("offset", glm::vec2(0.0f), true);
 
-        else            
+        else     
             GetShader(shader.first).SetVec2f("offset", camera->position, true);
 
         //projection

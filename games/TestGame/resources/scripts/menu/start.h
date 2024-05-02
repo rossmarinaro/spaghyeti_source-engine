@@ -16,6 +16,8 @@ namespace entity_behaviors {
                     m_hasStarted(false),
                     m_startText(std::static_pointer_cast<Text>(entity))
            {
+            
+               System::Audio::play("music.flac", true);
 
                Time::delayedCall(3000, [this] {  
                     this->m_hasStarted = true;
