@@ -30,7 +30,7 @@ void Elf::Update()
     this->sprite->SetFlipX(this->m_rev);
 
     if (this->hb)
-        this->hb->SetTransform(b2Vec2(this->sprite->position.x * this->sprite->scale.x + 50, this->sprite->position.y * this->sprite->scale.y + 80), 0);
+        this->hb->SetTransform(b2Vec2(this->sprite->position.x * this->sprite->scale.x + 50, this->sprite->position.y * this->sprite->scale.y + 60), 0);
 
     auto playerBehavior = Behavior::GetBehavior<PlayerController>("PlayerController", System::Game::GetScene()->behaviors);
 

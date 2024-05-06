@@ -48,6 +48,7 @@ namespace System {
             static void Exit();
             static void UpdateFrame();
             static void StartScene(const std::string& key);
+            static bool UIListenForInput(int index);
 
             //create objects
 
@@ -72,12 +73,6 @@ namespace System {
             //map manager
 
             static inline MapManager* maps;
-    
-            static inline std::vector<std::shared_ptr<Sprite>> virtual_buttons; 
-            
-            static inline bool UIListenForInput(int index) {
-                return virtual_buttons[index]->tint != glm::vec3(1.0f);
-            }
             
         private:
 

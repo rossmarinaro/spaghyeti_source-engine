@@ -94,7 +94,6 @@ void Text::Render()
 
     gltEndDraw();
 
-
 }
 
 
@@ -105,4 +104,16 @@ void Text::SetText(const std::string& content) {
 
     this->content = content;
     gltSetText(this->m_handle, this->content.c_str());
+}
+
+
+//-----------------------------
+
+std::array<GLfloat, 2> Text::GetTextDimensions() 
+{
+
+    GLfloat width = gltGetTextWidth(this->m_handle, this->scale.x),
+            height = gltGetTextHeight(this->m_handle, this->scale.y);
+
+    return { width, height };
 }

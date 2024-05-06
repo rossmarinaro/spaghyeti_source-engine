@@ -82,10 +82,6 @@ bool Camera::InBounds() {
 
 glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 {
-    
-    System::Window::s_currentWidth = width;  
-    System::Window::s_currentHeight = height;
-
     return (glm::highp_mat4)glm::ortho(
         this->m_screenLeft / this->zoom, width / this->zoom,  
         height / this->zoom, this->m_screenTop / this->zoom, 

@@ -167,7 +167,7 @@ void PlayerController::DoDamage(int amount)
 
     this->m_canDamage = false;
     this->m_health -= amount;
-
+ 
     if (this->m_health < 4 && this->m_health > 2)
         System::Game::GetScene()->GetEntity<Sprite>("heart1")->SetTint({ 0.0f, 0.0f, 0.0f });
 

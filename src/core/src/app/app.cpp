@@ -14,11 +14,13 @@ void System::Application::Init(Game* layer)
      
     Game::Boot();
 
+    //glfwMaximizeWindow(Window::s_instance);
+
     //init input callbacks 
 
     glfwSetKeyCallback(Window::s_instance, Inputs::key_callback); 
     glfwSetCursorPosCallback(Window::s_instance, Inputs::cursor_callback); 
-    
+ 
     #ifndef __EMSCRIPTEN__
         glfwSetMouseButtonCallback(Window::s_instance, Inputs::input_callback);
     //#else 

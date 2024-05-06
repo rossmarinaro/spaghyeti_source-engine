@@ -20,12 +20,16 @@ namespace entity_behaviors {
             inline void Update() override;
 
         private:
+
+            std::atomic_bool m_isOpen, m_canToggle;
             
             std::shared_ptr<Sprite> m_heart1;
             std::shared_ptr<Sprite> m_heart2;
             std::shared_ptr<Sprite> m_heart3;
+            std::shared_ptr<Sprite> m_menu;
 
-            std::shared_ptr<Text> m_text;
+            std::shared_ptr<Text> m_score;
+            std::shared_ptr<Text> m_quitText;
 
     };
 };

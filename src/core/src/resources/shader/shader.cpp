@@ -90,13 +90,12 @@ void Shader::Update(Camera* camera)
         if (shader.first != "Points" && shader.first != "Lines" && shader.first != "Triangles")
         {
 
-            if (shader.first == "cursor" || shader.first == "UI")                 
-                GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::s_width * 2), static_cast<float>(System::Window::s_height * 2)), true);  
-
+            if (shader.first == "cursor")                 
+               GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::s_width * 2), static_cast<float>(System::Window::s_height * 2)), true);  
+            
             else                 
                 GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight), true);
-       
-        }
+        } 
 
         //view
       

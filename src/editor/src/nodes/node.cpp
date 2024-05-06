@@ -471,6 +471,7 @@ json Node::WriteData(std::shared_ptr<Node> node, const std::string& type)
             { "shape", en->currentShape },
             { "position x", en->positionX },
             { "position y", en->positionY },
+            { "depth", en->depth },
             { "tint", {
                     { "x", en->m_debugGraphic ? en->m_debugGraphic->tint.x : 0 },
                     { "y", en->m_debugGraphic ? en->m_debugGraphic->tint.y : 0 },
@@ -790,6 +791,7 @@ void Node::ReadData(json& data, const std::string& type, bool makeNode, void* sc
             en->radius = data["radius"]; 
             en->positionX = data["position x"]; 
             en->positionY = data["position y"];
+            en->depth = data["depth"];
 
             if (static_cast<std::string>(data["shape"]).length()) {
 

@@ -12,8 +12,6 @@ namespace /* SPAGHYETI_CORE */ System {
       
             static inline float s_width, 
                                 s_height, 
-                                s_currentWidth, 
-                                s_currentHeight,
                                 s_scaleWidth = 1500.0f, 
                                 s_scaleHeight = 900.0f;
 

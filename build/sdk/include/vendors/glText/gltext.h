@@ -511,7 +511,7 @@ GLT_API void gltGetColor(GLfloat *r, GLfloat *g, GLfloat *b, GLfloat *a)
 GLT_API GLfloat gltGetLineHeight(GLfloat scale)
 {
 	return (GLfloat)_gltFontGlyphHeight * scale;
-}
+} 
 
 GLT_API GLfloat gltGetTextWidth(const GLTtext *text, GLfloat scale)
 {

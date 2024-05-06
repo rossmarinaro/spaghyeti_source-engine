@@ -13,6 +13,7 @@ EmptyNode::EmptyNode():
     this->rectWidth = 0.0f;
     this->rectHeight = 0.0f;
     this->radius = 0.0f;
+    this->depth = 1;
     this->show_debug = false;
     this->debug_fill = false;
     this->currentShape = "";
@@ -157,11 +158,14 @@ void EmptyNode::Render(std::shared_ptr<Node> node)
 
                     ImGui::SameLine();
 
-                    if (this->currentShape != "") {
+                    if (this->currentShape != "") 
+                    {
+                        ImGui::SliderInt("depth", &this->depth, 0, 1000);
                         ImGui::Checkbox("fill", &this->debug_fill); 
-                        ImGui::ColorEdit3("tint", (float*)&this->m_debugGraphic->tint); ImGui::SameLine();
+                        ImGui::ColorEdit3("tint", (float*)&this->m_debugGraphic->tint); 
+                        ImGui::SameLine();
                         ImGui::SliderFloat("alpha", &this->m_debugGraphic->alpha, 0.0f, 1.0f);
-                        ImGui::SliderFloat("position x", &this->positionX, 10.0f, 1000.0f); 
+                        ImGui::SliderFloat("position x", &this->positionX, 10.0f, 1000.0f);  
                         ImGui::SliderFloat("position y", &this->positionY, 10.0f, 1000.0f);
                     }
 

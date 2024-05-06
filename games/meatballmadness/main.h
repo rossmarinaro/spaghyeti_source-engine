@@ -20,7 +20,7 @@ class MeatballMadness : public System::Scene {
 
         void Preload() override;
         void Run() override;
-        void Update() override;
+        void Update();
 
         void MoveChef();
         void ThrowMeatball();

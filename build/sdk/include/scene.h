@@ -18,6 +18,8 @@ namespace System {
             std::vector<std::shared_ptr<Entity>> UI;
             std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
 
+            std::vector<std::shared_ptr<Entity>> virtual_buttons; 
+
             Scene(const Process::Context& context): 
                 m_context(context)
                     { this->Init("Untitled" + std::to_string(s_ID)); }
@@ -79,7 +81,7 @@ namespace System {
             }
 
         private:
-
+ 
             static inline int s_ID = 0;
 
             int m_worldWidth = 0, 

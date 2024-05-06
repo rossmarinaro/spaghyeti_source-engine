@@ -21,6 +21,8 @@ class Inputs {
              DOWN,
              G;
 
+        float mouseX, mouseY;
+
         void ShutDown();
         void CreateCursor();
         void RenderCursor();

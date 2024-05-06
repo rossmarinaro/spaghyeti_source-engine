@@ -103,8 +103,7 @@ namespace editor {
 
         public:
 
-            int 
-                frame, 
+            int frame, 
                 anim, 
                 depth;
 
@@ -277,14 +276,13 @@ namespace editor {
 
         public:
 
-            bool 
-                show_debug, 
-                debug_fill;
+            bool show_debug, debug_fill;
+
+            int depth;
     
-            float 
-                rectWidth, 
-                rectHeight,
-                radius;
+            float rectWidth, 
+                  rectHeight,
+                  radius;
 
             std::string currentShape;
             std::shared_ptr<Geometry> m_debugGraphic;

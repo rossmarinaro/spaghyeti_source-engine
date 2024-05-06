@@ -88,29 +88,10 @@ void CollisionManager::EndContact(b2Contact* contact)
 }
 
 
-//----------------------------------- UI related collisions (standard / ui layer projection matrix * factor)
-
-
-bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &sprite, const std::shared_ptr<Geometry> &rect, int factor)
-{
-    //x axis
-
-    bool collisionX = sprite->position.x + sprite->texture.FrameWidth / 2 >= rect->position.x * factor &&
-                      rect->position.x * factor + rect->width / 2 >= sprite->position.x;
-
-    //y axis
-
-    bool collisionY = sprite->position.y + sprite->texture.FrameHeight / 2 >= rect->position.y * factor &&
-                      rect->position.y * factor + rect->height / 2 >= sprite->position.y;
-
-    return collisionX && collisionY;
-
-}
-
 //-----------------------------------
 
 
-bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite> &spriteA, const std::shared_ptr<Sprite> &spriteB)
+bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB)
 {
     //x axis
 

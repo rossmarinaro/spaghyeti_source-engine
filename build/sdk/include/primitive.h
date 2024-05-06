@@ -23,9 +23,9 @@ namespace Graphics {
             void GenBuffer ();
             
             void Bind_Buffer (
-                const auto &data, 
-                const GLuint &buffer, 
-                const GLuint &VAO,
+                const auto& data, 
+                const GLuint& buffer, 
+                const GLuint& VAO,
                 GLuint location, 
                 GLint vecCount, 
                 GLenum type, 

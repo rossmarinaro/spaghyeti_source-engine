@@ -10,6 +10,13 @@
 using namespace System;      
 
 
+//------------------------------ UI
+
+bool Game::UIListenForInput(int index) {
+    return Application::game->currentScene->virtual_buttons[index]->tint != glm::vec3(1.0f);
+}
+
+
 //-----------------------
 
 void FlushGame(Game* game)
@@ -244,12 +251,7 @@ void Game::UpdateFrame()
 
     for (const auto& entity : game->currentScene->entities)
         if ((entity.get() && entity) && entity.get()->renderable) 
-        {
-            if (game->cursor != nullptr)
-                game->cursor->SetDepth(entity->depth + 1);
-
             entity->Render();
-        }
 
     for (const auto& UI : game->currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
@@ -257,8 +259,8 @@ void Game::UpdateFrame()
 
     //vignette overlay
 
-    game->currentScene->vignette->texture.FrameWidth = Window::s_currentWidth * 4;
-    game->currentScene->vignette->texture.FrameHeight = Window::s_currentWidth * 4;
+    game->currentScene->vignette->texture.FrameWidth = Window::s_width * 4;
+    game->currentScene->vignette->texture.FrameHeight = Window::s_height * 4;
     game->currentScene->vignette->Render();
 
     //render input cursor
@@ -307,8 +309,8 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     entity->active = false;
     entity->alive = false;
 
-    if (entity->IsSprite()) {
-
+    if (entity->IsSprite()) 
+    {
         auto sprite = std::static_pointer_cast<Sprite>(entity);
 
         if (sprite->bodies.size()) {
@@ -323,6 +325,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         entity.reset();
 
 } 
+
 
 //----------------------------- entity containers for instantiation
 
@@ -424,3 +427,6 @@ std::shared_ptr<Entity> Game::CreateEntity(const std::string& type)
 
     return entity;
 } 
+
+
+

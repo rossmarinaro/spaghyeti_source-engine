@@ -117,17 +117,20 @@ void MeatballMadness::MoveChef()
 
 void MeatballMadness::Update()
 { 
+
+    auto context = System::Game::GetScene()->GetContext();
+
     //set control states
 
     if (System::Application::isMobile)
-        for (int i = 0; i < System::Game::virtual_buttons.size(); i++)
+        for (int i = 0; i < this->virtual_buttons.size(); i++)
         {
-            System::Game::virtual_buttons[i]->SetScale(4.0f);
+            this->virtual_buttons[i]->SetScale(4.0f);
             
             switch (i) {
-                case 0: this->context.inputs->LEFT = System::Game::UIListenForInput(0); break;
-                case 1: this->context.inputs->RIGHT = System::Game::UIListenForInput(1); break;
-                case 2: this->context.inputs->UP = System::Game::UIListenForInput(2); break;
+                case 0: context.inputs->LEFT = System::Game::UIListenForInput(0); break;
+                case 1: context.inputs->RIGHT = System::Game::UIListenForInput(1); break;
+                case 2: context.inputs->UP = System::Game::UIListenForInput(2); break;
             }
         }
  
@@ -141,7 +144,7 @@ void MeatballMadness::Update()
     if (this->fails >= 3 && !game_over) 
         this->GameOver();
   
-    else if (paused && (this->context.inputs->isDown && canRestart)) 
+    else if (paused && (context.inputs->isDown && canRestart)) 
     {
             
         this->gameOverText->SetAlpha(0.0f);
@@ -157,7 +160,7 @@ void MeatballMadness::Update()
     else if (!started)
     {
 
-        if (this->context.inputs->isDown)
+        if (context.inputs->isDown)
         {
 
             #ifdef __EMSCRIPTEN__
@@ -275,7 +278,7 @@ void MeatballMadness::Update()
                 this->scoreText->SetDepth(entity->depth + 1);
             }
             
-            for (const auto& button : System::Game::virtual_buttons)
+            for (const auto& button : this->virtual_buttons)
                 if (button)
                     button->SetDepth(entity->depth + 1);
 
@@ -423,7 +426,7 @@ void MeatballMadness::Run()
     if (System::Application::isMobile)
     {
 
-        System::Game::virtual_buttons = {
+        this->virtual_buttons = {
 
             System::Game::CreateUI("arrow_button", 130.0f, 500.0f), //left
             System::Game::CreateUI("arrow_button", 250.0f, 500.0f), //right
@@ -431,7 +434,7 @@ void MeatballMadness::Run()
 
         };
             
-        System::Game::virtual_buttons[1]->SetRotation(180);
+        this->virtual_buttons[1]->SetRotation(180);
 
     }
 
@@ -439,6 +442,8 @@ void MeatballMadness::Run()
         if (!System::Audio::musicPlaying)
            System::Audio::play("music", true);
     #endif
+
+    Update();
 
 }
 
