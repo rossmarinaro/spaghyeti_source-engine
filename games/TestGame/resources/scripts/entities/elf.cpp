@@ -7,18 +7,21 @@ using namespace entity_behaviors;
 
 Elf::Elf(std::shared_ptr<Entity> entity):
     Behavior(entity, "Elf"),
-        m_rev(false),
+        m_canMoveLeft(false),
+        m_canMoveRight(true),
         m_canDamage(true),
         m_canDestroy(false),
-        m_canHit(false)
+        m_canHit(false),
+        m_reverse(false),
+        m_startPos(0)
 {
+
     this->health = 3; 
     this->sprite = std::static_pointer_cast<Sprite>(entity);
     this->sprite->SetAnimation("walk", false, 4);
+    this->m_startPos = this->sprite->position.x;
 
     this->hb = Physics::CreateDynamicBody("box", 0, 0, 30, 50, true, 1);
-
-    Time::setInterval(2000, [this] { this->m_rev = !this->m_rev; }); 
 }
 
 //-----------------------------------
@@ -26,9 +29,32 @@ Elf::Elf(std::shared_ptr<Entity> entity):
 void Elf::Update() 
 {
 
-    this->sprite->SetVelocityX(this->m_rev ? -2 : 2); 
-    this->sprite->SetFlipX(this->m_rev);
+    if (this->sprite->position.x > this->m_startPos - 80) {
+        this->m_canMoveLeft = true;
+        this->m_canMoveRight = false;
+    }
 
+    if (this->sprite->position.x == this->m_startPos - 80)
+        this->m_reverse = false;
+
+    if (this->sprite->position.x < this->m_startPos + 60 && !this->m_reverse) {
+        this->m_canMoveLeft = false;
+        this->m_canMoveRight = true;
+    }
+
+    if (this->sprite->position.x == this->m_startPos + 60)
+        this->m_reverse = true;
+
+    if (this->m_canMoveLeft) {
+        this->sprite->SetVelocityX(-2); 
+        this->sprite->SetFlipX(true);
+    }
+    
+    if (this->m_canMoveRight) {
+        this->sprite->SetVelocityX(2); 
+        this->sprite->SetFlipX(false);
+    }
+    
     if (this->hb)
         this->hb->SetTransform(b2Vec2(this->sprite->position.x * this->sprite->scale.x + 50, this->sprite->position.y * this->sprite->scale.y + 60), 0);
 

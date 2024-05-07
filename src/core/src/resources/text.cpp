@@ -84,7 +84,7 @@ void Text::Render()
     gltColor(this->tint.x, this->tint.y, this->tint.z, this->alpha);
 
     this->m_model = glm::mat4(1.0f);
-
+ 
     this->m_model = glm::translate(this->m_model, glm::vec3(this->position.x, this->position.y + gltGetTextHeight(this->m_handle, this->scale.y), 0.0f));
     this->m_model = glm::scale(this->m_model, glm::vec3(this->scale.x, this->scale.y, 1.0f));
 
@@ -109,7 +109,8 @@ void Text::SetText(const std::string& content) {
 
 //-----------------------------
 
-std::array<GLfloat, 2> Text::GetTextDimensions() 
+
+const glm::vec2 Text::GetTextDimensions() 
 {
 
     GLfloat width = gltGetTextWidth(this->m_handle, this->scale.x),

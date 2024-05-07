@@ -6,43 +6,52 @@
 namespace editor {
 
     //scene copy template
-    struct Scene {
+    class Scene {
 
-        int worldWidth = 2000,
-            worldHeight = 2000;
+        public:
 
-        float gravityX = 0.0f,
-              gravityY = 500.0f,
-              vignetteVisibility = 0.0f,
-              cameraZoom = 1,
-              currentBoundsWidthBegin,
-              currentBoundsWidthEnd,
-              currentBoundsHeightBegin,
-              currentBoundsHeightEnd;
+            ~Scene() 
+            {
+                nodes.clear();
+                globals.clear();
+                sceneAssets.clear(); 
+            }
 
-        bool globals_applied = false,
-             gravity_continuous = true,
-             gravity_sleeping = true;
- 
-        glm::vec2 cameraPosition;
-        glm::vec4 cameraBackgroundColor;
+            int worldWidth = 2000,
+                worldHeight = 2000;
 
-        std::vector<std::pair<std::string, std::string>> globals;
-        std::vector<std::shared_ptr<editor::Node>> nodes;
+            float gravityX = 0.0f,
+                gravityY = 500.0f,
+                vignetteVisibility = 0.0f,
+                cameraZoom = 1,
+                currentBoundsWidthBegin,
+                currentBoundsWidthEnd,
+                currentBoundsHeightBegin,
+                currentBoundsHeightEnd;
 
-        std::map<std::string, std::string> sceneAssets;
+            bool globals_applied = false,
+                gravity_continuous = true,
+                gravity_sleeping = true;
+    
+            glm::vec2 cameraPosition;
+            glm::vec4 cameraBackgroundColor;
 
-        template <typename T>
-        static inline std::shared_ptr<T> CreateObject(Scene* scene) 
-        {
+            std::vector<std::pair<std::string, std::string>> globals;
+            std::vector<std::shared_ptr<editor::Node>> nodes;
 
-            auto node = std::make_shared<T>();
+            std::map<std::string, std::string> sceneAssets;
 
-            scene->nodes.push_back(node);
+            template <typename T>
+            static inline std::shared_ptr<T> CreateObject(Scene* scene) 
+            {
 
-            return node;
+                auto node = std::make_shared<T>();
 
-        }
+                scene->nodes.push_back(node);
+
+                return node;
+
+            }
 
     };
 }

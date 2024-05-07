@@ -10,6 +10,8 @@ namespace entity_behaviors {
 
         public:
 
+            int layer;
+
             std::string key; 
             
             inline Behavior(std::shared_ptr<Entity> entity, const std::string& key):
@@ -17,6 +19,7 @@ namespace entity_behaviors {
                 m_isActive(true)
             {
                 this->key = key; 
+                this->layer = 0;
             }
 
             virtual ~Behavior() {

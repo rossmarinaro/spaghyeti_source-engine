@@ -18,9 +18,13 @@ namespace entity_behaviors {
 
         private:
 
-            bool m_rev, 
+            float m_startPos;
+
+            bool m_canMoveLeft,
+                 m_canMoveRight,
                  m_canDamage, 
                  m_canHit,
+                 m_reverse,
                  m_canDestroy;
 
     };

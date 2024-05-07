@@ -137,7 +137,7 @@ void Inputs::ProcessInput(GLFWwindow* window)
 
     //input state
 
-    this->isDown = this->numInputs > 0 ? true : false;
+    this->isDown = this->numInputs > 0;
 
     #if DEVELOPMENT == 1
         Application::game->physics->debug->enable = this->G;
@@ -206,8 +206,8 @@ void Inputs::CheckOverlap()
 
     auto do_check = [&](float x, float y, float width, float height) -> bool {
 
-        float clickareaWidth = 20,
-              clickareaHeight = 20;
+        float clickareaWidth = 80,
+              clickareaHeight = 60;
 
         bool overlapX = (x + width / 2) >= inputs->mouseX && inputs->mouseX + clickareaWidth >= x,
              overlapY = (y + height / 2) >= inputs->mouseY && inputs->mouseY + clickareaHeight >= y;
@@ -220,40 +220,29 @@ void Inputs::CheckOverlap()
 
         auto button = Application::game->currentScene->virtual_buttons[i];
 
-        if (!button->active)
+        if (!button.second->active)
             continue; 
 
-        if (strcmp(button->type, "UI") == 0 || strcmp(button->type, "sprite") == 0) {
-            auto sprite = std::static_pointer_cast<Sprite>(button);
+        if (strcmp(button.second->type, "UI") == 0 || strcmp(button.second->type, "sprite") == 0) {
+            auto sprite = std::static_pointer_cast<Sprite>(button.second);
             isOverlapping = do_check(sprite->position.x, sprite->position.y, sprite->texture.FrameWidth, sprite->texture.FrameHeight);  
         }
 
-        if (strcmp(button->type, "geometry") == 0) {   
-            auto geom = std::static_pointer_cast<Geometry>(button);
-            isOverlapping = do_check(geom->position.x, geom->position.y, geom->width, geom->height);
+        if (strcmp(button.second->type, "geometry") == 0) {   
+            auto geom = std::static_pointer_cast<Geometry>(button.second);
+            isOverlapping = do_check(geom->position.x - 600, geom->position.y + 350, geom->width, geom->height);
         }
 
-        if (strcmp(button->type, "text") == 0) {
-            auto text = std::static_pointer_cast<Text>(button);
-            isOverlapping = do_check(text->position.x, text->position.y, text->GetTextDimensions()[0], text->GetTextDimensions()[1]);
+        if (strcmp(button.second->type, "text") == 0) {
+            auto text = std::static_pointer_cast<Text>(button.second);
+            isOverlapping = do_check(text->position.x - 350, text->position.y + 420, text->GetTextDimensions().x, text->GetTextDimensions().y);
         }
- 
-        button->SetTint(isOverlapping ? glm::vec3(1.0f, 0.0f, 0.0f) : glm::vec3(1.0f, 1.0f, 1.0f));
-        button->SetAlpha(isOverlapping ? 0.5f : 1.0f); 
+        
+        Application::game->currentScene->virtual_buttons[i].first = isOverlapping;
+        button.second->SetTint(isOverlapping ? glm::vec3(1.0f, 0.0f, 0.0f) : glm::vec3(1.0f, 1.0f, 1.0f));
 
     }
 }
-
-
-//----------------------------------------
-
-
-void Inputs::ToggleVirtualButtonVisibility(bool visibility) {
-
-    for (const auto &button : Application::game->currentScene->virtual_buttons)
-        button->SetAlpha(visibility ? 1.0f : 0.0f);
-}
-
 
 
 //----------------------------------------
@@ -288,9 +277,6 @@ void Inputs::SetKeyInputs(bool boolean, int key, GLFWwindow* window)
         break;
         case GLFW_KEY_ENTER:
             this->ENTER = boolean;
-        break;
-        case GLFW_MOUSE_BUTTON_LEFT:
-            this->LEFT_CLICK = boolean;
         break;
         case GLFW_KEY_TAB:
             this->TAB = boolean;
@@ -453,16 +439,17 @@ void Inputs::SetGamepadInputs(unsigned int joystick)
 void Inputs::input_callback(GLFWwindow* window, int input, int action, int mods)
 {
 
-    if (input == GLFW_MOUSE_BUTTON_LEFT || input == 1)
-    {
-        if (action == GLFW_PRESS || action == 1)
-            return;
-        else
-            Application::game->inputs->ResetControls();
-    }
+    if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) 
+        Application::game->inputs->RIGHT_CLICK = true;
 
     else
-       Application::game->inputs->ResetControls();
+        Application::game->inputs->RIGHT_CLICK = false;
+
+    if (input == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) 
+        Application::game->inputs->LEFT_CLICK = true;
+
+    else
+        Application::game->inputs->LEFT_CLICK = false;
 
     if (action == GLFW_PRESS)
         Application::game->inputs->numInputs++;
@@ -483,15 +470,10 @@ void Inputs::ShutDown()
 
     ResetControls();
 
-    if (Application::isMobile)
-    {
+    if (Application::isMobile) {
         this->m_initVirtualControls = false;
+        Application::game->currentScene->virtual_buttons.clear();
 
-        for (auto& button : Application::game->currentScene->virtual_buttons)
-            if (button) {
-                button.reset();
-                button = nullptr;
-            }
     }
 
     #if DEVELOPMENT == 1
@@ -513,9 +495,8 @@ void Inputs::ResetControls()
         this->m_cursorY = -100.0f;
     }
 
-    else
-        this->LEFT_CLICK = false;
-
+    this->RIGHT_CLICK = false;
+    this->LEFT_CLICK = false;
     this->LEFT = false;
     this->RIGHT = false;
     this->DOWN = false;

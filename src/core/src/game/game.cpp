@@ -10,13 +10,6 @@
 using namespace System;      
 
 
-//------------------------------ UI
-
-bool Game::UIListenForInput(int index) {
-    return Application::game->currentScene->virtual_buttons[index]->tint != glm::vec3(1.0f);
-}
-
-
 //-----------------------
 
 void FlushGame(Game* game)
@@ -259,8 +252,8 @@ void Game::UpdateFrame()
 
     //vignette overlay
 
-    game->currentScene->vignette->texture.FrameWidth = Window::s_width * 4;
-    game->currentScene->vignette->texture.FrameHeight = Window::s_height * 4;
+    game->currentScene->vignette->texture.FrameWidth = Window::s_scaleWidth * 4;
+    game->currentScene->vignette->texture.FrameHeight = Window::s_scaleHeight * 4;
     game->currentScene->vignette->Render();
 
     //render input cursor
@@ -269,9 +262,18 @@ void Game::UpdateFrame()
  
     //update behaviors, pass game process context to subclasses
 
-    for (const auto& behavior : game->currentScene->behaviors)
-        if (!game->currentScene->IsPaused() && behavior.get() && behavior) 
+    for (const auto& behavior : game->currentScene->behaviors) 
+    {
+
+        if (!behavior.get() || !behavior)
+            continue;
+
+        if ((!game->currentScene->IsPaused() && behavior->layer == 0)) 
             behavior->Update();  
+            
+        else if (behavior->layer == 1)
+            behavior->Update();
+    }
 
     //depth sort
 
@@ -279,14 +281,15 @@ void Game::UpdateFrame()
 
     #if DEVELOPMENT == 1 
 
-        if (game->physics->debug->enable) {
+        if (game->physics->debug->enable) 
+        {
             game->physics->GetWorld().DebugDraw();
             game->physics->debug->Flush();
-        }
 
-        #if STANDALONE == 1
-            displayInfo->Update(game->m_context);
-        #endif
+            #if STANDALONE == 1
+                displayInfo->Update(game->m_context);
+            #endif
+        }
 
     #endif
 

@@ -197,7 +197,7 @@ class Text : public Entity {
  
         void Render();
 		void SetText(const std::string& content);
-        std::array<GLfloat, 2> GetTextDimensions();
+        const glm::vec2 GetTextDimensions();
  
         Text (const std::string& content, float x, float y, float scale = 1, glm::vec3 tint = glm::vec3(1.0f));
 		

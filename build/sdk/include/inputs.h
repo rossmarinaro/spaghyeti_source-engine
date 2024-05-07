@@ -10,6 +10,7 @@ class Inputs {
         int numInputs;
 
         bool isDown = false,
+             RIGHT_CLICK,
              LEFT_CLICK,
              SPACE, 
              SHIFT, 
@@ -26,7 +27,6 @@ class Inputs {
         void ShutDown();
         void CreateCursor();
         void RenderCursor();
-        void ToggleVirtualButtonVisibility(bool visibility);
         void ProcessInput(GLFWwindow* window);
 
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

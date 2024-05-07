@@ -48,7 +48,6 @@ namespace System {
             static void Exit();
             static void UpdateFrame();
             static void StartScene(const std::string& key);
-            static bool UIListenForInput(int index);
 
             //create objects
 

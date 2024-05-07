@@ -242,68 +242,68 @@ void EventListener::Deserialize(std::ifstream& JSON)
 void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 {
 
-    editor::Scene scene;
+    auto scene = new editor::Scene;
 
     json data = json::parse(JSON);
 
     //camera
 
-    scene.vignetteVisibility = data["camera"]["vignetteVisibility"];
-    scene.cameraPosition.x = data["camera"]["x"];
-    scene.cameraPosition.y = data["camera"]["y"];
-    scene.cameraZoom = data["camera"]["zoom"];
-    scene.cameraBackgroundColor.x = data["camera"]["color"]["x"];
-    scene.cameraBackgroundColor.y = data["camera"]["color"]["y"];
-    scene.cameraBackgroundColor.z = data["camera"]["color"]["z"];
-    scene.cameraBackgroundColor.w = data["camera"]["color"]["w"]; 
+    scene->vignetteVisibility = data["camera"]["vignetteVisibility"];
+    scene->cameraPosition.x = data["camera"]["x"];
+    scene->cameraPosition.y = data["camera"]["y"];
+    scene->cameraZoom = data["camera"]["zoom"];
+    scene->cameraBackgroundColor.x = data["camera"]["color"]["x"];
+    scene->cameraBackgroundColor.y = data["camera"]["color"]["y"];
+    scene->cameraBackgroundColor.z = data["camera"]["color"]["z"];
+    scene->cameraBackgroundColor.w = data["camera"]["color"]["w"]; 
 
-    scene.currentBoundsWidthBegin = data["camera"]["bounds"]["width"]["begin"];
-    scene.currentBoundsWidthEnd = data["camera"]["bounds"]["width"]["end"];
-    scene.currentBoundsHeightBegin = data["camera"]["bounds"]["height"]["begin"];
-    scene.currentBoundsHeightEnd = data["camera"]["bounds"]["height"]["end"];
+    scene->currentBoundsWidthBegin = data["camera"]["bounds"]["width"]["begin"];
+    scene->currentBoundsWidthEnd = data["camera"]["bounds"]["width"]["end"];
+    scene->currentBoundsHeightBegin = data["camera"]["bounds"]["height"]["begin"];
+    scene->currentBoundsHeightEnd = data["camera"]["bounds"]["height"]["end"];
     
-    scene.worldWidth = data["camera"]["width"];
-    scene.worldHeight = data["camera"]["height"];
+    scene->worldWidth = data["camera"]["width"];
+    scene->worldHeight = data["camera"]["height"];
 
-    scene.gravityX = data["settings"]["physics"]["gravity"]["x"];
-    scene.gravityY = data["settings"]["physics"]["gravity"]["y"];
-    scene.gravity_continuous = data["settings"]["physics"]["continuous"];
-    scene.gravity_sleeping = data["settings"]["physics"]["sleeping"];
+    scene->gravityX = data["settings"]["physics"]["gravity"]["x"];
+    scene->gravityY = data["settings"]["physics"]["gravity"]["y"];
+    scene->gravity_continuous = data["settings"]["physics"]["continuous"];
+    scene->gravity_sleeping = data["settings"]["physics"]["sleeping"];
 
     //global variables
     
     if (data["globals"].size()) {
         
         for (const auto& global : data["globals"])
-            scene.globals.push_back({ global["key"], global["type"] });
+            scene->globals.push_back({ global["key"], global["type"] });
 
-        scene.globals_applied = true;
+        scene->globals_applied = true;
     }
 
     //sprites
 
     for (auto& sprite : data["nodes"]["sprites"])
-        Node::ReadData(sprite, "Sprite", false, &scene);
+        Node::ReadData(sprite, "Sprite", false, scene);
 
     //tilemaps
 
     for (auto& tilemap : data["nodes"]["tilemaps"])
-        Node::ReadData(tilemap, "Tilemap", false, &scene);
+        Node::ReadData(tilemap, "Tilemap", false, scene);
 
     //audio
 
     for (auto& audio : data["nodes"]["audio"])
-        Node::ReadData(audio, "Audio", false, &scene);
+        Node::ReadData(audio, "Audio", false, scene);
 
     //empty
 
     for (auto& empty : data["nodes"]["empty"])
-        Node::ReadData(empty, "Empty", false, &scene);
+        Node::ReadData(empty, "Empty", false, scene);
 
     //text
 
     for (auto& text : data["nodes"]["text"])
-        Node::ReadData(text, "Text", false, &scene);
+        Node::ReadData(text, "Text", false, scene);
 
     //scene ready for compilation
 

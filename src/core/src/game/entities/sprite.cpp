@@ -189,7 +189,7 @@ void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
 
             std::map<std::string, std::pair<int, int>>::iterator anim = this->anims.find(animKey);
 
-            if (anim == this->anims.end()) 
+            if (anim == this->anims.end() || System::Application::game->currentScene->IsPaused()) 
                 return;
 
             std::vector<int> frames; //frames to populate  

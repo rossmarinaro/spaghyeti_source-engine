@@ -30,6 +30,7 @@ namespace entity_behaviors {
 
             std::shared_ptr<Text> m_score;
             std::shared_ptr<Text> m_quitText;
-
+            std::shared_ptr<Text> m_returnText;
+            
     };
 };

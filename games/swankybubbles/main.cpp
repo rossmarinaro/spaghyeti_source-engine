@@ -165,7 +165,7 @@ void Game::Update()
     if (!SwankyBubbles::started)
     {
 
-        System::Application::inputs.ToggleVirtualButtonVisibility(false);
+        System::Game::GetScene()->ToggleVirtualButtonVisibility(false);
 
         for (auto &heart : SwankyBubbles::hearts)
             if (heart)
@@ -175,17 +175,17 @@ void Game::Update()
             SwankyBubbles::menu->renderable = true;
 
         if (
-            System::Application::inputs.SHIFT || 
-            System::Application::inputs.SPACE ||
-            System::Application::inputs.LEFT_CLICK    
+            System::Game::GetScene()->GetContext().inputs.SHIFT || 
+            System::Game::GetScene()->GetContext().inputs.SPACE ||
+            System::Game::GetScene()->GetContext().inputs.LEFT_CLICK    
         )
         {
 
             SwankyBubbles::started = true;
             
-            System::Application::inputs.SHIFT = false;
-            System::Application::inputs.SPACE = false;
-            System::Application::inputs.LEFT_CLICK = false;
+            System::Game::GetScene()->GetContext().inputs.SHIFT = false;
+            System::Game::GetScene()->GetContext().inputs.SPACE = false;
+            System::Game::GetScene()->GetContext().inputs.LEFT_CLICK = false;
             player->renderable = true;
 
            //wasm build requires user guesture to play sound
@@ -206,7 +206,7 @@ void Game::Update()
         return;
     }
 
-    System::Application::inputs.ToggleVirtualButtonVisibility(true);
+    System::Game::GetScene()->ToggleVirtualButtonVisibility(true);
 
 //gameplay update
 
@@ -496,9 +496,9 @@ void Game::Update()
             System::Application::audio.play("error"); 
 
             if (     
-                System::Application::inputs.SHIFT || 
-                System::Application::inputs.SPACE ||
-                System::Application::inputs.LEFT_CLICK 
+                GetScene()->GetContext().inputs.SHIFT || 
+                GetScene()->GetContext().inputs.SPACE ||
+                GetScene()->GetContext().inputs.LEFT_CLICK 
             )
             {
                 ShutDown(); 
@@ -549,7 +549,7 @@ void Game::Init()
     if (System::Application::isMobile)
     {
         
-        System::Application::inputs.virtual_buttons = {
+        GetScene()->GetContext().inputs.virtual_buttons = {
 
             CreateUI("arrow_button", 30.0f, 200.0f), //left
             CreateUI("arrow_button", 125.0f, 200.0f), //right
@@ -559,11 +559,11 @@ void Game::Init()
 
         }; 
             
-        System::Application::inputs.virtual_buttons[1]->SetRotation(180);
-        System::Application::inputs.virtual_buttons[2]->SetRotation(90);
-        System::Application::inputs.virtual_buttons[3]->SetRotation(270);
+        GetScene()->GetContext().inputs.virtual_buttons[1]->SetRotation(180);
+        GetScene()->GetContext().inputs.virtual_buttons[2]->SetRotation(90);
+        GetScene()->GetContext().inputs.virtual_buttons[3]->SetRotation(270);
 
-        for (auto &button : System::Application::inputs.virtual_buttons)
+        for (auto &button : GetScene()->GetContext().inputs.virtual_buttons)
             if (button)
                 button->SetScale(4.0f);
     }
@@ -647,7 +647,7 @@ void Game::Run()
         {
 
             if (
-                System::Application::inputs.SPACE && 
+                GetScene()->GetContext().inputs.SPACE && 
                 SwankyBubbles::canFire &&
                 static_cast<SwankyVelvet*>(player)->canFire
             )

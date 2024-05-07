@@ -16,7 +16,7 @@ namespace editor {
             static inline std::string currentProject = "",
                                       currentScene = "";
 
-            static inline std::map<std::string, Scene> compileQueue;
+            static inline std::map<std::string, Scene*> compileQueue;
 
             bool NewProject(const char* root_path = "C:\\");
             bool SaveScene(bool saveAs = false);
@@ -26,6 +26,7 @@ namespace editor {
             void BuildAndRun();
             void OpenFile();
             void DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath);
+            
             std::string GetScriptName(const std::string& path);
 
         private:

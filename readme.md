@@ -6,7 +6,7 @@ Rendering system / content creation tool with audio generation, texturing, and l
 
 Supports loading image, shader, json, and raw byte char files.
 
-Scene heirarchy supports sprites, CSV tilemaps, audio, text, and empty nodes.
+Scene heirarchy supports sprites, CSV tilemaps (supports flipped tiles), audio, text, and empty nodes.
 
 Supports native C++ scripting for nodes.
 
@@ -15,6 +15,8 @@ Standalone runtime embedded into application builds, use as core only, or as DLL
 Project generation creates base boilerplate and proxy reference to current application, decoupled from core engine source.
 
 Project configurations are saved as a custom ".SPAGHYETI" file which are decrypted into JSON prior to parsing.
+
+Editor created in-scene game objects can be saved as prefabs for repeated use.
 
 For Emscripten WebGL builds, download the latest SDK release, run emsdk install tot, navigate to emscripten install directory, run emcmdprompt.bat and cd to the "web" directory in this tree. compile with that directory's MakeFile.
 

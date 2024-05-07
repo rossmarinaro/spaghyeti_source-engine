@@ -128,9 +128,9 @@ void MeatballMadness::Update()
             this->virtual_buttons[i]->SetScale(4.0f);
             
             switch (i) {
-                case 0: context.inputs->LEFT = System::Game::UIListenForInput(0); break;
-                case 1: context.inputs->RIGHT = System::Game::UIListenForInput(1); break;
-                case 2: context.inputs->UP = System::Game::UIListenForInput(2); break;
+                case 0: context.inputs->LEFT = ListenForInteraction(0); break;
+                case 1: context.inputs->RIGHT = ListenForInteraction(1); break;
+                case 2: context.inputs->UP = ListenForInteraction(2); break;
             }
         }
  
@@ -443,7 +443,8 @@ void MeatballMadness::Run()
            System::Audio::play("music", true);
     #endif
 
-    Update();
+    while (true)
+        Update();
 
 }
 

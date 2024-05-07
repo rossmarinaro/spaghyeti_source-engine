@@ -17,8 +17,7 @@ namespace System {
             std::vector<std::shared_ptr<Entity>> entities;
             std::vector<std::shared_ptr<Entity>> UI;
             std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
-
-            std::vector<std::shared_ptr<Entity>> virtual_buttons; 
+            std::vector<std::pair<int, std::shared_ptr<Entity>>> virtual_buttons; 
 
             Scene(const Process::Context& context): 
                 m_context(context)
@@ -29,34 +28,12 @@ namespace System {
                     { this->Init(key); }
 
             virtual ~Scene() { s_ID--; };
-
             virtual void Preload() {}
             virtual void Run() {}
 
             inline bool IsPaused() {
                 return this->m_paused;
             }
-
-            inline const Process::Context& GetContext() { return this->m_context; }
-
-            template <typename T>
-            const inline std::shared_ptr<T> GetEntity(const std::string& key) 
-            {
-
-                auto entity_it = std::find_if(this->entities.begin(), this->entities.end(), [&](auto entity) { return entity->name == key; });
-                auto UI_it = std::find_if(this->UI.begin(), this->UI.end(), [&](auto UI) { return UI->name == key; });
-
-                if (entity_it != this->entities.end())
-                    return std::static_pointer_cast<T>(*entity_it);
-
-                if (UI_it != this->UI.end())
-                    return std::static_pointer_cast<T>(*UI_it);
-            }
-
-        protected:
-            
-            ma_device m_music;     
-            Process::Context m_context;   
 
             template<typename T>
             inline T GetData(const char* key) const { 
@@ -80,6 +57,40 @@ namespace System {
                 this->m_paused = isPaused;
             }
 
+            inline bool ListenForInteraction(int index) 
+            {
+                auto it = std::find(this->virtual_buttons.begin(), this->virtual_buttons.end(), this->virtual_buttons[index]);
+
+                if (it != this->virtual_buttons.end())
+                    return this->virtual_buttons[index].first;
+
+                return false;
+            }
+
+            inline void ToggleVirtualButtonVisibility(bool visibility) {
+
+                for (auto& button : this->virtual_buttons) {
+                    button.first = visibility;
+                    button.second->SetAlpha(visibility ? 1.0f : 0.0f);
+                }
+            }
+
+            inline const Process::Context& GetContext() { return this->m_context; }
+
+            template <typename T>
+            const inline std::shared_ptr<T> GetEntity(const std::string& key) 
+            {
+
+                auto entity_it = std::find_if(this->entities.begin(), this->entities.end(), [&](auto entity) { return entity->name == key; });
+                auto UI_it = std::find_if(this->UI.begin(), this->UI.end(), [&](auto UI) { return UI->name == key; });
+
+                if (entity_it != this->entities.end())
+                    return std::static_pointer_cast<T>(*entity_it);
+
+                if (UI_it != this->UI.end())
+                    return std::static_pointer_cast<T>(*UI_it);
+            }
+
         private:
  
             static inline int s_ID = 0;
@@ -88,6 +99,9 @@ namespace System {
                 m_worldHeight = 0;
 
             bool m_paused;
+
+            ma_device m_music;     
+            Process::Context m_context;
 
             std::map<const char*, std::any> m_data;
 
