@@ -13,7 +13,31 @@ using namespace System;
 
 
 
-//---------- Initialize Window
+void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    s_width = width;
+    s_height = height;    
+}
+
+
+
+//-----------------------------------
+
+
+
+const glm::vec2 Window::GetNDCToPixel(float x, float y) 
+{
+    float ndcX = ((2.0f * x) / s_width - 1.0f),
+          ndcY = (1.0f - (2.0f * y) / s_height),
+          pixelX = (ndcX + 1.0f) * (s_scaleWidth / 2), 
+          pixelY = s_scaleHeight - (ndcY + 1.0f) * (s_scaleHeight / 2); 
+
+    return { pixelX, pixelY };
+}
+
+
+
+//------------------------------------ Initialize Window
+
 
 
 void Window::Init()

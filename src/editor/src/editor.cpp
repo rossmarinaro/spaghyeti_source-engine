@@ -163,4 +163,3 @@ void Editor::Reset()
     Log("Workspace reset.");
 }
 
-

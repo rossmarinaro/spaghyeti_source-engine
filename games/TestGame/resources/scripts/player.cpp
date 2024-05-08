@@ -1,4 +1,5 @@
 #include "./player.h"
+#include "./colorShiftSprite.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/audio.h"
 
@@ -6,6 +7,7 @@ using namespace entity_behaviors;
 
 PlayerController::PlayerController(std::shared_ptr<Entity> entity):
     Behavior(entity, "PlayerController"),
+        m_state(""),
         m_alive(true),
         m_active(true),
         m_follow(true),  
@@ -21,13 +23,17 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
     this->hb = Physics::CreateDynamicBody("box", 0, 0, 10, 10, true, 1);   
 }
 
+
 //-------------------------------------
+
  
 PlayerController::~PlayerController() {
     Physics::DestroyBody(this->hb);
 }
 
+
 //-------------------------------------
+
 
 void PlayerController::Update() 
 {
@@ -58,15 +64,21 @@ void PlayerController::Update()
 
     //attack
 
-    if (context.inputs->SPACE && this->m_canAttack) {
+    if (context.inputs->SPACE && this->m_canAttack) 
+    {
         this->m_canAttack = false;
         this->m_attacking = true;
+
+        this->Attack(context.physics);
     }
 
-    if (this->m_attacking) 
-        this->Attack(context.physics);
+    if (this->m_attacking && this->player->IsAnimComplete()) 
+    {
+        this->m_canAttack = true; 
+        this->m_attacking = false;
+    } 
 
-    else {
+    else if (this->m_state != "attack") {
         this->hb->SetTransform(b2Vec2(this->player->position.x + 20, this->player->position.y + 20), 0);
         this->hb->SetEnabled(false);  
     }
@@ -83,17 +95,12 @@ void PlayerController::Update()
         this->player->SetVelocity(0.0f, 0.0f);
         context.camera->Fade(0.1f, "in");
     }
-
-    if (this->player->IsAnimComplete()) 
-    {
-        this->m_canAttack = true; 
-        this->m_attacking = false;
-    } 
-
-        
+    //Behavior::GetBehavior<COLORSHIFTSPRITE>("COLORSHIFTSPRITE", System::Game::GetScene()->behaviors)->SetBroadcastTint("tile", { 0.73f, 0.15f, 0.75f });   
 }
 
+
 //-------------------------------------
+
 
 void PlayerController::Move(Inputs* inputs)
 {
@@ -105,24 +112,32 @@ void PlayerController::Move(Inputs* inputs)
         this->player->SetVelocityX(-300); 
         this->player->Animate("walk-left", false, 5); 
         this->m_flipX = true;
+        this->m_state = "move";
     }
 
     else if (inputs->RIGHT) {
         this->player->SetVelocityX(300); 
         this->player->Animate("walk-right", false, 5); 
         this->m_flipX = false;
+        this->m_state = "move";
     }
 
     else {
         this->player->SetVelocityX(0); 
         this->player->Animate(this->m_flipX ? "idle-left" : "idle-right", true);
+        this->m_state = "idle";
     }
 }
 
+
 //-------------------------------------
+
 
 void PlayerController::Jump(Inputs* inputs)
 {
+
+    if (this->m_attacking || !this->m_alive)
+        return;
 
     if (inputs->LEFT || inputs->RIGHT)
         this->player->SetImpulse(this->m_flipX ? -900 : 900, -2600);
@@ -131,22 +146,27 @@ void PlayerController::Jump(Inputs* inputs)
         this->player->SetImpulseY(-2500);  
 
     this->player->SetAnimation(this->m_flipX ? "jump-left" : "jump-right");
+
+    this->m_state = "jump";
 }
 
+
 //-------------------------------------
+
 
 void PlayerController::Attack(Physics* physics)
 {
 
+    this->player->SetVelocityX(0);
     this->hb->SetEnabled(true);
     
     if (this->m_flipX) {
-        this->player->SetAnimation("attack-left", true, 7);
+        this->player->Animate("attack-left", true, 10);
         this->hb->SetTransform(b2Vec2(this->player->position.x - 10, this->player->position.y + 45), 0);
     }
 
     else {
-        this->player->SetAnimation("attack-right", true, 7);
+        this->player->Animate("attack-right", true, 10);
         this->hb->SetTransform(b2Vec2(this->player->position.x + 110, this->player->position.y + 45), 0);
     }
 
@@ -154,10 +174,14 @@ void PlayerController::Attack(Physics* physics)
     {
         //todo: implement fireball
         //Time::delayedCall(1000, [&]() { });
-    }           
+    }  
+
+    this->m_state = "attack";         
 }
 
+
 //-------------------------------------
+
 
 void PlayerController::DoDamage(int amount)
 {
@@ -183,6 +207,7 @@ void PlayerController::DoDamage(int amount)
     if (this->m_health <= 0 && this->m_alive) 
     {
         this->m_alive = false;   
+        Behavior::GetBehavior<COLORSHIFTSPRITE>("COLORSHIFTSPRITE", System::Game::GetScene()->behaviors)->SetBroadcastTint("tile", { 0.43f, 0.3f, 0.85f });
         System::Audio::play("error.flac", false, 1.000000);
         this->player->SetTint({ 0.0f, 0.0f, 0.0f });
         Time::delayedCall(500, [this] { this->m_active = false; });

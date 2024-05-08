@@ -25,7 +25,7 @@ void editor::GUI::ShowSettings()
                 {
                     const std::string scene = System::Utils::ReplaceFrom(filename.path().filename().string(), ".", ""); 
                   
-                    if (Editor::events.currentScene != scene)
+                    if (Editor::events.s_currentScene != scene)
                         if (ImGui::MenuItem((scene).c_str())) 
                             if (std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == scene; }) == Editor::scenes.end()) 
                                 Editor::scenes.push_back(scene);
@@ -38,7 +38,7 @@ void editor::GUI::ShowSettings()
         {
             for (const auto& scene : Editor::scenes) 
             {
-                if (Editor::events.currentScene != scene)
+                if (Editor::events.s_currentScene != scene)
                 {
                     if (ImGui::MenuItem((scene).c_str())) {
 

@@ -139,8 +139,8 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             //project name and current scene
 
-            currentProject = std::filesystem::path(Editor::projectPath).parent_path().filename().string();
-            currentScene = System::Utils::ReplaceFrom(result.filename().string(), ".", "");
+            s_currentProject = std::filesystem::path(Editor::projectPath).parent_path().filename().string();
+            s_currentScene = System::Utils::ReplaceFrom(result.filename().string(), ".", "");
 
             //temporary file for decoding
 
@@ -189,10 +189,6 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             JSON.close();
 
-            //register opened scene
-
-            Editor::scenes.push_back(currentScene);
-
             remove(tmp.c_str());
 
             Editor::projectOpen = true;
@@ -216,7 +212,7 @@ bool EventListener::SaveScene(bool saveAs)
 
     try {
 
-        std::string project_root = Editor::projectPath + currentScene + ".spaghyeti";
+        std::string project_root = Editor::projectPath + s_currentScene + ".spaghyeti";
 
         std::ifstream file(project_root);
 
@@ -257,7 +253,7 @@ bool EventListener::SaveScene(bool saveAs)
 
             Editor::projectPath = std::filesystem::path{ filename }.parent_path().string() + "\\";
 
-            currentScene = System::Utils::ReplaceFrom(std::filesystem::path{ filename }.filename().string(), ".", "");
+            s_currentScene = System::Utils::ReplaceFrom(std::filesystem::path{ filename }.filename().string(), ".", "");
 
             Editor::Log("Project saved: " + Editor::projectPath + std::filesystem::path{ filename }.filename().string());
 
@@ -288,7 +284,7 @@ bool EventListener::SaveScene(bool saveAs)
                 {
                     std::filesystem::path result((const char*)ofn.lpstrFile);
 
-                    currentScene = result.filename().string();
+                    s_currentScene = result.filename().string();
 
                     if (saveFile(result.string() + ".spaghyeti"))
                         return true;
@@ -920,7 +916,7 @@ void EventListener::BuildAndRun()
             game_src << "       game.LoadScene<" + className + ">();\n";
         }
         
-        game_src << "       System::Application app { &game, \"" + currentProject + "\" };\n";
+        game_src << "       System::Application app { &game, \"" + s_currentProject + "\" };\n";
         game_src <<	"   #ifdef __EMSCRIPTEN__\n";
         game_src <<	"       emscripten_exit_with_live_runtime();\n";
         game_src <<	"   #endif\n";
@@ -934,7 +930,7 @@ void EventListener::BuildAndRun()
         ShowWindow(GetConsoleWindow(), SW_SHOW);
 
         system(Editor::platform == "Windows" ?
-            ("chdir sdk && buildGame.bat " + Editor::projectPath + " " + currentProject).c_str() :
+            ("chdir sdk && buildGame.bat " + Editor::projectPath + " " + s_currentProject).c_str() :
             ("chdir sdk && buildWebGL.bat " + Editor::projectPath).c_str()
         );
 
@@ -949,7 +945,7 @@ void EventListener::BuildAndRun()
     else if (Editor::platform == "WebGL")
     {
 
-        std::string name_upper = currentProject;
+        std::string name_upper = s_currentProject;
 
         transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
@@ -1057,7 +1053,7 @@ void EventListener::BuildAndRun()
     }
 
 
-    Editor::Log("Project " + currentProject + " built successfully.");
+    Editor::Log("Project " + s_currentProject + " built successfully.");
 
 }
 
@@ -1075,7 +1071,7 @@ void EventListener::GenerateProject()
     const std::string resources = Editor::projectPath + "\\resources";
 
     if (std::filesystem::exists(resources)) {
-        Editor::Log("Project " + currentProject + " already exists.");
+        Editor::Log("Project " + s_currentProject + " already exists.");
         return;
     }
 
@@ -1096,7 +1092,7 @@ void EventListener::GenerateProject()
     icon_makeFile << "icon.o: icon.rc" << "\n";
 	icon_makeFile << "      windres icon.rc icon.o";
 
-    Editor::Log("New project " + currentProject + " generated.");
+    Editor::Log("New project " + s_currentProject + " generated.");
 }
 
 

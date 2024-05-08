@@ -57,6 +57,10 @@ namespace System {
                 this->m_paused = isPaused;
             }
 
+            inline void SetInteractive(std::shared_ptr<Entity> entity) {
+                this->virtual_buttons.push_back({ 0, entity });
+            }
+
             inline bool ListenForInteraction(int index) 
             {
                 auto it = std::find(this->virtual_buttons.begin(), this->virtual_buttons.end(), this->virtual_buttons[index]);

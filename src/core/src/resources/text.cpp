@@ -1,6 +1,5 @@
 #include "../../../../build/sdk/include/app.h"
 
-
 void Text::Init()
 {
 
@@ -55,6 +54,7 @@ Text::Text(const std::string& content, float x, float y, float scale, glm::vec3 
         std::cout << "Text: " + (std::string)content + " created.\n";
     #endif
 
+
 }
 
 
@@ -93,6 +93,7 @@ void Text::Render()
     gltDrawText(this->m_handle, (GLfloat*)&mvp);
 
     gltEndDraw();
+
 
 }
 

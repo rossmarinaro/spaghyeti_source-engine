@@ -31,6 +31,8 @@ namespace entity_behaviors {
                 m_attacking,
                 m_shootFireball;
 
+            std::string m_state;
+
             std::atomic_bool m_active;
 
             inline void Move(Inputs* inputs);

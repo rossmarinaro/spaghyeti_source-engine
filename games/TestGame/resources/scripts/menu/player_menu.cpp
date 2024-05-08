@@ -45,7 +45,7 @@ void Menu_Player::Update()
 
     this->m_player->SetAnimation("idle", true, 4);
 
-    if (context.inputs->SPACE && this->m_init) {
+    if ((context.inputs->SPACE || context.inputs->LEFT_CLICK) && this->m_init) {
         this->m_init = false;
         System::Game::StartScene("CAVE");
     }

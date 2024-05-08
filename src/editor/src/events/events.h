@@ -13,8 +13,8 @@ namespace editor {
                                saveFlag = false,
                                buildFlag = false;
             
-            static inline std::string currentProject = "",
-                                      currentScene = "";
+            static inline std::string s_currentProject = "",
+                                      s_currentScene = "";
 
             static inline std::map<std::string, Scene*> compileQueue;
 

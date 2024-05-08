@@ -1,5 +1,6 @@
 #include "./ui.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
+#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/window.h"
 
 using namespace entity_behaviors;
 
@@ -34,8 +35,8 @@ UI::UI(std::shared_ptr<Entity> entity):
     this->m_returnText->SetScale(2.7f, 1.0f);
     this->m_returnText->SetAlpha(0.0f);
 
-    System::Game::GetScene()->virtual_buttons.push_back({ 0, this->m_returnText });
-    System::Game::GetScene()->virtual_buttons.push_back({ 0, this->m_quitText });
+    System::Game::GetScene()->SetInteractive(this->m_returnText);
+    System::Game::GetScene()->SetInteractive(this->m_quitText);
 } 
 
 //-------------------------------------

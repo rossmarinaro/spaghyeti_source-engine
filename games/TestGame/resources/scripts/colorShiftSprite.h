@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/behaviors.h"
 
 
@@ -11,33 +12,13 @@ namespace entity_behaviors {
 
            //constructor, called on start
 
-           COLORSHIFTSPRITE(std::shared_ptr<Entity> entity):
-               Behavior(entity, "COLORSHIFTSPRITE"),
-                    m_r(1.0f),
-                    m_g(1.0f),
-                    m_b(1.0f),
-                    m_rev(false),
-                    m_sprite(std::static_pointer_cast<Sprite>(entity))
-           {         
-                Time::setInterval(3000, [this] { this->m_rev = !this->m_rev; }); 
-           }
+           inline COLORSHIFTSPRITE(std::shared_ptr<Entity> entity);
 
            //update every frame
 
-           void Update() override {
-                
-                if (!this->m_rev) {
-                    this->m_r -= 0.01f;
-                    this->m_b += 0.01f;
-                }
-                
-                else {
-                    this->m_r += 0.01f;
-                    this->m_b -= 0.01f; 
-                }
+           inline void Update() override;
 
-                this->m_sprite->SetTint({ this->m_r, this->m_g, this->m_b });
-           }
+           inline void SetBroadcastTint(const char* entityType, const glm::vec3& tint);
 
         private:
 

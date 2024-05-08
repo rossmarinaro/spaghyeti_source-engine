@@ -20,11 +20,8 @@ namespace /* SPAGHYETI_CORE */ System {
             static inline const char* s_glsl_version = "";
 
             static void Init();
-
-            static inline void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-                s_width = width;
-                s_height = height;    
-            }
+            static const glm::vec2 GetNDCToPixel(float x, float y);
+            static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
     };
 

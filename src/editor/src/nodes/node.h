@@ -37,7 +37,11 @@ namespace editor {
             
             Node(const std::string& type, const std::string& name = "Untitled");
 
-            virtual ~Node() = default;
+            virtual ~Node() {
+                if (s_count > 0) 
+                    s_count--;
+            };
+            
             virtual void Render(std::shared_ptr<Node> node) = 0;
             virtual void Reset(const char* component = "") = 0;
 

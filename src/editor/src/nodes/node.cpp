@@ -9,8 +9,6 @@
 using namespace editor;
 
 
-
-
 Node::Node(const std::string& type, const std::string& name)
 {
 
@@ -103,9 +101,6 @@ void Node::DeleteNode (std::shared_ptr<Node> node)
 
     if (it != nodes.end())
         nodes.erase(it);
-
-    if (s_count > 0) 
-        s_count--;
 
 }
 

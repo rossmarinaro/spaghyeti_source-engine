@@ -83,6 +83,13 @@ void EventListener::Serialize(json& data)
     json text;
     json empty;
 
+    json scenes = json::array();
+
+    for (int i = 0; i < Editor::scenes.size(); i++)
+        scenes.push_back({ { "key", Editor::scenes[i] } });
+
+    data["scenes"] = scenes;
+
     //camera
 
     data["camera"]["vignetteVisibility"] = Editor::vignetteVisibility;
@@ -115,7 +122,7 @@ void EventListener::Serialize(json& data)
  
     if (Editor::globals_applied)
         for (const auto& global : Editor::globals)
-            globals.push_back({{ "key", global.first }, { "type", global.second } });
+            globals.push_back({ { "key", global.first }, { "type", global.second } });
 
     data["globals"] = globals;
 
@@ -166,6 +173,15 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     json data = json::parse(JSON);
 
+    //scenes 
+
+    if (data["scenes"].size() > 1) //saved in queue
+        for (const auto& scene : data["scenes"]) 
+            Editor::scenes.push_back(scene["key"]);
+
+    else //register opened scene
+        Editor::scenes.push_back(Editor::events.s_currentScene);
+
     //camera 
 
     Editor::vignetteVisibility = data["camera"]["vignetteVisibility"];
@@ -200,7 +216,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
         for (const auto& global : data["globals"])
             Editor::globals.push_back({ global["key"], global["type"] });
 
-        if (data["globals_applied"])
+        if (data["globals_applied"]) 
             Editor::globals_applied = true;
     }
 
@@ -229,7 +245,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
     for (auto& text : data["nodes"]["text"])
         Node::ReadData(text, "Text", true, nullptr);
 
-    Editor::Log("Project " + currentProject + " opened.\nProject root path set: " + Editor::projectPath);
+    Editor::Log("Project " + s_currentProject + " opened.\nProject root path set: " + Editor::projectPath);
 
 }
 

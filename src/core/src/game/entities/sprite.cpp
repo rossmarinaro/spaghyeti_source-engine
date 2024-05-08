@@ -182,6 +182,14 @@ void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
 
     uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
 
+    this->m_currentAnim = { animKey, { yoyo, rate } }; 
+
+    int startFrame = this->anims.find(this->m_currentAnim.first)->second.first,
+        endFrame = this->anims.find(this->m_currentAnim.first)->second.second,
+        frame = yoyo ? startFrame : endFrame;
+
+    this->m_animComplete = frame == this->currentFrame;
+
     try {
 
         if (this->m_isSpritesheet && this->active)
@@ -230,16 +238,8 @@ void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
                 
                 uint32_t elapsed = seconds % frames.size();
 
-                this->SetFrame(currentFrame != anim->second.second ? frames[elapsed] : anim->second.first);
+                this->SetFrame(this->currentFrame != anim->second.second ? frames[elapsed] : anim->second.first);
             }
-
-            this->m_currentAnim = { animKey, { yoyo, rate } };
-
-            int frame = yoyo ? 
-                this->anims.find(this->m_currentAnim.first)->second.first : 
-                this->anims.find(this->m_currentAnim.first)->second.second;
-
-			this->m_animComplete = frame == this->currentFrame;
 
         }
     }
@@ -250,7 +250,6 @@ void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
         #endif
     }
 }
-
 
 
 //------------------------------------------ render sprite / update transformations

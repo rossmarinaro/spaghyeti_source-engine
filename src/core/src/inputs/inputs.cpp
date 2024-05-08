@@ -3,17 +3,6 @@
 using namespace System;
 
 
-
-void SetMousePosition(float x, float y) 
-{
-    float ndcX = ((2.0f * x) / Window::s_width - 1.0f),
-          ndcY = (1.0f - (2.0f * y) / Window::s_height); 
-
-    Application::game->inputs->mouseX = ndcX * Window::s_scaleWidth + 400; 
-    Application::game->inputs->mouseY = -ndcY * Window::s_scaleHeight + 800;
-}
-
-
 //--------------------------------- native input callback to browser
 
 //mouse
@@ -25,7 +14,10 @@ void SetMousePosition(float x, float y)
 
         if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE && (event->movementX != 0 || event->movementY != 0)) 
         {
-            SetMousePosition(event->targetX, event->targetY) 
+            auto position = Window::GetNDCToPixel(event->targetX, event->targetY);
+
+            Application::game->inputs->mouseX = position.x;
+            Application::game->inputs->mouseY = position.y;
 
             Inputs::cursor_callback(Window::s_instance, event->targetX, event->targetY);
         }
@@ -66,10 +58,14 @@ void SetMousePosition(float x, float y)
             {
                 const EmscriptenTouchPoint* touch = &event->touches[i];
 
-                SetMousePosition(touch->targetX, touch->targetY);
+                auto position = Window::GetNDCToPixel(touch->targetX, touch->targetY);
+            
+                Application::game->inputs->mouseX = position.x;
+                Application::game->inputs->mouseY = position.y;
 
                 Inputs::cursor_callback(Window::s_instance, touch->targetX, touch->targetY);
                 Inputs::input_callback(Window::s_instance, 1, 1, 0);
+
                 Application::game->inputs->numInputs++;
             }
         }
@@ -78,6 +74,7 @@ void SetMousePosition(float x, float y)
         {
             Application::game->inputs->m_cursorReset = true;
             Inputs::input_callback(Window::s_instance, 0, 0, 0);
+
             Application::game->inputs->numInputs--;
         }
 
@@ -206,11 +203,8 @@ void Inputs::CheckOverlap()
 
     auto do_check = [&](float x, float y, float width, float height) -> bool {
 
-        float clickareaWidth = 80,
-              clickareaHeight = 60;
-
-        bool overlapX = (x + width / 2) >= inputs->mouseX && inputs->mouseX + clickareaWidth >= x,
-             overlapY = (y + height / 2) >= inputs->mouseY && inputs->mouseY + clickareaHeight >= y;
+        bool overlapX = (x + width / 2) >= inputs->mouseX && inputs->mouseX + width >= x,
+             overlapY = (y + height / 2) >= inputs->mouseY && inputs->mouseY + height >= y;
 
         return overlapX && overlapY;
     };
@@ -228,20 +222,57 @@ void Inputs::CheckOverlap()
             isOverlapping = do_check(sprite->position.x, sprite->position.y, sprite->texture.FrameWidth, sprite->texture.FrameHeight);  
         }
 
-        if (strcmp(button.second->type, "geometry") == 0) {   
-            auto geom = std::static_pointer_cast<Geometry>(button.second);
-            isOverlapping = do_check(geom->position.x - 600, geom->position.y + 350, geom->width, geom->height);
-        }
-
         if (strcmp(button.second->type, "text") == 0) {
             auto text = std::static_pointer_cast<Text>(button.second);
-            isOverlapping = do_check(text->position.x - 350, text->position.y + 420, text->GetTextDimensions().x, text->GetTextDimensions().y);
+            isOverlapping = do_check(text->position.x, text->position.y + text->GetTextDimensions().y, text->GetTextDimensions().x, text->GetTextDimensions().y);
         }
         
         Application::game->currentScene->virtual_buttons[i].first = isOverlapping;
         button.second->SetTint(isOverlapping ? glm::vec3(1.0f, 0.0f, 0.0f) : glm::vec3(1.0f, 1.0f, 1.0f));
 
     }
+}
+
+
+
+//----------------------------------------
+
+
+void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
+{
+
+    if (Application::game->cursor == nullptr)
+        return;
+
+    //set cursor object to movement, translate ndc coords to clip space
+
+    auto position = Window::GetNDCToPixel((float)xPos, (float)yPos);
+            
+    Application::game->inputs->mouseX = position.x;
+    Application::game->inputs->mouseY = position.y;
+//std::cout<<"x: "<<Application::game->inputs->mouseX<<" y: " <<Application::game->inputs->mouseY<<"\n";
+    Application::game->inputs->m_cursorX = (float)xPos;
+    Application::game->inputs->m_cursorY = (float)yPos;
+
+}
+
+
+//----------------------------------------
+
+
+void Inputs::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+
+    if (action == GLFW_PRESS) {
+        Application::game->inputs->SetKeyInputs(true, key, window);  
+        Application::game->inputs->numInputs++;
+    }
+
+    if (action == GLFW_RELEASE) {
+        Application::game->inputs->SetKeyInputs(false, key, window);  
+        Application::game->inputs->numInputs--;
+    }
+
 }
 
 
@@ -285,44 +316,6 @@ void Inputs::SetKeyInputs(bool boolean, int key, GLFWwindow* window)
             this->G = boolean;
         break;
     }
-}
-
-
-//----------------------------------------
-
-
-void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
-{
-
-    if (Application::game->cursor == nullptr)
-        return;
-
-    //set cursor object to movement, translate ndc coords to clip space
-
-    SetMousePosition((float)xPos, (float)yPos);
-
-    Application::game->inputs->m_cursorX = (float)xPos;
-    Application::game->inputs->m_cursorY = (float)yPos;
-
-}
-
-
-//----------------------------------------
-
-
-void Inputs::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-
-    if (action == GLFW_PRESS) {
-        Application::game->inputs->SetKeyInputs(true, key, window);  
-        Application::game->inputs->numInputs++;
-    }
-
-    if (action == GLFW_RELEASE) {
-        Application::game->inputs->SetKeyInputs(false, key, window);  
-        Application::game->inputs->numInputs--;
-    }
-
 }
 
 
@@ -460,9 +453,7 @@ void Inputs::input_callback(GLFWwindow* window, int input, int action, int mods)
 }
 
 
-
 //-----------------------------------------
-
 
 
 void Inputs::ShutDown()
@@ -473,7 +464,6 @@ void Inputs::ShutDown()
     if (Application::isMobile) {
         this->m_initVirtualControls = false;
         Application::game->currentScene->virtual_buttons.clear();
-
     }
 
     #if DEVELOPMENT == 1
