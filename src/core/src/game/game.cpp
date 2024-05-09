@@ -413,7 +413,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 {
     auto geom = std::make_shared<Geometry>(x, y, width, height);
 
-    Application::game->currentScene->entities.push_back(geom);
+    Application::game->currentScene->UI.push_back(geom);
 
     return geom;
 }

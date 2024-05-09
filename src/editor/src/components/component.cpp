@@ -9,8 +9,6 @@
 
 using namespace editor;
 
-//------------------------------------
-
 
 Component::Component(const std::string& id, const std::string& type, const std::string& node_type, bool init):
     m_init(init)
@@ -130,7 +128,7 @@ void Component::Make()
         src <<  "       public:\n\n";
         src <<  "           //constructor, called on start\n\n";
         src <<  "           " + this->filename + "(std::shared_ptr<Entity> entity):\n";
-        src <<  "            inline Behavior(entity, \""+ this->filename + "\")\n";
+        src <<  "            inline Behavior(entity, typeid(" + this->filename + ").name())\n";
         src <<  "           {\n\n";
         src <<  "           }\n\n";
         src <<  "           //update every frame\n\n";
@@ -151,13 +149,11 @@ void Component::Make()
     {
 
         for (const auto& node : Node::nodes)
-            if (node->ID == ID)
-            {
+            if (node->ID == ID) {
 
                 if (this->nodeType == "Sprite") {
 
                     auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::GetNode(this->ID));
-
                     sn->anim++;
                 }
 
@@ -171,22 +167,17 @@ void Component::Make()
     {
 
         for (const auto& node : Node::nodes)
-            if (node->ID == ID)
-            {
+            if (node->ID == ID) {
 
-                if (this->nodeType == "Sprite") 
-                {
+                if (this->nodeType == "Sprite") {
 
                     auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::GetNode(this->ID));
-
                     sn->CreateBody();
                 }
 
-                if (this->nodeType == "Tilemap") 
-                {
+                if (this->nodeType == "Tilemap") {
 
                     auto tmn = std::dynamic_pointer_cast<TilemapNode>(Node::GetNode(this->ID));
-
                     tmn->CreateBody();
 
                 }

@@ -5,7 +5,7 @@ using namespace entity_behaviors;
 
 
 Menu_Player::Menu_Player(std::shared_ptr<Entity> entity):
-    Behavior(entity, "Menu_Player"),
+    Behavior(entity, typeid(Menu_Player).name()),
         m_init(false),
         m_rev(false),
         m_player(std::static_pointer_cast<Sprite>(entity)),

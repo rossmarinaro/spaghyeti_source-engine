@@ -12,7 +12,7 @@ namespace entity_behaviors {
            //constructor, called on start
 
            Menu_Start(std::shared_ptr<Entity> entity):
-               Behavior(entity, "MenuStart"),
+               Behavior(entity, typeid(Menu_Start).name()),
                     m_hasStarted(false),
                     m_startText(std::static_pointer_cast<Text>(entity))
            {

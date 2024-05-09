@@ -11,10 +11,10 @@ namespace entity_behaviors {
             int health;
 
             std::shared_ptr<Sprite> sprite;
-            b2Body* hb;
+            b2Body* hb; 
 
-            inline Actor(std::shared_ptr<Entity> entity): 
-                Behavior(entity, "Actor"),
+            inline Actor(std::shared_ptr<Entity> entity, const std::string& key): 
+                Behavior(entity, key),
                     m_canDamage(true),
                     m_canHit(false),
                     m_canDestroy(false) {}

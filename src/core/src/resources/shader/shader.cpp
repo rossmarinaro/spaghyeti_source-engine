@@ -6,10 +6,9 @@
 #include "./glsl/raw/physics_debug.h"
 #include "./glsl/raw/text.h"
 
-//---------------------------------
 
 
-Shader& Shader::GetShader(const std::string &key) {
+Shader& Shader::GetShader(const std::string& key) {
     return System::Application::resources->shaders[key];
 } 
 

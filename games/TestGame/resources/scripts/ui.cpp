@@ -5,16 +5,17 @@
 using namespace entity_behaviors;
 
 UI::UI(std::shared_ptr<Entity> entity):
-    Behavior(entity, "UI"),
+    Behavior(entity, typeid(UI).name()),
         m_isOpen(false),
         m_canToggle(true),
         m_score(std::static_pointer_cast<Text>(entity)),
-        m_quitText(System::Game::CreateText("QUIT", 720, 425)),
-        m_returnText(System::Game::CreateText("RETURN", 690, 325)),
-        m_heart1(System::Game::CreateUI("heart.png", 1056.821, 30)),
-        m_heart2(System::Game::CreateUI("heart.png", 1120.538, 30)),
-        m_heart3(System::Game::CreateUI("heart.png", 1184.253, 30)),
-        m_menu(System::Game::CreateUI("menu.png", 34, 22))
+        m_heart1(System::Game::CreateUI("heart.png", 856.821, 30)),
+        m_heart2(System::Game::CreateUI("heart.png", 920.538, 30)),
+        m_heart3(System::Game::CreateUI("heart.png", 984.253, 30)),
+        m_menu(System::Game::CreateUI("menu.png", 135, 75)),
+        m_quitText(System::Game::CreateText("QUIT", 704, 430)),
+        m_returnText(System::Game::CreateText("RETURN", 673, 335)),
+        m_magicBar(System::Game::CreateGeom(555, 25, 110, 20))
 { 
 
     this->layer = 1;
@@ -24,7 +25,14 @@ UI::UI(std::shared_ptr<Entity> entity):
     this->m_heart2->name = "heart2";
     this->m_heart3->name = "heart3";
 
-    this->m_menu->SetScale(12.0f, 10.0f);
+    System::Game::CreateUI("ui_box.png", 1100, 40);
+    this->m_magicBar->shader = Shader::GetShader("UI"); 
+    this->m_magicBar->SetDepth(90000000); 
+    this->m_magicBar->SetTint({ 0.0f, 1.0f, 0.0f });
+
+    //pause menu
+
+    this->m_menu->SetScale(4.5f);
     this->m_menu->SetAlpha(0.0f);
 
     this->m_quitText->SetDepth(1000);
@@ -43,14 +51,30 @@ UI::UI(std::shared_ptr<Entity> entity):
 
 void UI::Update() 
 {
+    if (this->m_magicBar->width > 0)
+        this->m_magicBar->width -= 0.5f;
 
     //HUD
     
     this->m_score->SetText("score: " + std::to_string(this->score));
 
-    if(System::Game::GetScene()->ListenForInteraction(0) && 
-       System::Game::GetScene()->GetContext().inputs->LEFT_CLICK)
-        this->m_isOpen = false;
+    if(System::Game::GetScene()->ListenForInteraction(this->m_returnText)) 
+    {
+        this->m_returnText->SetTint({ 1.0f, 0.0f, 0.0f });
+
+        if (System::Game::GetScene()->GetContext().inputs->LEFT_CLICK)
+            this->m_isOpen = false;
+    }
+    else 
+        this->m_returnText->SetTint({ 1.0f, 1.0f, 1.0f });
+
+    if (System::Game::GetScene()->ListenForInteraction(this->m_quitText)) {
+        this->m_quitText->SetTint({ 1.0f, 0.0f, 0.0f });
+    }
+    else {
+        this->m_quitText->SetTint({ 1.0f, 1.0f, 1.0f });
+    }
+    
 
     if (System::Game::GetScene()->GetContext().inputs->SHIFT && this->m_canToggle) 
     {

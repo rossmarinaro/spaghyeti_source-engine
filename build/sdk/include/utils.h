@@ -6,15 +6,14 @@
 #include <string>
 #include <sstream>
 
-#define	RAND_LIMIT 32767
-
 
 namespace System {
+
+    #define	RAND_LIMIT 32767
 
 	class Utils {
 		
 		public:
-
 
 			static inline int randInt(int n) { return rand() % n; }
 
@@ -122,8 +121,9 @@ namespace System {
 					return "data";
 
 				return "";
-			}
-
+			} 
 				
 		};
+
 }
+

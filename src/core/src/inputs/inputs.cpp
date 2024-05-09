@@ -224,11 +224,12 @@ void Inputs::CheckOverlap()
 
         if (strcmp(button.second->type, "text") == 0) {
             auto text = std::static_pointer_cast<Text>(button.second);
-            isOverlapping = do_check(text->position.x, text->position.y + text->GetTextDimensions().y, text->GetTextDimensions().x, text->GetTextDimensions().y);
+            isOverlapping = do_check(text->position.x + text->GetTextDimensions().x, text->position.y + text->GetTextDimensions().y, text->GetTextDimensions().x, text->GetTextDimensions().y);
         }
+
+        //set mouse / cursor overlap with object
         
         Application::game->currentScene->virtual_buttons[i].first = isOverlapping;
-        button.second->SetTint(isOverlapping ? glm::vec3(1.0f, 0.0f, 0.0f) : glm::vec3(1.0f, 1.0f, 1.0f));
 
     }
 }

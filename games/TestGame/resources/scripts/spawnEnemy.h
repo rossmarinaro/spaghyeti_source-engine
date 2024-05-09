@@ -12,7 +12,7 @@ namespace entity_behaviors {
             //constructor, called on start
 
             SpawnEnemy(std::shared_ptr<Entity> entity):
-                Behavior(entity, "SpawnEnemy")
+                Behavior(entity, typeid(SpawnEnemy).name())
             {
                 //interval spawn timer
 

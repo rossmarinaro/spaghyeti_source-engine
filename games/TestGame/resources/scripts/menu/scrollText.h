@@ -12,7 +12,7 @@ namespace entity_behaviors {
            //constructor, called on start
 
             Menu_ScrollText(std::shared_ptr<Entity> entity):
-               Behavior(entity, "ScrollText"),
+               Behavior(entity, typeid(Menu_ScrollText).name()),
                     m_text(std::static_pointer_cast<Text>(entity)),
                     m_exclamations("")
             {

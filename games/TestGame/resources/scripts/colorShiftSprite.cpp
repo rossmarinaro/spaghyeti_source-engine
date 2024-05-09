@@ -9,7 +9,7 @@ using namespace entity_behaviors;
 
 
 COLORSHIFTSPRITE::COLORSHIFTSPRITE(std::shared_ptr<Entity> entity):
-    Behavior(entity, "COLORSHIFTSPRITE"),
+    Behavior(entity, typeid(COLORSHIFTSPRITE).name()),
         m_r(1.0f),
         m_g(1.0f),
         m_b(1.0f),

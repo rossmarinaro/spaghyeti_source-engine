@@ -57,16 +57,29 @@ namespace System {
                 this->m_paused = isPaused;
             }
 
-            inline void SetInteractive(std::shared_ptr<Entity> entity) {
-                this->virtual_buttons.push_back({ 0, entity });
-            }
-
-            inline bool ListenForInteraction(int index) 
+            inline void SetInteractive(std::shared_ptr<Entity> entity, bool interactive = true) 
             {
-                auto it = std::find(this->virtual_buttons.begin(), this->virtual_buttons.end(), this->virtual_buttons[index]);
+
+                if (interactive) {
+                    this->virtual_buttons.push_back({ 0, entity });
+                    return;
+                }
+
+                auto it = std::find_if(this->virtual_buttons.begin(), this->virtual_buttons.end(), [&](auto e) { return e.second == entity; });
 
                 if (it != this->virtual_buttons.end())
-                    return this->virtual_buttons[index].first;
+                    this->virtual_buttons.erase(it);
+                
+            }
+
+            inline bool ListenForInteraction(std::shared_ptr<Entity> entity) 
+            {
+                auto it = std::find_if(this->virtual_buttons.begin(), this->virtual_buttons.end(), [&](auto e) { return e.second == entity; });
+
+                if (it != this->virtual_buttons.end()) {
+                    auto element = *it;
+                    return element.first;
+                }
 
                 return false;
             }
