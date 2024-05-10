@@ -55,7 +55,7 @@ void Elf::Update()
     if (this->hb)
         this->hb->SetTransform(b2Vec2(this->sprite->position.x * this->sprite->scale.x + 50, this->sprite->position.y * this->sprite->scale.y + 60), 0);
 
-    auto playerBehavior = Behavior::GetBehavior<PlayerController>(System::Game::GetScene()->behaviors);
+    auto playerBehavior = System::Game::GetBehavior<PlayerController>();
 
     if (this->hb && b2TestOverlap(this->hb->GetFixtureList()->GetAABB(0), playerBehavior->player->bodies[0].first->GetFixtureList()->GetAABB(0)))
        playerBehavior->DoDamage(1);
@@ -79,7 +79,7 @@ void Elf::Update()
         this->health = 1;
         this->sprite->SetAlpha(1.0f);
         this->sprite->SetTint({ 0.0f, 0.0f, 0.0f });
-        Behavior::GetBehavior<UI>(System::Game::GetScene()->behaviors)->score++;
+        System::Game::GetBehavior<UI>()->score++;
 
         Time::delayedCall(400, [this] { this->m_canDestroy = true; });
     }

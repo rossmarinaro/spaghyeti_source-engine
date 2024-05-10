@@ -58,6 +58,7 @@ namespace System {
             static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y);
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2& start, const glm::vec2& end);
+            static void DestroyEntity(std::shared_ptr<Entity> entity);
             
             template <typename T>
             static inline void CreateBehavior(std::shared_ptr<Entity> entity, Scene* scene) {
@@ -66,8 +67,14 @@ namespace System {
                 scene->behaviors.push_back(behavior); 
             }
 
-            static void DestroyEntity(std::shared_ptr<Entity> entity);
+            template <typename T>
+            static inline const std::shared_ptr<T> GetBehavior() {
 
+                auto behaviors = GetScene()->behaviors;
+
+                return std::dynamic_pointer_cast<T>(*std::find_if(behaviors.begin(), behaviors.end(), 
+                    [&](auto behavior) { return behavior->key == typeid(T).name(); }));
+            }
 
             //map manager
 

@@ -29,12 +29,6 @@ namespace entity_behaviors {
             }
 
             virtual void Update() {}
-
-            template <typename T>
-            static inline const std::shared_ptr<T> GetBehavior(const std::vector<std::shared_ptr<Behavior>>& behaviors) {
-               return std::dynamic_pointer_cast<T>(*std::find_if(behaviors.begin(), behaviors.end(), 
-                    [&](auto behavior) { return behavior->key == typeid(T).name(); }));
-            }
          
         protected:
 

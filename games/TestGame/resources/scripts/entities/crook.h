@@ -23,7 +23,6 @@ namespace entity_behaviors {
             void Update() override 
             { 
 
-                //Game::GetBehavior("PlayerController");
             }
 
     };

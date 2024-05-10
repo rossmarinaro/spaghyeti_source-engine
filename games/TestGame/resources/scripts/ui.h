@@ -11,6 +11,8 @@ namespace entity_behaviors {
 
             int score;
 
+            std::shared_ptr<Geometry> magicBar;
+
            //constructor, called on start
 
             inline UI (std::shared_ptr<Entity> entity);
@@ -31,6 +33,7 @@ namespace entity_behaviors {
             std::shared_ptr<Text> m_score;
             std::shared_ptr<Text> m_quitText;
             std::shared_ptr<Text> m_returnText;
-            std::shared_ptr<Geometry> m_magicBar;          
+            std::shared_ptr<Text> m_livesText;
+                      
     };
 };

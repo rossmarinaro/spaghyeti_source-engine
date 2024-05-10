@@ -153,7 +153,7 @@ void MeatballMadness::Update()
         paused = false;
         canRestart = false;
         
-        entity_behaviors::Behavior::GetBehavior<entity_behaviors::Waiter>(this->behaviors)->canMove = true;
+        System::Game::GetBehavior<entity_behaviors::Waiter>()->canMove = true;
         
     }
 
@@ -168,7 +168,7 @@ void MeatballMadness::Update()
                     System::Audio::play("music", true);
             #endif
 
-            entity_behaviors::Behavior::GetBehavior<entity_behaviors::Waiter>(this->behaviors)->canMove = true;
+            System::Game::GetBehavior<entity_behaviors::Waiter>()->canMove = true;
             
             started = true;
         }
@@ -457,7 +457,7 @@ void MeatballMadness::GameOver()
     game_over = true;
     paused = true;
 
-    entity_behaviors::Behavior::GetBehavior<entity_behaviors::Waiter>(this->behaviors)->canMove = false;
+    System::Game::GetBehavior<entity_behaviors::Waiter>()->canMove = false;
 
     this->player->StopAnimation();
     this->player->SetFrame(1);

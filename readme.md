@@ -20,7 +20,11 @@ Editor created in-scene game objects can be saved as prefabs for repeated use.
 
 For Emscripten WebGL builds, download the latest SDK release, run emsdk install tot, navigate to emscripten install directory, run emcmdprompt.bat and cd to the "web" directory in this tree. compile with that directory's MakeFile.
 
-![image info](./screenshot.png)
+//Editor
+![image info](./images/screenshot.png)
+
+//Test Game
+![image info](./images/testgame.png)
 
 ---------------------------------------------------------- 
 
@@ -34,10 +38,10 @@ Libraries used: GLFW / GLAD, GLM, GLText (embedded debug text), FreeType (in-app
 
 Requires install of MingW compiler for Windows
 
-![image info](./stack.jpg)
+![image info](./images/stack.jpg)
 
 ----------------------------------------------------------
 
 Notes:
 
-When targeting specific entity from script use "System::Game::GetScene()->GetEntity()", if targeting a method from another script use "Behavior::GetBehavior()".
+When targeting specific entity from script use "System::Game::GetScene()->GetEntity()", if targeting a method from another script use "System::Game::GetBehavior()".

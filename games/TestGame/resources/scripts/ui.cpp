@@ -1,4 +1,5 @@
 #include "./ui.h"
+#include "./player.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/window.h"
 
@@ -9,13 +10,14 @@ UI::UI(std::shared_ptr<Entity> entity):
         m_isOpen(false),
         m_canToggle(true),
         m_score(std::static_pointer_cast<Text>(entity)),
-        m_heart1(System::Game::CreateUI("heart.png", 856.821, 30)),
-        m_heart2(System::Game::CreateUI("heart.png", 920.538, 30)),
-        m_heart3(System::Game::CreateUI("heart.png", 984.253, 30)),
+        m_heart1(System::Game::CreateUI("heart.png", 56.821, 30)),
+        m_heart2(System::Game::CreateUI("heart.png", 120.538, 30)),
+        m_heart3(System::Game::CreateUI("heart.png", 184.253, 30)),
         m_menu(System::Game::CreateUI("menu.png", 135, 75)),
+        m_livesText(System::Game::CreateText("", 330, 25)),
         m_quitText(System::Game::CreateText("QUIT", 704, 430)),
-        m_returnText(System::Game::CreateText("RETURN", 673, 335)),
-        m_magicBar(System::Game::CreateGeom(555, 25, 110, 20))
+        m_returnText(System::Game::CreateText("RETURN", 673, 335))
+        
 { 
 
     this->layer = 1;
@@ -25,10 +27,15 @@ UI::UI(std::shared_ptr<Entity> entity):
     this->m_heart2->name = "heart2";
     this->m_heart3->name = "heart3";
 
+    this->m_livesText->SetScale(2.0f);
+    this->m_livesText->SetTint({ 0.0f, 1.0f, 0.0f });
+
     System::Game::CreateUI("ui_box.png", 1100, 40);
-    this->m_magicBar->shader = Shader::GetShader("UI"); 
-    this->m_magicBar->SetDepth(90000000); 
-    this->m_magicBar->SetTint({ 0.0f, 1.0f, 0.0f });
+    System::Game::CreateUI("sv_icon.png", 270, 30);
+    this->magicBar = System::Game::CreateGeom(555, 25, 110, 20);
+    this->magicBar->shader = Shader::GetShader("UI"); 
+    this->magicBar->SetDepth(90000000); 
+    this->magicBar->SetTint({ 0.0f, 1.0f, 0.0f });
 
     //pause menu
 
@@ -51,8 +58,10 @@ UI::UI(std::shared_ptr<Entity> entity):
 
 void UI::Update() 
 {
-    if (this->m_magicBar->width > 0)
-        this->m_magicBar->width -= 0.5f;
+    if (this->magicBar->width > 1)
+        this->magicBar->width -= 0.5f;
+
+    this->m_livesText->SetText("x" + std::to_string(System::Game::GetBehavior<PlayerController>()->livesLeft));
 
     //HUD
     

@@ -85,9 +85,12 @@ void PlayerController::Update()
 
     //player dead
 
-    if (!this->m_active.load()) {
+    if (!this->m_active.load()) 
+    {
         this->m_active = true;
-        System::Game::StartScene("GAMEOVER");
+
+        System::Game::StartScene(this->livesLeft > 0 ? "CAVE" : "GAMEOVER");
+
         return;
     }
 
@@ -96,7 +99,7 @@ void PlayerController::Update()
         context.camera->Fade(0.1f, "in");
     }
     else
-        Behavior::GetBehavior<COLORSHIFTSPRITE>(System::Game::GetScene()->behaviors)->SetBroadcastTint("tile", { 0.73f, 0.15f, 0.75f });   
+        System::Game::GetBehavior<COLORSHIFTSPRITE>()->SetBroadcastTint("tile", { 0.73f, 0.15f, 0.75f });   
 }
 
 
@@ -208,13 +211,14 @@ void PlayerController::DoDamage(int amount)
     if (this->m_health <= 0 && this->m_alive) 
     {
         this->m_alive = false;   
+        this->livesLeft--;
 
-        Behavior::GetBehavior<COLORSHIFTSPRITE>(System::Game::GetScene()->behaviors)->SetBroadcastTint("tile", { 0.43f, 0.3f, 0.85f });
+        System::Game::GetBehavior<COLORSHIFTSPRITE>()->SetBroadcastTint("tile", { 0.43f, 0.3f, 0.85f });
 
         System::Audio::play("error.flac", false, 1.000000);
 
         this->player->SetTint({ 0.0f, 0.0f, 0.0f });
-        
+
         Time::delayedCall(500, [this] { this->m_active = false; });
     }
 
