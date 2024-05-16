@@ -85,10 +85,14 @@ void EventListener::Serialize(json& data)
 
     json scenes = json::array();
 
-    for (int i = 0; i < Editor::scenes.size(); i++)
-        scenes.push_back({ { "key", Editor::scenes[i] } });
+    if (Editor::scenes.size() > 1) 
+    {
+        for (int i = 0; i < Editor::scenes.size(); i++)
+            scenes.push_back({ { "key", Editor::scenes[i] } });
 
-    data["scenes"] = scenes;
+        data["scenes"] = scenes;
+    }
+    
 
     //camera
 
@@ -178,7 +182,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
     if (data["scenes"].size() > 1) //saved in queue
         for (const auto& scene : data["scenes"]) 
             Editor::scenes.push_back(scene["key"]);
-
+    
     else //register opened scene
         Editor::scenes.push_back(Editor::events.s_currentScene);
 
@@ -323,9 +327,8 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     //scene ready for compilation
 
-    compileQueue.insert({ sceneKey, scene });
+    compileQueue.push_back({ sceneKey, scene });
 
- 
 }
 
 

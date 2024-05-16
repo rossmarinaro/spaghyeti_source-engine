@@ -19,9 +19,13 @@ namespace entity_behaviors {
                     m_canHit(false),
                     m_canDestroy(false) {}
 
+            void Update();
+
             ~Actor() = default;
 
         protected:
+
+            int m_damage;
 
             bool m_canDamage, 
                  m_canHit,

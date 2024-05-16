@@ -11,11 +11,11 @@ namespace entity_behaviors {
 
            //constructor, called on start
 
-           inline Menu_Player(std::shared_ptr<Entity> entity);
+           Menu_Player(std::shared_ptr<Entity> entity);
 
            //update every frame
 
-           inline void Update() override;
+           void Update() override;
 
         private:
 

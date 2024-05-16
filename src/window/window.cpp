@@ -100,24 +100,26 @@ void Window::Init()
 
     GLFWmonitor* isFullScreen = NULL;
 
-    #if STANDALONE == 1
-        //isFullScreen = glfwGetPrimaryMonitor();
+//set window dimensions for desktop builds
+
+    #if STANDALONE == 0
+        s_width = 1200.0f;
+        s_height = 600.0f;
+    #else
+        s_width = 800.0f;
+        s_height = 400.0f;
+         //isFullScreen = glfwGetPrimaryMonitor();
     #endif
-
-    //set window dimensions for desktop builds
-
-    s_width = Application::isMobile ? 800.0f : 1200.0f;
-    s_height = Application::isMobile ? 400.0f : 600.0f;
 
     //create window
 
     s_instance = glfwCreateWindow(
-            s_width, 
-            s_height,
-            (Application::name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2024 🍝👌").c_str(), 
-            isFullScreen, 
-            NULL
-        );
+        s_width, 
+        s_height,
+        (Application::name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2024 🍝👌").c_str(), 
+        isFullScreen, 
+        NULL
+    );
 
     //glfwSetWindowMonitor();
 

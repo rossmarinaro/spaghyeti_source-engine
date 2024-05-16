@@ -1,29 +1,24 @@
 #pragma once
 
-#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/behaviors.h"
+#include "./actor.h"
 
 namespace entity_behaviors {
     
-    class Crook : public Behavior {
+    class Crook : public Actor {
 
         public:
 
-            int health;
+            Crook(std::shared_ptr<Entity> entity);
+            
+            void Update() override;
 
-            //constructor, called on start
+        private:
 
-            Crook(std::shared_ptr<Entity> entity):
-                Behavior(entity, "Crook")
-            {
-                this->health = 3; 
-            }
+            float m_startPos;
 
-            //update every frame
-
-            void Update() override 
-            { 
-
-            }
+            bool m_canMoveLeft,
+                 m_canMoveRight,
+                 m_reverse;
 
     };
 }

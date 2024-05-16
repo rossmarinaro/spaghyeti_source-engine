@@ -12,13 +12,13 @@ namespace entity_behaviors {
 
            //constructor, called on start
 
-           inline COLORSHIFTSPRITE(std::shared_ptr<Entity> entity);
+           COLORSHIFTSPRITE(std::shared_ptr<Entity> entity);
 
            //update every frame
 
-           inline void Update() override;
+           void Update() override;
 
-           inline void SetBroadcastTint(const char* entityType, const glm::vec3& tint);
+           static void SetBroadcastTint(const char* entityType, const glm::vec3& tint);
 
         private:
 

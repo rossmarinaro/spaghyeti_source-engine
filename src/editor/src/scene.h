@@ -10,26 +10,24 @@ namespace editor {
 
         public:
 
-            ~Scene() 
-            {
+            ~Scene() {
                 nodes.clear();
                 globals.clear();
-                sceneAssets.clear(); 
             }
 
             int worldWidth = 2000,
                 worldHeight = 2000;
 
             float gravityX = 0.0f,
-                gravityY = 500.0f,
-                vignetteVisibility = 0.0f,
-                cameraZoom = 1,
-                currentBoundsWidthBegin,
-                currentBoundsWidthEnd,
-                currentBoundsHeightBegin,
-                currentBoundsHeightEnd;
+                  gravityY = 500.0f,
+                  vignetteVisibility = 0.0f,
+                  cameraZoom = 1,
+                  currentBoundsWidthBegin,
+                  currentBoundsWidthEnd,
+                  currentBoundsHeightBegin,
+                  currentBoundsHeightEnd;
 
-            bool globals_applied = false,
+            bool globals_applied = false, 
                 gravity_continuous = true,
                 gravity_sleeping = true;
     
@@ -38,8 +36,6 @@ namespace editor {
 
             std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::shared_ptr<editor::Node>> nodes;
-
-            std::map<std::string, std::string> sceneAssets;
 
             template <typename T>
             static inline std::shared_ptr<T> CreateObject(Scene* scene) 

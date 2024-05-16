@@ -162,7 +162,7 @@ void Texture2D::SetFiltering()
 //-----------------------------------
 
 
-void Texture2D::Load(const std::string& key) 
+void Texture2D::Load(const std::string& key, bool flipY) 
 {
 
 
@@ -181,7 +181,7 @@ void Texture2D::Load(const std::string& key)
     
         int width, height, nrChannels;    
 
-        stbi_set_flip_vertically_on_load(1);
+        stbi_set_flip_vertically_on_load(flipY);
 
         unsigned char* data = stbi_load(filepath, &width, &height, &nrChannels, 0);
 
@@ -314,22 +314,22 @@ void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int dr
     //flip X
 
     if (flipX && !flipY) 
-        offset = { this->FrameWidth, this->FrameHeight, this->U2, this->V1, this->U1, this->V2 }; 
+        offset = { this->FrameWidth, this->FrameHeight, this->U2, this->V2, this->U1, this->V1 }; 
 
     //flip Y
 
     else if (!flipX && flipY)
-        offset = { this->FrameWidth, this->FrameHeight, this->U1, this->V2, this->U2, this->V1 }; 
+        offset = { this->FrameWidth, this->FrameHeight, this->U1, this->V1, this->U2, this->V2 }; 
 
     //flip X, Y
 
     else if (flipX && flipY)
-        offset = { this->FrameWidth, this->FrameHeight, this->U2, this->V2, this->U1, this->V1 }; 
+        offset = { this->FrameWidth, this->FrameHeight, this->U2, this->V1, this->U1, this->V2 }; 
 
     //no flip
 
     else
-        offset = { this->FrameWidth, this->FrameHeight, this->U1, this->V1, this->U2, this->V2 }; 
+        offset = { this->FrameWidth, this->FrameHeight, this->U1, this->V2, this->U2, this->V1 };
 
     
     Renderable texture = { position.x, position.y, offset }; //posX, posY, UV

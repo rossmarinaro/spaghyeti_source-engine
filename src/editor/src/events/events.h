@@ -16,7 +16,7 @@ namespace editor {
             static inline std::string s_currentProject = "",
                                       s_currentScene = "";
 
-            static inline std::map<std::string, Scene*> compileQueue;
+            static inline std::vector<std::pair<std::string, Scene*>> compileQueue;
 
             bool NewProject(const char* root_path = "C:\\");
             bool SaveScene(bool saveAs = false);

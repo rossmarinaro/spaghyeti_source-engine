@@ -138,10 +138,11 @@ void Game::StartScene(const std::string& key)
 
         //clear entities if applicable (after first initialization)
 
-        if (game->currentScene) 
-           FlushGame(game);     
+        if (game->currentScene) {
+            Resources::Manager::Clear(false);  
+            FlushGame(game);  
+        }   
 
-        Resources::Manager::Clear(false);
         Application::eventPool = new EventPool(THREAD_COUNT);
 
         //assign / load current scene

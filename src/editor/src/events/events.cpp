@@ -506,12 +506,15 @@ void EventListener::BuildAndRun()
 
         //include scripts
 
-        for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
-            if (!script.is_directory()) {
-                std::string path = script.path().string();
+        for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) {
+
+            std::string path = script.path().string();
+
+            if (!script.is_directory() && System::Utils::str_endsWith(path, ".h")) {
                 std::replace(path.begin(), path.end(), '\\', '/');
                 game_src << "#include " << "\"" + path + "\"\n";
             }
+        }
         
         //parse scene files
 
@@ -548,6 +551,19 @@ void EventListener::BuildAndRun()
                 }
         }
 
+        //preload file assets
+
+        std::ostringstream asset_queue;
+
+        for (const auto& asset : AssetManager::productionAssets)
+        {
+            std::string path = asset.second;
+
+            std::replace(path.begin(), path.end(), '\\', '/');
+
+            asset_queue << "  System::Resources::Manager::LoadFile(" + asset.first + ", " + path + ");\n";
+        }
+
         //now compile each scene
 
         for (const auto& target : compileQueue)
@@ -555,7 +571,12 @@ void EventListener::BuildAndRun()
 
             //temp files: asset and command lists
 
-            std::ostringstream asset_queue, global_queue, command_queue;
+            std::ostringstream preload_queue, global_queue, command_queue;
+
+            //preload files in first scene 
+
+            if (target.first == Editor::events.s_currentScene) 
+                preload_queue << asset_queue.str() << "\n\tSystem::Resources::Manager::RegisterAssets();\n";
 
             //set global vars
 
@@ -605,18 +626,7 @@ void EventListener::BuildAndRun()
             command_queue << "   this->GetContext().physics->continuous = " + phys_isCont + ";\n";
             command_queue << "   this->GetContext().physics->sleeping = " + phys_isSleeping + ";\n";
             command_queue << "   this->GetContext().physics->SetGravity(" + std::to_string(target.second->gravityX) + ", " + std::to_string(target.second->gravityY) + ");\n";
-
-            //preload assets
-
-            for (const auto& asset : AssetManager::productionAssets)
-            {
-                std::string path = asset.second;
-
-                std::replace(path.begin(), path.end(), '\\', '/');
-
-                asset_queue << "  System::Resources::Manager::LoadFile(" + asset.first + ", " + path + ");\n";
-            }
-
+                
             //command data, iterate over nodes and create objects
 
             for (const auto& node : target.second->nodes)
@@ -625,7 +635,7 @@ void EventListener::BuildAndRun()
                 //load shaders
 
                 if (node->HasComponent("Shader") && node->shader.first.length())
-                    asset_queue << "  Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\");\n";
+                    preload_queue << "  Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\");\n";
 
 
                 //--------------- sprite
@@ -649,7 +659,7 @@ void EventListener::BuildAndRun()
                         frame_oss << framesToLoad.back();
 
                         if (sn->frames.size() > 1)
-                            asset_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->key + "\", {" + frame_oss.str() + "});\n";
+                            preload_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->key + "\", {" + frame_oss.str() + "});\n";
                     }
 
                     //load animations
@@ -664,7 +674,7 @@ void EventListener::BuildAndRun()
                         std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
                         anim_oss << animsToLoad.back();
 
-                        asset_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->key + "\", {" + anim_oss.str() + "});\n";
+                        preload_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->key + "\", {" + anim_oss.str() + "});\n";
                     }
 
                     if (sn->make_UI) 
@@ -704,10 +714,8 @@ void EventListener::BuildAndRun()
             
                     //animator
 
-                    if (sn->HasComponent("Animator") && sn->animations.size()) {
+                    if (sn->HasComponent("Animator") && sn->animations.size()) 
                         command_queue << "   sprite_" + node->ID + "->anims = System::Resources::Manager::GetAnimations(\"" + sn->key + "\");\n";
-                        command_queue << "   sprite_" + node->ID + "->ReadSpritesheetData();\n"; 
-                    } 
         
                     //shader
 
@@ -791,14 +799,22 @@ void EventListener::BuildAndRun()
                     if (tmn->layers.size())
                         for (int i = 0; i < tmn->layer; i++)
                         {
-                            asset_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
-                            asset_queue << "  System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
+  
+                            if (tmn->layers[i][2].length())
+                                preload_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
                             
-                            command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
+                            if (tmn->layers[i][0].length()) {
+                                preload_queue << "  System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
+                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
+                            }
                         }
 
-                    command_queue << "   std::shared_ptr<Entity> map_" + node->ID + " = System::Game::CreateEntity(\"" + "tilemap" + "\");\n\t";
-                    command_queue << "   map_" + node->ID + "->name = \"" + tmn->name + "\";\n";
+                    //create map if layers are defined
+
+                    if (tmn->layers[0][0].length()) {
+                        command_queue << "   auto map_" + node->ID + " = System::Game::CreateEntity(\"" + "tilemap" + "\");\n\t";
+                        command_queue << "   map_" + node->ID + "->name = \"" + tmn->name + "\";\n";
+                    }
 
                     //static physics bodies
 
@@ -841,7 +857,7 @@ void EventListener::BuildAndRun()
 
             const std::string globalData = global_queue.str(), 
                               commandData = command_queue.str(),  
-                              preloadData = asset_queue.str();
+                              preloadData = preload_queue.str();
 
             std::string name_upper = target.first;
 
@@ -861,7 +877,7 @@ void EventListener::BuildAndRun()
             game_src << "    " + globalData + "\n";
             game_src <<"};\n\n\n"; 
 
-            game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "  System::Resources::Manager::RegisterAssets();\n}\n\n";
+            game_src << "void " + name_upper + "::Preload() {\n" + preloadData + "\n}\n\n";
             game_src << "void " + name_upper + "::Run() {\n" + commandData + "}\n\n";
             
 

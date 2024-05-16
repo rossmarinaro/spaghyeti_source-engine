@@ -81,14 +81,14 @@ namespace Graphics {
             
             ~Texture2D() = default;
 
-            static Texture2D& GetTexture(const std::string &key);
-            static void Load(const std::string &key);
-            static void UnLoad(const std::string &key);
-            static void SetChannels(Texture2D &texture, unsigned int channels);
+            static Texture2D& GetTexture(const std::string& key);
+            static void Load(const std::string& key, bool flipY = false);
+            static void UnLoad(const std::string& key);
+            static void SetChannels(Texture2D& texture, unsigned int channels);
             
             void SetFiltering();
-            void Generate(unsigned int width, unsigned int height, auto &data);  // generates texture from image data
-            void Update(const glm::vec2 &position, bool flipX, bool flipY, int drawStyle);
+            void Generate(unsigned int width, unsigned int height, auto& data);  // generates texture from image data
+            void Update(const glm::vec2& position, bool flipX, bool flipY, int drawStyle);
             void Bind() const { glBindTexture(GL_TEXTURE_2D, this->ID); }; // binds the texture as the current active GL_TEXTURE_2D texture object
 
         private: 

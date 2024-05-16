@@ -65,7 +65,7 @@ void TilemapNode::Reset(const char* component_type)
 //---------------------------
 
 
-void TilemapNode::ApplyTilemap(bool clearPrevious)
+void TilemapNode::ApplyTilemap(bool clearPrevious, bool renderReversed)
 {
 
     if (clearPrevious)
@@ -77,14 +77,19 @@ void TilemapNode::ApplyTilemap(bool clearPrevious)
     { 
 
         int w = 0,  
-            h = this->spr_sheet_height[i] - 1; 
+            h = renderReversed ? this->spr_sheet_height[i] - 1 : 0; 
 
         for (int y = 0; y < this->map_height; ++y)
             for (int x = 0; x < this->map_width; ++x)
             { 
-                if (w == this->spr_sheet_width[i]) { 
+                if (w == this->spr_sheet_width[i]) 
+                { 
                     w = 0;
-                    h--;   
+
+                    if (renderReversed)
+                        h--;  
+                    else 
+                        h++; 
                 }   
 
                 if (w < this->map_width) {
@@ -267,13 +272,23 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                                     json data = json::parse(JSON);
 
-                                    for (const auto& body : data["objects"])
-                                    {
-                                        this->CreateBody(body["x"], body["y"], body["width"], body["height"]);
+                                    auto createBodies = [&](float x, float y, float w, float h) {
+
+                                        this->CreateBody(x, y, w, h);
                                         
                                         for (int i = 0; i < this->bodies.size(); i++)
                                             this->UpdateBody(i);
-                                    }
+                                    };
+
+                                    if (data["objects"].size())
+                                        for (const auto& body : data["objects"])
+                                            createBodies(body["x"], body["y"], body["width"], body["height"]);
+
+                                    else if (data["layers"].size())
+                                        for (const auto& layer : data["layers"])
+                                            if (layer["objects"].size())
+                                                for (const auto& body : data["objects"])
+                                                    createBodies(body["x"], body["y"], body["width"], body["height"]);
              
                                     this->m_layersApplied = false;
                                 }
@@ -325,7 +340,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                         
                         ImGui::PushID(i);
                        
-                        this->layers.push_back({});
+                        this->layers.push_back({ "", "", "" });
 
                         if (ImGui::BeginMenu("CSV: ")) 
                         {
@@ -339,8 +354,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                                 key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
                                 path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
 
-                                if (System::Utils::str_endsWith(path, ".csv")) {
-
+                                if (System::Utils::str_endsWith(path, ".csv")) 
                                     if (ImGui::MenuItem(key.c_str())) {
 
                                         this->layers[i][0] = key;
@@ -348,7 +362,6 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                                         this->m_layersApplied = false;
                                     }
-                                }
                             }
                   
                             ImGui::EndMenu();

@@ -68,12 +68,16 @@ namespace System {
             }
 
             template <typename T>
-            static inline const std::shared_ptr<T> GetBehavior() {
+            static inline const std::shared_ptr<T> GetBehavior() 
+            {
 
-                auto behaviors = GetScene()->behaviors;
-
-                return std::dynamic_pointer_cast<T>(*std::find_if(behaviors.begin(), behaviors.end(), 
+                auto behavior = std::dynamic_pointer_cast<T>(*std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), 
                     [&](auto behavior) { return behavior->key == typeid(T).name(); }));
+
+                if (behavior)
+                    return behavior;
+                    
+                return nullptr;
             }
 
             //map manager

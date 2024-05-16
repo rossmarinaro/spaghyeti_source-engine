@@ -372,6 +372,9 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     this->velocityY = 0.0f;
     this->texture = Graphics::Texture2D::GetTexture(key);
     this->shader = Shader::GetShader("sprite");
+    
+    if (isTile)
+        this->SetFlipY(true);
 
     #if DEVELOPMENT == 1
         if (!isTile)

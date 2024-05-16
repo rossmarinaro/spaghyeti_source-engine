@@ -378,7 +378,7 @@ json Node::WriteData(std::shared_ptr<Node> node, const std::string& type)
                 }
             }
         };
-    }
+    } 
 
     //------------tilemap
 

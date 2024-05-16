@@ -15,11 +15,11 @@ namespace entity_behaviors {
 
            //constructor, called on start
 
-            inline UI (std::shared_ptr<Entity> entity);
+            UI (std::shared_ptr<Entity> entity);
 
             //update every frame
 
-            inline void Update() override;
+            void Update() override;
 
         private:
 

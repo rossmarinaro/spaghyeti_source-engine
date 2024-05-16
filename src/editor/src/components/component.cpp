@@ -128,11 +128,11 @@ void Component::Make()
         src <<  "       public:\n\n";
         src <<  "           //constructor, called on start\n\n";
         src <<  "           " + this->filename + "(std::shared_ptr<Entity> entity):\n";
-        src <<  "            inline Behavior(entity, typeid(" + this->filename + ").name())\n";
-        src <<  "           {\n\n";
-        src <<  "           }\n\n";
+        src <<  "            Behavior(entity, typeid(" + this->filename + ").name())\n";
+        src <<  "            {\n\n";
+        src <<  "            }\n\n";
         src <<  "           //update every frame\n\n";
-        src <<  "           inline void Update() override {\n\n";
+        src <<  "            void Update() override {\n\n";
         src <<  "           }\n\n";
         src <<  "   };\n";
         src <<  "};";

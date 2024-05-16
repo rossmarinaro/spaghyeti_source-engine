@@ -47,7 +47,7 @@ void Menu_Player::Update()
 
     if ((context.inputs->SPACE || context.inputs->LEFT_CLICK) && this->m_init) {
         this->m_init = false;
-        System::Game::StartScene("CAVE");
+        System::Game::StartScene("TOWN");
     }
 }
 

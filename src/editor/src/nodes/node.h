@@ -211,7 +211,7 @@ namespace editor {
             void Render(std::shared_ptr<Node> node) override;
             void Reset(const char* component_type = "") override;
 
-            void ApplyTilemap(bool clearPrevious = true);
+            void ApplyTilemap(bool clearPrevious = true, bool renderReversed = false);
             void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
             void UpdateBody(int index);
 

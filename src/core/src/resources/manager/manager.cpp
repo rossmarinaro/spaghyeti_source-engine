@@ -14,14 +14,7 @@ using namespace System::Resources;
 //clear resources and assets, "all" flag true removes textures and shaders
 void Manager::Clear(bool all)
 {
-    System::Application::resources->m_file_audio_assets.clear();
-    System::Application::resources->m_file_text_assets.clear();
-    System::Application::resources->m_file_assets.clear();
-    System::Application::resources->m_file_image_assets.clear();
-    System::Application::resources->m_raw_image_assets.clear();
-    System::Application::resources->m_raw_audio_assets;
-    System::Application::resources->m_raw_assets.clear();
-
+    
     System::Application::resources->atlases.clear();
     System::Application::resources->atlas_paths.clear();
     System::Application::resources->anims.clear();
@@ -31,6 +24,14 @@ void Manager::Clear(bool all)
 
     if (all)
     {
+        System::Application::resources->m_file_audio_assets.clear();
+        System::Application::resources->m_file_text_assets.clear();
+        System::Application::resources->m_file_assets.clear();
+        System::Application::resources->m_file_image_assets.clear();
+        System::Application::resources->m_raw_image_assets.clear();
+        System::Application::resources->m_raw_audio_assets;
+        System::Application::resources->m_raw_assets.clear();
+
         for (const auto& shader : System::Application::resources->shaders)
             glDeleteProgram(shader.second.ID);
 

@@ -13,11 +13,11 @@ namespace entity_behaviors {
             std::shared_ptr<Sprite> player;
             b2Body* hb;
 
-            inline PlayerController(std::shared_ptr<Entity> entity);
-            inline ~PlayerController();
+            PlayerController(std::shared_ptr<Entity> entity);
+            ~PlayerController();
 
-            inline void Update() override; 
-            inline void DoDamage(int amount);
+            void Update() override; 
+            void DoDamage(int amount);
 
         private:
 
@@ -37,9 +37,9 @@ namespace entity_behaviors {
 
             std::atomic_bool m_active;
 
-            inline void Move(Inputs* inputs);
-            inline void Jump(Inputs* inputs);
-            inline void Attack(Physics* physics);
+            void Move(Inputs* inputs);
+            void Jump(Inputs* inputs);
+            void Attack(Physics* physics);
 
     };
 }

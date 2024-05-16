@@ -98,7 +98,8 @@ void PlayerController::Update()
         this->player->SetVelocity(0.0f, 0.0f);
         context.camera->Fade(0.1f, "in");
     }
-    else
+    
+    else if (System::Game::GetBehavior<COLORSHIFTSPRITE>())
         System::Game::GetBehavior<COLORSHIFTSPRITE>()->SetBroadcastTint("tile", { 0.73f, 0.15f, 0.75f });   
 }
 

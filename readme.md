@@ -20,10 +20,10 @@ Editor created in-scene game objects can be saved as prefabs for repeated use.
 
 For Emscripten WebGL builds, download the latest SDK release, run emsdk install tot, navigate to emscripten install directory, run emcmdprompt.bat and cd to the "web" directory in this tree. compile with that directory's MakeFile.
 
-//Editor
+Editor:
 ![image info](./images/screenshot.png)
 
-//Test Game
+Test Game:
 ![image info](./images/testgame.png)
 
 ---------------------------------------------------------- 

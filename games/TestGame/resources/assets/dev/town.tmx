@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="86" height="19" tilewidth="64" tileheight="64" infinite="0" backgroundcolor="#ffbc5e" nextlayerid="9" nextobjectid="15">
+ <editorsettings>
+  <export target="../data/town.csv" format="csv"/>
+ </editorsettings>
+ <objectgroup id="8" name="bounds">
+  <object id="6" x="8" y="580" width="5500" height="32"/>
+  <object id="9" x="-12" y="-28" width="28" height="624"/>
+  <object id="14" x="5470" y="-12" width="28" height="624"/>
+ </objectgroup>
+</map>

@@ -8,7 +8,8 @@ void editor::GUI::ShowSettings()
 
     //scenes
 
-    if (ImGui::BeginMenu("Scenes")) {
+    if (ImGui::BeginMenu("Scenes")) 
+    {
 
         if (ImGui::BeginMenu("scenes in queue"))
         {
@@ -36,16 +37,14 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("remove")) 
         {
-            for (const auto& scene : Editor::scenes) 
+            for (auto& scene : Editor::scenes) 
             {
                 if (Editor::events.s_currentScene != scene)
                 {
                     if (ImGui::MenuItem((scene).c_str())) {
 
                         auto it = std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == scene; });
-
-                        if (it != Editor::scenes.end())
-                            Editor::scenes.erase(it);
+                        Editor::scenes.erase(it);
                     }
                 } 
 

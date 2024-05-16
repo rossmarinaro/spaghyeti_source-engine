@@ -58,6 +58,7 @@ UI::UI(std::shared_ptr<Entity> entity):
 
 void UI::Update() 
 {
+    
     if (this->magicBar->width > 1)
         this->magicBar->width -= 0.5f;
 

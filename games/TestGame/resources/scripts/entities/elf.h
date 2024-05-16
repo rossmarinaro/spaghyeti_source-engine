@@ -8,8 +8,8 @@ namespace entity_behaviors {
 
         public:
 
-            inline Elf(std::shared_ptr<Entity> entity);
-            inline void Update() override;
+            Elf(std::shared_ptr<Entity> entity);
+            void Update() override;
 
         private:
 
