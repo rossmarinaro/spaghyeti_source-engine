@@ -37,14 +37,19 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("remove")) 
         {
-            for (auto& scene : Editor::scenes) 
+            for (auto scene_it = Editor::scenes.begin(); scene_it != Editor::scenes.end(); scene_it++) 
             {
-                if (Editor::events.s_currentScene != scene)
+                if (Editor::events.s_currentScene != *scene_it)
                 {
-                    if (ImGui::MenuItem((scene).c_str())) {
+                    if (ImGui::MenuItem((*scene_it).c_str())) 
+                    {
 
-                        auto it = std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == scene; });
-                        Editor::scenes.erase(it);
+                        auto it = std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == *scene_it; });
+  
+                        if (it != Editor::scenes.end()) {
+                            scene_it = Editor::scenes.erase(it);
+                            --scene_it;
+                        }
                     }
                 } 
 
@@ -186,11 +191,11 @@ void editor::GUI::ShowSettings()
 void editor::GUI::ShowMenu()
 {
 
-    ImGui::MenuItem("File Select", NULL, false, false); 
-    
-    ImGui::SameLine();
+    ImGui::MenuItem(("Platform: " + Editor::platform).c_str(), NULL, false, false);
 
-    ImGui::Text(("Platform: " + Editor::platform).c_str());
+    ImGui::MenuItem(("Build: " + Editor::buildType).c_str(), NULL, false, false);
+
+    ImGui::Separator();
 
     if (ImGui::MenuItem("Build / Run"))
         Editor::events.buildFlag = true;
@@ -212,10 +217,23 @@ void editor::GUI::ShowMenu()
     ImGui::Separator();
 
     if (ImGui::MenuItem("Quit", "Alt+F4"))
-        s_show_quit = true;
+        s_show_quit = true; 
 
     if (ImGui::BeginMenu("Options"))
     {
+
+        //build type
+
+        if (ImGui::BeginMenu("Build Type"))
+        {
+            if (ImGui::MenuItem("debug"))
+                Editor::buildType = "debug";
+
+            if (ImGui::MenuItem("production"))
+                Editor::buildType = "production";
+
+            ImGui::EndMenu();
+        }
 
         //platform
 

@@ -16,11 +16,11 @@
                  "type":"",
                  "visible":true,
                  "width":5500,
-                 "x":8,
-                 "y":580
+                 "x":1.33333333333337,
+                 "y":714.666666666667
                 }, 
                 {
-                 "height":624,
+                 "height":748,
                  "id":9,
                  "name":"",
                  "rotation":0,
@@ -31,7 +31,7 @@
                  "y":-28
                 }, 
                 {
-                 "height":624,
+                 "height":733.333333333333,
                  "id":14,
                  "name":"",
                  "rotation":0,
@@ -47,13 +47,26 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":9,
+ "nextlayerid":12,
  "nextobjectid":15,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
  "tileheight":64,
- "tilesets":[],
+ "tilesets":[
+        {
+         "columns":10,
+         "firstgid":1,
+         "image":"..\/images\/town.png",
+         "imageheight":640,
+         "imagewidth":640,
+         "margin":0,
+         "name":"town",
+         "spacing":0,
+         "tilecount":100,
+         "tileheight":64,
+         "tilewidth":64
+        }],
  "tilewidth":64,
  "type":"map",
  "version":"1.10",

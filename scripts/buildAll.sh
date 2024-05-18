@@ -1,1 +1,1 @@
-./buildCore.bat && ./buildEditor.bat
+./buildCoreDebug.bat && ./buildCoreProduction.bat && ./buildEditor.bat

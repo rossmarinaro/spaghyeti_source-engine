@@ -453,7 +453,7 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
 
                     //texture
         
-                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->m_currentTexture, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image")
+                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)this->m_currentTexture, ImVec2(50, 50)) && System::Utils::GetFileType(Editor::selectedAsset) == "image")
                         this->ApplyTexture(Editor::selectedAsset);
 
                     else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && Editor::selectedAsset.length() && System::Utils::GetFileType(Editor::selectedAsset) != "image")

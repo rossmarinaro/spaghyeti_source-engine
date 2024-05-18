@@ -19,7 +19,7 @@ namespace entity_behaviors {
                     m_canHit(false),
                     m_canDestroy(false) {}
 
-            void Update();
+            void Update(float offsetX = 0.0f, float offsetY = 0.0f);
 
             ~Actor() = default;
 

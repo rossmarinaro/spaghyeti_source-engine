@@ -458,11 +458,14 @@ void EventListener::BuildAndRun()
 
         //copy runtime dll to build folder
 
-        const std::string dll = "spaghyeti_source_runtime-core.dll",
+        const std::string dll = Editor::buildType == "debug" ? "spaghyeti_source_runtime-core-debug.dll" : "spaghyeti_source_runtime-core.dll",
                           copy_dll = Editor::projectPath + "build\\" + dll;
+
+        remove((Editor::projectPath + "build\\spaghyeti_source_runtime-core-debug.dll").c_str());
+        remove((Editor::projectPath + "build\\spaghyeti_source_runtime-core.dll").c_str());
         
         if (!std::filesystem::exists(copy_dll))
-            std::filesystem::copy_file(dll, copy_dll, options);
+            std::filesystem::copy_file(Editor::rootPath + "\\sdk\\" + dll, copy_dll, options);
 
         //generate MakeFile
 
@@ -480,7 +483,13 @@ void EventListener::BuildAndRun()
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/*.cpp) \\" << "\n";
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/**/*.cpp) \\" << "\n";
         main_makeFile << "    ./game.cpp \\" << "\n";
-        main_makeFile << "    ./build/spaghyeti_source_runtime-core.dll" << "\n\n";
+
+        if (Editor::buildType == "debug")
+            main_makeFile <<  "   ./build/spaghyeti_source_runtime-core-debug.dll" << "\n\n";
+
+        else
+            main_makeFile <<  "   ./build/spaghyeti_source_runtime-core.dll" << "\n\n";
+
         main_makeFile << "all : $(OBJS)" << "\n";
         main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 ./resources/icon/icon.o -o ./build/$(PROJECT).exe";
 

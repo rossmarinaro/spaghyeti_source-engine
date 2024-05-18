@@ -245,7 +245,7 @@ class Sprite : public Entity {
 		inline void SetFrame(int frame) { this->currentFrame = frame; }
 		inline void SetAnimation(const char* key, bool yoyo = false, int rate = 2) { this->m_currentAnim = { key, { yoyo, rate } }; }
 		inline void StopAnimation() { this->m_currentAnim = {}; }
-
+        inline void SetScrollFactor(const glm::vec2& factor) { this->m_scrollFactor = factor; }
 		inline void SetContact(bool isContact) { this->m_contacting = isContact; }
 		inline bool IsContacting() { return this->m_contacting; }
 		inline bool IsSpritesheet() { return this->m_isSpritesheet; } 
@@ -279,7 +279,7 @@ class Sprite : public Entity {
 			 m_animComplete = true,
 			 m_anim_yoyo = false;
 
-		glm::vec2 m_velocity;
+		glm::vec2 m_velocity, m_scrollFactor;
 
 		std::pair<std::string, std::pair<bool, int>> m_currentAnim;
 		

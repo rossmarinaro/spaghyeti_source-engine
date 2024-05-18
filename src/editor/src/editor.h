@@ -60,6 +60,7 @@ namespace editor {
 
 			static inline std::string selectedAsset,
 									  platform = "Windows",
+                                      buildType = "debug",
 									  projectPath = "",
 									  rootPath;
 

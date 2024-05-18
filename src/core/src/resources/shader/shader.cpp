@@ -101,7 +101,7 @@ void Shader::Update(Camera* camera)
         if (shader.first == "cursor" || shader.first == "UI")             
             GetShader(shader.first).SetMat4("view", glm::mat4(1.0f), true);
 
-        else             
+        else if (shader.first == "Points" || shader.first == "Lines" || shader.first == "Triangles")         
             GetShader(shader.first).SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(camera->position, 0.0f)), true);
 
     }

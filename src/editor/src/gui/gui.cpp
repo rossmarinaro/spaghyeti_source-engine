@@ -278,8 +278,10 @@ void GUI::ShowOptionsQuit()
 {
     ImGui::Text("Do You Want To Quit?");
 
-    if (ImGui::MenuItem("Yes"))
+    if (ImGui::MenuItem("Yes")) {
+        s_show_quit = false;
         glfwSetWindowShouldClose(System::Window::s_instance, true);
+    }
 
     if (ImGui::MenuItem("No"))
         s_show_quit = false;

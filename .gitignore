@@ -2,6 +2,7 @@
 /build/include/vendors
 /build/spaghyeti_source-engine-full.exe
 /build/spaghyeti_source-engine_runtime-editor.dll
+/build/sdk/spaghyeti_source-engine_runtime-core-debug.dll
 /build/sdk/spaghyeti_source-engine_runtime-core.dll
 /build/imgui.ini
 /build/Logs.txt

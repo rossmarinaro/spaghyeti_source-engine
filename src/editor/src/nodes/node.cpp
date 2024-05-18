@@ -719,7 +719,7 @@ void Node::ReadData(json& data, const std::string& type, bool makeNode, void* sc
                 }
 
             //physics 
-            
+       
             if (data["components"]["physics"]["exists"]) 
                 tmn->AddComponent("Physics", false);
 

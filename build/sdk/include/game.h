@@ -69,13 +69,13 @@ namespace System {
 
             template <typename T>
             static inline const std::shared_ptr<T> GetBehavior() 
-            {
+            { 
 
-                auto behavior = std::dynamic_pointer_cast<T>(*std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), 
-                    [&](auto behavior) { return behavior->key == typeid(T).name(); }));
+                auto it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), 
+                    [&](auto behavior) { return behavior->key == typeid(T).name(); });
 
-                if (behavior)
-                    return behavior;
+                if (it != GetScene()->behaviors.end())
+                    return std::dynamic_pointer_cast<T>(*it);
                     
                 return nullptr;
             }

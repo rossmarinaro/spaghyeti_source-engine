@@ -1,9 +1,7 @@
 #include "./elf.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
 
-using namespace entity_behaviors;
-
-Elf::Elf(std::shared_ptr<Entity> entity):
+entity_behaviors::Elf::Elf(std::shared_ptr<Entity> entity):
     Actor(entity, typeid(Elf).name()),
         m_canMoveLeft(false),
         m_canMoveRight(true),
@@ -22,9 +20,9 @@ Elf::Elf(std::shared_ptr<Entity> entity):
 
 //-----------------------------------
 
-void Elf::Update() 
+void entity_behaviors::Elf::Update() 
 {
-    Actor::Update();
+    Actor::Update(50.0f, 60.0f);
 
     if (this->sprite->position.x > this->m_startPos - 80) {
         this->m_canMoveLeft = true;
@@ -51,5 +49,9 @@ void Elf::Update()
         this->sprite->SetVelocityX(2); 
         this->sprite->SetFlipX(false);
     }
-    
+
+    if (System::Game::GetScene()->key == "CAVE")
+        for (auto& tile : System::Game::GetScene()->entities) 
+            if (strcmp(tile->type, "tile") == 0 && tile->name == "cave_background2.csv")
+                std::static_pointer_cast<Sprite>(tile)->SetScrollFactor({ 0.5f, 1.0f });
 }

@@ -2,62 +2,48 @@
 #include "../player.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
 
-using namespace entity_behaviors;
 
-Crook::Crook(std::shared_ptr<Entity> entity):
+entity_behaviors::Crook::Crook(std::shared_ptr<Entity> entity):
     Actor(entity, typeid(Crook).name())
 {
     this->health = 5; 
+    this->m_damage = 1;
     this->sprite = std::static_pointer_cast<Sprite>(entity);
     this->sprite->SetAnimation("idle", false, 4);
-    this->m_startPos = this->sprite->position.x;
-
-    this->hb = Physics::CreateDynamicBody("box", 0, 0, 30, 50, true, 1);
+    this->hb = Physics::CreateDynamicBody("box", 0, 0, 50, 60, true, 1);
 }
 
 
-void Crook::Update() 
+void entity_behaviors::Crook::Update() 
 { 
-    Actor::Update();
+
+    Actor::Update(110.0f, 80.0f);
 
     auto playerBehavior = System::Game::GetBehavior<PlayerController>();
 
-    if (playerBehavior == nullptr)
-        return;
-
-    if (playerBehavior->player.get() && std::sqrt(std::pow((this->sprite->position.x, playerBehavior->player->position.x), 2) + std::pow((this->sprite->position.y, playerBehavior->player->position.y), 2)) < 1)
+    if (glm::length(fabs(this->sprite->position.x - playerBehavior->positionX)) <= 150.0f) 
     {
-
-        this->sprite->SetAnimation("attack");
-
-        if (this->sprite->position.x > this->m_startPos - 80) {
-            this->m_canMoveLeft = true;
-            this->m_canMoveRight = false;
-        }
-
-        if (this->sprite->position.x == this->m_startPos - 80)
-            this->m_reverse = false;
-
-        if (this->sprite->position.x < this->m_startPos + 60 && !this->m_reverse) {
-            this->m_canMoveLeft = false;
-            this->m_canMoveRight = true;
-        }
-
-        if (this->sprite->position.x == this->m_startPos + 60)
-            this->m_reverse = true;
-
-        if (this->m_canMoveLeft) {
-            this->sprite->SetVelocityX(-2); 
-            // this->sprite->SetFlipX(true);
-        }
-        
-        if (this->m_canMoveRight) {
-            this->sprite->SetVelocityX(2); 
-            //this->sprite->SetFlipX(false);
-        } 
+        this->sprite->SetAnimation("attack", true, 4);
+        this->sprite->SetVelocityX(playerBehavior->positionX > this->sprite->position.x ? 2.5f : -2.5f);
     }
 
-    else 
-        this->sprite->SetAnimation("idle");
+    else if (glm::length(fabs(this->sprite->position.x - playerBehavior->positionX)) <= 250.0f)
+    {
+
+        this->sprite->SetAnimation("walk", true, 7);
+
+        this->sprite->SetFlipX(playerBehavior->positionX > this->sprite->position.x);
+ 
+        this->sprite->SetVelocityX(playerBehavior->positionX > this->sprite->position.x ? 1 : -1); 
+    }
+
+    else {
+        this->sprite->SetAnimation("idle", false, 3);
+        this->sprite->SetVelocityX(0);
+    }
+
+    for (auto& tile : System::Game::GetScene()->entities) 
+        if (strcmp(tile->type, "tile") == 0)
+            std::static_pointer_cast<Sprite>(tile)->SetScrollFactor({ -0.75f, 1.0f });
     
 }

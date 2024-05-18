@@ -8,7 +8,8 @@ namespace entity_behaviors {
 
         public:
 
-            static inline int livesLeft = 3;
+            static inline int s_livesLeft = 3;
+            float positionX, positionY;
 
             std::shared_ptr<Sprite> player;
             b2Body* hb;

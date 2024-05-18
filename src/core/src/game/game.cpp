@@ -151,7 +151,7 @@ void Game::StartScene(const std::string& key)
 
         game->currentScene->Preload();
 
-        game->currentScene->vignette = std::make_unique<Sprite>("base", 0.0f, 0.0f);
+        game->currentScene->vignette = std::make_unique<Sprite>("base", 0.0f, -50.0f);
         game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
         game->currentScene->vignette->SetAlpha(0.0f);
 

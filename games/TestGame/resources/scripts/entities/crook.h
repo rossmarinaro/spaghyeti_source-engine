@@ -12,13 +12,5 @@ namespace entity_behaviors {
             
             void Update() override;
 
-        private:
-
-            float m_startPos;
-
-            bool m_canMoveLeft,
-                 m_canMoveRight,
-                 m_reverse;
-
     };
 }

@@ -62,7 +62,7 @@ void UI::Update()
     if (this->magicBar->width > 1)
         this->magicBar->width -= 0.5f;
 
-    this->m_livesText->SetText("x" + std::to_string(System::Game::GetBehavior<PlayerController>()->livesLeft));
+    this->m_livesText->SetText("x" + std::to_string(System::Game::GetBehavior<PlayerController>()->s_livesLeft));
 
     //HUD
     

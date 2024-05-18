@@ -50,7 +50,7 @@ void TilemapNode::Reset(const char* component_type)
 
         this->bodyX.clear();
         this->bodyY.clear();
-        this->body_width.clear();
+        this->body_width.clear(); 
         this->body_height.clear();
 
         this->bodies.clear();
@@ -58,7 +58,8 @@ void TilemapNode::Reset(const char* component_type)
 
     this->m_mapApplied = false;
 
-    MapManager::ClearMap();
+    if (passAll)
+        MapManager::ClearMap();
 }
 
 
@@ -81,7 +82,7 @@ void TilemapNode::ApplyTilemap(bool clearPrevious, bool renderReversed)
 
         for (int y = 0; y < this->map_height; ++y)
             for (int x = 0; x < this->map_width; ++x)
-            { 
+            {
                 if (w == this->spr_sheet_width[i]) 
                 { 
                     w = 0;
@@ -287,7 +288,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                                     else if (data["layers"].size())
                                         for (const auto& layer : data["layers"])
                                             if (layer["objects"].size())
-                                                for (const auto& body : data["objects"])
+                                                for (const auto& body : layer["objects"])
                                                     createBodies(body["x"], body["y"], body["width"], body["height"]);
              
                                     this->m_layersApplied = false;
@@ -376,7 +377,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                         ImGui::Text(csv_name.c_str()); 
 
-                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::GetTexture(this->layers[i][2]).ID, ImVec2(50, 50), ImVec2(0, 1), ImVec2(1, 0)) && System::Utils::GetFileType(Editor::selectedAsset) == "image") 
+                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::GetTexture(this->layers[i][2]).ID, ImVec2(50, 50)) && System::Utils::GetFileType(Editor::selectedAsset) == "image") 
                         {
                             this->layers[i][2] = Editor::selectedAsset;
                             this->m_layersApplied = false;

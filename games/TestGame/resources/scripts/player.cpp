@@ -21,6 +21,8 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
 { 
     this->player = std::static_pointer_cast<Sprite>(entity); 
     this->hb = Physics::CreateDynamicBody("box", 0, 0, 10, 10, true, 1);   
+    this->positionX = 0.0f; 
+    this->positionY = 0.0f;
 }
 
 
@@ -89,7 +91,7 @@ void PlayerController::Update()
     {
         this->m_active = true;
 
-        System::Game::StartScene(this->livesLeft > 0 ? "CAVE" : "GAMEOVER");
+        System::Game::StartScene(s_livesLeft > 0 ? System::Game::GetScene()->key : "GAMEOVER");
 
         return;
     }
@@ -98,7 +100,7 @@ void PlayerController::Update()
         this->player->SetVelocity(0.0f, 0.0f);
         context.camera->Fade(0.1f, "in");
     }
-    
+
     else if (System::Game::GetBehavior<COLORSHIFTSPRITE>())
         System::Game::GetBehavior<COLORSHIFTSPRITE>()->SetBroadcastTint("tile", { 0.73f, 0.15f, 0.75f });   
 }
@@ -132,6 +134,9 @@ void PlayerController::Move(Inputs* inputs)
         this->player->Animate(this->m_flipX ? "idle-left" : "idle-right", true);
         this->m_state = "idle";
     }
+
+    this->positionX = this->player->position.x; 
+    this->positionY = this->player->position.y;
 }
 
 
@@ -212,7 +217,7 @@ void PlayerController::DoDamage(int amount)
     if (this->m_health <= 0 && this->m_alive) 
     {
         this->m_alive = false;   
-        this->livesLeft--;
+        s_livesLeft--;
 
         System::Game::GetBehavior<COLORSHIFTSPRITE>()->SetBroadcastTint("tile", { 0.43f, 0.3f, 0.85f });
 

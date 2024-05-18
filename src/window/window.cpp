@@ -96,19 +96,21 @@ void Window::Init()
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
     glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
-    //glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
-
-    GLFWmonitor* isFullScreen = NULL;
 
 //set window dimensions for desktop builds
+
+    GLFWmonitor* isFullScreen = NULL;
 
     #if STANDALONE == 0
         s_width = 1200.0f;
         s_height = 600.0f;
     #else
-        s_width = 800.0f;
-        s_height = 400.0f;
-         //isFullScreen = glfwGetPrimaryMonitor();
+        s_width = 900.0f;
+        s_height = 500.0f;
+
+        //isFullScreen = glfwGetPrimaryMonitor();
+        //glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
+        
     #endif
 
     //create window

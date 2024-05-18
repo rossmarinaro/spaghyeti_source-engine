@@ -329,9 +329,16 @@ void Sprite::Render()
         this->bodies.size() ? 1.0f : this->scale.x, 
         this->bodies.size() ? 1.0f : this->scale.y
     ), true);
+    
     this->shader.SetFloat("alphaVal", this->alpha, true); 
     this->shader.SetVec3f("tint", this->tint, true);
     this->shader.SetMat4("model", this->m_model, true);
+
+    if (this->IsSprite() && strcmp(this->type, "UI") != 0)
+        this->shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position.x * this->m_scrollFactor.x, System::Application::game->camera->position.y * this->m_scrollFactor.y, 0.0f)), true);
+    
+    else         
+        this->shader.SetMat4("view", glm::mat4(1.0f), true);
 
     this->texture.Update(this->position, this->flipX, this->flipY, GL_FILL);   
 
@@ -363,7 +370,8 @@ void Sprite::Render()
 
 
 Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile): 
-    Entity("sprite", x, y)
+    Entity("sprite", x, y),
+        m_scrollFactor(glm::vec2(1.0f))
 {   
     this->key = key;
     this->currentFrame = frame;    
@@ -371,7 +379,7 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     this->velocityX = 0.0f;
     this->velocityY = 0.0f;
     this->texture = Graphics::Texture2D::GetTexture(key);
-    this->shader = Shader::GetShader("sprite");
+    this->shader = Shader::GetShader("sprite");          
     
     if (isTile)
         this->SetFlipY(true);

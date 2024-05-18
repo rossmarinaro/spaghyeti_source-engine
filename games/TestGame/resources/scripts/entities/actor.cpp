@@ -5,11 +5,11 @@
 
 using namespace entity_behaviors;
 
-void Actor::Update() 
+void Actor::Update(float offsetX, float offsetY) 
 {
 
     if (this->hb)
-        this->hb->SetTransform(b2Vec2(this->sprite->position.x * this->sprite->scale.x + 50, this->sprite->position.y * this->sprite->scale.y + 60), 0);
+        this->hb->SetTransform(b2Vec2(this->sprite->position.x * this->sprite->scale.x + offsetX, this->sprite->position.y * this->sprite->scale.y + offsetY), 0);
 
     auto playerBehavior = System::Game::GetBehavior<PlayerController>();
 

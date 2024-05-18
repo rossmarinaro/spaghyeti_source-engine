@@ -52,8 +52,15 @@ void MapManager::CreateLayer (
         for (int x = 0; x < mapWidth; ++x) 
         {
 
+            if (map.begin() + (x + y * mapWidth) == map.end()) {
+                #if DEVELOPMENT == 1
+                    std::cout << "Tilemap: index overflow, truncating map.\n";
+                #endif
+                return;
+            }
+
             //convert string to int at index
- 
+
             int tileType = atoi(map[x + y * mapWidth].c_str());
 
             //skip if no tile
@@ -92,7 +99,7 @@ void MapManager::CreateLayer (
                 
                 tile->name = (std::string)data_key;
                 tile->SetDepth(depth); 
-                tile->SetFlip(flipX, flipY); 
+                tile->SetFlip(flipX, flipY);  
 
                 //add layer to stack
 
