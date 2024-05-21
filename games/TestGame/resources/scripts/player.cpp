@@ -103,6 +103,17 @@ void PlayerController::Update()
 
     else if (System::Game::GetBehavior<COLORSHIFTSPRITE>())
         System::Game::GetBehavior<COLORSHIFTSPRITE>()->SetBroadcastTint("tile", { 0.73f, 0.15f, 0.75f });   
+
+    for (const auto& star : this->stars)
+        if (star->active)
+        {
+            const bool dir = star->GetData<bool>("direction");
+
+            star->SetVelocityX(dir ? -20 : 20);
+
+            if ((dir && star->position.x >= this->player->position.x + 500) || (!dir && star->position.x >= this->player->position.x + 500)/* context.camera->position */)
+                System::Game::DestroyEntity(star);
+        }
 }
 
 
@@ -180,10 +191,15 @@ void PlayerController::Attack(Physics* physics)
         this->hb->SetTransform(b2Vec2(this->player->position.x + 110, this->player->position.y + 45), 0);
     }
 
-    if (this->m_shootFireball)
+    //if (this->m_shootFireball)
     {
         //todo: implement fireball
         //Time::delayedCall(1000, [&]() { });
+        auto star = System::Game::CreateSprite("star.png", this->m_flipX ? this->player->position.x - 20 : this->player->position.x + 50, this->player->position.y);
+        bool dir = this->m_flipX;
+        star->SetData("direction", dir);
+        this->stars.push_back(star);
+        
     }  
 
     this->m_state = "attack";         

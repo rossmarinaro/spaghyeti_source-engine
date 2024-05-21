@@ -43,7 +43,7 @@ void entity_behaviors::Crook::Update()
     }
 
     for (auto& tile : System::Game::GetScene()->entities) 
-        if (strcmp(tile->type, "tile") == 0)
+        if (strcmp(tile->type, "tile") == 0 && tile->name == "town_background.csv")
             std::static_pointer_cast<Sprite>(tile)->SetScrollFactor({ -0.75f, 1.0f });
     
 }

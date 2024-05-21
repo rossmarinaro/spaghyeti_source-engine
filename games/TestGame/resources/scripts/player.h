@@ -38,6 +38,8 @@ namespace entity_behaviors {
 
             std::atomic_bool m_active;
 
+            std::vector<std::shared_ptr<Sprite>> stars;
+
             void Move(Inputs* inputs);
             void Jump(Inputs* inputs);
             void Attack(Physics* physics);
