@@ -46,6 +46,7 @@ namespace Shaders {
             "void main()\n"
             "{\n"    
                 "color = vec4(tint, alphaVal) * texture(image, uv);\n"   
+                //"if (color.r == 1.0 && color.b == 1.0) discard;\n" magenta background only
             "}\n"; 
 
         //-------------- graphics
@@ -123,6 +124,7 @@ namespace Shaders {
             "{\n"    
 
                 "color = vec4(tint, alphaVal) * texture(image, uv * repeat);\n"   
+                 //"if (color.r == 1.0 && color.b == 1.0) discard;\n" magenta background only
             "}\n"; 
 
         //-------------- graphics
