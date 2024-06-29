@@ -49,6 +49,8 @@ namespace editor {
             static void ShowOptionsSave(bool quit);
             static void AlignForWidth(float width, float alignment = 0.5f);
             static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
+
+            static inline GLuint s_currentTexture = NULL;
     };
 
 }

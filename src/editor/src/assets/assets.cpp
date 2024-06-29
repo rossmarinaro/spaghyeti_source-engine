@@ -63,6 +63,9 @@ std::string AssetManager::GetFolder(const std::string& asset)
     if (System::Utils::GetFileType(asset) == "data") 
         folder = "\\data\\";
 
+    if (System::Utils::GetFileType(asset) == "icon") 
+        folder = "\\icon\\";
+
     return folder;
 }
 

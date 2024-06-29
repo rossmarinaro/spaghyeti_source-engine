@@ -359,8 +359,10 @@ void EventListener::OpenFile()
 
             //copy asset reference to respective project folder
 
-            if (!file.good())
-                std::filesystem::copy_file(result.string(), Editor::projectPath + "resources\\assets" + folder + asset, options);
+            if (!file.good()) {
+                const std::string dir = folder != "icon" ? "assets" : "";
+                std::filesystem::copy_file(result.string(), Editor::projectPath + "resources\\" + folder + asset, options);
+            }
 
             //register asset into temp cache
 
@@ -377,11 +379,10 @@ void EventListener::OpenFile()
             {
                 if (
                     std::find_if( 
-                        AssetManager::images.begin(), AssetManager::images.end(),
-                        [&](std::pair<std::string, GLuint> pair) { return pair.first == asset; }
-                    ) == AssetManager::images.end()
+                        vec.begin(), vec.end(),
+                        [&](std::pair<std::string, GLuint> pair) { return pair.first == asset; }) == vec.end()
                 )
-                    AssetManager::images.push_back({ asset, id });
+                    vec.push_back({ asset, id });
             };
 
             folder.erase(remove(folder.begin(), folder.end(), '\\'), folder.end());
@@ -699,6 +700,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->SetTint({ " + std::to_string(sn->tint.x) + ", " + std::to_string(sn->tint.y) + ", " + std::to_string(sn->tint.z) + " });\n";
                     command_queue << "   sprite_" + node->ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetAlpha(" + std::to_string(sn->alpha) + ");\n";
 
                     std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
 
@@ -1115,7 +1117,7 @@ void EventListener::GenerateProject()
 
     icon_rc << "1 ICON \"./icon.ico\"";
     icon_makeFile << "icon.o: icon.rc" << "\n";
-	icon_makeFile << "      windres icon.rc icon.o";
+	icon_makeFile << "\twindres icon.rc icon.o";
 
     Editor::Log("New project " + s_currentProject + " generated.");
 }

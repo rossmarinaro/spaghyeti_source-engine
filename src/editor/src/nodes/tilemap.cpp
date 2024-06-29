@@ -240,7 +240,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
 
                     //load collision data from file
 
-                    if (ImGui::BeginMenu("load collision data"))
+                    if (ImGui::BeginMenu("load collision data")) 
                     {
                         for (const auto& asset : AssetManager::loadedAssets)
                         {
@@ -295,6 +295,7 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                                 }
                             }
                         }
+                        
                         ImGui::EndMenu();
                     }
                     

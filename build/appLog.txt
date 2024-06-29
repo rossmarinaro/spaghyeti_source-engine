@@ -1,198 +1,24 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sun May 19 13:01:02 2024
-IMGui Version: 1 @ Sun May 19 13:01:02 2024
-GUI launched. @ Sun May 19 13:01:02 2024
-Workspace reset. @ Sun May 19 13:01:06 2024
-Sprite node Untitled created. @ Sun May 19 13:01:07 2024
-Text node Untitled created. @ Sun May 19 13:01:07 2024
-Text node Untitled created. @ Sun May 19 13:01:07 2024
-Text node Untitled created. @ Sun May 19 13:01:07 2024
-Text node Untitled created. @ Sun May 19 13:01:07 2024
-Project TestGame opened.
-Project root path set: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\ @ Sun May 19 13:01:07 2024
-Sprite node Untitled created. @ Sun May 19 13:01:11 2024
-Sprite node Untitled created. @ Sun May 19 13:01:11 2024
-Sprite node Untitled created. @ Sun May 19 13:01:11 2024
-Sprite node Untitled created. @ Sun May 19 13:01:11 2024
-Sprite node Untitled created. @ Sun May 19 13:01:11 2024
-Sprite node Untitled created. @ Sun May 19 13:01:11 2024
-Tilemap node Untitled created. @ Sun May 19 13:01:11 2024
-Empty node Untitled created. @ Sun May 19 13:01:11 2024
-Text node Untitled created. @ Sun May 19 13:01:11 2024
-Scene parsed. @ Sun May 19 13:01:11 2024
-Text node Untitled created. @ Sun May 19 13:01:11 2024
-Scene parsed. @ Sun May 19 13:01:11 2024
-Sprite node Untitled created. @ Sun May 19 13:01:12 2024
-Text node Untitled created. @ Sun May 19 13:01:12 2024
-Text node Untitled created. @ Sun May 19 13:01:12 2024
-Text node Untitled created. @ Sun May 19 13:01:12 2024
-Text node Untitled created. @ Sun May 19 13:01:12 2024
-Scene parsed. @ Sun May 19 13:01:12 2024
-Sprite node Untitled created. @ Sun May 19 13:01:12 2024
-Sprite node Untitled created. @ Sun May 19 13:01:12 2024
-Sprite node Untitled created. @ Sun May 19 13:01:12 2024
-Tilemap node Untitled created. @ Sun May 19 13:01:12 2024
-Text node Untitled created. @ Sun May 19 13:01:12 2024
-Scene parsed. @ Sun May 19 13:01:12 2024
-Sprite node player deleted. @ Sun May 19 13:01:12 2024
-Sprite node background deleted. @ Sun May 19 13:01:12 2024
-Sprite node elf deleted. @ Sun May 19 13:01:12 2024
-Sprite node elf_8bcca20a_9fed_c0a0_976e_47657fca4452 deleted. @ Sun May 19 13:01:12 2024
-Sprite node elf_2bbfb34f_795b_8a46_784b_227fb08154d3 deleted. @ Sun May 19 13:01:12 2024
-Sprite node elf_95dd9dad_2bcf_f264_9b08_45d447441778 deleted. @ Sun May 19 13:01:12 2024
-Tilemap node map deleted. @ Sun May 19 13:01:12 2024
-Empty node Untitled_dedabf90_b598_fbf3_bfcd_3db9f085673b deleted. @ Sun May 19 13:01:12 2024
-Text node score deleted. @ Sun May 19 13:01:12 2024
-Text node gameover deleted. @ Sun May 19 13:01:12 2024
-Sprite node sv_118668b8_146b_84ff_5b7f_62f50aa0804b deleted. @ Sun May 19 13:01:12 2024
-Text node the funky adventures_8ad9c10c_a195_3161_b2a7_39d16fe802d5 deleted. @ Sun May 19 13:01:12 2024
-Text node swanky velvet_b3936827_f235_10ca_7d8b_8645c66461cf deleted. @ Sun May 19 13:01:12 2024
-Text node press start_aa1f9323_c288_bd98_58e4_927ebe3c7eb9 deleted. @ Sun May 19 13:01:12 2024
-Text node pastaboss enterprise_669829b8_48bd_202b_a65c_563ec90f24b1 deleted. @ Sun May 19 13:01:12 2024
-Sprite node player deleted. @ Sun May 19 13:01:12 2024
-Sprite node background deleted. @ Sun May 19 13:01:12 2024
-Sprite node hooligan deleted. @ Sun May 19 13:01:12 2024
-Tilemap node map deleted. @ Sun May 19 13:01:12 2024
-Text node score deleted. @ Sun May 19 13:01:12 2024
-Project TestGame built successfully. @ Sun May 19 13:01:55 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Tilemap node Untitled created. @ Sun May 19 13:02:30 2024
-Empty node Untitled created. @ Sun May 19 13:02:30 2024
-Text node Untitled created. @ Sun May 19 13:02:30 2024
-Scene parsed. @ Sun May 19 13:02:30 2024
-Text node Untitled created. @ Sun May 19 13:02:30 2024
-Scene parsed. @ Sun May 19 13:02:30 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Text node Untitled created. @ Sun May 19 13:02:30 2024
-Text node Untitled created. @ Sun May 19 13:02:30 2024
-Text node Untitled created. @ Sun May 19 13:02:30 2024
-Text node Untitled created. @ Sun May 19 13:02:30 2024
-Scene parsed. @ Sun May 19 13:02:30 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Sprite node Untitled created. @ Sun May 19 13:02:30 2024
-Tilemap node Untitled created. @ Sun May 19 13:02:30 2024
-Text node Untitled created. @ Sun May 19 13:02:30 2024
-Scene parsed. @ Sun May 19 13:02:30 2024
-Sprite node player deleted. @ Sun May 19 13:02:30 2024
-Sprite node background deleted. @ Sun May 19 13:02:30 2024
-Sprite node elf deleted. @ Sun May 19 13:02:30 2024
-Sprite node elf_8bcca20a_9fed_c0a0_976e_47657fca4452 deleted. @ Sun May 19 13:02:30 2024
-Sprite node elf_2bbfb34f_795b_8a46_784b_227fb08154d3 deleted. @ Sun May 19 13:02:30 2024
-Sprite node elf_95dd9dad_2bcf_f264_9b08_45d447441778 deleted. @ Sun May 19 13:02:30 2024
-Tilemap node map deleted. @ Sun May 19 13:02:30 2024
-Empty node Untitled_dedabf90_b598_fbf3_bfcd_3db9f085673b deleted. @ Sun May 19 13:02:30 2024
-Text node score deleted. @ Sun May 19 13:02:30 2024
-Text node gameover deleted. @ Sun May 19 13:02:30 2024
-Sprite node sv_06908ebe_efce_036c_1c5e_556a6b372a18 deleted. @ Sun May 19 13:02:30 2024
-Text node the funky adventures_a6dfbb93_8625_269f_3b9e_5c335bef46b3 deleted. @ Sun May 19 13:02:30 2024
-Text node swanky velvet_fa0b17a0_a7c4_15de_4abd_fb83b6bc571e deleted. @ Sun May 19 13:02:30 2024
-Text node press start_99544c0d_8504_ed1f_a410_46fe9a8f5f67 deleted. @ Sun May 19 13:02:30 2024
-Text node pastaboss enterprise_8a3eaca9_70be_c341_bd26_2303c00ce4ba deleted. @ Sun May 19 13:02:30 2024
-Sprite node player deleted. @ Sun May 19 13:02:30 2024
-Sprite node background deleted. @ Sun May 19 13:02:30 2024
-Sprite node hooligan deleted. @ Sun May 19 13:02:30 2024
-Tilemap node map deleted. @ Sun May 19 13:02:30 2024
-Text node score deleted. @ Sun May 19 13:02:30 2024
-Project TestGame built successfully. @ Sun May 19 13:03:47 2024
-Sprite node Untitled created. @ Sun May 19 13:05:34 2024
-Sprite node Untitled created. @ Sun May 19 13:05:34 2024
-Sprite node Untitled created. @ Sun May 19 13:05:34 2024
-Sprite node Untitled created. @ Sun May 19 13:05:34 2024
-Sprite node Untitled created. @ Sun May 19 13:05:34 2024
-Sprite node Untitled created. @ Sun May 19 13:05:34 2024
-Tilemap node Untitled created. @ Sun May 19 13:05:34 2024
-Empty node Untitled created. @ Sun May 19 13:05:34 2024
-Text node Untitled created. @ Sun May 19 13:05:34 2024
-Scene parsed. @ Sun May 19 13:05:34 2024
-Text node Untitled created. @ Sun May 19 13:05:34 2024
-Scene parsed. @ Sun May 19 13:05:34 2024
-Sprite node Untitled created. @ Sun May 19 13:05:34 2024
-Text node Untitled created. @ Sun May 19 13:05:34 2024
-Text node Untitled created. @ Sun May 19 13:05:34 2024
-Text node Untitled created. @ Sun May 19 13:05:34 2024
-Text node Untitled created. @ Sun May 19 13:05:34 2024
-Scene parsed. @ Sun May 19 13:05:34 2024
-Sprite node Untitled created. @ Sun May 19 13:05:35 2024
-Sprite node Untitled created. @ Sun May 19 13:05:35 2024
-Sprite node Untitled created. @ Sun May 19 13:05:35 2024
-Tilemap node Untitled created. @ Sun May 19 13:05:35 2024
-Text node Untitled created. @ Sun May 19 13:05:35 2024
-Scene parsed. @ Sun May 19 13:05:35 2024
-Sprite node player deleted. @ Sun May 19 13:05:35 2024
-Sprite node background deleted. @ Sun May 19 13:05:35 2024
-Sprite node elf deleted. @ Sun May 19 13:05:35 2024
-Sprite node elf_8bcca20a_9fed_c0a0_976e_47657fca4452 deleted. @ Sun May 19 13:05:35 2024
-Sprite node elf_2bbfb34f_795b_8a46_784b_227fb08154d3 deleted. @ Sun May 19 13:05:35 2024
-Sprite node elf_95dd9dad_2bcf_f264_9b08_45d447441778 deleted. @ Sun May 19 13:05:35 2024
-Tilemap node map deleted. @ Sun May 19 13:05:35 2024
-Empty node Untitled_dedabf90_b598_fbf3_bfcd_3db9f085673b deleted. @ Sun May 19 13:05:35 2024
-Text node score deleted. @ Sun May 19 13:05:35 2024
-Text node gameover deleted. @ Sun May 19 13:05:35 2024
-Sprite node sv_cb740fb0_cfd9_19f4_df99_adbce94ecd61 deleted. @ Sun May 19 13:05:35 2024
-Text node the funky adventures_d13c5d8b_e590_f4ef_bc2d_dc515c6186b0 deleted. @ Sun May 19 13:05:35 2024
-Text node swanky velvet_bde7e828_d95e_ed09_3e29_24072ee5181e deleted. @ Sun May 19 13:05:35 2024
-Text node press start_50c9aa64_09e9_9c05_82eb_572f77dece6c deleted. @ Sun May 19 13:05:35 2024
-Text node pastaboss enterprise_f56ab1f4_3e5c_2912_3ec4_b8603a782d27 deleted. @ Sun May 19 13:05:35 2024
-Sprite node player deleted. @ Sun May 19 13:05:35 2024
-Sprite node background deleted. @ Sun May 19 13:05:35 2024
-Sprite node hooligan deleted. @ Sun May 19 13:05:35 2024
-Tilemap node map deleted. @ Sun May 19 13:05:35 2024
-Text node score deleted. @ Sun May 19 13:05:35 2024
-Project TestGame built successfully. @ Sun May 19 13:06:54 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Tilemap node Untitled created. @ Sun May 19 13:07:28 2024
-Empty node Untitled created. @ Sun May 19 13:07:28 2024
-Text node Untitled created. @ Sun May 19 13:07:28 2024
-Scene parsed. @ Sun May 19 13:07:28 2024
-Text node Untitled created. @ Sun May 19 13:07:28 2024
-Scene parsed. @ Sun May 19 13:07:28 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Text node Untitled created. @ Sun May 19 13:07:28 2024
-Text node Untitled created. @ Sun May 19 13:07:28 2024
-Text node Untitled created. @ Sun May 19 13:07:28 2024
-Text node Untitled created. @ Sun May 19 13:07:28 2024
-Scene parsed. @ Sun May 19 13:07:28 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Sprite node Untitled created. @ Sun May 19 13:07:28 2024
-Tilemap node Untitled created. @ Sun May 19 13:07:28 2024
-Text node Untitled created. @ Sun May 19 13:07:28 2024
-Scene parsed. @ Sun May 19 13:07:28 2024
-Sprite node player deleted. @ Sun May 19 13:07:28 2024
-Sprite node background deleted. @ Sun May 19 13:07:28 2024
-Sprite node elf deleted. @ Sun May 19 13:07:28 2024
-Sprite node elf_8bcca20a_9fed_c0a0_976e_47657fca4452 deleted. @ Sun May 19 13:07:28 2024
-Sprite node elf_2bbfb34f_795b_8a46_784b_227fb08154d3 deleted. @ Sun May 19 13:07:28 2024
-Sprite node elf_95dd9dad_2bcf_f264_9b08_45d447441778 deleted. @ Sun May 19 13:07:28 2024
-Tilemap node map deleted. @ Sun May 19 13:07:28 2024
-Empty node Untitled_dedabf90_b598_fbf3_bfcd_3db9f085673b deleted. @ Sun May 19 13:07:28 2024
-Text node score deleted. @ Sun May 19 13:07:28 2024
-Text node gameover deleted. @ Sun May 19 13:07:28 2024
-Sprite node sv_2231d2e4_ab4f_426c_6e70_2c18f4cc082a deleted. @ Sun May 19 13:07:28 2024
-Text node the funky adventures_3d8723c7_5896_548c_fadc_1fda2005276b deleted. @ Sun May 19 13:07:28 2024
-Text node swanky velvet_c7796eef_7be3_9782_4bbf_785d08aa30e6 deleted. @ Sun May 19 13:07:28 2024
-Text node press start_96199da7_3ab8_9915_22d3_0fe61f6ca523 deleted. @ Sun May 19 13:07:28 2024
-Text node pastaboss enterprise_6cd1f407_5cb2_8b83_ef76_e3a12e81b31b deleted. @ Sun May 19 13:07:28 2024
-Sprite node player deleted. @ Sun May 19 13:07:28 2024
-Sprite node background deleted. @ Sun May 19 13:07:28 2024
-Sprite node hooligan deleted. @ Sun May 19 13:07:28 2024
-Tilemap node map deleted. @ Sun May 19 13:07:28 2024
-Text node score deleted. @ Sun May 19 13:07:28 2024
-Project TestGame built successfully. @ Sun May 19 13:08:26 2024
-Sprite node sv deleted. @ Sun May 19 13:08:29 2024
-Text node the funky adventures deleted. @ Sun May 19 13:08:29 2024
-Text node swanky velvet deleted. @ Sun May 19 13:08:29 2024
-Text node press start deleted. @ Sun May 19 13:08:29 2024
-Text node pastaboss enterprise deleted. @ Sun May 19 13:08:29 2024
-GUI exited @ Sun May 19 13:08:29 2024
-Editor closed. @ Sun May 19 13:08:29 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sat Jun 29 12:01:32 2024
+IMGui Version: 1 @ Sat Jun 29 12:01:32 2024
+GUI launched. @ Sat Jun 29 12:01:32 2024
+Workspace reset. @ Sat Jun 29 12:01:36 2024
+Sprite node Untitled created. @ Sat Jun 29 12:01:37 2024
+Sprite node Untitled created. @ Sat Jun 29 12:01:37 2024
+Sprite node Untitled created. @ Sat Jun 29 12:01:37 2024
+Project fighter opened.
+Project root path set: C:\project_data\projects\fighter\ @ Sat Jun 29 12:01:37 2024
+Project saved: C:\project_data\projects\fighter\main.spaghyeti @ Sat Jun 29 12:02:32 2024
+copying: C:\project_data\projects\fighter\resources\assets\images\bearman.png~ to: C:\project_data\projects\fighter\build\assets\bearman.png~ @ Sat Jun 29 12:02:32 2024
+Sprite node Untitled created. @ Sat Jun 29 12:02:32 2024
+Sprite node Untitled created. @ Sat Jun 29 12:02:32 2024
+Sprite node Untitled created. @ Sat Jun 29 12:02:32 2024
+Scene parsed. @ Sat Jun 29 12:02:32 2024
+Sprite node bg_5203558a_d347_5eae_d504_ed2d99c061c1 deleted. @ Sat Jun 29 12:02:32 2024
+Sprite node player_40ee5e8e_c815_b367_11da_ae96139181f4 deleted. @ Sat Jun 29 12:02:32 2024
+Sprite node Untitled_83aaeac1_b01b_8795_4c47_4ef9a2828751_e60f707e_1b16_02d1_4549_2f35d4c8f5fb deleted. @ Sat Jun 29 12:02:32 2024
+Project fighter built successfully. @ Sat Jun 29 12:06:01 2024
+Sprite node bg deleted. @ Sat Jun 29 12:06:07 2024
+Sprite node player deleted. @ Sat Jun 29 12:06:07 2024
+Sprite node Untitled_83aaeac1_b01b_8795_4c47_4ef9a2828751 deleted. @ Sat Jun 29 12:06:07 2024
+GUI exited @ Sat Jun 29 12:06:07 2024
+Editor closed. @ Sat Jun 29 12:06:07 2024

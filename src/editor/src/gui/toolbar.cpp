@@ -222,15 +222,31 @@ void editor::GUI::ShowMenu()
     if (ImGui::BeginMenu("Options"))
     {
 
-        //build type
+        //build 
 
-        if (ImGui::BeginMenu("Build Type"))
+        if (ImGui::BeginMenu("Build"))
         {
-            if (ImGui::MenuItem("debug"))
-                Editor::buildType = "debug";
+            if (ImGui::BeginMenu("type")) 
+            {
+                if (ImGui::MenuItem("debug"))
+                    Editor::buildType = "debug";
 
-            if (ImGui::MenuItem("production"))
-                Editor::buildType = "production";
+                if (ImGui::MenuItem("production"))
+                    Editor::buildType = "production";
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("icon")) 
+            {
+
+                ImGui::ImageButton("texture button", (void*)(intptr_t)s_currentTexture, ImVec2(50, 50));
+
+                if (ImGui::MenuItem("Select Icon"))
+                    Editor::events.OpenFile();
+
+                ImGui::EndMenu();
+            }
 
             ImGui::EndMenu();
         }

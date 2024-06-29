@@ -1,6 +1,7 @@
 #include "./node.h"
 #include "../gui/gui.h"
 #include "../editor.h"
+#include "../assets/assets.h"
 #include "../../../../build/sdk/include/app.h"
 
 using namespace editor;
@@ -469,17 +470,18 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                         if (ImGui::BeginMenu("frames")) 
                         {
                             //apply frames
-
+ 
                             if (ImGui::Button("apply") && !this->framesApplied)
                             {
-                                this->framesApplied = true;
+                          
                                 this->frames.clear();
 
                                 for (int i = 0; i < this->frame; i++) 
                                     this->frames.push_back({ this->frameBuf1[i], this->frameBuf2[i], this->frameBuf3[i], this->frameBuf4[i], this->frameBuf5[i], this->frameBuf6[i]}); 
 
                                 this->RegisterFrames(); 
-                                this->spriteHandle->ReadSpritesheetData();
+                                this->framesApplied = true;
+                                this->spriteHandle->ReadSpritesheetData(); 
                                 this->spriteHandle->SetFrame(0);
 
                             }
@@ -505,13 +507,6 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                                         
                                         ImGui::PushID(i);
                                         
-                                        this->frameBuf1.push_back(0);
-                                        this->frameBuf2.push_back(0);
-                                        this->frameBuf3.push_back(0);
-                                        this->frameBuf4.push_back(0);
-                                        this->frameBuf5.push_back(1);
-                                        this->frameBuf6.push_back(1);
-
                                         if (ImGui::Button("-x") && this->frameBuf5[i] > 1) {
                                             this->framesApplied = false;
                                             this->frameBuf5[i]--;
@@ -578,7 +573,16 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                             }
 
                             if (ImGui::Button("add frame")) 
+                            {
+                                this->frameBuf1.push_back(0);
+                                this->frameBuf2.push_back(0);
+                                this->frameBuf3.push_back(0);
+                                this->frameBuf4.push_back(0);
+                                this->frameBuf5.push_back(1);
+                                this->frameBuf6.push_back(1);
+
                                 this->frame++;
+                            }
 
                             ImGui::SameLine();
 
@@ -592,7 +596,63 @@ void SpriteNode::Render(std::shared_ptr<Node> node)
                                 this->frameBuf4.pop_back();
                                 this->frameBuf5.pop_back();
                                 this->frameBuf6.pop_back();
+                                
                                 this->frame--;
+                            }
+
+                            //load frame data from file
+
+                            if (ImGui::BeginMenu("load frame data"))
+                            {
+                                for (const auto& asset : AssetManager::loadedAssets)
+                                {
+
+                                    std::string key = asset.first;
+                                    std::string path = asset.second;
+
+                                    key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
+                                    path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+
+                                    if (System::Utils::str_endsWith(path, ".json")) 
+                                    {
+
+                                        if (ImGui::MenuItem(key.c_str())) 
+                                        {
+
+                                            //parse json to extract frame data
+
+                                            std::ifstream JSON(path);
+
+                                            json data = json::parse(JSON);
+
+                                            //clear previous frames
+
+                                            this->frameBuf1.clear();
+                                            this->frameBuf2.clear();
+                                            this->frameBuf3.clear();
+                                            this->frameBuf4.clear();
+                                            this->frameBuf5.clear();
+                                            this->frameBuf6.clear();
+
+                                            if (data["frames"].size() > 1)
+                                                for (const auto& index : data["frames"]) 
+                                                {
+                                                    this->frameBuf1.push_back(index["frame"]["x"]);
+                                                    this->frameBuf2.push_back(index["frame"]["y"]);
+                                                    this->frameBuf3.push_back(index["frame"]["w"]);
+                                                    this->frameBuf4.push_back(index["frame"]["h"]);
+                                                    this->frameBuf5.push_back(1);
+                                                    this->frameBuf6.push_back(1);
+                                                    
+                                                    
+                                                };
+                                                
+                                            this->frame += data["frames"].size() - 1;
+                                        }
+                                    }
+                                }
+
+                                ImGui::EndMenu();
                             }
 
                             ImGui::EndMenu();

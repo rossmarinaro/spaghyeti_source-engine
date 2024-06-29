@@ -120,6 +120,9 @@ namespace System {
 				) 
 					return "data";
 
+                if (str_endsWith(path, ".ico")) 
+					return "icon";
+
 				return "";
 			} 
 				
