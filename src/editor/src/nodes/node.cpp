@@ -391,7 +391,7 @@ json Node::WriteData(std::shared_ptr<Node> node, const std::string& type)
 
         json layers = json::array();
 
-        for (int i = 0; i < tmn->layers.size(); ++i)
+        for (int i = 0; i < tmn->layers.size(); i++)
             layers.push_back({
                 { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
                 { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
@@ -408,7 +408,7 @@ json Node::WriteData(std::shared_ptr<Node> node, const std::string& type)
 
         json bodies = json::array();
 
-        for (int i = 0; i < tmn->bodies.size(); ++i) 
+        for (int i = 0; i < tmn->bodies.size(); i++) 
             bodies.push_back({
                 { "body_width", tmn->body_width.size() ? tmn->body_width[i] : 0 },
                 { "body_height", tmn->body_height.size() ? tmn->body_height[i] : 0 },
@@ -645,6 +645,7 @@ void Node::ReadData(json& data, const std::string& type, bool makeNode, void* sc
                     for (const auto& body : data["components"]["physics"]["bodies"]) 
                         if (makeNode)
                             sn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"], body["sensor"], body["pointer"]);
+
                         else 
                         {
                             sn->bodyX.push_back(body["bodyX"]);
@@ -710,14 +711,14 @@ void Node::ReadData(json& data, const std::string& type, bool makeNode, void* sc
             tmn->tile_height = data["tile_height"];
             tmn->layer = data["layer"];
 
-            if (data["layers"].size())
+            if (data["layers"].size()) 
                 for (const auto& layer : data["layers"]) {
                     tmn->layers.push_back({ layer["csv"]["key"], layer["csv"]["path"], layer["csv"]["texture"] });
                     tmn->spr_sheet_width.push_back(layer["frames x"]);
                     tmn->spr_sheet_height.push_back(layer["frames y"]);
                     tmn->depth.push_back(layer["depth"]);
                 }
-
+            
             //physics 
        
             if (data["components"]["physics"]["exists"]) 
@@ -733,6 +734,7 @@ void Node::ReadData(json& data, const std::string& type, bool makeNode, void* sc
                         for (int i = 0; i < tmn->bodies.size(); i++)
                             tmn->UpdateBody(i);
                     }
+
                     else {
                         tmn->bodyX.push_back(body["bodyX"]);
                         tmn->bodyY.push_back(body["bodyY"]);

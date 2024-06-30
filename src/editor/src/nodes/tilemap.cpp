@@ -11,7 +11,7 @@ TilemapNode::TilemapNode():
         m_layersApplied(false),
         m_mapApplied(false)
 { 
-    this->layer = 1;
+    this->layer = 0;
     this->map_width = 10;
     this->map_height = 10;
     this->tile_width = 64;
@@ -105,9 +105,9 @@ void TilemapNode::ApplyTilemap(bool clearPrevious, bool renderReversed)
 
         //load atlas frames from csv offsets
 
-        std::string key = this->layers[i][0],
-                    path = this->layers[i][1],
-                    texture = this->layers[i][2];
+        std::string key = this->layers[i][0], //csv file
+                    path = this->layers[i][1], //path
+                    texture = this->layers[i][2]; //image
 
         System::Resources::Manager::LoadFrames(texture, this->offset);
         System::Resources::Manager::LoadFile(key.c_str(), path.c_str());
@@ -342,8 +342,6 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                         
                         ImGui::PushID(i);
                        
-                        this->layers.push_back({ "", "", "" });
-
                         if (ImGui::BeginMenu("CSV: ")) 
                         {
 
@@ -409,8 +407,10 @@ void TilemapNode::Render(std::shared_ptr<Node> node)
                         ImGui::Text("applied");
                     }
 
-                    if (ImGui::Button("add layer"))
+                    if (ImGui::Button("add layer")) {
+                        this->layers.push_back({ "", "", "" });
                         this->layer++;
+                    }
 
                     ImGui::SameLine();
 

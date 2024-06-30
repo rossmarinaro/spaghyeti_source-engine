@@ -115,8 +115,10 @@ void Manager::LoadFile(const char* key, const char* path)
     else
         return;
 
-    if (System::Application::resources->m_file_assets.find(key) == System::Application::resources->m_file_assets.end())
-        System::Application::resources->m_file_assets.insert({ key, path });
+    if (System::Application::resources->m_file_assets.find(key) != System::Application::resources->m_file_assets.end())
+        UnLoadFile(key);
+    
+    System::Application::resources->m_file_assets.insert({ key, path });
 
 } 
 
@@ -126,8 +128,10 @@ void Manager::LoadFile(const char* key, const char* path)
 //load frames from vector of int arrays
 void Manager::LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames) {
 
-    if (System::Application::resources->atlases.find(key) == System::Application::resources->atlases.end())
-        System::Application::resources->atlases.insert( { key, frames } );
+    if (System::Application::resources->atlases.find(key) != System::Application::resources->atlases.end())
+        UnLoadFrames(key);
+
+    System::Application::resources->atlases.insert( { key, frames } );
  
 }
 
@@ -138,8 +142,10 @@ void Manager::LoadFrames(const std::string& key, const std::vector<std::array<in
 //load frames from file
 void Manager::LoadAtlas(const std::string& key, const char* path) {
 
-    if (System::Application::resources->atlas_paths.find(key) == System::Application::resources->atlas_paths.end())
-        System::Application::resources->atlas_paths.insert( { key, path } );
+    if (System::Application::resources->atlas_paths.find(key) != System::Application::resources->atlas_paths.end())
+        UnLoadAtlas(key);
+
+    System::Application::resources->atlas_paths.insert( { key, path } );
 }
 
 
@@ -149,8 +155,10 @@ void Manager::LoadAtlas(const std::string& key, const char* path) {
 //load animations from map of start / end pairs defined by key
 void Manager::LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims) {
 
-    if (System::Application::resources->anims.find(key) == System::Application::resources->anims.end())
-        System::Application::resources->anims.insert( { key, anims } );
+    if (System::Application::resources->anims.find(key) != System::Application::resources->anims.end())
+        UnLoadAnims(key);
+
+    System::Application::resources->anims.insert( { key, anims } );
 }
 
 //------------------------------------ load tilemaps
@@ -160,7 +168,9 @@ void Manager::LoadAnims(const std::string& key, const std::map<std::string, std:
 void Manager::LoadTilemap(const std::string& key, const std::vector<std::string>& data) {
     
     if (System::Application::resources->tilemap.find(key) == System::Application::resources->tilemap.end())
-        System::Application::resources->tilemap.insert({ key, data });
+        UnLoadTilemap(key);
+
+    System::Application::resources->tilemap.insert({ key, data });
 }
 
 
@@ -170,13 +180,12 @@ void Manager::LoadTilemap(const std::string& key, const std::vector<std::string>
 //load raw char array image / dimensions and bytes per pixel channel
 void Manager::LoadRawImage(const char* key, const char* arr, int width, int height, int channel) {
 
-    if (System::Application::resources->image_dimensions_and_channels.find(key) == System::Application::resources->image_dimensions_and_channels.end())
-    {
-        System::Application::resources->image_dimensions_and_channels.insert( { key, { width, height, channel } } );
-        System::Application::resources->m_raw_image_assets.insert({ key, arr });
-        System::Application::resources->m_raw_assets.insert({key, arr});
-    }
-
+    if (System::Application::resources->image_dimensions_and_channels.find(key) != System::Application::resources->image_dimensions_and_channels.end())
+        UnLoadRawImage(key);
+    
+    System::Application::resources->image_dimensions_and_channels.insert( { key, { width, height, channel } } );
+    System::Application::resources->m_raw_image_assets.insert({ key, arr });
+    System::Application::resources->m_raw_assets.insert({key, arr});
 }
 
 //------------------------------------- 
@@ -185,12 +194,12 @@ void Manager::LoadRawImage(const char* key, const char* arr, int width, int heig
 //load raw char array audio / size in bytes
 void Manager::LoadRawAudio(const char* key, const char* arr, unsigned int bytes) 
 {
-    if (System::Application::resources->audio_size.find(key) == System::Application::resources->audio_size.end())
-    {
-        System::Application::resources->audio_size.insert( { key, bytes } ); 
-        System::Application::resources->m_raw_audio_assets.insert({ key, arr });
-        System::Application::resources->m_raw_assets.insert({ key, arr });
-    } 
+    if (System::Application::resources->audio_size.find(key) != System::Application::resources->audio_size.end())
+        UnLoadRawAudio(key);
+    
+    System::Application::resources->audio_size.insert( { key, bytes } ); 
+    System::Application::resources->m_raw_audio_assets.insert({ key, arr });
+    System::Application::resources->m_raw_assets.insert({ key, arr }); 
 
 }
 
