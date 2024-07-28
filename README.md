@@ -34,7 +34,7 @@ Test Game:
 
 Written by Ross Marinaro - Pastaboss Enterprise 🍝👌
 
-![image info](./icon/icon.ico)  
+![image info](./src/editor/icon/icon.ico)  
 
 ----------------------------------------------------------
 
