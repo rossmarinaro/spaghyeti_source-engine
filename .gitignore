@@ -1,0 +1,13 @@
+/build/games
+/build/include/vendors
+/build/spaghyeditor.exe
+/build/spaghyeditor.dll
+/build/sdk/spaghyeti-debug.dll
+/build/sdk/spaghyeti-release.a
+/build/sdk/spaghyeti.a
+/build/sdk/spaghyeti-web.a
+/build/imgui.ini
+/build/Logs.txt
+
+/games/TestGame/build
+/games/fighter/build

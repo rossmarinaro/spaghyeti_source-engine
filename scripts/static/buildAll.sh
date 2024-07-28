@@ -1,0 +1,1 @@
+py buildCore.py 0 && py buildCore.py 1

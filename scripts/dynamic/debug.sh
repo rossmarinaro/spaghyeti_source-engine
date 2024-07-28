@@ -1,0 +1,1 @@
+py buildCore.py "debug" 1

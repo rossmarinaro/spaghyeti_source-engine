@@ -1,0 +1,42 @@
+body {
+    font-family: arial;
+    margin: 0;
+    padding: none;
+    background-color: #564826;
+    overflow: hidden;
+}
+
+canvas {
+    z-index: 1;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    overflow: hidden; 
+    border: 0.25em solid black;
+    background-color: #000;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+@media (orientation: portrait) 
+{
+
+    canvas {
+        margin-top: 50%;
+    }
+}
+
+  
+@media (orientation: landscape) and (min-width: 900px)
+{
+    canvas {
+        margin-top: 1.5%;
+    }
+}
+

@@ -1,0 +1,1 @@
+cd static && ./buildAll.sh && cd ../dynamic && ./buildAll.sh

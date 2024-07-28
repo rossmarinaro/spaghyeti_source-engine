@@ -1,0 +1,1 @@
+py buildCore.py "release" 0
