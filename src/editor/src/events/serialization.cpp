@@ -236,13 +236,13 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     //loaded data
 
-    if (data["spritesheets"].size())
+    if (data.contains("spritesheets"))
         for (const auto& spritesheet : data["spritesheets"])
             Editor::spritesheets.push_back(spritesheet);
 
     //global variables
     
-    if (data["globals"].size())
+    if (data.contains("globals"))
     {
         for (const auto& global : data["globals"])
             Editor::globals.push_back({ global["key"], global["type"] });
@@ -310,13 +310,13 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     //loaded data
 
-    if (data["spritesheets"].size()) 
+    if (data.contains("spritesheets")) 
         for (const auto& spritesheet : data["spritesheets"])
             scene->spritesheets.push_back(spritesheet);
 
     //global variables
     
-    if (data["globals"].size()) {
+    if (data.contains("globals")) {
         
         for (const auto& global : data["globals"])
             scene->globals.push_back({ global["key"], global["type"] });

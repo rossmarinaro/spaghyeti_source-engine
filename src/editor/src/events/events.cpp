@@ -570,8 +570,18 @@ void EventListener::BuildAndRun()
     else if (Editor::platform == "WebGL")
     {
 
-        std::string name_upper = s_currentProject;
+        const std::string use_pthreads = Editor::use_pthreads ? "1" : "0",
+                          shared_memory = Editor::shared_memory ? "1" : "0",
+                          allow_memory_growth = Editor::allow_memory_growth ? "1" : "0",
+                          allow_exception_catching = Editor::allow_memory_growth ? "1" : "0",
+                          export_all = Editor::export_all ? "1" : "0",
+                          wasm = Editor::wasm ? "1" : "0",
+                          gl_assertions = Editor::gl_assertions ? "1" : "0",
+                          use_webgl2 = Editor::use_webgl2 ? "1" : "0",
+                          full_es3 = Editor::full_es3 ? "1" : "0";
+                        
 
+        std::string name_upper = s_currentProject;
         transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
         if (!std::filesystem::exists(web))
@@ -591,25 +601,26 @@ void EventListener::BuildAndRun()
         web_makeFile << "COMPILER_FLAGS = -O3 -o dist/index.html\n\n";
 
         web_makeFile << "LINKER_FLAGS = \\\n";
-        web_makeFile << "   -sEXPORT_ALL=1 \\\n";
-        web_makeFile << "   -sWASM=1 \\\n";
+        web_makeFile << "   -sEXPORT_ALL=" << export_all << " \\\n";
+        web_makeFile << "   -sWASM=" << wasm << "\\\n";
+        web_makeFile << "   -sGL_ASSERTIONS=" << gl_assertions << "\\\n";
+        web_makeFile << "   -sUSE_WEBGL2=" << use_webgl2 << " \\\n";
+        web_makeFile << "   -sFULL_ES3=" << full_es3 << " \\\n";
+        web_makeFile << "   -sUSE_PTHREADS=" << use_pthreads << " \\\n";
+        web_makeFile << "   -sSHARED_MEMORY=" << shared_memory << " \\\n";
+        web_makeFile << "   -sALLOW_MEMORY_GROWTH=" << allow_memory_growth << " \\\n";
+        web_makeFile << "   -sNO_DISABLE_EXCEPTION_CATCHING=" << allow_exception_catching << " \\\n";
+        web_makeFile << "   -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency \\\n";
+        web_makeFile << "   -sUSE_GLFW=3 \\\n";
         web_makeFile << "   -sLEGACY_GL_EMULATION=0 \\\n";
         web_makeFile << "   -sASSERTIONS \\\n";
-        web_makeFile << "   -sGL_ASSERTIONS=1 \\\n";
         web_makeFile << "   -sMAX_WEBGL_VERSION=3 \\\n";
         web_makeFile << "   -sMIN_WEBGL_VERSION=0 \\\n";
-        web_makeFile << "   -sUSE_WEBGL2=1 \\\n";
-        web_makeFile << "   -sFULL_ES3=1 \\\n";
-        web_makeFile << "   -sUSE_GLFW=3 \\\n";
         web_makeFile << "   -sUSE_LIBPNG=1 \\\n";
         web_makeFile << "   -sUSE_ZLIB \\\n";
         web_makeFile << "   -sASYNCIFY \\\n";
-        web_makeFile << "   -sUSE_PTHREADS=1 \\\n";
         web_makeFile << "   -sPTHREAD_POOL_SIZE_STRICT=28 \\\n";
-        web_makeFile << "   -sSHARED_MEMORY=1 \\\n";
-        //web_makeFile << "   -sALLOW_MEMORY_GROWTH=1 \\\n";
         //web_makeFile << "   -sTOTAL_STACK=512mb \\\n";
-        web_makeFile << " -sINITIAL_MEMORY=33554432 \\\n";
         web_makeFile << "   -Wl,--whole-archive \\\n";
         
         web_makeFile << "   --pre-js pre-js.js \\\n";

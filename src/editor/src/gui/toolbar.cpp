@@ -398,6 +398,34 @@ void editor::GUI::ShowMenu()
                 ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("configurations")) 
+            {
+
+                ImGui::Text(Editor::platform.c_str());
+
+                ImGui::Separator();
+
+                if (Editor::platform == "WebGL")
+                {
+                    ImGui::Checkbox("use pthreads", &Editor::use_pthreads);
+                    ImGui::Checkbox("shared memory", &Editor::shared_memory);
+                    ImGui::Checkbox("allow memory growth", &Editor::allow_memory_growth);
+                    ImGui::Checkbox("allow exception catching", &Editor::allow_exception_catching);
+                    ImGui::Checkbox("export all", &Editor::export_all);
+                    ImGui::Checkbox("WASM", &Editor::wasm);
+                    ImGui::Checkbox("GL assertions", &Editor::gl_assertions);
+                    ImGui::Checkbox("use WebGL2", &Editor::use_webgl2);
+                    ImGui::Checkbox("full ES3", &Editor::full_es3);
+                }
+
+                else 
+                    ImGui::Text("N/A");
+                
+
+                ImGui::EndMenu();
+            }
+
+
             ImGui::EndMenu();
         }
 

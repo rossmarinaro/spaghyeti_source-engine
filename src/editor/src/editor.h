@@ -49,7 +49,16 @@ namespace editor {
 			static inline bool projectOpen = false,
                                globals_applied = false,
 							   gravity_continuous = true, 
-							   gravity_sleeping = true;
+							   gravity_sleeping = true,
+                               use_pthreads = true,
+                               shared_memory = true,
+                               allow_memory_growth = true,
+                               allow_exception_catching = true,
+                               export_all = true,
+                               wasm = true,
+                               gl_assertions = true,
+                               use_webgl2 = true,
+                               full_es3 = true;
 
 			static inline EventListener events;
 			
