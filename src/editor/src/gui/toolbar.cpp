@@ -186,118 +186,105 @@ void editor::GUI::ShowSettings()
         ImGui::EndMenu();
     }
 
-    //spritesheet loader
+    //data loader
         
     if (ImGui::BeginMenu("Load Data"))
     {
 
         if (ImGui::BeginMenu("spritesheets"))
         {
+            int i = 0;
 
-            if (ImGui::BeginMenu("loaded spritesheets")) 
-            {
-                if (Editor::spritesheets.size())
-                    for (const auto& spritesheet : Editor::spritesheets)
-                        ImGui::MenuItem(spritesheet.c_str());
-
-                else 
-                    ImGui::Text("no spritesheets loaded.");
-
-                ImGui::EndMenu();
-            }
-
-            ImGui::Separator();
-
-            if (ImGui::BeginMenu("unload spritesheet")) 
-            {
-                
-                if (!Editor::spritesheets.size())
-                    ImGui::Text("no spritesheets loaded.");
-
-                else
-                    for (const auto& spritesheet : Editor::spritesheets)
-                        if (ImGui::MenuItem(spritesheet.c_str())) 
-                        {
-                            auto it = std::find(Editor::spritesheets.begin(), Editor::spritesheets.end(), spritesheet);
-
-                            if (it != Editor::spritesheets.end()) {
-                                System::Resources::Manager::UnLoadFrames(spritesheet);
-                                Editor::spritesheets.erase(it);
-                            }
-                        }
-
-                ImGui::EndMenu();
-            }
-
-            ImGui::Separator();
-
-            if (ImGui::BeginMenu("browse spritesheets")) 
+            for (auto& spritesheet : Editor::spritesheets)
             {
 
-                for (const auto& asset : AssetManager::loadedAssets)
+                ImGui::PushID(i);
+
+                i++;
+
+                ImGui::Separator();
+
+                std::string alias_key = spritesheet.first;
+
+                ImGui::InputText("key", &alias_key);
+
+                spritesheet.first = alias_key;
+
+                ImGui::SameLine();
+
+                if (ImGui::BeginCombo("path", spritesheet.second.c_str()))
                 {
 
-                    std::string key = asset.first;
-                    std::string path = asset.second;
-
-                    key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
-                    path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
-
-                    if (System::Utils::str_endsWith(path, ".json")) 
+                    for (const auto& asset : AssetManager::loadedAssets)
                     {
 
-                        auto it = std::find(Editor::spritesheets.begin(), Editor::spritesheets.end(), key);
+                        std::string key = asset.first;
+                        std::string path = asset.second;
 
-                        if (ImGui::MenuItem(key.c_str()) && it == Editor::spritesheets.end()) 
+                        key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
+                        path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+
+                        if (System::Utils::str_endsWith(path, ".json")) 
                         {
 
-                            //parse json to extract frame data
-
-                            std::ifstream JSON(path);
-
-                            if (!JSON.good()) 
-                                Editor::Log("Error parsing. Maybe file is in an inappropriate folder?");
-
-                            else 
+                            if (ImGui::MenuItem(key.c_str())) 
                             {
 
-                                json data = json::parse(JSON);
+                                //parse json to extract frame data
 
-                                std::vector<std::array<int, 6>> framesToPush;
+                                std::ifstream JSON(path);
 
-                                if (data["frames"].size() > 1)
-                                    for (const auto& index : data["frames"]) 
-                                    {
-                                        int x = index["frame"]["x"],
-                                            y = index["frame"]["y"];
+                                if (!JSON.good()) 
+                                    Editor::Log("Error parsing. Maybe file is in an inappropriate folder?");
 
-                                        float width = index["frame"]["w"],
-                                              height = index["frame"]["h"];
-                                
-                                        framesToPush.push_back({ x, y, width, height, 1, 1 });
+                                else 
+                                {
 
-                                    };
-                
-                                System::Resources::Manager::LoadFrames(key, framesToPush);
-                                Editor::spritesheets.push_back(key);
+                                    json data = json::parse(JSON);
 
+                                    std::vector<std::array<int, 6>> framesToPush;
+
+                                    if (data["frames"].size() > 1)
+                                        for (const auto& index : data["frames"]) 
+                                        {
+                                            int x = index["frame"]["x"],
+                                                y = index["frame"]["y"];
+
+                                            float width = index["frame"]["w"],
+                                                  height = index["frame"]["h"];
+                                    
+                                            framesToPush.push_back({ x, y, width, height, 1, 1 });
+
+                                        };
+                    
+                                    System::Resources::Manager::LoadFrames(key, framesToPush);
+                                    spritesheet.second = path;
+
+                                }
                             }
                         }
                     }
+
+                    ImGui::EndCombo();
                 }
 
-                ImGui::EndMenu();
+                ImGui::Separator();
+
+                ImGui::PopID();
             }
 
+            if (ImGui::Button("add"))
+                Editor::spritesheets.push_back({ "", "" });
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("delete"))
+                Editor::spritesheets.pop_back();
+    
             ImGui::EndMenu();
             
         }
 
-        if (ImGui::BeginMenu("animations")) 
-        {
-            ImGui::Text("no animations loaded.");
-            ImGui::EndMenu();
-        }
 
         ImGui::EndMenu();
 

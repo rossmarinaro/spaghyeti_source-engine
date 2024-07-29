@@ -65,7 +65,8 @@ namespace editor {
 			static inline System::Game* game;
 			
 			static inline std::vector<std::pair<std::string, std::string>> globals;
-            static inline std::vector<std::string> spritesheets;
+            static inline std::vector<std::pair<std::string, std::string>> spritesheets;
+
 			static inline std::vector<std::string> scenes;
 
 			static inline std::string selectedAsset,

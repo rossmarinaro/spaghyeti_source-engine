@@ -127,8 +127,8 @@ void EventListener::Serialize(json& data)
     json spritesheets = json::array();
 
     if (Editor::spritesheets.size())
-        for (int i = 0; i < Editor::spritesheets.size(); i++)
-            spritesheets.push_back(Editor::spritesheets[i]);
+        for (const auto& spritesheet : Editor::spritesheets)
+            spritesheets.push_back({ { "key", spritesheet.first }, { "path", spritesheet.second } });
 
     data["spritesheets"] = spritesheets;
 
@@ -238,7 +238,7 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     if (data.contains("spritesheets"))
         for (const auto& spritesheet : data["spritesheets"])
-            Editor::spritesheets.push_back(spritesheet);
+            Editor::spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
 
     //global variables
     
@@ -312,7 +312,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     if (data.contains("spritesheets")) 
         for (const auto& spritesheet : data["spritesheets"])
-            scene->spritesheets.push_back(spritesheet);
+            scene->spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
 
     //global variables
     

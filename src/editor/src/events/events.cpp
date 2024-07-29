@@ -801,7 +801,7 @@ void EventListener::BuildAndRun()
 
         std::ostringstream preload_queue, global_queue, command_queue;
 
-        //load spritesheets
+        //load spritesheets (loaded data)
 
         if (target.second->spritesheets.size())
         {
@@ -813,13 +813,10 @@ void EventListener::BuildAndRun()
                 for (const auto& asset : AssetManager::loadedAssets)
                 {
 
-                    std::string key = asset.first,
-                                path = asset.second;
-
-                    key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
+                    std::string path = asset.second;
                     path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
 
-                    if (System::Utils::str_endsWith(path, ".json") && key == spritesheet) 
+                    if (System::Utils::str_endsWith(path, ".json") && path == spritesheet.second) 
                     {
                         std::ifstream JSON(path);
                         json data = json::parse(JSON);
@@ -835,16 +832,16 @@ void EventListener::BuildAndRun()
 
                                     framesToLoad.push_back("{" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", 1, 1}");
                                 }
-                                
+                             
                         if (!framesToLoad.empty()) 
                         {
                             std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
                             frame_oss << framesToLoad.back();
 
                             for (const auto& spritesheet : target.second->spritesheets)
-                                if (std::find(loadedFrames.begin(), loadedFrames.end(), spritesheet) == loadedFrames.end()) {
-                                    preload_queue << "  System::Resources::Manager::LoadFrames(\"" + spritesheet + "\", {" + frame_oss.str() + "});\n";
-                                    loadedFrames.push_back(spritesheet);
+                                if (std::find(loadedFrames.begin(), loadedFrames.end(), spritesheet.first) == loadedFrames.end()) {
+                                    preload_queue << "  System::Resources::Manager::LoadFrames(\"" + spritesheet.first + "\", {" + frame_oss.str() + "});\n";
+                                    loadedFrames.push_back(spritesheet.first);
                                 }
                         }
                     }
@@ -852,18 +849,10 @@ void EventListener::BuildAndRun()
                 }
         }
 
-        //load anims
-
-        // if (target.second->animations.size())
-        // {
-            //std::ostringstream anim_oss;
-            //std::vector<std::string> animsToLoad;
-        // }
-
         //preload files in first scene 
 
         if (target.first == Editor::events.s_currentScene) 
-            preload_queue << asset_queue.str() << "     System::Resources::Manager::RegisterTextures();\n";
+            preload_queue << asset_queue.str() << "   System::Resources::Manager::RegisterTextures();\n";
 
         //set global vars
 
@@ -913,242 +902,242 @@ void EventListener::BuildAndRun()
         command_queue << "   this->GetContext().physics->continuous = " + phys_isCont + ";\n";
         command_queue << "   this->GetContext().physics->sleeping = " + phys_isSleeping + ";\n";
         command_queue << "   this->GetContext().physics->SetGravity(" + std::to_string(target.second->gravityX) + ", " + std::to_string(target.second->gravityY) + ");\n";
-        
+    
                 
         //command data, iterate over nodes and create objects
 
         const std::function<void(std::vector<std::shared_ptr<Node>>&)> writeNodes = [&](std::vector<std::shared_ptr<Node>>& arr) -> void { 
 
-        for (const auto& node : arr)
-        {
-
-            //load shaders
-
-            if (node->HasComponent("Shader") && node->shader.first.length())
-                preload_queue << "  Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\");\n";
-
-
-            //--------------- sprite
-
-            if (node->type == "Sprite")
+            for (const auto& node : arr)
             {
-                std::ostringstream frame_oss;
-                std::vector<std::string> framesToLoad;
 
-                std::ostringstream anim_oss;
-                std::vector<std::string> animsToLoad;
+                //load shaders
 
-                auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
+                if (node->HasComponent("Shader") && node->shader.first.length())
+                    preload_queue << "  Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\");\n";
 
-                //load frames
 
-                for (const auto& frame : sn->frames)
-                    framesToLoad.push_back("{" + std::to_string(frame.x) + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + ", " + std::to_string(frame.factorX) + ", " + std::to_string(frame.factorY) + "}");
+                //--------------- sprite
 
-                if (!framesToLoad.empty()) 
+                if (node->type == "Sprite")
                 {
-                    std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
-                    frame_oss << framesToLoad.back();
-
-                    if (sn->frames.size() > 1 && std::find(loadedFrames.begin(), loadedFrames.end(), sn->key) == loadedFrames.end()) {
-                        loadedFrames.push_back(sn->key);
-                        preload_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->key + "\", {" + frame_oss.str() + "});\n";
-                    }
-                        
-                }
-
-                //load animations
-
-                for (const auto& anim : sn->animations)
-                    animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
-
-                if (!animsToLoad.empty() && std::find(loadedAnims.begin(), loadedAnims.end(), sn->key) == loadedAnims.end()) 
-                {
-                    std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
-                    anim_oss << animsToLoad.back();
-
-                    preload_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->key + "\", {" + anim_oss.str() + "});\n";
-
-                    loadedAnims.push_back(sn->key);
-                }
-
-                if (sn->make_UI) 
-                    command_queue << "   auto sprite_" + node->ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
-                
-                else  
-                    command_queue << "   auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
-        
-                //sprite configurations
-
-                command_queue << "   sprite_" + node->ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
-                command_queue << "   sprite_" + node->ID + "->SetRotation(" + std::to_string(sn->rotation) + ");\n";
-                command_queue << "   sprite_" + node->ID + "->SetTint({ " + std::to_string(sn->tint.x) + ", " + std::to_string(sn->tint.y) + ", " + std::to_string(sn->tint.z) + " });\n";
-                command_queue << "   sprite_" + node->ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
-                command_queue << "   sprite_" + node->ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
-                command_queue << "   sprite_" + node->ID + "->SetAlpha(" + std::to_string(sn->alpha) + ");\n";
-
-                const std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
-
-                    command_queue << "   sprite_" + node->ID + "->texture.Filter_Min = " + filtering + ";\n";
-                    command_queue << "   sprite_" + node->ID + "->texture.Filter_Max = " + filtering + ";\n";
-
-                    if (sn->lock_in_place) {
-                        command_queue << "   sprite_" + node->ID + "->shader = Shader::GetShader(\"UI\");\n";
-                        command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
-                    }
-
-                    command_queue << "   sprite_" + node->ID + "->name = \"" + node->name + "\";\n"; 
-
-                    //physics bodies
-
-                    if (sn->HasComponent("Physics"))
-                    {
-                        for (int i = 0; i < sn->bodies.size(); i++) 
-                            command_queue << "   sprite_" + node->ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX + sn->bodyX[i]) + ", " + std::to_string(sn->positionY + sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + " } });\n"; 
-
-                        command_queue << "   for (const auto& body : sprite_" + node->ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
-
-                    }
-            
-                    //animator
-
-                    if (sn->HasComponent("Animator") && sn->animations.size()) 
-                        command_queue << "   sprite_" + node->ID + "->anims = System::Resources::Manager::GetAnimations(\"" + sn->key + "\");\n";
-        
-                    //shader
-
-                    if (sn->HasComponent("Shader") && sn->shader.first.length()) 
-                        command_queue << "   sprite_" + node->ID + "->shader = Shader::GetShader(\"" + sn->shader.first + "\");\n";
-
-                }
-
-                //--------------- text
-
-                if (node->type == "Text")
-                {          
-
-                    auto tn = std::dynamic_pointer_cast<TextNode>(node);
-
-                    command_queue << "   auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ");\n";
-
-                    command_queue << "   text_" + node->ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
-                    command_queue << "   text_" + node->ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";
-                    command_queue << "   text_" + node->ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
-                    command_queue << "   text_" + node->ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
-                    command_queue << "   text_" + node->ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
-
-                    command_queue << "   text_" + node->ID + "->name = \"" + node->name + "\";\n";
-        
-                }
-
-                //--------------- empty
-
-                if (node->type == "Empty")
-                {
-
-                    auto en = std::dynamic_pointer_cast<EmptyNode>(node);
-
-                    if (en->m_debugGraphic)
-                    {
-                        //TODO: set shape
-
-                        if (en->currentShape == "rectangle") {
-                            command_queue << "   empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
-                            command_queue << "   empty_" + node->ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
-                        }
-
-                        if (en->currentShape.length()) {
-                            command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->m_debugGraphic->tint.r) + ", " + std::to_string(en->m_debugGraphic->tint.g) + ", " + std::to_string(en->m_debugGraphic->tint.b) + "});\n";
-                            command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->alpha) + ");\n";
-                        }
-                    }
-
-                    else 
-                        command_queue << "   std::shared_ptr<Entity> empty_" + node->ID + " = System::Game::CreateEntity();\n\t";
-
-                    command_queue << "   empty_" + node->ID + "->name = \"" + node->name + "\";\n";
-
-                    //shader
-
-                    if (en->HasComponent("Shader") && en->shader.first.length()) 
-                        command_queue << "   empty_" + node->ID + "->shader = Shader::GetShader(\"" + en->shader.first + "\");\n";
-
-                }
-
-                //--------------- tilemap
-
-                if (node->type == "Tilemap")
-                {
-
                     std::ostringstream frame_oss;
                     std::vector<std::string> framesToLoad;
 
-                    auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
+                    std::ostringstream anim_oss;
+                    std::vector<std::string> animsToLoad;
+
+                    auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
                     //load frames
 
-                    std::ostringstream offset_oss;
-                    std::vector<std::string> offsetsToLoad;
+                    for (const auto& frame : sn->frames)
+                        framesToLoad.push_back("{" + std::to_string(frame.x) + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + ", " + std::to_string(frame.factorX) + ", " + std::to_string(frame.factorY) + "}");
 
-                    if (tmn->offset.size()) 
+                    if (!framesToLoad.empty()) 
                     {
-                        for (const auto& offset : tmn->offset)
-                            offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + ", " + std::to_string(offset[4]) + ", " + std::to_string(offset[5]) + "}");
-                    
-                        if (!offsetsToLoad.empty()) {
-                            std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
-                            offset_oss << offsetsToLoad.back();
-                        } 
-                    }
+                        std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
+                        frame_oss << framesToLoad.back();
 
-                    if (tmn->layers.size())
-                    {
-                        for (int i = 0; i < tmn->layer; i++)
-                        {
-
-                            if (tmn->layers[i][2].length() && std::find(loadedFrames.begin(), loadedFrames.end(), tmn->layers[i][2]) == loadedFrames.end()) {
-                                preload_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
-                                loadedFrames.push_back(tmn->layers[i][2]);
-                            }
+                        if (sn->frames.size() > 1 && std::find(loadedFrames.begin(), loadedFrames.end(), sn->key) == loadedFrames.end()) {
+                            loadedFrames.push_back(sn->key);
+                            preload_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->key + "\", {" + frame_oss.str() + "});\n";
+                        }
                             
-                            if (tmn->layers[i][0].length()) {
-                                preload_queue << "  System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
-                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
-                            }
+                    }
+
+                    //load animations
+
+                    for (const auto& anim : sn->animations)
+                        animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
+
+                    if (!animsToLoad.empty() && std::find(loadedAnims.begin(), loadedAnims.end(), sn->key) == loadedAnims.end()) 
+                    {
+                        std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
+                        anim_oss << animsToLoad.back();
+
+                        preload_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->key + "\", {" + anim_oss.str() + "});\n";
+
+                        loadedAnims.push_back(sn->key);
+                    }
+
+                    if (sn->make_UI) 
+                        command_queue << "   auto sprite_" + node->ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                    
+                    else  
+                        command_queue << "   auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+            
+                    //sprite configurations
+
+                    command_queue << "   sprite_" + node->ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetRotation(" + std::to_string(sn->rotation) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetTint({ " + std::to_string(sn->tint.x) + ", " + std::to_string(sn->tint.y) + ", " + std::to_string(sn->tint.z) + " });\n";
+                    command_queue << "   sprite_" + node->ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetAlpha(" + std::to_string(sn->alpha) + ");\n";
+
+                    const std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
+
+                        command_queue << "   sprite_" + node->ID + "->texture.Filter_Min = " + filtering + ";\n";
+                        command_queue << "   sprite_" + node->ID + "->texture.Filter_Max = " + filtering + ";\n";
+
+                        if (sn->lock_in_place) {
+                            command_queue << "   sprite_" + node->ID + "->shader = Shader::GetShader(\"UI\");\n";
+                            command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
                         }
 
-                        //create map if layers are defined
+                        command_queue << "   sprite_" + node->ID + "->name = \"" + node->name + "\";\n"; 
 
-                        if (tmn->layers[0][0].length()) {
-                            command_queue << "   auto map_" + node->ID + " = System::Game::CreateEntity(\"" + "tilemap" + "\");\n\t";
-                            command_queue << "   map_" + node->ID + "->name = \"" + tmn->name + "\";\n";
+                        //physics bodies
+
+                        if (sn->HasComponent("Physics"))
+                        {
+                            for (int i = 0; i < sn->bodies.size(); i++) 
+                                command_queue << "   sprite_" + node->ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX + sn->bodyX[i]) + ", " + std::to_string(sn->positionY + sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + " } });\n"; 
+
+                            command_queue << "   for (const auto& body : sprite_" + node->ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
+
                         }
+                
+                        //animator
+
+                        if (sn->HasComponent("Animator") && sn->animations.size()) 
+                            command_queue << "   sprite_" + node->ID + "->anims = System::Resources::Manager::GetAnimations(\"" + sn->key + "\");\n";
+            
+                        //shader
+
+                        if (sn->HasComponent("Shader") && sn->shader.first.length()) 
+                            command_queue << "   sprite_" + node->ID + "->shader = Shader::GetShader(\"" + sn->shader.first + "\");\n";
 
                     }
 
-                    //static physics bodies
+                    //--------------- text
 
-                    if (tmn->HasComponent("Physics") && tmn->bodies.size())
-                        for (int i = 0; i < tmn->bodies.size(); i++)    
-                            command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i] + tmn->body_width[i] / 2) + ", " + std::to_string(tmn->bodyY[i] + tmn->body_height[i] / 2) + ", " + std::to_string(tmn->body_width[i] / 2) + ", " + std::to_string(tmn->body_height[i] / 2) + ");\n";
+                    if (node->type == "Text")
+                    {          
 
-                } 
+                        auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
-                //--------------- audio
+                        command_queue << "   auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ");\n";
 
-                if (node->type == "Audio")
-                {
+                        command_queue << "   text_" + node->ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
+                        command_queue << "   text_" + node->ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";
+                        command_queue << "   text_" + node->ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
+                        command_queue << "   text_" + node->ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
+                        command_queue << "   text_" + node->ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
 
-                    auto an = std::dynamic_pointer_cast<AudioNode>(node);
+                        command_queue << "   text_" + node->ID + "->name = \"" + node->name + "\";\n";
+            
+                    }
 
-                    std::string loop = an->loop ? "true" : "false";
+                    //--------------- empty
 
-                    command_queue << "   System::Audio::play(\"" + an->audio_source_name + "\", " + loop + ", " + std::to_string(an->volume) + ");\n";
+                    if (node->type == "Empty")
+                    {
 
-                    command_queue << "   std::shared_ptr<Entity> audio_" + node->ID + " = System::Game::CreateEntity(\"" + "audio" + "\");\n\t";
-                    command_queue << "   audio_" + node->ID + "->name = \"" + an->name + "\";\n";
-                    
-                }
+                        auto en = std::dynamic_pointer_cast<EmptyNode>(node);
+
+                        if (en->m_debugGraphic)
+                        {
+                            //TODO: set shape
+
+                            if (en->currentShape == "rectangle") {
+                                command_queue << "   empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
+                                command_queue << "   empty_" + node->ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
+                            }
+
+                            if (en->currentShape.length()) {
+                                command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->m_debugGraphic->tint.r) + ", " + std::to_string(en->m_debugGraphic->tint.g) + ", " + std::to_string(en->m_debugGraphic->tint.b) + "});\n";
+                                command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->alpha) + ");\n";
+                            }
+                        }
+
+                        else 
+                            command_queue << "   std::shared_ptr<Entity> empty_" + node->ID + " = System::Game::CreateEntity();\n\t";
+
+                        command_queue << "   empty_" + node->ID + "->name = \"" + node->name + "\";\n";
+
+                        //shader
+
+                        if (en->HasComponent("Shader") && en->shader.first.length()) 
+                            command_queue << "   empty_" + node->ID + "->shader = Shader::GetShader(\"" + en->shader.first + "\");\n";
+
+                    }
+
+                    //--------------- tilemap
+
+                    if (node->type == "Tilemap")
+                    {
+
+                        std::ostringstream frame_oss;
+                        std::vector<std::string> framesToLoad;
+
+                        auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
+
+                        //load frames
+
+                        std::ostringstream offset_oss;
+                        std::vector<std::string> offsetsToLoad;
+
+                        if (tmn->offset.size()) 
+                        {
+                            for (const auto& offset : tmn->offset)
+                                offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + ", " + std::to_string(offset[4]) + ", " + std::to_string(offset[5]) + "}");
+                        
+                            if (!offsetsToLoad.empty()) {
+                                std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
+                                offset_oss << offsetsToLoad.back();
+                            } 
+                        }
+
+                        if (tmn->layers.size())
+                        {
+                            for (int i = 0; i < tmn->layer; i++)
+                            {
+
+                                if (tmn->layers[i][2].length() && std::find(loadedFrames.begin(), loadedFrames.end(), tmn->layers[i][2]) == loadedFrames.end()) {
+                                    preload_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
+                                    loadedFrames.push_back(tmn->layers[i][2]);
+                                }
+                                
+                                if (tmn->layers[i][0].length()) {
+                                    preload_queue << "  System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
+                                    command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
+                                }
+                            }
+
+                            //create map if layers are defined
+
+                            if (tmn->layers[0][0].length()) {
+                                command_queue << "   auto map_" + node->ID + " = System::Game::CreateEntity(\"" + "tilemap" + "\");\n\t";
+                                command_queue << "   map_" + node->ID + "->name = \"" + tmn->name + "\";\n";
+                            }
+
+                        }
+
+                        //static physics bodies
+
+                        if (tmn->HasComponent("Physics") && tmn->bodies.size())
+                            for (int i = 0; i < tmn->bodies.size(); i++)    
+                                command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i] + tmn->body_width[i] / 2) + ", " + std::to_string(tmn->bodyY[i] + tmn->body_height[i] / 2) + ", " + std::to_string(tmn->body_width[i] / 2) + ", " + std::to_string(tmn->body_height[i] / 2) + ");\n";
+
+                    } 
+
+                    //--------------- audio
+
+                    if (node->type == "Audio")
+                    {
+
+                        auto an = std::dynamic_pointer_cast<AudioNode>(node);
+
+                        std::string loop = an->loop ? "true" : "false";
+
+                        command_queue << "   System::Audio::play(\"" + an->audio_source_name + "\", " + loop + ", " + std::to_string(an->volume) + ");\n";
+
+                        command_queue << "   std::shared_ptr<Entity> audio_" + node->ID + " = System::Game::CreateEntity(\"" + "audio" + "\");\n\t";
+                        command_queue << "   audio_" + node->ID + "->name = \"" + an->name + "\";\n";
+                        
+                    }
 
                     //--------------- group
 

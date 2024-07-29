@@ -464,7 +464,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                     if (m_currentTexture)
                     {
 
-                    //spritesheet / atlas
+                        //spritesheet / atlas
 
                         if (ImGui::BeginMenu("frames")) 
                         {
@@ -478,7 +478,8 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                                 for (int i = 0; i < frame; i++) 
                                     frames.push_back({ frameBuf1[i], frameBuf2[i], frameBuf3[i], frameBuf4[i], frameBuf5[i], frameBuf6[i]}); 
 
-                                RegisterFrames(); 
+                                RegisterFrames();  
+                                
                                 framesApplied = true;
                                 spriteHandle->ReadSpritesheetData(); 
                                 spriteHandle->SetFrame(0);

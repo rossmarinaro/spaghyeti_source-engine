@@ -35,7 +35,7 @@ namespace editor {
             glm::vec4 cameraBackgroundColor;
 
             std::vector<std::pair<std::string, std::string>> globals;
-            std::vector<std::string> spritesheets;
+            std::vector<std::pair<std::string, std::string>> spritesheets;
             std::vector<std::shared_ptr<editor::Node>> nodes;
 
             template <typename T>
