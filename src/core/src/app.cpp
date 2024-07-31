@@ -12,7 +12,7 @@ void System::Application::Init(Game* layer)
  
     //run game layer
      
-    Game::Boot();
+    game->Boot();
 
     //glfwMaximizeWindow(Window::s_instance);
 
@@ -42,7 +42,7 @@ void System::Application::Update(void* layer)
     Game* game = static_cast<Game*>(layer);
 
     Renderer::Update(game->camera);
-
+ 
     Time::Update(glfwGetTime()); 
 
     glfwPollEvents();  
@@ -107,7 +107,7 @@ System::Application::~Application()
 {
 
     #if STANDALONE == 1
-        Game::Exit();
+        game->Exit();
     #endif
 
     Resources::Manager::Clear();

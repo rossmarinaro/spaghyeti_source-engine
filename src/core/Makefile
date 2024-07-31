@@ -5,8 +5,8 @@ OBJS = \
 	$(wildcard src/**/**/**/*.cpp) \
 	$(wildcard src/**/**/**/**/*.cpp) \
 	$(wildcard ../window/*.cpp) \
-	$(wildcard ./vendors/box2d/src/**/*.cpp) \
-	$(wildcard ./vendors/glad/src/*.c)
+	$(wildcard ../vendors/box2d/src/**/*.cpp) \
+	$(wildcard ../vendors/glad/src/*.c)
 
 
 

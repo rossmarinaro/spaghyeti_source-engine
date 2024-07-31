@@ -14,10 +14,13 @@
     #define THREAD_COUNT 10
 #endif
 
+#if DEVELOPMENT == 1
+    #include <iostream>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include <iostream>
 #include <chrono>
 #include <thread>
 #include <algorithm>

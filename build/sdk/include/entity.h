@@ -7,7 +7,7 @@
 #include <any>
 #include <fstream>
 #include <memory>
-
+#include <atomic>
 #include "./manager.h"
 #include "./inputs.h"
 
@@ -25,10 +25,10 @@ class Entity {
 		float rotation, alpha;  
 		
         bool flipX, 
-			 flipY, 
-			 active, 
-			 renderable, 
-			 alive;
+             flipY, 
+             active, 
+             renderable, 
+             alive;
 
 		const char* type;
 
@@ -36,7 +36,7 @@ class Entity {
 
 		glm::vec2 position, scale;
 
-		std::string name;
+		std::string ID, name;
 
 		//key val data to be assigned to entity object
 
@@ -60,7 +60,7 @@ class Entity {
 		inline void SetFlipX(bool flipX) { this->flipX = flipX; }
 		inline void SetFlipY(bool flipY) { this->flipY = flipY; }
         inline void SetScrollFactor(const glm::vec2& factor) { this->m_scrollFactor = factor; }
-
+     
         inline bool IsSprite() {
 			return strcmp(this->type, "sprite") == 0 || 
 				   strcmp(this->type, "tile") == 0;

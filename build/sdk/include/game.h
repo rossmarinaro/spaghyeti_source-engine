@@ -26,8 +26,6 @@ namespace System {
             Physics* physics; 
             Inputs* inputs;
 
-            Scene* currentScene;
-
             std::vector<Scene*> scenes;
             std::shared_ptr<Geometry> cursor = nullptr;
 
@@ -39,15 +37,13 @@ namespace System {
                 T* scene = new T(this->m_context);
                 this->scenes.push_back(scene);
             }
-
-            static Scene* GetScene(const std::string& key = "");
            
             //game lifecycle
 
-            static void Boot();
-            static void Exit();
-            static void UpdateFrame();
-            static void StartScene(const std::string& key);
+            void Boot();
+            void UpdateFrame();
+            void Flush();
+            void Exit();
 
             //create objects
 
@@ -59,6 +55,9 @@ namespace System {
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2& start, const glm::vec2& end);
             static void DestroyEntity(std::shared_ptr<Entity> entity);
+            
+            static void StartScene(const std::string& key);
+            static Scene* GetScene(const std::string& key = "");
             
             template <typename T>
             static inline void CreateBehavior(std::shared_ptr<Entity> entity, Scene* scene) {
@@ -88,6 +87,7 @@ namespace System {
 
             bool m_gameState;
             Process::Context m_context;
+            Scene* currentScene; 
             
     }; 
 

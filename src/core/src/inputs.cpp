@@ -209,10 +209,10 @@ void Inputs::CheckOverlap()
         return overlapX && overlapY;
     };
 
-    for (int i = 0; i < Application::game->currentScene->virtual_buttons.size(); i++)
+    for (int i = 0; i < Game::GetScene()->virtual_buttons.size(); i++)
     {
 
-        auto button = Application::game->currentScene->virtual_buttons[i];
+        auto button = Game::GetScene()->virtual_buttons[i];
 
         if (!button.second->active)
             continue; 
@@ -229,7 +229,7 @@ void Inputs::CheckOverlap()
 
         //set mouse / cursor overlap with object
         
-        Application::game->currentScene->virtual_buttons[i].first = isOverlapping;
+        Game::GetScene()->virtual_buttons[i].first = isOverlapping;
 
     }
 }
@@ -464,7 +464,7 @@ void Inputs::ShutDown()
 
     if (Application::isMobile) {
         this->m_initVirtualControls = false;
-        Application::game->currentScene->virtual_buttons.clear();
+        Game::GetScene()->virtual_buttons.clear();
     }
 
     #if DEVELOPMENT == 1

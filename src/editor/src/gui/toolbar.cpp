@@ -225,44 +225,8 @@ void editor::GUI::ShowSettings()
                         path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
 
                         if (System::Utils::str_endsWith(path, ".json")) 
-                        {
-
                             if (ImGui::MenuItem(key.c_str())) 
-                            {
-
-                                //parse json to extract frame data
-
-                                std::ifstream JSON(path);
-
-                                if (!JSON.good()) 
-                                    Editor::Log("Error parsing. Maybe file is in an inappropriate folder?");
-
-                                else 
-                                {
-
-                                    json data = json::parse(JSON);
-
-                                    std::vector<std::array<int, 6>> framesToPush;
-
-                                    if (data["frames"].size() > 1)
-                                        for (const auto& index : data["frames"]) 
-                                        {
-                                            int x = index["frame"]["x"],
-                                                y = index["frame"]["y"];
-
-                                            float width = index["frame"]["w"],
-                                                  height = index["frame"]["h"];
-                                    
-                                            framesToPush.push_back({ x, y, width, height, 1, 1 });
-
-                                        };
-                    
-                                    System::Resources::Manager::LoadFrames(key, framesToPush);
-                                    spritesheet.second = path;
-
-                                }
-                            }
-                        }
+                                spritesheet.second = path;
                     }
 
                     ImGui::EndCombo();

@@ -28,10 +28,10 @@ Camera::Camera():
 void Camera::SetVignette(float alpha) 
 { 
 
-    if (!System::Application::game->currentScene->vignette)
+    if (!System::Game::GetScene()->vignette)
         return;
 
-    System::Application::game->currentScene->vignette->SetAlpha(alpha);
+    System::Game::GetScene()->vignette->SetAlpha(alpha);
 }
 
 
@@ -42,14 +42,14 @@ void Camera::SetVignette(float alpha)
 void Camera::Fade(float rate, const char* direction) 
 { 
 
-    if (!System::Application::game->currentScene->vignette)
+    if (!System::Game::GetScene()->vignette)
         return;
 
     if (strcmp(direction, "in") == 0)
-        System::Application::game->currentScene->vignette->alpha += rate;
+        System::Game::GetScene()->vignette->alpha += rate;
 
     if (strcmp(direction, "out") == 0)
-        System::Application::game->currentScene->vignette->alpha -= rate;
+        System::Game::GetScene()->vignette->alpha -= rate;
 }
 
 //--------------------------------

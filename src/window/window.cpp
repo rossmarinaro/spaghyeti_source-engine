@@ -105,12 +105,12 @@ void Window::Init()
         #if STANDALONE == 0
         
             s_width = 1200.0f;
-            s_height = 700.0f;
+            s_height = 680.0f;
 
         #else 
 
             s_width = 380.0f; 
-            s_height = 320.0f; 
+            s_height = 300.0f; 
 
         #endif
 

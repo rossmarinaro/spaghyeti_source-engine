@@ -1,13 +1,15 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/manager.h"
-
+#include "../../vendors/UUID.hpp"
 
 //---------------------------------- empty entity
 
 Entity::Entity(const char* type) {
     this->type = type;
     name = "Untitled_" + std::to_string(s_count);
+    ID = UUID::generate_uuid();
     s_count++;
+    s_depth++;
 }
 
 
@@ -30,9 +32,11 @@ Entity::Entity(const char* type, float x, float y):
     flipX = false;
     flipY = false;
     depth = s_depth + 1;
+    ID = UUID::generate_uuid();
 
     name = "Untitled_" + std::to_string(s_count);
-    s_count++; 
+    s_count++;
+    s_depth++;
 }
 
 
@@ -83,7 +87,7 @@ void Entity::Cull(std::shared_ptr<Entity> target, float factor, int distance)
         renderable = (position.x > target->position.x && position.x < target->position.x + distance) ||
                            (position.x < target->position.x && position.x > target->position.x - System::Window::s_scaleWidth * factor);
 
-}
+} 
 
 
 /* GEOMETRY */
@@ -156,7 +160,7 @@ std::shared_ptr<Sprite> Sprite::Clone()
 
     clone->ReadSpritesheetData();
 
-    System::Application::game->currentScene->entities.push_back(clone); 
+    System::Game::GetScene()->entities.push_back(clone); 
 
     if (bodies.size())
         for (int i = 0; i < bodies.size(); i++)
@@ -390,7 +394,7 @@ void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
 
             std::map<std::string, std::pair<int, int>>::iterator anim = anims.find(animKey);
 
-            if (anim == anims.end() || System::Application::game->currentScene->IsPaused()) 
+            if (anim == anims.end() || System::Game::GetScene()->IsPaused()) 
                 return;
 
             std::vector<int> frames; //frames to populate  
@@ -451,7 +455,7 @@ void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
 void Sprite::Render()
 {  
 
-    if (!renderable || !alive)
+    if (!alive)
         return;
 
     //update spritesheet UV subtexturing if applicable
@@ -509,57 +513,67 @@ void Sprite::Render()
 
     //update shaders and textures 
 
-   // if (strcmp(type, "tile") == 0)
-        //shader.SetInt("images", 1, true);
-    //else
-        shader.SetInt("image", 0, true);
+    if (active)
+    {
 
-    #ifndef __EMSCRIPTEN__
-        shader.SetInt("repeat", texture.Repeat, true);
-    #endif
+        //render texture
 
-    shader.SetVec2f("scale", glm::vec2(
-        bodies.size() ? 1.0f : scale.x, 
-        bodies.size() ? 1.0f : scale.y
-    ), true);
-    
-    shader.SetFloat("alphaVal", alpha, true); 
-    shader.SetVec3f("tint", tint, true);
-    shader.SetMat4("model", m_model, true);
+        if (renderable)
+        {
+            //if (strcmp(type, "tile") == 0)
+            //shader.SetInt("images", 1, true);
+            //else
+                shader.SetInt("image", 0, true);
 
-    if (IsSprite())
-        shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)), true);
-    
-    else         
-        shader.SetMat4("view", glm::mat4(1.0f), true);
+            #ifndef __EMSCRIPTEN__
+                shader.SetInt("repeat", texture.Repeat, true);
+            #endif
 
-    #if _ISMOBILE == 1
-        texture.Update(position, flipX, flipY, GL_FILL);   
-    #else
-        texture.Update(position, flipX, flipY, 1); 
-    #endif
+            shader.SetVec2f("scale", glm::vec2(
+                bodies.size() ? 1.0f : scale.x, 
+                bodies.size() ? 1.0f : scale.y
+            ), true);
+            
+            shader.SetFloat("alphaVal", alpha, true); 
+            shader.SetVec3f("tint", tint, true);
+            shader.SetMat4("model", m_model, true);
 
-    //update physics bodies if exists
+            if (IsSprite())
+                shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)), true);
+            
+            else         
+                shader.SetMat4("view", glm::mat4(1.0f), true);
 
-    if (bodies.size())
-        for (int i = 0; i < bodies.size(); i++)
-            if (bodies[i].first->IsEnabled()) 
-            {
-                if (i == 0 && bodies[i].first->GetType() == b2_dynamicBody) 
-                { 
-                    b2Vec2 position = bodies[0].first->GetPosition(); 
-                    position.y += bodies[0].second.w; //apply y offset
-                    SetPosition(glm::vec2((position.x - bodies[0].second.x), ((position.y - bodies[0].second.y) - bodies[0].second.w)));
+            #if _ISMOBILE == 1
+                texture.Update(position, flipX, flipY, GL_FILL);   
+            #else
+                texture.Update(position, flipX, flipY, 1); 
+            #endif   
+        }
+
+        //update physics bodies if exists
+
+        if (bodies.size())
+            for (int i = 0; i < bodies.size(); i++)
+                if (bodies[i].first->IsEnabled()) 
+                {
+                    if (i == 0 && bodies[i].first->GetType() == b2_dynamicBody) 
+                    { 
+                        b2Vec2 position = bodies[0].first->GetPosition(); 
+                        position.y += bodies[0].second.w; //apply y offset
+                        SetPosition(glm::vec2((position.x - bodies[0].second.x), ((position.y - bodies[0].second.y) - bodies[0].second.w)));
+                    }
+                    else
+                        bodies[i].first->SetTransform(b2Vec2((position.x - bodies[0].second.x), ((position.y - bodies[0].second.y) - bodies[0].second.w)), 0);
+
                 }
-                else
-                    bodies[i].first->SetTransform(b2Vec2((position.x - bodies[0].second.x), ((position.y - bodies[0].second.y) - bodies[0].second.w)), 0);
 
-            }
+        //play current animation
 
-    //play current animation
+        if (m_isSpritesheet && m_currentAnim.first.length())
+            Animate(m_currentAnim.first, m_currentAnim.second.first, m_currentAnim.second.second); 
 
-    if (m_isSpritesheet && m_currentAnim.first.length())
-        Animate(m_currentAnim.first, m_currentAnim.second.first, m_currentAnim.second.second); 
+    }
 
 }
  

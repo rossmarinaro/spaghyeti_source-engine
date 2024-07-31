@@ -6,7 +6,7 @@ OBJS = \
 	$(wildcard src/**/**/*.cpp) \
 	$(wildcard src/**/**/**/*.cpp) \
 	$(wildcard ../window/*.cpp) \
-	$(wildcard ./vendors/imgui/*.cpp) \
+	$(wildcard ../vendors/**/*.cpp) \
 	../../build/spaghyeditor.dll
 
 CC = g++ -g -std=c++17 

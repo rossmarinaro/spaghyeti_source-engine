@@ -806,47 +806,39 @@ void EventListener::BuildAndRun()
         if (target.second->spritesheets.size())
         {
 
-            std::ostringstream frame_oss;
-            std::vector<std::string> framesToLoad;
-
             for (const auto& spritesheet : target.second->spritesheets)
-                for (const auto& asset : AssetManager::loadedAssets)
-                {
+            {
 
-                    std::string path = asset.second;
-                    path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+                std::ifstream JSON(spritesheet.second);
+                json data = json::parse(JSON);
 
-                    if (System::Utils::str_endsWith(path, ".json") && path == spritesheet.second) 
-                    {
-                        std::ifstream JSON(path);
-                        json data = json::parse(JSON);
+                std::ostringstream frame_oss;
+                std::vector<std::string> framesToLoad;
 
-                        if (data["frames"].size())
-                            for (const auto& frame : data["frames"])    
-                                if (frame.contains("frame")) 
-                                {
-                                    int x = frame["frame"]["x"],
-                                        y = frame["frame"]["y"],
-                                        width = frame["frame"]["w"],
-                                        height = frame["frame"]["h"];
-
-                                    framesToLoad.push_back("{" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", 1, 1}");
-                                }
-                             
-                        if (!framesToLoad.empty()) 
+                if (data["frames"].size())
+                    for (const auto& frame : data["frames"])    
+                        if (frame.contains("frame")) 
                         {
-                            std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
-                            frame_oss << framesToLoad.back();
+                            int x = frame["frame"]["x"],
+                                y = frame["frame"]["y"],
+                                width = frame["frame"]["w"],
+                                height = frame["frame"]["h"];
 
-                            for (const auto& spritesheet : target.second->spritesheets)
-                                if (std::find(loadedFrames.begin(), loadedFrames.end(), spritesheet.first) == loadedFrames.end()) {
-                                    preload_queue << "  System::Resources::Manager::LoadFrames(\"" + spritesheet.first + "\", {" + frame_oss.str() + "});\n";
-                                    loadedFrames.push_back(spritesheet.first);
-                                }
+                            framesToLoad.push_back("{" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", 1, 1}");
                         }
-                    }
+                        
+                if (!framesToLoad.empty()) 
+                {
+                    std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
+                    frame_oss << framesToLoad.back();
 
+                    if (std::find(loadedFrames.begin(), loadedFrames.end(), spritesheet.first) == loadedFrames.end()) {
+                        preload_queue << "  System::Resources::Manager::LoadFrames(\"" + spritesheet.first + "\", {" + frame_oss.str() + "});\n";
+                        loadedFrames.push_back(spritesheet.first);
+                    }
                 }
+                
+            }
         }
 
         //preload files in first scene 
@@ -998,11 +990,6 @@ void EventListener::BuildAndRun()
                             command_queue << "   for (const auto& body : sprite_" + node->ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
 
                         }
-                
-                        //animator
-
-                        if (sn->HasComponent("Animator") && sn->animations.size()) 
-                            command_queue << "   sprite_" + node->ID + "->anims = System::Resources::Manager::GetAnimations(\"" + sn->key + "\");\n";
             
                         //shader
 
@@ -1162,6 +1149,7 @@ void EventListener::BuildAndRun()
                         command_queue << "   System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
 
                     }
+
                 }
             };
 

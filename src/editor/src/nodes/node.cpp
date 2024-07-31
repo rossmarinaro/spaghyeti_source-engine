@@ -4,7 +4,7 @@
 #include "../editor.h"
 #include "../assets/assets.h"
 
-#include "../../vendors/UUID.hpp"
+#include "../../../vendors/UUID.hpp"
 
 using namespace editor;
 

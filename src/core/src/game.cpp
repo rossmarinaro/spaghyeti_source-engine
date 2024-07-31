@@ -12,39 +12,39 @@ using namespace System;
 
 //-----------------------
 
-void FlushGame(Game* game)
+void Game::Flush()
 {
 
-    game->inputs->ResetControls();
+    inputs->ResetControls();
 
     if (Application::eventPool) {
         delete Application::eventPool; 
         Application::eventPool = nullptr;
     }
 
-    for (auto& entity : game->currentScene->entities) 
+    for (auto& entity : currentScene->entities) 
         entity.reset();
 
-    for (auto& ui : game->currentScene->UI) 
+    for (auto& ui : currentScene->UI) 
         ui.reset();
 
-    for (auto& behavior : game->currentScene->behaviors) 
+    for (auto& behavior : currentScene->behaviors) 
         behavior.reset();
 
-    game->currentScene->entities.clear();
-    game->currentScene->UI.clear();
-    game->currentScene->behaviors.clear();
+    currentScene->entities.clear();
+    currentScene->UI.clear();
+    currentScene->behaviors.clear();
 
-    game->maps->layers.clear();
+    maps->layers.clear();
 
     //refresh physics
     
-    game->physics->ClearBodies();   
+    physics->ClearBodies();   
 
     #if DEVELOPMENT == 1 
 
-       delete game->physics->debug;
-       game->physics->debug = nullptr;
+       delete physics->debug;
+       physics->debug = nullptr;
 
         #if STANDALONE == 1
 
@@ -53,8 +53,8 @@ void FlushGame(Game* game)
 
         #endif
 
-        game->physics->debug = new DebugDraw;
-	    game->physics->GetWorld().SetDebugDraw(game->physics->debug);
+        physics->debug = new DebugDraw;
+	    physics->GetWorld().SetDebugDraw(physics->debug);
 
         #if STANDALONE == 1
             displayInfo = new DisplayInfo;
@@ -62,12 +62,12 @@ void FlushGame(Game* game)
 
     #endif  
 
-    delete game->physics;
-    game->physics = nullptr;
+    delete physics;
+    physics = nullptr;
 
-    game->physics = new Physics;
+    physics = new Physics;
 
-    game->physics->GetWorld().SetContactListener(&game->physics->collisions);
+    physics->GetWorld().SetContactListener(&physics->collisions);
 
 }
 
@@ -119,28 +119,26 @@ void Game::Boot()
 
     std::cout << "Game: " + Application::name + " initializing.\n";
 
-    Game* game = Application::game;
+    currentScene = nullptr;
 
-    game->currentScene = nullptr;
-
-    game->text->Init(); 
+    text->Init(); 
 
     //preload / run game layer
 
-    StartScene(game->scenes[0]->key); 
+    StartScene(scenes[0]->key); 
 
     glfwSetWindowTitle(Window::s_instance, Application::name.c_str());
 
-    game->inputs->CreateCursor();
+    inputs->CreateCursor();
 
-    game->physics->GetWorld().SetContactListener(&game->physics->collisions);
+    physics->GetWorld().SetContactListener(&physics->collisions);
     
     //physics listener and debug
 
     #if DEVELOPMENT == 1 
      
-        game->physics->debug = new DebugDraw;
-	    game->physics->GetWorld().SetDebugDraw(game->physics->debug);
+        physics->debug = new DebugDraw;
+	    physics->GetWorld().SetDebugDraw(physics->debug);
 
         #if STANDALONE == 1
             displayInfo = new DisplayInfo;
@@ -172,7 +170,7 @@ void Game::StartScene(const std::string& key)
 
         if (game->currentScene) {
             Resources::Manager::Clear(false);  
-            FlushGame(game);  
+            game->Flush();
         }   
 
         Application::eventPool = new EventPool(THREAD_COUNT);
@@ -212,24 +210,22 @@ void Game::StartScene(const std::string& key)
 void Game::Exit() 
 {
 
-    Game* game = Application::game;
+    m_gameState = false;
 
-    game->m_gameState = false;
+    Flush();
 
-    FlushGame(game);
-
-    for (auto& scene : game->scenes) {
+    for (auto& scene : scenes) {
         delete scene;
         scene = nullptr;
     }
 
-    game->scenes.clear();    
-    game->text->ShutDown();
+    scenes.clear();    
+    text->ShutDown();
 
     #if DEVELOPMENT == 1 
 
-       delete game->physics->debug;
-       game->physics->debug = nullptr;
+       delete physics->debug;
+       physics->debug = nullptr;
 
         #if STANDALONE == 1
 
@@ -240,17 +236,17 @@ void Game::Exit()
 
     #endif
 
-    delete game->camera;
-    game->camera = nullptr;
+    delete camera;
+    camera = nullptr;
 
-    delete game->physics;
-    game->physics = nullptr;
+    delete physics;
+    physics = nullptr;
 
-    delete game->time;
-    game->time = nullptr;
+    delete time;
+    time = nullptr;
 
-    delete game->inputs;
-    game->inputs = nullptr;
+    delete inputs;
+    inputs = nullptr;
 
     delete maps;
     maps = nullptr;
@@ -266,28 +262,26 @@ void Game::Exit()
 void Game::UpdateFrame()
 {
 
-    Game* game = Application::game;
-
-    if (!game->m_gameState)
+    if (!m_gameState)
         return;
 
-    game->physics->Update();
+    physics->Update();
 
     //render queues
 
-    for (const auto& entity : game->currentScene->entities)
+    for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity) && entity.get()->renderable) 
             entity->Render();
 
-    for (const auto& UI : game->currentScene->UI)
+    for (const auto& UI : currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
             UI->Render();
 
     //vignette overlay
 
-    game->currentScene->vignette->texture.FrameWidth = Window::s_scaleWidth * 4;
-    game->currentScene->vignette->texture.FrameHeight = Window::s_scaleHeight * 4;
-    game->currentScene->vignette->Render();
+    currentScene->vignette->texture.FrameWidth = Window::s_scaleWidth * 4;
+    currentScene->vignette->texture.FrameHeight = Window::s_scaleHeight * 4;
+    currentScene->vignette->Render();
 
     //render input cursor
 
@@ -295,32 +289,38 @@ void Game::UpdateFrame()
  
     //update behaviors, pass game process context to subclasses
 
-    for (const auto& behavior : game->currentScene->behaviors) 
-    {
+    auto inactive_behavior_it = std::find_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](auto b) { return b->active == false; });
 
-        if (!behavior.get() || !behavior)
-            continue;
-
-        if ((!game->currentScene->IsPaused() && behavior->layer == 0)) 
-            behavior->Update();  
-            
-        else if (behavior->layer == 1)
-            behavior->Update();
+    if (inactive_behavior_it != currentScene->behaviors.end()) {
+        //Application::game->currentScene->behaviors.erase(inactive_behavior_it);
+        //(*inactive_behavior_it).reset();
     }
+
+    for (const auto& behavior : currentScene->behaviors) 
+        if (behavior->active) 
+        {
+
+            if ((!currentScene->IsPaused() && behavior->layer == 0)) 
+                behavior->Update();  
+                
+            else if (behavior->layer == 1)
+                behavior->Update();
+        }
+
 
     //depth sort
 
-    std::sort(game->currentScene->entities.begin(), game->currentScene->entities.end(), [](auto a, auto b){ return a->depth < b->depth; });
+    std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b){ return a->depth < b->depth; });
 
     #if DEVELOPMENT == 1 
 
-        if (game->physics->debug->enable) 
+        if (physics->debug->enable) 
         {
-            game->physics->GetWorld().DebugDraw();
-            game->physics->debug->Flush();
+            physics->GetWorld().DebugDraw();
+            physics->debug->Flush();
 
             #if STANDALONE == 1
-                displayInfo->Update(game->m_context);
+                displayInfo->Update(m_context);
             #endif
         }
 
@@ -334,6 +334,8 @@ void Game::UpdateFrame()
  
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
+
+    const std::string ID = entity->ID;
 
     auto it = std::find(Application::game->currentScene->entities.begin(), Application::game->currentScene->entities.end(), entity);
 
@@ -357,8 +359,17 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         }
     }
 
+    //remove from vector and disappear into the void
+
     if (!Application::game->currentScene->entities.size())
-       entity.reset();
+       entity.reset(); 
+
+    //reset associated behavior if applicable
+
+    auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b) { return b->ID == ID; });
+
+    if (behavior_it != Application::game->currentScene->behaviors.end()) 
+        (*behavior_it)->active = false;
 
 } 
 

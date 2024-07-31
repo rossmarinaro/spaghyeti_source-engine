@@ -98,10 +98,22 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
             //update active nodes
         
-            if (_nodes.size())
+            if (_nodes.size()) 
+            {
+                int i = 0;
+
                 for (const auto &node : _nodes)
-                    if (node && node->active)
+                    if (node && node->active) 
+                    {
+                        ImGui::PushID(i);
+
+                        i++;
+
                         node->Update(node, _nodes);
+
+                        ImGui::PopID();
+                    }
+            }          
         
             ImGui::TreePop();
         }

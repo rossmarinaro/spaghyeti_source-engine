@@ -7,8 +7,6 @@
 #include "../../../build/sdk/include/tilemap.h"
 #include "../../../build/sdk/include/app.h"
 
-using app = System::Application;
-
 
 //create layer from csv
 void MapManager::CreateLayer (
@@ -114,7 +112,7 @@ void MapManager::CreateLayer (
 
         }
 
-    app::game->maps->layers.push_back(layer);
+    System::Application::game->maps->layers.push_back(layer);
 
     #if DEVELOPMENT == 1
         std::cout << "Tilemap: Initialized layer: " + (std::string)data_key + "\n";
@@ -129,7 +127,7 @@ void MapManager::CreateLayer (
 void MapManager::RemoveLayer(const std::string& key) 
 {
 
-    for (auto it = app::game->maps->layers.begin(); it != app::game->maps->layers.end(); ++it) {
+    for (auto it = System::Application::game->maps->layers.begin(); it != System::Application::game->maps->layers.end(); ++it) {
 
         auto layer = *it;
 
@@ -139,10 +137,10 @@ void MapManager::RemoveLayer(const std::string& key)
             }), layer.end());
     }
 
-    app::game->currentScene->entities.erase(
-        std::remove_if(app::game->currentScene->entities.begin(), app::game->currentScene->entities.end(), [&](auto t) { 
+    System::Game::GetScene()->entities.erase(
+        std::remove_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [&](auto t) { 
             return strcmp(t->type, "tile") == 0 && t->name == key; }), 
-                app::game->currentScene->entities.end());
+                System::Game::GetScene()->entities.end());
 
     #if DEVELOPMENT == 1
         std::cout << "Tilemap: layer " + key + " cleared.\n";
@@ -157,12 +155,12 @@ void MapManager::RemoveLayer(const std::string& key)
 void MapManager::ClearMap() 
 {
 
-    app::game->maps->layers.clear();
+    System::Application::game->maps->layers.clear();
 
-    app::game->currentScene->entities.erase(
-        std::remove_if(app::game->currentScene->entities.begin(), app::game->currentScene->entities.end(), [](auto t) { 
+    System::Game::GetScene()->entities.erase(
+        std::remove_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [](auto t) { 
             return strcmp(t->type, "tile") == 0; }), 
-                app::game->currentScene->entities.end());
+                System::Game::GetScene()->entities.end());
 
     #if DEVELOPMENT == 1
         std::cout << "Tilemap: layers cleared.\n";

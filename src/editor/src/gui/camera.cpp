@@ -24,7 +24,7 @@ void editor::GUI::RenderCamera()
 
     //vignette visibility
 
-    Editor::game->currentScene->vignette->SetAlpha(Editor::vignetteVisibility);
+    Editor::game->GetScene()->vignette->SetAlpha(Editor::vignetteVisibility);
 
 }
 

@@ -13,26 +13,27 @@ namespace entity_behaviors {
 
             int layer;
 
-            std::string key, name; 
+            std::string ID, key, name; 
+
+            std::atomic_char active;
             
             inline Behavior(std::shared_ptr<Entity> entity, const std::string& key):
-                m_entity(entity),
-                m_isActive(true)
+                m_entity(entity)
             {
                 this->key = key; 
                 this->layer = 0;
+                this->active = true;
+                this->ID = m_entity->ID;
             }
 
             virtual ~Behavior() {
-                this->m_isActive = false;
+                this->active = false;
                 this->m_entity = nullptr;
             }
 
             virtual void Update() {}
          
         protected:
-
-            std::atomic_char m_isActive;
 
             std::shared_ptr<Entity> m_entity;
 
