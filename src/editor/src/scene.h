@@ -37,10 +37,10 @@ namespace editor {
             std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;
             std::vector<std::shared_ptr<editor::Node>> nodes;
+            std::vector<std::string> assets;
 
             template <typename T>
-            static inline std::shared_ptr<T> CreateObject(Scene* scene) 
-            {
+            static inline std::shared_ptr<T> CreateObject(Scene* scene) {
 
                 auto node = std::make_shared<T>();
 

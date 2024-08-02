@@ -1,5 +1,8 @@
-#include "../../../build/sdk/include/events.h"
+#if DEVELOPMENT == 1
+    #include <iostream>
+#endif
 
+#include "../../../build/sdk/include/events.h"
   
 //Constructor to creates a thread pool with given number of threads
 

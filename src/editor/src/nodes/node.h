@@ -270,6 +270,7 @@ namespace editor {
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const char* component_type = "") override;
+            void Load();
 
         private:
 

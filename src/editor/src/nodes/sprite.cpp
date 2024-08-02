@@ -161,6 +161,8 @@ void SpriteNode::ApplyTexture(const std::string& asset)
     m_currentTexture = spriteHandle->texture.GetTexture(asset).ID;  
     key = asset;
 
+    AssetManager::Register(key, true);
+
 }
 
 
@@ -453,10 +455,10 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                     //texture
         
-                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)m_currentTexture, ImVec2(50, 50)) && System::Utils::GetFileType(Editor::selectedAsset) == "image")
-                        ApplyTexture(Editor::selectedAsset);
+                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)m_currentTexture, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::selectedAsset) == "image")
+                        ApplyTexture(AssetManager::selectedAsset);
 
-                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && Editor::selectedAsset.length() && System::Utils::GetFileType(Editor::selectedAsset) != "image")
+                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && AssetManager::selectedAsset.length() && System::Utils::GetFileType(AssetManager::selectedAsset) != "image")
                         ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
 
                     //if texture applied to sprite

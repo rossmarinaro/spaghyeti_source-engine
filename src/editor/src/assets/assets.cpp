@@ -9,6 +9,34 @@
 
 using namespace editor;
 
+
+void AssetManager::Reset()
+{
+    selectedAsset.clear();
+    images.clear();
+    audio.clear();
+    data.clear();
+    loadedAssets.clear();
+    assets.clear();
+    assets_to_build.clear();
+}
+
+
+//--------------------------
+
+
+void AssetManager::Register(const std::string& asset, bool isEditor) 
+{
+
+    if (isEditor && std::find(assets.begin(), assets.end(), asset) == assets.end())
+        assets.push_back(asset);
+
+    if (std::find(assets_to_build.begin(), assets_to_build.end(), asset) == assets_to_build.end())
+        assets_to_build.push_back(asset);
+}
+
+
+ 
 //---------------------------
 
 
@@ -18,13 +46,12 @@ void AssetManager::LoadAsset(const std::string& asset, const std::string& path)
     const std::string folder = GetFolder(asset),
                       texture = GetThumbnail(asset),
                       key = "\"" + asset + "\"",
-                      developmentPath = "\"" + path + "resources\\assets" + folder + asset + "\"",
-                      productionPath = "assets\\" + asset + "\""; //full path: "\"" + path + "build\\assets\\" + asset + "\"";
+                      developmentPath = "\"" + path + "resources\\assets" + folder + asset + "\"";
 
     loadedAssets.insert({ key, developmentPath });
-    productionAssets.insert({ key, productionPath });
 
 }
+
 
 //----------------------------
 

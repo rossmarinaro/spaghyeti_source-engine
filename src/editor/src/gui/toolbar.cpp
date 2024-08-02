@@ -190,6 +190,61 @@ void editor::GUI::ShowSettings()
         
     if (ImGui::BeginMenu("Load Data"))
     {
+        if (ImGui::BeginMenu("preloaded assets"))
+        {
+
+            if (ImGui::BeginMenu("add from assets"))
+            {
+                std::string curr_asset = AssetManager::selectedAsset.size() ? AssetManager::selectedAsset : "please select an asset";
+
+                ImGui::Text(("path: " + curr_asset).c_str());
+
+                if (ImGui::MenuItem("apply") && AssetManager::selectedAsset.size()) 
+                {
+                    AssetManager::Register(AssetManager::selectedAsset, true);
+
+                    AssetManager::selectedAsset = "";
+                }
+
+                ImGui::EndMenu();
+            }
+
+            ImGui::Separator();
+            
+            int i = 0;
+
+            if (AssetManager::assets.size())
+                for (auto& asset : AssetManager::assets) 
+                {
+                    i++;
+
+                    std::string key = asset,
+                                path = "build/assets/" + key;
+
+                    if (Editor::platform != "WebGL")
+                        path = "assets/" + key;
+
+                    if (ImGui::BeginMenu((key + ": " + path).c_str()))
+                    {
+                        if (ImGui::MenuItem("delete")) {
+                            auto it = std::find(AssetManager::assets.begin(), AssetManager::assets.end(), key);
+                            if (it != AssetManager::assets.end())
+                                AssetManager::assets.erase(it);
+                        }
+
+                        ImGui::EndMenu();
+                    }
+
+                    if (i < AssetManager::assets.size())
+                        ImGui::Separator();
+                }
+
+            else
+                ImGui::MenuItem("no assets loaded.");
+
+
+            ImGui::EndMenu();
+        }
 
         if (ImGui::BeginMenu("spritesheets"))
         {

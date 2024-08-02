@@ -699,6 +699,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn->spriteHandle->SetTexture(data["currentTexture"]);
             }
 
+            else 
+                AssetManager::Register(data["currentTexture"], false);
+
             if (data["frames"].size() > 1)
             {
                 sn->frameBuf1.clear();
@@ -825,7 +828,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 tmn = Make<TilemapNode>(arr); 
             
             else 
-                tmn = Scene::CreateObject<TilemapNode>(_scene); 
+                tmn = Scene::CreateObject<TilemapNode>(_scene);  
 
             tmn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
 
@@ -884,8 +887,10 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (makeNode)
                 an = Make<AudioNode>(arr); 
             
-            else 
-                an = Scene::CreateObject<AudioNode>(_scene);  
+            else {
+                an = Scene::CreateObject<AudioNode>(_scene);    
+                AssetManager::Register(data["source name"], false);
+            } 
 
             an->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
 

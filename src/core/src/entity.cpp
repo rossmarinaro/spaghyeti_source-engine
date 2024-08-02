@@ -80,12 +80,12 @@ void Entity::Cull(std::shared_ptr<Entity> target, float factor, int distance)
     if (!context.camera->InBounds()) {
         SetScrollFactor({ 1.0f, 1.0f });
         renderable = (position.x > target->position.x && position.x < target->position.x + 1500) ||
-                           (position.x < target->position.x && position.x > target->position.x - System::Window::s_scaleWidth);
+                     (position.x < target->position.x && position.x > target->position.x - System::Window::s_scaleWidth);
     }
 
     else 
         renderable = (position.x > target->position.x && position.x < target->position.x + distance) ||
-                           (position.x < target->position.x && position.x > target->position.x - System::Window::s_scaleWidth * factor);
+                     (position.x < target->position.x && position.x > target->position.x - System::Window::s_scaleWidth * factor);
 
 } 
 

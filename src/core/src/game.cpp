@@ -22,14 +22,14 @@ void Game::Flush()
         Application::eventPool = nullptr;
     }
 
-    for (auto& entity : currentScene->entities) 
-        entity.reset();
+    // for (auto& entity : currentScene->entities) 
+    //     entity.reset();
 
-    for (auto& ui : currentScene->UI) 
-        ui.reset();
+    // for (auto& ui : currentScene->UI) 
+    //     ui.reset();
 
-    for (auto& behavior : currentScene->behaviors) 
-        behavior.reset();
+    // for (auto& behavior : game->currentScene->behaviors) 
+    //     behavior.reset();
 
     currentScene->entities.clear();
     currentScene->UI.clear();
@@ -184,6 +184,8 @@ void Game::StartScene(const std::string& key)
         game->currentScene->vignette = std::make_unique<Sprite>("base", 0.0f, -50.0f);
         game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
         game->currentScene->vignette->SetAlpha(0.0f);
+        game->currentScene->vignette->shader = Shader::GetShader("UI");
+        game->currentScene->vignette->SetScrollFactor({ 0.0f, 1.0f });
 
         game->currentScene->Run();  
 

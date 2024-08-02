@@ -151,15 +151,11 @@ void Editor::Reset()
     gravity_continuous = true;
     gravity_sleeping = true;
 
-    selectedAsset.clear();
     globals.clear();
+    spritesheets.clear();
     scenes.clear();
 
-    AssetManager::images.clear();
-    AssetManager::audio.clear();
-    AssetManager::data.clear();
-    AssetManager::loadedAssets.clear();
+    AssetManager::Reset();
 
     Log("Workspace reset.");
 }
-

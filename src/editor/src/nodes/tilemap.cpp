@@ -79,10 +79,10 @@ void TilemapNode::Reset(const char* component_type)
 //---------------------------
 
 
-void TilemapNode::ApplyTilemap(bool cious, bool renderReversed, bool isJSON)
+void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
 {
 
-    if (cious) {
+    if (clearPrev) {
         MapManager::ClearMap();
         offset.clear();
     }
@@ -114,40 +114,42 @@ void TilemapNode::ApplyTilemap(bool cious, bool renderReversed, bool isJSON)
                     w++;
                 }
             }
-            
-        if (!cious)
-            return;
-
-        //load atlas frames from csv offsets
 
         std::string key = layers[i][0], //csv file
                     path = layers[i][1], //path
                     texture = layers[i][2]; //image
 
-        //create unique layer names for json
+        AssetManager::Register(texture, clearPrev); //image
+        AssetManager::Register(key, clearPrev); //csv
+            
+        if (clearPrev)
+        {
+            //load atlas frames from csv offsets /create unique layer names for json
 
-        if (isJSON)
-            key += "_" + std::to_string(i);
+            if (isJSON)
+                key += "_" + std::to_string(i);
 
-        System::Resources::Manager::LoadFrames(texture, offset); //image texture with frame offsets
-        System::Resources::Manager::LoadFile(key.c_str(), path.c_str()); //csv 
+            System::Resources::Manager::LoadFrames(texture, offset); //image texture with frame offsets
+            System::Resources::Manager::LoadFile(key.c_str(), path.c_str()); //csv 
+            
+            //parse csv data and load map layer
 
-        //parse csv data and load map layer
+            std::vector<std::string> data = System::Resources::Manager::ParseCSV(key, i);
 
-        std::vector<std::string> data = System::Resources::Manager::ParseCSV(key, i);
+            if (data.size()) {
 
-        if (data.size()) {
+                System::Resources::Manager::LoadTilemap(key, data);
 
-            System::Resources::Manager::LoadTilemap(key, data);
+                MapManager::CreateLayer(key.c_str(), texture.c_str(), map_width, map_height, tile_width, tile_height, depth[i]);
 
-            MapManager::CreateLayer(key.c_str(), texture.c_str(), map_width, map_height, tile_width, tile_height, depth[i]);
+                m_layersApplied = true;
+                m_mapApplied = true;
+            }
 
-            m_layersApplied = true;
-            m_mapApplied = true;
+            else 
+                Editor::Log("There was a problem parsing CSV file.");
         }
 
-        else 
-            Editor::Log("There was a problem parsing CSV file.");
     }
 }
 
@@ -268,8 +270,8 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                         for (const auto& asset : AssetManager::loadedAssets)
                         {
 
-                            std::string key = asset.first;
-                            std::string path = asset.second;
+                            std::string key = asset.first,
+                                        path = asset.second;
 
                             key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
                             path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
@@ -403,13 +405,13 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                         ImGui::Text(csv_name.c_str()); 
 
-                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::GetTexture(layers[i][2]).ID, ImVec2(50, 50)) && System::Utils::GetFileType(Editor::selectedAsset) == "image") 
+                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::GetTexture(layers[i][2]).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::selectedAsset) == "image") 
                         {
-                            layers[i][2] = Editor::selectedAsset;
+                            layers[i][2] = AssetManager::selectedAsset;
                             m_layersApplied = false;
                         }
 
-                        else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(Editor::selectedAsset) != "image")
+                        else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(AssetManager::selectedAsset) != "image")
                             ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
 
                         if (

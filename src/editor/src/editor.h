@@ -51,14 +51,14 @@ namespace editor {
 							   gravity_continuous = true, 
 							   gravity_sleeping = true,
                                use_pthreads = true,
-                               shared_memory = true,
-                               allow_memory_growth = true,
+                               shared_memory = false,
+                               allow_memory_growth = false,
                                allow_exception_catching = true,
                                export_all = true,
                                wasm = true,
                                gl_assertions = true,
-                               use_webgl2 = true,
-                               full_es3 = true;
+                               use_webgl2 = false,
+                               full_es3 = false;
 
 			static inline EventListener events;
 			
@@ -69,8 +69,7 @@ namespace editor {
 
 			static inline std::vector<std::string> scenes;
 
-			static inline std::string selectedAsset,
-									  platform = "Windows",
+			static inline std::string platform = "Windows",
                                       releaseType = "debug",
                                       buildType = "dynamic",
 									  projectPath = "",

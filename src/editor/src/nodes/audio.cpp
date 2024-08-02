@@ -22,6 +22,15 @@ AudioNode::AudioNode():
 }
 
 
+//--------------------------
+
+
+void AudioNode::Load() {
+    audio_source_name = AssetManager::selectedAsset;
+    AssetManager::Register(audio_source_name, true);
+}
+
+
 
 //---------------------------
  
@@ -57,7 +66,7 @@ void AudioNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
         
             static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
 
-            if (ImGui::BeginMenu("Options")) {
+            if (ImGui::BeginMenu("Options")) { 
                 ShowOptions(node, arr);
                 ImGui::EndMenu();
             }
@@ -68,8 +77,8 @@ void AudioNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
             {
 
                 if (ImGui::ImageButton("audio source", (void*)(intptr_t)m_audioTexture.ID, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0))) {
-                    if (System::Utils::GetFileType(Editor::selectedAsset) == "audio")
-                        audio_source_name = Editor::selectedAsset;
+                    if (System::Utils::GetFileType(AssetManager::selectedAsset) == "audio")
+                        Load();
                 }
                     
                 else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(audio_source_name) != "audio") 

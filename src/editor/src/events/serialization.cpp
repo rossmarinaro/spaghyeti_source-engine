@@ -234,23 +234,6 @@ void EventListener::Deserialize(std::ifstream& JSON)
     Editor::gravity_continuous = data["settings"]["physics"]["continuous"];
     Editor::gravity_sleeping = data["settings"]["physics"]["sleeping"];
 
-    //loaded data
-
-    if (data.contains("spritesheets"))
-        for (const auto& spritesheet : data["spritesheets"])
-            Editor::spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
-
-    //global variables
-    
-    if (data.contains("globals"))
-    {
-        for (const auto& global : data["globals"])
-            Editor::globals.push_back({ global["key"], global["type"] });
-
-        if (data["globals_applied"]) 
-            Editor::globals_applied = true;
-    }
-
     for (auto& sprite : data["nodes"]["sprites"])
         Node::ReadData(sprite, true, nullptr);
 
@@ -268,6 +251,23 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     for (auto& group : data["nodes"]["groups"])
         Node::ReadData(group, true, nullptr);
+
+    //loaded data
+
+    if (data.contains("spritesheets"))
+        for (const auto& spritesheet : data["spritesheets"])
+            Editor::spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
+
+    //global variables
+    
+    if (data.contains("globals"))
+    {
+        for (const auto& global : data["globals"])
+            Editor::globals.push_back({ global["key"], global["type"] });
+
+        if (data["globals_applied"]) 
+            Editor::globals_applied = true;
+    }
 
 }
 
@@ -308,22 +308,6 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
     scene->gravity_continuous = data["settings"]["physics"]["continuous"];
     scene->gravity_sleeping = data["settings"]["physics"]["sleeping"];
 
-    //loaded data
-
-    if (data.contains("spritesheets")) 
-        for (const auto& spritesheet : data["spritesheets"])
-            scene->spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
-
-    //global variables
-    
-    if (data.contains("globals")) {
-        
-        for (const auto& global : data["globals"])
-            scene->globals.push_back({ global["key"], global["type"] });
-
-        scene->globals_applied = true;
-    }
-
     for (auto& sprite : data["nodes"]["sprites"])
         Node::ReadData(sprite, false, scene);
 
@@ -341,6 +325,30 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     for (auto& group : data["nodes"]["groups"])
         Node::ReadData(group, false, scene);
+
+    //loaded data
+
+    if (data.contains("spritesheets")) 
+        for (const auto& spritesheet : data["spritesheets"])
+            scene->spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
+
+    //copy preloaded assets into scene
+
+    if (AssetManager::assets_to_build.size())
+        for (const auto& asset : AssetManager::assets_to_build)
+            scene->assets.push_back(asset);
+
+    AssetManager::assets_to_build.clear();
+
+    //global variables
+    
+    if (data.contains("globals")) {
+        
+        for (const auto& global : data["globals"])
+            scene->globals.push_back({ global["key"], global["type"] });
+
+        scene->globals_applied = true;
+    }
 
     //scene ready for compilation
 

@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <fstream>
-#include <iostream>
 
 #include "../../../vendors/imgui/imgui.h"
 #include "../../../vendors/imgui/imgui_impl_glfw.h"

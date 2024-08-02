@@ -32,8 +32,8 @@ void displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec)
                 ImGui::PushID(i);
 
                 if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec[i].second, ImVec2(70, 70))) {
-                    editor::Editor::selectedAsset = vec[i].first;
-                    editor::Editor::Log("Current asset selected: " + editor::Editor::selectedAsset);
+                    editor::AssetManager::selectedAsset = vec[i].first;
+                    editor::Editor::Log("Current asset selected: " + editor::AssetManager::selectedAsset);
                 }
 
                 //asset tool tip
