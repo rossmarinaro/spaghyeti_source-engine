@@ -22,7 +22,7 @@ void MapManager::CreateLayer (
 {
 
     const std::vector<std::string>& data = System::Resources::Manager::GetRawTilemapData(data_key);
-    
+      
     std::vector<std::string> map;
     std::vector<std::shared_ptr<Sprite>> layer; 
 

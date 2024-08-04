@@ -53,13 +53,6 @@ void Game::Flush()
 
         #endif
 
-        physics->debug = new DebugDraw;
-	    physics->GetWorld().SetDebugDraw(physics->debug);
-
-        #if STANDALONE == 1
-            displayInfo = new DisplayInfo;
-        #endif
-
     #endif  
 
     delete physics;
@@ -69,6 +62,16 @@ void Game::Flush()
 
     physics->GetWorld().SetContactListener(&physics->collisions);
 
+    #if DEVELOPMENT == 1
+
+        physics->debug = new DebugDraw;
+	    physics->GetWorld().SetDebugDraw(physics->debug);
+
+        #if STANDALONE == 1
+            displayInfo = new DisplayInfo;
+        #endif
+
+    #endif
 }
 
 
