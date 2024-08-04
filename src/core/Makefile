@@ -43,7 +43,7 @@ static: compile ar
 web: compile_web emar 
 
 compile: $(OBJS)
-	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) -w -Wl,-subsystem,windows $(LINKER_FLAGS) $(BUILDTYPE) $(BUILDFLAG) $(OUTFILE) 
+	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) -w -Wfatal-errors -Wl,-subsystem,windows $(LINKER_FLAGS) $(BUILDTYPE) $(BUILDFLAG) $(OUTFILE) 
 
 compile_web: $(OBJS) 
 	em++ -g -O3 -std=c++20 -w $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_WEB) -pthread -c $(OUTFILE) 

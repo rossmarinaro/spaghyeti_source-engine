@@ -30,15 +30,16 @@ void Manager::Clear(bool all)
         System::Application::resources->m_raw_audio_assets.clear();
         System::Application::resources->m_raw_assets.clear();
 
-        for (auto& shader : System::Application::resources->shaders)
-            shader.second.Delete();
-
         for (auto& texture : System::Application::resources->textures) 
             texture.second.Delete();
 
-        System::Application::resources->shaders.clear();
         System::Application::resources->textures.clear();
 
+        for (auto& shader : System::Application::resources->shaders)
+            shader.second.Delete();
+
+        System::Application::resources->shaders.clear();
+        
     }
 
     #if DEVELOPMENT == 1
@@ -86,13 +87,13 @@ void Manager::RegisterTextures()
 void Manager::LoadFile(const char* key, const char* path)
 {
 
-    if (System::Utils::GetFileType(path) == "image")
+    if (System::Utils::GetFileType(path) == "image" && System::Application::resources->m_file_image_assets.find(key) == System::Application::resources->m_file_image_assets.end())
         System::Application::resources->m_file_image_assets.insert({ key, path });
 
-    else if (System::Utils::GetFileType(path) == "audio")
+    else if (System::Utils::GetFileType(path) == "audio" && System::Application::resources->m_file_audio_assets.find(key) == System::Application::resources->m_file_audio_assets.end())
         System::Application::resources->m_file_audio_assets.insert({ key, path });
 
-    else if (System::Utils::GetFileType(path) == "data")
+    else if (System::Utils::GetFileType(path) == "data" && System::Application::resources->m_file_text_assets.find(key) == System::Application::resources->m_file_text_assets.end())
         System::Application::resources->m_file_text_assets.insert({ key, path });
 
     else 

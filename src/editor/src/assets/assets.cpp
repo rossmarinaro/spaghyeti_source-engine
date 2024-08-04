@@ -25,14 +25,17 @@ void AssetManager::Reset()
 //--------------------------
 
 
-void AssetManager::Register(const std::string& asset, bool isEditor) 
+void AssetManager::Register(const std::string& asset, bool isEditor, bool isPreload) 
 {
+
+    if (std::find(assets_to_build.begin(), assets_to_build.end(), asset) == assets_to_build.end())
+        assets_to_build.push_back(asset);
 
     if (isEditor && std::find(assets.begin(), assets.end(), asset) == assets.end())
         assets.push_back(asset);
 
-    if (std::find(assets_to_build.begin(), assets_to_build.end(), asset) == assets_to_build.end())
-        assets_to_build.push_back(asset);
+    if (isPreload && std::find(assets_preload.begin(), assets_preload.end(), asset) == assets_preload.end())
+        assets_preload.push_back(asset);
 }
 
 

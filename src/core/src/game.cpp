@@ -168,8 +168,11 @@ void Game::StartScene(const std::string& key)
 
         //clear entities if applicable (after first initialization)
 
-        if (game->currentScene) {
-            Resources::Manager::Clear(false);  
+        if (game->currentScene) 
+        {
+            if (game->currentScene->key != key)
+                Resources::Manager::Clear(false);  
+
             game->Flush();
         }   
 
@@ -179,7 +182,10 @@ void Game::StartScene(const std::string& key)
 
         game->currentScene = *it;
 
-        game->currentScene->Preload();
+        if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {
+            game->currentScene->Preload();
+            cachedScenes.push_back(game->currentScene->key);
+        }
 
         game->currentScene->vignette = std::make_unique<Sprite>("base", 0.0f, -50.0f);
         game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
@@ -221,7 +227,8 @@ void Game::Exit()
         scene = nullptr;
     }
 
-    scenes.clear();    
+    scenes.clear();   
+    cachedScenes.clear(); 
     text->ShutDown();
 
     #if DEVELOPMENT == 1 

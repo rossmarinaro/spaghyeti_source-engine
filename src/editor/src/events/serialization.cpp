@@ -132,6 +132,14 @@ void EventListener::Serialize(json& data)
 
     data["spritesheets"] = spritesheets;
 
+    json assets = json::array();
+
+    if (AssetManager::assets_preload.size())
+        for (const auto& asset : AssetManager::assets_preload)
+            assets.push_back(asset);
+
+    data["assets"] = assets;
+
     //globals
 
     json globals = json::array();
@@ -258,6 +266,12 @@ void EventListener::Deserialize(std::ifstream& JSON)
         for (const auto& spritesheet : data["spritesheets"])
             Editor::spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
 
+    if (data.contains("assets"))
+        for (const auto& asset : data["assets"]) {
+            const std::string key = static_cast<std::string>(asset);
+            AssetManager::Register(asset, true, true);
+        }
+
     //global variables
     
     if (data.contains("globals"))
@@ -333,6 +347,10 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
             scene->spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
 
     //copy preloaded assets into scene
+
+    if (data.contains("assets"))
+        for (const auto& asset : data["assets"])
+            scene->assets.push_back(asset);
 
     if (AssetManager::assets_to_build.size())
         for (const auto& asset : AssetManager::assets_to_build)

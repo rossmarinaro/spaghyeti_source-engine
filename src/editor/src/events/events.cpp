@@ -1299,5 +1299,3 @@ void EventListener::GenerateProject()
     Editor::Log("New project " + s_currentProject + " generated.");
 }
 
-
-

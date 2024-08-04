@@ -24,15 +24,6 @@ namespace System {
 
             public:
 
-                //asset storage
-
-                std::map<std::string, std::vector<std::string>> tilemap;
-                std::map<std::string, unsigned int> audio_size;
-                std::map<std::string, std::vector<std::array<int, 6>>> atlases;
-                std::map<std::string, std::map<std::string, std::pair<int, int>>> anims;
-                std::map<std::string, const char*> atlas_paths;
-                std::map<std::string, std::array<int, 3>> image_dimensions_and_channels;
-
                 //resource storage
 
                 std::map<std::string, Shader> shaders;
@@ -70,6 +61,15 @@ namespace System {
                 static std::vector<std::string> ParseCSV(const std::string& key, int index = 0);
 
             private:
+
+                //asset storage
+
+                std::map<std::string, std::vector<std::string>> tilemap;
+                std::map<std::string, unsigned int> audio_size;
+                std::map<std::string, std::vector<std::array<int, 6>>> atlases;
+                std::map<std::string, std::map<std::string, std::pair<int, int>>> anims;
+                std::map<std::string, const char*> atlas_paths;
+                std::map<std::string, std::array<int, 3>> image_dimensions_and_channels;
 
                 //file assets
  

@@ -195,15 +195,16 @@ void editor::GUI::ShowSettings()
 
             if (ImGui::BeginMenu("add from assets"))
             {
-                std::string curr_asset = AssetManager::selectedAsset.size() ? AssetManager::selectedAsset : "please select an asset";
-
-                ImGui::Text(("path: " + curr_asset).c_str());
-
-                if (ImGui::MenuItem("apply") && AssetManager::selectedAsset.size()) 
+                for (auto& asset : AssetManager::loadedAssets) 
                 {
-                    AssetManager::Register(AssetManager::selectedAsset, true);
+                    std::string key = asset.first,
+                                path = asset.second;
 
-                    AssetManager::selectedAsset = "";
+                    key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
+                    path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+
+                    if (ImGui::MenuItem(path.c_str())) 
+                        AssetManager::Register(key, true, true);
                 }
 
                 ImGui::EndMenu();
@@ -218,18 +219,23 @@ void editor::GUI::ShowSettings()
                 {
                     i++;
 
-                    std::string key = asset,
-                                path = "build/assets/" + key;
+                    std::string path = "build/assets/" + asset;
 
                     if (Editor::platform != "WebGL")
-                        path = "assets/" + key;
+                        path = "assets/" + asset;
 
-                    if (ImGui::BeginMenu((key + ": " + path).c_str()))
+                    if (ImGui::BeginMenu((asset + ": " + path).c_str()))
                     {
-                        if (ImGui::MenuItem("delete")) {
-                            auto it = std::find(AssetManager::assets.begin(), AssetManager::assets.end(), key);
+                        if (ImGui::MenuItem("delete")) 
+                        {
+                            auto it = std::find(AssetManager::assets.begin(), AssetManager::assets.end(), asset);
+
                             if (it != AssetManager::assets.end())
                                 AssetManager::assets.erase(it);
+
+                            auto it_preload = std::find(AssetManager::assets_preload.begin(), AssetManager::assets_preload.end(), asset);
+                            if (it_preload != AssetManager::assets_preload.end())
+                                AssetManager::assets_preload.erase(it_preload);
                         }
 
                         ImGui::EndMenu();
@@ -273,8 +279,8 @@ void editor::GUI::ShowSettings()
                     for (const auto& asset : AssetManager::loadedAssets)
                     {
 
-                        std::string key = asset.first;
-                        std::string path = asset.second;
+                        std::string key = asset.first,
+                                    path = asset.second;
 
                         key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
                         path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
