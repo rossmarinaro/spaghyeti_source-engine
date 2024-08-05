@@ -43,11 +43,7 @@ void System::Application::Update(void* layer)
 
     Renderer::Update(game->camera);
  
-    Time::Update(glfwGetTime()); 
-
-    glfwPollEvents();  
-    
-    game->inputs->ProcessInput(Window::s_instance);
+    Time::Update(glfwGetTime());
 
     glViewport(0, 0, Window::s_width, Window::s_height);
 

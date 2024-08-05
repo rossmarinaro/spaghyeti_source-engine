@@ -27,6 +27,7 @@ void Time::Update(double t)
     time->m_delta = delta;
 
     System::Application::game->UpdateFrame(); 
+
 }
 
 

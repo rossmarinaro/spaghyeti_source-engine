@@ -10,7 +10,6 @@ class Inputs {
         int numInputs;
 
         bool cursorReset,
-             isDown = false,
              RIGHT_CLICK,
              LEFT_CLICK,
              SPACE, 
@@ -21,7 +20,12 @@ class Inputs {
              RIGHT,
              UP,
              DOWN,
-             G;
+             W,
+             A,
+             S,
+             D,
+             G,
+             isDown = false;
 
         float mouseX, mouseY;
 

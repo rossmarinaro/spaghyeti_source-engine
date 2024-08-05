@@ -22,15 +22,6 @@ void Game::Flush()
         Application::eventPool = nullptr;
     }
 
-    // for (auto& entity : currentScene->entities) 
-    //     entity.reset();
-
-    // for (auto& ui : currentScene->UI) 
-    //     ui.reset();
-
-    // for (auto& behavior : game->currentScene->behaviors) 
-    //     behavior.reset();
-
     currentScene->entities.clear();
     currentScene->UI.clear();
     currentScene->behaviors.clear();
@@ -277,6 +268,10 @@ void Game::UpdateFrame()
     if (!m_gameState)
         return;
 
+    glfwPollEvents();  
+    
+    inputs->ProcessInput(Window::s_instance);
+
     physics->Update();
 
     //render queues
@@ -301,12 +296,12 @@ void Game::UpdateFrame()
  
     //update behaviors, pass game process context to subclasses
 
-    auto inactive_behavior_it = std::find_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](auto b) { return b->active == false; });
+    // auto inactive_behavior_it = std::find_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](auto b) { return b->active == false; });
 
-    if (inactive_behavior_it != currentScene->behaviors.end()) {
-        //Application::game->currentScene->behaviors.erase(inactive_behavior_it);
-        //(*inactive_behavior_it).reset();
-    }
+    // if (inactive_behavior_it != currentScene->behaviors.end()) {
+    //     //Application::game->currentScene->behaviors.erase(inactive_behavior_it);
+    //     //(*inactive_behavior_it).reset();
+    // }
 
     for (const auto& behavior : currentScene->behaviors) 
         if (behavior->active) 

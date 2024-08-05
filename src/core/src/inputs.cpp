@@ -96,7 +96,7 @@ Inputs::Inputs():
     m_initVirtualControls(false)
 {
 
-    this->numInputs = 0;
+    numInputs = 0;
 
     ResetControls();
 
@@ -134,10 +134,10 @@ void Inputs::ProcessInput(GLFWwindow* window)
 
     //input state
 
-    this->isDown = this->numInputs > 0;
+    isDown = numInputs > 0;
 
     #if DEVELOPMENT == 1
-        Application::game->physics->debug->enable = this->G;
+        Application::game->physics->debug->enable = G;
     #endif
 
     //gamepad
@@ -173,9 +173,9 @@ void Inputs::RenderCursor()
     if (Application::game->cursor != nullptr)
     {
 
-        Application::game->cursor->SetPosition(this->m_cursorX, this->m_cursorY);
+        Application::game->cursor->SetPosition(m_cursorX, m_cursorY);
 
-        if (Application::isMobile && this->cursorReset)
+        if (Application::isMobile && cursorReset)
             cursor_callback(Window::s_instance, -100.0f, -100.0f);
 
         CheckOverlap();
@@ -289,32 +289,44 @@ void Inputs::SetKeyInputs(bool boolean, int key, GLFWwindow* window)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         break;
         case GLFW_KEY_LEFT:
-            this->LEFT = boolean;
+            LEFT = boolean;
         break;
         case GLFW_KEY_RIGHT:
-            this->RIGHT = boolean;
+            RIGHT = boolean;
         break;
         case GLFW_KEY_UP:
-            this->UP = boolean;
+            UP = boolean;
         break;
         case GLFW_KEY_DOWN:
-           this->DOWN = boolean;
+           DOWN = boolean;
         break;
         case GLFW_KEY_LEFT_SHIFT:
         case GLFW_KEY_RIGHT_SHIFT:
-            this->SHIFT = boolean;
+            SHIFT = boolean;
         break;
         case GLFW_KEY_SPACE:
-            this->SPACE = boolean;
+            SPACE = boolean;
         break;
         case GLFW_KEY_ENTER:
-            this->ENTER = boolean;
+            ENTER = boolean;
         break;
         case GLFW_KEY_TAB:
-            this->TAB = boolean;
+            TAB = boolean;
         break;
         case GLFW_KEY_G:
-            this->G = boolean;
+            G = boolean;
+        break;
+        case GLFW_KEY_W:
+            W = boolean;
+        break;
+        case GLFW_KEY_A:
+            A = boolean;
+        break;
+        case GLFW_KEY_S:
+            S = boolean;
+        break;
+        case GLFW_KEY_D:
+            D = boolean;
         break;
     }
 }
@@ -330,100 +342,100 @@ void Inputs::SetGamepadInputs(unsigned int joystick)
 
     const float* axes = glfwGetJoystickAxes(joystick, &axesCount);
 
-    this->LEFT = axes[0] > 1;
-    this->RIGHT = axes[1] > 1;
+    LEFT = axes[0] > 1;
+    RIGHT = axes[1] > 1;
 
     int buttonCount;
 
     const unsigned char* buttons = glfwGetJoystickButtons(joystick, &buttonCount);
 
     if (GLFW_PRESS == buttons[0]) 
-        this->ENTER = true;
+        ENTER = true;
     
     else if (GLFW_RELEASE == buttons[0]) 
-        this->ENTER = false;
+        ENTER = false;
 
     if (
         GLFW_PRESS == buttons[1] ||
         GLFW_PRESS == buttons[2]
     )
-        this->SPACE = true;
+        SPACE = true;
 
     else if (
         GLFW_RELEASE == buttons[1] ||
         GLFW_RELEASE == buttons[2]
     )
-        this->SPACE = false;
+        SPACE = false;
 
     if (
         GLFW_PRESS == buttons[3] ||
         GLFW_PRESS == buttons[4]
     )
-        this->SHIFT = true;
+        SHIFT = true;
 
     else if (
         GLFW_RELEASE == buttons[3] ||
         GLFW_RELEASE == buttons[4]
     )
-        this->SHIFT = false;
+        SHIFT = false;
 
     if (
         GLFW_PRESS == buttons[5] ||
         GLFW_PRESS == buttons[6]
     )
-        this->TAB = true;
+        TAB = true;
 
     else if (
         GLFW_RELEASE == buttons[5] ||
         GLFW_RELEASE == buttons[6]
     )
-        this->TAB = false;
+        TAB = false;
 
     if (
         GLFW_PRESS == buttons[7] ||
         GLFW_PRESS == buttons[8] ||
         GLFW_PRESS == buttons[9]
     )
-        this->LEFT_CLICK = true;
+        LEFT_CLICK = true;
 
     else if (
         GLFW_RELEASE == buttons[7] ||
         GLFW_PRESS == buttons[8] ||
         GLFW_PRESS == buttons[9]
     )
-        this->LEFT_CLICK = false;
+        LEFT_CLICK = false;
 
     if (GLFW_PRESS == buttons[10])
-        this->DOWN = true;
+        DOWN = true;
 
     else if (GLFW_RELEASE == buttons[10])
-        this->DOWN = false;
+        DOWN = false;
 
     if (GLFW_PRESS == buttons[11])
-        this->RIGHT = true;
+        RIGHT = true;
 
     else if (GLFW_RELEASE == buttons[11])
-        this->RIGHT = false;
+        RIGHT = false;
 
     if (GLFW_PRESS == buttons[12])
-        this->UP = true;
+        UP = true;
 
     else if (GLFW_RELEASE == buttons[12])
-        this->UP = false;
+        UP = false;
 
     if (GLFW_PRESS == buttons[13])
-        this->LEFT = true;
+        LEFT = true;
 
     else if (GLFW_RELEASE == buttons[13])
-        this->LEFT = false;
+        LEFT = false;
 
     for (int i = 0; i < sizeof(buttons); i++) 
 
         if (buttons[i] == GLFW_PRESS)
-            this->numInputs++;
+            numInputs++;
 
         else if (buttons[i] == GLFW_RELEASE)
-            this->numInputs--;
+            numInputs--;
 }
 
 
@@ -463,7 +475,7 @@ void Inputs::ShutDown()
     ResetControls();
 
     if (Application::isMobile) {
-        this->m_initVirtualControls = false;
+        m_initVirtualControls = false;
         Game::GetScene()->virtual_buttons.clear();
     }
 
@@ -479,23 +491,27 @@ void Inputs::ShutDown()
 void Inputs::ResetControls()
 {
 
-    this->cursorReset = true;
+    cursorReset = true;
 
     if (!Application::isMobile) {
-        this->m_cursorX = -100.0f;
-        this->m_cursorY = -100.0f;
+        m_cursorX = -100.0f;
+        m_cursorY = -100.0f;
     }
 
-    this->RIGHT_CLICK = false;
-    this->LEFT_CLICK = false;
-    this->LEFT = false;
-    this->RIGHT = false;
-    this->DOWN = false;
-    this->UP = false;
-    this->SHIFT = false;
-    this->TAB = false;
-    this->SPACE = false;
-    this->ENTER = false;
+    RIGHT_CLICK = false;
+    LEFT_CLICK = false;
+    LEFT = false;
+    RIGHT = false;
+    DOWN = false;
+    UP = false;
+    SHIFT = false;
+    TAB = false;
+    SPACE = false;
+    ENTER = false; 
+    W = false;
+    A = false;
+    S = false;
+    D = false;
 }
 
 
