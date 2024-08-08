@@ -15,7 +15,6 @@ void Manager::Clear(bool all)
     System::Application::resources->atlases.clear();
     System::Application::resources->atlas_paths.clear();
     System::Application::resources->anims.clear();
-    System::Application::resources->tilemap.clear();
     System::Application::resources->image_dimensions_and_channels.clear();
     System::Application::resources->audio_size.clear();
 
@@ -142,16 +141,6 @@ void Manager::LoadAnims(const std::string& key, const std::map<std::string, std:
         System::Application::resources->anims.insert( { key, anims } );
 }
 
-//------------------------------------ load tilemaps
-
-
-//load tilemaps
-void Manager::LoadTilemap(const std::string& key, const std::vector<std::string>& data) {
-    
-    if (System::Application::resources->tilemap.find(key) == System::Application::resources->tilemap.end())
-        System::Application::resources->tilemap.insert({ key, data });
-}
-
 
 //--------------------------------- 
 
@@ -240,15 +229,6 @@ void Manager::UnLoadAnims(const std::string& key) {
 
     if (System::Application::resources->anims.find(key) != System::Application::resources->anims.end())
         System::Application::resources->anims.erase(System::Application::resources->anims.find(key));
-}
-
-//------------------------------------ 
-
-//unload tilemaps
-void Manager::UnLoadTilemap(const std::string& key) {
-    
-    if (System::Application::resources->tilemap.find(key) != System::Application::resources->tilemap.end())
-        System::Application::resources->tilemap.erase(System::Application::resources->tilemap.find(key));
 }
 
 
@@ -347,20 +327,6 @@ std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::string
     return {};
 }
 
-
-//-------------------------------- 
-
-//get raw tilemap
-const std::vector<std::string> Manager::GetRawTilemapData(const std::string& key)
-{
-
-    const std::map<std::string, std::vector<std::string>>::iterator it = System::Application::resources->tilemap.find(key);
-
-    if (it != System::Application::resources->tilemap.end())
-        return it->second;
-
-	return {};
-}
 
 
 //--------------------------------

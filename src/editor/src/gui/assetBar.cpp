@@ -87,7 +87,7 @@ void editor::GUI::RenderAssets()
 
     else 
     {
-        if (ImGui::ImageButton("image", (void*)(intptr_t) Graphics::Texture2D::GetTexture("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
+        if (ImGui::ImageButton("image", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
             SetFolder(true, "images");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
@@ -95,7 +95,7 @@ void editor::GUI::RenderAssets()
 
         ImGui::SameLine(); 
 
-        if (ImGui::ImageButton("audio", (void*)(intptr_t) Graphics::Texture2D::GetTexture("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
+        if (ImGui::ImageButton("audio", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
             SetFolder(true, "audio");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
@@ -103,7 +103,7 @@ void editor::GUI::RenderAssets()
 
         ImGui::SameLine(); 
 
-        if (ImGui::ImageButton("data", (void*)(intptr_t) Graphics::Texture2D::GetTexture("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
+        if (ImGui::ImageButton("data", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
             SetFolder(true, "data");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))

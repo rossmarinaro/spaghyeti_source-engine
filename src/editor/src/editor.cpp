@@ -24,7 +24,25 @@ void Editor::Update()
         GUI::s_grid->Render();
 
     Time::Update(glfwGetTime());
-   
+
+    //save hotkey
+       
+    if (projectOpen)
+    {
+        if (events.canSave && 
+        (
+            ImGui::IsKeyPressed(ImGuiKey_LeftCtrl) || ImGui::IsKeyPressed(ImGuiKey_RightCtrl)) && 
+            ImGui::IsKeyPressed(ImGuiKey_S)) 
+        {
+
+            events.canSave = false;
+            events.SaveScene(events.saveFlag);
+        }
+
+        else 
+            events.canSave = true;
+    }
+
     glfwPollEvents();
 
     GUI::Render();
@@ -36,12 +54,12 @@ void Editor::Update()
     //save and close editor
 
     if (glfwWindowShouldClose(Window::s_instance))
-    {
-        if (projectOpen)
-            Editor::events.saveFlag = true;
-        else 
-            Editor::events.exitFlag = true;
-    }
+        if (events.canSave) {
+            if (projectOpen)
+                events.saveFlag = true;
+            else 
+                events.exitFlag = true;
+        }
 
 }
 

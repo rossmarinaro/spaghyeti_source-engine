@@ -40,7 +40,7 @@ TilemapNode::~TilemapNode()
 
 void TilemapNode::AddLayer()
 {
-    layers.push_back({ "", "", "" });
+    layers.push_back({ "", "" });
     layer++;
     spr_sheet_width.push_back(0);
     spr_sheet_height.push_back(0);
@@ -115,17 +115,15 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
                 }
             }
 
-        std::string key = layers[i][0], //csv file
+        std::string key = layers[i][0], //csv
                     path = layers[i][1], //path
                     texture = layers[i][2]; //image
 
         AssetManager::Register(texture, clearPrev); //image
         AssetManager::Register(key, clearPrev); //csv
-            
+        
         if (clearPrev)
         {
-            //load atlas frames from csv offsets /create unique layer names for json
-
             if (isJSON)
                 key += "_" + std::to_string(i);
 
@@ -134,13 +132,11 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
             
             //parse csv data and load map layer
 
-            std::vector<std::string> data = System::Resources::Manager::ParseCSV(key, i);
+            const std::vector<std::string>& data = System::Resources::Manager::ParseCSV(key, i);
 
             if (data.size()) {
 
-                System::Resources::Manager::LoadTilemap(key, data);
-
-                MapManager::CreateLayer(key.c_str(), texture.c_str(), map_width, map_height, tile_width, tile_height, depth[i]);
+                MapManager::CreateLayer(texture.c_str(), key.c_str(), data, map_width, map_height, tile_width, tile_height, depth[i]);
 
                 m_layersApplied = true;
                 m_mapApplied = true;
@@ -386,7 +382,6 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                                 if (System::Utils::str_endsWith(path, ".csv")) 
                                     if (ImGui::MenuItem(key.c_str())) {
 
-                                        layers[i][0] = key;
                                         layers[i][1] = path;
 
                                         m_layersApplied = false;
@@ -405,9 +400,9 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                         ImGui::Text(csv_name.c_str()); 
 
-                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::GetTexture(layers[i][2]).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::selectedAsset) == "image") 
+                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get(layers[i][1]).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::selectedAsset) == "image") 
                         {
-                            layers[i][2] = AssetManager::selectedAsset;
+                            layers[i][1] = AssetManager::selectedAsset;
                             m_layersApplied = false;
                         }
 
@@ -499,13 +494,12 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                                         {
                                             AddLayer();
 
-                                            layers[i][0] = key;
                                             layers[i][1] = path;
                                             layers[i][2] = static_cast<std::string>(data["tilesets"][0]["name"]) + ".png";
                                             depth[i] = d;
 
-                                            spr_sheet_width[i] = Graphics::Texture2D::GetTexture(layers[i][2]).Width / tile_width;
-                                            spr_sheet_height[i] = Graphics::Texture2D::GetTexture(layers[i][2]).Height / tile_height;
+                                            spr_sheet_width[i] = Graphics::Texture2D::Get(layers[2][1]).Width / tile_width;
+                                            spr_sheet_height[i] = Graphics::Texture2D::Get(layers[2][1]).Height / tile_height;
 
                                             Reset();
                                             

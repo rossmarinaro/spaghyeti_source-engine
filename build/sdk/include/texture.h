@@ -28,7 +28,7 @@ namespace Graphics {
             Texture2D();
             ~Texture2D() = default;
 
-            static Texture2D& GetTexture(const std::string& key);
+            static Texture2D& Get(const std::string& key);
             static void Load(const std::string& key, bool flipY = false);
             static void UnLoad(const std::string& key);
             static void SetChannels(Texture2D& texture, unsigned int channels);

@@ -324,11 +324,11 @@ Text::Text(const std::string& content, float x, float y, float scale, glm::vec3 
     //glAttachShader(program, vertShader);
     //glAttachShader(program, fragShader);
     //glLinkProgram(program);
-    // GLint attrib = glGetAttribLocation(Shader::GetShader("text").ID/* program */, "inPosition");
+    // GLint attrib = glGetAttribLocation(Shader::Get("text").ID/* program */, "inPosition");
     // glEnableVertexAttribArray(attrib);
     // size_t attriboffset = 0;
     // glVertexAttribPointer(attrib, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)(attriboffset));
-    // glUseProgram(Shader::GetShader("text").ID/* program */);
+    // glUseProgram(Shader::Get("text").ID/* program */);
     // comic = LoadFont("C:\\project_data\\projects\\c++\\spaghyeti_source_engine\\games\\TestGame\\resources\\assets\\fonts\\Silkscreen\\slkscr.ttf"/* "resources\\assets\\fonts\\Silkscreen\\slkscr.ttf" */);
 
 }
@@ -370,7 +370,7 @@ void Text::Render()
 
     gltEndDraw();
 
-   //RenderString("Left!", 100, 50, 200, 0, comic, Shader::GetShader("text").ID);
+   //RenderString("Left!", 100, 50, 200, 0, comic, Shader::Get("text").ID);
 }
 
 

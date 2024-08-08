@@ -11,7 +11,8 @@ namespace editor {
 
             static inline bool exitFlag = false,
                                saveFlag = false,
-                               buildFlag = false;
+                               buildFlag = false,
+                               canSave = true;
             
             static inline std::string s_currentProject = "",
                                       s_currentScene = "";

@@ -11,8 +11,9 @@
 //create layer from csv
 void MapManager::CreateLayer (
 
-    const char* data_key,
     const char* texture_key,
+    const char* data_key,
+    const std::vector<std::string>& data,
     uint32_t mapWidth,
     uint32_t mapHeight,
     uint32_t tileWidth,
@@ -20,9 +21,7 @@ void MapManager::CreateLayer (
     uint32_t depth
 )
 {
-
-    const std::vector<std::string>& data = System::Resources::Manager::GetRawTilemapData(data_key);
-      
+    
     std::vector<std::string> map;
     std::vector<std::shared_ptr<Sprite>> layer; 
 
@@ -97,8 +96,9 @@ void MapManager::CreateLayer (
                 //create tilesprite entity
 
                 auto tile = System::Game::CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType); 
-                
+            
                 tile->name = (std::string)data_key;
+                
                 tile->SetDepth(depth); 
                 tile->SetFlip(flipX, flipY);  
 
@@ -115,7 +115,7 @@ void MapManager::CreateLayer (
     System::Application::game->maps->layers.push_back(layer);
 
     #if DEVELOPMENT == 1
-        std::cout << "Tilemap: Initialized layer: " + (std::string)data_key + "\n";
+        std::cout << "Tilemap: Initialized layer with key: " + (std::string)texture_key + "\n";
     #endif
 
 }

@@ -101,8 +101,8 @@ Geometry::Geometry(float x, float y, float width, float height):
     this->width = width;
     this->height = height;
     tint = glm::vec3(0.0f, 0.0f, 1.0f);
-    texture = Graphics::Texture2D::GetTexture("base");
-    shader = Shader::GetShader("graphics");
+    texture = Graphics::Texture2D::Get("base");
+    shader = Shader::Get("graphics");
     
     #if DEVELOPMENT == 1
         std::cout << "Entity: quad created.\n"; 
@@ -117,14 +117,6 @@ void Geometry::Render()
 {
 
     m_model = glm::mat4(1.0f); 
-
-    auto SetShader = [&](){
-        shader.SetVec3f("tint", tint, true);
-        shader.SetMat4("model", m_model, true);  
-        shader.SetFloat("alphaVal", alpha, true);
-    };
-
-    //quad or line
 
     if (strcmp(m_type, "quad") == 0)
     {
@@ -141,12 +133,14 @@ void Geometry::Render()
 
         m_model = glm::translate(m_model, glm::vec3(-0.5f * width - position.x, -0.5f * height - position.y, 0.0f));
         
-        SetShader();
+        shader.SetVec3f("tint", tint);
+        shader.SetMat4("model", m_model);  
+        shader.SetFloat("alphaVal", alpha);
+        shader.SetMat4("view", glm::mat4(1.0f));
 
         texture.Update(position, false, false, m_drawStyle); 
 
     }
-
 
 }
 
@@ -303,7 +297,7 @@ void Sprite::RemoveBodies()
 void Sprite::SetTexture(const std::string& key)
 {  
 
-    auto texture = Graphics::Texture2D::GetTexture(key); 
+    auto texture = Graphics::Texture2D::Get(key); 
         
     this->key = key; 
 
@@ -523,10 +517,10 @@ void Sprite::Render()
             //if (strcmp(type, "tile") == 0)
             //shader.SetInt("images", 1, true);
             //else
-                shader.SetInt("image", 0, true);
+                shader.SetInt("image", 0);
 
             #ifndef __EMSCRIPTEN__
-                shader.SetInt("repeat", texture.Repeat, true);
+                shader.SetInt("repeat", texture.Repeat);
             #endif
 
             shader.SetVec2f("scale", glm::vec2(
@@ -534,15 +528,15 @@ void Sprite::Render()
                 bodies.size() ? 1.0f : scale.y
             ), true);
             
-            shader.SetFloat("alphaVal", alpha, true); 
-            shader.SetVec3f("tint", tint, true);
-            shader.SetMat4("model", m_model, true);
+            shader.SetFloat("alphaVal", alpha); 
+            shader.SetVec3f("tint", tint);
+            shader.SetMat4("model", m_model);
 
             if (IsSprite())
-                shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)), true);
+                shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
             
             else         
-                shader.SetMat4("view", glm::mat4(1.0f), true);
+                shader.SetMat4("view", glm::mat4(1.0f));
 
             #if _ISMOBILE == 1
                 texture.Update(position, flipX, flipY, GL_FILL);   
@@ -589,8 +583,8 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     anims = System::Resources::Manager::GetAnimations(key);
     velocityX = 0.0f;
     velocityY = 0.0f;
-    texture = Graphics::Texture2D::GetTexture(key);
-    shader = Shader::GetShader("sprite");          
+    texture = Graphics::Texture2D::Get(key);
+    shader = Shader::Get("sprite");          
     
     #if DEVELOPMENT == 1
         if (!isTile)
@@ -610,8 +604,8 @@ Sprite::Sprite(Sprite& sprite):
     anims = System::Resources::Manager::GetAnimations(sprite.key);
     velocityX = sprite.velocityX;
     velocityY = sprite.velocityY;
-    texture = Graphics::Texture2D::GetTexture(sprite.key);
-    shader = Shader::GetShader("sprite");     
+    texture = Graphics::Texture2D::Get(sprite.key);
+    shader = Shader::Get("sprite");     
 
     #if DEVELOPMENT == 1
         std::cout << "Sprite: " + key + " Cloned.\n"; 
@@ -628,8 +622,8 @@ Sprite::Sprite(const std::string& key, const glm::vec2& position):
     Entity("UI", position.x, position.y)
 {
     this->key = key;
-    texture = Graphics::Texture2D::GetTexture(key);
-    shader = Shader::GetShader("UI");
+    texture = Graphics::Texture2D::Get(key);
+    shader = Shader::Get("UI");
     
     #if DEVELOPMENT == 1
         std::cout << "Sprite: UI " + key + " created.\n"; 

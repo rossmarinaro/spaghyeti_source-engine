@@ -68,7 +68,7 @@ void SpriteNode::Reset(const char* component_type)
 
     if (strcmp(component_type, "Shader") == 0 || passAll)
         if (spriteHandle.get())
-            spriteHandle->shader = Shader::GetShader("sprite");
+            spriteHandle->shader = Shader::Get("sprite");
 
     if (strcmp(component_type, "Script") == 0 || passAll)
         behaviors.clear();
@@ -158,7 +158,7 @@ void SpriteNode::ApplyTexture(const std::string& asset)
     else 
        spriteHandle->SetTexture(asset); 
 
-    m_currentTexture = spriteHandle->texture.GetTexture(asset).ID;  
+    m_currentTexture = spriteHandle->texture.Get(asset).ID;  
     key = asset;
 
     AssetManager::Register(key, true);

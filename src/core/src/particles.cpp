@@ -3,8 +3,8 @@
 
 // ParticleGenerator::ParticleGenerator(const char* key, unsigned int amount)
 // : 
-//   shader(System::Resources::Manager::shader->GetShader("sprite")), 
-//   texture(System::Resources::Manager::texture2D->GetTexture(key)), 
+//   shader(System::Resources::Manager::shader->Get("sprite")), 
+//   texture(System::Resources::Manager::texture2D->Get(key)), 
 //   amount(amount)
 // {
 //     for (unsigned int i = 0; i < this->amount; ++i)

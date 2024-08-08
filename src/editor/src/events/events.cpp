@@ -165,7 +165,7 @@ bool EventListener::OpenScene() //makes temporary json file to parse data from .
 
                     AssetManager::LoadAsset(asset, Editor::projectPath);
 
-                    unsigned int id = Graphics::Texture2D::GetTexture(texture).ID;
+                    unsigned int id = Graphics::Texture2D::Get(texture).ID;
 
                     if (type == "images")
                         AssetManager::images.push_back({ asset, id });
@@ -377,7 +377,7 @@ void EventListener::OpenFile()
 
             //apply image to assets menu if not there already
 
-            unsigned int id = Graphics::Texture2D::GetTexture(texture).ID;
+            unsigned int id = Graphics::Texture2D::Get(texture).ID;
 
             auto insertAsset = [&](std::vector<std::pair<std::string, GLuint>>& vec) 
             {
@@ -972,7 +972,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->texture.Filter_Max = " + filtering + ";\n";
 
                     if (sn->lock_in_place) {
-                        command_queue << "   sprite_" + node->ID + "->shader = Shader::GetShader(\"UI\");\n";
+                        command_queue << "   sprite_" + node->ID + "->shader = Shader::Get(\"UI\");\n";
                         command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
                     }
 
@@ -992,7 +992,7 @@ void EventListener::BuildAndRun()
                     //shader
 
                     if (sn->HasComponent("Shader") && sn->shader.first.length()) 
-                        command_queue << "   sprite_" + node->ID + "->shader = Shader::GetShader(\"" + sn->shader.first + "\");\n";
+                        command_queue << "   sprite_" + node->ID + "->shader = Shader::Get(\"" + sn->shader.first + "\");\n";
 
                 }
 
@@ -1045,7 +1045,7 @@ void EventListener::BuildAndRun()
                     //shader
 
                     if (en->HasComponent("Shader") && en->shader.first.length()) 
-                        command_queue << "   empty_" + node->ID + "->shader = Shader::GetShader(\"" + en->shader.first + "\");\n";
+                        command_queue << "   empty_" + node->ID + "->shader = Shader::Get(\"" + en->shader.first + "\");\n";
 
                 }
 
@@ -1082,10 +1082,8 @@ void EventListener::BuildAndRun()
                                 loadedFrames.push_back(tmn->layers[i][2]);
                             }
                             
-                            if (tmn->layers[i][0].length()) {
-                                preload_queue << "  System::Resources::Manager::LoadTilemap(\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"));\n";
-                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][0] + "\", \"" + tmn->layers[i][2] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
-                            }
+                            if (tmn->layers[i][0].length()) 
+                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][2] + "\", ""\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"), " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
                         }
 
                         //create map if layers are defined

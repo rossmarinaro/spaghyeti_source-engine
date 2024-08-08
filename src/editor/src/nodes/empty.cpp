@@ -45,7 +45,7 @@ void EmptyNode::Reset(const char* component_type)
 
     if (strcmp(component_type, "Shader") == 0 || passAll)
         if (m_debugGraphic.get())
-                m_debugGraphic->shader = Shader::GetShader("graphics");
+                m_debugGraphic->shader = Shader::Get("graphics");
 
     if (strcmp(component_type, "Script") == 0 || passAll)
         behaviors.clear();
@@ -148,9 +148,6 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
                     ImGui::EndMenu();
                 }
                     
-                if (m_debugGraphic)
-                    ImGui::Checkbox("debug", &show_debug);
-
             }
 
             ImGui::TreePop();
@@ -178,7 +175,6 @@ void EmptyNode::Render()
             ImGui::SliderInt("depth", &depth, 0, 1000);
             ImGui::Checkbox("fill", &debug_fill); 
             ImGui::ColorEdit3("tint", (float*)&m_debugGraphic->tint); 
-            ImGui::SameLine();
             ImGui::SliderFloat("alpha", &m_debugGraphic->alpha, 0.0f, 1.0f);
             ImGui::SliderFloat("position x", &positionX, 10.0f, 1000.0f);  
             ImGui::SliderFloat("position y", &positionY, 10.0f, 1000.0f);

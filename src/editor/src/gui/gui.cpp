@@ -134,7 +134,7 @@ void GUI::CreateGrid()
     Shader::Load("grid", checker_vertex, checker_fragment, nullptr); 
 
     s_grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    s_grid->shader = Shader::GetShader("grid");
+    s_grid->shader = Shader::Get("grid");
 
 }
 
@@ -176,7 +176,6 @@ void GUI::Render()
        s_grid->shader.SetFloat("pitch", s_grid_quantity, true);
         
     //Renderer::CreateFrameBuffer();
-    
 
 }
 
@@ -252,7 +251,7 @@ void GUI::ShowOptionsInit()
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
     ImGui::GetWindowDrawList()->AddImage(
-        (void*)Graphics::Texture2D::GetTexture("icon large").ID,
+        (void*)Graphics::Texture2D::Get("icon large").ID,
         ImVec2(pos.x, pos.y),
         ImVec2(pos.x + window_width, pos.y + window_height),
         ImVec2(0, 1),

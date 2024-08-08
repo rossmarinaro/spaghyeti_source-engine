@@ -39,7 +39,6 @@ namespace System {
                 static const std::map<std::string, std::pair<int, int>> GetAnimations(const std::string& key);
                 static const std::array<int, 3> GetRawDimensionsAndChannels(const std::string& key);
                 static std::vector<std::array<int, 6>> GetRawSpritesheetData(const std::string& key);
-                static const std::vector<std::string> GetRawTilemapData(const std::string& key);
 
                 static void RegisterTextures();
                 static void Clear(bool all = true);
@@ -49,7 +48,6 @@ namespace System {
                 static void LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims);
                 static void LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames); 
                 static void LoadAtlas(const std::string& key, const char* path); 
-                static void LoadTilemap(const std::string& key, const std::vector<std::string>& data);
 
                 static void UnLoadFile(const char* key);
                 static void UnLoadRawImage(const char* key);
@@ -57,14 +55,12 @@ namespace System {
                 static void UnLoadAnims(const std::string& key);
                 static void UnLoadFrames(const std::string& key); 
                 static void UnLoadAtlas(const std::string& key); 
-                static void UnLoadTilemap(const std::string& key);
                 static std::vector<std::string> ParseCSV(const std::string& key, int index = 0);
 
             private:
 
                 //asset storage
 
-                std::map<std::string, std::vector<std::string>> tilemap;
                 std::map<std::string, unsigned int> audio_size;
                 std::map<std::string, std::vector<std::array<int, 6>>> atlases;
                 std::map<std::string, std::map<std::string, std::pair<int, int>>> anims;

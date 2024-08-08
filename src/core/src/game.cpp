@@ -107,7 +107,7 @@ Game::Game()
 
 //---------------------------- boot entry scene
 
-
+std::shared_ptr<Text> loadingText;
 void Game::Boot()   
 {     
 
@@ -164,8 +164,10 @@ void Game::StartScene(const std::string& key)
 
         if (game->currentScene) 
         {
-            if (game->currentScene->key != key)
-                Resources::Manager::Clear(false);  
+            if (game->currentScene->key == game->scenes[0]->key) {
+               Resources::Manager::Clear(false);  
+               cachedScenes.clear();
+            }
 
             game->Flush();
         }   
@@ -184,7 +186,7 @@ void Game::StartScene(const std::string& key)
         game->currentScene->vignette = std::make_unique<Sprite>("base", 0.0f, -50.0f);
         game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
         game->currentScene->vignette->SetAlpha(0.0f);
-        game->currentScene->vignette->shader = Shader::GetShader("UI");
+        game->currentScene->vignette->shader = Shader::Get("UI");
         game->currentScene->vignette->SetScrollFactor({ 0.0f, 1.0f });
 
         game->currentScene->Run();  
@@ -433,7 +435,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
     auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
 
     ts->type = "tile";
-    //ts->shader = Shader::GetShader("batch");
+    //ts->shader = Shader::Get("batch");
     ts->ReadSpritesheetData(); 
 
     Application::game->currentScene->entities.push_back(ts);
@@ -464,7 +466,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 {
     auto geom = std::make_shared<Geometry>(x, y, width, height);
 
-    Application::game->currentScene->UI.push_back(geom);
+    Application::game->currentScene->entities.push_back(geom);
 
     return geom;
 }

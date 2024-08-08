@@ -160,7 +160,7 @@ void Inputs::CreateCursor()
     Application::game->cursor = System::Game::CreateGeom(100.0f, 100.0f, 30.0f, 30.0f);
     Application::game->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
     Application::game->cursor->SetAlpha(0.0f); 
-    Application::game->cursor->shader = Shader::GetShader("cursor");
+    Application::game->cursor->shader = Shader::Get("cursor");
 }
 
 

@@ -50,7 +50,7 @@ void Texture2D::Delete() {
 //-------------------------------
 
 
-Texture2D& Texture2D::GetTexture(const std::string& key) {
+Texture2D& Texture2D::Get(const std::string& key) {
     return System::Application::resources->textures[key];
 }
 

@@ -8,7 +8,7 @@ void Shader::Delete() {
 //-------------------------------
 
 
-Shader& Shader::GetShader(const std::string& key) {
+Shader& Shader::Get(const std::string& key) {
     return System::Application::resources->shaders[key];
 } 
 
@@ -302,18 +302,18 @@ void Shader::InitBaseShaders()
 
     //shader char arrays
 
-    Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment, nullptr); 
-    Load("UI", spriteQuadShader_vertex, spriteQuadShader_fragment, nullptr);
-    Load("graphics", debugGraphicShader_vertex, debugGraphicShader_fragment, nullptr);
-    Load("cursor", debugGraphicShader_vertex, debugGraphicShader_fragment, nullptr);
-    //Load("batch", spriteBatchShader_vertex, spriteBatchShader_fragment, nullptr);
-    //Load("text", textVertex, textFragment, nullptr);
+    Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment); 
+    Load("UI", spriteQuadShader_vertex, spriteQuadShader_fragment);
+    Load("graphics", debugGraphicShader_vertex, debugGraphicShader_fragment);
+    Load("cursor", debugGraphicShader_vertex, debugGraphicShader_fragment);
+    //Load("batch", spriteBatchShader_vertex, spriteBatchShader_fragment);
+    //Load("text", textVertex, textFragment);
      
     #if DEVELOPMENT == 1
 
-        Load("Points", geom_vertex1, geom_fragment, nullptr);
-        Load("Lines", geom_vertex2, geom_fragment, nullptr);
-        Load("Triangles", geom_vertex2, geom_fragment, nullptr);
+        Load("Points", geom_vertex1, geom_fragment);
+        Load("Lines", geom_vertex2, geom_fragment);
+        Load("Triangles", geom_vertex2, geom_fragment);
 
     #endif
 
@@ -350,10 +350,10 @@ void Shader::Update(Camera* camera)
         //offset
 
         if (shader.first == "cursor" || shader.first == "UI")             
-            GetShader(shader.first).SetVec2f("offset", glm::vec2(0.0f), true);
+            Get(shader.first).SetVec2f("offset", glm::vec2(0.0f));
 
         else     
-            GetShader(shader.first).SetVec2f("offset", camera->position, true);
+            Get(shader.first).SetVec2f("offset", camera->position);
 
         //projection
 
@@ -361,19 +361,19 @@ void Shader::Update(Camera* camera)
         {
 
             if (shader.first == "cursor")                 
-               GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::s_width * 2), static_cast<float>(System::Window::s_height * 2)), true);  
+               Get(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::s_width * 2), static_cast<float>(System::Window::s_height * 2)));  
             
             else                 
-                GetShader(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight), true);
+                Get(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight));
         } 
 
         //view
       
         if (shader.first == "cursor" || shader.first == "UI")             
-            GetShader(shader.first).SetMat4("view", glm::mat4(1.0f), true);
+            Get(shader.first).SetMat4("view", glm::mat4(1.0f));
 
         else if (shader.first == "Points" || shader.first == "Lines" || shader.first == "Triangles")         
-            GetShader(shader.first).SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(camera->position, 0.0f)), true);
+            Get(shader.first).SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(camera->position, 0.0f)));
 
     }
 }

@@ -9,7 +9,7 @@ using namespace editor;
 
 AudioNode::AudioNode(): 
     Node("Audio"),
-        m_audioTexture(Graphics::Texture2D::GetTexture("audio src"))
+        m_audioTexture(Graphics::Texture2D::Get("audio src"))
      
 {
     audio_source_name = "";
