@@ -233,9 +233,11 @@ namespace editor {
 
         public:
 
-            int depth;
+            int depth, isUI;
 
             float size, alpha;
+
+            bool UIFlag;
 
             glm::vec3 tint;
 

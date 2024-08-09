@@ -86,13 +86,13 @@ void Manager::RegisterTextures()
 void Manager::LoadFile(const char* key, const char* path)
 {
 
-    if (System::Utils::GetFileType(path) == "image" && System::Application::resources->m_file_image_assets.find(key) == System::Application::resources->m_file_image_assets.end())
+    if (System::Utils::GetFileType(path) == "image")
         System::Application::resources->m_file_image_assets.insert({ key, path });
 
-    else if (System::Utils::GetFileType(path) == "audio" && System::Application::resources->m_file_audio_assets.find(key) == System::Application::resources->m_file_audio_assets.end())
+    else if (System::Utils::GetFileType(path) == "audio")
         System::Application::resources->m_file_audio_assets.insert({ key, path });
 
-    else if (System::Utils::GetFileType(path) == "data" && System::Application::resources->m_file_text_assets.find(key) == System::Application::resources->m_file_text_assets.end())
+    else if (System::Utils::GetFileType(path) == "data")
         System::Application::resources->m_file_text_assets.insert({ key, path });
 
     else 
@@ -114,9 +114,7 @@ void Manager::LoadFile(const char* key, const char* path)
 //load frames from vector of int arrays
 void Manager::LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames) {
 
-    if (System::Application::resources->atlases.find(key) == System::Application::resources->atlases.end())
-        System::Application::resources->atlases.insert( { key, frames } );
- 
+    System::Application::resources->atlases.insert( { key, frames } );
 }
 
 
@@ -126,8 +124,7 @@ void Manager::LoadFrames(const std::string& key, const std::vector<std::array<in
 //load frames from file
 void Manager::LoadAtlas(const std::string& key, const char* path) {
 
-    if (System::Application::resources->atlas_paths.find(key) == System::Application::resources->atlas_paths.end())
-        System::Application::resources->atlas_paths.insert( { key, path } );
+    System::Application::resources->atlas_paths.insert( { key, path } );
 }
 
 
@@ -137,8 +134,7 @@ void Manager::LoadAtlas(const std::string& key, const char* path) {
 //load animations from map of start / end pairs defined by key
 void Manager::LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims) {
 
-    if (System::Application::resources->anims.find(key) == System::Application::resources->anims.end())
-        System::Application::resources->anims.insert( { key, anims } );
+    System::Application::resources->anims.insert( { key, anims } );
 }
 
 
@@ -148,14 +144,11 @@ void Manager::LoadAnims(const std::string& key, const std::map<std::string, std:
 //load raw char array image / dimensions and bytes per pixel channel
 void Manager::LoadRawImage(const char* key, const char* arr, int width, int height, int channel) 
 {
-    if (System::Application::resources->image_dimensions_and_channels.find(key) == System::Application::resources->image_dimensions_and_channels.end())
-        System::Application::resources->image_dimensions_and_channels.insert({ key, { width, height, channel } });
+    System::Application::resources->image_dimensions_and_channels.insert({ key, { width, height, channel } });
 
-    if (System::Application::resources->m_raw_image_assets.find(key) == System::Application::resources->m_raw_image_assets.end())
-        System::Application::resources->m_raw_image_assets.insert({ key, arr });
+    System::Application::resources->m_raw_image_assets.insert({ key, arr });
 
-    if (System::Application::resources->m_raw_assets.find(key) == System::Application::resources->m_raw_assets.end())
-        System::Application::resources->m_raw_assets.insert({ key, arr });
+    System::Application::resources->m_raw_assets.insert({ key, arr });
 }
 
 //------------------------------------- 
@@ -165,14 +158,11 @@ void Manager::LoadRawImage(const char* key, const char* arr, int width, int heig
 void Manager::LoadRawAudio(const char* key, const char* arr, unsigned int bytes) 
 {
 
-    if (System::Application::resources->audio_size.find(key) == System::Application::resources->audio_size.end())
-        System::Application::resources->audio_size.insert({ key, bytes }); 
+    System::Application::resources->audio_size.insert({ key, bytes }); 
 
-    if (System::Application::resources->m_raw_audio_assets.find(key) == System::Application::resources->m_raw_audio_assets.end())
-        System::Application::resources->m_raw_audio_assets.insert({ key, arr });
+    System::Application::resources->m_raw_audio_assets.insert({ key, arr });
 
-    if (System::Application::resources->m_raw_assets.find(key) == System::Application::resources->m_raw_assets.end())
-        System::Application::resources->m_raw_assets.insert({ key, arr }); 
+    System::Application::resources->m_raw_assets.insert({ key, arr }); 
 
 }
 

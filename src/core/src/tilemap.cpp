@@ -84,7 +84,7 @@ void MapManager::CreateLayer (
                     bin_reset[0] = '0'; 
                     bin_reset[1] = '0';
                     bin_reset[2] = '0';
-                   
+                    
                     tileType = System::Utils::BinToDec(atoi(bin_reset.c_str()));       
                                 
                     flipX = static_cast<std::string>(flags).substr(0, 1) == "1";

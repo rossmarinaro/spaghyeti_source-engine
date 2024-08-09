@@ -26,6 +26,8 @@ void Time::Update(double t)
 
     time->m_delta = delta;
 
+    glfwPollEvents(); 
+
     System::Application::game->UpdateFrame(); 
 
 }

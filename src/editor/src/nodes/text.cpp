@@ -10,9 +10,10 @@ using namespace editor;
 TextNode::TextNode(): 
     Node("Text")
 {
-
+    isUI = 2;
     size = 1;
-    alpha = 1,
+    alpha = 1;
+    UIFlag = true;
     tint = glm::vec3(1.0f);
     depth = 1;
     textBuf = "";
@@ -115,7 +116,7 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
             if (show_options)
             {
                 ImGui::InputText("content", &textBuf);
-
+                ImGui::Checkbox("UI", &UIFlag);
                 ImGui::ColorEdit3("tint", (float*)&tint); 
                 ImGui::SliderInt("depth", &depth, 0, 1000);
                 ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
@@ -152,5 +153,7 @@ void TextNode::Render()
         textHandle->SetTint(tint);
         textHandle->SetDepth(depth);
     }
+
+    isUI = UIFlag ? 2 : 1;
 }
 

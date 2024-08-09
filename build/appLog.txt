@@ -1,111 +1,24 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Thu Aug 08 11:15:21 2024
-IMGui Version: 1 @ Thu Aug 08 11:15:21 2024
-GUI launched. @ Thu Aug 08 11:15:21 2024
-Workspace reset. @ Thu Aug 08 11:15:25 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Thu Aug 08 18:33:48 2024
+IMGui Version: 1 @ Thu Aug 08 18:33:48 2024
+GUI launched. @ Thu Aug 08 18:33:48 2024
+Workspace reset. @ Thu Aug 08 18:34:02 2024
 Project TheFunkyAdventuresOfSwankyVelvet opened.
-Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Tilemap node Untitled created. @ Thu Aug 08 11:15:26 2024
-key: town_mountains.csvpath: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\town_mountains.csvtex: town.png @ Thu Aug 08 11:15:26 2024
-key: town_background0.csvpath: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\town_background0.csvtex: town.png @ Thu Aug 08 11:15:26 2024
-key: town_background1.csvpath: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\town_background1.csvtex: town.png @ Thu Aug 08 11:15:26 2024
-key: town_background2.csvpath: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\town_background2.csvtex: town.png @ Thu Aug 08 11:15:26 2024
-key: town_background3.csvpath: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\town_background3.csvtex: town.png @ Thu Aug 08 11:15:26 2024
-key: town_foreground1.csvpath: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\town_foreground1.csvtex: town.png @ Thu Aug 08 11:15:26 2024
-key: town_foreground2.csvpath: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\town_foreground2.csvtex: town.png @ Thu Aug 08 11:15:26 2024
-key: town_foreground3.csvpath: C:\project_data\projects\c++\spaghyeti_source_engine\games\TestGame\resources\assets\data\town_foreground3.csvtex: town.png @ Thu Aug 08 11:15:26 2024
-key: town_platforms.csvpath: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_platforms.csvtex: town.png @ Thu Aug 08 11:15:26 2024
-Empty node Untitled created. @ Thu Aug 08 11:15:26 2024
-Text node Untitled created. @ Thu Aug 08 11:15:26 2024
-Group node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Group node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:26 2024
-Group node Untitled created. @ Thu Aug 08 11:15:27 2024
-Sprite node Untitled created. @ Thu Aug 08 11:15:27 2024
-Sprite node coin deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_0 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_5 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_6 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_7 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_8 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_9 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_10 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_11 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node box deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node box_14 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node box_14_15 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node box_14_15_16 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_17 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node hooligan deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node hooligan_2 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node hooligan_2_3 deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node player deleted. @ Thu Aug 08 11:15:33 2024
-Sprite node sky deleted. @ Thu Aug 08 11:15:33 2024
-Tilemap node map deleted. @ Thu Aug 08 11:15:33 2024
-Empty node manager deleted. @ Thu Aug 08 11:15:33 2024
-Text node score deleted. @ Thu Aug 08 11:15:33 2024
-Group node items deleted. @ Thu Aug 08 11:15:33 2024
-Group node enemies deleted. @ Thu Aug 08 11:15:33 2024
-Group node player deleted. @ Thu Aug 08 11:15:33 2024
-GUI exited @ Thu Aug 08 11:15:33 2024
-Editor closed. @ Thu Aug 08 11:15:33 2024
+Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Thu Aug 08 18:34:03 2024
+Sprite node Untitled created. @ Thu Aug 08 18:34:03 2024
+Sprite node Untitled created. @ Thu Aug 08 18:34:03 2024
+Sprite node Untitled created. @ Thu Aug 08 18:34:03 2024
+Text node Untitled created. @ Thu Aug 08 18:34:03 2024
+Group node Untitled created. @ Thu Aug 08 18:34:03 2024
+Text node Untitled created. @ Thu Aug 08 18:34:03 2024
+Text node Untitled created. @ Thu Aug 08 18:34:03 2024
+Text node Untitled created. @ Thu Aug 08 18:34:03 2024
+Text node top deleted. @ Thu Aug 08 18:34:42 2024
+Text node bottom deleted. @ Thu Aug 08 18:34:42 2024
+Text node author deleted. @ Thu Aug 08 18:34:42 2024
+Sprite node sv deleted. @ Thu Aug 08 18:34:42 2024
+Sprite node background deleted. @ Thu Aug 08 18:34:42 2024
+Sprite node glow deleted. @ Thu Aug 08 18:34:42 2024
+Text node start deleted. @ Thu Aug 08 18:34:42 2024
+Group node title deleted. @ Thu Aug 08 18:34:42 2024
+GUI exited @ Thu Aug 08 18:34:42 2024
+Editor closed. @ Thu Aug 08 18:34:42 2024

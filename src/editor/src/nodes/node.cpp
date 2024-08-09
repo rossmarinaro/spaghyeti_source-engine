@@ -594,6 +594,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                     { "z", tn->tint.z }
                 }
             },
+            { "UIFlag", tn->UIFlag }, 
             { "alpha", tn->alpha },    
             { "position x", tn->positionX },      
             { "position y", tn->positionY }, 
@@ -989,6 +990,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             tn->scaleX = data["scale x"];      
             tn->scaleY = data["scale y"];
             tn->depth = data["depth"];    
+            tn->UIFlag = data["UIFlag"];
 
             //script
 

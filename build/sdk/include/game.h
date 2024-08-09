@@ -47,13 +47,12 @@ namespace System {
 
             //create objects
 
-            static std::shared_ptr<Entity> CreateEntity(const std::string& type = "empty");
+            static std::shared_ptr<Entity> CreateEntity(const std::string& type = "empty", int layer = 1);
             static std::shared_ptr<Sprite> CreateUI(const std::string& key, float x, float y, int frame = 0);
-            static std::shared_ptr<Sprite> CreateSprite(const std::string& key, float x, float y, int frame = 0, float scale = 1.0f);
+            static std::shared_ptr<Sprite> CreateSprite(const std::string& key, float x, float y, int frame = 0, float scale = 1.0f, int layer = 1);
             static std::shared_ptr<Sprite> CreateTileSprite(const std::string& key, float x, float y, int frame);
-            static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y);
-            static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height);
-            static std::shared_ptr<Geometry> CreateGeom(float x, float y, const glm::vec2& start, const glm::vec2& end);
+            static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y, int layer = 2);
+            static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height, int layer = 1);
             static void DestroyEntity(std::shared_ptr<Entity> entity);
             
             static void StartScene(const std::string& key);
@@ -87,7 +86,7 @@ namespace System {
 
             static inline std::vector<std::string> cachedScenes;
 
-            bool m_gameState;
+            std::atomic_bool m_gameState;
             Process::Context m_context;
             Scene* currentScene; 
 

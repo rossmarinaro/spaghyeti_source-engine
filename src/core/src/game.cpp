@@ -107,7 +107,7 @@ Game::Game()
 
 //---------------------------- boot entry scene
 
-std::shared_ptr<Text> loadingText;
+
 void Game::Boot()   
 {     
 
@@ -270,8 +270,6 @@ void Game::UpdateFrame()
     if (!m_gameState)
         return;
 
-    glfwPollEvents();  
-    
     inputs->ProcessInput(Window::s_instance);
 
     physics->Update();
@@ -288,10 +286,12 @@ void Game::UpdateFrame()
 
     //vignette overlay
 
-    currentScene->vignette->texture.FrameWidth = Window::s_scaleWidth * 4;
-    currentScene->vignette->texture.FrameHeight = Window::s_scaleHeight * 4;
-    currentScene->vignette->Render();
-
+    if(currentScene->vignette) {
+        currentScene->vignette->texture.FrameWidth = Window::s_scaleWidth * 4;
+        currentScene->vignette->texture.FrameHeight = Window::s_scaleHeight * 4;
+        currentScene->vignette->Render();
+    }
+    
     //render input cursor
 
     Application::game->inputs->RenderCursor();
@@ -350,7 +350,14 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
     if (it != Application::game->currentScene->entities.end())
         Application::game->currentScene->entities.erase(it);
-    
+
+    else {
+        auto UI_it = std::find(Application::game->currentScene->UI.begin(), Application::game->currentScene->UI.end(), entity);
+
+        if (UI_it != Application::game->currentScene->UI.end())
+            Application::game->currentScene->UI.erase(UI_it);
+    }
+
     entity->renderable = false;
 
     entity->active = false;
@@ -388,7 +395,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 //----------------------------- sprite
 
 
-std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, float y, int frame, float scale)
+std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, float y, int frame, float scale, int layer)
 {
 
     auto sprite = std::make_shared<Sprite>(key, x, y, frame);
@@ -399,7 +406,11 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
 
     sprite->SetScale(scale);
 
-    Application::game->currentScene->entities.push_back(sprite); 
+    if (layer == 1)
+        Application::game->currentScene->entities.push_back(sprite);
+
+    if (layer == 2)
+        Application::game->currentScene->UI.push_back(sprite); 
 
     return sprite;
 }
@@ -448,12 +459,16 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
 //----------------------------- debug text
 
 
-std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, float y)
+std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, float y, int layer)
 {
 
     auto text = std::make_shared<Text>(content, x, y); 
 
-    Application::game->currentScene->UI.push_back(text);
+    if (layer == 1)
+        Application::game->currentScene->entities.push_back(text);
+
+    if (layer == 2)
+        Application::game->currentScene->UI.push_back(text);
 
     return text;
 }
@@ -462,11 +477,15 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 //----------------------------- quad
 
 
-std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height)
+std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height, int layer)
 {
     auto geom = std::make_shared<Geometry>(x, y, width, height);
 
-    Application::game->currentScene->entities.push_back(geom);
+    if (layer == 1)
+        Application::game->currentScene->entities.push_back(geom);
+
+    if (layer == 2)
+        Application::game->currentScene->UI.push_back(geom);
 
     return geom;
 }
@@ -475,11 +494,15 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 //----------------------------- base entity wrapper
 
 
-std::shared_ptr<Entity> Game::CreateEntity(const std::string& type)
+std::shared_ptr<Entity> Game::CreateEntity(const std::string& type, int layer)
 {
     auto entity = std::make_shared<Entity>(type.c_str());
 
-    Application::game->currentScene->entities.push_back(entity);
+    if (layer == 1)
+        Application::game->currentScene->entities.push_back(entity);
+
+    if (layer == 2)
+        Application::game->currentScene->UI.push_back(entity);
 
     return entity;
 } 
