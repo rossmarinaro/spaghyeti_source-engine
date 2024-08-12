@@ -1,24 +1,27 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Thu Aug 08 18:33:48 2024
-IMGui Version: 1 @ Thu Aug 08 18:33:48 2024
-GUI launched. @ Thu Aug 08 18:33:48 2024
-Workspace reset. @ Thu Aug 08 18:34:02 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Aug 12 13:23:33 2024
+IMGui Version: 1 @ Mon Aug 12 13:23:34 2024
+GUI launched. @ Mon Aug 12 13:23:34 2024
+Workspace reset. @ Mon Aug 12 13:23:41 2024
 Project TheFunkyAdventuresOfSwankyVelvet opened.
-Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Thu Aug 08 18:34:03 2024
-Sprite node Untitled created. @ Thu Aug 08 18:34:03 2024
-Sprite node Untitled created. @ Thu Aug 08 18:34:03 2024
-Sprite node Untitled created. @ Thu Aug 08 18:34:03 2024
-Text node Untitled created. @ Thu Aug 08 18:34:03 2024
-Group node Untitled created. @ Thu Aug 08 18:34:03 2024
-Text node Untitled created. @ Thu Aug 08 18:34:03 2024
-Text node Untitled created. @ Thu Aug 08 18:34:03 2024
-Text node Untitled created. @ Thu Aug 08 18:34:03 2024
-Text node top deleted. @ Thu Aug 08 18:34:42 2024
-Text node bottom deleted. @ Thu Aug 08 18:34:42 2024
-Text node author deleted. @ Thu Aug 08 18:34:42 2024
-Sprite node sv deleted. @ Thu Aug 08 18:34:42 2024
-Sprite node background deleted. @ Thu Aug 08 18:34:42 2024
-Sprite node glow deleted. @ Thu Aug 08 18:34:42 2024
-Text node start deleted. @ Thu Aug 08 18:34:42 2024
-Group node title deleted. @ Thu Aug 08 18:34:42 2024
-GUI exited @ Thu Aug 08 18:34:42 2024
-Editor closed. @ Thu Aug 08 18:34:42 2024
+Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Mon Aug 12 13:23:42 2024
+Sprite node Untitled created. @ Mon Aug 12 13:23:42 2024
+Sprite node Untitled created. @ Mon Aug 12 13:23:42 2024
+Sprite node Untitled created. @ Mon Aug 12 13:23:42 2024
+Text node Untitled created. @ Mon Aug 12 13:23:42 2024
+Group node Untitled created. @ Mon Aug 12 13:23:42 2024
+Text node Untitled created. @ Mon Aug 12 13:23:42 2024
+Text node Untitled created. @ Mon Aug 12 13:23:42 2024
+Text node Untitled created. @ Mon Aug 12 13:23:42 2024
+Text node top deleted. @ Mon Aug 12 13:23:52 2024
+Text node bottom deleted. @ Mon Aug 12 13:23:52 2024
+Text node author deleted. @ Mon Aug 12 13:23:52 2024
+Sprite node sv deleted. @ Mon Aug 12 13:23:52 2024
+Sprite node background deleted. @ Mon Aug 12 13:23:52 2024
+Sprite node glow deleted. @ Mon Aug 12 13:23:52 2024
+Text node start deleted. @ Mon Aug 12 13:23:52 2024
+Group node title deleted. @ Mon Aug 12 13:23:52 2024
+Workspace reset. @ Mon Aug 12 13:23:52 2024
+scene test opened.
+ @ Mon Aug 12 13:23:52 2024
+GUI exited @ Mon Aug 12 13:24:13 2024
+Editor closed. @ Mon Aug 12 13:24:13 2024

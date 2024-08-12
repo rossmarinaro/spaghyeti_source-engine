@@ -113,7 +113,6 @@ void Manager::LoadFile(const char* key, const char* path)
 
 //load frames from vector of int arrays
 void Manager::LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames) {
-
     System::Application::resources->atlases.insert( { key, frames } );
 }
 
@@ -123,7 +122,6 @@ void Manager::LoadFrames(const std::string& key, const std::vector<std::array<in
 
 //load frames from file
 void Manager::LoadAtlas(const std::string& key, const char* path) {
-
     System::Application::resources->atlas_paths.insert( { key, path } );
 }
 
@@ -133,7 +131,6 @@ void Manager::LoadAtlas(const std::string& key, const char* path) {
 
 //load animations from map of start / end pairs defined by key
 void Manager::LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims) {
-
     System::Application::resources->anims.insert( { key, anims } );
 }
 

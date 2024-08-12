@@ -237,7 +237,7 @@ void GUI::ShowOptionsInit()
     }
 
     if (ImGui::Button("Open", ImVec2(System::Window::s_width, 0.0f))) {
-        if (Editor::events.OpenScene())
+        if (Editor::events.Open())
             s_show_init = false;
     }
 

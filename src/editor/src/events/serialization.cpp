@@ -32,6 +32,41 @@ std::string EventListener::GetScriptName(const std::string& path)
 //-----------------------------------
 
 
+void EventListener::EncodeFile(const std::string& path)
+{
+    std::ofstream src(path);
+
+    json data;
+
+    Serialize(data, true);
+
+    std::string JSON = data.dump();
+
+    for (int i = 0; i < JSON.length(); i++)
+        if (JSON[i] == '{')
+            JSON[i] = '%';
+        else if (JSON[i] == '}')
+            JSON[i] = '|';
+        else if (JSON[i] == '[')
+            JSON[i] = '?';
+        else if (JSON[i] == ']')
+            JSON[i] = '!';
+        else if (JSON[i] == ',')
+            JSON[i] = '&';
+        else if (JSON[i] == ',')
+            JSON[i] = '&';
+        else if (JSON[i] == ':')
+            JSON[i] = '$';
+
+    src << JSON;
+
+    src.close();
+}
+
+
+//-----------------------------------
+
+
 void EventListener::DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath)
 {
 
@@ -72,10 +107,11 @@ void EventListener::DecodeFile(const std::string& outPath, const std::filesystem
 //-----------------------------project serialization
 
 
-void EventListener::Serialize(json& data)
+void EventListener::Serialize(json& data, bool newScene)
 {
 
-    json nodes;
+    json scenes = json::array();
+    json nodes = json::array();
 
     json sprites;
     json tilemaps;
@@ -83,110 +119,99 @@ void EventListener::Serialize(json& data)
     json text;
     json empty;
     json groups;
-
-    json scenes = json::array();
-
-    if (Editor::scenes.size() > 1) 
-    {
-        for (int i = 0; i < Editor::scenes.size(); i++)
-            scenes.push_back({ { "key", Editor::scenes[i] } });
-
-        data["scenes"] = scenes;
-    }
-
-    data["icon"] = AssetManager::projectIcon;
+    
+    data["icon"] = newScene ? "" : AssetManager::projectIcon;
 
     //camera
 
-    data["camera"]["vignetteVisibility"] = Editor::vignetteVisibility;
-    data["camera"]["x"] = Editor::game->camera->position.x;
-    data["camera"]["y"] = Editor::game->camera->position.y;
-    data["camera"]["width"] = Editor::worldWidth;
-    data["camera"]["height"] = Editor::worldHeight;
-    data["camera"]["zoom"] = Editor::game->camera->zoom; 
-    data["camera"]["color"]["x"] = Editor::game->camera->backgroundColor.x;
-    data["camera"]["color"]["y"] = Editor::game->camera->backgroundColor.y;
-    data["camera"]["color"]["z"] = Editor::game->camera->backgroundColor.z;
-    data["camera"]["color"]["w"] = Editor::game->camera->backgroundColor.w;
-    data["camera"]["alpha"] = GUI::s_grid->alpha;
-    data["camera"]["pitch"] = GUI::s_grid_quantity;
-    data["camera"]["bounds"]["width"]["begin"] = Editor::game->camera->currentBoundsWidthBegin;
-    data["camera"]["bounds"]["width"]["end"] = Editor::game->camera->currentBoundsWidthEnd;
-    data["camera"]["bounds"]["height"]["begin"] = Editor::game->camera->currentBoundsHeightBegin;
-    data["camera"]["bounds"]["height"]["end"] = Editor::game->camera->currentBoundsHeightEnd;
+    data["camera"]["vignetteVisibility"] = newScene ? 0.0f : Editor::vignetteVisibility;
+    data["camera"]["x"] = newScene ? 0.0f : Editor::game->camera->position.x;
+    data["camera"]["y"] = newScene ? 0.0f : Editor::game->camera->position.y;
+    data["camera"]["width"] = newScene ? 2000.0f : Editor::worldWidth;
+    data["camera"]["height"] = newScene ? 2000.0f : Editor::worldHeight;
+    data["camera"]["zoom"] = newScene ? 1.0f : Editor::game->camera->zoom; 
+    data["camera"]["color"]["x"] = newScene ? 0.5f : Editor::game->camera->backgroundColor.x;
+    data["camera"]["color"]["y"] = newScene ? 0.5f : Editor::game->camera->backgroundColor.y;
+    data["camera"]["color"]["z"] = newScene ? 0.5f : Editor::game->camera->backgroundColor.z;
+    data["camera"]["color"]["w"] = newScene ? 1.0f : Editor::game->camera->backgroundColor.w;
+    data["camera"]["alpha"] = newScene ? 1.0f : GUI::s_grid->alpha;
+    data["camera"]["pitch"] = newScene ? 20.0f : GUI::s_grid_quantity;
+    data["camera"]["bounds"]["width"]["begin"] = newScene ? 0.0f : Editor::game->camera->currentBoundsWidthBegin;
+    data["camera"]["bounds"]["width"]["end"] = newScene ? 0.0f : Editor::game->camera->currentBoundsWidthEnd;
+    data["camera"]["bounds"]["height"]["begin"] = newScene ? 0.0f : Editor::game->camera->currentBoundsHeightBegin;
+    data["camera"]["bounds"]["height"]["end"] = newScene ? 0.0f : Editor::game->camera->currentBoundsHeightEnd;
 
     //settings
 
-    data["settings"]["physics"]["gravity"]["x"] = Editor::gravityX;
-    data["settings"]["physics"]["gravity"]["y"] = Editor::gravityY;
-    data["settings"]["physics"]["continuous"] = Editor::gravity_continuous;
-    data["settings"]["physics"]["sleeping"] = Editor::gravity_sleeping;
+    data["settings"]["physics"]["gravity"]["x"] = newScene ? 0.0f : Editor::gravityX;
+    data["settings"]["physics"]["gravity"]["y"] = newScene ? 500.0f : Editor::gravityY;
+    data["settings"]["physics"]["continuous"] = newScene ? true : Editor::gravity_continuous;
+    data["settings"]["physics"]["sleeping"] = newScene ? true : Editor::gravity_sleeping;
+
+    data["globals_applied"] = newScene ? false : Editor::globals_applied;
 
     //loaded data
 
     json spritesheets = json::array();
-
-    if (Editor::spritesheets.size())
-        for (const auto& spritesheet : Editor::spritesheets)
-            spritesheets.push_back({ { "key", spritesheet.first }, { "path", spritesheet.second } });
-
-    data["spritesheets"] = spritesheets;
-
     json assets = json::array();
-
-    if (AssetManager::assets_preload.size())
-        for (const auto& asset : AssetManager::assets_preload)
-            assets.push_back(asset);
-
-    data["assets"] = assets;
-
-    //globals
-
     json globals = json::array();
 
-    data["globals_applied"] = Editor::globals_applied;
- 
-    if (Editor::globals_applied)
-        for (const auto& global : Editor::globals)
-            globals.push_back({ { "key", global.first }, { "type", global.second } });
-
-    data["globals"] = globals;
-
-    //nodes
-
-    for (auto& node : Node::nodes)
+    if (!newScene)
     {
+        if (Editor::globals_applied)
+            for (const auto& global : Editor::globals)
+                globals.push_back({ { "key", global.first }, { "type", global.second } });
 
-        if (node->type == "Sprite")
-            sprites.push_back(Node::WriteData(node));
+        if (AssetManager::assets_preload.size())
+            for (const auto& asset : AssetManager::assets_preload)
+                assets.push_back(asset);
 
-        if (node->type == "Tilemap")
-            tilemaps.push_back(Node::WriteData(node));
+        if (Editor::spritesheets.size())
+            for (const auto& spritesheet : Editor::spritesheets)
+                spritesheets.push_back({ { "key", spritesheet.first }, { "path", spritesheet.second } });
 
-        if (node->type == "Audio")
-            audio.push_back(Node::WriteData(node));
+        if (Editor::scenes.size() > 1) 
+        {
+            for (int i = 0; i < Editor::scenes.size(); i++)
+                scenes.push_back({ { "key", Editor::scenes[i] } });
 
-        if (node->type == "Empty")
-            empty.push_back(Node::WriteData(node));
+            data["scenes"] = scenes;
+        }
 
-        if (node->type == "Text")
-            text.push_back(Node::WriteData(node));
-            
-        if (node->type == "Group")
-            groups.push_back(Node::WriteData(node));
-    
+        for (auto& node : Node::nodes)
+        {
+
+            if (node->type == "Sprite")
+                sprites.push_back(Node::WriteData(node));
+
+            if (node->type == "Tilemap")
+                tilemaps.push_back(Node::WriteData(node));
+
+            if (node->type == "Audio")
+                audio.push_back(Node::WriteData(node));
+
+            if (node->type == "Empty")
+                empty.push_back(Node::WriteData(node));
+
+            if (node->type == "Text")
+                text.push_back(Node::WriteData(node));
+                
+            if (node->type == "Group")
+                groups.push_back(Node::WriteData(node));
+        
+        }
     }
 
-    //embed node data
-
-    nodes = json::array();
-
+    data["spritesheets"] = spritesheets;
+    data["assets"] = assets;
+    data["globals"] = globals;
     data["nodes"]["sprites"] = sprites;
     data["nodes"]["tilemaps"] = tilemaps;
     data["nodes"]["audio"] = audio;
     data["nodes"]["empty"] = empty;
     data["nodes"]["text"] = text;
     data["nodes"]["groups"] = groups;
+
 }
 
 

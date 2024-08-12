@@ -25,6 +25,7 @@ using namespace editor;
 //--------------------------------- file open callbacks (windows only)
 
 
+
 static int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
     #ifdef _WIN32
@@ -41,25 +42,9 @@ static int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg, LPARAM lParam, LPARA
 }
 
 
-//---------------------------------------
-
-
-static int CALLBACK BrowseFolderCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
-{
-    #ifdef _WIN32
-
-        if (uMsg == BFFM_INITIALIZED) {
-            LPCTSTR path = reinterpret_cast<LPCTSTR>(lpData);
-            ::SendMessage(hwnd, BFFM_SETSELECTION, true, (LPARAM) path);
-        }
-
-    #endif
-
-    return 0;
-}
-
 
 //-------------------------------- new project layer
+
 
 
 bool EventListener::NewProject(const char* root_path)
@@ -107,10 +92,71 @@ bool EventListener::NewProject(const char* root_path)
 }
 
 
+
+//-------------------------------- new scene
+
+
+
+bool EventListener::NewScene(const char* root_path)
+{
+
+    #ifdef _WIN32
+
+        OPENFILENAME ofn;
+
+        char szFileName[MAX_PATH] = "";
+
+        ZeroMemory(&ofn, sizeof(ofn));
+
+        ofn.lStructSize = sizeof(ofn); 
+        ofn.hwndOwner = NULL;
+        ofn.lpstrFilter = _T("SpaghYeti Files (*.spaghyeti)\0*.spaghyeti");
+        ofn.lpstrFile = szFileName;
+        ofn.nMaxFile = MAX_PATH;
+        ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+        ofn.lpstrDefExt = NULL;
+
+        if (GetSaveFileName(&ofn) == TRUE) 
+        {
+            std::filesystem::path result((const char*)ofn.lpstrFile);
+
+            const std::string file = result.string() + ".spaghyeti";
+
+            EncodeFile(file);
+
+            s_currentScene = result.filename().string();
+
+            const std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
+
+            DecodeFile(tmp, file);
+
+            Editor::Reset();
+
+            std::ifstream JSON(tmp);
+
+            if (JSON.good()) {
+                Editor::Log("scene " + s_currentScene + " opened.\n");
+                Deserialize(JSON);
+            }
+
+            else {
+                Editor::Log("there was a problem deserializing scene.");
+                return false;
+            }
+
+            return true;
+        }
+
+    #endif
+
+    return false;
+}
+
+
 //----------------------------- open project layer
 
 
-bool EventListener::OpenScene() //makes temporary json file to parse data from .spaghyeti
+bool EventListener::Open() //makes temporary json file to parse data from .spaghyeti
 {
 
    #ifdef _WIN32
@@ -225,41 +271,15 @@ bool EventListener::SaveScene(bool saveAs)
 
         file.close();
 
-        auto saveFile = [&](std::string filename) -> bool {
+        auto saveFile = [&](std::string filepath) -> bool {
 
-            std::ofstream src(filename);
+            EncodeFile(filepath);
 
-            json data;
+            Editor::projectPath = std::filesystem::path{ filepath }.parent_path().string() + "\\";
 
-            Serialize(data);
+            s_currentScene = System::Utils::ReplaceFrom(std::filesystem::path{ filepath }.filename().string(), ".", "");
 
-            std::string JSON = data.dump();
-
-            for (int i = 0; i < JSON.length(); i++)
-                if (JSON[i] == '{')
-                    JSON[i] = '%';
-                else if (JSON[i] == '}')
-                    JSON[i] = '|';
-                else if (JSON[i] == '[')
-                    JSON[i] = '?';
-                else if (JSON[i] == ']')
-                    JSON[i] = '!';
-                else if (JSON[i] == ',')
-                    JSON[i] = '&';
-                else if (JSON[i] == ',')
-                    JSON[i] = '&';
-                else if (JSON[i] == ':')
-                    JSON[i] = '$';
-
-            src << JSON;
-
-            src.close();
-
-            Editor::projectPath = std::filesystem::path{ filename }.parent_path().string() + "\\";
-
-            s_currentScene = System::Utils::ReplaceFrom(std::filesystem::path{ filename }.filename().string(), ".", "");
-
-            Editor::Log("Project saved: " + Editor::projectPath + std::filesystem::path{ filename }.filename().string());
+            Editor::Log("Project saved: " + Editor::projectPath + std::filesystem::path{ filepath }.filename().string());
 
             return true;
 
@@ -731,6 +751,40 @@ void EventListener::BuildAndRun()
             std::replace(path.begin(), path.end(), '\\', '/');
             game_src << "#include " << "\"" + path + "\"\n";
         }
+    }
+
+    //include shaders
+
+    for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::shader_dir)) 
+    {
+
+        std::string path = shader.path().string(),
+                    name = shader.path().filename().string(),
+                    copiedFile = assetsFolder + name;
+
+        auto iterate = [&] (std::string& p){
+
+            const bool shader_extensions = (System::Utils::str_endsWith(p, ".shader") || System::Utils::str_endsWith(p, ".vert") || System::Utils::str_endsWith(p, ".frag") || System::Utils::str_endsWith(p, ".glsl"));
+
+            if (shader_extensions) 
+            {
+                std::replace(p.begin(), p.end(), '\\', '/');
+
+                if (!std::filesystem::exists(copiedFile)) {
+                    Editor::Log("copying shaders: " + p + " to: " + copiedFile);
+                    std::filesystem::copy_file(p, copiedFile, options);
+                }
+            }
+        };
+
+        if (shader.is_directory()) {
+            for (const auto& folder : std::filesystem::recursive_directory_iterator(shader)) {
+                std::string p = folder.path().string();
+                iterate(p);
+            }}
+
+        else
+            iterate(path);
     }
 
     //temp containers to track loaded configurations by key to avoid duplicate loads

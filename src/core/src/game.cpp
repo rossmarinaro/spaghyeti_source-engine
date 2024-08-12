@@ -22,10 +22,6 @@ void Game::Flush()
         Application::eventPool = nullptr;
     }
 
-    currentScene->entities.clear();
-    currentScene->UI.clear();
-    currentScene->behaviors.clear();
-
     maps->layers.clear();
 
     //refresh physics
@@ -63,6 +59,10 @@ void Game::Flush()
         #endif
 
     #endif
+    
+    currentScene->entities.clear();
+    currentScene->UI.clear();
+    currentScene->behaviors.clear();
 }
 
 

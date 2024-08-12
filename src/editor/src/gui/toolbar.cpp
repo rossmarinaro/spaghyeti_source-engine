@@ -333,11 +333,21 @@ void editor::GUI::ShowMenu()
     if (ImGui::MenuItem("Build / Run"))
         Editor::events.buildFlag = true;
 
-    if (ImGui::MenuItem("New"))
-        Editor::events.NewProject();
+    if (ImGui::BeginMenu("New")) 
+    {
+        if (ImGui::MenuItem("project"))
+            if (!Editor::events.NewProject())
+                Editor::Log("could not create project.");
+
+        if (ImGui::MenuItem("scene"))
+            if (!Editor::events.NewScene())
+                Editor::Log("could not create scene.");
+
+        ImGui::EndMenu();
+    }
 
     if (ImGui::MenuItem("Open", "Ctrl+O"))
-        Editor::events.OpenScene();
+        Editor::events.Open();
 
     if (ImGui::MenuItem("Save", "Ctrl+S"))
         if(!Editor::events.SaveScene())

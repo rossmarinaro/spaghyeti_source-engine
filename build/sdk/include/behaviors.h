@@ -26,9 +26,14 @@ namespace entity_behaviors {
                 this->ID = m_entity->ID;
             }
 
-            virtual ~Behavior() {
+            virtual ~Behavior() 
+            {
                 this->active = false;
                 this->m_entity = nullptr;
+
+                #if DEVELOPMENT == 1
+                    std::cout << "Behavior: " << this->name << " destroyed.\n";
+                #endif
             }
 
             virtual void Update() {}
