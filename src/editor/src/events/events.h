@@ -28,7 +28,7 @@ namespace editor {
             void BuildAndRun();
             void OpenFile();
             void DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath);
-            void EncodeFile(const std::string& path);
+            void EncodeFile(const std::string& path, bool newScene = false);
             
             std::string GetScriptName(const std::string& path);
 

@@ -122,7 +122,7 @@ bool EventListener::NewScene(const char* root_path)
 
             const std::string file = result.string() + ".spaghyeti";
 
-            EncodeFile(file);
+            EncodeFile(file, true);
 
             s_currentScene = result.filename().string();
 

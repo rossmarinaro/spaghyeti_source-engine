@@ -1,27 +1,5 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Aug 12 13:23:33 2024
-IMGui Version: 1 @ Mon Aug 12 13:23:34 2024
-GUI launched. @ Mon Aug 12 13:23:34 2024
-Workspace reset. @ Mon Aug 12 13:23:41 2024
-Project TheFunkyAdventuresOfSwankyVelvet opened.
-Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Mon Aug 12 13:23:42 2024
-Sprite node Untitled created. @ Mon Aug 12 13:23:42 2024
-Sprite node Untitled created. @ Mon Aug 12 13:23:42 2024
-Sprite node Untitled created. @ Mon Aug 12 13:23:42 2024
-Text node Untitled created. @ Mon Aug 12 13:23:42 2024
-Group node Untitled created. @ Mon Aug 12 13:23:42 2024
-Text node Untitled created. @ Mon Aug 12 13:23:42 2024
-Text node Untitled created. @ Mon Aug 12 13:23:42 2024
-Text node Untitled created. @ Mon Aug 12 13:23:42 2024
-Text node top deleted. @ Mon Aug 12 13:23:52 2024
-Text node bottom deleted. @ Mon Aug 12 13:23:52 2024
-Text node author deleted. @ Mon Aug 12 13:23:52 2024
-Sprite node sv deleted. @ Mon Aug 12 13:23:52 2024
-Sprite node background deleted. @ Mon Aug 12 13:23:52 2024
-Sprite node glow deleted. @ Mon Aug 12 13:23:52 2024
-Text node start deleted. @ Mon Aug 12 13:23:52 2024
-Group node title deleted. @ Mon Aug 12 13:23:52 2024
-Workspace reset. @ Mon Aug 12 13:23:52 2024
-scene test opened.
- @ Mon Aug 12 13:23:52 2024
-GUI exited @ Mon Aug 12 13:24:13 2024
-Editor closed. @ Mon Aug 12 13:24:13 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Aug 12 15:07:59 2024
+IMGui Version: 1 @ Mon Aug 12 15:08:00 2024
+GUI launched. @ Mon Aug 12 15:08:00 2024
+GUI exited @ Mon Aug 12 15:08:01 2024
+Editor closed. @ Mon Aug 12 15:08:01 2024

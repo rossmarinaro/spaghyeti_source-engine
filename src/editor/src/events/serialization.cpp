@@ -32,13 +32,13 @@ std::string EventListener::GetScriptName(const std::string& path)
 //-----------------------------------
 
 
-void EventListener::EncodeFile(const std::string& path)
+void EventListener::EncodeFile(const std::string& path, bool newScene)
 {
     std::ofstream src(path);
 
     json data;
 
-    Serialize(data, true);
+    Serialize(data, newScene);
 
     std::string JSON = data.dump();
 
