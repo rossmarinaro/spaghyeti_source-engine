@@ -1,5 +1,18 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Aug 12 15:07:59 2024
-IMGui Version: 1 @ Mon Aug 12 15:08:00 2024
-GUI launched. @ Mon Aug 12 15:08:00 2024
-GUI exited @ Mon Aug 12 15:08:01 2024
-Editor closed. @ Mon Aug 12 15:08:01 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Aug 12 15:31:29 2024
+IMGui Version: 1 @ Mon Aug 12 15:31:30 2024
+GUI launched. @ Mon Aug 12 15:31:30 2024
+Workspace reset. @ Mon Aug 12 15:31:39 2024
+Project fighter opened.
+Project root path set: C:\project_data\projects\c++\fighter\ @ Mon Aug 12 15:31:39 2024
+Sprite node Untitled created. @ Mon Aug 12 15:31:39 2024
+Sprite node Untitled created. @ Mon Aug 12 15:31:39 2024
+Sprite node Untitled created. @ Mon Aug 12 15:31:39 2024
+Sprite node Untitled created. @ Mon Aug 12 15:31:39 2024
+Sprite node Untitled created. @ Mon Aug 12 15:31:39 2024
+Sprite node bg1 deleted. @ Mon Aug 12 15:33:01 2024
+Sprite node player1 deleted. @ Mon Aug 12 15:33:01 2024
+Sprite node player2 deleted. @ Mon Aug 12 15:33:01 2024
+Sprite node bg2 deleted. @ Mon Aug 12 15:33:01 2024
+Sprite node bg3 deleted. @ Mon Aug 12 15:33:01 2024
+GUI exited @ Mon Aug 12 15:33:01 2024
+Editor closed. @ Mon Aug 12 15:33:01 2024

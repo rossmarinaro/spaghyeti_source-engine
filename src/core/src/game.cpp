@@ -382,10 +382,10 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
     //reset associated behavior if applicable
 
-    auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b) { return b->ID == ID; });
+  //  auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b) { return b->ID == ID; });
 
-    if (behavior_it != Application::game->currentScene->behaviors.end()) 
-        (*behavior_it)->active = false;
+    //if (behavior_it != Application::game->currentScene->behaviors.end()) 
+        //(*behavior_it)->active = false;
 
 } 
 
