@@ -23,46 +23,12 @@ void Game::Flush()
     }
 
     maps->layers.clear();
-
-    //refresh physics
-    
-    physics->ClearBodies();   
-
-    #if DEVELOPMENT == 1 
-
-       delete physics->debug;
-       physics->debug = nullptr;
-
-        #if STANDALONE == 1
-
-            delete displayInfo;
-            displayInfo = nullptr;
-
-        #endif
-
-    #endif  
-
-    delete physics;
-    physics = nullptr;
-
-    physics = new Physics;
-
-    physics->GetWorld().SetContactListener(&physics->collisions);
-
-    #if DEVELOPMENT == 1
-
-        physics->debug = new DebugDraw;
-	    physics->GetWorld().SetDebugDraw(physics->debug);
-
-        #if STANDALONE == 1
-            displayInfo = new DisplayInfo;
-        #endif
-
-    #endif
     
     currentScene->entities.clear();
     currentScene->UI.clear();
     currentScene->behaviors.clear();
+
+  
 }
 
 
@@ -172,11 +138,47 @@ void Game::StartScene(const std::string& key)
             game->Flush();
         }   
 
-        Application::eventPool = new EventPool(THREAD_COUNT);
-
         //assign / load current scene
 
         game->currentScene = *it;
+
+        Application::eventPool = new EventPool(THREAD_COUNT);
+
+        //refresh physics
+
+        game->physics->ClearBodies();  
+
+        #if DEVELOPMENT == 1 
+
+        delete game->physics->debug;
+        game->physics->debug = nullptr;
+
+            #if STANDALONE == 1
+
+                delete displayInfo;
+                displayInfo = nullptr;
+
+            #endif
+
+        #endif  
+
+        delete game->physics;
+        game->physics = nullptr;
+
+        game->physics = new Physics;
+
+        game->physics->GetWorld().SetContactListener(&game->physics->collisions);
+
+        #if DEVELOPMENT == 1
+
+            game->physics->debug = new DebugDraw;
+            game->physics->GetWorld().SetDebugDraw(game->physics->debug);
+
+            #if STANDALONE == 1
+                displayInfo = new DisplayInfo;
+            #endif
+
+        #endif
 
         if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {
             game->currentScene->Preload();
@@ -382,10 +384,11 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
     //reset associated behavior if applicable
 
-  //  auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b) { return b->ID == ID; });
+    auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b) { return b->ID == ID; });
 
-    //if (behavior_it != Application::game->currentScene->behaviors.end()) 
-        //(*behavior_it)->active = false;
+    if (behavior_it != Application::game->currentScene->behaviors.end()) 
+        (*behavior_it)->active = false;
+
 
 } 
 
