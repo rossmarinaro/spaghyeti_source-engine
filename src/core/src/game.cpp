@@ -144,40 +144,44 @@ void Game::StartScene(const std::string& key)
 
         Application::eventPool = new EventPool(THREAD_COUNT);
 
-        //refresh physics
+        #if STANDALONE == 1
 
-        game->physics->ClearBodies();  
+            //refresh physics
 
-        #if DEVELOPMENT == 1 
+            game->physics->ClearBodies();  
 
-        delete game->physics->debug;
-        game->physics->debug = nullptr;
+            #if DEVELOPMENT == 1 
 
-            #if STANDALONE == 1
+                delete game->physics->debug;
+                game->physics->debug = nullptr;
 
-                delete displayInfo;
-                displayInfo = nullptr;
+                #if STANDALONE == 1
+
+                    delete displayInfo;
+                    displayInfo = nullptr;
+
+                #endif
+
+            #endif  
+
+            delete game->physics;
+            game->physics = nullptr;
+
+            game->physics = new Physics;
+
+            game->physics->GetWorld().SetContactListener(&game->physics->collisions);
+
+            #if DEVELOPMENT == 1
+
+                game->physics->debug = new DebugDraw;
+                game->physics->GetWorld().SetDebugDraw(game->physics->debug);
+
+                #if STANDALONE == 1
+                    displayInfo = new DisplayInfo;
+                #endif
 
             #endif
-
-        #endif  
-
-        delete game->physics;
-        game->physics = nullptr;
-
-        game->physics = new Physics;
-
-        game->physics->GetWorld().SetContactListener(&game->physics->collisions);
-
-        #if DEVELOPMENT == 1
-
-            game->physics->debug = new DebugDraw;
-            game->physics->GetWorld().SetDebugDraw(game->physics->debug);
-
-            #if STANDALONE == 1
-                displayInfo = new DisplayInfo;
-            #endif
-
+            
         #endif
 
         if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {

@@ -85,7 +85,7 @@ void System::Renderer::RescaleFrameBuffer(float width, float height)
 //     m_Data.QuadBuffer = new Vertex[MaxVertexCount];
 
 //     glGenVertexArrays(1, &m_Data.QuadVA); 
-//     glBindVertexArray(m_Data.QuadVA);
+//     glBindVertexArray(m_Data.QuadVA); 
     
 //     glGenBuffers(1, &m_Data.QuadVB);
 //     glBind_Buffer(GL_ARRAY_BUFFER, m_Data.QuadVB);

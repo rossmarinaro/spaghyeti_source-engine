@@ -3,7 +3,6 @@
     #include <windows.h>
     #include <tchar.h>
     #include <bits/stdc++.h>
-    //#include <iostream>
     #include <sys/stat.h>
     #include <sys/types.h>
     #include <shlobj.h>

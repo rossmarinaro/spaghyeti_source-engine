@@ -50,7 +50,7 @@ b2Body* Physics::CreateStaticBody(
     box.SetAsBox(width, height);       
     body.self->CreateFixture(&box, 0.0f); 
 
-    System::Application::game->physics->m_active_bodies.push_back(body.self);
+    System::Application::game->physics->active_bodies.push_back(body.self);
 
     return body.self;
 }
@@ -109,7 +109,7 @@ b2Body* Physics::CreateDynamicBody(
 
     body.self->CreateFixture(&body.fixtureDef);
 
-    System::Application::game->physics->m_active_bodies.push_back(body.self); 
+    System::Application::game->physics->active_bodies.push_back(body.self); 
     
     return body.self;
 }
@@ -129,11 +129,11 @@ void Physics::DestroyBody(b2Body* b) {
 
 void Physics::ClearBodies() 
 {
-    if (this->m_active_bodies.size())
-        for (const auto& body : this->m_active_bodies)
+    if (this->active_bodies.size())
+        for (const auto& body : this->active_bodies)
             DestroyBody(body);
 
-    this->m_active_bodies.clear();
+    this->active_bodies.clear();
 }
 
 
@@ -172,10 +172,10 @@ void Physics::Update()
     for (; it != end; ++it) 
     {
         auto b = *it;
-        auto b_it = std::find(this->m_active_bodies.begin(), this->m_active_bodies.end(), b);
+        auto b_it = std::find(this->active_bodies.begin(), this->active_bodies.end(), b);
 
-        if (b_it != this->m_active_bodies.end()) 
-            this->m_active_bodies.erase(b_it);
+        if (b_it != this->active_bodies.end()) 
+            this->active_bodies.erase(b_it);
 
         if (b != nullptr) {
             this->m_world.DestroyBody(b);

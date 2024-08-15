@@ -20,6 +20,7 @@ class Physics {
              clearForces = false;
         
         CollisionManager collisions;
+        std::vector<b2Body*> active_bodies;
         
         #if DEVELOPMENT == 1
             DebugDraw* debug;
@@ -70,7 +71,6 @@ class Physics {
 
         b2Vec2 m_gravity;
         std::set<b2Body*> m_bodiesToRemove;
-        std::vector<b2Body*> m_active_bodies;
 
         static inline const int32 s_velocityIterations = 3;
         static inline const int32 s_positionIterations = 2;

@@ -69,7 +69,7 @@ void CollisionManager::EndContact(b2Contact* contact)
 
             sprite->num_contacts--;
 
-            if (sprite->num_contacts > 0)
+            if (sprite->num_contacts > 0) 
                 break;
 
             for (const auto& body : sprite->bodies)
