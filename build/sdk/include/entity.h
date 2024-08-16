@@ -223,7 +223,6 @@ class Sprite : public Entity {
 		void SetImpulse(float x, float y);
 		void SetImpulseX(float x);
 		void SetImpulseY(float y);
-		void Animate(const std::string& animKey, bool yoyo = false, int rate = 2); 
 		void Render();
         std::shared_ptr<Sprite> Clone();
 

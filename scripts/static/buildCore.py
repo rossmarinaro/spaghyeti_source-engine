@@ -1,7 +1,7 @@
 import os
 import sys
 
-make = 'web' if int(sys.argv[1]) == 1 else 'static BUILDTYPE="-static" BUILDFLAG="-c" DEVELOPMENT="0" USE_JSON="1" STANDALONE="1" THREAD_COUNT="5"'
+make = 'web' if int(sys.argv[1]) == 1 else 'static BUILDTYPE="-static" BUILDFLAG="-c" DEVELOPMENT="0" USE_JSON="1" STANDALONE="1" THREAD_COUNT="10"'
 lib = 'spaghyeti-web.a' if int(sys.argv[1]) == 1 else 'spaghyeti.a'
 build_type = 'web' if int(sys.argv[1]) == 1 else 'standard'
 

@@ -364,85 +364,6 @@ void Sprite::ReadSpritesheetData()
 }
 
 
-
-//---------------------- animate sprite
-
-
-void Sprite::Animate(const std::string& animKey, bool yoyo, int rate)
-{ 
-
-    uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
-
-    m_currentAnim = { animKey, { yoyo, rate } }; 
-
-    int startFrame = anims.find(m_currentAnim.first)->second.first,
-        endFrame = anims.find(m_currentAnim.first)->second.second,
-        frame = yoyo ? startFrame : endFrame;
-
-    m_animComplete = frame == currentFrame;
-
-    try {
-
-        if (m_isSpritesheet && active)
-        {
-
-            std::map<std::string, std::pair<int, int>>::iterator anim = anims.find(animKey);
-
-            if (anim == anims.end() || System::Game::GetScene()->IsPaused()) 
-                return;
-
-            std::vector<int> frames; //frames to populate  
-
-            if (yoyo)
-            {
-
-                for (int i = anim->second.first; i < anim->second.second + 1; i++) 
-                    frames.push_back(i);
-                
-                uint32_t elapsed = seconds % frames.size();
-
-                std::vector<int> frames_reversed;
-
-                for (int i = anim->second.second; i > anim->second.first - 1; i--) 
-                    frames_reversed.push_back(i);
-
-                uint32_t elapsed_reversed = seconds % frames_reversed.size();
-
-                if (!m_anim_yoyo && currentFrame == anim->second.second && frames[elapsed] != anim->second.second) 
-                    m_anim_yoyo = true;
-
-                if (m_anim_yoyo && currentFrame == anim->second.first && frames_reversed[elapsed_reversed] != anim->second.first)    
-                    m_anim_yoyo = false;
-
-                if (m_anim_yoyo) 
-                    SetFrame(frames_reversed[elapsed_reversed]);
-
-                else 
-                    SetFrame(frames[elapsed]);
-             
-            }
-
-            else    
-            {
-                for (int i = anim->second.first; i < anim->second.second; i++) 
-                    frames.push_back(i);
-                
-                uint32_t elapsed = seconds % frames.size();
-
-                SetFrame(currentFrame != anim->second.second ? frames[elapsed] : anim->second.first);
-            }
-
-        }
-    }
-
-    catch (std::runtime_error& err) { 
-        #if DEVELOPMENT == 1
-            std::cout << "Sprite: error playing animation: " << err.what() << "\n"; 
-        #endif
-    }
-}
-
-
 //------------------------------------------ render sprite / update transformations
 
 
@@ -565,7 +486,81 @@ void Sprite::Render()
         //play current animation
 
         if (m_isSpritesheet && m_currentAnim.first.length())
-            Animate(m_currentAnim.first, m_currentAnim.second.first, m_currentAnim.second.second); 
+        {
+            const std::string& animKey = m_currentAnim.first;
+            bool yoyo = m_currentAnim.second.first;
+            int rate = m_currentAnim.second.second;
+            uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
+
+            m_currentAnim = { animKey, { yoyo, rate } }; 
+        
+            int startFrame = anims.find(m_currentAnim.first)->second.first,
+                endFrame = anims.find(m_currentAnim.first)->second.second,
+                frame = yoyo ? startFrame : endFrame;
+
+            m_animComplete = frame == currentFrame;
+
+            try {
+
+                if (m_isSpritesheet && active)
+                {
+
+                    std::map<std::string, std::pair<int, int>>::iterator anim = anims.find(animKey);
+
+                    if (anim == anims.end() || System::Game::GetScene()->IsPaused()) 
+                        return;
+
+                    std::vector<int> frames; //frames to populate  
+
+                    if (yoyo)
+                    {
+
+                        for (int i = anim->second.first; i < anim->second.second + 1; i++) 
+                            frames.push_back(i);
+                        
+                        uint32_t elapsed = seconds % frames.size();
+
+                        std::vector<int> frames_reversed;
+
+                        for (int i = anim->second.second; i > anim->second.first - 1; i--) 
+                            frames_reversed.push_back(i);
+
+                        uint32_t elapsed_reversed = seconds % frames_reversed.size();
+
+                        if (!m_anim_yoyo && currentFrame == anim->second.second && frames[elapsed] != anim->second.second) 
+                            m_anim_yoyo = true;
+
+                        if (m_anim_yoyo && currentFrame == anim->second.first && frames_reversed[elapsed_reversed] != anim->second.first)    
+                            m_anim_yoyo = false;
+
+                        if (m_anim_yoyo) 
+                            SetFrame(frames_reversed[elapsed_reversed]);
+
+                        else 
+                            SetFrame(frames[elapsed]);
+                    
+                    }
+
+                    else    
+                    {
+                        for (int i = anim->second.first; i < anim->second.second; i++) 
+                            frames.push_back(i);
+                        
+                        uint32_t elapsed = seconds % frames.size();
+
+                        SetFrame(currentFrame != anim->second.second ? frames[elapsed] : anim->second.first);
+                    }
+
+                }
+            }
+
+            catch (std::runtime_error& err) { 
+                #if DEVELOPMENT == 1
+                    std::cout << "Sprite: error playing animation: " << err.what() << "\n"; 
+                #endif
+            }
+        }
+         
 
     }
 
