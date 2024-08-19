@@ -14,7 +14,7 @@ using namespace System;
 
 void Game::Flush()
 {
-
+    m_gameState = false; 
     inputs->ResetControls();
 
     if (Application::eventPool) {
@@ -115,9 +115,7 @@ void Game::Boot()
 void Game::StartScene(const std::string& key) 
 {
 
-    Game* game = Application::game;
-
-    game->m_gameState = false; 
+    Game* game = Application::game; 
 
     //find loaded scene
 
@@ -181,7 +179,7 @@ void Game::StartScene(const std::string& key)
                 #endif
 
             #endif
-            
+
         #endif
 
         if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {

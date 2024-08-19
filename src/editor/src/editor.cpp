@@ -84,7 +84,7 @@ Editor::Editor()
 
     game->LoadScene<System::Scene>();
 
-    Application::name = "SPAGHYETITOR";
+    Application::name = "SPAGHYEDITOR";
 
     Window::Init();
 

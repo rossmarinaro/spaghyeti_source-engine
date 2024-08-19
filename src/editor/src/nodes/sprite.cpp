@@ -764,7 +764,7 @@ void SpriteNode::Render()
         spriteHandle->SetTint(tint);
 
         if (m_currentAnim.first.length())   
-            spriteHandle->Animate(m_currentAnim.first, m_currentAnim.second.first, m_currentAnim.second.second);
+            spriteHandle->SetAnimation(m_currentAnim.first, m_currentAnim.second.first, m_currentAnim.second.second);
 
         else
             spriteHandle->StopAnimation();
