@@ -16,9 +16,8 @@ Camera::Camera():
     this->position = glm::vec2(0.0f, 0.0f);
     this->backgroundColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 
-    #if DEVELOPMENT == 1
-        LOG("Camera: initialized.");
-    #endif
+    LOG("Camera: initialized.");
+
 
 }
 

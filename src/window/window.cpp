@@ -41,8 +41,11 @@ void Window::Init()
     if(!glfwInit())
     {
 
-        #ifndef __EMSCRIPTEN__
-            std::cout << "GLFW: Error - " << glfwGetError(NULL) << "\n";
+        #ifndef __EMSCRIPTEN__ 
+            #if DEVELOPMENT == 1
+                int err = glfwGetError(NULL);
+                LOG("GLFW: Error:: " + std::to_string(err));
+            #endif
         #endif
 
         exit(EXIT_FAILURE);
@@ -140,20 +143,24 @@ void Window::Init()
     glfwMakeContextCurrent(s_instance);
 
     #if DEVELOPMENT == 1
-        std::cout << "Window: initialized.\n";
+        LOG("Window: initialized.");
     #endif
 
-    #ifndef __EMSCRIPTEN__
+    #ifndef __EMSCRIPTEN__ 
 
-        if (!gladLoadGL() || !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-            std::cout <<  "GLFW: Failed to initialize GLAD\n";
-            return;
-        }
+        #if DEVELOPMENT == 1
+
+            if (!gladLoadGL() || !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+                LOG("GLFW: Failed to initialize GLAD");
+                return;
+            }
+
+        #endif
 
     #endif
 
     #if DEVELOPMENT == 1
-        std::cout <<  "GLFW: GL Version - " << glGetString(GL_VERSION) << "\n";
+        LOG("GLFW: GL Version - " << glGetString(GL_VERSION));
     #endif
 
 }

@@ -120,9 +120,8 @@ Inputs::Inputs():
 
     #endif
 
-    #if DEVELOPMENT == 1
-        LOG("Inputs: initialized.");
-    #endif
+    LOG("Inputs: initialized.");
+
 }
 
 
@@ -480,9 +479,8 @@ void Inputs::ShutDown()
         Game::GetScene()->virtual_buttons.clear();
     }
 
-    #if DEVELOPMENT == 1
-        LOG("Inputs: shutdown.");
-    #endif
+    LOG("Inputs: shutdown.");
+
 }
 
 

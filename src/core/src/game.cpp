@@ -72,7 +72,6 @@ Game::Game()
 
 void Game::Boot()   
 {     
-
     LOG("Game: " + Application::name + " initializing.");
 
     currentScene = nullptr;
@@ -196,17 +195,12 @@ void Game::StartScene(const std::string& key)
 
         game->m_gameState = true;
 
-        #if DEVELOPMENT == 1
-            LOG("Scene: " + key + " started.");
-        #endif
+        LOG("Scene: " + key + " started.");
 
     }
 
-    else {
-        #if DEVELOPMENT == 1
-            LOG("Scene: key not found.");
-        #endif
-    }
+    else 
+        LOG("Scene: key not found.");
 
 }
 
@@ -260,9 +254,7 @@ void Game::Exit()
     delete maps;
     maps = nullptr;
 
-    #if DEVELOPMENT == 1
-        LOG("Game: exited.");
-    #endif
+    LOG("Game: exited.");
 
 }
 
@@ -272,7 +264,7 @@ void Game::Exit()
 
 void Game::UpdateFrame()
 {
-    
+
     if (!m_gameState)
         return;
 

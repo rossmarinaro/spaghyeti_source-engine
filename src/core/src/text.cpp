@@ -248,20 +248,15 @@ void main() {
 void Text::Init()
 {
 
-    if (!gltInit())
-    {
-        #if DEVELOPMENT == 1
-            LOG(stderr << "Text: Failed to initialize text: " << EXIT_FAILURE );
-        #endif
-
+    if (!gltInit()) {
+        LOG(stderr << "Text: Failed to initialize text: " << EXIT_FAILURE );
         return;
 	}
 
     s_buffer = gltCreateText();
 
-    #if DEVELOPMENT == 1
-        LOG("Text: initialized.");
-    #endif
+    LOG("Text: initialized.");
+
 }
 
 
@@ -274,9 +269,8 @@ void Text::ShutDown()
     gltDeleteText(s_buffer);
     gltTerminate();
 
-    #if DEVELOPMENT == 1
-        LOG("Text: uninitialized.");
-    #endif
+    LOG("Text: uninitialized.");
+
 }
 
 
@@ -295,10 +289,7 @@ Text::Text(const std::string& content, float x, float y, float scale, glm::vec3 
 
     this->SetText(content);
 
-    #if DEVELOPMENT == 1
-        LOG("Text: " + (std::string)content + " created.");
-    #endif
-
+    LOG("Text: " + (std::string)content + " created.");
 
 
     // GLuint vbo, vao, fbo, fbTexture;
@@ -337,13 +328,8 @@ Text::Text(const std::string& content, float x, float y, float scale, glm::vec3 
 //--------------------------
 
 
-Text::~Text() 
-{
-
-    #if DEVELOPMENT == 1
-        LOG("Text: " + (std::string)content + " deleted.");
-    #endif
-
+Text::~Text() {
+    LOG("Text: " + (std::string)content + " deleted.");
 }
 
 

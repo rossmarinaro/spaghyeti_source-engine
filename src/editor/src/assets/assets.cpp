@@ -196,7 +196,7 @@ bool AssetManager::SavePrefab(const std::string& nodeId)
     }
 
     catch (std::runtime_error& err) {
-        std::cout << "error saving prefab: " << err.what() << "\n";
+        Editor::Log("error saving prefab: " + (std::string)err.what());
         return false;
     }
 }

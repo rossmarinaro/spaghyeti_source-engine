@@ -119,11 +119,9 @@ void Texture2D::Load(const std::string& key, bool flipY)
             success = true;
         }
 
-        else {
-            #if DEVELOPMENT == 1
-                LOG("Texture2D: image file loading failed.");    
-            #endif
-        }
+        else 
+            LOG("Texture2D: image file loading failed.");    
+      
     }
 
     //raw asset
@@ -146,27 +144,19 @@ void Texture2D::Load(const std::string& key, bool flipY)
         }
     }
 
-    if (!success) 
-    {
+    if (!success) {
 
-        #if DEVELOPMENT == 1
-            LOG("Texture2D: Image of key: " + key + " not found.");    
-        #endif
-        
+        LOG("Texture2D: Image of key: " + key + " not found.");    
+   
         return;
     }
     
-    else {
-
-        #if DEVELOPMENT == 1
-            LOG("Texture2D: " + key + " loaded.");
-        #endif
-    }
+    else 
+        LOG("Texture2D: " + key + " loaded.");
       
     //assign texture in manager
 
     System::Application::resources->textures[key] = texture;  
-
 
 } 
 
@@ -187,9 +177,8 @@ void Texture2D::UnLoad(const std::string& key)
 
     }
 
-    #if DEVELOPMENT == 1
-        LOG("Texture2D: Deleted texture " + key);
-    #endif
+    LOG("Texture2D: Deleted texture " + key);
+
 }
 
 

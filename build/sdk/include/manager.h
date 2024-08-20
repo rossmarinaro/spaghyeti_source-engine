@@ -8,15 +8,12 @@
 #include "./shader.h"
 #include "./texture.h"
 
-
-
 namespace System {
 
     namespace Resources {
 
 
-        // A static singleton ResourceManager class that hosts several
-        // functions to load Textures and Shaders. Each loaded texture
+        // load Textures and Shaders. Each loaded texture
         // and/or shader is also stored for future reference by string
         // handles. Assets are defined in their respective containers.
         class Manager

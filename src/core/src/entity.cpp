@@ -1,3 +1,7 @@
+#if USE_JSON == 1
+    #include <fstream>
+#endif
+
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/manager.h"
 #include "../../vendors/UUID.hpp"
@@ -104,9 +108,8 @@ Geometry::Geometry(float x, float y, float width, float height):
     texture = Graphics::Texture2D::Get("base");
     shader = Shader::Get("graphics");
     
-    #if DEVELOPMENT == 1
-        std::cout << "Entity: quad created.\n"; 
-    #endif
+    LOG("Entity: quad created."); 
+
 }
 
 
@@ -340,9 +343,7 @@ void Sprite::ReadSpritesheetData()
                     }
         #else 
 
-            #if DEVELOPMENT == 1
-                LOG("Sprite: an attempt to load JSON failed, because JSON has not been enabled.");
-            #endif
+            LOG("Sprite: an attempt to load JSON failed, because JSON has not been enabled.");
             
         #endif
 
@@ -555,9 +556,7 @@ void Sprite::Render()
             }
 
             catch (std::runtime_error& err) { 
-                #if DEVELOPMENT == 1
-                    LOG("Sprite: error playing animation: " << err.what()); 
-                #endif
+                LOG("Sprite: error playing animation: " << err.what()); 
             }
         }
          
@@ -581,10 +580,9 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     texture = Graphics::Texture2D::Get(key);
     shader = Shader::Get("sprite");          
     
-    #if DEVELOPMENT == 1
-        if (!isTile)
-            LOG("Sprite: " + key + " Created."); 
-    #endif
+    if (!isTile)
+        LOG("Sprite: " + key + " Created."); 
+
 }
 
 
@@ -602,9 +600,7 @@ Sprite::Sprite(Sprite& sprite):
     texture = Graphics::Texture2D::Get(sprite.key);
     shader = Shader::Get("sprite");     
 
-    #if DEVELOPMENT == 1
-        LOG("Sprite: " + key + " Cloned."); 
-    #endif
+    LOG("Sprite: " + key + " Cloned."); 
 
 }
 
@@ -620,9 +616,7 @@ Sprite::Sprite(const std::string& key, const glm::vec2& position):
     texture = Graphics::Texture2D::Get(key);
     shader = Shader::Get("UI");
     
-    #if DEVELOPMENT == 1
-        LOG("Sprite: UI " + key + " created."); 
-    #endif
+    LOG("Sprite: UI " + key + " created."); 
 }
 
 
@@ -632,10 +626,9 @@ Sprite::Sprite(const std::string& key, const glm::vec2& position):
 
 Sprite::~Sprite() {
 
-    #if DEVELOPMENT == 1
-        if (strcmp(type, "tile") != 0)
-            LOG("Sprite: " + key + " Destroyed."); 
-    #endif
+    if (strcmp(type, "tile") != 0)
+        LOG("Sprite: " + key + " Destroyed."); 
+
 }
 
 

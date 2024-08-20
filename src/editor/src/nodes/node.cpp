@@ -1033,7 +1033,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
     }
 
     catch (std::runtime_error& err) {
-        
-        std::cout << "error reading data: " << err.what() << "\n";
+        Editor::Log("error reading data: " + (std::string)err.what());
     }
 }

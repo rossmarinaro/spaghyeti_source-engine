@@ -1,3 +1,5 @@
+#include <fstream>
+#include <sstream>
 #include "../../../build/sdk/include/app.h"
 
 
@@ -321,9 +323,8 @@ void Shader::InitBaseShaders()
 
     //...
 
-    #if DEVELOPMENT == 1
-        LOG("Shader: Base shaders initialized.");
-    #endif
+    LOG("Shader: Base shaders initialized.");
+
 }
 
 
@@ -398,17 +399,15 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
 
             glGetShaderInfoLog(shader, 1024, &length, message);
 
-            #if DEVELOPMENT == 1
-                LOG("Shader: " + key + " of type " + type + " compilation error: " + message);
-            #endif
+            LOG("Shader: " + key + " of type " + type + " compilation error: " + message);
+
             return false;
         }
 
         else {
 
-            #if DEVELOPMENT == 1
-                LOG("Shader: " + key + " of type " + type + " compiled successfully.");  
-            #endif
+            LOG("Shader: " + key + " of type " + type + " compiled successfully.");  
+
             return true;
         }
     }
@@ -422,17 +421,15 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
 
             glGetProgramInfoLog(shader, 1024, &length, message);
 
-            #if DEVELOPMENT == 1
-                LOG("Shader: " + key + " of type " + type + " linking error: " + message);
-            #endif
+            LOG("Shader: " + key + " of type " + type + " linking error: " + message);
+
             return false;
         }
 
         else {
 
-            #if DEVELOPMENT == 1
-                LOG("Shader: " + key + " of type " + type + " linked successfully.");  
-            #endif
+            LOG("Shader: " + key + " of type " + type + " linked successfully.");  
+
             return true;
         
         }
@@ -449,9 +446,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
 
     if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&](auto s) { return s.first == key; }) != System::Application::resources->shaders.end())
     {
-        #if DEVELOPMENT == 1
-            LOG("Shader: already exists.");
-        #endif
+        LOG("Shader: already exists.");
 
         return;
     } 
@@ -511,9 +506,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         const char* fs = fragmentCode.c_str();
         const char* gs = geometryCode.c_str();
 
-        #if DEVELOPMENT == 1
-            LOG("Shader: Loading " + key + " from file.");
-        #endif
+        LOG("Shader: Loading " + key + " from file.");
 
         shader.Generate(key, vs, fs,/*  gShaderStream ? gs : */ nullptr);
  
@@ -523,22 +516,14 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     
     else
     {
-        if (vertShader)
-        {
-            #if DEVELOPMENT == 1
-                LOG("Shader: Loading " + key + " from string.");
-            #endif
-        
+        if (vertShader) {
+            LOG("Shader: Loading " + key + " from string.");
             shader.Generate(key, vertShader, fragShader, nullptr);
         }
         
-        else {
-            #if DEVELOPMENT == 1
-                LOG("Shader: No vertex or fragment.");
-            #endif
-        }
-      
-    
+        else 
+            LOG("Shader: No vertex or fragment.");
+
     }
 
     System::Application::resources->shaders[key] = shader; 
@@ -640,9 +625,7 @@ void Shader::UnLoad(const std::string& key)
         System::Application::resources->shaders.erase(it);
     }
 
-    #if DEVELOPMENT == 1
-        std::cout << "Shader: Deleted shader " << key << "\n";
-    #endif
+    LOG("Shader: Deleted shader " + key);
     
 }
 

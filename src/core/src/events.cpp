@@ -1,4 +1,4 @@
-#if DEVELOPMENT == 1
+#if DEVELOPMENT == 1 && STANDALONE == 1
     #include "../../../build/sdk/include/utils.h"
 #endif
 
@@ -45,7 +45,7 @@ EventPool::EventPool(size_t count):
         }); 
     } 
 
-    #if DEVELOPMENT == 1
+    #if DEVELOPMENT == 1 && STANDALONE == 1
         LOG("Events: thread pool started.");
     #endif
 
@@ -71,7 +71,7 @@ EventPool::~EventPool()
         
     m_threads.clear();     
 
-    #if DEVELOPMENT == 1
+    #if DEVELOPMENT == 1 && STANDALONE == 1
         LOG("Events: thread pool stopped.");
     #endif     
         

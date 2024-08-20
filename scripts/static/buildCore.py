@@ -10,4 +10,4 @@ build_type = 'web' if int(sys.argv[1]) == 1 else 'standard'
 # if not os.path.exists(tmp_dir):
 #     os.mkdir(tmp_dir)
 
-os.system(f'echo build static core ({ build_type })... && cd ../../src/core && make { make } && mv { lib } ../../build/sdk && rm -f *.o')
+os.system(f'echo build static core ({ build_type })... && cd ../../src/core && make { make } && mv { lib } ../../build/sdk && rm -f *.o') 

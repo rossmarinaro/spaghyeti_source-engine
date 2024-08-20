@@ -14,13 +14,17 @@ namespace System {
 
     //debug only logging
 
-    #if DEVELOPMENT == 1
-        #ifndef LOG
+    #ifndef LOG
+
+        #if DEVELOPMENT == 1 && STANDALONE == 1
             #define LOG(msg) \
                 std::cout << msg << std::endl; \
-                std::ofstream log("log.txt", std::ofstream::app | std::ofstream::out); \
-                log << msg << std::endl;
-            #endif
+                std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; \
+               
+        #else
+            #define LOG(msg)
+        #endif
+
     #endif
 
     //common utilities

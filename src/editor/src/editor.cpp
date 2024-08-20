@@ -1,3 +1,4 @@
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <time.h>
@@ -146,6 +147,7 @@ void Editor::Log(const std::string& message)
     std::time_t time_stamp = std::time(nullptr);
 
     src << message << " @ " << std::ctime(&time_stamp);
+    std::cout << message << " @ " << std::ctime(&time_stamp) << std::endl;
 
 }
 

@@ -1,6 +1,5 @@
 #include <sstream>
 #include <fstream>
-#include <vector>
 
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/manager.h"
@@ -41,9 +40,8 @@ void Manager::Clear(bool all)
         
     }
 
-    #if DEVELOPMENT == 1
-        LOG("Resources: assets cleared.");
-    #endif
+    LOG("Resources: assets cleared.");
+
 
 }
 
@@ -74,9 +72,8 @@ void Manager::RegisterTextures()
         if (System::Application::resources->textures.find(texture.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(texture.first);
 
-    #if DEVELOPMENT == 1
-        LOG("Resources: assets registered.");
-    #endif
+    LOG("Resources: assets registered.");
+
 }
 
 
@@ -95,12 +92,8 @@ void Manager::LoadFile(const char* key, const char* path)
     else if (System::Utils::GetFileType(path) == "data")
         System::Application::resources->m_file_text_assets.insert({ key, path });
 
-    else 
-    {
-        #if DEVELOPMENT == 1
-            LOG("Resources: filetype not available for loading.");
-        #endif
-
+    else {
+        LOG("Resources: filetype not available for loading.");
         return;
     }
     

@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include <iostream>
 #include <chrono>
 #include <thread>
 #include <algorithm>
@@ -22,7 +21,6 @@
 #include "../../../build/sdk/include/audio.h"
 #include "../../../build/sdk/include/window.h"      
 #include "../../../build/sdk/include/inputs.h"
-#include "../../../build/sdk/include/utils.h" 
 #include "../../../build/sdk/include/time.h"
 #include "../../../build/sdk/include/game.h"
 #include "../../../build/sdk/include/camera.h"

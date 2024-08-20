@@ -12,7 +12,7 @@
 #include "../../../build/sdk/include/time.h"
 #include "../../../build/sdk/include/manager.h"
 
-#if DEVELOPMENT == 1
+#if DEVELOPMENT == 1 && STANDALONE == 1
     #include "../../../build/sdk/include/utils.h"
 #endif
 
@@ -37,7 +37,7 @@ void read_frames(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint3
 
     if (pDecoder == NULL) 
     {
-        #if DEVELOPMENT == 1
+        #if DEVELOPMENT == 1 && STANDALONE == 1
             LOG("Audio: There was a problem decoding audio.");
         #endif
 
@@ -69,7 +69,7 @@ void process_audio(const char* key, bool loop, float volume)
 
     if (result != MA_SUCCESS) {
 
-        #if DEVELOPMENT == 1
+        #if DEVELOPMENT == 1 && STANDALONE == 1
             LOG("Audio: Failed to init sound.");
         #endif
 
@@ -101,7 +101,7 @@ void process_audio(const char* key, bool loop, float volume)
     if (ma_device_init(NULL, &deviceConfig, loop ? &music_device : &sound_device) != MA_SUCCESS) 
     {
 
-        #if DEVELOPMENT == 1
+        #if DEVELOPMENT == 1 && STANDALONE == 1
             LOG("Audio: Failed to open playback device.");
         #endif
         
@@ -113,7 +113,7 @@ void process_audio(const char* key, bool loop, float volume)
     if (ma_device_start(loop ? &music_device : &sound_device) != MA_SUCCESS) 
     {
 
-        #if DEVELOPMENT == 1
+        #if DEVELOPMENT == 1 && STANDALONE == 1
             LOG("Audio: Failed to start playback device.");
         #endif
 
@@ -162,7 +162,7 @@ void System::Audio::stop()
     if (ma_device_get_state(&sound_device) == ma_device_state_started) 
         ma_data_source_set_looping(&sound_decoder, MA_FALSE);
 
-    #if DEVELOPMENT == 1
+    #if DEVELOPMENT == 1 && STANDALONE == 1
         LOG("Audio: audio stopped.");
     #endif
 

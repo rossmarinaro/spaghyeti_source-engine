@@ -1,4 +1,5 @@
 #include <bitset>
+#include <sstream>
 
 #ifndef __EMSCRIPTEN__
     #include <bits/stdc++.h>
@@ -30,9 +31,7 @@ void MapManager::CreateLayer (
 
     if (!data.size()) {
 
-        #if DEVELOPMENT == 1
-            LOG("Tilemap: layer data not found.");
-        #endif
+        LOG("Tilemap: layer data not found.");
 
         return;
     }
@@ -50,9 +49,9 @@ void MapManager::CreateLayer (
         {
 
             if (map.begin() + (x + y * mapWidth) == map.end()) {
-                #if DEVELOPMENT == 1
-                    LOG("Tilemap: index overflow, truncating map.");
-                #endif
+      
+                LOG("Tilemap: index overflow, truncating map.");
+
                 return;
             }
 
@@ -114,9 +113,8 @@ void MapManager::CreateLayer (
 
     System::Application::game->maps->layers.push_back(layer);
 
-    #if DEVELOPMENT == 1
-        LOG("Tilemap: Initialized layer with key: " + (std::string)texture_key);
-    #endif
+    LOG("Tilemap: Initialized layer with key: " + (std::string)texture_key);
+
 
 }
 
@@ -142,9 +140,7 @@ void MapManager::RemoveLayer(const std::string& key)
             return strcmp(t->type, "tile") == 0 && t->name == key; }), 
                 System::Game::GetScene()->entities.end());
 
-    #if DEVELOPMENT == 1
-        LOG("Tilemap: layer " + key + " cleared.");
-    #endif
+    LOG("Tilemap: layer " + key + " cleared.");
 
 }
 
@@ -162,9 +158,7 @@ void MapManager::ClearMap()
             return strcmp(t->type, "tile") == 0; }), 
                 System::Game::GetScene()->entities.end());
 
-    #if DEVELOPMENT == 1
-        LOG("Tilemap: layers cleared.");
-    #endif
+    LOG("Tilemap: layers cleared.");
 
 }
 

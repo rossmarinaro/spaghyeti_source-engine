@@ -15,9 +15,7 @@ Physics::Physics():
     this->m_flags += b2Draw::e_aabbBit;
     this->m_flags += b2Draw::e_centerOfMassBit;
 
-    #if DEVELOPMENT == 1
-        LOG("Physics: world enabled."); 
-    #endif
+    LOG("Physics: world enabled."); 
 } 
 
 
