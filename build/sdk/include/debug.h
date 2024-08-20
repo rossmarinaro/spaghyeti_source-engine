@@ -5,7 +5,6 @@
 #include "./entity.h"
 
 
-
 class DebugGraphic {
 
     public:

@@ -121,7 +121,7 @@ void Texture2D::Load(const std::string& key, bool flipY)
 
         else {
             #if DEVELOPMENT == 1
-                std::cout << "Texture2D: image file loading failed.\n";    
+                LOG("Texture2D: image file loading failed.");    
             #endif
         }
     }
@@ -150,7 +150,7 @@ void Texture2D::Load(const std::string& key, bool flipY)
     {
 
         #if DEVELOPMENT == 1
-            std::cout << "Texture2D: Image of key: " << key << " not found.\n";    
+            LOG("Texture2D: Image of key: " + key + " not found.");    
         #endif
         
         return;
@@ -159,7 +159,7 @@ void Texture2D::Load(const std::string& key, bool flipY)
     else {
 
         #if DEVELOPMENT == 1
-            std::cout << "Texture2D: " << key << " loaded.\n";
+            LOG("Texture2D: " + key + " loaded.");
         #endif
     }
       
@@ -188,7 +188,7 @@ void Texture2D::UnLoad(const std::string& key)
     }
 
     #if DEVELOPMENT == 1
-        std::cout << "Texture2D: Deleted texture " << key << "\n";
+        LOG("Texture2D: Deleted texture " + key);
     #endif
 }
 

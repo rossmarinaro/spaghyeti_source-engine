@@ -63,7 +63,10 @@ System::Application::Application(Game* layer, const std::string& key)
 
     name = key;
 
-    std::cout << "PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌\n";  
+    #if DEVELOPMENT == 1
+        remove("log.txt");
+        LOG("PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌");  
+    #endif
 
     //set global time object  
 
@@ -72,7 +75,7 @@ System::Application::Application(Game* layer, const std::string& key)
     #if STANDALONE == 1
 
         if (!layer) {
-            std::cout << "Error: No target layer present.\n";  
+            LOG("Error: No target layer present.");  
             return;    
         }
 
@@ -116,6 +119,7 @@ System::Application::~Application()
     delete resources;
     resources = nullptr;
 
-    std::cout << "Application terminated successfully. 👌\n";
-
+    #if DEVELOPMENT == 1
+        LOG("Application terminated successfully. 👌");
+    #endif
 };

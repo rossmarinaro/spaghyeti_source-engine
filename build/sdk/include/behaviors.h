@@ -21,18 +21,18 @@ namespace entity_behaviors {
                 m_entity(entity)
             {
                 this->key = key; 
-                this->layer = 0;
-                this->active = true;
-                this->ID = m_entity->ID;
+                layer = 0;
+                active = true;
+                ID = m_entity->ID;
             }
 
             virtual ~Behavior() 
             {
-                this->active = false;
-                this->m_entity = nullptr;
+                active = false;
+                m_entity = nullptr;
 
                 #if DEVELOPMENT == 1
-                    std::cout << "Behavior: " << this->name << " destroyed.\n";
+                    std::cout << "Behavior: " << name << " destroyed.\n";
                 #endif
             }
 
@@ -46,8 +46,8 @@ namespace entity_behaviors {
             inline std::shared_ptr<T> GetHandle(const char* type)
             {
 
-                if (strcmp(this->m_entity->type, type) == 0)
-                    return std::dynamic_pointer_cast<T>(this->m_entity);
+                if (strcmp(m_entity->type, type) == 0)
+                    return std::dynamic_pointer_cast<T>(m_entity);
 
                 else 
                     return nullptr; 

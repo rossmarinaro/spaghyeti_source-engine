@@ -10,11 +10,9 @@
 using namespace System;      
 
 
-//-----------------------
-
 void Game::Flush()
 {
-    m_gameState = false; 
+    
     inputs->ResetControls();
 
     if (Application::eventPool) {
@@ -27,8 +25,6 @@ void Game::Flush()
     currentScene->entities.clear();
     currentScene->UI.clear();
     currentScene->behaviors.clear();
-
-  
 }
 
 
@@ -77,7 +73,7 @@ Game::Game()
 void Game::Boot()   
 {     
 
-    std::cout << "Game: " + Application::name + " initializing.\n";
+    LOG("Game: " + Application::name + " initializing.");
 
     currentScene = nullptr;
 
@@ -90,13 +86,14 @@ void Game::Boot()
     glfwSetWindowTitle(Window::s_instance, Application::name.c_str());
 
     inputs->CreateCursor();
+    inputs->ResetControls();
 
     physics->GetWorld().SetContactListener(&physics->collisions);
     
     //physics listener and debug
 
     #if DEVELOPMENT == 1 
-     
+
         physics->debug = new DebugDraw;
 	    physics->GetWorld().SetDebugDraw(physics->debug);
 
@@ -117,6 +114,8 @@ void Game::StartScene(const std::string& key)
 
     Game* game = Application::game; 
 
+    game->m_gameState = false;
+ 
     //find loaded scene
 
     auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](Scene* scene) { return scene->key == key; });
@@ -162,10 +161,10 @@ void Game::StartScene(const std::string& key)
 
             #endif  
 
-            delete game->physics;
+     /*        delete game->physics;
             game->physics = nullptr;
 
-            game->physics = new Physics;
+            game->physics = new Physics; */
 
             game->physics->GetWorld().SetContactListener(&game->physics->collisions);
 
@@ -195,16 +194,17 @@ void Game::StartScene(const std::string& key)
 
         game->currentScene->Run();  
 
-        game->m_gameState = true; 
+        game->m_gameState = true;
 
         #if DEVELOPMENT == 1
-            std::cout << "Scene: " + key + " started.\n";
+            LOG("Scene: " + key + " started.");
         #endif
+
     }
 
     else {
         #if DEVELOPMENT == 1
-            std::cout << "Scene: key not found.\n";
+            LOG("Scene: key not found.");
         #endif
     }
 
@@ -260,7 +260,9 @@ void Game::Exit()
     delete maps;
     maps = nullptr;
 
-    std::cout << "Game: exited.\n";
+    #if DEVELOPMENT == 1
+        LOG("Game: exited.");
+    #endif
 
 }
 
@@ -270,7 +272,7 @@ void Game::Exit()
 
 void Game::UpdateFrame()
 {
-
+    
     if (!m_gameState)
         return;
 
@@ -278,15 +280,11 @@ void Game::UpdateFrame()
 
     physics->Update();
 
-    //render queues
+    //entity render queue
 
     for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity) && entity.get()->renderable) 
             entity->Render();
-
-    for (const auto& UI : currentScene->UI)
-        if ((UI.get() && UI) && UI.get()->renderable) 
-            UI->Render();
 
     //vignette overlay
 
@@ -295,35 +293,21 @@ void Game::UpdateFrame()
         currentScene->vignette->texture.FrameHeight = Window::s_scaleHeight * 4;
         currentScene->vignette->Render();
     }
-    
+
+    //UI render queue
+
+    for (const auto& UI : currentScene->UI)
+        if ((UI.get() && UI) && UI.get()->renderable) 
+            UI->Render();
+
     //render input cursor
 
     Application::game->inputs->RenderCursor();
- 
-    //update behaviors, pass game process context to subclasses
-
-    // auto inactive_behavior_it = std::find_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](auto b) { return b->active == false; });
-
-    // if (inactive_behavior_it != currentScene->behaviors.end()) {
-    //     //Application::game->currentScene->behaviors.erase(inactive_behavior_it);
-    //     //(*inactive_behavior_it).reset();
-    // }
-
-    for (const auto& behavior : currentScene->behaviors) 
-        if (behavior->active) 
-        {
-
-            if ((!currentScene->IsPaused() && behavior->layer == 0)) 
-                behavior->Update();  
-                
-            else if (behavior->layer == 1)
-                behavior->Update();
-        }
-
 
     //depth sort
 
     std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b){ return a->depth < b->depth; });
+    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b){ return a->depth < b->depth; });
 
     #if DEVELOPMENT == 1 
 
@@ -339,6 +323,25 @@ void Game::UpdateFrame()
 
     #endif
 
+    // auto inactive_behavior_it = std::find_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](auto b) { return b->active == false; });
+
+    // if (inactive_behavior_it != currentScene->behaviors.end()) {
+    //     Application::game->currentScene->behaviors.erase(inactive_behavior_it);
+    //     (*inactive_behavior_it).reset();
+    // }
+
+    //update behaviors, pass game process context to subclasses
+
+    for (const auto& behavior : currentScene->behaviors) 
+        if (m_gameState && (behavior.get() && behavior) && behavior->active) 
+        {
+            if ((!currentScene->IsPaused() && behavior->layer == 0)) 
+                behavior->Update();  
+                
+            else if (behavior->layer == 1)
+                behavior->Update();
+        }
+    
 }  
 
 

@@ -31,7 +31,7 @@ void MapManager::CreateLayer (
     if (!data.size()) {
 
         #if DEVELOPMENT == 1
-            std::cout << "Tilemap: layer data not found.\n";
+            LOG("Tilemap: layer data not found.");
         #endif
 
         return;
@@ -51,7 +51,7 @@ void MapManager::CreateLayer (
 
             if (map.begin() + (x + y * mapWidth) == map.end()) {
                 #if DEVELOPMENT == 1
-                    std::cout << "Tilemap: index overflow, truncating map.\n";
+                    LOG("Tilemap: index overflow, truncating map.");
                 #endif
                 return;
             }
@@ -115,7 +115,7 @@ void MapManager::CreateLayer (
     System::Application::game->maps->layers.push_back(layer);
 
     #if DEVELOPMENT == 1
-        std::cout << "Tilemap: Initialized layer with key: " + (std::string)texture_key + "\n";
+        LOG("Tilemap: Initialized layer with key: " + (std::string)texture_key);
     #endif
 
 }
@@ -143,7 +143,7 @@ void MapManager::RemoveLayer(const std::string& key)
                 System::Game::GetScene()->entities.end());
 
     #if DEVELOPMENT == 1
-        std::cout << "Tilemap: layer " + key + " cleared.\n";
+        LOG("Tilemap: layer " + key + " cleared.");
     #endif
 
 }
@@ -163,7 +163,7 @@ void MapManager::ClearMap()
                 System::Game::GetScene()->entities.end());
 
     #if DEVELOPMENT == 1
-        std::cout << "Tilemap: layers cleared.\n";
+        LOG("Tilemap: layers cleared.");
     #endif
 
 }

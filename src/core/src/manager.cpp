@@ -42,7 +42,7 @@ void Manager::Clear(bool all)
     }
 
     #if DEVELOPMENT == 1
-        std::cout << "Resources: assets cleared.\n";
+        LOG("Resources: assets cleared.");
     #endif
 
 }
@@ -75,7 +75,7 @@ void Manager::RegisterTextures()
             Graphics::Texture2D::Load(texture.first);
 
     #if DEVELOPMENT == 1
-        std::cout << "Resources: assets registered.\n";
+        LOG("Resources: assets registered.");
     #endif
 }
 
@@ -98,7 +98,7 @@ void Manager::LoadFile(const char* key, const char* path)
     else 
     {
         #if DEVELOPMENT == 1
-            std::cout << "Resources: filetype not available for loading.\n";
+            LOG("Resources: filetype not available for loading.");
         #endif
 
         return;

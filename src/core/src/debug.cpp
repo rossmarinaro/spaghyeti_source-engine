@@ -296,7 +296,7 @@ void DebugGraphic::Destroy(auto *shape)
 
 
 DebugDraw::DebugDraw():
-	enable(true)
+	enable(false)
 {
 
 	m_points = new Points;
@@ -308,7 +308,7 @@ DebugDraw::DebugDraw():
 	m_triangles = new Triangles;
 	m_triangles->Create();
 
-	std::cout << "Physics Debug: graphic debug primitives initialized.\n";
+	LOG("Physics Debug: graphic debug primitives initialized.");
 }
 
 
@@ -330,7 +330,7 @@ DebugDraw::~DebugDraw()
 	delete m_triangles;
 	m_triangles = nullptr;
 
-	std::cout << "Physics Debug: graphic debug primitives destroyed.\n";
+	LOG("Physics Debug: graphic debug primitives destroyed.");
 
 }
 

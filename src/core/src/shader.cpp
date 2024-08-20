@@ -322,7 +322,7 @@ void Shader::InitBaseShaders()
     //...
 
     #if DEVELOPMENT == 1
-        std::cout << "Shader: Base shaders initialized.\n";
+        LOG("Shader: Base shaders initialized.");
     #endif
 }
 
@@ -399,7 +399,7 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
             glGetShaderInfoLog(shader, 1024, &length, message);
 
             #if DEVELOPMENT == 1
-                std::cout << "Shader: " << key << " of type " << type << " compilation error: " << message << "\n";
+                LOG("Shader: " + key + " of type " + type + " compilation error: " + message);
             #endif
             return false;
         }
@@ -407,7 +407,7 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
         else {
 
             #if DEVELOPMENT == 1
-                std::cout << "Shader: " << key << " of type " << type << " compiled successfully.\n";  
+                LOG("Shader: " + key + " of type " + type + " compiled successfully.");  
             #endif
             return true;
         }
@@ -423,7 +423,7 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
             glGetProgramInfoLog(shader, 1024, &length, message);
 
             #if DEVELOPMENT == 1
-                std::cout << "Shader: " << key << " of type " << type << " linking error: " << message <<"\n";
+                LOG("Shader: " + key + " of type " + type + " linking error: " + message);
             #endif
             return false;
         }
@@ -431,7 +431,7 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
         else {
 
             #if DEVELOPMENT == 1
-                std::cout << "Shader: " << key << " of type " << type << " linked successfully.\n";  
+                LOG("Shader: " + key + " of type " + type + " linked successfully.");  
             #endif
             return true;
         
@@ -450,7 +450,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&](auto s) { return s.first == key; }) != System::Application::resources->shaders.end())
     {
         #if DEVELOPMENT == 1
-            std::cout << "Shader: already exists.\n";
+            LOG("Shader: already exists.");
         #endif
 
         return;
@@ -512,7 +512,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         const char* gs = geometryCode.c_str();
 
         #if DEVELOPMENT == 1
-            std::cout << "Shader: Loading " << key << " from file.\n";
+            LOG("Shader: Loading " + key + " from file.");
         #endif
 
         shader.Generate(key, vs, fs,/*  gShaderStream ? gs : */ nullptr);
@@ -526,7 +526,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         if (vertShader)
         {
             #if DEVELOPMENT == 1
-                std::cout << "Shader: Loading " << key << " from string.\n";
+                LOG("Shader: Loading " + key + " from string.");
             #endif
         
             shader.Generate(key, vertShader, fragShader, nullptr);
@@ -534,7 +534,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         
         else {
             #if DEVELOPMENT == 1
-                std::cout << "Shader: No vertex or fragment.\n";
+                LOG("Shader: No vertex or fragment.");
             #endif
         }
       

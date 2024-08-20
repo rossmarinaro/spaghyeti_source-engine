@@ -341,7 +341,7 @@ void Sprite::ReadSpritesheetData()
         #else 
 
             #if DEVELOPMENT == 1
-                std::cout << "Sprite: an attempt to load JSON failed, because JSON has not been enabled.\n";
+                LOG("Sprite: an attempt to load JSON failed, because JSON has not been enabled.");
             #endif
             
         #endif
@@ -556,7 +556,7 @@ void Sprite::Render()
 
             catch (std::runtime_error& err) { 
                 #if DEVELOPMENT == 1
-                    std::cout << "Sprite: error playing animation: " << err.what() << "\n"; 
+                    LOG("Sprite: error playing animation: " << err.what()); 
                 #endif
             }
         }
@@ -583,7 +583,7 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     
     #if DEVELOPMENT == 1
         if (!isTile)
-            std::cout << "Sprite: " + key + " Created.\n"; 
+            LOG("Sprite: " + key + " Created."); 
     #endif
 }
 
@@ -603,7 +603,7 @@ Sprite::Sprite(Sprite& sprite):
     shader = Shader::Get("sprite");     
 
     #if DEVELOPMENT == 1
-        std::cout << "Sprite: " + key + " Cloned.\n"; 
+        LOG("Sprite: " + key + " Cloned."); 
     #endif
 
 }
@@ -621,7 +621,7 @@ Sprite::Sprite(const std::string& key, const glm::vec2& position):
     shader = Shader::Get("UI");
     
     #if DEVELOPMENT == 1
-        std::cout << "Sprite: UI " + key + " created.\n"; 
+        LOG("Sprite: UI " + key + " created."); 
     #endif
 }
 
@@ -634,7 +634,7 @@ Sprite::~Sprite() {
 
     #if DEVELOPMENT == 1
         if (strcmp(type, "tile") != 0)
-            std::cout << "Sprite: " + key + " Destroyed.\n"; 
+            LOG("Sprite: " + key + " Destroyed."); 
     #endif
 }
 

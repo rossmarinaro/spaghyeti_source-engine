@@ -1,5 +1,5 @@
 #if DEVELOPMENT == 1
-    #include <iostream>
+    #include "../../../build/sdk/include/utils.h"
 #endif
 
 #include "../../../build/sdk/include/events.h"
@@ -46,7 +46,7 @@ EventPool::EventPool(size_t count):
     } 
 
     #if DEVELOPMENT == 1
-        std::cout << "Events: thread pool started. " << "\n";
+        LOG("Events: thread pool started.");
     #endif
 
 }
@@ -72,7 +72,7 @@ EventPool::~EventPool()
     m_threads.clear();     
 
     #if DEVELOPMENT == 1
-        std::cout << "Events: thread pool stopped. " << "\n";
+        LOG("Events: thread pool stopped.");
     #endif     
         
 }

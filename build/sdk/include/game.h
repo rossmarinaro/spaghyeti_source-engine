@@ -85,7 +85,6 @@ namespace System {
         private:
 
             static inline std::vector<std::string> cachedScenes;
-
             std::atomic_bool m_gameState;
             Process::Context m_context;
             Scene* currentScene; 

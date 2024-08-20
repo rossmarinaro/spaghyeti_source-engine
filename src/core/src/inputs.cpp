@@ -121,7 +121,7 @@ Inputs::Inputs():
     #endif
 
     #if DEVELOPMENT == 1
-        std::cout << "Inputs: initialized.\n";
+        LOG("Inputs: initialized.");
     #endif
 }
 
@@ -140,7 +140,7 @@ void Inputs::ProcessInput(GLFWwindow* window)
         Application::game->physics->debug->enable = G;
     #endif
 
-    //gamepad
+    //gamepad 
 
     int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 
@@ -209,29 +209,30 @@ void Inputs::CheckOverlap()
         return overlapX && overlapY;
     };
 
-    for (int i = 0; i < Game::GetScene()->virtual_buttons.size(); i++)
-    {
+    if (Game::GetScene()->virtual_buttons.size())
+        for (int i = 0; i < Game::GetScene()->virtual_buttons.size(); i++)
+        {
 
-        auto button = Game::GetScene()->virtual_buttons[i];
+            auto button = Game::GetScene()->virtual_buttons[i];
 
-        if (!button.second->active)
-            continue; 
+            if (!button.second->active)
+                continue; 
 
-        if (strcmp(button.second->type, "UI") == 0 || strcmp(button.second->type, "sprite") == 0) {
-            auto sprite = std::static_pointer_cast<Sprite>(button.second);
-            isOverlapping = do_check(sprite->position.x, sprite->position.y, sprite->texture.FrameWidth, sprite->texture.FrameHeight);  
+            if (strcmp(button.second->type, "UI") == 0 || strcmp(button.second->type, "sprite") == 0) {
+                auto sprite = std::static_pointer_cast<Sprite>(button.second);
+                isOverlapping = do_check(sprite->position.x, sprite->position.y, sprite->texture.FrameWidth, sprite->texture.FrameHeight);  
+            }
+
+            if (strcmp(button.second->type, "text") == 0) {
+                auto text = std::static_pointer_cast<Text>(button.second);
+                isOverlapping = do_check(text->position.x + text->GetTextDimensions().x, text->position.y + text->GetTextDimensions().y, text->GetTextDimensions().x, text->GetTextDimensions().y);
+            }
+
+            //set mouse / cursor overlap with object
+            
+            Game::GetScene()->virtual_buttons[i].first = isOverlapping;
+
         }
-
-        if (strcmp(button.second->type, "text") == 0) {
-            auto text = std::static_pointer_cast<Text>(button.second);
-            isOverlapping = do_check(text->position.x + text->GetTextDimensions().x, text->position.y + text->GetTextDimensions().y, text->GetTextDimensions().x, text->GetTextDimensions().y);
-        }
-
-        //set mouse / cursor overlap with object
-        
-        Game::GetScene()->virtual_buttons[i].first = isOverlapping;
-
-    }
 }
 
 
@@ -480,7 +481,7 @@ void Inputs::ShutDown()
     }
 
     #if DEVELOPMENT == 1
-        std::cout << "Inputs: shutdown.\n";
+        LOG("Inputs: shutdown.");
     #endif
 }
 
@@ -512,6 +513,7 @@ void Inputs::ResetControls()
     A = false;
     S = false;
     D = false;
+    G = false;
 }
 
 

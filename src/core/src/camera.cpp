@@ -17,7 +17,7 @@ Camera::Camera():
     this->backgroundColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 
     #if DEVELOPMENT == 1
-        std::cout << "Camera: initialized.\n";
+        LOG("Camera: initialized.");
     #endif
 
 }
