@@ -49,4 +49,4 @@ Requires install of MingW compiler for Windows
 
 Notes:
 
-When targeting specific entity from script use "System::Game::GetScene()->GetEntity()", if targeting a method from another script use "System::Game::GetBehavior()".
+When targeting specific entity from script use `System::Game::GetScene()->GetEntity()`, if targeting a method from another script use `System::Game::GetBehavior()`.

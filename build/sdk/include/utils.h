@@ -19,8 +19,7 @@ namespace System {
         #if DEVELOPMENT == 1 && STANDALONE == 1
             #define LOG(msg) \
                 std::cout << msg << std::endl; \
-                std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; \
-               
+                std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; 
         #else
             #define LOG(msg)
         #endif
@@ -37,14 +36,14 @@ namespace System {
 
 			static inline float randFloat(float n) { return ((float)(rand()) / (float)(RAND_MAX)) * n; }
 
-			static inline float floatBetween(float lo, float hi)
+			static inline float floatBetween(float min, float max)
 			{
-				float r = (float)(rand() & (RAND_LIMIT));
+				float n = (float)(rand() & (RAND_LIMIT));
 
-				r /= RAND_LIMIT;
-				r = (hi - lo) * r + lo;
+				n /= RAND_LIMIT;
+				n = (max - min) * n + min;
 
-				return r;
+				return n;
 			}
 
 			static inline int intBetween(int min, int max) { return rand() % (min - max + 1) + min; } 
@@ -57,8 +56,8 @@ namespace System {
 				return str.find(sub) != std::string::npos || str.find(sub_upper) != std::string::npos; 
 			}
 
-			static inline bool str_endsWith(const std::string_view& str, const std::string_view& suff) {
-				return str.size() >= suff.size() && 0 == str.compare(str.size() - suff.size(), suff.size(), suff);
+			static inline bool str_endsWith(const std::string_view& str, const std::string_view& suffix) {
+				return str.size() >= suffix.size() && 0 == str.compare(str.size() - suffix.size(), suffix.size(), suffix);
 			}
 
 			static inline bool CoinFlip(void) {

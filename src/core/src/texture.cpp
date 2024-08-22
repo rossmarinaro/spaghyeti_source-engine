@@ -223,7 +223,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, const void* da
 void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int drawStyle) 
 {   
 
-    //---------------- format texture
+    //format texture
  
     Format offset;
 
