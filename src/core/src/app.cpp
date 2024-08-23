@@ -74,11 +74,8 @@ System::Application::Application(Game* layer, const std::string& key)
 
     #if STANDALONE == 1
 
-        if (!layer) 
-        {
-            #if DEVELOPMENT == 1
-                LOG("Error: No target layer present.");  
-            #endif
+        if (!layer) {
+            LOG("Error: No target layer present.");  
             return;    
         }
 

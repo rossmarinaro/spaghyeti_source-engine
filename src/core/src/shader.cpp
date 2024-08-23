@@ -384,7 +384,7 @@ void Shader::Update(Camera* camera)
 
 
 bool checkCompileErrors(const std::string& key, unsigned int shader, const std::string& type)
-{
+{ 
 
     GLint result;
     GLsizei length = 0;
@@ -472,25 +472,25 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
                           fShaderStream, 
                           gShaderStream;
 
-        // read file's buffer contents into streams
+        //read file's buffer contents into streams
 
         vShaderStream << vertexShaderFile.rdbuf();
         fShaderStream << fragmentShaderFile.rdbuf();
         gShaderStream << geomShaderFile.rdbuf();
 
-        // close file handlers
+        //close file handlers
 
         vertexShaderFile.close();
         fragmentShaderFile.close();
         geomShaderFile.close();
 
-        // convert stream into string
+        //convert stream into string
 
         std::string vertexCode = vShaderStream.str(),
                     fragmentCode = fShaderStream.str(),
                     geometryCode = gShaderStream.str();
 
-        // if geometry shader path is present, also load a geometry shader
+        //if geometry shader path is present, also load a geometry shader
 
         if (geomShader != nullptr)
         {
@@ -508,7 +508,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
 
         LOG("Shader: Loading " + key + " from file.");
 
-        shader.Generate(key, vs, fs,/*  gShaderStream ? gs : */ nullptr);
+        shader.Generate(key, vs, fs);
  
     }
 
@@ -518,7 +518,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     {
         if (vertShader) {
             LOG("Shader: Loading " + key + " from string.");
-            shader.Generate(key, vertShader, fragShader, nullptr);
+            shader.Generate(key, vertShader, fragShader);
         }
         
         else 
@@ -543,7 +543,7 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
 
     vertex = glCreateShader(GL_VERTEX_SHADER);  
 
-    glShaderSource(vertex, 1, &vertexPath, NULL);
+    glShaderSource(vertex, 1, &vertexPath, NULL);LOG("0");
     glCompileShader(vertex);
 
     if (!checkCompileErrors(key, vertex, "vertex"))

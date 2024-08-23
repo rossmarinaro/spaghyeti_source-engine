@@ -1,0 +1,69 @@
+PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌
+Inputs: initialized.
+Camera: initialized.
+Physics: world enabled.
+Shader: Loading sprite from string.
+0
+Shader: sprite of type vertex compiled successfully.
+Shader: sprite of type fragment compiled successfully.
+Shader: sprite of type program linked successfully.
+Shader: No vertex or fragment.
+Shader: Loading UI from string.
+0
+Shader: UI of type vertex compiled successfully.
+Shader: UI of type fragment compiled successfully.
+Shader: UI of type program linked successfully.
+Shader: No vertex or fragment.
+Shader: Loading graphics from string.
+0
+Shader: graphics of type vertex compiled successfully.
+Shader: graphics of type fragment compiled successfully.
+Shader: graphics of type program linked successfully.
+Shader: No vertex or fragment.
+Shader: Loading cursor from string.
+0
+Shader: cursor of type vertex compiled successfully.
+Shader: cursor of type fragment compiled successfully.
+Shader: cursor of type program linked successfully.
+Shader: No vertex or fragment.
+Shader: Loading Points from string.
+0
+Shader: Points of type vertex compiled successfully.
+Shader: Points of type fragment compiled successfully.
+Shader: Points of type program linked successfully.
+Shader: No vertex or fragment.
+Shader: Loading Lines from string.
+0
+Shader: Lines of type vertex compiled successfully.
+Shader: Lines of type fragment compiled successfully.
+Shader: Lines of type program linked successfully.
+Shader: No vertex or fragment.
+Shader: Loading Triangles from string.
+0
+Shader: Triangles of type vertex compiled successfully.
+Shader: Triangles of type fragment compiled successfully.
+Shader: Triangles of type program linked successfully.
+Shader: No vertex or fragment.
+Shader: Base shaders initialized.
+Game:  initializing.
+Text: initialized.
+Sprite: base Created.
+Scene: Untitled0 started.
+Scene: key not found.
+Entity: quad created.
+Physics Debug: graphic debug primitives initialized.
+Shader: Loading grid from string.
+0
+Shader: grid of type vertex compiled successfully.
+Shader: grid of type fragment compiled successfully.
+Shader: grid of type program linked successfully.
+Shader: No vertex or fragment.
+Entity: quad created.
+Texture2D: audio src loaded.
+Texture2D: data src loaded.
+Texture2D: editor logo loaded.
+Texture2D: folder src loaded.
+Texture2D: icon large loaded.
+Resources: assets registered.
+Resources: assets cleared.
+Application terminated successfully. 👌

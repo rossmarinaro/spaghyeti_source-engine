@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include "../../build/sdk/include/app.h"
-#include "../../build/sdk/include/window.h"
+#include "../../build/sdk/include/utils.h"
 
 #ifdef __EMSCRIPTEN__
     #include <emscripten/eventloop.h>
@@ -39,18 +39,14 @@ void Window::Init()
 {
 
     if(!glfwInit())
-    {
+    { 
 
         #ifndef __EMSCRIPTEN__ 
-            #if DEVELOPMENT == 1
-                int err = glfwGetError(NULL);
-                LOG("GLFW: Error:: " + std::to_string(err));
-            #endif
+            int err = glfwGetError(NULL);
+            LOG("GLFW: Error:: " + std::to_string(err));
         #endif
 
         exit(EXIT_FAILURE);
-
-        return;
     }
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
@@ -134,34 +130,28 @@ void Window::Init()
 
     //glfwSetWindowMonitor(s_instance, monitor, 0, 0, s_width, s_height, 60);
 
-    if (!s_instance) {
+    if (!s_instance) 
+    {
+        LOG("GLFW: GLFW window could not be created.");
         glfwTerminate();
-        return;
+        exit(EXIT_FAILURE);
     }
     
     glfwShowWindow(s_instance);
     glfwMakeContextCurrent(s_instance);
 
-    #if DEVELOPMENT == 1
-        LOG("Window: initialized.");
-    #endif
+    LOG("Window: initialized.");
 
     #ifndef __EMSCRIPTEN__ 
 
-        #if DEVELOPMENT == 1
-
-            if (!gladLoadGL() || !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-                LOG("GLFW: Failed to initialize GLAD");
-                return;
-            }
-
-        #endif
+        if (!gladLoadGL() || !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+            LOG("GLFW: Failed to initialize GLAD");
+            exit(EXIT_FAILURE);
+        }
 
     #endif
 
-    #if DEVELOPMENT == 1
-        LOG("GLFW: GL Version - " << glGetString(GL_VERSION));
-    #endif
+    LOG("GLFW: GL Version - " << glGetString(GL_VERSION));
 
 }
 

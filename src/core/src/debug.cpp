@@ -21,7 +21,7 @@ void Points::Create()
 	shader = Shader::Get("Points");
 
 	m_vertexAttribute = 0;
-    m_colorAttribute = 1;
+    m_colorAttribute = 1; 
     m_sizeAttribute = 2;
 
     // Generate

@@ -151,19 +151,10 @@ void Game::StartScene(const std::string& key)
                 delete game->physics->debug;
                 game->physics->debug = nullptr;
 
-                #if STANDALONE == 1
-
-                    delete displayInfo;
-                    displayInfo = nullptr;
-
-                #endif
+                delete displayInfo;
+                displayInfo = nullptr;
 
             #endif  
-
-     /*        delete game->physics;
-            game->physics = nullptr;
-
-            game->physics = new Physics; */
 
             game->physics->GetWorld().SetContactListener(&game->physics->collisions);
 
@@ -172,9 +163,7 @@ void Game::StartScene(const std::string& key)
                 game->physics->debug = new DebugDraw;
                 game->physics->GetWorld().SetDebugDraw(game->physics->debug);
 
-                #if STANDALONE == 1
-                    displayInfo = new DisplayInfo;
-                #endif
+                displayInfo = new DisplayInfo;
 
             #endif
 

@@ -25,7 +25,6 @@
 
 #include "./audio.h"
 #include "./window.h"       
-#include "./utils.h"
 #include "./time.h"
 #include "./game.h"
 #include "./camera.h"

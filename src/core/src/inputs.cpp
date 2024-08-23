@@ -110,6 +110,7 @@ Inputs::Inputs():
             emscripten_set_touchend_callback("canvas", 0, 1, web_touch_callback);
             emscripten_set_touchmove_callback("canvas", 0, 1, web_touch_callback);
        }
+        
        else
        {
             emscripten_set_click_callback("canvas", 0, 1, web_mouse_callback);
