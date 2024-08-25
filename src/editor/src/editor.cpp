@@ -79,7 +79,7 @@ Editor::Editor()
     Log("Editor Root: " + rootPath);
 
     Game g;
-    game = &g;
+    game = &g; 
 
     //init base sandox scene
 

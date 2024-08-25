@@ -295,8 +295,7 @@ void DebugGraphic::Destroy(auto *shape)
 //---------------------------------------
 
 
-DebugDraw::DebugDraw():
-	enable(false)
+DebugDraw::DebugDraw()
 {
 
 	m_points = new Points;

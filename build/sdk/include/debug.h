@@ -103,8 +103,6 @@ class Triangles : public DebugGraphic
 class DebugDraw : public b2Draw
 {
     public:
-
-        bool enable;
         
         static inline Points* m_points = nullptr;
         static inline Lines* m_lines = nullptr;

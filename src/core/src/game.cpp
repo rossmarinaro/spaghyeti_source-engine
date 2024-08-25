@@ -94,12 +94,15 @@ void Game::Boot()
     #if DEVELOPMENT == 1 
 
         physics->debug = new DebugDraw;
-	    physics->GetWorld().SetDebugDraw(physics->debug);
+	    physics->GetWorld().SetDebugDraw(physics->debug); 
 
         #if STANDALONE == 1
-            displayInfo = new DisplayInfo;
+            displayInfo = new DisplayInfo; 
+            physics->enableDebug = false;
+        #else
+            physics->enableDebug = true;
         #endif
-
+        
     #endif
 
 }
@@ -154,18 +157,14 @@ void Game::StartScene(const std::string& key)
                 delete displayInfo;
                 displayInfo = nullptr;
 
-            #endif  
-
-            game->physics->GetWorld().SetContactListener(&game->physics->collisions);
-
-            #if DEVELOPMENT == 1
-
                 game->physics->debug = new DebugDraw;
                 game->physics->GetWorld().SetDebugDraw(game->physics->debug);
 
                 displayInfo = new DisplayInfo;
 
             #endif
+
+            game->physics->GetWorld().SetContactListener(&game->physics->collisions);
 
         #endif
 
@@ -185,7 +184,7 @@ void Game::StartScene(const std::string& key)
         game->m_gameState = true;
 
         LOG("Scene: " + key + " started.");
-
+        return;
     }
 
     else 
@@ -283,7 +282,7 @@ void Game::UpdateFrame()
 
     //render input cursor
 
-    Application::game->inputs->RenderCursor();
+    inputs->RenderCursor();
 
     //depth sort
 
@@ -292,7 +291,7 @@ void Game::UpdateFrame()
 
     #if DEVELOPMENT == 1 
 
-        if (physics->debug->enable) 
+        if (physics->enableDebug) 
         {
             physics->GetWorld().DebugDraw();
             physics->debug->Flush();

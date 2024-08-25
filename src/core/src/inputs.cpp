@@ -136,8 +136,8 @@ void Inputs::ProcessInput(GLFWwindow* window)
 
     isDown = numInputs > 0;
 
-    #if DEVELOPMENT == 1
-        Application::game->physics->debug->enable = G;
+    #if DEVELOPMENT == 1 && STANDALONE == 1
+        Application::game->physics->enableDebug = G;
     #endif
 
     //gamepad 
@@ -181,7 +181,7 @@ void Inputs::RenderCursor()
         CheckOverlap();
 
         #if DEVELOPMENT == 1
-            Application::game->cursor->SetAlpha(Application::game->physics->debug->enable ? 1.0f : 0.0f);
+            Application::game->cursor->SetAlpha(Application::game->physics->enableDebug ? 1.0f : 0.0f);
         #else
             Application::game->cursor->SetAlpha(0.0f);
         #endif

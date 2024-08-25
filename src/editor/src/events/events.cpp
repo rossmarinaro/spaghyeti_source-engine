@@ -1056,7 +1056,11 @@ void EventListener::BuildAndRun()
 
                     auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
-                    command_queue << "   auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + std::to_string(tn->isUI) + ");\n";
+                    //text render layer
+
+                    tn->isUI = tn->UIFlag ? 2 : 1;
+
+                    command_queue << "   auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + std::to_string(tn->isUI) + ");\n"; 
 
                     command_queue << "   text_" + node->ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";

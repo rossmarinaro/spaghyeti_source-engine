@@ -543,7 +543,7 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
 
     vertex = glCreateShader(GL_VERTEX_SHADER);  
 
-    glShaderSource(vertex, 1, &vertexPath, NULL);LOG("0");
+    glShaderSource(vertex, 1, &vertexPath, NULL);
     glCompileShader(vertex);
 
     if (!checkCompileErrors(key, vertex, "vertex"))

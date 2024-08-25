@@ -381,9 +381,8 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                                 if (System::Utils::str_endsWith(path, ".csv")) 
                                     if (ImGui::MenuItem(key.c_str())) {
-
                                         layers[i][1] = path;
-
+                                        layers[i][0] = key;
                                         m_layersApplied = false;
                                     }
                             }
@@ -400,9 +399,9 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                         ImGui::Text(csv_name.c_str()); 
 
-                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get(layers[i][1]).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::selectedAsset) == "image") 
+                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get(layers[i][2]).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::selectedAsset) == "image") 
                         {
-                            layers[i][1] = AssetManager::selectedAsset;
+                            layers[i][2] = AssetManager::selectedAsset;
                             m_layersApplied = false;
                         }
 

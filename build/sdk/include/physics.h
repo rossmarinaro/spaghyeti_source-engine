@@ -15,7 +15,8 @@ class Physics {
 
         float gravityX, gravityY;
 
-        bool sleeping = true, 
+        bool enableDebug,
+             sleeping = true, 
              setWarmStart = false, 
              continuous = true, 
              subStep = false,
@@ -52,8 +53,8 @@ class Physics {
         ~Physics() = default;
 
         inline void SetGravity(float x, float y) {
-            this->gravityX = x;
-            this->gravityY = y;
+            gravityX = x;
+            gravityY = y;
         }
 
         inline b2World& GetWorld() { return this->m_world; }
