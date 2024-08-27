@@ -27,6 +27,7 @@ Requires install of Python 3 to run build scripts
 Editor:
 ![image info](./images/screenshot.png)
 ![image info](./images/screenshot2.png)
+![image info](./images/screenshot3.png)
 
 Test Game:
 ![image info](./images/testgame.png)
