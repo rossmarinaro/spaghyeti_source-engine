@@ -168,7 +168,7 @@ void Inputs::ProcessInput(GLFWwindow* window)
                 continue; 
 
             if (strcmp(button.second->type, "UI") == 0 || strcmp(button.second->type, "sprite") == 0) {
-                auto sprite = std::static_pointer_cast<Sprite>(button.second);
+                auto sprite = std::static_pointer_cast<Sprite>(button.second); 
                 isOverlapping = do_check(sprite->position.x, sprite->position.y, sprite->texture.FrameWidth, sprite->texture.FrameHeight);  
             }
 

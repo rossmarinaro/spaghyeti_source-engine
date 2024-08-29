@@ -195,11 +195,11 @@ void EmptyNode::Render()
             m_debugGraphic->SetSize(radius);
         }
 
-        m_debugGraphic->renderable = show_debug ? true : false;
+        m_debugGraphic->renderable = show_debug;
 
         m_debugGraphic->SetPosition(positionX, positionY);
 
-        m_debugGraphic->SetDrawStyle(debug_fill ? 0 : 1); 
+        m_debugGraphic->SetDrawStyle(debug_fill ? GL_FILL : GL_LINE); 
     
     }
 }

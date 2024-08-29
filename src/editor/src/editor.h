@@ -61,6 +61,8 @@ namespace editor {
 			static inline EventListener events;
 			
 			static inline System::Game* game;
+
+            static inline std::pair<std::string, std::array<float, 4>> selectedEntityTransform;
 			
 			static inline std::vector<std::pair<std::string, std::string>> globals;
             static inline std::vector<std::pair<std::string, std::string>> spritesheets;
@@ -82,6 +84,7 @@ namespace editor {
 
 		private:
 
+            static inline std::shared_ptr<Geometry> s_selector;
 			static void Update();
 	};
 

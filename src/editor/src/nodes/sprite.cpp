@@ -211,7 +211,9 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
         ImGui::PushID(("(Sprite) " + name).c_str());
 
-        if (ImGui::TreeNode(("(Sprite) " + name).c_str()))
+        std::string selText = Editor::selectedEntityTransform.first == ID ? "<SELECTED> " : "";
+
+        if (ImGui::TreeNode((selText + "(Sprite) " + name).c_str()))
         {
         
             static char name_buf[32] = ""; ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
@@ -448,7 +450,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
             if (show_options)
             {
-            
+
                 ImGui::Checkbox("texture", &m_show_sprite_texture); 
 
                 if (m_show_sprite_texture)
@@ -780,8 +782,8 @@ void SpriteNode::Render()
                         spriteHandle->position.y + bodyY[i]
                     ), 0);
 
-        if (System::Game::GetScene()->ListenForInteraction(spriteHandle) /* && System::Game::GetScene()->GetContext().inputs->LEFT_CLICK */)
-            spriteHandle->SetTint({ 1.0f, 0.0f, 0.0f });
+        if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+            Editor::selectedEntityTransform = { ID, { spriteHandle->position.x, spriteHandle->position.y, spriteHandle->texture.FrameWidth, spriteHandle->texture.FrameHeight }};
 
     }
 }

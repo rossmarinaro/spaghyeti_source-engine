@@ -107,7 +107,7 @@ Geometry::Geometry(float x, float y, float width, float height):
     tint = glm::vec3(0.0f, 0.0f, 1.0f);
     texture = Graphics::Texture2D::Get("base");
     shader = Shader::Get("graphics");
-    
+    renderable = true;
     LOG("Entity: quad created."); 
 
 }
@@ -127,7 +127,6 @@ void Geometry::Render(float projWidth, float projHeight)
         texture.FrameWidth = width;
         texture.FrameHeight = height;
 
-        m_model = glm::translate(m_model, glm::vec3(position, 0.0f));  
         m_model = glm::translate(m_model, glm::vec3(0.5f * width + position.x, 0.5f * height + position.y, 0.0f)); 
 
         if (rotation > 0)
@@ -138,8 +137,8 @@ void Geometry::Render(float projWidth, float projHeight)
         shader.SetVec3f("tint", tint);
         shader.SetMat4("model", m_model);  
         shader.SetFloat("alphaVal", alpha);
-        shader.SetVec2f("offset", glm::vec2(0.0f));
-        shader.SetMat4("view", glm::mat4(1.0f));
+        shader.SetVec2f("offset", System::Application::game->camera->position);
+        shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
         shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight));
 
         texture.Update(position, false, false, m_drawStyle); 
@@ -467,11 +466,8 @@ void Sprite::Render(float projWidth, float projHeight)
 
             shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight));
 
-            #if _ISMOBILE == 1
-                texture.Update(position, flipX, flipY, GL_FILL);   
-            #else
-                texture.Update(position, flipX, flipY, 1); 
-            #endif   
+            texture.Update(position, flipX, flipY, GL_FILL);   
+ 
         }
 
         //update physics bodies if exists

@@ -46,12 +46,21 @@ void Editor::Update()
 
     glfwPollEvents();
 
-    GUI::Render();
+    GUI::Render(); 
+
+    //track mouse position
 
     auto position = Window::GetNDCToPixel(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
 
-    game->inputs->mouseX = position.x;
-    game->inputs->mouseY = position.y;
+    game->inputs->mouseX = ImGui::GetMousePos().x - position.x;
+    game->inputs->mouseY = ImGui::GetMousePos().y - Editor::game->camera->position.y;
+
+    //current selected entity
+
+    if (s_selector) {
+        s_selector->SetPosition(selectedEntityTransform.second[0], selectedEntityTransform.second[1]); 
+        s_selector->SetSize(selectedEntityTransform.second[2], selectedEntityTransform.second[3]); 
+    } 
 
     glViewport(0, 0, Window::s_width, Window::s_height);
     
@@ -109,6 +118,12 @@ Editor::Editor()
 
     glfwSetWindowIcon(Window::s_instance, 1, &image);
 
+    //create entity selector graphic
+
+    s_selector = System::Game::CreateGeom(100.0f, 100.0f, 100.0f, 100.0f, 2);
+    s_selector->SetTint(glm::vec3(0.0f, 1.0f, 0.0f));  
+    s_selector->SetDrawStyle(GL_LINE);
+    
     //main update loop
 
     while (!Editor::events.exitFlag) 

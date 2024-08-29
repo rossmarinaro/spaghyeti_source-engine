@@ -110,7 +110,7 @@ void Shader::InitBaseShaders()
 
         "void main()\n"
         "{\n"
-            "gl_Position = projection * model * view * vec4(pos.xy + offset.xy, 0.0, 1.0);\n"
+            "gl_Position = projection * model * view * vec4(pos.xy + offset.xy, 0.0, 1.0);\n" 
         "}";
 
     static const char* debugGraphicShader_fragment = \

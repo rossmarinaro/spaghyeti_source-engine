@@ -46,6 +46,7 @@ Texture2D: folder src loaded.
 Texture2D: icon large loaded.
 Resources: assets registered.
 Entity: quad created.
+Entity: quad created.
 Texture2D: image file loading failed.
 Texture2D: bar-venue-good.png loaded.
 Resources: assets registered.

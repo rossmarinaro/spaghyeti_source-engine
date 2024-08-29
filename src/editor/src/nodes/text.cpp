@@ -64,7 +64,9 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
 
         ImGui::PushID(("(Text) " + name).c_str());
 
-        if (ImGui::TreeNode(("(Text) " + name).c_str()))
+        std::string selText = Editor::selectedEntityTransform.first == ID ? "<SELECTED> " : "";
+
+        if (ImGui::TreeNode((selText + "(Text) " + name).c_str()))
         {
         
             static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
@@ -154,8 +156,8 @@ void TextNode::Render()
         textHandle->SetTint(tint);
         textHandle->SetDepth(depth);
 
-        if (System::Game::GetScene()->ListenForInteraction(textHandle) /* && System::Game::GetScene()->GetContext().inputs->LEFT_CLICK */)
-            textHandle->SetTint({ 1.0f, 0.0f, 0.0f });
+        if (System::Game::GetScene()->ListenForInteraction(textHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+            Editor::selectedEntityTransform = { ID, { textHandle->position.x, textHandle->position.y, textHandle->GetTextDimensions().x, textHandle->GetTextDimensions().y + textHandle->GetTextDimensions().x / 2 }};
     }
 
     isUI = UIFlag ? 2 : 1;

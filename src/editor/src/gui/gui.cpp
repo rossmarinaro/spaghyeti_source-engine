@@ -109,7 +109,6 @@ void GUI::Launch()
     s_cursor = std::make_unique<Geometry>(100.0f, 100.0f, 30.0f, 30.0f);
     s_cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f));  
     s_cursor->SetAlpha(0.0f);
-    s_cursor->renderable = true;
 
     Editor::Log("GUI launched.");
 
@@ -331,7 +330,7 @@ void GUI::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
     {
 
         //zoom camera
-
+ 
         float zoom = Editor::game->camera->GetZoom();
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Right))

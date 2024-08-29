@@ -113,7 +113,7 @@ class Geometry : public Entity {
 
 		float width, height, radius;
 
-		inline void SetDrawStyle(int style) { this->m_drawStyle = style; } 
+		inline void SetDrawStyle(GLint style) { m_drawStyle = style; } 
 
 		inline void SetSize(float width, float height) { 
 			this->width = width; 
@@ -132,11 +132,7 @@ class Geometry : public Entity {
 
 	private:
         
-        #if _ISMOBILE == 1
-		    GLint m_drawStyle = GL_FILL;
-        #else 
-            GLint m_drawStyle = 1;
-        #endif
+        GLint m_drawStyle = GL_FILL;
 
 		const char* m_type;
 		

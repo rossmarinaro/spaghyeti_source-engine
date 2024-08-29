@@ -302,7 +302,6 @@ void GUI::RenderNodes()
             if (node && node->active) {
                 node->Update(node, Node::nodes); 
                 node->Render(); 
-
             }
 }
 
