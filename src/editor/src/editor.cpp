@@ -22,7 +22,7 @@ void Editor::Update()
     Renderer::Update(game->camera);
 
     if (GUI::s_grid)
-        GUI::s_grid->Render();
+        GUI::s_grid->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
 
     Time::Update(glfwGetTime());
 
@@ -36,7 +36,7 @@ void Editor::Update()
             ImGui::IsKeyPressed(ImGuiKey_S)) 
         {
 
-            events.canSave = false;
+            events.canSave = false; 
             events.SaveScene(events.saveFlag);
         }
 
@@ -48,7 +48,13 @@ void Editor::Update()
 
     GUI::Render();
 
+    auto position = Window::GetNDCToPixel(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+
+    game->inputs->mouseX = position.x;
+    game->inputs->mouseY = position.y;
+
     glViewport(0, 0, Window::s_width, Window::s_height);
+    
 	glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);
 	glfwSwapBuffers(Window::s_instance);
 

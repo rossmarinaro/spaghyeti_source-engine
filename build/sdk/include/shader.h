@@ -25,7 +25,6 @@ class Shader {
         void Delete();
         
         static void InitBaseShaders(); 
-        static void Update(Camera* camera);
         static void Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomShader = nullptr);
         static void UnLoad(const std::string& key);
         static Shader& Get(const std::string& key);

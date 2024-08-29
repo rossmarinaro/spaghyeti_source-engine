@@ -51,48 +51,6 @@ void GUI::Launch()
     ImGui_ImplGlfw_InitForOpenGL(Window::s_instance, true);
     ImGui_ImplOpenGL3_Init(Window::s_glsl_version);
 
-    CreateGrid();
-
-    //load embedded assets
-
-    System::Resources::Manager::LoadRawImage("editor logo", Assets::Images::editor_logo, 66, 65, 4);
-    System::Resources::Manager::LoadRawImage("icon large", Assets::Images::icon_large, 211, 126, 4);
-    System::Resources::Manager::LoadRawImage("audio src", Assets::Images::audio_src, 75, 70, 3);
-    System::Resources::Manager::LoadRawImage("data src", Assets::Images::data_src, 75, 70, 4);
-    System::Resources::Manager::LoadRawImage("folder src", Assets::Images::folder_src, 202, 202, 4);
-
-    System::Resources::Manager::RegisterTextures();
-
-    glfwSetScrollCallback(System::Window::s_instance, scroll_callback);
-
-    Editor::Log("GUI launched.");
-
-}
-
-
-//----------------------------------- alignment util
-
-
-void GUI::AlignForWidth(float width, float alignment)
-{
-
-    ImGuiStyle& style = ImGui::GetStyle();
-
-    float avail = ImGui::GetContentRegionAvail().x;
-    float off = (avail - width) * alignment;
-
-    if (off > 0.0f)
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
-
-}
-
-
-//----------------------------------- background grid
-
-
-void GUI::CreateGrid()
-{
-
     static const char* checker_vertex = 
 
         "#version 330 core\n"
@@ -131,10 +89,46 @@ void GUI::CreateGrid()
         "}\n";
 
 
-    Shader::Load("grid", checker_vertex, checker_fragment, nullptr); 
+    Shader::Load("grid", checker_vertex, checker_fragment); 
 
     s_grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
     s_grid->shader = Shader::Get("grid");
+
+    //load embedded assets
+
+    System::Resources::Manager::LoadRawImage("editor logo", Assets::Images::editor_logo, 66, 65, 4);
+    System::Resources::Manager::LoadRawImage("icon large", Assets::Images::icon_large, 211, 126, 4);
+    System::Resources::Manager::LoadRawImage("audio src", Assets::Images::audio_src, 75, 70, 3);
+    System::Resources::Manager::LoadRawImage("data src", Assets::Images::data_src, 75, 70, 4);
+    System::Resources::Manager::LoadRawImage("folder src", Assets::Images::folder_src, 202, 202, 4);
+
+    System::Resources::Manager::RegisterTextures();
+
+    glfwSetScrollCallback(System::Window::s_instance, scroll_callback);
+
+    s_cursor = std::make_unique<Geometry>(100.0f, 100.0f, 30.0f, 30.0f);
+    s_cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f));  
+    s_cursor->SetAlpha(0.0f);
+    s_cursor->renderable = true;
+
+    Editor::Log("GUI launched.");
+
+}
+
+
+//----------------------------------- alignment util
+
+
+void GUI::AlignForWidth(float width, float alignment)
+{
+
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    float avail = ImGui::GetContentRegionAvail().x;
+    float off = (avail - width) * alignment;
+
+    if (off > 0.0f)
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
 
 }
 
@@ -174,7 +168,12 @@ void GUI::Render()
 
     if (s_grid)
        s_grid->shader.SetFloat("pitch", s_grid_quantity, true);
-        
+
+    if (s_cursor) {
+        s_cursor->SetPosition(ImGui::GetMousePos().x, ImGui::GetMousePos().y);   
+        s_cursor->Render(static_cast<float>(System::Window::s_width * 2), static_cast<float>(System::Window::s_height * 2));
+    }
+     
     //Renderer::CreateFrameBuffer();
 
 }

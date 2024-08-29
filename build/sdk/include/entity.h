@@ -83,7 +83,7 @@ class Entity {
 			this->position.y = y; 
 		}
 		 
-		virtual void Render() {}
+		virtual void Render(float projWidth, float projHeight) {}
         virtual ~Entity() { s_count--; }
  
 		Entity(const char* type);
@@ -128,7 +128,7 @@ class Geometry : public Entity {
 
 		~Geometry() = default;
 
-		void Render();
+		void Render(float projWidth, float projHeight);
 
 	private:
         
@@ -155,7 +155,7 @@ class Text : public Entity {
         static void Init();
         static void ShutDown();
  
-        void Render();
+        void Render(float projWidth, float projHeight);
 		void SetText(const std::string& content);
         const glm::vec2 GetTextDimensions();
  
@@ -220,7 +220,7 @@ class Sprite : public Entity {
 		void SetImpulse(float x, float y);
 		void SetImpulseX(float x);
 		void SetImpulseY(float y);
-		void Render();
+		void Render(float projWidth, float projHeight);
         std::shared_ptr<Sprite> Clone();
 
 		Sprite(const std::string& key, const glm::vec2& position);

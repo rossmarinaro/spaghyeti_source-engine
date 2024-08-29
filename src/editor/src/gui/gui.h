@@ -30,19 +30,19 @@ namespace editor {
             static void RenderScriptOptions(const std::string& nodeId);
 
             static inline std::unique_ptr<Geometry> s_grid;
+            static inline std::shared_ptr<Geometry> s_cursor;
             
             static inline float s_grid_quantity = 20.0f;
 
         private:
 
-            static void CreateGrid();
             static void RenderNodes();
             static void RenderDockSpace();
             static void RenderLogs();
             static void RenderAssets();
-            static void RenderCamera();
             static void ShowSettings();
             static void ShowMenu();
+            static void ShowViewport();
             static void ShowOptionsInit();
             static void ShowOptionsQuit();
             static void ShowOptionsSave(bool quit);

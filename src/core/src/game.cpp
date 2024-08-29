@@ -84,7 +84,6 @@ void Game::Boot()
 
     glfwSetWindowTitle(Window::s_instance, Application::name.c_str());
 
-    inputs->CreateCursor();
     inputs->ResetControls();
 
     physics->GetWorld().SetContactListener(&physics->collisions);
@@ -102,7 +101,7 @@ void Game::Boot()
         #else
             physics->enableDebug = true;
         #endif
-        
+
     #endif
 
 }
@@ -173,10 +172,9 @@ void Game::StartScene(const std::string& key)
             cachedScenes.push_back(game->currentScene->key);
         }
 
-        game->currentScene->vignette = std::make_unique<Sprite>("base", 0.0f, -50.0f);
+        game->currentScene->vignette = std::make_unique<Geometry>(0.0f, -50.0f, 0.0f, 0.0f);
         game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
         game->currentScene->vignette->SetAlpha(0.0f);
-        game->currentScene->vignette->shader = Shader::Get("UI");
         game->currentScene->vignette->SetScrollFactor({ 0.0f, 1.0f });
 
         game->currentScene->Run();  
@@ -264,25 +262,20 @@ void Game::UpdateFrame()
 
     for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity) && entity.get()->renderable) 
-            entity->Render();
+            entity->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
 
     //vignette overlay
 
     if(currentScene->vignette) {
-        currentScene->vignette->texture.FrameWidth = Window::s_scaleWidth * 4;
-        currentScene->vignette->texture.FrameHeight = Window::s_scaleHeight * 4;
-        currentScene->vignette->Render();
+        currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
+        currentScene->vignette->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     }
 
     //UI render queue
 
     for (const auto& UI : currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
-            UI->Render();
-
-    //render input cursor
-
-    inputs->RenderCursor();
+            UI->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
 
     //depth sort
 

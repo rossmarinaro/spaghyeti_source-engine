@@ -1025,7 +1025,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->texture.Filter_Max = " + filtering + ";\n";
 
                     if (sn->lock_in_place) {
-                        command_queue << "   sprite_" + node->ID + "->shader = Shader::Get(\"UI\");\n";
+                        command_queue << "   sprite_" + node->ID + "->type = \"UI\";\n";
                         command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
                     }
 

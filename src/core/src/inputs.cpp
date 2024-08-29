@@ -90,8 +90,6 @@ using namespace System;
 //----------------------------------------
 
 Inputs::Inputs():
-    m_cursorX(0), 
-    m_cursorY(0),
     cursorReset(false), 
     m_initVirtualControls(false)
 {
@@ -147,64 +145,15 @@ void Inputs::ProcessInput(GLFWwindow* window)
     if (1 == present)
         SetGamepadInputs(GLFW_JOYSTICK_1);
 
-
-    CheckOverlap();
-}
-
-
-//------------------------------------- cursor object
-
- 
-void Inputs::CreateCursor() 
-{
-    Application::game->cursor = System::Game::CreateGeom(100.0f, 100.0f, 30.0f, 30.0f);
-    Application::game->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
-    Application::game->cursor->SetAlpha(0.0f); 
-    Application::game->cursor->shader = Shader::Get("cursor");
-}
-
-
-//--------------------------------------
-
-
-void Inputs::RenderCursor()
-{
-
-    if (Application::game->cursor != nullptr)
-    {
-
-        Application::game->cursor->SetPosition(m_cursorX, m_cursorY);
-
-        if (Application::isMobile && cursorReset)
-            cursor_callback(Window::s_instance, -100.0f, -100.0f);
-
-        CheckOverlap();
-
-        #if DEVELOPMENT == 1
-            Application::game->cursor->SetAlpha(Application::game->physics->enableDebug ? 1.0f : 0.0f);
-        #else
-            Application::game->cursor->SetAlpha(0.0f);
-        #endif
-
-        Application::game->cursor->Render();
-    }
-}
-
-
-//------------------------------------- listen for entity overlap
-
-
-void Inputs::CheckOverlap()
-{
+    if (Application::isMobile && cursorReset)
+        cursor_callback(Window::s_instance, 0.0f, 0.0f);
 
     bool isOverlapping = false;
 
-    auto inputs = Application::game->inputs; 
-
     auto do_check = [&](float x, float y, float width, float height) -> bool {
 
-        bool overlapX = (x + width / 2) >= inputs->mouseX && inputs->mouseX + width >= x,
-             overlapY = (y + height / 2) >= inputs->mouseY && inputs->mouseY + height >= y;
+        bool overlapX = (x + width / 2) >= mouseX && mouseX + width >= x,
+             overlapY = (y + height / 2) >= mouseY && mouseY + height >= y;
 
         return overlapX && overlapY;
     };
@@ -243,18 +192,12 @@ void Inputs::CheckOverlap()
 void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
 {
 
-    if (Application::game->cursor == nullptr)
-        return;
-
     //set cursor object to movement, translate ndc coords to clip space
 
     auto position = Window::GetNDCToPixel((float)xPos, (float)yPos);
             
     Application::game->inputs->mouseX = position.x;
     Application::game->inputs->mouseY = position.y;
-
-    Application::game->inputs->m_cursorX = (float)xPos;
-    Application::game->inputs->m_cursorY = (float)yPos;
 
 }
 
@@ -492,11 +435,6 @@ void Inputs::ResetControls()
 {
 
     cursorReset = true;
-
-    if (!Application::isMobile) {
-        m_cursorX = -100.0f;
-        m_cursorY = -100.0f;
-    }
 
     RIGHT_CLICK = false;
     LEFT_CLICK = false;

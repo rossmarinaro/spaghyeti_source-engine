@@ -18,6 +18,7 @@ TextNode::TextNode():
     depth = 1;
     textBuf = "";
     textHandle = System::Game::CreateText(textBuf, positionX, positionY);
+    System::Game::GetScene()->SetInteractive(textHandle);
 
     Editor::Log("Text node " + name + " created.");   
 }
@@ -152,6 +153,9 @@ void TextNode::Render()
         textHandle->SetRotation(rotation);
         textHandle->SetTint(tint);
         textHandle->SetDepth(depth);
+
+        if (System::Game::GetScene()->ListenForInteraction(textHandle) /* && System::Game::GetScene()->GetContext().inputs->LEFT_CLICK */)
+            textHandle->SetTint({ 1.0f, 0.0f, 0.0f });
     }
 
     isUI = UIFlag ? 2 : 1;

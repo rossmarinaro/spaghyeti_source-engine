@@ -298,10 +298,11 @@ void GUI::RenderNodes()
     //render active nodes
         
     if (Node::nodes.size())
-        for (const auto &node : Node::nodes)
+        for (const auto& node : Node::nodes)
             if (node && node->active) {
                 node->Update(node, Node::nodes); 
-                node->Render();
+                node->Render(); 
+
             }
 }
 

@@ -149,10 +149,11 @@ void SpriteNode::RegisterFrames()
 void SpriteNode::ApplyTexture(const std::string& asset)
 {  
 
-    if (spriteHandle == nullptr) { 
-
+    if (!spriteHandle) 
+    { 
         spriteHandle = System::Game::CreateSprite(asset, 0.0f, 0.0f);
         spriteHandle->name = name;
+        System::Game::GetScene()->SetInteractive(spriteHandle);
     }
 
     else 
@@ -768,7 +769,7 @@ void SpriteNode::Render()
 
         else
             spriteHandle->StopAnimation();
-
+            
         //entity physics body transform
         
         if (bodies.size())
@@ -778,6 +779,9 @@ void SpriteNode::Render()
                         spriteHandle->position.x + bodyX[i], 
                         spriteHandle->position.y + bodyY[i]
                     ), 0);
+
+        if (System::Game::GetScene()->ListenForInteraction(spriteHandle) /* && System::Game::GetScene()->GetContext().inputs->LEFT_CLICK */)
+            spriteHandle->SetTint({ 1.0f, 0.0f, 0.0f });
 
     }
 }

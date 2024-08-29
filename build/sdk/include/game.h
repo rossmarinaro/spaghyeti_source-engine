@@ -27,7 +27,6 @@ namespace System {
             Inputs* inputs;
 
             std::vector<Scene*> scenes;
-            std::shared_ptr<Geometry> cursor = nullptr;
 
             Game();
             virtual ~Game() = default;

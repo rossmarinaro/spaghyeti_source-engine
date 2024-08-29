@@ -12,7 +12,7 @@ namespace System {
 
             std::string key;
 
-            std::unique_ptr<Sprite> vignette;
+            std::unique_ptr<Geometry> vignette;
             
             std::vector<std::shared_ptr<Entity>> entities;
             std::vector<std::shared_ptr<Entity>> UI;
@@ -60,12 +60,12 @@ namespace System {
             inline void SetInteractive(std::shared_ptr<Entity> entity, bool interactive = true) 
             {
 
-                if (interactive) {
+                auto it = std::find_if(this->virtual_buttons.begin(), this->virtual_buttons.end(), [&](auto e) { return e.second == entity; });
+
+                if (interactive && it == this->virtual_buttons.end()) {
                     this->virtual_buttons.push_back({ 0, entity });
                     return;
                 }
-
-                auto it = std::find_if(this->virtual_buttons.begin(), this->virtual_buttons.end(), [&](auto e) { return e.second == entity; });
 
                 if (it != this->virtual_buttons.end())
                     this->virtual_buttons.erase(it);
@@ -82,14 +82,6 @@ namespace System {
                 }
 
                 return false;
-            }
-
-            inline void ToggleVirtualButtonVisibility(bool visibility) {
-
-                for (auto& button : this->virtual_buttons) {
-                    button.first = visibility;
-                    button.second->SetAlpha(visibility ? 1.0f : 0.0f);
-                }
             }
 
             inline const Process::Context& GetContext() { return this->m_context; }

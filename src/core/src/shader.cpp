@@ -305,9 +305,7 @@ void Shader::InitBaseShaders()
     //shader char arrays
 
     Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment); 
-    Load("UI", spriteQuadShader_vertex, spriteQuadShader_fragment);
     Load("graphics", debugGraphicShader_vertex, debugGraphicShader_fragment);
-    Load("cursor", debugGraphicShader_vertex, debugGraphicShader_fragment);
     //Load("batch", spriteBatchShader_vertex, spriteBatchShader_fragment);
     //Load("text", textVertex, textFragment);
      
@@ -325,58 +323,6 @@ void Shader::InitBaseShaders()
 
     LOG("Shader: Base shaders initialized.");
 
-}
-
-
-//---------------------------------
-
-
-void Shader::Update(Camera* camera)
-{
-
-    glClearColor(
-        camera->backgroundColor.x * camera->backgroundColor.w,
-        camera->backgroundColor.y * camera->backgroundColor.w,
-        camera->backgroundColor.z * camera->backgroundColor.w, 
-        camera->backgroundColor.w 
-    ); 
-
-    //custom shaders
-
-    for (auto it = System::Application::resources->shaders.begin(); it != System::Application::resources->shaders.end(); ++it)
-    {
-        
-        auto shader = *it;
-
-        //offset
-
-        if (shader.first == "cursor" || shader.first == "UI")             
-            Get(shader.first).SetVec2f("offset", glm::vec2(0.0f));
-
-        else     
-            Get(shader.first).SetVec2f("offset", camera->position);
-
-        //projection
-
-        if (shader.first != "Points" && shader.first != "Lines" && shader.first != "Triangles")
-        {
-
-            if (shader.first == "cursor")                 
-               Get(shader.first).SetMat4("projection", camera->GetProjectionMatrix(static_cast<float>(System::Window::s_width * 2), static_cast<float>(System::Window::s_height * 2)));  
-            
-            else                 
-                Get(shader.first).SetMat4("projection", camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight));
-        } 
-
-        //view
-      
-        if (shader.first == "cursor" || shader.first == "UI")             
-            Get(shader.first).SetMat4("view", glm::mat4(1.0f));
-
-        else if (shader.first == "Points" || shader.first == "Lines" || shader.first == "Triangles")         
-            Get(shader.first).SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(camera->position, 0.0f)));
-
-    }
 }
 
 

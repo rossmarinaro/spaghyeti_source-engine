@@ -30,8 +30,6 @@ class Inputs {
         float mouseX, mouseY;
 
         void ShutDown();
-        void CreateCursor();
-        void RenderCursor();
         void ResetControls();
         void ProcessInput(GLFWwindow* window);
 
@@ -44,11 +42,8 @@ class Inputs {
 
     private:
 
-        float m_cursorX, m_cursorY;
-
         bool m_initVirtualControls;
 
-        void CheckOverlap();
         void SetGamepadInputs(unsigned int joystick);
         void SetKeyInputs(bool boolean, int key, GLFWwindow* window);
 

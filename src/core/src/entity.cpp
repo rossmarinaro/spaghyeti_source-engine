@@ -116,7 +116,7 @@ Geometry::Geometry(float x, float y, float width, float height):
 //------------------------------------- 
 
 
-void Geometry::Render()
+void Geometry::Render(float projWidth, float projHeight)
 {
 
     m_model = glm::mat4(1.0f); 
@@ -128,7 +128,6 @@ void Geometry::Render()
         texture.FrameHeight = height;
 
         m_model = glm::translate(m_model, glm::vec3(position, 0.0f));  
-
         m_model = glm::translate(m_model, glm::vec3(0.5f * width + position.x, 0.5f * height + position.y, 0.0f)); 
 
         if (rotation > 0)
@@ -139,7 +138,9 @@ void Geometry::Render()
         shader.SetVec3f("tint", tint);
         shader.SetMat4("model", m_model);  
         shader.SetFloat("alphaVal", alpha);
+        shader.SetVec2f("offset", glm::vec2(0.0f));
         shader.SetMat4("view", glm::mat4(1.0f));
+        shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight));
 
         texture.Update(position, false, false, m_drawStyle); 
 
@@ -368,7 +369,7 @@ void Sprite::ReadSpritesheetData()
 //------------------------------------------ render sprite / update transformations
 
 
-void Sprite::Render()
+void Sprite::Render(float projWidth, float projHeight)
 {  
 
     if (!alive)
@@ -454,11 +455,17 @@ void Sprite::Render()
             shader.SetVec3f("tint", tint);
             shader.SetMat4("model", m_model);
 
-            if (IsSprite())
+            if (IsSprite()) {
+                shader.SetVec2f("offset", System::Application::game->camera->position);
                 shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
-            
-            else         
+            }
+
+            else {
+                shader.SetVec2f("offset", glm::vec2(0.0f));
                 shader.SetMat4("view", glm::mat4(1.0f));
+            }
+
+            shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight));
 
             #if _ISMOBILE == 1
                 texture.Update(position, flipX, flipY, GL_FILL);   
@@ -612,9 +619,9 @@ Sprite::Sprite(Sprite& sprite):
 Sprite::Sprite(const std::string& key, const glm::vec2& position): 
     Entity("UI", position.x, position.y)
 {
-    this->key = key;
+    this->key = key; 
     texture = Graphics::Texture2D::Get(key);
-    shader = Shader::Get("UI");
+    shader = Shader::Get("sprite");  
     
     LOG("Sprite: UI " + key + " created."); 
 }

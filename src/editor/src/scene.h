@@ -28,8 +28,8 @@ namespace editor {
                   currentBoundsHeightEnd;
 
             bool globals_applied = false, 
-                gravity_continuous = true,
-                gravity_sleeping = true;
+                 gravity_continuous = true,
+                 gravity_sleeping = true;
     
             glm::vec2 cameraPosition;
             glm::vec4 cameraBackgroundColor;

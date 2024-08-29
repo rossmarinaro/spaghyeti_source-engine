@@ -14,7 +14,12 @@ void System::Renderer::Update(Camera* camera)
  
     glClear(GL_COLOR_BUFFER_BIT);
     
-    Shader::Update(camera);
+    glClearColor(
+        camera->backgroundColor.x * camera->backgroundColor.w,
+        camera->backgroundColor.y * camera->backgroundColor.w,
+        camera->backgroundColor.z * camera->backgroundColor.w, 
+        camera->backgroundColor.w 
+    );
 
 }
 

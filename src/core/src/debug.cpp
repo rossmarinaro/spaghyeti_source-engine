@@ -65,7 +65,8 @@ void Points::Flush()
 	if (m_count == 0)
         return;
 
-	this->shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight), true);
+	shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight), true);
+    shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position, 0.0f)));
 
     glBindVertexArray(m_vaoId);
 
@@ -140,7 +141,8 @@ void Lines::Flush()
     if (m_count == 0)
         return; 
 
-	this->shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight), true);
+	shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight), true);
+    shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position, 0.0f)));
 
     glBindVertexArray(m_vaoId);
 
@@ -210,7 +212,8 @@ void Triangles::Flush()
     if (m_count == 0)
         return;
 
-	this->shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight), true);
+	shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight), true);
+    shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position, 0.0f)));
 
     glBindVertexArray(m_vaoId);
 
