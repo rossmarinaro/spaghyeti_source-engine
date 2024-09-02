@@ -21,62 +21,66 @@ namespace System {
 
             Scene(const Process::Context& context): 
                 m_context(context)
-                    { this->Init("Untitled" + std::to_string(s_ID)); }
+                    { Init("Untitled" + std::to_string(s_ID)); }
 
             Scene(const Process::Context& context, const std::string& key): 
                 m_context(context)
-                    { this->Init(key); }
+                    { Init(key); }
 
             virtual ~Scene() { s_ID--; };
             virtual void Preload() {}
             virtual void Run() {}
 
             inline bool IsPaused() {
-                return this->m_paused;
+                return m_paused;
             }
 
             template<typename T>
             inline T GetData(const char* key) const { 
-                return std::any_cast<T>(this->m_data.at(key));
+                return std::any_cast<T>(m_data.at(key));
             }
 
             inline void SetData(const char* key, std::any value) { 
-                this->m_data.insert({ key, value }); 
+                m_data.insert({ key, value }); 
             }
 
             inline const glm::vec2 GetWorldDimensions() { 
-                return glm::vec2(this->m_worldWidth, this->m_worldHeight);
+                return glm::vec2(m_worldWidth, m_worldHeight);
             }
 
             inline void SetWorldDimensions(float width, float height) { 
-                this->m_worldWidth = width;
-                this->m_worldHeight = height;
+                m_worldWidth = width;
+                m_worldHeight = height;
             }
 
             inline void SetPause(bool isPaused) {
-                this->m_paused = isPaused;
+                m_paused = isPaused;
             }
+
+            //assign entity to react to input
 
             inline void SetInteractive(std::shared_ptr<Entity> entity, bool interactive = true) 
             {
 
-                auto it = std::find_if(this->virtual_buttons.begin(), this->virtual_buttons.end(), [&](auto e) { return e.second == entity; });
+                auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity; });
 
-                if (interactive && it == this->virtual_buttons.end()) {
-                    this->virtual_buttons.push_back({ 0, entity });
+                if (interactive && it == virtual_buttons.end()) {
+                    virtual_buttons.push_back({ 0, entity });
                     return;
                 }
 
-                if (it != this->virtual_buttons.end())
-                    this->virtual_buttons.erase(it);
+                if (it != virtual_buttons.end())
+                    virtual_buttons.erase(it);
                 
             }
 
+            //check if cursor is hovering entity
+
             inline bool ListenForInteraction(std::shared_ptr<Entity> entity) 
             {
-                auto it = std::find_if(this->virtual_buttons.begin(), this->virtual_buttons.end(), [&](auto e) { return e.second == entity; });
+                auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity; });
 
-                if (it != this->virtual_buttons.end()) {
+                if (it != virtual_buttons.end()) {
                     auto element = *it;
                     return element.first;
                 }
@@ -84,19 +88,19 @@ namespace System {
                 return false;
             }
 
-            inline const Process::Context& GetContext() { return this->m_context; }
+            inline const Process::Context& GetContext() { return m_context; }
 
             template <typename T>
             const inline std::shared_ptr<T> GetEntity(const std::string& key) 
             {
 
-                auto entity_it = std::find_if(this->entities.begin(), this->entities.end(), [&](auto entity) { return entity->name == key; });
-                auto UI_it = std::find_if(this->UI.begin(), this->UI.end(), [&](auto UI) { return UI->name == key; });
+                auto entity_it = std::find_if(entities.begin(), entities.end(), [&](auto entity) { return entity->name == key; });
+                auto UI_it = std::find_if(UI.begin(), UI.end(), [&](auto UI) { return UI->name == key; });
 
-                if (entity_it != this->entities.end())
+                if (entity_it != entities.end())
                     return std::static_pointer_cast<T>(*entity_it);
 
-                if (UI_it != this->UI.end())
+                if (UI_it != UI.end())
                     return std::static_pointer_cast<T>(*UI_it);
 
                 return nullptr;

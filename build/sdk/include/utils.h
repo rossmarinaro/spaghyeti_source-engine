@@ -16,7 +16,7 @@ namespace System {
 
     #ifndef LOG
 
-        #if DEVELOPMENT == 1 //&& STANDALONE == 1
+        #if DEVELOPMENT == 1 && STANDALONE == 1
             #define LOG(msg) \
                 std::cout << msg << std::endl; \
                 std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; 
@@ -27,7 +27,7 @@ namespace System {
     #endif
 
     //common utilities
-
+ 
 	class Utils {
 		
 		public:

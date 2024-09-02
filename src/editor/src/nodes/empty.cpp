@@ -13,6 +13,7 @@ EmptyNode::EmptyNode():
     rectWidth = 0.0f;
     rectHeight = 0.0f;
     radius = 0.0f;
+    line_weight = 1.0f;
     depth = 1;
     show_debug = false;
     debug_fill = false;
@@ -169,11 +170,12 @@ void EmptyNode::Render()
     {
 
         ImGui::Checkbox("debug", &show_debug);
+        ImGui::Checkbox("fill", &debug_fill);
 
         if (currentShape != "") 
         {
             ImGui::SliderInt("depth", &depth, 0, 1000);
-            ImGui::Checkbox("fill", &debug_fill); 
+            ImGui::SliderFloat("line weight", &line_weight, 0.1f, 3.0f); 
             ImGui::ColorEdit3("tint", (float*)&m_debugGraphic->tint); 
             ImGui::SliderFloat("alpha", &m_debugGraphic->alpha, 0.0f, 1.0f);
             ImGui::SliderFloat("position x", &positionX, 10.0f, 1000.0f);  
@@ -198,8 +200,8 @@ void EmptyNode::Render()
         m_debugGraphic->renderable = show_debug;
 
         m_debugGraphic->SetPosition(positionX, positionY);
-
         m_debugGraphic->SetDrawStyle(debug_fill ? GL_FILL : GL_LINE); 
+        m_debugGraphic->SetThickness(line_weight);
     
     }
 }

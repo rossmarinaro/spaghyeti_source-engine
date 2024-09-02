@@ -294,7 +294,8 @@ namespace editor {
     
             float rectWidth, 
                   rectHeight,
-                  radius;
+                  radius,
+                  line_weight;
 
             std::string currentShape;
             std::shared_ptr<Geometry> m_debugGraphic;

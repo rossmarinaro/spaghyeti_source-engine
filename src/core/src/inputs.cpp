@@ -195,7 +195,7 @@ void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
     //set cursor object to movement, translate ndc coords to clip space
 
     auto position = Window::GetNDCToPixel((float)xPos, (float)yPos);
-            
+   
     Application::game->inputs->mouseX = position.x;
     Application::game->inputs->mouseY = position.y;
 

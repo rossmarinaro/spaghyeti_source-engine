@@ -553,6 +553,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "shape", en->currentShape },
             { "position x", en->positionX },
             { "position y", en->positionY },
+            { "line_weight", en->line_weight },
             { "depth", en->depth },
             { "tint", {
                     { "x", en->m_debugGraphic ? en->m_debugGraphic->tint.x : 0 },
@@ -919,6 +920,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             en->debug_fill = data["fill"];
             en->rectWidth = data["width"];  
             en->rectHeight = data["height"]; 
+            en->line_weight = data["line_weight"];
             en->radius = data["radius"]; 
             en->positionX = data["position x"]; 
             en->positionY = data["position y"];

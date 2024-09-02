@@ -62,7 +62,7 @@ namespace editor {
 			
 			static inline System::Game* game;
 
-            static inline std::pair<std::string, std::array<float, 4>> selectedEntityTransform;
+            static inline std::shared_ptr<Entity> selectedEntity;
 			
 			static inline std::vector<std::pair<std::string, std::string>> globals;
             static inline std::vector<std::pair<std::string, std::string>> spritesheets;

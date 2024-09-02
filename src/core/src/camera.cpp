@@ -1,20 +1,17 @@
 #include "../../../build/sdk/include/app.h"
 
-Camera::Camera():
-    m_screenLeft(1.0f),
-    m_screenTop(0.0f)
-
+Camera::Camera()
 {
-    this->rotation = 0.0f;
-    this->zoom = 1.0f;
-    this->targetX = 0.0f;
-    this->targetY = 0.0f;
-    this->currentBoundsWidthBegin = 0.0f;
-    this->currentBoundsWidthEnd = 0.0f;
-    this->currentBoundsHeightBegin = 0.0f;
-    this->currentBoundsHeightEnd = 0.0f;
-    this->position = glm::vec2(0.0f, 0.0f);
-    this->backgroundColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+    rotation = 0.0f;
+    zoom = 1.0f;
+    targetX = 0.0f;
+    targetY = 0.0f;
+    currentBoundsWidthBegin = 0.0f;
+    currentBoundsWidthEnd = 0.0f;
+    currentBoundsHeightBegin = 0.0f;
+    currentBoundsHeightEnd = 0.0f;
+    position = glm::vec2(0.0f, 0.0f);
+    backgroundColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 
     LOG("Camera: initialized.");
 
@@ -57,10 +54,10 @@ void Camera::Fade(float rate, const char* direction)
 void Camera::SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd) 
 {
  
-    this->currentBoundsWidthBegin = widthBegin;
-    this->currentBoundsWidthEnd = widthEnd;
-    this->currentBoundsHeightBegin = heightBegin;
-    this->currentBoundsHeightEnd = heightEnd;
+    currentBoundsWidthBegin = widthBegin;
+    currentBoundsWidthEnd = widthEnd;
+    currentBoundsHeightBegin = heightBegin;
+    currentBoundsHeightEnd = heightEnd;
 }
 
  
@@ -69,10 +66,10 @@ void Camera::SetBounds(float widthBegin, float widthEnd, float heightBegin, floa
 
 bool Camera::InBounds() { 
 
-    return this->targetX > this->currentBoundsWidthBegin &&
-           this->targetX < this->currentBoundsWidthEnd && 
-           this->targetY > this->currentBoundsHeightBegin &&
-           this->targetY < this->currentBoundsHeightEnd;
+    return targetX > currentBoundsWidthBegin &&
+           targetX < currentBoundsWidthEnd && 
+           targetY > currentBoundsHeightBegin &&
+           targetY < currentBoundsHeightEnd;
 }
 
 
@@ -82,8 +79,8 @@ bool Camera::InBounds() {
 glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 {
     return (glm::highp_mat4)glm::ortho(
-        this->m_screenLeft / this->zoom, width / this->zoom,  
-        height / this->zoom, this->m_screenTop / this->zoom, 
+        1.0f / zoom, width / zoom,  
+        height / zoom, 0.0f / zoom, 
         -1.0f, 1.0f 
     );
 }

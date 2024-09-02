@@ -21,12 +21,24 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
 //-----------------------------------
 
 
-const glm::vec2 Window::GetNDCToPixel(float x, float y) 
+const glm::vec2 Window::GetPixelToNDC(float x, float y) 
 {
     float ndcX = ((2.0f * x) / s_width - 1.0f),
-          ndcY = (1.0f - (2.0f * y) / s_height),
-          pixelX = (ndcX + 1.0f) * (s_scaleWidth / 2), 
-          pixelY = s_scaleHeight - (ndcY + 1.0f) * (s_scaleHeight / 2); 
+          ndcY = (1.0f - (2.0f * y) / s_height); 
+
+    return { ndcX, ndcY };
+}
+
+
+//-----------------------------------
+
+
+const glm::vec2 Window::GetNDCToPixel(float x, float y) 
+{
+    glm::vec2 ndc = GetPixelToNDC(x, y);
+
+    float pixelX = (ndc.x + 1.0f) * (s_scaleWidth / 2), 
+          pixelY = s_scaleHeight - (ndc.y + 1.0f) * (s_scaleHeight / 2); 
 
     return { pixelX, pixelY };
 }

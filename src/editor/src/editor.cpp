@@ -48,18 +48,36 @@ void Editor::Update()
 
     GUI::Render(); 
 
-    //track mouse position
+    //track mouse position by translating screen space to world space 
 
-    auto position = Window::GetNDCToPixel(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+    double xPos, yPos;
+    glfwGetCursorPos(Window::s_instance, &xPos, &yPos);
 
-    game->inputs->mouseX = ImGui::GetMousePos().x - position.x;
-    game->inputs->mouseY = ImGui::GetMousePos().y - Editor::game->camera->position.y;
+    glm::vec4 ndc = glm::vec4(Window::GetPixelToNDC(xPos, yPos), 1.0f, 1.0f);
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(game->camera->position.x, game->camera->position.y, 0.0f));
+    glm::mat4 localCoords = glm::inverse(game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight) * view);
+
+    glm::vec4 worldCoords(ndc.x, ndc.y, 0.0f, 1.0f); 
+    glm::vec4 resultPosition = localCoords * worldCoords;
+
+    game->inputs->mouseX = resultPosition.x - game->camera->position.x;        
+    game->inputs->mouseY = resultPosition.y - game->camera->position.y;
 
     //current selected entity
+       
+    if (s_selector && selectedEntity) 
+    {
+        s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
+        
+        if (strcmp(selectedEntity->type, "sprite") == 0) {
+            auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
+            s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
+        } 
 
-    if (s_selector) {
-        s_selector->SetPosition(selectedEntityTransform.second[0], selectedEntityTransform.second[1]); 
-        s_selector->SetSize(selectedEntityTransform.second[2], selectedEntityTransform.second[3]); 
+        if (strcmp(selectedEntity->type, "text") == 0) {
+            auto text = std::static_pointer_cast<Text>(selectedEntity);
+            s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
+        }
     } 
 
     glViewport(0, 0, Window::s_width, Window::s_height);
@@ -120,10 +138,11 @@ Editor::Editor()
 
     //create entity selector graphic
 
-    s_selector = System::Game::CreateGeom(100.0f, 100.0f, 100.0f, 100.0f, 2);
+    s_selector = System::Game::CreateGeom(-100.0f, 0.0f, 0.0f, 0.0f, 2);
     s_selector->SetTint(glm::vec3(0.0f, 1.0f, 0.0f));  
     s_selector->SetDrawStyle(GL_LINE);
-    
+    s_selector->SetThickness(2.0f);
+      
     //main update loop
 
     while (!Editor::events.exitFlag) 

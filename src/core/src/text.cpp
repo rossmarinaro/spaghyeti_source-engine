@@ -345,12 +345,12 @@ void Text::Render(float projWidth, float projHeight)
 
     gltColor(this->tint.x, this->tint.y, this->tint.z, this->alpha);
 
-    this->m_model = glm::mat4(1.0f);
+    glm::mat4 model = glm::mat4(1.0f);
  
-    this->m_model = glm::translate(this->m_model, glm::vec3(this->position.x, this->position.y + gltGetTextHeight(this->m_handle, this->scale.y), 0.0f));
-    this->m_model = glm::scale(this->m_model, glm::vec3(this->scale.x, this->scale.y, 1.0f));
+    model = glm::translate(model, glm::vec3(this->position.x, this->position.y + gltGetTextHeight(this->m_handle, this->scale.y), 0.0f));
+    model = glm::scale(model, glm::vec3(this->scale.x, this->scale.y, 1.0f));
 
-    glm::highp_mat4 mvp = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight) * this->m_model;
+    glm::highp_mat4 mvp = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight) * model;
 
     gltDrawText(this->m_handle, (GLfloat*)&mvp);
 

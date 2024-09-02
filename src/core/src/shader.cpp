@@ -460,15 +460,10 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
 
     //from raw char
     
-    else
-    {
-        if (vertShader) {
-            LOG("Shader: Loading " + key + " from string.");
-            shader.Generate(key, vertShader, fragShader);
-        }
-        
-        else 
-            LOG("Shader: No vertex or fragment.");
+    else {
+
+        LOG("Shader: Loading " + key + " from string.");
+        shader.Generate(key, vertShader, fragShader);
 
     }
 

@@ -220,7 +220,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, const void* da
 //----------------------------------------
 
 
-void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int drawStyle) 
+void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int drawStyle, float thickness) 
 {   
 
     //format texture
@@ -338,6 +338,8 @@ void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int dr
         glPolygonMode(GL_FRONT_AND_BACK, drawStyle);
     #endif
     
+    glLineWidth(thickness);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    
 }
 

@@ -106,8 +106,9 @@ void GUI::Launch()
 
     glfwSetScrollCallback(System::Window::s_instance, scroll_callback);
 
-    s_cursor = std::make_unique<Geometry>(100.0f, 100.0f, 30.0f, 30.0f);
-    s_cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f));  
+    s_cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
+    s_cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
+    s_cursor->isCursor = true; 
     s_cursor->SetAlpha(0.0f);
 
     Editor::Log("GUI launched.");
@@ -170,7 +171,7 @@ void GUI::Render()
 
     if (s_cursor) {
         s_cursor->SetPosition(ImGui::GetMousePos().x, ImGui::GetMousePos().y);   
-        s_cursor->Render(static_cast<float>(System::Window::s_width * 2), static_cast<float>(System::Window::s_height * 2));
+        s_cursor->Render(System::Window::s_width, System::Window::s_height);
     }
      
     //Renderer::CreateFrameBuffer();

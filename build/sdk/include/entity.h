@@ -51,11 +51,11 @@ class Entity {
 		inline void SetAlpha(float alpha) { this->alpha = alpha; }
 		inline void SetRotation(float rotation) { this->rotation = rotation; }
 		inline void SetPosition(const glm::vec2& position) { this->position = position; }
-		inline void ClearTint() { this->tint = glm::vec3(1.0f); }
+		inline void ClearTint() { tint = glm::vec3(1.0f); }
 		inline void SetTint(const glm::vec3& tint) { this->tint = tint; }
 		inline void SetFlipX(bool flipX) { this->flipX = flipX; }
 		inline void SetFlipY(bool flipY) { this->flipY = flipY; }
-        inline void SetScrollFactor(const glm::vec2& factor) { this->m_scrollFactor = factor; }
+        inline void SetScrollFactor(const glm::vec2& factor) { m_scrollFactor = factor; }
      
         inline bool IsSprite() {
 			return strcmp(this->type, "sprite") == 0 || 
@@ -95,7 +95,6 @@ class Entity {
 
     protected:
 
-        glm::mat4 m_model; 
         glm::vec2 m_scrollFactor;
 
 };
@@ -112,8 +111,10 @@ class Geometry : public Entity {
         Graphics::Texture2D texture;
 
 		float width, height, radius;
+        bool isCursor;
 
 		inline void SetDrawStyle(GLint style) { m_drawStyle = style; } 
+        inline void SetThickness(float thickness) { m_thickness = thickness; } 
 
 		inline void SetSize(float width, float height) { 
 			this->width = width; 
@@ -126,11 +127,15 @@ class Geometry : public Entity {
 
 		Geometry(float x, float y, float width, float height);
 
+        //TODO: circle
+
 		~Geometry() = default;
 
 		void Render(float projWidth, float projHeight);
 
 	private:
+
+        float m_thickness;
         
         GLint m_drawStyle = GL_FILL;
 

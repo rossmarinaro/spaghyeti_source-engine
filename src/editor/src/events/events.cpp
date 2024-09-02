@@ -1089,6 +1089,7 @@ void EventListener::BuildAndRun()
                         }
 
                         if (en->currentShape.length()) {
+                            command_queue << "   empty_" + node->ID + "->SetThickness" + std::to_string(en->line_weight) + ");\n";
                             command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->m_debugGraphic->tint.r) + ", " + std::to_string(en->m_debugGraphic->tint.g) + ", " + std::to_string(en->m_debugGraphic->tint.b) + "});\n";
                             command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->alpha) + ");\n";
                         }

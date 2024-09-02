@@ -197,7 +197,7 @@ void SpriteNode::ApplyAnimation(const std::string& key, int start, int end)
 }
 
 
-//---------------------------
+//---------------------------  
 
 
 void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
@@ -211,7 +211,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
         ImGui::PushID(("(Sprite) " + name).c_str());
 
-        std::string selText = Editor::selectedEntityTransform.first == ID ? "<SELECTED> " : "";
+        std::string selText = (Editor::selectedEntity && spriteHandle) && Editor::selectedEntity->ID == spriteHandle->ID ? "<SELECTED> " : "";
 
         if (ImGui::TreeNode((selText + "(Sprite) " + name).c_str()))
         {
@@ -782,8 +782,8 @@ void SpriteNode::Render()
                         spriteHandle->position.y + bodyY[i]
                     ), 0);
 
-        if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            Editor::selectedEntityTransform = { ID, { spriteHandle->position.x, spriteHandle->position.y, spriteHandle->texture.FrameWidth, spriteHandle->texture.FrameHeight }};
+        if (System::Game::GetScene()->ListenForInteraction(spriteHandle) /* && ImGui::IsMouseDown(ImGuiMouseButton_Left) */)
+            Editor::selectedEntity = spriteHandle;
 
     }
 }

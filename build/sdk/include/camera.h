@@ -49,8 +49,4 @@ class Camera {
         Camera();
         ~Camera() = default;
 
-
-    private:
-    
-        float m_screenLeft, m_screenTop;
 };

@@ -21,7 +21,6 @@ Entity::Entity(const char* type) {
 
 
 Entity::Entity(const char* type, float x, float y):
-    m_model(glm::mat4(1.0f)),
     m_scrollFactor(glm::vec2(1.0f))
 { 
     this->type = type;
@@ -104,44 +103,47 @@ Geometry::Geometry(float x, float y, float width, float height):
 { 
     this->width = width;
     this->height = height;
+    
     tint = glm::vec3(0.0f, 0.0f, 1.0f);
     texture = Graphics::Texture2D::Get("base");
     shader = Shader::Get("graphics");
     renderable = true;
+    isCursor = false;
+
     LOG("Entity: quad created."); 
 
 }
 
 
 //------------------------------------- 
-
+ 
 
 void Geometry::Render(float projWidth, float projHeight)
 {
 
-    m_model = glm::mat4(1.0f); 
+    glm::mat4 model = glm::mat4(1.0f); 
 
     if (strcmp(m_type, "quad") == 0)
     {
-
+ 
         texture.FrameWidth = width;
         texture.FrameHeight = height;
-
-        m_model = glm::translate(m_model, glm::vec3(0.5f * width + position.x, 0.5f * height + position.y, 0.0f)); 
+  
+        model = glm::translate(model, glm::vec3(0.5f * width + position.x, 0.5f * height + position.y, 0.0f)); 
 
         if (rotation > 0)
-            m_model = glm::rotate(m_model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
+            model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
 
-        m_model = glm::translate(m_model, glm::vec3(-0.5f * width - position.x, -0.5f * height - position.y, 0.0f));
+        model = glm::translate(model, glm::vec3(-0.5f * width - position.x, -0.5f * height - position.y, 0.0f));
         
         shader.SetVec3f("tint", tint);
-        shader.SetMat4("model", m_model);  
+        shader.SetMat4("model", model);  
         shader.SetFloat("alphaVal", alpha);
-        shader.SetVec2f("offset", System::Application::game->camera->position);
-        shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
+        shader.SetVec2f("offset", isCursor ? glm::vec2(0.0f) : System::Application::game->camera->position);
+        shader.SetMat4("view", isCursor ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
         shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight));
 
-        texture.Update(position, false, false, m_drawStyle); 
+        texture.Update(position, false, false, m_drawStyle, m_thickness); 
 
     }
 
@@ -415,17 +417,17 @@ void Sprite::Render(float projWidth, float projHeight)
 
     //sprite model transformations
 
-    m_model = glm::mat4(1.0f);       
-
-    m_model = glm::translate(m_model, { 0.5f * texture.FrameWidth + position.x, 0.5f * texture.FrameHeight + position.y, 0.0f }); 
+    glm::mat4 model = glm::mat4(1.0f);       
+  
+    model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x, 0.5f * texture.FrameHeight + position.y, 0.0f }); 
     
     //apply scaling to sprites that have bodies
     
     if (bodies.size())
-        m_model = glm::scale(m_model, glm::vec3(scale, 1.0f));   
+        model = glm::scale(model, glm::vec3(scale, 1.0f));   
 
-    m_model = glm::rotate(m_model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    m_model = glm::translate(m_model, { -0.5f * texture.FrameWidth - position.x, -0.5f * texture.FrameHeight - position.y, 0.0f });
+    model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
+    model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x, -0.5f * texture.FrameHeight - position.y, 0.0f });
 
     //update shaders and textures 
 
@@ -452,11 +454,11 @@ void Sprite::Render(float projWidth, float projHeight)
             
             shader.SetFloat("alphaVal", alpha); 
             shader.SetVec3f("tint", tint);
-            shader.SetMat4("model", m_model);
+            shader.SetMat4("model", model);
 
             if (IsSprite()) {
                 shader.SetVec2f("offset", System::Application::game->camera->position);
-                shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
+                shader.SetMat4("view", glm::translate(model, glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
             }
 
             else {

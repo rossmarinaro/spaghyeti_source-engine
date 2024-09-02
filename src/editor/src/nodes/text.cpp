@@ -64,7 +64,7 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
 
         ImGui::PushID(("(Text) " + name).c_str());
 
-        std::string selText = Editor::selectedEntityTransform.first == ID ? "<SELECTED> " : "";
+        std::string selText = (Editor::selectedEntity && textHandle) && Editor::selectedEntity->ID == textHandle->ID ? "<SELECTED> " : "";
 
         if (ImGui::TreeNode((selText + "(Text) " + name).c_str()))
         {
@@ -157,7 +157,7 @@ void TextNode::Render()
         textHandle->SetDepth(depth);
 
         if (System::Game::GetScene()->ListenForInteraction(textHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            Editor::selectedEntityTransform = { ID, { textHandle->position.x, textHandle->position.y, textHandle->GetTextDimensions().x, textHandle->GetTextDimensions().y + textHandle->GetTextDimensions().x / 2 }};
+            Editor::selectedEntity = textHandle;
     }
 
     isUI = UIFlag ? 2 : 1;

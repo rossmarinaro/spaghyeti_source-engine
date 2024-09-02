@@ -65,6 +65,7 @@ void Points::Flush()
 	if (m_count == 0)
         return;
 
+    shader.SetVec2f("offset", System::Application::game->camera->position);
 	shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight), true);
     shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position, 0.0f)));
 
@@ -80,6 +81,13 @@ void Points::Flush()
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(float), m_sizes);
 
     glEnable(GL_PROGRAM_POINT_SIZE);
+
+    #ifndef __EMSCRIPTEN__
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    #endif
+
+    glLineWidth(0.1f);
+
     glDrawArrays(GL_POINTS, 0, m_count);
     glDisable(GL_PROGRAM_POINT_SIZE);
 
@@ -141,6 +149,7 @@ void Lines::Flush()
     if (m_count == 0)
         return; 
 
+    shader.SetVec2f("offset", System::Application::game->camera->position);
 	shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight), true);
     shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position, 0.0f)));
 
@@ -151,6 +160,12 @@ void Lines::Flush()
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b2Color), m_colors);
+
+    #ifndef __EMSCRIPTEN__
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    #endif
+
+    glLineWidth(0.1f);
 
     glDrawArrays(GL_LINES, 0, m_count);
 
@@ -212,6 +227,7 @@ void Triangles::Flush()
     if (m_count == 0)
         return;
 
+    shader.SetVec2f("offset", System::Application::game->camera->position);
 	shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight), true);
     shader.SetMat4("view", glm::translate(glm::mat4(1.0f), glm::vec3(System::Application::game->camera->position, 0.0f)));
 
@@ -224,8 +240,17 @@ void Triangles::Flush()
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b2Color), m_colors);
 
     //glEnable(GL_BLEND);
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    #ifndef __EMSCRIPTEN__
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    #endif
+
+    glLineWidth(0.1f);
+
     glDrawArrays(GL_TRIANGLES, 0, m_count);
+    
     //glDisable(GL_BLEND);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -237,7 +262,7 @@ void Triangles::Flush()
 	#endif
 }
 
-
+ 
 //--------------------------------------
 
 
