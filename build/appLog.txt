@@ -1,124 +1,24 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Sep 02 15:03:01 2024
-IMGui Version: 1 @ Mon Sep 02 15:03:01 2024
-GUI launched. @ Mon Sep 02 15:03:01 2024
-Workspace reset. @ Mon Sep 02 15:03:04 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Tue Sep 03 16:37:43 2024
+IMGui Version: 1 @ Tue Sep 03 16:37:43 2024
+GUI launched. @ Tue Sep 03 16:37:43 2024
+Workspace reset. @ Tue Sep 03 16:37:48 2024
 Project TheFunkyAdventuresOfSwankyVelvet opened.
-Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Tilemap node Untitled created. @ Mon Sep 02 15:03:05 2024
-Empty node Untitled created. @ Mon Sep 02 15:03:05 2024
-Text node Untitled created. @ Mon Sep 02 15:03:05 2024
-Group node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:05 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Group node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Group node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node Untitled created. @ Mon Sep 02 15:03:06 2024
-Sprite node coin deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_0 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_5 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_6 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_7 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_8 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_9 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_10 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_11 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node box deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node box_14 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node box_14_15 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node box_14_15_16 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_17 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node box_14_15_16_38 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node box_14_15_16_39 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node box_14_15_16_39_40 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node hooligan deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node hooligan_2 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node hooligan_2_3 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node pidgeon deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node pidgeon_6 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node pidgeon_6_7 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node pidgeon_6_7_8 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node pidgeon_6_7_8_9 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node jogger deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node jogger_11 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node jogger_11_12 deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node player deleted. @ Mon Sep 02 15:03:30 2024
-Sprite node sky deleted. @ Mon Sep 02 15:03:30 2024
-Tilemap node map deleted. @ Mon Sep 02 15:03:30 2024
-Empty node manager deleted. @ Mon Sep 02 15:03:30 2024
-Text node score deleted. @ Mon Sep 02 15:03:30 2024
-Group node items deleted. @ Mon Sep 02 15:03:30 2024
-Group node enemies deleted. @ Mon Sep 02 15:03:30 2024
-Group node player deleted. @ Mon Sep 02 15:03:30 2024
-GUI exited @ Mon Sep 02 15:03:30 2024
-Editor closed. @ Mon Sep 02 15:03:30 2024
+Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Tue Sep 03 16:37:48 2024
+Sprite node Untitled created. @ Tue Sep 03 16:37:48 2024
+Sprite node Untitled created. @ Tue Sep 03 16:37:48 2024
+Sprite node Untitled created. @ Tue Sep 03 16:37:48 2024
+Empty node Untitled created. @ Tue Sep 03 16:37:48 2024
+Text node Untitled created. @ Tue Sep 03 16:37:48 2024
+Group node Untitled created. @ Tue Sep 03 16:37:48 2024
+Text node Untitled created. @ Tue Sep 03 16:37:48 2024
+Sprite node Untitled created. @ Tue Sep 03 16:37:48 2024
+Text node author deleted. @ Tue Sep 03 16:37:54 2024
+Sprite node text deleted. @ Tue Sep 03 16:37:54 2024
+Sprite node sv deleted. @ Tue Sep 03 16:37:54 2024
+Sprite node background deleted. @ Tue Sep 03 16:37:54 2024
+Sprite node glow deleted. @ Tue Sep 03 16:37:54 2024
+Empty node manager deleted. @ Tue Sep 03 16:37:54 2024
+Text node start deleted. @ Tue Sep 03 16:37:54 2024
+Group node title deleted. @ Tue Sep 03 16:37:54 2024
+GUI exited @ Tue Sep 03 16:37:54 2024
+Editor closed. @ Tue Sep 03 16:37:54 2024

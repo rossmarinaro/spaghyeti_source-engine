@@ -137,7 +137,7 @@ class Geometry : public Entity {
 
         float m_thickness;
         
-        GLint m_drawStyle = GL_FILL;
+        GLint m_drawStyle;
 
 		const char* m_type;
 		

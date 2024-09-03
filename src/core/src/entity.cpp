@@ -99,7 +99,8 @@ void Entity::Cull(std::shared_ptr<Entity> target, float factor, int distance)
 //quad
 Geometry::Geometry(float x, float y, float width, float height): 
     Entity("geometry", x, y),
-        m_type("quad")
+        m_type("quad"),
+        m_drawStyle(GL_FILL)
 { 
     this->width = width;
     this->height = height;

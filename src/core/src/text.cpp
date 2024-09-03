@@ -354,6 +354,10 @@ void Text::Render(float projWidth, float projHeight)
 
     gltDrawText(this->m_handle, (GLfloat*)&mvp);
 
+    #ifndef __EMSCRIPTEN__
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    #endif
+
     gltEndDraw();
 
    //RenderString("Left!", 100, 50, 200, 0, comic, Shader::Get("text").ID);

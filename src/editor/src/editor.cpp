@@ -60,7 +60,7 @@ void Editor::Update()
     glm::vec4 worldCoords(ndc.x, ndc.y, 0.0f, 1.0f); 
     glm::vec4 resultPosition = localCoords * worldCoords;
 
-    game->inputs->mouseX = resultPosition.x - game->camera->position.x;        
+    game->inputs->mouseX = resultPosition.x - game->camera->position.x - 50;        
     game->inputs->mouseY = resultPosition.y - game->camera->position.y;
 
     //current selected entity

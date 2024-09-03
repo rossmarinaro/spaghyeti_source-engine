@@ -156,7 +156,7 @@ void TextNode::Render()
         textHandle->SetTint(tint);
         textHandle->SetDepth(depth);
 
-        if (System::Game::GetScene()->ListenForInteraction(textHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        if (System::Game::GetScene()->ListenForInteraction(textHandle) /* && ImGui::IsMouseDown(ImGuiMouseButton_Left) */)
             Editor::selectedEntity = textHandle;
     }
 
