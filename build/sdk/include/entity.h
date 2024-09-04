@@ -111,7 +111,7 @@ class Geometry : public Entity {
         Graphics::Texture2D texture;
 
 		float width, height, radius;
-        bool isCursor;
+        bool isStatic;
 
 		inline void SetDrawStyle(GLint style) { m_drawStyle = style; } 
         inline void SetThickness(float thickness) { m_thickness = thickness; } 

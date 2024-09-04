@@ -782,7 +782,7 @@ void SpriteNode::Render()
                         spriteHandle->position.y + bodyY[i]
                     ), 0);
 
-        if (System::Game::GetScene()->ListenForInteraction(spriteHandle) /* && ImGui::IsMouseDown(ImGuiMouseButton_Left) */)
+        if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             Editor::selectedEntity = spriteHandle;
 
     }

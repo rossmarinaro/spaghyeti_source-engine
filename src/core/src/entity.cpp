@@ -109,7 +109,7 @@ Geometry::Geometry(float x, float y, float width, float height):
     texture = Graphics::Texture2D::Get("base");
     shader = Shader::Get("graphics");
     renderable = true;
-    isCursor = false;
+    isStatic = false;
 
     LOG("Entity: quad created."); 
 
@@ -140,8 +140,8 @@ void Geometry::Render(float projWidth, float projHeight)
         shader.SetVec3f("tint", tint);
         shader.SetMat4("model", model);  
         shader.SetFloat("alphaVal", alpha);
-        shader.SetVec2f("offset", isCursor ? glm::vec2(0.0f) : System::Application::game->camera->position);
-        shader.SetMat4("view", isCursor ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
+        shader.SetVec2f("offset", isStatic ? glm::vec2(0.0f) : System::Application::game->camera->position);
+        shader.SetMat4("view", isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
         shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight));
 
         texture.Update(position, false, false, m_drawStyle, m_thickness); 

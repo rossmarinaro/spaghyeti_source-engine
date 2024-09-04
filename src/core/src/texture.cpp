@@ -119,8 +119,10 @@ void Texture2D::Load(const std::string& key, bool flipY)
             success = true;
         }
 
-        else 
-            LOG("Texture2D: image file loading failed.");    
+        else  {
+            LOG("Texture2D: image file loading failed."); 
+            return;
+        }   
       
     }
 

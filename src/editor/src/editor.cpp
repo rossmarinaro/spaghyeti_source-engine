@@ -65,19 +65,27 @@ void Editor::Update()
 
     //current selected entity
        
-    if (s_selector && selectedEntity) 
+    if (s_selector) 
     {
-        s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
+        if (selectedEntity)
+        {
+            s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
+            s_selector->SetAlpha(1.0f);
         
-        if (strcmp(selectedEntity->type, "sprite") == 0) {
-            auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
-            s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
-        } 
+            if (strcmp(selectedEntity->type, "sprite") == 0) {
+                auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
+                s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
+            } 
 
-        if (strcmp(selectedEntity->type, "text") == 0) {
-            auto text = std::static_pointer_cast<Text>(selectedEntity);
-            s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
+            if (strcmp(selectedEntity->type, "text") == 0) {
+                auto text = std::static_pointer_cast<Text>(selectedEntity);
+                s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
+            }
         }
+
+        else
+            s_selector->SetAlpha(0.0f);
+       
     } 
 
     glViewport(0, 0, Window::s_width, Window::s_height);
@@ -138,10 +146,11 @@ Editor::Editor()
 
     //create entity selector graphic
 
-    s_selector = System::Game::CreateGeom(-100.0f, 0.0f, 0.0f, 0.0f, 2);
+    s_selector = System::Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
     s_selector->SetTint(glm::vec3(0.0f, 1.0f, 0.0f));  
     s_selector->SetDrawStyle(GL_LINE);
     s_selector->SetThickness(2.0f);
+    s_selector->SetAlpha(0.0f);
       
     //main update loop
 
