@@ -7,7 +7,7 @@
 /build/sdk/spaghyeti.a
 /build/sdk/spaghyeti-web.a
 /build/imgui.ini
-/build/Logs.txt
+/build/appLog.txt
 
 /games/TestGame/build
 /games/fighter/build
