@@ -99,11 +99,16 @@ void Entity::Cull(std::shared_ptr<Entity> target, float factor, int distance)
 //quad
 Geometry::Geometry(float x, float y, float width, float height): 
     Entity("geometry", x, y),
-        m_type("quad"),
-        m_drawStyle(GL_FILL)
+        m_type("quad")
 { 
     this->width = width;
     this->height = height;
+
+    #ifndef __EMSCRIPTEN__
+        m_drawStyle = GL_FILL;
+    #else 
+        m_drawStyle = 1;
+    #endif
     
     tint = glm::vec3(0.0f, 0.0f, 1.0f);
     texture = Graphics::Texture2D::Get("base");
@@ -469,7 +474,13 @@ void Sprite::Render(float projWidth, float projHeight)
 
             shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight));
 
-            texture.Update(position, flipX, flipY, GL_FILL);   
+            int fill = 1;
+
+            #ifndef __EMSCRIPTEN__
+                fill = GL_FILL;
+            #endif
+
+            texture.Update(position, flipX, flipY, fill);   
  
         }
 
