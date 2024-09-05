@@ -1130,6 +1130,10 @@ void EventListener::BuildAndRun()
                         } 
                     }
 
+                    //this flag loads maps on scene load but not restart
+
+                    command_queue << "   if (loadMap) {\n";
+
                     if (tmn->layers.size())
                     {
                         for (int i = 0; i < tmn->layer; i++)
@@ -1152,7 +1156,7 @@ void EventListener::BuildAndRun()
                         }
 
                     }
-
+command_queue << "   }\n";
                     //static physics bodies
 
                     if (tmn->HasComponent("Physics") && tmn->bodies.size())
@@ -1235,13 +1239,13 @@ void EventListener::BuildAndRun()
         game_src << "    public:\n";
         game_src << "       " + name_upper + "(const Process::Context& context):\n\t\tScene(context, \"" + name_upper + "\") { }\n";
         game_src << "           void Preload() override;\n";
-        game_src << "           void Run() override;\n";
+        game_src << "           void Run(bool loadMap) override;\n";
         game_src << "    private:\n";
         game_src << "    " + globalData + "\n";
         game_src <<"};\n\n\n"; 
 
         game_src << "void " + name_upper + "::Preload() {\n" + assetData + "\n" + preloadData + "\n}\n\n";
-        game_src << "void " + name_upper + "::Run() {\n" + commandData + "}\n\n";
+        game_src << "void " + name_upper + "::Run(bool loadMap) {\n" + commandData + "}\n\n";
         
 
     }

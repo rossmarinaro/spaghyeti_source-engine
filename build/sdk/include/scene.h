@@ -29,7 +29,7 @@ namespace System {
 
             virtual ~Scene() { s_ID--; };
             virtual void Preload() {}
-            virtual void Run() {}
+            virtual void Run(bool onSceneLoad) {}
 
             inline bool IsPaused() {
                 return m_paused;

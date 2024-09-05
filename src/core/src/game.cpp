@@ -10,8 +10,10 @@
 using namespace System;      
 
 
-void Game::Flush()
+void Game::Flush(bool removeMap)
 {
+
+    LOG("Scene: " + currentScene->key + " stopped.");
     
     inputs->ResetControls();
 
@@ -19,10 +21,15 @@ void Game::Flush()
         delete Application::eventPool; 
         Application::eventPool = nullptr;
     }
-
-    maps->layers.clear();
     
-    currentScene->entities.clear();
+    if (removeMap) {
+        maps->layers.clear();
+        currentScene->entities.clear();
+    }
+    
+    else
+        currentScene->entities.erase(std::remove_if(currentScene->entities.begin(), currentScene->entities.end(), [](const auto e) { return strcmp(e->type, "tile") != 0; }), currentScene->entities.end());
+
     currentScene->UI.clear();
     currentScene->behaviors.clear();
 }
@@ -80,7 +87,7 @@ void Game::Boot()
 
     //preload / run game layer
 
-    StartScene(scenes[0]->key); 
+    StartScene(scenes[0]->key, true); 
 
     glfwSetWindowTitle(Window::s_instance, Application::name.c_str());
 
@@ -110,7 +117,7 @@ void Game::Boot()
 //-----------------------------
 
 
-void Game::StartScene(const std::string& key) 
+void Game::StartScene(const std::string& key, bool loadMap) 
 {
 
     Game* game = Application::game; 
@@ -133,11 +140,12 @@ void Game::StartScene(const std::string& key)
                cachedScenes.clear();
             }
 
-            game->Flush();
+            game->Flush(game->currentScene->key != key);
+
         }   
 
         //assign / load current scene
-
+        
         game->currentScene = *it;
 
         Application::eventPool = new EventPool(THREAD_COUNT);
@@ -177,11 +185,14 @@ void Game::StartScene(const std::string& key)
         game->currentScene->vignette->SetAlpha(0.0f);
         game->currentScene->vignette->SetScrollFactor({ 0.0f, 1.0f });
 
-        game->currentScene->Run();  
+        game->currentScene->Run(loadMap);  
 
         game->m_gameState = true;
 
-        LOG("Scene: " + key + " started.");
+        const std::string state = loadMap ? " started" : " restarted.";
+
+        LOG("Scene: " + key + state);
+
         return;
     }
 
@@ -200,7 +211,7 @@ void Game::Exit()
 
     m_gameState = false;
 
-    Flush();
+    Flush(true);
 
     for (auto& scene : scenes) {
         delete scene;

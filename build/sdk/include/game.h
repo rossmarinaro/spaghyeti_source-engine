@@ -41,7 +41,7 @@ namespace System {
 
             void Boot();
             void UpdateFrame();
-            void Flush();
+            void Flush(bool removeMap);
             void Exit();
 
             //create objects
@@ -54,7 +54,7 @@ namespace System {
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height, int layer = 1);
             static void DestroyEntity(std::shared_ptr<Entity> entity);
             
-            static void StartScene(const std::string& key);
+            static void StartScene(const std::string& key, bool loadMap);
             static Scene* GetScene(const std::string& key = "");
             
             template <typename T>
