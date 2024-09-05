@@ -447,7 +447,7 @@ void Sprite::Render(float projWidth, float projHeight)
             //if (strcmp(type, "tile") == 0)
             //shader.SetInt("images", 1, true);
             //else
-                shader.SetInt("image", 0);
+                shader.SetInt("image", 0);    
 
             #ifndef __EMSCRIPTEN__
                 shader.SetInt("repeat", texture.Repeat);
