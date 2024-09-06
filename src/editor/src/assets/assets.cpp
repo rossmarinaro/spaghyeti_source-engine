@@ -43,13 +43,13 @@ void AssetManager::Register(const std::string& asset, bool isEditor, bool isPrel
 //---------------------------
 
 
-void AssetManager::LoadAsset(const std::string& asset, const std::string& path)
+void AssetManager::LoadAsset(const std::string& asset)
 {
-
+ 
     const std::string folder = GetFolder(asset),
                       texture = GetThumbnail(asset),
                       key = "\"" + asset + "\"",
-                      developmentPath = "\"" + path + "resources\\assets" + folder + asset + "\"";
+                      developmentPath = "resources\\assets" + folder + asset;
 
     loadedAssets.insert({ key, developmentPath });
 
@@ -191,7 +191,7 @@ bool AssetManager::SavePrefab(const std::string& nodeId)
             if (saveFile(result.string() + ".prefab"))
                 return true;
         }
-
+ 
     #endif
     }
 

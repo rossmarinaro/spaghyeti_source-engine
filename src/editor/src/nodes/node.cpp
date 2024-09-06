@@ -676,35 +676,72 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             else 
                 sn = Scene::CreateObject<SpriteNode>(_scene); 
 
-            sn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+           if (data.contains("name"))
+                sn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
 
-            sn->positionX = data["positionX"];
-            sn->positionY = data["positionY"];
-            sn->rotation = data["rotation"];
-            sn->scaleX = data["scaleX"];
-            sn->scaleY = data["scaleY"];
-            sn->flippedX = data["flipX"];
-            sn->flippedY = data["flipY"];
-            sn->depth = data["depth"];
-            sn->lock_in_place = data["lock"]; 
-            sn->make_UI = data["makeUI"];
-            sn->U1 = data["U1"]; 
-            sn->V1 = data["V1"];
-            sn->U2 = data["U2"]; 
-            sn->V2 = data["V2"];
-            sn->key = data["currentTexture"];
-            sn->tint = { data["tint"]["x"], data["tint"]["y"], data["tint"]["z"] };
-            sn->alpha = data["alpha"];
+            if (data.contains("positionX"))
+                sn->positionX = data["positionX"];
 
-            if (makeNode) {
-                sn->ApplyTexture(data["currentTexture"]);  
-                sn->spriteHandle->SetTexture(data["currentTexture"]);
+            if (data.contains("positionY"))
+                sn->positionY = data["positionY"];
+
+            if (data.contains("rotation"))
+                sn->rotation = data["rotation"];
+
+            if (data.contains("scaleX"))
+                sn->scaleX = data["scaleX"];
+
+            if (data.contains("scaleY"))
+                sn->scaleY = data["scaleY"];
+
+            if (data.contains("flipX"))
+                sn->flippedX = data["flipX"];
+
+            if (data.contains("flipY"))
+                sn->flippedY = data["flipY"];
+
+            if (data.contains("depth"))
+                sn->depth = data["depth"];
+
+            if (data.contains("lock"))
+                sn->lock_in_place = data["lock"]; 
+
+            if (data.contains("makeUI"))
+                sn->make_UI = data["makeUI"];
+
+            if (data.contains("U1"))
+                sn->U1 = data["U1"]; 
+
+            if (data.contains("V1"))
+                sn->V1 = data["V1"];
+            
+            if (data.contains("U2"))
+                sn->U2 = data["U2"]; 
+
+            if (data.contains("V2"))
+                sn->V2 = data["V2"];
+
+            if (data.contains("currentTexture"))
+                sn->key = data["currentTexture"];
+
+            if (data.contains("alpha"))
+                sn->alpha = data["alpha"];
+
+            if (data.contains("tint"))
+                sn->tint = { data["tint"]["x"], data["tint"]["y"], data["tint"]["z"] };
+
+            if (data.contains("currentTexture"))
+            {
+                if (makeNode) {
+                    sn->ApplyTexture(data["currentTexture"]);  
+                    sn->spriteHandle->SetTexture(data["currentTexture"]);
+                }
+
+                else 
+                    AssetManager::Register(data["currentTexture"], false);
             }
 
-            else 
-                AssetManager::Register(data["currentTexture"], false);
-
-            if (data["frames"].size() > 1)
+            if (data.contains("frames") && data["frames"].size() > 1)
             {
                 sn->frameBuf1.clear();
                 sn->frameBuf2.clear();
@@ -740,80 +777,88 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             
             //animator
 
-            if (data["components"]["animator"]["exists"]) 
-                sn->AddComponent("Animator", false);
-
-            for (const auto& anim : data["components"]["animator"]["animations"]) 
-            { 
-
-                SpriteNode::StringContainer sc = { anim["key"] };
-
-                sn->animBuf1.push_back(sc);
-                sn->animBuf2.push_back(anim["start"]); 
-                sn->animBuf3.push_back(anim["end"]);
-            
-                sn->ApplyAnimation(anim["key"], anim["start"], anim["end"]);
-            }
-
-            sn->anim = sn->animations.size();   
-
-            //physics 
-
-            if (data["components"]["physics"]["exists"]) 
+            if (data.contains("components"))
             {
-                sn->AddComponent("Physics", false);
 
-                sn->friction = data["components"]["physics"]["friction"];
-                sn->restitution = data["components"]["physics"]["restitution"];
-                sn->density = data["components"]["physics"]["density"]; 
+                if (data["components"]["animator"]["exists"]) 
+                    sn->AddComponent("Animator", false);
 
-                if (data["components"]["physics"]["bodies"].size()) 
-                    for (const auto& body : data["components"]["physics"]["bodies"]) 
-                        if (makeNode)
-                            sn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"], body["sensor"], body["pointer"]);
+                for (const auto& anim : data["components"]["animator"]["animations"]) 
+                { 
 
-                        else 
-                        {
-                            sn->bodyX.push_back(body["bodyX"]);
-                            sn->bodyY.push_back(body["bodyY"]);
-                            sn->body_width.push_back(body["body_width"]);
-                            sn->body_height.push_back(body["body_height"]);
+                    SpriteNode::StringContainer sc = { anim["key"] };
 
-                            SpriteNode::BoolContainer bc;
-                            bc.b = body["sensor"];
-
-                            sn->is_sensor.push_back(bc);
-                            sn->body_pointer.push_back(body["pointer"]);
-
-                            sn->bodies.push_back(nullptr);
-                        }
-            }
-
-            //script
-
-            if (data["components"]["script"]["exists"]) {
+                    sn->animBuf1.push_back(sc);
+                    sn->animBuf2.push_back(anim["start"]); 
+                    sn->animBuf3.push_back(anim["end"]);
                 
-                sn->AddComponent("Script", false);
+                    sn->ApplyAnimation(anim["key"], anim["start"], anim["end"]);
+                }
+            
 
-                if (data["components"]["script"]["scripts"].size())
-                    for (const auto& scripts : data["components"]["script"]["scripts"])
-                        for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                            if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
-                                sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });   
-            }
+                sn->anim = sn->animations.size();   
 
-            //shader
+                //physics 
 
-            if (data["components"]["shader"]["exists"]) {
+                if (data["components"]["physics"]["exists"]) 
+                {
+                    sn->AddComponent("Physics", false);
 
-                sn->AddComponent("Shader", false); 
+                    sn->friction = data["components"]["physics"]["friction"];
+                    sn->restitution = data["components"]["physics"]["restitution"];
+                    sn->density = data["components"]["physics"]["density"]; 
 
-                if (data["components"]["shader"]["shaders"].size())
-                    LoadShader(sn, 
-                        static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]).c_str(),
-                        static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]).c_str(),
-                        static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
-                    );
+                    if (data["components"]["physics"]["bodies"].size()) 
+                        for (const auto& body : data["components"]["physics"]["bodies"]) 
+                            if (makeNode)
+                                sn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"], body["sensor"], body["pointer"]);
+
+                            else 
+                            {
+                                sn->bodyX.push_back(body["bodyX"]);
+                                sn->bodyY.push_back(body["bodyY"]);
+                                sn->body_width.push_back(body["body_width"]);
+                                sn->body_height.push_back(body["body_height"]);
+
+                                SpriteNode::BoolContainer bc;
+                                bc.b = body["sensor"];
+
+                                sn->is_sensor.push_back(bc);
+                                sn->body_pointer.push_back(body["pointer"]);
+
+                                sn->bodies.push_back(nullptr);
+                            }
+                }
+
+                //script
+
+                if (data["components"]["script"]["exists"]) 
+                {
+                    
+                    sn->AddComponent("Script", false);
+
+                    if (data["components"]["script"]["scripts"].size())
+                        for (const auto& scripts : data["components"]["script"]["scripts"])
+                            for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                                if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
+                                    sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });   
+                }
+
+                //shader
+
+                if (data["components"]["shader"]["exists"]) 
+                {
+
+                    sn->AddComponent("Shader", false); 
+
+                    if (data["components"]["shader"]["shaders"].size())
+                        LoadShader(sn, 
+                            static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]).c_str(),
+                            static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]).c_str(),
+                            static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
+                        );
+                }
+
             }
 
             return sn;
@@ -832,49 +877,62 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             else 
                 tmn = Scene::CreateObject<TilemapNode>(_scene);  
 
-            tmn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+            if (data.contains("name"))
+                tmn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
 
-            tmn->map_width = data["map_width"];
-            tmn->map_height = data["map_height"];
-            tmn->tile_width = data["tile_width"];
-            tmn->tile_height = data["tile_height"];
-            tmn->layer = data["layer"];
+            if (data.contains("map_width"))
+                tmn->map_width = data["map_width"];
 
-            if (data["layers"].size()) 
+            if (data.contains("map_height"))
+                tmn->map_height = data["map_height"];
+
+            if (data.contains("tile_width"))
+                tmn->tile_width = data["tile_width"];
+
+            if (data.contains("tile_height"))
+                tmn->tile_height = data["tile_height"];
+                
+            if (data.contains("layer"))
+                tmn->layer = data["layer"];
+
+            if (data.contains("layers") && data["layers"].size()) 
                 for (const auto& layer : data["layers"]) {
                     tmn->layers.push_back({ layer["csv"]["key"], layer["csv"]["path"], layer["csv"]["texture"] });
                     tmn->spr_sheet_width.push_back(layer["frames x"]);
                     tmn->spr_sheet_height.push_back(layer["frames y"]);
                     tmn->depth.push_back(layer["depth"]);
                 }
-            
-            //physics 
+
+            if (data.contains("components"))
+            {
+                //physics 
        
-            if (data["components"]["physics"]["exists"]) 
-                tmn->AddComponent("Physics", false);
+                if (data["components"]["physics"]["exists"]) 
+                    tmn->AddComponent("Physics", false);
 
-            if (data["components"]["physics"]["bodies"].size())
-                for (const auto& body : data["components"]["physics"]["bodies"]) 
-                {
-                    if (makeNode) 
+                if (data["components"]["physics"]["bodies"].size())
+                    for (const auto& body : data["components"]["physics"]["bodies"]) 
                     {
-                        tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+                        if (makeNode) 
+                        {
+                            tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
 
-                        for (int i = 0; i < tmn->bodies.size(); i++)
-                            tmn->UpdateBody(i);
+                            for (int i = 0; i < tmn->bodies.size(); i++)
+                                tmn->UpdateBody(i);
+                        }
+
+                        else {
+                            tmn->bodyX.push_back(body["bodyX"]);
+                            tmn->bodyY.push_back(body["bodyY"]);
+                            tmn->body_width.push_back(body["body_width"]);
+                            tmn->body_height.push_back(body["body_height"]);
+                            tmn->bodies.push_back(nullptr);
+                        }
+
                     }
-
-                    else {
-                        tmn->bodyX.push_back(body["bodyX"]);
-                        tmn->bodyY.push_back(body["bodyY"]);
-                        tmn->body_width.push_back(body["body_width"]);
-                        tmn->body_height.push_back(body["body_height"]);
-                        tmn->bodies.push_back(nullptr);
-                    }
-
-                }
+            }
             
-            if (data["layers"].size())
+            if (data.contains("layers") && data["layers"].size())
                 tmn->ApplyTilemap(makeNode);
 
             return tmn;
@@ -889,16 +947,25 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (makeNode)
                 an = Make<AudioNode>(arr); 
             
-            else {
-                an = Scene::CreateObject<AudioNode>(_scene);    
-                AssetManager::Register(data["source name"], false);
+            else 
+            {
+                an = Scene::CreateObject<AudioNode>(_scene); 
+
+                if (data.contains("source name"))   
+                    AssetManager::Register(data["source name"], false);
             } 
 
-            an->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+            if (data.contains("name"))
+                an->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
 
-            an->audio_source_name = data["source name"];
-            an->volume = data["volume"];
-            an->loop = data["loop"];
+            if (data.contains("source name"))
+                an->audio_source_name = data["source name"];
+
+            if (data.contains("volume"))
+                an->volume = data["volume"];
+
+            if (data.contains("loop"))
+                an->loop = data["loop"];
         }
 
         //empty
@@ -914,19 +981,37 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             else 
                 en = Scene::CreateObject<EmptyNode>(_scene);   
 
-            en->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+            if (data.contains("name"))
+                en->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
 
-            en->show_debug = data["debug graphics"]; 
-            en->debug_fill = data["fill"];
-            en->rectWidth = data["width"];  
-            en->rectHeight = data["height"]; 
-            en->line_weight = data["line weight"];
-            en->radius = data["radius"]; 
-            en->positionX = data["position x"]; 
-            en->positionY = data["position y"];
-            en->depth = data["depth"];
+            if (data.contains("debug graphics"))
+                en->show_debug = data["debug graphics"]; 
 
-            if (static_cast<std::string>(data["shape"]).length()) {
+            if (data.contains("fill"))
+                en->debug_fill = data["fill"];
+
+            if (data.contains("width"))
+                en->rectWidth = data["width"];  
+
+            if (data.contains("height"))
+                en->rectHeight = data["height"]; 
+
+            if (data.contains("line weight"))
+                en->line_weight = data["line weight"];
+
+            if (data.contains("radius"))
+                en->radius = data["radius"]; 
+
+            if (data.contains("position x"))
+                en->positionX = data["position x"]; 
+
+            if (data.contains("position y"))
+                en->positionY = data["position y"];
+
+            if (data.contains("depth"))
+                en->depth = data["depth"];
+
+            if (data.contains("shape") && static_cast<std::string>(data["shape"]).length()) {
 
                 en->CreateShape(data["shape"]);
 
@@ -938,32 +1023,36 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 }
             }
 
-            //script
-
-            if (data["components"]["script"]["exists"]) {
-
-                en->AddComponent("Script", false);
-
-                if (data["components"]["script"]["scripts"].size())
-                    for (const auto& scripts : data["components"]["script"]["scripts"])
-                        for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                            if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
-                                en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
-            }
-
-            //shader
-
-            if (data["components"]["shader"]["exists"]) 
+            if (data.contains("components"))
             {
-                
-                en->AddComponent("Shader", false);
+                //script
 
-                if (data["components"]["shader"]["shaders"].size())
-                    LoadShader(en, 
-                        static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]).c_str(),
-                        static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]).c_str(),
-                        static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
-                    );
+                if (data["components"]["script"]["exists"]) 
+                {
+
+                    en->AddComponent("Script", false);
+
+                    if (data["components"]["script"]["scripts"].size())
+                        for (const auto& scripts : data["components"]["script"]["scripts"])
+                            for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
+                                if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
+                                    en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
+                }
+
+                //shader
+
+                if (data["components"]["shader"]["exists"]) 
+                {
+                    
+                    en->AddComponent("Shader", false);
+
+                    if (data["components"]["shader"]["shaders"].size())
+                        LoadShader(en, 
+                            static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]).c_str(),
+                            static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]).c_str(),
+                            static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
+                        );
+                }
             }
 
             return en;
@@ -981,22 +1070,42 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             else 
                 tn = Scene::CreateObject<TextNode>(_scene);
 
-            tn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+            if (data.contains("name"))
+                tn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
 
-            tn->textBuf = data["content"];
-            tn->tint = glm::vec3(data["tint"]["x"], data["tint"]["y"], data["tint"]["z"]);     
-            tn->alpha = data["alpha"];       
-            tn->positionX = data["position x"];        
-            tn->positionY = data["position y"];   
-            tn->rotation = data["rotation"];      
-            tn->scaleX = data["scale x"];      
-            tn->scaleY = data["scale y"];
-            tn->depth = data["depth"];    
-            tn->UIFlag = data["UIFlag"];
+            if (data.contains("content"))
+                tn->textBuf = data["content"];
+
+            if (data.contains("tint"))
+                tn->tint = glm::vec3(data["tint"]["x"], data["tint"]["y"], data["tint"]["z"]);     
+
+            if (data.contains("alpha"))
+                tn->alpha = data["alpha"];   
+
+            if (data.contains("position x"))
+                tn->positionX = data["position x"];   
+
+            if (data.contains("position y"))
+                tn->positionY = data["position y"];   
+
+            if (data.contains("rotation"))
+                tn->rotation = data["rotation"];   
+
+            if (data.contains("scale x"))
+                tn->scaleX = data["scale x"];      
+
+            if (data.contains("scale y"))
+                tn->scaleY = data["scale y"];
+
+            if (data.contains("depth"))
+                tn->depth = data["depth"];    
+
+            if (data.contains("UIFlag"))
+                tn->UIFlag = data["UIFlag"];
 
             //script
 
-            if (data["components"]["script"]["exists"]) 
+            if (data.contains("components") && data["components"]["script"]["exists"]) 
             {
                 tn->AddComponent("Script", false);
 
@@ -1023,9 +1132,10 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             else 
                 gn = Scene::CreateObject<GroupNode>(_scene);
             
-            gn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+            if (data.contains("name"))
+                gn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
 
-            if (data["nodes"].size())
+            if (data.contains("nodes") && data["nodes"].size())
                 for (auto& node : data["nodes"]) 
                     ReadData(node["data"], makeNode, makeNode ? nullptr : _scene, gn->_nodes, true);
 

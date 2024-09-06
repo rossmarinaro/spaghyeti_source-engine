@@ -278,7 +278,7 @@ void editor::GUI::ShowSettings()
 
                     for (const auto& asset : AssetManager::loadedAssets)
                     {
-
+ 
                         std::string key = asset.first,
                                     path = asset.second;
 

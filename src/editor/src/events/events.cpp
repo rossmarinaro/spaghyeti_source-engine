@@ -25,7 +25,7 @@ using namespace editor;
 
 
 
-static int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg, LPARAM lParam, LPARAM lpData)
+static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
     #ifdef _WIN32
 
@@ -208,7 +208,7 @@ bool EventListener::Open() //makes temporary json file to parse data from .spagh
                     System::Resources::Manager::LoadFile(asset.c_str(), dir.c_str());
                     System::Resources::Manager::RegisterTextures();
 
-                    AssetManager::LoadAsset(asset, Editor::projectPath);
+                    AssetManager::LoadAsset(asset);
 
                     unsigned int id = Graphics::Texture2D::Get(texture).ID;
 
@@ -392,7 +392,7 @@ void EventListener::OpenFile()
             std::map<std::string, std::string>::iterator iterator = AssetManager::loadedAssets.find(asset);
 
             if (iterator == AssetManager::loadedAssets.end() || AssetManager::selectedAsset.length() < 0) 
-                AssetManager::LoadAsset(asset, Editor::projectPath);
+                AssetManager::LoadAsset(asset);
 
             //apply image to assets menu if not there already
 
@@ -527,15 +527,16 @@ void EventListener::BuildAndRun()
 
         std::string icon_path;
 
-        if (std::filesystem::exists(Editor::projectPath + "icon.rc"))
+        if (std::filesystem::exists(Editor::projectPath + "icon.rc")) 
             remove((Editor::projectPath + "icon.rc").c_str());
 
-        if (AssetManager::projectIcon.length()) {
+    
+        if (std::filesystem::exists(AssetManager::projectIcon) && AssetManager::projectIcon.length()) {
             std::ofstream icon_rc(Editor::projectPath + "icon.rc");
             icon_rc << "1 ICON \"" + AssetManager::projectIcon + "\"";
             has_icon = true;
         }
-        
+
         //generate MakeFile
         
         std::ofstream main_makeFile;
@@ -863,8 +864,10 @@ void EventListener::BuildAndRun()
 
             for (const auto& spritesheet : target.second->spritesheets)
             {
+                
+                const std::string filepath = Editor::projectPath + spritesheet.second;
 
-                std::ifstream JSON(spritesheet.second);
+                std::ifstream JSON(filepath);
                 json data = json::parse(JSON);
 
                 std::ostringstream frame_oss;
@@ -1156,7 +1159,9 @@ void EventListener::BuildAndRun()
                         }
 
                     }
-command_queue << "   }\n";
+
+                    command_queue << "   }\n";
+
                     //static physics bodies
 
                     if (tmn->HasComponent("Physics") && tmn->bodies.size())
