@@ -60,16 +60,16 @@ Game::Game()
 
     //game components
 
-    this->inputs = new Inputs;
-    this->time = new Time;
-    this->camera = new Camera;
-    this->physics = new Physics;
+    inputs = new Inputs;
+    time = new Time;
+    camera = new Camera;
+    physics = new Physics;
 
     maps = new MapManager;
 
     //scene context handles
 
-    this->m_context = { this->inputs, this->camera, this->physics, this->time };
+    m_context = { inputs, camera, physics, time };
 
 }
 
@@ -274,6 +274,7 @@ void Game::UpdateFrame()
     for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity) && entity.get()->renderable) 
             entity->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+           
 
     //vignette overlay
 
@@ -469,9 +470,12 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 //----------------------------- quad
 
 
-std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height, int layer)
+std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height, int layer, bool isStatic)
 {
     auto geom = std::make_shared<Geometry>(x, y, width, height);
+
+    if (isStatic)
+        geom->isStatic = true;
 
     if (layer == 1)
         Application::game->currentScene->entities.push_back(geom);

@@ -290,7 +290,7 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                                     //parse json to extract body data
 
-                                    std::ifstream JSON(path);
+                                    std::ifstream JSON(Editor::projectPath + path);
 
                                     json data = json::parse(JSON);
 
@@ -466,7 +466,7 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                                 //parse json to extract body data
 
-                                std::ifstream JSON(path);
+                                std::ifstream JSON(Editor::projectPath + path);
 
                                 json data = json::parse(JSON);
 

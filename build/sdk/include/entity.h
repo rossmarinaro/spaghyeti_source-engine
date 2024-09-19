@@ -89,8 +89,8 @@ class Entity {
 		Entity(const char* type);
 		Entity(const char* type, float x, float y);
         
-        void Cull(std::shared_ptr<Entity> target, float factor, int distance);
-        void StartFollow(Camera* camera, float offset);
+        void Cull(const glm::vec2& targetPosition);
+        void StartFollow(float offset = 0.0f);
         void SetData(const std::string& key, const std::any& value);
 
     protected:

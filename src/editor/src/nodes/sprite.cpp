@@ -631,7 +631,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                                             //parse json to extract frame data
 
-                                            std::ifstream JSON(path);
+                                            std::ifstream JSON(Editor::projectPath + path);
 
                                             if (!JSON.good()) 
                                                 Editor::Log("Error parsing. Maybe file is in an inappropriate folder?");

@@ -46,14 +46,16 @@ Entity::Entity(const char* type, float x, float y):
 //------------------------------------
 
 
-void Entity::StartFollow(Camera* camera, float offset) 
+void Entity::StartFollow(float offset) 
 {
 
-    camera->targetX = position.x;
-    camera->targetY = position.y;
+    auto context = System::Game::GetScene()->GetContext();
 
-    if (camera->InBounds())
-        camera->position.x = (-position.x + offset) / 2;  
+    context.camera->targetX = position.x;
+    context.camera->targetY = position.y;
+
+    if (context.camera->InBounds())
+        context.camera->position.x = (-position.x + offset) / 2;  
 }
 
 
@@ -75,21 +77,18 @@ void Entity::SetData(const std::string& key, const std::any& value)
 //------------------------------------ 
 
 
-void Entity::Cull(std::shared_ptr<Entity> target, float factor, int distance)
+void Entity::Cull(const glm::vec2& targetPosition)
 {
 
     auto context = System::Game::GetScene()->GetContext();
 
-    if (!context.camera->InBounds()) {
-        SetScrollFactor({ 1.0f, 1.0f });
-        renderable = (position.x > target->position.x && position.x < target->position.x + 1500) ||
-                     (position.x < target->position.x && position.x > target->position.x - System::Window::s_scaleWidth);
-    }
+    float width = System::Window::s_scaleWidth;
 
-    else 
-        renderable = (position.x > target->position.x && position.x < target->position.x + distance) ||
-                     (position.x < target->position.x && position.x > target->position.x - System::Window::s_scaleWidth * factor);
+    if (!context.camera->InBounds() && targetPosition.x > System::Window::s_scaleWidth)
+        width = width + (width / 2);
 
+    renderable = (position.x > targetPosition.x && (position.x < targetPosition.x + width) * m_scrollFactor.x) ||
+                 (position.x < targetPosition.x && (position.x > targetPosition.x - width) * m_scrollFactor.x);
 } 
 
 
@@ -463,7 +462,7 @@ void Sprite::Render(float projWidth, float projHeight)
             shader.SetMat4("model", model);
 
             if (IsSprite()) {
-                shader.SetVec2f("offset", System::Application::game->camera->position);
+                shader.SetVec2f("offset", glm::vec2(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y));
                 shader.SetMat4("view", glm::translate(model, glm::vec3(System::Application::game->camera->position.x * m_scrollFactor.x, System::Application::game->camera->position.y * m_scrollFactor.y, 0.0f)));
             }
 
