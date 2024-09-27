@@ -307,13 +307,13 @@ void Sprite::RemoveBodies()
 void Sprite::SetTexture(const std::string& key)
 {  
 
-    auto texture = Graphics::Texture2D::Get(key); 
+    auto tex = Graphics::Texture2D::Get(key); 
         
     this->key = key; 
 
-    texture.FrameWidth = texture.Width;
-    texture.FrameHeight = texture.Height;
-    texture.ID = texture.ID;
+    texture.FrameWidth = tex.Width;
+    texture.FrameHeight = tex.Height;
+    texture.ID = tex.ID;
 
     m_currentAnim = {};
 }

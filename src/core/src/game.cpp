@@ -267,7 +267,8 @@ void Game::UpdateFrame()
 
     inputs->ProcessInput(Window::s_instance);
 
-    physics->Update();
+    if (!currentScene->IsPaused())
+        physics->Update();
 
     //entity render queue
 

@@ -155,7 +155,7 @@ void SpriteNode::ApplyTexture(const std::string& asset)
         spriteHandle->name = name;
         System::Game::GetScene()->SetInteractive(spriteHandle);
     }
-
+ 
     else 
        spriteHandle->SetTexture(asset); 
 
