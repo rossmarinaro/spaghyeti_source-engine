@@ -10,10 +10,9 @@ class MapManager {
         std::string currentMap;
         std::vector<std::vector<std::shared_ptr<Sprite>>> layers;
 
-        static void CreateLayer (
+        static bool CreateLayer (
             const char* texture_key, 
             const char* data_key,
-            const std::vector<std::string>& data,
             uint32_t mapWidth, 
             uint32_t mapHeight, 
             uint32_t tileWidth, 

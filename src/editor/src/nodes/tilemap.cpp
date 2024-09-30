@@ -132,11 +132,7 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
             
             //parse csv data and load map layer
 
-            const std::vector<std::string>& data = System::Resources::Manager::ParseCSV(key, i);
-
-            if (data.size()) {
-
-                MapManager::CreateLayer(texture.c_str(), key.c_str(), data, map_width, map_height, tile_width, tile_height, depth[i]);
+            if (MapManager::CreateLayer(texture.c_str(), key.c_str(), map_width, map_height, tile_width, tile_height, depth[i])) {
 
                 m_layersApplied = true;
                 m_mapApplied = true;

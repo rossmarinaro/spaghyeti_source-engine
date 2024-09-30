@@ -1148,7 +1148,7 @@ void EventListener::BuildAndRun()
                             }
                             
                             if (tmn->layers[i][0].length()) 
-                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][2] + "\", ""\"" + tmn->layers[i][0] + "\", System::Resources::Manager::ParseCSV(\"" + tmn->layers[i][0] + "\"), " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
+                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][2] + "\", ""\"" + tmn->layers[i][0] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
                         }
 
                         //create map if layers are defined

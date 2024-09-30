@@ -366,6 +366,8 @@ std::vector<std::string> Manager::ParseCSV(const std::string& key, int index)
     std::vector<std::string> result;
     std::string line;
 
+    result.reserve(10000);
+
     const std::map<std::string, std::string>::iterator it = System::Application::resources->m_file_text_assets.find(key);
  
     if (it != System::Application::resources->m_file_text_assets.end()) 
@@ -385,7 +387,7 @@ std::vector<std::string> Manager::ParseCSV(const std::string& key, int index)
                         if (index == i && data["layers"][i].contains("data")) 
                         {
                             for (auto& d : data["layers"][i]["data"]) 
-                            {
+                            { 
                                 if (d == 0)
                                     d = -1;
 
@@ -393,7 +395,7 @@ std::vector<std::string> Manager::ParseCSV(const std::string& key, int index)
                             }
 
                             while(getline(ss, line))
-                                result.push_back(line);
+                                result.emplace_back(line);
                             
                         }
             
@@ -403,7 +405,7 @@ std::vector<std::string> Manager::ParseCSV(const std::string& key, int index)
 
         else if (System::Utils::str_endsWith(it->second, ".csv")) //plain csv file
             while(getline(in, line))
-                result.push_back(line + ",");
+                result.emplace_back(line + ",");
      
         in.close();      
     }

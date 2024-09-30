@@ -48,7 +48,7 @@ b2Body* Physics::CreateStaticBody(
     box.SetAsBox(width, height);       
     body.self->CreateFixture(&box, 0.0f); 
 
-    System::Application::game->physics->active_bodies.push_back(body.self);
+    System::Application::game->physics->active_bodies.emplace_back(body.self);
 
     return body.self;
 }
@@ -107,7 +107,7 @@ b2Body* Physics::CreateDynamicBody(
 
     body.self->CreateFixture(&body.fixtureDef);
 
-    System::Application::game->physics->active_bodies.push_back(body.self); 
+    System::Application::game->physics->active_bodies.emplace_back(body.self); 
     
     return body.self;
 }

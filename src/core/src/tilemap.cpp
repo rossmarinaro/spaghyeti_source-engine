@@ -10,11 +10,10 @@
 
 
 //create layer from csv
-void MapManager::CreateLayer (
+bool MapManager::CreateLayer (
 
     const char* texture_key,
     const char* data_key,
-    const std::vector<std::string>& data,
     uint32_t mapWidth,
     uint32_t mapHeight,
     uint32_t tileWidth,
@@ -22,42 +21,47 @@ void MapManager::CreateLayer (
     uint32_t depth
 )
 {
-    
-    std::vector<std::string> map;
-    std::vector<std::shared_ptr<Sprite>> layer; 
 
-    std::stringstream ss; 
-    std::string line; 
+    auto data = System::Resources::Manager::ParseCSV(data_key);
 
-    if (!data.size()) {
+    if (!data.size()) {                                       
 
         LOG("Tilemap: layer data not found.");
 
-        return;
+        return false;
     }
+
+    std::vector<std::shared_ptr<Sprite>> layer; 
+
+    layer.reserve(10000);
+
+    std::stringstream ss; 
+    std::string line; 
 
     //remove commas from array before parsing
 
     for (int i = 0; i < data.size(); i++) 
         ss << data[i]; 
 
+    data.clear();
+
     while(getline(ss, line, ','))
-        map.push_back(line); 
+       data.emplace_back(line);
 
     for (int y = 0; y < mapHeight; ++y)
         for (int x = 0; x < mapWidth; ++x) 
         {
 
-            if (map.begin() + (x + y * mapWidth) == map.end()) {
+            if ((data.begin() + (x + y * mapWidth)) == data.end()) {
       
                 LOG("Tilemap: index overflow, truncating map.");
 
-                return;
+                return false;
             }
 
             //convert string to int at index
 
-            int tileType = atoi(map[x + y * mapWidth].c_str());
+            int tileType = atoi(/* map */data[x + y * mapWidth].c_str());
 
             //skip if no tile
 
@@ -106,16 +110,16 @@ void MapManager::CreateLayer (
 
                 //add layer to stack
 
-                layer.push_back(tile);
+                layer.emplace_back(tile);
             }
 
         }
 
-    System::Application::game->maps->layers.push_back(layer);
+    System::Application::game->maps->layers.emplace_back(layer);
 
     LOG("Tilemap: Initialized layer with key: " + (std::string)texture_key);
 
-
+    return true;
 }
 
 

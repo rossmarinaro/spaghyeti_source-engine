@@ -177,7 +177,7 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
         if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {
             game->currentScene->Preload();
-            cachedScenes.push_back(game->currentScene->key);
+            cachedScenes.emplace_back(game->currentScene->key);
         }
 
         game->currentScene->vignette = std::make_unique<Geometry>(0.0f, -50.0f, 0.0f, 0.0f);
@@ -401,10 +401,10 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
     sprite->SetScale(scale);
 
     if (layer == 1)
-        Application::game->currentScene->entities.push_back(sprite);
+        Application::game->currentScene->entities.emplace_back(sprite);
 
     if (layer == 2)
-        Application::game->currentScene->UI.push_back(sprite); 
+        Application::game->currentScene->UI.emplace_back(sprite); 
 
     return sprite;
 }
@@ -425,7 +425,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y,
     
     element->SetFrame(frame);
 
-    Application::game->currentScene->UI.push_back(element);
+    Application::game->currentScene->UI.emplace_back(element);
 
     return element;
 }
@@ -443,7 +443,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
     //ts->shader = Shader::Get("batch");
     ts->ReadSpritesheetData(); 
 
-    Application::game->currentScene->entities.push_back(ts);
+    Application::game->currentScene->entities.emplace_back(ts);
 
     return ts;
 
@@ -459,10 +459,10 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
     auto text = std::make_shared<Text>(content, x, y); 
 
     if (layer == 1)
-        Application::game->currentScene->entities.push_back(text);
+        Application::game->currentScene->entities.emplace_back(text);
 
     if (layer == 2)
-        Application::game->currentScene->UI.push_back(text);
+        Application::game->currentScene->UI.emplace_back(text);
 
     return text;
 }
@@ -479,10 +479,10 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
         geom->isStatic = true;
 
     if (layer == 1)
-        Application::game->currentScene->entities.push_back(geom);
+        Application::game->currentScene->entities.emplace_back(geom);
 
     if (layer == 2)
-        Application::game->currentScene->UI.push_back(geom);
+        Application::game->currentScene->UI.emplace_back(geom);
 
     return geom;
 }
@@ -496,10 +496,10 @@ std::shared_ptr<Entity> Game::CreateEntity(const std::string& type, int layer)
     auto entity = std::make_shared<Entity>(type.c_str());
 
     if (layer == 1)
-        Application::game->currentScene->entities.push_back(entity);
+        Application::game->currentScene->entities.emplace_back(entity);
 
     if (layer == 2)
-        Application::game->currentScene->UI.push_back(entity);
+        Application::game->currentScene->UI.emplace_back(entity);
 
     return entity;
 } 
