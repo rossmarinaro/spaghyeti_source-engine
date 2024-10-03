@@ -329,7 +329,7 @@ Text::Text(const std::string& content, float x, float y, float scale, glm::vec3 
 
 
 Text::~Text() {
-    LOG("Text: " + (std::string)content + " deleted.");
+    LOG("Text: " + (std::string)content + " destroyed.");
 }
 
 

@@ -2,7 +2,6 @@
 
 #include "./entity.h"
 #include "./context.h"
-#include "./utils.h"
 
 namespace entity_behaviors {
 
@@ -13,7 +12,7 @@ namespace entity_behaviors {
 
             int layer;
 
-            std::string ID, key, name; 
+            std::string ID, key; 
 
             std::atomic_char active;
             
@@ -26,18 +25,10 @@ namespace entity_behaviors {
                 ID = m_entity->ID;
             }
 
-            virtual ~Behavior() 
-            {
-                active = false;
-                m_entity = nullptr;
-
-                #if DEVELOPMENT == 1
-                    std::cout << "Behavior: " << name << " destroyed.\n";
-                #endif
-            }
+            virtual ~Behavior() {}
 
             virtual void Update() {}
-         
+
         protected:
 
             std::shared_ptr<Entity> m_entity;

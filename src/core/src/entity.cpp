@@ -596,9 +596,14 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     texture = Graphics::Texture2D::Get(key);
     shader = Shader::Get("sprite");          
     
-    if (!isTile)
-        LOG("Sprite: " + key + " Created."); 
+    if (isTile) 
+    {
+        type = "tile"; 
+        //shader = Shader::Get("batch");
+        return;
+    }
 
+    LOG("Sprite: " + key + " Created.");
 }
 
 
@@ -641,10 +646,9 @@ Sprite::Sprite(const std::string& key, const glm::vec2& position):
 
 
 Sprite::~Sprite() {
-
-    if (strcmp(type, "tile") != 0)
+    if (strcmp(type, "tile") != 0) {
         LOG("Sprite: " + key + " Destroyed."); 
-
+    }
 }
 
 

@@ -21,17 +21,28 @@ void Game::Flush(bool removeMap)
         delete Application::eventPool; 
         Application::eventPool = nullptr;
     }
-    
-    if (removeMap) {
+
+   if (removeMap) 
+   {
         maps->layers.clear();
         currentScene->entities.clear();
-    }
+
+        std::vector<std::shared_ptr<entity_behaviors::Behavior>> tmp;
+
+        for (const auto& behavior : currentScene->behaviors)
+            if (behavior.get()) 
+                tmp.push_back(std::move(behavior));
+
+        tmp.clear();
+   }
     
-    else
+   else {
+        currentScene->behaviors.clear();
         currentScene->entities.erase(std::remove_if(currentScene->entities.begin(), currentScene->entities.end(), [](const auto e) { return strcmp(e->type, "tile") != 0; }), currentScene->entities.end());
+   }
 
     currentScene->UI.clear();
-    currentScene->behaviors.clear();
+
 }
 
 
@@ -147,7 +158,7 @@ void Game::StartScene(const std::string& key, bool loadMap)
         //assign / load current scene
         
         game->currentScene = *it;
-
+  
         Application::eventPool = new EventPool(THREAD_COUNT);
 
         #if STANDALONE == 1
@@ -275,7 +286,6 @@ void Game::UpdateFrame()
     for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity) && entity.get()->renderable) 
             entity->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-           
 
     //vignette overlay
 
@@ -318,8 +328,8 @@ void Game::UpdateFrame()
 
     //update behaviors, pass game process context to subclasses
 
-    for (const auto& behavior : currentScene->behaviors) 
-        if (m_gameState && (behavior.get() && behavior) && behavior->active) 
+    for (const auto& behavior : currentScene->behaviors)
+        if (behavior.get() && behavior->active) 
         {
             if ((!currentScene->IsPaused() && behavior->layer == 0)) 
                 behavior->Update();  
@@ -439,8 +449,6 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
 
     auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
 
-    ts->type = "tile";
-    //ts->shader = Shader::Get("batch");
     ts->ReadSpritesheetData(); 
 
     Application::game->currentScene->entities.emplace_back(ts);
