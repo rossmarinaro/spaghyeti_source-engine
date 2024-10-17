@@ -44,7 +44,7 @@ class Entity {
             if (this->data.find(key) != this->data.end())
                 return std::any_cast<T>(this->data.at(key)); 
 
-            return std::any_cast<T>(this->data.at(0));
+            return T();
         }
 
 		inline void SetDepth(int depth) { this->depth = depth; }

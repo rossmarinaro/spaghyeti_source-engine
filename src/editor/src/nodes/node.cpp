@@ -441,6 +441,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "lock", sn->lock_in_place },
             { "makeUI", sn->make_UI },
             { "frames", frames },
+            { "current frame", sn->currentFrame },
             { "components", {
                     { "physics", {
                             { "exists", sn->HasComponent("Physics") },
@@ -758,10 +759,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     sn->frameBuf4.push_back(data["frames"][i]["height"]);
                     sn->frameBuf5.push_back(data["frames"][i]["factor x"]);
                     sn->frameBuf6.push_back(data["frames"][i]["factor y"]);
-
                 }
 
                 sn->frame = data["frames"].size();
+
+                if (data.contains("current frame"))
+                    sn->currentFrame = data["current frame"];
       
                 for (int i = 0; i < sn->frame; i++) 
                     sn->frames.push_back({ sn->frameBuf1[i], sn->frameBuf2[i], sn->frameBuf3[i], sn->frameBuf4[i], sn->frameBuf5[i], sn->frameBuf6[i]}); 
@@ -771,7 +774,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 if (makeNode) {
                     sn->framesApplied = true; 
                     sn->spriteHandle->ReadSpritesheetData();
-                    sn->spriteHandle->SetFrame(0);
                 }
             }
             

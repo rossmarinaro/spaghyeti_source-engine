@@ -111,7 +111,8 @@ namespace editor {
 
             int frame, 
                 anim, 
-                depth;
+                depth,
+                currentFrame;
 
             bool framesApplied,       
                  filter_nearest,

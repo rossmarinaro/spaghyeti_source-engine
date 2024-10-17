@@ -20,6 +20,7 @@ SpriteNode::SpriteNode():
     lock_in_place = false;
     make_UI = false;
     frame = 0;
+    currentFrame = 0;
     anim = 1;
     depth = 1;
     restitution = 0.0f;
@@ -564,17 +565,17 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                                     ImGui::EndMenu();
                                 }
 
-                                if (ImGui::Button("-") && spriteHandle->currentFrame > 0) 
-                                    spriteHandle->currentFrame--;                    
+                                if (ImGui::Button("-") && currentFrame > 0) 
+                                    currentFrame--;                    
                                 
                                 ImGui::SameLine();
 
-                                if (ImGui::Button("+") && spriteHandle->currentFrame < spriteHandle->frames - 1) 
-                                    spriteHandle->currentFrame++; 
+                                if (ImGui::Button("+") && currentFrame < spriteHandle->frames - 1) 
+                                    currentFrame++; 
 
                                 ImGui::SameLine();
 
-                                ImGui::Text("frame: %d", spriteHandle->currentFrame);
+                                ImGui::Text("frame: %d", currentFrame);
 
                                 ImGui::SameLine();
 
@@ -757,7 +758,8 @@ void SpriteNode::Render()
         spriteHandle->texture.V1 = V1;
         spriteHandle->texture.U2 = U2;
         spriteHandle->texture.V2 = V2;
-        
+
+        spriteHandle->SetFrame(currentFrame);
         spriteHandle->SetScale(scaleX, scaleY);
         spriteHandle->SetPosition(positionX, positionY);
         spriteHandle->SetRotation(rotation); 
