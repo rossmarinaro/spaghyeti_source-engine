@@ -219,6 +219,10 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
         
             static char name_buf[32] = ""; ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
 
+            
+            if (ImGui::Button("Select") && spriteHandle)
+                Editor::selectedEntity = spriteHandle;
+
             //save prefab
 
             if (ImGui::Button("Save prefab")) 
@@ -784,8 +788,8 @@ void SpriteNode::Render()
                         spriteHandle->position.y + bodyY[i]
                     ), 0);
 
-        if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            Editor::selectedEntity = spriteHandle;
+        //if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && (ImGui::IsMouseDown(ImGuiKey_RightShift) || ImGui::IsMouseDown(ImGuiKey_LeftShift)))
+            //Editor::selectedEntity = spriteHandle;
 
     }
 }

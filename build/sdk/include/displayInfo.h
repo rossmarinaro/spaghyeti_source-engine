@@ -18,8 +18,8 @@ class DisplayInfo {
             cam_text = std::make_shared<Text>("CAMERA", 10, 50);
             cam_text->SetScale(2.0f, 1.0f);
 
-            drawCall_text = std::make_shared<Text>("DRAW CALLS", 10, 100);
-            drawCall_text->SetScale(2.0f, 1.0f);
+            entity_text = std::make_shared<Text>("ENTITIES", 10, 100);
+            entity_text->SetScale(2.0f, 1.0f);
         }
 
         //update every frame
@@ -39,18 +39,18 @@ class DisplayInfo {
             cam_text->SetText(camInfo);
             cam_text->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
 
-            //draw calls
+            //entities
             
-            const std::string calls = "DRAW CALLS: " + std::to_string(Entity::s_count);
-            drawCall_text->SetText(calls);
-            drawCall_text->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+            const std::string calls = "ENTITIES: " + std::to_string(Entity::s_count);
+            entity_text->SetText(calls);
+            entity_text->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
         }
 
     private:
         
         std::shared_ptr<Text> fps_text;
         std::shared_ptr<Text> cam_text;
-        std::shared_ptr<Text> drawCall_text;
+        std::shared_ptr<Text> entity_text;
 
 };
 
