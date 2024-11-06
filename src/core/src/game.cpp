@@ -342,7 +342,7 @@ void Game::UpdateFrame()
 
 
 //-----------------------------
-
+std::map<std::string, Sprite> test;
  
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
@@ -352,23 +352,22 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     auto it = std::find(Application::game->currentScene->entities.begin(), Application::game->currentScene->entities.end(), entity);
 
     if (it != Application::game->currentScene->entities.end())
-        Application::game->currentScene->entities.erase(it);
+        Application::game->currentScene->entities.erase(std::move(it));
 
     else {
         auto UI_it = std::find(Application::game->currentScene->UI.begin(), Application::game->currentScene->UI.end(), entity);
 
         if (UI_it != Application::game->currentScene->UI.end())
-            Application::game->currentScene->UI.erase(UI_it);
+            Application::game->currentScene->UI.erase(std::move(UI_it));
     }
 
     entity->renderable = false;
-
     entity->active = false;
     entity->alive = false;
 
     if (entity->IsSprite()) 
     {
-        auto sprite = std::static_pointer_cast<Sprite>(entity);
+        auto sprite = std::static_pointer_cast<Sprite>(entity); 
 
         if (sprite->bodies.size()) {
             for (const auto& body : sprite->bodies)
@@ -380,7 +379,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
     //remove from vector and disappear into the void
 
-    if (!Application::game->currentScene->entities.size())
+    if (entity.unique())
        entity.reset(); 
 
     //reset associated behavior if applicable
@@ -388,7 +387,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b) { return b->ID == ID; });
 
     if (behavior_it != Application::game->currentScene->behaviors.end()) 
-        (*behavior_it)->active = false;
+        (*behavior_it)->active = false;  //tmp:  Application::game->currentScene->behaviors.erase(behavior_it);
 
 
 } 

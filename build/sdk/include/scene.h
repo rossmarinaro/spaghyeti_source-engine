@@ -91,11 +91,11 @@ namespace System {
             inline const Process::Context& GetContext() { return m_context; }
 
             template <typename T>
-            const inline std::shared_ptr<T> GetEntity(const std::string& key) 
+            const inline std::shared_ptr<T> GetEntity(const std::string& name) 
             {
 
-                auto entity_it = std::find_if(entities.begin(), entities.end(), [&](auto entity) { return entity->name == key; });
-                auto UI_it = std::find_if(UI.begin(), UI.end(), [&](auto UI) { return UI->name == key; });
+                auto entity_it = std::find_if(entities.begin(), entities.end(), [&](auto entity) { return entity->name == name; });
+                auto UI_it = std::find_if(UI.begin(), UI.end(), [&](auto UI) { return UI->name == name; });
 
                 if (entity_it != entities.end())
                     return std::static_pointer_cast<T>(*entity_it);
