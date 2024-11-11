@@ -8,7 +8,6 @@
 #include "../assets/embedded/images/icon_large.h"
 #include "../assets/embedded/images/folder_src.h"
 
-using namespace /* SPAGHYETI_CORE */ System;
 using namespace editor;
 
 //------------------------------------- launch GUI
@@ -48,8 +47,8 @@ void GUI::Launch()
 
     //setup platform/renderer backends
 
-    ImGui_ImplGlfw_InitForOpenGL(Window::s_instance, true);
-    ImGui_ImplOpenGL3_Init(Window::s_glsl_version);
+    ImGui_ImplGlfw_InitForOpenGL(System::Window::s_instance, true);
+    ImGui_ImplOpenGL3_Init(System::Window::s_glsl_version);
 
     static const char* checker_vertex = 
 
@@ -245,7 +244,7 @@ void GUI::ShowOptionsInit()
     const float window_width = ImGui::GetContentRegionAvail().x;
     const float window_height = ImGui::GetContentRegionAvail().y;
 
-    Renderer::RescaleFrameBuffer(window_width, window_height);
+    System::Renderer::RescaleFrameBuffer(window_width, window_height);
 
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
@@ -257,9 +256,9 @@ void GUI::ShowOptionsInit()
         ImVec2(1, 0)
     );
 
-    Renderer::BindFrameBuffer();
+    System::Renderer::BindFrameBuffer();
 
-    Renderer::UnbindFrameBuffer();
+    System::Renderer::UnbindFrameBuffer();
 
     ImGui::SetCursorPos((ImVec2((ImGui::GetWindowSize().x * 0.5f) - 270, (ImGui::GetWindowSize().y * 0.5f) - 230)));
 

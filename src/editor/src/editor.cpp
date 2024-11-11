@@ -88,6 +88,11 @@ void Editor::Update()
        
     } 
 
+    //cull entities outside camera viewport
+
+    for (const auto& entity : Game::GetScene()->entities)
+        entity->Cull(game->camera->position + Window::s_width / 2 * game->camera->GetZoom());
+
     glViewport(0, 0, Window::s_width, Window::s_height);
     
 	glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);

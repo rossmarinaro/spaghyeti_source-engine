@@ -24,9 +24,6 @@ void Game::Flush(bool removeMap)
 
    if (removeMap) 
    {
-        maps->layers.clear();
-        currentScene->entities.clear();
-
         std::vector<std::shared_ptr<entity_behaviors::Behavior>> tmp;
 
         for (const auto& behavior : currentScene->behaviors)
@@ -34,6 +31,9 @@ void Game::Flush(bool removeMap)
                 tmp.push_back(std::move(behavior));
 
         tmp.clear();
+
+        maps->layers.clear();
+        currentScene->entities.clear();
    }
     
    else {
@@ -42,7 +42,7 @@ void Game::Flush(bool removeMap)
    }
 
     currentScene->UI.clear();
-
+//currentScene->behaviors.clear();
 }
 
 
