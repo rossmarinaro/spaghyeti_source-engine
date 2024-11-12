@@ -22,27 +22,21 @@ void Game::Flush(bool removeMap)
         Application::eventPool = nullptr;
     }
 
-   if (removeMap) 
-   {
-        std::vector<std::shared_ptr<entity_behaviors::Behavior>> tmp;
+    for (const auto& behavior : currentScene->behaviors)
+        if (behavior.get()) 
+            behavior->active = false;
 
-        for (const auto& behavior : currentScene->behaviors)
-            if (behavior.get()) 
-                tmp.push_back(std::move(behavior));
+    currentScene->behaviors.clear(); 
+    currentScene->UI.clear();   
 
-        tmp.clear();
-
+    if (removeMap) {
         maps->layers.clear();
         currentScene->entities.clear();
-   }
+    }
     
-   else {
-        currentScene->behaviors.clear();
+    else 
         currentScene->entities.erase(std::remove_if(currentScene->entities.begin(), currentScene->entities.end(), [](const auto e) { return strcmp(e->type, "tile") != 0; }), currentScene->entities.end());
-   }
 
-    currentScene->UI.clear();
-//currentScene->behaviors.clear();
 }
 
 

@@ -38,7 +38,7 @@ Texture2D::Texture2D():
 
 
 void Texture2D::Delete() {
-    glDeleteTextures(1, &ID);   
+    glDeleteTextures(1, &ID);    
     glBindTexture(GL_TEXTURE_2D, 0);
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
@@ -51,7 +51,9 @@ void Texture2D::Delete() {
 
 
 Texture2D& Texture2D::Get(const std::string& key) {
-    return System::Application::resources->textures[key];
+    return System::Application::resources->textures[
+        System::Application::resources->textures.find(key) != System::Application::resources->textures.end() ? 
+            key : "base"];
 }
 
 
@@ -197,7 +199,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, const void* da
     FrameHeight = Height;
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, ID); 
+    glBindTexture(GL_TEXTURE_2D, ID);
     
     #ifndef __EMSCRIPTEN__
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -319,6 +321,12 @@ void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int dr
 
         m_UVs[10] = texture.format.u1;
         m_UVs[11] = texture.format.v2;
+
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, ID); 
+
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, Get("base").ID); 
 
     Bind();
 

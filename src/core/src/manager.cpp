@@ -64,11 +64,11 @@ void Manager::RegisterTextures()
 
     //load textures
 
-    for (const auto& texture : System::Application::resources->m_file_image_assets)
+    for (const auto& texture : System::Application::resources->m_raw_image_assets)
         if (System::Application::resources->textures.find(texture.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(texture.first);
 
-    for (const auto& texture : System::Application::resources->m_raw_image_assets)
+    for (const auto& texture : System::Application::resources->m_file_image_assets)
         if (System::Application::resources->textures.find(texture.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(texture.first);
 

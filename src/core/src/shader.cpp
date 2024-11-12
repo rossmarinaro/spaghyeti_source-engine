@@ -579,8 +579,8 @@ void Shader::SetFloat(const char* name, float value, bool useShader)
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(this->ID, name) != -1)
-        glUniform1f(glGetUniformLocation(this->ID, name), value); 
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniform1f(glGetUniformLocation(ID, name), value); 
 }
 
 // -----------------------------------------------------------------------
@@ -591,8 +591,8 @@ void Shader::SetInt(const char* name, int value, bool useShader)
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(this->ID, name) != -1)
-        glUniform1i(glGetUniformLocation(this->ID, name), value); 
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniform1i(glGetUniformLocation(ID, name), value); 
 }
 
 // -----------------------------------------------------------------------
@@ -602,8 +602,8 @@ void Shader::SetVec2f(const char* name, float x, float y, bool useShader)
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(this->ID, name) != -1)
-        glUniform2f(glGetUniformLocation(this->ID, name), x, y);
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniform2f(glGetUniformLocation(ID, name), x, y);
 }
 
 // -----------------------------------------------------------------------
@@ -613,8 +613,8 @@ void Shader::SetVec2f(const char* name, const glm::vec2& value, bool useShader)
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(this->ID, name) != -1)
-        glUniform2f(glGetUniformLocation(this->ID, name), value.x, value.y);
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniform2f(glGetUniformLocation(ID, name), value.x, value.y);
 }
 
 // -----------------------------------------------------------------------
@@ -624,8 +624,8 @@ void Shader::SetVec3f(const char* name, float x, float y, float z, bool useShade
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(this->ID, name) != -1)
-        glUniform3f(glGetUniformLocation(this->ID, name), x, y, z);
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniform3f(glGetUniformLocation(ID, name), x, y, z);
 }
 
 // -----------------------------------------------------------------------
@@ -635,8 +635,8 @@ void Shader::SetVec3f(const char* name, const glm::vec3& value, bool useShader)
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(this->ID, name) != -1)
-        glUniform3f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z);
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniform3f(glGetUniformLocation(ID, name), value.x, value.y, value.z);
 }
 
 // -----------------------------------------------------------------------
@@ -647,8 +647,8 @@ void Shader::SetVec4f(const char* name, float x, float y, float z, float w, bool
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(this->ID, name) != -1)
-        glUniform4f(glGetUniformLocation(this->ID, name), x, y, z, w);
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniform4f(glGetUniformLocation(ID, name), x, y, z, w);
 }
 
 // -----------------------------------------------------------------------
@@ -658,8 +658,8 @@ void Shader::SetVec4f(const char* name, const glm::vec4& value, bool useShader)
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(this->ID, name) != -1)
-        glUniform4f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z, value.w);
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniform4f(glGetUniformLocation(ID, name), value.x, value.y, value.z, value.w);
 }
 
 // -----------------------------------------------------------------------
@@ -669,6 +669,6 @@ void Shader::SetMat4(const char* name, const glm::mat4& matrix, bool useShader)
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(this->ID, name) != -1)
-        glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, false, glm::value_ptr(matrix));
 }

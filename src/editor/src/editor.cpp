@@ -90,8 +90,8 @@ void Editor::Update()
 
     //cull entities outside camera viewport
 
-    for (const auto& entity : Game::GetScene()->entities)
-        entity->Cull(game->camera->position + Window::s_width / 2 * game->camera->GetZoom());
+    //for (const auto& entity : Game::GetScene()->entities)
+        //entity->Cull({ -game->camera->position.x / 2 * game->camera->GetZoom(), game->camera->position.y });
 
     glViewport(0, 0, Window::s_width, Window::s_height);
     
