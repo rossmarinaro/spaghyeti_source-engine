@@ -56,7 +56,8 @@ namespace editor {
                                wasm = true,
                                gl_assertions = true,
                                use_webgl2 = false,
-                               full_es3 = false;
+                               full_es3 = false,
+                               preserveSrc = false;
 
 			static inline EventListener events;
 			

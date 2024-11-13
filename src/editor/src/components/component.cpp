@@ -15,12 +15,12 @@ Component::Component(const std::string& id, const std::string& type, const std::
 {
     s_count++;
 
-    this->ID = id;
+    ID = id;
+    name = "";
     this->type = type;
     this->nodeType = node_type;
-    this->name = "";
 
-    if (this->m_init)
+    if (m_init)
         Editor::Log((std::string)this->type + " component added.");
 }
 
@@ -30,9 +30,9 @@ Component::Component(const std::string& id, const std::string& type, const std::
 
 Component::~Component() {
 
-    if (this->m_init) {
+    if (m_init) {
         s_count--;
-        Editor::Log((std::string)this->type + " component" + " removed.");
+        Editor::Log((std::string)type + " component" + " removed.");
     }
 }
 
@@ -45,15 +45,15 @@ void Component::Make()
 
     //shader
 
-    if (this->type == "Shader")
+    if (type == "Shader")
     {
 
-        if (!this->filename.size())
+        if (!filename.size())
             return;
 
-        std::string path = Editor::projectPath + AssetManager::shader_dir + "/" + this->filename,
-                    vert = path + "/" + this->filename + ".vert",
-                    frag = path + "/" + this->filename + ".frag";
+        std::string path = Editor::projectPath + AssetManager::shader_dir + "/" + filename,
+                    vert = path + "/" + filename + ".vert",
+                    frag = path + "/" + filename + ".frag";
 
 
         if (std::filesystem::exists(vert) && std::filesystem::exists(frag)) {
@@ -93,7 +93,7 @@ void Component::Make()
         vert_src.close();
         frag_src.close();
 
-        this->filename = "";
+        filename = "";
 
     }
 
@@ -101,16 +101,16 @@ void Component::Make()
     //script
 
 
-    if (this->type == "Script")
+    if (type == "Script")
     {
 
-        if (!this->filename.size())
+        if (!filename.size())
             return;
 
-        std::string path = Editor::projectPath + AssetManager::script_dir + "/" + this->filename + ".h";
+        std::string path = Editor::projectPath + AssetManager::script_dir + "/" + filename + ".h";
 
         if (std::filesystem::exists(path)) {
-            Editor::Log("Script name already exists!");
+            Editor::Log("Script path already exists!");
             return;
         }
 
@@ -119,16 +119,31 @@ void Component::Make()
         std::string root_path = Editor::rootPath;
         std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
-        transform(this->filename.begin(), this->filename.end(), this->filename.begin(), ::toupper);
+        filename[0] = toupper(filename[0]);
+        
+        for (int i = 0; i < filename.length(); i++) 
+        {
+            if (filename[i] == ' ')
+                std::replace(filename.begin(), filename.end(), ' ', '_');
+
+            if (filename[i] == '_')
+                filename[i + 1] = toupper(filename[i + 1]);
+        }
+
+        if (std::filesystem::exists(Editor::projectPath + AssetManager::script_dir + "/" + filename + ".h")) {
+            Editor::Log("Script name already exists!");
+            remove(path.c_str());
+            return;
+        }
 
         src << "#pragma once\n\n";
         src << "#include \"" + root_path + "/sdk/include/behaviors.h\"\n\n\n";
         src << "namespace entity_behaviors {\n\n";
-        src <<  "   class " + this->filename + " : public Behavior {\n\n";
+        src <<  "   class " + filename + " : public Behavior {\n\n";
         src <<  "       public:\n\n";
         src <<  "           //constructor, called on start\n\n";
-        src <<  "           " + this->filename + "(std::shared_ptr<Entity> entity):\n";
-        src <<  "            Behavior(entity->ID, typeid(" + this->filename + ").name())\n";
+        src <<  "           " + filename + "(std::shared_ptr<Entity> entity):\n";
+        src <<  "            Behavior(entity->ID, typeid(" + filename + ").name())\n";
         src <<  "            {\n\n";
         src <<  "            }\n\n";
         src <<  "           //update every frame\n\n";
@@ -139,13 +154,13 @@ void Component::Make()
 
         src.close();
 
-        this->filename = "";
+        filename = "";
 
     }
 
     //animator
 
-    if (this->type == "Animator")
+    if (type == "Animator")
     {
 
         for (const auto& node : Node::nodes)
@@ -163,7 +178,7 @@ void Component::Make()
     //physics
 
 
-    if (this->type == "Physics")
+    if (type == "Physics")
     {
 
         for (const auto& node : Node::nodes)

@@ -1323,7 +1323,9 @@ void EventListener::BuildAndRun()
     else if (Editor::platform == "Windows")
         system(("chdir sdk && buildGame.bat " + Editor::projectPath + " " + s_currentProject).c_str());
 
-    remove(srcPath.c_str());
+    if (!Editor::preserveSrc)
+        remove(srcPath.c_str());
+        
     remove(makefile_path.c_str());
     remove(web_makeFile_path.c_str());
     remove(web_preJS_path.c_str());

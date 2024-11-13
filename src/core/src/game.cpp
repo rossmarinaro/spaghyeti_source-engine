@@ -22,15 +22,10 @@ void Game::Flush(bool removeMap)
         Application::eventPool = nullptr;
     }
 
-    for (const auto& behavior : currentScene->behaviors)
-        if (behavior.get()) 
-            behavior->active = false;
-
-    currentScene->behaviors.clear(); 
     currentScene->UI.clear();   
 
     if (removeMap) {
-        maps->layers.clear();
+       maps->layers.clear();
         currentScene->entities.clear();
     }
     
@@ -136,6 +131,31 @@ void Game::StartScene(const std::string& key, bool loadMap)
     if (it != game->scenes.end())
     {
 
+        #if STANDALONE == 1
+
+            //refresh physics
+
+            game->physics->ClearBodies();  
+
+            /* #if DEVELOPMENT == 1 
+
+                delete game->physics->debug;
+                game->physics->debug = nullptr;
+
+                delete displayInfo;
+                displayInfo = nullptr;
+
+                game->physics->debug = new DebugDraw;
+                game->physics->GetWorld().SetDebugDraw(game->physics->debug);
+
+                displayInfo = new DisplayInfo;
+
+            #endif */
+
+            //game->physics->GetWorld().SetContactListener(&game->physics->collisions);
+
+        #endif
+
         //clear entities if applicable (after first initialization)
 
         if (game->currentScene) 
@@ -152,33 +172,8 @@ void Game::StartScene(const std::string& key, bool loadMap)
         //assign / load current scene
         
         game->currentScene = *it;
-  
+
         Application::eventPool = new EventPool(THREAD_COUNT);
-
-        #if STANDALONE == 1
-
-            //refresh physics
-
-            game->physics->ClearBodies();  
-
-            #if DEVELOPMENT == 1 
-
-                delete game->physics->debug;
-                game->physics->debug = nullptr;
-
-                delete displayInfo;
-                displayInfo = nullptr;
-
-                game->physics->debug = new DebugDraw;
-                game->physics->GetWorld().SetDebugDraw(game->physics->debug);
-
-                displayInfo = new DisplayInfo;
-
-            #endif
-
-            game->physics->GetWorld().SetContactListener(&game->physics->collisions);
-
-        #endif
 
         if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {
             game->currentScene->Preload();
@@ -193,6 +188,12 @@ void Game::StartScene(const std::string& key, bool loadMap)
         game->currentScene->Run(loadMap);  
 
         game->m_gameState = true;
+
+        //clear behaviors from other scenes
+
+        for (const auto& scene : game->scenes)
+            if (scene != game->currentScene) 
+                scene->behaviors.clear();
 
         const std::string state = loadMap ? " started" : " restarted.";
 
@@ -272,9 +273,6 @@ void Game::UpdateFrame()
 
     inputs->ProcessInput(Window::s_instance);
 
-    if (!currentScene->IsPaused())
-        physics->Update();
-
     //entity render queue
 
     for (const auto& entity : currentScene->entities)
@@ -283,17 +281,20 @@ void Game::UpdateFrame()
 
     //vignette overlay
 
-    if(currentScene->vignette) {
+/*     if(currentScene->vignette) {
         currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
         currentScene->vignette->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    }
+    } */
 
     //UI render queue
 
     for (const auto& UI : currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
             UI->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-
+    if(currentScene->vignette) {
+        currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
+        currentScene->vignette->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    }
     //depth sort
 
     std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b){ return a->depth < b->depth; });
@@ -331,12 +332,14 @@ void Game::UpdateFrame()
             else if (behavior->layer == 1)
                 behavior->Update();
         }
-    
+
+    if (!currentScene->IsPaused())
+        physics->Update();
 }  
 
 
 //-----------------------------
-std::map<std::string, Sprite> test;
+
  
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {

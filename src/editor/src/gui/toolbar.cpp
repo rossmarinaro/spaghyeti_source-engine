@@ -368,7 +368,8 @@ void editor::GUI::ShowMenu()
         //build 
 
         if (ImGui::BeginMenu("Build"))
-        {
+        { 
+
             if (ImGui::BeginMenu("type")) 
             {
                 if (Editor::platform == "WebGL")
@@ -422,8 +423,9 @@ void editor::GUI::ShowMenu()
 
             if (ImGui::BeginMenu("configurations")) 
             {
-
-                ImGui::Text(Editor::platform.c_str());
+                ImGui::Checkbox("preserve source file", &Editor::preserveSrc);
+                
+                ImGui::Text(("platform: " + Editor::platform).c_str());
 
                 ImGui::Separator();
 
