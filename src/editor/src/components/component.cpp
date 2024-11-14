@@ -17,6 +17,7 @@ Component::Component(const std::string& id, const std::string& type, const std::
 
     ID = id;
     name = "";
+    
     this->type = type;
     this->nodeType = node_type;
 
@@ -107,7 +108,7 @@ void Component::Make()
         if (!filename.size())
             return;
 
-        std::string path = Editor::projectPath + AssetManager::script_dir + "/" + filename + ".h";
+        const std::string path = Editor::projectPath + AssetManager::script_dir + "/" + filename + ".h";
 
         if (std::filesystem::exists(path)) {
             Editor::Log("Script path already exists!");
@@ -119,33 +120,35 @@ void Component::Make()
         std::string root_path = Editor::rootPath;
         std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
-        filename[0] = toupper(filename[0]);
+        std::string className(filename);
+        className[0] = toupper(className[0]);
         
-        for (int i = 0; i < filename.length(); i++) 
+        for (int i = 0; i < className.length(); i++) 
         {
-            if (filename[i] == ' ')
-                std::replace(filename.begin(), filename.end(), ' ', '_');
+            if (className[i] == ' ')
+                std::replace(className.begin(), className.end(), ' ', '_');
 
-            if (filename[i] == '_')
-                filename[i + 1] = toupper(filename[i + 1]);
+            if (className[i] == '_')
+                className[i + 1] = toupper(className[i + 1]);
         }
 
-        if (std::filesystem::exists(Editor::projectPath + AssetManager::script_dir + "/" + filename + ".h")) {
+        if (std::filesystem::exists(Editor::projectPath + AssetManager::script_dir + "/" + className + ".h")) {
             Editor::Log("Script name already exists!");
             remove(path.c_str());
             return;
         }
 
         src << "#pragma once\n\n";
-        src << "#include \"" + root_path + "/sdk/include/behaviors.h\"\n\n\n";
+        src << "#include \"" << root_path << "/sdk/include/behaviors.h\"\n\n\n";
         src << "namespace entity_behaviors {\n\n";
-        src <<  "   class " + filename + " : public Behavior {\n\n";
+        src <<  "   class " << className << " : public Behavior {\n\n";
         src <<  "       public:\n\n";
         src <<  "           //constructor, called on start\n\n";
-        src <<  "           " + filename + "(std::shared_ptr<Entity> entity):\n";
-        src <<  "            Behavior(entity->ID, typeid(" + filename + ").name())\n";
+        src <<  "           " << className << "(std::shared_ptr<Entity> entity):\n";
+        src <<  "            Behavior(entity->ID, typeid(" << filename << ").name())\n";
         src <<  "            {\n\n";
         src <<  "            }\n\n";
+        src <<  "           ~" << className << "() = default;\n";
         src <<  "           //update every frame\n\n";
         src <<  "            void Update() override {\n\n";
         src <<  "           }\n\n";
@@ -166,9 +169,9 @@ void Component::Make()
         for (const auto& node : Node::nodes)
             if (node->ID == ID) {
 
-                if (this->nodeType == "Sprite") {
+                if (nodeType == "Sprite") {
 
-                    auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(this->ID));
+                    auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(ID));
                     sn->anim++;
                 }
 
@@ -184,15 +187,15 @@ void Component::Make()
         for (const auto& node : Node::nodes)
             if (node->ID == ID) {
 
-                if (this->nodeType == "Sprite") {
+                if (nodeType == "Sprite") {
 
-                    auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(this->ID));
+                    auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(ID));
                     sn->CreateBody();
                 }
 
-                if (this->nodeType == "Tilemap") {
+                if (nodeType == "Tilemap") {
 
-                    auto tmn = std::dynamic_pointer_cast<TilemapNode>(Node::Get(this->ID));
+                    auto tmn = std::dynamic_pointer_cast<TilemapNode>(Node::Get(ID));
                     tmn->CreateBody();
 
                 }

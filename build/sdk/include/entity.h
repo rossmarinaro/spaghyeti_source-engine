@@ -90,7 +90,6 @@ class Entity {
 		Entity(const char* type, float x, float y);
         
         void Cull(const glm::vec2& targetPosition);
-        void StartFollow(float offset = 0.0f);
         void SetData(const std::string& key, const std::any& value);
 
     protected:

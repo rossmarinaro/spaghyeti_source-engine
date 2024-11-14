@@ -125,15 +125,15 @@ void EventListener::Serialize(json& data, bool newScene)
     //camera
 
     data["camera"]["vignetteVisibility"] = newScene ? 0.0f : Editor::vignetteVisibility;
-    data["camera"]["x"] = newScene ? 0.0f : Editor::game->camera->position.x;
-    data["camera"]["y"] = newScene ? 0.0f : Editor::game->camera->position.y;
+    data["camera"]["x"] = newScene ? 0.0f : Editor::game->camera->GetPosition().x;
+    data["camera"]["y"] = newScene ? 0.0f : Editor::game->camera->GetPosition().y;
     data["camera"]["width"] = newScene ? 2000.0f : Editor::worldWidth;
     data["camera"]["height"] = newScene ? 2000.0f : Editor::worldHeight;
-    data["camera"]["zoom"] = newScene ? 1.0f : Editor::game->camera->zoom; 
-    data["camera"]["color"]["x"] = newScene ? 0.5f : Editor::game->camera->backgroundColor.x;
-    data["camera"]["color"]["y"] = newScene ? 0.5f : Editor::game->camera->backgroundColor.y;
-    data["camera"]["color"]["z"] = newScene ? 0.5f : Editor::game->camera->backgroundColor.z;
-    data["camera"]["color"]["w"] = newScene ? 1.0f : Editor::game->camera->backgroundColor.w;
+    data["camera"]["zoom"] = newScene ? 1.0f : Editor::game->camera->GetZoom(); 
+    data["camera"]["color"]["x"] = newScene ? 0.5f : Editor::game->camera->GetBackgroundColor().x;
+    data["camera"]["color"]["y"] = newScene ? 0.5f : Editor::game->camera->GetBackgroundColor().y;
+    data["camera"]["color"]["z"] = newScene ? 0.5f : Editor::game->camera->GetBackgroundColor().z;
+    data["camera"]["color"]["w"] = newScene ? 1.0f : Editor::game->camera->GetBackgroundColor().w;
     data["camera"]["alpha"] = newScene ? 1.0f : GUI::s_grid->alpha;
     data["camera"]["pitch"] = newScene ? 20.0f : GUI::s_grid_quantity;
     data["camera"]["bounds"]["width"]["begin"] = newScene ? 0.0f : Editor::game->camera->currentBoundsWidthBegin;
@@ -243,13 +243,9 @@ void EventListener::Deserialize(std::ifstream& JSON)
     //camera 
 
     Editor::vignetteVisibility = data["camera"]["vignetteVisibility"];
-    Editor::game->camera->position.x = data["camera"]["x"];
-    Editor::game->camera->position.y = data["camera"]["y"];
-    Editor::game->camera->zoom = data["camera"]["zoom"];
-    Editor::game->camera->backgroundColor.x = data["camera"]["color"]["x"];
-    Editor::game->camera->backgroundColor.y = data["camera"]["color"]["y"];
-    Editor::game->camera->backgroundColor.z = data["camera"]["color"]["z"];
-    Editor::game->camera->backgroundColor.w = data["camera"]["color"]["w"]; 
+    Editor::game->camera->SetPosition({ data["camera"]["x"], data["camera"]["y"] });
+    Editor::game->camera->SetZoom(data["camera"]["zoom"]);
+    Editor::game->camera->SetBackgroundColor({ data["camera"]["color"]["x"], data["camera"]["color"]["y"], data["camera"]["color"]["z"], data["camera"]["color"]["w"] }); 
 
     Editor::game->camera->SetBounds(
         data["camera"]["bounds"]["width"]["begin"], data["camera"]["bounds"]["width"]["end"],

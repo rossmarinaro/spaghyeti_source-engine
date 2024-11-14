@@ -137,21 +137,6 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
             game->physics->ClearBodies();  
 
-            /* #if DEVELOPMENT == 1 
-
-                delete game->physics->debug;
-                game->physics->debug = nullptr;
-
-                delete displayInfo;
-                displayInfo = nullptr;
-
-                game->physics->debug = new DebugDraw;
-                game->physics->GetWorld().SetDebugDraw(game->physics->debug);
-
-                displayInfo = new DisplayInfo;
-
-            #endif */
-
             //game->physics->GetWorld().SetContactListener(&game->physics->collisions);
 
         #endif
@@ -279,22 +264,19 @@ void Game::UpdateFrame()
         if ((entity.get() && entity) && entity.get()->renderable) 
             entity->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
 
-    //vignette overlay
-
-/*     if(currentScene->vignette) {
-        currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
-        currentScene->vignette->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    } */
-
     //UI render queue
 
     for (const auto& UI : currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
             UI->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+
+    //vignette overlay
+
     if(currentScene->vignette) {
         currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
         currentScene->vignette->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     }
+
     //depth sort
 
     std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b){ return a->depth < b->depth; });
@@ -314,12 +296,6 @@ void Game::UpdateFrame()
 
     #endif
 
-    // auto inactive_behavior_it = std::find_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](auto b) { return b->active == false; });
-
-    // if (inactive_behavior_it != currentScene->behaviors.end()) {
-    //     Application::game->currentScene->behaviors.erase(inactive_behavior_it);
-    //     (*inactive_behavior_it).reset();
-    // }
 
     //update behaviors, pass game process context to subclasses
 
@@ -333,8 +309,15 @@ void Game::UpdateFrame()
                 behavior->Update();
         }
 
+    //physics
+
     if (!currentScene->IsPaused())
         physics->Update();
+
+    //camera
+ 
+    camera->Update();
+     
 }  
 
 

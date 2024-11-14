@@ -339,13 +339,13 @@ void GUI::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
         //position camera
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            Editor::game->camera->SetPosition({ Editor::game->camera->position.x + yOffset * 10, Editor::game->camera->position.y });
+            Editor::game->camera->SetPosition({ Editor::game->camera->GetPosition().x + yOffset * 10, Editor::game->camera->GetPosition().y });
         
         else 
-            Editor::game->camera->SetPosition({ Editor::game->camera->position.x, Editor::game->camera->position.y + yOffset * 10 });
+            Editor::game->camera->SetPosition({ Editor::game->camera->GetPosition().x, Editor::game->camera->GetPosition().y + yOffset * 10 });
 
         if (xOffset != 0)
-            Editor::game->camera->SetPosition({ Editor::game->camera->position.x + xOffset * 10, Editor::game->camera->position.y });
+            Editor::game->camera->SetPosition({ Editor::game->camera->GetPosition().x + xOffset * 10, Editor::game->camera->GetPosition().y });
     }
 }
 

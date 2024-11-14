@@ -13,12 +13,14 @@ void System::Renderer::Update(Camera* camera)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
  
     glClear(GL_COLOR_BUFFER_BIT);
+
+    auto bg = camera->GetBackgroundColor();
     
     glClearColor(
-        camera->backgroundColor.x * camera->backgroundColor.w,
-        camera->backgroundColor.y * camera->backgroundColor.w,
-        camera->backgroundColor.z * camera->backgroundColor.w, 
-        camera->backgroundColor.w 
+        bg.x * bg.w,
+        bg.y * bg.w,
+        bg.z * bg.w, 
+        bg.w 
     );
 
 }

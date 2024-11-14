@@ -35,7 +35,7 @@ class DisplayInfo {
 
             //camera stats
             
-            const std::string camInfo = "CAMERA: x: " + std::to_string(-context.camera->position.x) + " y: " + std::to_string(-context.camera->position.y);
+            const std::string camInfo = "CAMERA: x: " + std::to_string(-context.camera->GetPosition().x) + " y: " + std::to_string(-context.camera->GetPosition().y);
             cam_text->SetText(camInfo);
             cam_text->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
 

@@ -1,21 +1,19 @@
 #include "../../../build/sdk/include/app.h"
 
-Camera::Camera()
+Camera::Camera():
+    m_zoom(1.0f),
+    m_rotation(0.0f),
+    m_position(glm::vec2(0.0f, 0.0f)),
+    m_backgroundColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)),
+    m_target({ nullptr, { 0.0f, 0.0f } })
 {
-    rotation = 0.0f;
-    zoom = 1.0f;
-    targetX = 0.0f;
-    targetY = 0.0f;
     currentBoundsWidthBegin = 0.0f;
     currentBoundsWidthEnd = 0.0f;
     currentBoundsHeightBegin = 0.0f;
     currentBoundsHeightEnd = 0.0f;
-    position = glm::vec2(0.0f, 0.0f);
-    backgroundColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+    canFollow = true;
 
     LOG("Camera: initialized.");
-
-
 }
 
 //-------------------------------
@@ -64,12 +62,16 @@ void Camera::SetBounds(float widthBegin, float widthEnd, float heightBegin, floa
 //-------------------------------
 
 
-bool Camera::InBounds() { 
+bool Camera::InBounds() 
+{ 
 
-    return targetX > currentBoundsWidthBegin &&
-           targetX < currentBoundsWidthEnd && 
-           targetY > currentBoundsHeightBegin &&
-           targetY < currentBoundsHeightEnd;
+    if (!m_target.first)
+        return false;
+
+    return m_target.first->x > currentBoundsWidthBegin &&
+           m_target.first->x < currentBoundsWidthEnd && 
+           m_target.first->x > currentBoundsHeightBegin &&
+           m_target.first->x < currentBoundsHeightEnd;
 }
 
 
@@ -79,12 +81,23 @@ bool Camera::InBounds() {
 glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 {
     return (glm::highp_mat4)glm::ortho(
-        1.0f / zoom, width / zoom,  
-        height / zoom, 0.0f / zoom, 
+        1.0f / m_zoom, width / m_zoom,  
+        height / m_zoom, 0.0f / m_zoom, 
         -1.0f, 1.0f 
     );
 }
 
+
+//-------------------------------
+
+
+void Camera::Update() {
+
+    if (canFollow && InBounds()) {
+        m_position.x = (-m_target.first->x + m_target.second.first) / 2; 
+        m_position.y = m_target.second.second != 0.0f ? (-m_target.first->y + m_target.second.second) / 2 : 0.0f;  
+    }
+}
 
 
 

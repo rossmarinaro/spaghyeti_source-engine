@@ -117,7 +117,7 @@ void PlayerController::Update()
             star->SetDepth(10000);
             star->SetAnimation("glow", true, 20);
 
-            if ((dir && star->position.x >= this->player->position.x + 500) || (!dir && star->position.x >= this->player->position.x + 500)/* context.camera->position */)
+            if ((dir && star->position.x >= this->player->position.x + 500) || (!dir && star->position.x >= this->player->position.x + 500)/* context.camera->GetPosition */)
                 System::Game::DestroyEntity(star);
         }
 }
