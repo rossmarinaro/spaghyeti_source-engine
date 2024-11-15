@@ -68,8 +68,8 @@ void Entity::Cull(const glm::vec2& targetPosition)
 
     float width = System::Window::s_scaleWidth;
 
-    if (!context.camera->InBounds() && targetPosition.x > System::Window::s_scaleWidth)
-        width = width + (width / 2);
+   // if (!context.camera->InBounds() && targetPosition.x > System::Window::s_scaleWidth)
+     //   width = width + (width / 2);
 
     renderable = (position.x > targetPosition.x && (position.x < targetPosition.x + width) * m_scrollFactor.x) ||
                  (position.x < targetPosition.x && (position.x > targetPosition.x - width) * m_scrollFactor.x);

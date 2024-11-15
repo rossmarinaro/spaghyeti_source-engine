@@ -12,13 +12,13 @@ class DisplayInfo {
 
         inline DisplayInfo()
         {
-            fps_text = std::make_shared<Text>("FPS", 10, 0);
+            fps_text = std::make_unique<Text>("FPS", 10, 0);
             fps_text->SetScale(2.0f, 1.0f);
 
-            cam_text = std::make_shared<Text>("CAMERA", 10, 50);
+            cam_text = std::make_unique<Text>("CAMERA", 10, 50);
             cam_text->SetScale(2.0f, 1.0f);
 
-            entity_text = std::make_shared<Text>("ENTITIES", 10, 100);
+            entity_text = std::make_unique<Text>("ENTITIES", 10, 100);
             entity_text->SetScale(2.0f, 1.0f);
         }
 
@@ -48,9 +48,9 @@ class DisplayInfo {
 
     private:
         
-        std::shared_ptr<Text> fps_text;
-        std::shared_ptr<Text> cam_text;
-        std::shared_ptr<Text> entity_text;
+        std::unique_ptr<Text> fps_text;
+        std::unique_ptr<Text> cam_text;
+        std::unique_ptr<Text> entity_text;
 
 };
 

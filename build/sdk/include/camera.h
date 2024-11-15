@@ -13,8 +13,6 @@ class Camera {
               currentBoundsHeightBegin,
               currentBoundsHeightEnd;
 
-        bool canFollow;
-
         inline void Reset() 
         {
             
@@ -25,6 +23,10 @@ class Camera {
 
             m_target = { nullptr, { 0.0f, 0.0f } };
             m_rotation = 0.0f;
+        }
+
+        inline bool const IsFollow() { 
+            return m_canFollow; 
         }
 
         inline float const GetZoom() { 
@@ -64,12 +66,12 @@ class Camera {
         }
 
         inline void StartFollow(glm::vec2* position, float offsetX = 0.0f, float offsetY = 0.0f) {
-            canFollow = true;
+            m_canFollow = true;
             m_target = { position, { offsetX, offsetY } };
         }
 
         inline void StopFollow() {
-            canFollow = false;
+            m_canFollow = false;
         }
         
         bool InBounds(); 
@@ -85,6 +87,8 @@ class Camera {
     private:
     
         float m_zoom, m_rotation;
+
+        bool m_canFollow;
 
         glm::vec2 m_position;
         glm::vec4 m_backgroundColor;
