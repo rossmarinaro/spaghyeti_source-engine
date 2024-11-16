@@ -339,20 +339,20 @@ Text::~Text() {
 void Text::Render(float projWidth, float projHeight)
 {
 
-    this->SetText(this->content);
+    SetText(content);
 
     gltBeginDraw();
 
-    gltColor(this->tint.x, this->tint.y, this->tint.z, this->alpha);
+    gltColor(tint.x, tint.y, tint.z, alpha);
 
     glm::mat4 model = glm::mat4(1.0f);
  
-    model = glm::translate(model, glm::vec3(this->position.x, this->position.y + gltGetTextHeight(this->m_handle, this->scale.y), 0.0f));
-    model = glm::scale(model, glm::vec3(this->scale.x, this->scale.y, 1.0f));
+    model = glm::translate(model, glm::vec3(position.x, position.y /* + gltGetTextHeight(m_handle, scale.y) */, 0.0f));
+    model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.0f));
 
     glm::highp_mat4 mvp = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight) * model;
 
-    gltDrawText(this->m_handle, (GLfloat*)&mvp);
+    gltDrawText(m_handle, (GLfloat*)&mvp);
 
     #ifndef __EMSCRIPTEN__
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -370,7 +370,7 @@ void Text::Render(float projWidth, float projHeight)
 void Text::SetText(const std::string& content) {
 
     this->content = content;
-    gltSetText(this->m_handle, this->content.c_str());
+    gltSetText(m_handle, this->content.c_str());
 }
 
 
@@ -380,8 +380,8 @@ void Text::SetText(const std::string& content) {
 const glm::vec2 Text::GetTextDimensions() 
 {
 
-    GLfloat width = gltGetTextWidth(this->m_handle, this->scale.x),
-            height = gltGetTextHeight(this->m_handle, this->scale.y);
+    GLfloat width = gltGetTextWidth(m_handle, scale.x),
+            height = gltGetTextHeight(m_handle, scale.y);
 
     return { width, height };
 }

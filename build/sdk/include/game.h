@@ -41,7 +41,7 @@ namespace System {
 
             void Boot();
             void UpdateFrame();
-            void Flush(bool removeMap);
+            void Flush(bool removeBehaviors = true);
             void Exit();
 
             //create objects

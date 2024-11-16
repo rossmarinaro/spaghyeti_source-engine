@@ -10,7 +10,7 @@
 using namespace System;      
 
 
-void Game::Flush(bool removeMap)
+void Game::Flush(bool removeBehaviors)
 {
 
     LOG("Scene: " + currentScene->key + " stopped.");
@@ -22,16 +22,13 @@ void Game::Flush(bool removeMap)
         Application::eventPool = nullptr;
     }
 
+    if (removeBehaviors)
+        currentScene->behaviors.clear();
+
+    maps->layers.clear();
     currentScene->UI.clear();   
-
-    if (removeMap) {
-       maps->layers.clear();
-        currentScene->entities.clear();
-    }
-    
-    else 
-        currentScene->entities.erase(std::remove_if(currentScene->entities.begin(), currentScene->entities.end(), [](const auto e) { return strcmp(e->type, "tile") != 0; }), currentScene->entities.end());
-
+    currentScene->entities.clear();
+   
 }
 
 
@@ -150,7 +147,7 @@ void Game::StartScene(const std::string& key, bool loadMap)
                cachedScenes.clear();
             }
 
-            game->Flush(game->currentScene->key != key);
+            game->Flush(!loadMap);
 
         }   
 
@@ -176,9 +173,10 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
         //clear behaviors from other scenes
 
-        for (const auto& scene : game->scenes)
-            if (scene != game->currentScene) 
-                scene->behaviors.clear();
+        if (loadMap)
+            for (const auto& scene : game->scenes)
+                if (scene != game->currentScene) 
+                    scene->behaviors.clear();
 
         const std::string state = loadMap ? " started" : " restarted.";
 
@@ -202,7 +200,7 @@ void Game::Exit()
 
     m_gameState = false;
 
-    Flush(true);
+    Flush();
 
     for (auto& scene : scenes) {
         delete scene;
