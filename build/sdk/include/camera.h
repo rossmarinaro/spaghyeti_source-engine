@@ -33,6 +33,10 @@ class Camera {
             return m_zoom; 
         }
 
+        inline float* GetZoomPtr() { 
+            return &m_zoom; 
+        }
+
         inline float const GetRotation() { 
             return m_rotation; 
         }

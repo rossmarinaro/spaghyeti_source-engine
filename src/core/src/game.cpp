@@ -23,7 +23,7 @@ void Game::Flush(bool removeBehaviors)
     }
 
     if (removeBehaviors)
-        currentScene->behaviors.clear();
+       currentScene->behaviors.clear();
 
     maps->layers.clear();
     currentScene->UI.clear();   
@@ -147,7 +147,7 @@ void Game::StartScene(const std::string& key, bool loadMap)
                cachedScenes.clear();
             }
 
-            game->Flush(!loadMap);
+            game->Flush(game->currentScene->key == key);
 
         }   
 
