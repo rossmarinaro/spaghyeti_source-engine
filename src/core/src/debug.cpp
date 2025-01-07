@@ -65,7 +65,7 @@ void Points::Flush()
 	if (m_count == 0)
         return;
 
-    shader.SetMat4("vp", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * System::Application::game->camera->GetViewMatrix(glm::mat4(1.0f), glm::mat4(1.0f), System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y));
+    shader.SetMat4("vp", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y));
     shader.SetVec2f("offset", System::Application::game->camera->GetPosition());
 
     glBindVertexArray(m_vaoId);
@@ -147,8 +147,8 @@ void Lines::Flush()
 
     if (m_count == 0)
         return;     
-        
-    shader.SetMat4("vp", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * System::Application::game->camera->GetViewMatrix(glm::mat4(1.0f), glm::mat4(1.0f), System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y));
+
+    shader.SetMat4("vp", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y));
     shader.SetVec2f("offset", System::Application::game->camera->GetPosition());
 
     glBindVertexArray(m_vaoId);
@@ -225,7 +225,7 @@ void Triangles::Flush()
     if (m_count == 0)
         return;
 
-    shader.SetMat4("vp", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * System::Application::game->camera->GetViewMatrix(glm::mat4(1.0f), glm::mat4(1.0f), System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y));
+    shader.SetMat4("vp", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y));
     shader.SetVec2f("offset", System::Application::game->camera->GetPosition());
 
     glBindVertexArray(m_vaoId);

@@ -414,7 +414,7 @@ void Sprite::Render(float projWidth, float projHeight)
               proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
 
     if (IsSprite())
-        view = System::Application::game->camera->GetViewMatrix(model, view, System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().x * m_scrollFactor.y);
+        view = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y);
 
     model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 

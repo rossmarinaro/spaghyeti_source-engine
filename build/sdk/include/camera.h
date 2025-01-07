@@ -85,7 +85,7 @@ class Camera {
         void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd); 
 
         glm::highp_mat4 GetProjectionMatrix(float width, float height),
-                        GetViewMatrix(const glm::mat4& model, const glm::mat4& view, float x, float y);
+                        GetViewMatrix(float x, float y);
 
         Camera();
         ~Camera() = default;

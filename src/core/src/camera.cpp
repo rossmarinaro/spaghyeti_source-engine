@@ -90,16 +90,16 @@ glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 //------------------------------
 
 
-glm::highp_mat4 Camera::GetViewMatrix(const glm::mat4& model, const glm::mat4& view, float x, float y)
+glm::highp_mat4 Camera::GetViewMatrix(float x, float y)
 {
-
+    glm::mat4 view = glm::mat4(1.0f);
     glm::vec2 midOffset = GetPosition();
 
     view = glm::translate(view, glm::vec3(midOffset, 0.0f)); 
     view = glm::rotate(view, glm::radians(m_rotation), { 0.0f, 0.0f, 1.0f }); 
     view = glm::translate(view, glm::vec3(-midOffset, 0.0f));
 
-    view = glm::translate(model, glm::vec3(x, y, 0.0f));
+    view = glm::translate(view, glm::vec3(x, y, 0.0f));
 
     return view;
 }
