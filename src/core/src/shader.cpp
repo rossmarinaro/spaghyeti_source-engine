@@ -47,15 +47,12 @@ void Shader::InitBaseShaders()
         "out vec2 uv;\n"
 
         "uniform vec2 scale;\n"
-        "uniform vec2 offset;\n"
-        "uniform mat4 model;\n"
-        "uniform mat4 view;\n"
-        "uniform mat4 projection;\n"
-
+        "uniform mat4 mvp;\n"
+        
         "void main()\n"
         "{\n"            
             "uv = UV;\n"
-            "gl_Position = projection * model * view * vec4((vert.xy * scale) + offset.xy, 0.0, 1.0);\n" 
+            "gl_Position = mvp * vec4((vert.xy * scale), 0.0, 1.0);\n" 
         "}"; 
 
 
@@ -104,13 +101,11 @@ void Shader::InitBaseShaders()
         "layout(location = 0) in vec2 pos;\n"
         
         "uniform vec2 offset;\n"
-        "uniform mat4 model;\n"
-        "uniform mat4 view;\n"
-        "uniform mat4 projection;\n"
+        "uniform mat4 mvp;\n"
 
         "void main()\n"
         "{\n"
-            "gl_Position = projection * model * view * vec4(pos.xy + offset.xy, 0.0, 1.0);\n" 
+            "gl_Position = mvp * vec4(pos.xy + offset.xy, 0.0, 1.0);\n" 
         "}";
 
     static const char* debugGraphicShader_fragment = \
@@ -188,9 +183,7 @@ void Shader::InitBaseShaders()
             "#version 330 core\n"
         #endif
 
-        "uniform mat4 projection;\n"
-        "uniform vec2 offset;\n"
-        "uniform mat4 view;\n"
+        "uniform mat4 vp;\n"
 
         "layout(location = 0) in vec2 v_position;\n"
         "layout(location = 1) in vec4 v_color;\n"
@@ -201,7 +194,7 @@ void Shader::InitBaseShaders()
         "void main(void)\n"  
         "{\n"
         "	f_color = v_color;\n"
-        "	gl_Position = projection * view * vec4(v_position + offset.xy, 0.0f, 1.0f);\n" 
+        "	gl_Position = vp * vec4(v_position, 0.0f, 1.0f);\n" 
         "   gl_PointSize = v_size;\n"
         "}\n";
 
@@ -217,9 +210,7 @@ void Shader::InitBaseShaders()
             "#version 330 core\n"
         #endif
 
-        "uniform mat4 projection;\n"
-        "uniform vec2 offset;\n"
-        "uniform mat4 view;\n"
+        "uniform mat4 vp;\n"
 
         "layout(location = 0) in vec2 v_position;\n"
         "layout(location = 1) in vec4 v_color;\n"
@@ -229,7 +220,7 @@ void Shader::InitBaseShaders()
         "void main(void)\n"
         "{\n"
         "	f_color = v_color;\n"
-        "	gl_Position = projection * view * vec4(v_position + offset.xy, 0.0f, 1.0f);\n"  
+        "	gl_Position =  vp * vec4(v_position, 0.0f, 1.0f);\n"  
         "}\n";
 
 
@@ -265,17 +256,14 @@ void Shader::InitBaseShaders()
         "layout (location = 0) in vec2 vert;\n"
         "layout (location = 1) in vec4 UV;\n"
 
-        "uniform vec2 offset;\n"
-        "uniform mat4 model;\n"
-        "uniform mat4 view;\n"
-        "uniform mat4 projection;\n"
+        "uniform mat4 vp;\n"
 
         "out vec4 uv;\n"
 
         "void main()\n"
         "{\n"           
             "uv = UV;\n"
-            "gl_Position = projection * model * view * vec4(vert.xy + offset.xy, 0.0, 1.0);\n"
+            "gl_Position = vp * vec4(vert.xy, 0.0, 1.0);\n"
         "}\n"; 
 
 

@@ -196,18 +196,18 @@ class Sprite : public Entity {
 		std::vector<std::pair<b2Body*, glm::vec4>> bodies; 
 
 		inline int GetBodyDataType() const { 
-			for (const auto &body : this->bodies)
+			for (const auto &body : bodies)
 				return body.first->GetFixtureList()->GetBody()->GetUserData().pointer; 
 			return 0;
 		}
 
-		inline void SetFrame(int frame) { this->currentFrame = frame; }
-		inline void SetAnimation(const char* key, bool yoyo = false, int rate = 2) { this->m_currentAnim = { key, { yoyo, rate } }; }
-		inline void StopAnimation() { this->m_currentAnim = {}; }
-		inline void SetContact(bool isContact) { this->m_contacting = isContact; }
-		inline bool IsContacting() { return this->m_contacting; }
-		inline bool IsSpritesheet() { return this->m_isSpritesheet; } 
-		inline bool IsAnimComplete() { return this->m_animComplete; }
+		inline void SetFrame(int frame) { currentFrame = frame; }
+		inline void SetAnimation(const char* key, bool yoyo = false, int rate = 2) { m_currentAnim = { key, { yoyo, rate } }; }
+		inline void StopAnimation() { m_currentAnim = {}; }
+		inline void SetContact(bool isContact) { m_contacting = isContact; }
+		inline bool IsContacting() { return m_contacting; }
+		inline bool IsSpritesheet() { return m_isSpritesheet; } 
+		inline bool IsAnimComplete() { return m_animComplete; }
 
 		void ReadSpritesheetData();
 		void RemoveBodies();

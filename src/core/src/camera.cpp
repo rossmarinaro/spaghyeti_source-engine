@@ -87,6 +87,23 @@ glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
     );
 }
 
+//------------------------------
+
+
+glm::highp_mat4 Camera::GetViewMatrix(const glm::mat4& model, const glm::mat4& view, float x, float y)
+{
+
+    glm::vec2 midOffset = GetPosition();
+
+    view = glm::translate(view, glm::vec3(midOffset, 0.0f)); 
+    view = glm::rotate(view, glm::radians(m_rotation), { 0.0f, 0.0f, 1.0f }); 
+    view = glm::translate(view, glm::vec3(-midOffset, 0.0f));
+
+    view = glm::translate(model, glm::vec3(x, y, 0.0f));
+
+    return view;
+}
+
 
 //-------------------------------
 
@@ -94,7 +111,7 @@ glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 void Camera::Update() {
 
     if (m_canFollow && InBounds()) {
-        m_position.x = (-m_target.first->x + m_target.second.first) / 2; 
+        m_position.x = (-m_target.first->x + m_target.second.first); 
         m_position.y = m_target.second.second != 0.0f ? (-m_target.first->y + m_target.second.second) / 2 : 0.0f;  
     }
 }

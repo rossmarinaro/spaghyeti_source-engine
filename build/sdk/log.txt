@@ -1,0 +1,242 @@
+PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌
+Window: initialized.
+GLFW: GL Version - 4.0.0 - Build 20.19.15.5126
+Shader: Loading sprite from string.
+Shader: sprite of type vertex compiled successfully.
+Shader: sprite of type fragment compiled successfully.
+Shader: sprite of type program linked successfully.
+Shader: Loading graphics from string.
+Shader: graphics of type vertex compiled successfully.
+Shader: graphics of type fragment compiled successfully.
+Shader: graphics of type program linked successfully.
+Shader: Loading Points from string.
+Shader: Points of type vertex compiled successfully.
+Shader: Points of type fragment compiled successfully.
+Shader: Points of type program linked successfully.
+Shader: Loading Lines from string.
+Shader: Lines of type vertex compiled successfully.
+Shader: Lines of type fragment compiled successfully.
+Shader: Lines of type program linked successfully.
+Shader: Loading Triangles from string.
+Shader: Triangles of type vertex compiled successfully.
+Shader: Triangles of type fragment compiled successfully.
+Shader: Triangles of type program linked successfully.
+Shader: Base shaders initialized.
+Game: TheFunkyAdventuresOfSwankyVelvet initializing.
+Text: initialized.
+Physics: bodies cleared.
+Events: thread pool started.
+Texture2D: base loaded.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Texture2D: image file loading failed.
+Resources: assets registered.
+Entity: quad created.
+Sprite: sky2.png Created.
+Sprite: hooker.png Created.
+Text:  created.
+Text: score: created.
+Text:  created.
+Entity: quad created.
+Text: QUIT created.
+Text: RETURN created.
+Entity: quad created.
+Entity: quad created.
+Entity: quad created.
+Entity: quad created.
+Sprite: UI heart.png created.
+Sprite: UI heart.png created.
+Sprite: UI heart.png created.
+Sprite: UI sv_icon.png created.
+Sprite: UI ui_box.png created.
+Entity: quad created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: box.png Created.
+Sprite: items.png Created.
+Sprite: box.png Created.
+Sprite: items.png Created.
+Sprite: box.png Created.
+Sprite: items.png Created.
+Sprite: box.png Created.
+Sprite: items.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: coin.png Created.
+Sprite: hooligan.png Created.
+Sprite: hooligan.png Created.
+Sprite: hooligan.png Created.
+Sprite: jogger.png Created.
+Sprite: pitbull.png Created.
+Sprite: hoodlum.png Created.
+Sprite: pidgeon.png Created.
+Sprite: player.png Created.
+Sprite: town2_background0.png Created.
+Sprite: town2_background1.png Created.
+Sprite: town2_background2.png Created.
+Sprite: town2_background3.png Created.
+Sprite: town2_foreground1.png Created.
+Sprite: town2_background4.png Created.
+Sprite: background2.png Created.
+Sprite: town2_foreground.png Created.
+Sprite: town2_foreground0.png Created.
+Sprite: town2_foreground2.png Created.
+Sprite: town2_background1.png Created.
+Sprite: town2_background3.png Created.
+Sprite: town2_background3.png Created.
+Sprite: town2_background3.png Created.
+Sprite: town2_background3.png Created.
+Sprite: town2_background3.png Created.
+Sprite: town2_background3.png Created.
+Sprite: town2_foreground1.png Created.
+Sprite: town2_foreground1.png Created.
+Sprite: town2_foreground1.png Created.
+Sprite: town2_foreground1.png Created.
+Sprite: car.png Created.
+Sprite: car.png Created.
+Sprite: car.png Created.
+Sprite: car.png Created.
+Sprite: car.png Created.
+Sprite: hoodlum.png Created.
+Sprite: jogger.png Created.
+Scene: TOWN2 started
+Physics Debug: graphic debug primitives initialized.
+Text: FPS created.
+Text: CAMERA created.
+Text: ENTITIES created.
+Scene: TOWN2 stopped.
+Events: thread pool stopped.
+Text: score: 0 destroyed.
+Text:  destroyed.
+Text: x3 destroyed.
+Sprite: heart.png Destroyed.
+Sprite: heart.png Destroyed.
+Sprite: heart.png Destroyed.
+Sprite: sv_icon.png Destroyed.
+Sprite: ui_box.png Destroyed.
+Sprite: sky2.png Destroyed.
+Sprite: town2_background0.png Destroyed.
+Sprite: background2.png Destroyed.
+Sprite: town2_background2.png Destroyed.
+Sprite: town2_background1.png Destroyed.
+Sprite: town2_background1.png Destroyed.
+Sprite: town2_background3.png Destroyed.
+Sprite: town2_background3.png Destroyed.
+Sprite: town2_background3.png Destroyed.
+Sprite: town2_background3.png Destroyed.
+Sprite: town2_background3.png Destroyed.
+Sprite: town2_background3.png Destroyed.
+Sprite: town2_background3.png Destroyed.
+Sprite: town2_background4.png Destroyed.
+Sprite: town2_foreground1.png Destroyed.
+Sprite: town2_foreground1.png Destroyed.
+Sprite: town2_foreground1.png Destroyed.
+Sprite: town2_foreground1.png Destroyed.
+Sprite: town2_foreground1.png Destroyed.
+Sprite: town2_foreground0.png Destroyed.
+Sprite: town2_foreground.png Destroyed.
+Sprite: items.png Destroyed.
+Sprite: items.png Destroyed.
+Sprite: items.png Destroyed.
+Sprite: items.png Destroyed.
+Sprite: player.png Destroyed.
+Sprite: pidgeon.png Destroyed.
+Sprite: hooker.png Destroyed.
+Sprite: car.png Destroyed.
+Sprite: car.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: car.png Destroyed.
+Sprite: box.png Destroyed.
+Sprite: box.png Destroyed.
+Sprite: box.png Destroyed.
+Sprite: box.png Destroyed.
+Sprite: town2_foreground2.png Destroyed.
+Sprite: car.png Destroyed.
+Sprite: car.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: hoodlum.png Destroyed.
+Sprite: hooligan.png Destroyed.
+Sprite: hoodlum.png Destroyed.
+Sprite: hooligan.png Destroyed.
+Sprite: hooligan.png Destroyed.
+Sprite: coin.png Destroyed.
+Sprite: jogger.png Destroyed.
+Sprite: jogger.png Destroyed.
+Sprite: pitbull.png Destroyed.
+Text: RETURN destroyed.
+Text: QUIT destroyed.
+Text: uninitialized.
+Physics Debug: graphic debug primitives destroyed.
+Text: ENTITIES destroyed.
+Text: CAMERA destroyed.
+Text: FPS destroyed.
+Game: exited.
+Resources: assets cleared.
+Application terminated successfully. 👌

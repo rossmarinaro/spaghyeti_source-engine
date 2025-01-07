@@ -1,478 +1,420 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Tue Nov 19 14:03:32 2024
-IMGui Version: 1 @ Tue Nov 19 14:03:33 2024
-GUI launched. @ Tue Nov 19 14:03:33 2024
-Workspace reset. @ Tue Nov 19 14:03:37 2024
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Tue Jan 07 14:00:53 2025
+IMGui Version: 1 @ Tue Jan 07 14:00:53 2025
+GUI launched. @ Tue Jan 07 14:00:53 2025
+Workspace reset. @ Tue Jan 07 14:00:56 2025
 Project TheFunkyAdventuresOfSwankyVelvet opened.
-Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Tue Nov 19 14:03:38 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:38 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:38 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:38 2024
-Empty node Untitled created. @ Tue Nov 19 14:03:38 2024
-Text node Untitled created. @ Tue Nov 19 14:03:38 2024
-Group node Untitled created. @ Tue Nov 19 14:03:38 2024
-Text node Untitled created. @ Tue Nov 19 14:03:38 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:38 2024
-Project saved: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\menu.spaghyeti @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\.foreground2.png-autosave.kra to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\.foreground2.png-autosave.kra @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background0.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background0.png @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background1.png @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background2.png @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background3.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background3.png @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background4.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background4.png @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background5.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background5.png @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\bar-venue-good.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\bar-venue-good.png @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\box.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\box.png @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\car.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\car.png @ Tue Nov 19 14:03:48 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\cave.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\coin.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\coin.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\dialogue window rectangle.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\dialogue window rectangle.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\disco ball.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\disco ball.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\fade.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\fade.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\fire.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\fire.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground0.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground0.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground1.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground2.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground3.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground3.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground4.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground4.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground5.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground5.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\grunt.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\grunt.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\heart.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\heart.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\hoodlum.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hoodlum.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\hooker.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hooker.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\hooligan.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hooligan.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\items.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\items.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\jogger.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\jogger.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\menu.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\menu.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\miner1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\miner1.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\mountains.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\mountains.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\pidgeon.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pidgeon.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\pidgeon_poo.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pidgeon_poo.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\pitbull.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pitbull.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\platformer.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\platformer.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\player.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\player.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\rat.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\rat.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\robber.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\robber.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\sky1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\sky1.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\sky2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\sky2.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\star.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\star.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\sv.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\sv.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\sv_icon.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\sv_icon.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\title.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\title.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background0.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background0.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background1.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background2.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background3.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background3.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background4.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background4.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_foreground.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_foreground0.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground0.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_foreground1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground1.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_foreground2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground2.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\trippy.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\ui_box.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\ui_box.png @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\boing.ogg to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\boing.ogg @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\error.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\error.flac @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\fire_sound.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\fire_sound.flac @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\music.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\music.flac @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\ring.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\ring.flac @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\swipe.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\swipe.flac @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\swipe.ogg to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\swipe.ogg @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\box.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\box.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\car.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\car.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave_background.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave_background.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave_background2.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave_background2.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave_background3.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave_background3.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave_ground.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave_ground.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\coin.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\coin.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\hoodlum.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hoodlum.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\hooker.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hooker.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\hooligan.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hooligan.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\items.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\items.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\jogger.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\jogger.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\pidgeon.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pidgeon.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\pidgeon_poo.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pidgeon_poo.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\pitbull.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pitbull.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\player.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\player.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\rat.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\rat.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\robber.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\robber.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\star.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\star.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_bounds.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_bounds.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_foreground1.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground1.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_foreground2.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground2.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_foreground3.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground3.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_mountains.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_mountains.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_platforms.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_platforms.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_bounds.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_bounds.json @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_foreground0.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_foreground0.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_foreground2.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_foreground2.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_foreground3.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_foreground3.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_mountains.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_mountains.csv @ Tue Nov 19 14:03:49 2024
-copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_platforms.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_platforms.csv @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/damage/damage.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\damage @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/damage/damage.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\damage.frag @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/image.vert to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\image.vert @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/tintshift/tintshift.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\tintshift @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/tintshift/tintshift.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\tintshift.frag @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy.frag @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.vert to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy.vert @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy2/trippy2.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy2 @ Tue Nov 19 14:03:49 2024
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy2/trippy2.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy2.frag @ Tue Nov 19 14:03:49 2024
-Text node Untitled created. @ Tue Nov 19 14:03:49 2024
-Scene parsed. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Empty node Untitled created. @ Tue Nov 19 14:03:49 2024
-Text node Untitled created. @ Tue Nov 19 14:03:49 2024
-Group node Untitled created. @ Tue Nov 19 14:03:49 2024
-Text node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Scene parsed. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Empty node Untitled created. @ Tue Nov 19 14:03:49 2024
-Text node Untitled created. @ Tue Nov 19 14:03:49 2024
-Group node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:49 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Group node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Group node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Group node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Tilemap node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Scene parsed. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Empty node Untitled created. @ Tue Nov 19 14:03:50 2024
-Text node Untitled created. @ Tue Nov 19 14:03:50 2024
-Group node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:50 2024
-Group node Untitled created. @ Tue Nov 19 14:03:50 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Group node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Group node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Tilemap node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Group node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Empty node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Sprite node Untitled created. @ Tue Nov 19 14:03:51 2024
-Scene parsed. @ Tue Nov 19 14:03:51 2024
-Text node GAME OVER deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node sv deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node background deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node glow deleted. @ Tue Nov 19 14:03:51 2024
-Empty node manager deleted. @ Tue Nov 19 14:03:51 2024
-Text node start deleted. @ Tue Nov 19 14:03:51 2024
-Group node title deleted. @ Tue Nov 19 14:03:51 2024
-Text node author deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node text deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node sky deleted. @ Tue Nov 19 14:03:51 2024
-Empty node manager deleted. @ Tue Nov 19 14:03:51 2024
-Text node score deleted. @ Tue Nov 19 14:03:51 2024
-Group node items deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_0 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_5 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_6 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_7 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_8 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_9 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_10 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_11 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box_14 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box_14_15 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box_14_15_16 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_17 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box_14_15_16_38 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box_14_15_16_39 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box_14_15_16_39_40 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_42 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_43 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_44 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_45 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_46 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_47 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_48 deleted. @ Tue Nov 19 14:03:51 2024
-Group node enemies deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hooligan deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hooligan_2 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hoodlum deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pidgeon deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pidgeon_6 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pidgeon_6_7 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pidgeon_6_7_8 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pidgeon_6_7_8_9 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node jogger deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node jogger_11 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node jogger_11_12 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pitbull deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pitbull_14 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hoodlum_15 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pitbull_14_16 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pitbull_14_16_17 deleted. @ Tue Nov 19 14:03:51 2024
-Group node player deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node player deleted. @ Tue Nov 19 14:03:51 2024
-Group node map deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node town_mountains deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node town_background0 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node town_background1 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node town_background2 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node town_background3 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node town_background4 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node town_background5 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node houses front 1 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node map_fence deleted. @ Tue Nov 19 14:03:51 2024
-Tilemap node bodies deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node foreground deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node foreground2 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node houses front 2 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node sidewalk deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node grass front deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node sky deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hooker deleted. @ Tue Nov 19 14:03:51 2024
-Empty node manager deleted. @ Tue Nov 19 14:03:51 2024
-Text node score deleted. @ Tue Nov 19 14:03:51 2024
-Group node items deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_0 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_5 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_6 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_7 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_8 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_9 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_10 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_11 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box_14 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box_14_15 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node box_14_15_16 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_17 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30 deleted. @ Tue Nov 19 14:03:51 2024
-Group node enemies deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hooligan deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hooligan_2 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hooligan_2_3 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node jogger deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pitbull deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hoodlum deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pidgeon deleted. @ Tue Nov 19 14:03:51 2024
-Group node player deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node player deleted. @ Tue Nov 19 14:03:51 2024
-Group node map deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node town2_background0 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node buildings blk 1 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node background_bridge deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node building gray 1 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node buildings front 1 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node town2_background4 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node background_trees deleted. @ Tue Nov 19 14:03:51 2024
-Tilemap node bodies deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node foreground deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pavement deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node pavement front deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node buildings blk 2 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node building gray 2 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node building gray 3 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node building gray 4 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node building gray 5 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node building gray 6 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node building gray 7 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node buildings front 2 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node buildings front 3 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node buildings front 4 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node buildings front 5 deleted. @ Tue Nov 19 14:03:51 2024
-Group node boss deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node boss car deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node boss wheel1 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node boss wheel2 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node boss thug deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node boss thug arm deleted. @ Tue Nov 19 14:03:51 2024
-Empty node manager deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node hoodlum1 deleted. @ Tue Nov 19 14:03:51 2024
-Sprite node jogger1 deleted. @ Tue Nov 19 14:03:51 2024
-Project TheFunkyAdventuresOfSwankyVelvet built successfully. @ Tue Nov 19 14:05:01 2024
-Text node author deleted. @ Tue Nov 19 14:05:03 2024
-Sprite node text deleted. @ Tue Nov 19 14:05:03 2024
-Sprite node sv deleted. @ Tue Nov 19 14:05:03 2024
-Sprite node background deleted. @ Tue Nov 19 14:05:03 2024
-Sprite node glow deleted. @ Tue Nov 19 14:05:03 2024
-Empty node manager deleted. @ Tue Nov 19 14:05:03 2024
-Text node start deleted. @ Tue Nov 19 14:05:03 2024
-Group node title deleted. @ Tue Nov 19 14:05:03 2024
-GUI exited @ Tue Nov 19 14:05:03 2024
-Editor closed. @ Tue Nov 19 14:05:03 2024
+Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Empty node Untitled created. @ Tue Jan 07 14:00:58 2025
+Text node Untitled created. @ Tue Jan 07 14:00:58 2025
+Group node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Group node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Group node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Group node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Tilemap node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Group node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Empty node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+Sprite node Untitled created. @ Tue Jan 07 14:00:58 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\.foreground2.png-autosave.kra to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\.foreground2.png-autosave.kra @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background0.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background0.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background1.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background2.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background3.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background3.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background4.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background4.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\background5.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\background5.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\bar-venue-good.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\bar-venue-good.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\box.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\box.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\car.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\car.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\cave.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\coin.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\coin.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\dialogue window rectangle.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\dialogue window rectangle.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\disco ball.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\disco ball.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\fade.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\fade.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\fire.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\fire.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground0.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground0.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground1.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground2.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground3.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground3.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground4.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground4.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\foreground5.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\foreground5.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\grunt.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\grunt.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\heart.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\heart.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\hoodlum.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hoodlum.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\hooker.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hooker.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\hooligan.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hooligan.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\items.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\items.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\jogger.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\jogger.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\menu.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\menu.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\miner1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\miner1.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\mountains.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\mountains.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\pidgeon.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pidgeon.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\pidgeon_poo.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pidgeon_poo.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\pitbull.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pitbull.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\platformer.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\platformer.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\player.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\player.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\rat.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\rat.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\robber.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\robber.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\sky1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\sky1.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\sky2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\sky2.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\star.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\star.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\sv.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\sv.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\sv_icon.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\sv_icon.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\title.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\title.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background0.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background0.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background1.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background2.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background3.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background3.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_background4.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_background4.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_foreground.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_foreground0.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground0.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_foreground1.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground1.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\town2_foreground2.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground2.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\trippy.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\images\ui_box.png to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\ui_box.png @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\boing.ogg to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\boing.ogg @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\error.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\error.flac @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\fire_sound.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\fire_sound.flac @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\music.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\music.flac @ Tue Jan 07 14:01:02 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\ring.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\ring.flac @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\swipe.flac to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\swipe.flac @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\audio\swipe.ogg to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\swipe.ogg @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\box.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\box.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\car.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\car.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave_background.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave_background.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave_background2.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave_background2.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave_background3.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave_background3.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\cave_ground.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\cave_ground.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\coin.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\coin.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\hoodlum.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hoodlum.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\hooker.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hooker.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\hooligan.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\hooligan.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\items.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\items.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\jogger.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\jogger.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\pidgeon.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pidgeon.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\pidgeon_poo.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pidgeon_poo.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\pitbull.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\pitbull.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\player.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\player.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\rat.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\rat.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\robber.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\robber.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\star.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\star.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_bounds.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_bounds.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_foreground1.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground1.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_foreground2.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground2.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_foreground3.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_foreground3.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_mountains.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_mountains.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town2_platforms.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town2_platforms.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_bounds.json to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_bounds.json @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_foreground0.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_foreground0.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_foreground2.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_foreground2.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_foreground3.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_foreground3.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_mountains.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_mountains.csv @ Tue Jan 07 14:01:03 2025
+copying: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\resources\assets\data\town_platforms.csv to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\town_platforms.csv @ Tue Jan 07 14:01:03 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/damage/damage.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\damage @ Tue Jan 07 14:01:04 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/damage/damage.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\damage.frag @ Tue Jan 07 14:01:04 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/image.vert to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\image.vert @ Tue Jan 07 14:01:04 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/tintshift/tintshift.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\tintshift @ Tue Jan 07 14:01:04 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/tintshift/tintshift.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\tintshift.frag @ Tue Jan 07 14:01:04 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy @ Tue Jan 07 14:01:04 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy.frag @ Tue Jan 07 14:01:05 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.vert to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy.vert @ Tue Jan 07 14:01:05 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy2/trippy2.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy2 @ Tue Jan 07 14:01:05 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy2/trippy2.frag to: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\build\assets\trippy2.frag @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Empty node Untitled created. @ Tue Jan 07 14:01:05 2025
+Text node Untitled created. @ Tue Jan 07 14:01:05 2025
+Group node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Group node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:05 2025
+Group node Untitled created. @ Tue Jan 07 14:01:05 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Group node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Tilemap node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Group node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Empty node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Sprite node Untitled created. @ Tue Jan 07 14:01:06 2025
+Scene parsed. @ Tue Jan 07 14:01:06 2025
+Sprite node sky deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node hooker deleted. @ Tue Jan 07 14:01:06 2025
+Empty node manager deleted. @ Tue Jan 07 14:01:06 2025
+Text node score deleted. @ Tue Jan 07 14:01:06 2025
+Group node items deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_0 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_5 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_6 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_7 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_8 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_9 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_10 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_11 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node box deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node box_14 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node box_14_15 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node box_14_15_16 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_17 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21_22 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21_22_23 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30 deleted. @ Tue Jan 07 14:01:06 2025
+Group node enemies deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node hooligan deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node hooligan_2 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node hooligan_2_3 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node jogger deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node pitbull deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node hoodlum deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node pidgeon deleted. @ Tue Jan 07 14:01:06 2025
+Group node player deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node player deleted. @ Tue Jan 07 14:01:06 2025
+Group node map deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node town2_background0 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node buildings blk 1 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node background_bridge deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node building gray 1 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node buildings front 1 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node town2_background4 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node background_trees deleted. @ Tue Jan 07 14:01:06 2025
+Tilemap node bodies deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node foreground deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node pavement deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node pavement front deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node buildings blk 2 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node building gray 2 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node building gray 3 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node building gray 4 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node building gray 5 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node building gray 6 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node building gray 7 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node buildings front 2 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node buildings front 3 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node buildings front 4 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node buildings front 5 deleted. @ Tue Jan 07 14:01:06 2025
+Group node boss deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node boss car deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node boss wheel1 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node boss wheel2 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node boss thug deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node boss thug arm deleted. @ Tue Jan 07 14:01:06 2025
+Empty node manager deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node hoodlum1 deleted. @ Tue Jan 07 14:01:06 2025
+Sprite node jogger1 deleted. @ Tue Jan 07 14:01:06 2025
+Project TheFunkyAdventuresOfSwankyVelvet built successfully. @ Tue Jan 07 14:01:50 2025
+Sprite node coin deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_0 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_5 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_6 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_7 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_8 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_9 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_10 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_11 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node box deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node box_14 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node box_14_15 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node box_14_15_16 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_17 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21_22 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21_22_23 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node hooligan deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node hooligan_2 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node hooligan_2_3 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node jogger deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node pitbull deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node hoodlum deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node pidgeon deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node player deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node town2_background0 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node buildings blk 1 deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node background_bridge deleted. @ Tue Jan 07 14:01:52 2025
+Sprite node building gray 1 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node buildings front 1 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node town2_background4 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node background_trees deleted. @ Tue Jan 07 14:01:53 2025
+Tilemap node bodies deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node foreground deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node pavement deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node pavement front deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node buildings blk 2 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node building gray 2 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node building gray 3 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node building gray 4 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node building gray 5 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node building gray 6 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node building gray 7 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node buildings front 2 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node buildings front 3 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node buildings front 4 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node buildings front 5 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node boss car deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node boss wheel1 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node boss wheel2 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node boss thug deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node boss thug arm deleted. @ Tue Jan 07 14:01:53 2025
+Empty node manager deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node hoodlum1 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node jogger1 deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node sky deleted. @ Tue Jan 07 14:01:53 2025
+Sprite node hooker deleted. @ Tue Jan 07 14:01:53 2025
+Empty node manager deleted. @ Tue Jan 07 14:01:53 2025
+Text node score deleted. @ Tue Jan 07 14:01:53 2025
+Group node items deleted. @ Tue Jan 07 14:01:53 2025
+Group node enemies deleted. @ Tue Jan 07 14:01:53 2025
+Group node player deleted. @ Tue Jan 07 14:01:53 2025
+Group node map deleted. @ Tue Jan 07 14:01:53 2025
+Group node boss deleted. @ Tue Jan 07 14:01:53 2025
+GUI exited @ Tue Jan 07 14:01:53 2025
+Editor closed. @ Tue Jan 07 14:01:53 2025

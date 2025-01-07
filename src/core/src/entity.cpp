@@ -129,8 +129,11 @@ void Geometry::Render(float projWidth, float projHeight)
         shader.SetMat4("model", model);  
         shader.SetFloat("alphaVal", alpha);
         shader.SetVec2f("offset", isStatic ? glm::vec2(0.0f) : System::Application::game->camera->GetPosition());
-        shader.SetMat4("view", isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y, 0.0f)));
-        shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight));
+
+        glm::mat4 proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight),
+                  view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y, 0.0f));
+
+        shader.SetMat4("mvp", proj * view * model);
 
         texture.Update(position, false, false, m_drawStyle, m_thickness); 
 
@@ -406,17 +409,19 @@ void Sprite::Render(float projWidth, float projHeight)
 
     //sprite model transformations
 
-    glm::mat4 model = glm::mat4(1.0f);       
-  
-    model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x, 0.5f * texture.FrameHeight + position.y, 0.0f }); 
-    
-    //apply scaling to sprites that have bodies
-    
-    if (bodies.size())
-        model = glm::scale(model, glm::vec3(scale, 1.0f));   
+    glm::mat4 model = glm::mat4(1.0f), 
+              view = glm::mat4(1.0f), 
+              proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
 
+    if (IsSprite())
+        view = System::Application::game->camera->GetViewMatrix(model, view, System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().x * m_scrollFactor.y);
+
+    model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x, -0.5f * texture.FrameHeight - position.y, 0.0f });
+    model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
+
+    if (bodies.size())
+        model = glm::scale(model, glm::vec3(scale, 1.0f));
 
     //update shaders and textures 
 
@@ -443,19 +448,8 @@ void Sprite::Render(float projWidth, float projHeight)
             
             shader.SetFloat("alphaVal", alpha); 
             shader.SetVec3f("tint", tint);
-            shader.SetMat4("model", model);
 
-            if (IsSprite()) {
-                shader.SetVec2f("offset", glm::vec2(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y));
-                shader.SetMat4("view", glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y, 0.0f)));
-            }
-
-            else {
-                shader.SetVec2f("offset", glm::vec2(0.0f));
-                shader.SetMat4("view", glm::mat4(1.0f));
-            }
-
-            shader.SetMat4("projection", System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight));
+            shader.SetMat4("mvp", proj * view * model);
 
             int fill = 1;
 
