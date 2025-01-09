@@ -100,12 +100,11 @@ void Shader::InitBaseShaders()
 
         "layout(location = 0) in vec2 pos;\n"
         
-        "uniform vec2 offset;\n"
         "uniform mat4 mvp;\n"
 
         "void main()\n"
         "{\n"
-            "gl_Position = mvp * vec4(pos.xy + offset.xy, 0.0, 1.0);\n" 
+            "gl_Position = mvp * vec4(pos.xy, 0.0, 1.0);\n" 
         "}";
 
     static const char* debugGraphicShader_fragment = \

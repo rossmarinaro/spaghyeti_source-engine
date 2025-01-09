@@ -22,7 +22,7 @@ class Time {
         inline float GetMilliseconds() const { return this->m_now * 1000; }
         
         static void delayedCall(int milliseconds, std::function<void()>&& fn_ptr);
-        static void setInterval(int milliseconds, std::function<void()>&& fn_ptr);
+        static void setInterval(int milliseconds, std::function<void()>&& fn_ptr, int timesRemaining = -1);
 
         static void Update(double t);
         //static void RunClock(int milliseconds);

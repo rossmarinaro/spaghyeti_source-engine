@@ -72,14 +72,12 @@ void Component::Make()
         vert_src << "layout (location = 0) in vec2 vert;\n";
         vert_src << "layout (location = 1) in vec2 UV;\n\n";
         vert_src << "out vec2 uv;\n\n";
-        vert_src << "uniform mat4 model;\n";
-        vert_src << "uniform mat4 view;\n";
-        vert_src << "uniform mat4 projection;\n";
+        vert_src << "uniform mat4 mvp;\n";
         vert_src << "uniform vec2 offset;\n\n";
         vert_src << "void main()\n";
         vert_src << "{\n";
         vert_src << "   uv = UV;\n";
-        vert_src << "   gl_Position = projection * model * view * vec4(vert.xy + offset.xy, 0.0, 1.0);\n";
+        vert_src << "   gl_Position = mvp * vec4(vert.xy + offset.xy, 0.0, 1.0);\n";
         vert_src << "};";
 
         frag_src << "#version 330 core\n\n";

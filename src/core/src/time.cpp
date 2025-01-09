@@ -80,18 +80,25 @@ void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
 //-------------- recursive interval timeout
 
 
-void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr)
+void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr, int timesRemaining)
 {
 
     System::Application::eventPool->Enqueue([=] { 
 
-        while(System::Application::eventPool->active.load()) 
+        int times = timesRemaining;
+
+        while(System::Application::eventPool->active.load() && times != 0) 
         { 
             if (System::Application::eventPool->active.load())
                 std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 
-            if (System::Application::eventPool->active.load())
+            if (System::Application::eventPool->active.load()) 
+            {
                 fn_ptr(); 
+                
+                if (times != -1)
+                    times--;
+            }
         }
 
     }); 

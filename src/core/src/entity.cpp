@@ -128,7 +128,6 @@ void Geometry::Render(float projWidth, float projHeight)
         shader.SetVec3f("tint", tint);
         shader.SetMat4("model", model);  
         shader.SetFloat("alphaVal", alpha);
-        shader.SetVec2f("offset", isStatic ? glm::vec2(0.0f) : System::Application::game->camera->GetPosition());
 
         glm::mat4 proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight),
                   view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y, 0.0f));
@@ -410,11 +409,8 @@ void Sprite::Render(float projWidth, float projHeight)
     //sprite model transformations
 
     glm::mat4 model = glm::mat4(1.0f), 
-              view = glm::mat4(1.0f), 
+              view = !IsSprite() ? glm::mat4(1.0f) : System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y), 
               proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
-
-    if (IsSprite())
-        view = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y);
 
     model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 

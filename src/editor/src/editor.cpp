@@ -53,12 +53,10 @@ void Editor::Update()
     double xPos, yPos;
     glfwGetCursorPos(Window::s_instance, &xPos, &yPos);
 
-    glm::vec4 ndc = glm::vec4(Window::GetPixelToNDC(xPos, yPos), 1.0f, 1.0f);
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(game->camera->GetPosition().x, game->camera->GetPosition().y, 0.0f));
-    glm::mat4 localCoords = glm::inverse(game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight) * view);
-
-    glm::vec4 worldCoords(ndc.x, ndc.y, 0.0f, 1.0f); 
-    glm::vec4 resultPosition = localCoords * worldCoords;
+    glm::mat4 localCoords = glm::inverse(game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight) * game->camera->GetViewMatrix(game->camera->GetPosition().x, game->camera->GetPosition().y));
+    glm::vec4 ndc = glm::vec4(Window::GetPixelToNDC(xPos, yPos), 1.0f, 1.0f),
+              worldCoords(ndc.x, ndc.y, 0.0f, 1.0f),
+              resultPosition = localCoords * worldCoords;
 
     game->inputs->mouseX = resultPosition.x - game->camera->GetPosition().x - 50;        
     game->inputs->mouseY = resultPosition.y - game->camera->GetPosition().y;
