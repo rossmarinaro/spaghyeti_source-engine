@@ -632,7 +632,8 @@ void EventListener::BuildAndRun()
         web_makeFile << "   -sNO_DISABLE_EXCEPTION_CATCHING=" << allow_exception_catching << " \\\n";
         web_makeFile << "   -sINITIAL_MEMORY=420mb\\\n";
         //web_makeFile << "   -sMAXIMUM_MEMORY=1000mb \\\n";
-        web_makeFile << "   -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency \\\n";
+        //web_makeFile << "   -sPTHREAD_POOL_SIZE_STRICT=33 \\\n";
+        web_makeFile << "   -sPTHREAD_POOL_SIZE=33 \\\n";//web_makeFile << "   -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency \\\n";
         web_makeFile << "   -sUSE_GLFW=3 \\\n";
         web_makeFile << "   -sLEGACY_GL_EMULATION=0 \\\n";
         web_makeFile << "   -sASSERTIONS \\\n";
@@ -641,13 +642,12 @@ void EventListener::BuildAndRun()
         web_makeFile << "   -sUSE_LIBPNG=1 \\\n";
         web_makeFile << "   -sUSE_ZLIB \\\n";
         web_makeFile << "   -sASYNCIFY \\\n";
-        web_makeFile << "   -sPTHREAD_POOL_SIZE_STRICT=28 \\\n";
         web_makeFile << "   -Wl,--whole-archive \\\n";
         
         web_makeFile << "   --pre-js pre-js.js \\\n";
         web_makeFile << "   --preload-file ../build/assets \\\n";
-        web_makeFile << "   --use-preload-plugins \\\n";
-        web_makeFile << "   --shell-file template.html\n\n";
+        web_makeFile << "   --use-preload-plugins \\\n\n";
+       // web_makeFile << "   --shell-file template.html\n\n";
 
         web_makeFile << "all: $(OBJS)\n";
         web_makeFile << "\tem++ -std=c++20 $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS)\n";
@@ -755,36 +755,68 @@ void EventListener::BuildAndRun()
 
     //include shaders
 
+    const auto iterate_shader = [] (std::string path, const std::string& copiedFile) -> void
+    {
+
+        std::string line,
+                    type;
+
+        if (System::Utils::str_endsWith(path, ".vert"))
+            type = ".vert";
+
+        else if (System::Utils::str_endsWith(path, ".frag"))
+            type = ".frag";
+
+        else 
+            return;
+
+        const std::string tmp_file = System::Utils::ReplaceFrom(path, ".", "") + "_tmp" + type;
+
+        std::ifstream shaderFile(path);
+        std::ofstream out_file(tmp_file);
+
+        while (getline(shaderFile, line)) {
+
+            for (int i = 0; i < line.length(); i++) {
+                if (Editor::platform == "WebGL" && line == "#version 330 core")
+                    line = "#version 300 es";
+
+                else if (line == "#version 300 es")
+                    line = "#version 330 core";
+            }
+
+            out_file << line << "\n";
+        }
+
+        shaderFile.close();
+        out_file.close();
+
+        remove(path.c_str());
+       // rename(tmp_file.c_str(), path.c_str());
+
+        std::replace(path.begin(), path.end(), '\\', '/');
+
+        if (!std::filesystem::exists(copiedFile)) {
+            Editor::Log("copying shaders: " + path + " to: " + copiedFile);
+            std::filesystem::copy_file(path, copiedFile, options);
+        }
+        
+    };
+
     for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::shader_dir)) 
     {
 
-        std::string path = shader.path().string(),
-                    name = shader.path().filename().string(),
-                    copiedFile = assetsFolder + name;
+        std::string path = shader.path().string();
+        const std::string name = shader.path().filename().string(),
+                          copiedFile = assetsFolder + name;
 
-        auto iterate = [&] (std::string& p){
-
-            const bool shader_extensions = (System::Utils::str_endsWith(p, ".shader") || System::Utils::str_endsWith(p, ".vert") || System::Utils::str_endsWith(p, ".frag") || System::Utils::str_endsWith(p, ".glsl"));
-
-            if (shader_extensions) 
-            {
-                std::replace(p.begin(), p.end(), '\\', '/');
-
-                if (!std::filesystem::exists(copiedFile)) {
-                    Editor::Log("copying shaders: " + p + " to: " + copiedFile);
-                    std::filesystem::copy_file(p, copiedFile, options);
-                }
-            }
-        };
-
-        if (shader.is_directory()) {
-            for (const auto& folder : std::filesystem::recursive_directory_iterator(shader)) {
-                std::string p = folder.path().string();
-                iterate(p);
-            }}
-
-        else
-            iterate(path);
+        if (shader.is_directory()) 
+            for (const auto& folder : std::filesystem::recursive_directory_iterator(shader)) 
+                if (System::Utils::str_endsWith(path, ".vert") || !System::Utils::str_endsWith(path, ".frag"))
+                    iterate_shader(folder.path().string(), copiedFile);
+            
+        else if (System::Utils::str_endsWith(path, ".vert") || !System::Utils::str_endsWith(path, ".frag"))
+            iterate_shader(path, copiedFile);
     }
 
     //temp containers to track loaded configurations by key to avoid duplicate loads
@@ -834,28 +866,23 @@ void EventListener::BuildAndRun()
 
         //temp files: asset and command lists
 
-        std::ostringstream asset_queue, preload_queue, global_queue, command_queue;
+        std::ostringstream asset_queue, preload_queue, global_queue, command_queue, constructor_queue;
 
         //preload file assets
 
-        for (const auto& asset : target.second->assets)
-        {
+        for (const auto& asset : target.second->assets) {
 
-            std::string key = "\"" + asset + "\"",
-                        path = "assets\\" + asset + "\"";
-
-            std::replace(path.begin(), path.end(), '\\', '/');
+            const std::string key = "\"" + asset + "\"";
 
             //assets are copied to user project's "build" directory, and then virtually referenced from this path, hence the prefix in webgl builds
 
-            if (Editor::platform == "WebGL")
-                path = "\"build/" + path;
-
-            else
-                path = "\"" + path;
-
-            asset_queue << "  System::Resources::Manager::LoadFile(" + key + ", " + path + ");\n";
+            asset_queue << "  System::Resources::Manager::LoadFile(" + key + ", \"" + AssetManager::GetLocalBuildPath(asset) + "\");\n";
         }
+
+        //load shaders
+
+        for (const auto& shader : target.second->shaders)
+            constructor_queue << "  Shader::Load(\"" + shader.first + "\", \"" + shader.second.first + "\", \"" + shader.second.second + "\");\n";
 
         //load spritesheets (loaded data)
 
@@ -882,7 +909,7 @@ void EventListener::BuildAndRun()
                                 width = frame["frame"]["w"],
                                 height = frame["frame"]["h"];
 
-                            framesToLoad.push_back("{" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", 1, 1}");
+                            framesToLoad.emplace_back("{" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", 1, 1}");
                         }
                         
                 if (!framesToLoad.empty()) 
@@ -892,7 +919,7 @@ void EventListener::BuildAndRun()
 
                     if (std::find(loadedFrames.begin(), loadedFrames.end(), spritesheet.first) == loadedFrames.end()) {
                         preload_queue << "  System::Resources::Manager::LoadFrames(\"" + spritesheet.first + "\", {" + frame_oss.str() + "});\n";
-                        loadedFrames.push_back(spritesheet.first);
+                        loadedFrames.emplace_back(spritesheet.first);
                     }
                 }
                 
@@ -977,7 +1004,7 @@ void EventListener::BuildAndRun()
                     //load frames
 
                     for (const auto& frame : sn->frames)
-                        framesToLoad.push_back("{" + std::to_string(frame.x) + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + ", " + std::to_string(frame.factorX) + ", " + std::to_string(frame.factorY) + "}");
+                        framesToLoad.emplace_back("{" + std::to_string(frame.x) + ", " + std::to_string(frame.y) + ", " + std::to_string(frame.width) + ", " + std::to_string(frame.height) + ", " + std::to_string(frame.factorX) + ", " + std::to_string(frame.factorY) + "}");
 
                     if (!framesToLoad.empty()) 
                     {
@@ -985,7 +1012,7 @@ void EventListener::BuildAndRun()
                         frame_oss << framesToLoad.back();
 
                         if (sn->frames.size() > 1 && std::find(loadedFrames.begin(), loadedFrames.end(), sn->key) == loadedFrames.end()) {
-                            loadedFrames.push_back(sn->key);
+                            loadedFrames.emplace_back(sn->key);
                             preload_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->key + "\", {" + frame_oss.str() + "});\n";
                         }
                             
@@ -994,7 +1021,7 @@ void EventListener::BuildAndRun()
                     //load animations
 
                     for (const auto& anim : sn->animations)
-                        animsToLoad.push_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
+                        animsToLoad.emplace_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
 
                     if (!animsToLoad.empty()) 
                     {
@@ -1002,7 +1029,7 @@ void EventListener::BuildAndRun()
                         anim_oss << animsToLoad.back();
 
                         if (std::find(loadedAnims.begin(), loadedAnims.end(), sn->key) == loadedAnims.end()) {
-                            loadedAnims.push_back(sn->key);
+                            loadedAnims.emplace_back(sn->key);
                             preload_queue << "  System::Resources::Manager::LoadAnims(\"" + sn->key + "\", {" + anim_oss.str() + "});\n";
                         }
                     }
@@ -1095,6 +1122,11 @@ void EventListener::BuildAndRun()
                             command_queue << "   empty_" + node->ID + "->SetThickness" + std::to_string(en->line_weight) + ");\n";
                             command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->m_debugGraphic->tint.r) + ", " + std::to_string(en->m_debugGraphic->tint.g) + ", " + std::to_string(en->m_debugGraphic->tint.b) + "});\n";
                             command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->alpha) + ");\n";
+
+                            //shader
+
+                            if (en->HasComponent("Shader") && en->shader.first.length()) 
+                                command_queue << "   empty_" + node->ID + "->shader = Shader::Get(\"" + en->shader.first + "\");\n";
                         }
                     }
 
@@ -1102,12 +1134,6 @@ void EventListener::BuildAndRun()
                         command_queue << "   std::shared_ptr<Entity> empty_" + node->ID + " = System::Game::CreateEntity();\n\t";
 
                     command_queue << "   empty_" + node->ID + "->name = \"" + node->name + "\";\n";
-
-                    //shader
-
-                    if (en->HasComponent("Shader") && en->shader.first.length()) 
-                        command_queue << "   empty_" + node->ID + "->shader = Shader::Get(\"" + en->shader.first + "\");\n";
-
                 }
 
                 //--------------- tilemap
@@ -1125,7 +1151,7 @@ void EventListener::BuildAndRun()
                     if (tmn->offset.size()) 
                     {
                         for (const auto& offset : tmn->offset)
-                            offsetsToLoad.push_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + ", " + std::to_string(offset[4]) + ", " + std::to_string(offset[5]) + "}");
+                            offsetsToLoad.emplace_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + ", " + std::to_string(offset[4]) + ", " + std::to_string(offset[5]) + "}");
                     
                         if (!offsetsToLoad.empty()) {
                             std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
@@ -1144,7 +1170,7 @@ void EventListener::BuildAndRun()
 
                             if (tmn->layers[i][2].length() && std::find(loadedFrames.begin(), loadedFrames.end(), tmn->layers[i][2]) == loadedFrames.end()) {
                                 preload_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
-                                loadedFrames.push_back(tmn->layers[i][2]);
+                                loadedFrames.emplace_back(tmn->layers[i][2]);
                             }
                             
                             if (tmn->layers[i][0].length()) 
@@ -1229,6 +1255,7 @@ void EventListener::BuildAndRun()
         const std::string globalData = global_queue.str(),
                           assetData = asset_queue.str(),
                           preloadData = preload_queue.str(),
+                          constructorData = constructor_queue.str(),
                           commandData = command_queue.str();
 
         std::string name_upper = target.first;
@@ -1242,7 +1269,7 @@ void EventListener::BuildAndRun()
 
         game_src << "\n\nclass " + name_upper + " : public System::Scene {\n\n"; 
         game_src << "    public:\n";
-        game_src << "       " + name_upper + "(const Process::Context& context):\n\t\tScene(context, \"" + name_upper + "\") { }\n";
+        game_src << "       " + name_upper + "(const Process::Context& context):\n\t\tScene(context, \"" + name_upper + "\") {\n\t" + constructorData + "\n}\n";
         game_src << "           void Preload() override;\n";
         game_src << "           void Run(bool loadMap) override;\n";
         game_src << "    private:\n";

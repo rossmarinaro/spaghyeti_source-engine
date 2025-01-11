@@ -152,9 +152,10 @@ void EventListener::Serialize(json& data, bool newScene)
 
     //loaded data
 
-    json spritesheets = json::array();
-    json assets = json::array();
-    json globals = json::array();
+    json spritesheets = json::array(),
+         assets = json::array(),
+         shaders = json::array(),
+         globals = json::array();
 
     if (!newScene)
     {
@@ -165,6 +166,10 @@ void EventListener::Serialize(json& data, bool newScene)
         if (AssetManager::assets_preload.size())
             for (const auto& asset : AssetManager::assets_preload)
                 assets.push_back(asset);
+
+        if (Editor::shaders_applied)
+            for (const auto& shader : Editor::shaders)
+                shaders.push_back({ { "key", shader.first }, { "vertex", shader.second.first }, { "fragment", shader.second.second } });
 
         if (Editor::spritesheets.size())
             for (const auto& spritesheet : Editor::spritesheets)
@@ -204,6 +209,7 @@ void EventListener::Serialize(json& data, bool newScene)
 
     data["spritesheets"] = spritesheets;
     data["assets"] = assets;
+    data["shaders"] = shaders;
     data["globals"] = globals;
     data["nodes"]["sprites"] = sprites;
     data["nodes"]["tilemaps"] = tilemaps;
@@ -293,6 +299,10 @@ void EventListener::Deserialize(std::ifstream& JSON)
             AssetManager::Register(asset, true, true);
         }
 
+    if (data.contains("shaders"))
+        for (const auto& shader : data["shaders"]) 
+            Editor::shaders.push_back({ shader["key"], { shader["vertex"], shader["fragment"] } });
+        
     //global variables
     
     if (data.contains("globals"))
@@ -367,7 +377,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
         for (const auto& spritesheet : data["spritesheets"])
             scene->spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
 
-    //copy preloaded assets into scene
+    //copy preloaded assets / shaders into scene
 
     if (data.contains("assets"))
         for (const auto& asset : data["assets"])
@@ -377,6 +387,14 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
         for (const auto& asset : AssetManager::assets_to_build)
             scene->assets.push_back(asset);
 
+    if (data.contains("shaders")) {
+
+        for (const auto& shader : data["shaders"])
+            scene->shaders.push_back(shader);
+
+        scene->shaders_applied = true;
+    }
+        
     AssetManager::assets_to_build.clear();
 
     //global variables

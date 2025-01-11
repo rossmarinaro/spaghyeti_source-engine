@@ -124,6 +124,24 @@ std::string AssetManager::GetThumbnail(const std::string& asset)
 //---------------------------------
 
 
+std::string AssetManager::GetLocalBuildPath(const std::string& asset) 
+{
+
+    std::string path = "assets\\" + asset;
+
+    std::replace(path.begin(), path.end(), '\\', '/');
+
+    if (Editor::platform == "WebGL")
+        return "build/" + path;
+
+    else
+        return path;
+}
+
+
+//---------------------------------
+
+
 bool AssetManager::SavePrefab(const std::string& nodeId)
 {
 

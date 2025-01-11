@@ -78,7 +78,7 @@ void Component::Make()
         vert_src << "{\n";
         vert_src << "   uv = UV;\n";
         vert_src << "   gl_Position = mvp * vec4(vert.xy + offset.xy, 0.0, 1.0);\n";
-        vert_src << "};";
+        vert_src << "}";
 
         frag_src << "#version 330 core\n\n";
         frag_src << "in vec2 uv;\n";
@@ -87,7 +87,7 @@ void Component::Make()
         frag_src << "void main()\n";
         frag_src << "{\n";
         frag_src << "   color = vec4(1., 0., 0., 1.) * texture(image, uv);\n";
-        frag_src << "};";
+        frag_src << "}";
 
         vert_src.close();
         frag_src.close();

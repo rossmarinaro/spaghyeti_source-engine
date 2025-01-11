@@ -45,6 +45,7 @@ namespace editor {
 								gravityY = 500.0f;
 
 			static inline bool projectOpen = false,
+                               shaders_applied = false,
                                globals_applied = false,
 							   gravity_continuous = true, 
 							   gravity_sleeping = true,
@@ -67,6 +68,7 @@ namespace editor {
 			
 			static inline std::vector<std::pair<std::string, std::string>> globals;
             static inline std::vector<std::pair<std::string, std::string>> spritesheets;
+            static inline std::vector<std::pair<std::string, std::pair<std::string, std::string>>> shaders;
 
 			static inline std::vector<std::string> scenes;
 

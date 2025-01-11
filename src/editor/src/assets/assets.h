@@ -32,6 +32,7 @@ namespace editor {
 
             static std::string GetFolder(const std::string& asset);
             static std::string GetThumbnail(const std::string& asset);
+            static std::string GetLocalBuildPath(const std::string& asset);
 
     };
 

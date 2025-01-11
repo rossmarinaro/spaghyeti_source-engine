@@ -228,6 +228,7 @@ void Editor::Reset()
     globals.clear();
     spritesheets.clear();
     scenes.clear();
+    shaders.clear();
 
     AssetManager::Reset();
 

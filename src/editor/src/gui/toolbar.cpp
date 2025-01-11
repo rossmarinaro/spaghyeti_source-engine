@@ -186,14 +186,17 @@ void editor::GUI::ShowSettings()
         ImGui::EndMenu();
     }
 
-    //data loader
+    //scene data loader
         
     if (ImGui::BeginMenu("Load Data"))
     {
-        if (ImGui::BeginMenu("preloaded assets"))
+
+        //preload assets
+
+        if (ImGui::BeginMenu("preload assets"))
         {
 
-            if (ImGui::BeginMenu("add from assets"))
+            if (ImGui::BeginMenu("add"))
             {
                 for (auto& asset : AssetManager::loadedAssets) 
                 {
@@ -217,7 +220,7 @@ void editor::GUI::ShowSettings()
             if (AssetManager::assets.size())
                 for (auto& asset : AssetManager::assets) 
                 {
-                    i++;
+                    i++; 
 
                     std::string path = "build/assets/" + asset;
 
@@ -234,6 +237,7 @@ void editor::GUI::ShowSettings()
                                 AssetManager::assets.erase(it);
 
                             auto it_preload = std::find(AssetManager::assets_preload.begin(), AssetManager::assets_preload.end(), asset);
+
                             if (it_preload != AssetManager::assets_preload.end())
                                 AssetManager::assets_preload.erase(it_preload);
                         }
@@ -248,6 +252,105 @@ void editor::GUI::ShowSettings()
             else
                 ImGui::MenuItem("no assets loaded.");
 
+
+            ImGui::EndMenu();
+        }
+
+        //preload shaders
+
+        if (ImGui::BeginMenu("preload shaders"))
+        {
+
+            const auto searchShaderFolders = [](int index, const std::string& type) -> void {
+
+                for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::shader_dir)) 
+                {
+
+                    std::string path = shader.path().string();
+                    const std::string name = shader.path().filename().string();
+
+                    if (!System::Utils::str_endsWith(path, type))
+                        continue;
+
+                    auto iterate = [&] (std::string& p) {
+
+                        if (System::Utils::str_endsWith(p, type)) 
+                            if (ImGui::MenuItem(p.c_str())) {
+                                if (type == ".vert")
+                                    Editor::shaders[index].second.first = p;
+                                if (type == ".frag")
+                                    Editor::shaders[index].second.second = p;
+                            }
+                    };
+
+                    if (shader.is_directory()) {
+                        for (const auto& folder : std::filesystem::recursive_directory_iterator(shader)) {
+                            std::string p = folder.path().string();
+                            iterate(p);
+                        }
+                    }
+
+                    else
+                        iterate(path);
+                }
+            };
+
+            for (int i = 0; i < Editor::shaders.size(); i++)
+            {
+
+                ImGui::PushID(i);
+
+                ImGui::InputText("key", &Editor::shaders[i].first);
+
+                ImGui::Text(("vertex: " + Editor::shaders[i].second.first).c_str());
+
+                ImGui::SameLine();
+                
+                if (ImGui::BeginMenu(".vert")) {
+                    searchShaderFolders(i, ".vert");
+                    ImGui::EndMenu();
+                }
+
+                ImGui::Text(("fragment: " + Editor::shaders[i].second.second).c_str());
+
+                ImGui::SameLine();
+
+                if (ImGui::BeginMenu(".frag")) {
+                    searchShaderFolders(i, ".frag");
+                    ImGui::EndMenu();
+                }
+
+                ImGui::Separator();
+
+                ImGui::PopID();
+
+            }
+
+            if (ImGui::Button("add"))
+                Editor::shaders.push_back({"", { "none selected", "none selected" }});
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("delete")) {
+                std::string key = Editor::globals.back().first;
+                Editor::shaders.pop_back();
+                Editor::shaders_applied = false;
+                Editor::Log("shader: " + key + " removed.");
+            }
+
+            if (ImGui::Button("apply"))
+            {
+                for (auto& shader : Editor::shaders) {
+
+                    if ((!shader.first.length() || shader.second.first == "none selected" || shader.second.second == "none selected") || 
+                        std::adjacent_find(Editor::shaders.begin(), Editor::shaders.end()) != Editor::shaders.end())
+                        break;
+
+                    Editor::shaders_applied = true;
+
+                    Editor::Log("shader: " + shader.first + " added.");
+                }
+            }
 
             ImGui::EndMenu();
         }
