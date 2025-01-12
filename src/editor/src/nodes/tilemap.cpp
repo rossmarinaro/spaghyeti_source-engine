@@ -115,24 +115,24 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
                 }
             }
 
-        std::string key = layers[i][0], //csv
-                    path = layers[i][1], //path
-                    texture = layers[i][2]; //image
+        std::string csv = layers[i][0], 
+                    path = layers[i][1], 
+                    texture = layers[i][2]; 
 
-        AssetManager::Register(texture, clearPrev); //image
-        AssetManager::Register(key, clearPrev); //csv
+        AssetManager::Register(texture); 
+        AssetManager::Register(csv); 
         
         if (clearPrev)
         {
             if (isJSON)
-                key += "_" + std::to_string(i);
+                csv += "_" + std::to_string(i);
 
             System::Resources::Manager::LoadFrames(texture, offset); //image texture with frame offsets
-            System::Resources::Manager::LoadFile(key.c_str(), path.c_str()); //csv 
+            System::Resources::Manager::LoadFile(csv.c_str(), path.c_str()); //csv 
             
             //parse csv data and load map layer
 
-            if (MapManager::CreateLayer(texture.c_str(), key.c_str(), map_width, map_height, tile_width, tile_height, depth[i])) {
+            if (MapManager::CreateLayer(texture.c_str(), csv.c_str(), map_width, map_height, tile_width, tile_height, depth[i])) {
 
                 m_layersApplied = true;
                 m_mapApplied = true;

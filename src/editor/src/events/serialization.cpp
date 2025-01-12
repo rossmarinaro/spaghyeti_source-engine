@@ -11,9 +11,6 @@
 using namespace editor;
 
 
-//-----------------------------------
-
-
 std::string EventListener::GetScriptName(const std::string& path)
 {
 
@@ -163,8 +160,8 @@ void EventListener::Serialize(json& data, bool newScene)
             for (const auto& global : Editor::globals)
                 globals.push_back({ { "key", global.first }, { "type", global.second } });
 
-        if (AssetManager::assets_preload.size())
-            for (const auto& asset : AssetManager::assets_preload)
+        if (AssetManager::assets.size())
+            for (const auto& asset : AssetManager::assets)
                 assets.push_back(asset);
 
         if (Editor::shaders_applied)
@@ -293,10 +290,8 @@ void EventListener::Deserialize(std::ifstream& JSON)
             Editor::spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
 
     if (data.contains("assets"))
-        for (const auto& asset : data["assets"]) {
-            const std::string key = static_cast<std::string>(asset);
-            AssetManager::Register(asset, true, true);
-        }
+        for (const auto& asset : data["assets"]) 
+            AssetManager::Register(asset);
 
     if (data.contains("shaders"))
         for (const auto& shader : data["shaders"]) {
@@ -380,15 +375,9 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     //copy preloaded assets / shaders into scene
 
-    //if (data.contains("assets"))
-      //  for (const auto& asset : data["assets"])
-         //   scene->assets.push_back(asset);
-
-    if (AssetManager::assets_to_build.size())
-        for (const auto& asset : AssetManager::assets_to_build)
-            scene->assets.push_back(asset);
-
-    AssetManager::assets_to_build.clear();
+    if (data.contains("assets"))
+       for (const auto& asset : data["assets"])
+           scene->assets.push_back(asset);
 
     if (data.contains("shaders")) {
 

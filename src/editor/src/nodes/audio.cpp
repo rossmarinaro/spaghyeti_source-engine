@@ -27,7 +27,7 @@ AudioNode::AudioNode():
 
 void AudioNode::Load() {
     audio_source_name = AssetManager::selectedAsset;
-    AssetManager::Register(audio_source_name, true);
+    AssetManager::Register(audio_source_name);
 }
 
 

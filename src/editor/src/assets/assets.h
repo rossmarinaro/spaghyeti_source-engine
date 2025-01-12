@@ -19,20 +19,19 @@ namespace editor {
             static inline std::vector<std::pair<std::string, GLuint>> audio; 
             static inline std::vector<std::pair<std::string, GLuint>> data; 
 
-            static inline std::vector<std::string> assets, assets_preload, assets_to_build; 
+            static inline std::vector<std::string> assets; 
 
             static inline std::map<std::string, std::string> loadedAssets;
 
             static void Reset();
             static void SetIcon(const std::string& key);
-            static void Register(const std::string& key, bool isEditor = false, bool isPreload = false);
+            static void Register(const std::string& key);
             static void LoadAsset(const std::string& asset);
             static bool SavePrefab(const std::string& nodeId);
             static bool LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes = Node::nodes);
 
             static std::string GetFolder(const std::string& asset);
             static std::string GetThumbnail(const std::string& asset);
-            static std::string GetLocalBuildPath(const std::string& asset);
 
     };
 

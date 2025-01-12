@@ -207,7 +207,7 @@ void editor::GUI::ShowSettings()
                     path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
 
                     if (ImGui::MenuItem(path.c_str())) 
-                        AssetManager::Register(key, true, true);
+                        AssetManager::Register(key);
                 }
 
                 ImGui::EndMenu();
@@ -235,11 +235,6 @@ void editor::GUI::ShowSettings()
 
                             if (it != AssetManager::assets.end())
                                 AssetManager::assets.erase(it);
-
-                            auto it_preload = std::find(AssetManager::assets_preload.begin(), AssetManager::assets_preload.end(), asset);
-
-                            if (it_preload != AssetManager::assets_preload.end())
-                                AssetManager::assets_preload.erase(it_preload);
                         }
 
                         ImGui::EndMenu();

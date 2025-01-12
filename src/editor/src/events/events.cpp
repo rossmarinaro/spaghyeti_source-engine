@@ -452,13 +452,24 @@ void EventListener::InsertTo(const std::string& code, const std::string& directo
 
 void EventListener::BuildAndRun()
 {
+    //directory / builder files
 
-    const std::string folder = Editor::platform == "WebGL" ? "web" : "build",
-                      assetsFolder = Editor::projectPath + "build\\assets\\",
+    std::string makefile_path = Editor::projectPath + "\\Makefile";
+    std::replace(makefile_path.begin(), makefile_path.end(), '\\', '/');
+
+    const std::string web = Editor::projectPath + "\\web",
+                      web_makeFile_path = web + "/Makefile",
+                      web_preJS_path = web + "/pre-js.js",
+                      web_HTML_path = web + "/template.html",
+                      folder = Editor::platform == "WebGL" ? "web" : "build",
+                      assetsFolder = Editor::platform == "WebGL" ? Editor::projectPath + "web\\assets\\" : Editor::projectPath + "build\\assets\\",
                       buildPath = Editor::projectPath + folder;
 
     if (!std::filesystem::exists(buildPath)) 
         std::filesystem::create_directory(buildPath);
+
+    if (Editor::platform == "WebGL" && !std::filesystem::exists(web)) 
+        std::filesystem::create_directory(web);
 
     if (!std::filesystem::exists(assetsFolder)) 
         std::filesystem::create_directory(assetsFolder);
@@ -507,16 +518,6 @@ void EventListener::BuildAndRun()
         if (!std::filesystem::exists(copy_lib))
             std::filesystem::copy_file(Editor::rootPath + "\\sdk\\" + lib, copy_lib, options);
     }
-
-   //directory / builder files
-
-    std::string makefile_path = Editor::projectPath + "\\Makefile";
-    std::replace(makefile_path.begin(), makefile_path.end(), '\\', '/');
-
-    const std::string web = Editor::projectPath + "\\web",
-                      web_makeFile_path = web + "/Makefile",
-                      web_preJS_path = web + "/pre-js.js",
-                      web_HTML_path = web + "/template.html";
 
     //Windows
 
@@ -604,8 +605,7 @@ void EventListener::BuildAndRun()
         std::string name_upper = s_currentProject;
         transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
-        if (!std::filesystem::exists(web))
-            std::filesystem::create_directory(web);
+        //todo: tmp assets folder
 
         std::ofstream web_makeFile(web + "/Makefile"),
                       web_preJS(web + "/pre-js.js"),
@@ -633,7 +633,7 @@ void EventListener::BuildAndRun()
         web_makeFile << "   -sINITIAL_MEMORY=420mb\\\n";
         //web_makeFile << "   -sMAXIMUM_MEMORY=1000mb \\\n";
         //web_makeFile << "   -sPTHREAD_POOL_SIZE_STRICT=33 \\\n";
-        web_makeFile << "   -sPTHREAD_POOL_SIZE=33 \\\n";//web_makeFile << "   -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency \\\n";
+        web_makeFile << "   -sPTHREAD_POOL_SIZE=33 \\\n"; //web_makeFile << "   -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency \\\n";
         web_makeFile << "   -sUSE_GLFW=3 \\\n";
         web_makeFile << "   -sLEGACY_GL_EMULATION=0 \\\n";
         web_makeFile << "   -sASSERTIONS \\\n";
@@ -645,9 +645,9 @@ void EventListener::BuildAndRun()
         web_makeFile << "   -Wl,--whole-archive \\\n";
         
         web_makeFile << "   --pre-js pre-js.js \\\n";
-        web_makeFile << "   --preload-file ../build/assets \\\n";
+        web_makeFile << "   --preload-file ./assets \\\n";
         web_makeFile << "   --use-preload-plugins \\\n\n";
-       // web_makeFile << "   --shell-file template.html\n\n";
+        //web_makeFile << "   --shell-file template.html\n\n";
 
         web_makeFile << "all: $(OBJS)\n";
         web_makeFile << "\tem++ -std=c++20 $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS)\n";
@@ -821,15 +821,15 @@ void EventListener::BuildAndRun()
 
     //iterate over scenes to include
 
-    const auto parseScene = []() -> void {
+    const auto parseScene = [this](const std::filesystem::directory_entry& filepath) -> void {
 
         for (const auto& scene : Editor::scenes)
         {
-            if (scene == System::Utils::ReplaceFrom(file.path().filename().string(), ".", ""))
+            if (scene == System::Utils::ReplaceFrom(filepath.path().filename().string(), ".", ""))
             {
                 std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
 
-                DecodeFile(tmp, file);
+                DecodeFile(tmp, filepath);
 
                 std::ifstream JSON(tmp);
 
@@ -854,13 +854,13 @@ void EventListener::BuildAndRun()
 
     for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath)) 
     {
-        if (System::Utils::str_endsWith(file.path().string(), ".spaghyeti")) 
-            parseScene();
+        if (file.exists() && System::Utils::str_endsWith(file.path().string(), ".spaghyeti")) 
+            parseScene(file);
 
-        else if (file.is_directory())
-            for (const auto& file : std::filesystem::directory_iterator(file + "/scenes"))
-                if (System::Utils::str_endsWith(file.path().string(), ".spaghyeti"))
-                    parseScene();
+        else if (file.is_directory() && file.path().filename().string() == "scenes")
+            for (const auto& f : std::filesystem::directory_iterator(Editor::projectPath + "/scenes"))
+                if (file.exists() && System::Utils::str_endsWith(f.path().string(), ".spaghyeti"))
+                    parseScene(f);
     }
 
     //now compile each scene
@@ -880,7 +880,7 @@ void EventListener::BuildAndRun()
 
             //assets are copied to user project's "build" directory, and then virtually referenced from this path, hence the prefix in webgl builds
 
-            asset_queue << "  System::Resources::Manager::LoadFile(" + key + ", \"" + AssetManager::GetLocalBuildPath(asset) + "\");\n";
+            asset_queue << "  System::Resources::Manager::LoadFile(" + key + ", \"" + "assets/" + asset + "\");\n";
         }
 
         //load shaders
@@ -890,8 +890,8 @@ void EventListener::BuildAndRun()
             std::filesystem::path vertPath { shader.second.first },
                                   fragPath { shader.second.second };
 
-            const std::string vertex = AssetManager::GetLocalBuildPath(vertPath.filename().string()),
-                              fragment = AssetManager::GetLocalBuildPath(fragPath.filename().string());
+            const std::string vertex = "assets/" + vertPath.filename().string(),
+                              fragment = "assets/" + fragPath.filename().string();
 
             asset_queue << "  Shader::Load(\"" + shader.first + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
         }
@@ -1370,6 +1370,9 @@ void EventListener::BuildAndRun()
     remove(web_makeFile_path.c_str());
     remove(web_preJS_path.c_str());
     remove(web_HTML_path.c_str());
+
+    if (Editor::platform == "WebGL")
+        std::filesystem::remove_all((web + "/assets").c_str());
 
     Editor::Log("Project " + s_currentProject + " built successfully.");
 

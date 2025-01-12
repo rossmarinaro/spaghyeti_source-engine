@@ -4,6 +4,8 @@
 
 ----------------------------------------------------------
 
+Features:
+
 Rendering system / content creation tool with audio generation, texturing, and logging. 
 
 Supports loading image, shader, json, and raw byte char files.
@@ -19,6 +21,10 @@ Project generation creates base boilerplate and proxy reference to current appli
 Project configurations are saved as a custom ".SPAGHYETI" file which are decrypted into JSON prior to parsing.
 
 Editor created in-scene game objects can be saved as prefabs for repeated use.
+
+Manual per-Scene asset and shader loading to reduce unnecessary file loads
+
+Shader platform compatible versions are automatically updated per build type
 
 For Emscripten WebGL builds, download the latest SDK release, run emsdk install tot, navigate to emscripten install directory, run emcmdprompt.bat and cd to the "web" directory in this tree. compile with that directory's MakeFile.
 
@@ -51,3 +57,11 @@ Requires install of MingW compiler for Windows
 Notes:
 
 When targeting specific entity from script use `System::Game::GetScene()->GetEntity()`, if targeting a method from another script use `System::Game::GetBehavior()`.
+
+----------------------------------------------------------
+
+To Do:
+
+undo/redo functionality
+improve editor entity selection/mouse picking/raycasting
+per scene animation loading

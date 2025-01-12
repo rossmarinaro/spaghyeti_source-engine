@@ -47,8 +47,8 @@ SpriteNode::SpriteNode():
 //---------------------------
 
 
-SpriteNode::~SpriteNode()
-{
+SpriteNode::~SpriteNode() {
+
     m_currentTexture = NULL;
 
     if (spriteHandle != nullptr)
@@ -133,8 +133,8 @@ void SpriteNode::CreateBody(float x, float y, float width, float height, bool is
 //---------------------------------
 
 
-void SpriteNode::RegisterFrames()
-{
+void SpriteNode::RegisterFrames() {
+
     std::vector<std::array<int, 6>> framesToPush;
 
     for (const auto& frame : frames)
@@ -163,7 +163,7 @@ void SpriteNode::ApplyTexture(const std::string& asset)
     m_currentTexture = spriteHandle->texture.Get(asset).ID;  
     key = asset;
 
-    AssetManager::Register(key, true);
+    AssetManager::Register(key);
 
 }
 

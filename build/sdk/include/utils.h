@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <string>
 
 #if DEVELOPMENT == 1
     #include <iostream>

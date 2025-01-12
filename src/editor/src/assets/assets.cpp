@@ -10,33 +10,24 @@
 using namespace editor;
 
 
-void AssetManager::Reset()
-{
+void AssetManager::Reset() {
+
     selectedAsset.clear();
     images.clear();
     audio.clear();
     data.clear();
     loadedAssets.clear();
     assets.clear();
-    assets_to_build.clear();
-    assets_preload.clear();
 }
 
 
 //--------------------------
 
 
-void AssetManager::Register(const std::string& asset, bool isEditor, bool isPreload) 
-{
+void AssetManager::Register(const std::string& asset) {
 
-    if (std::find(assets_to_build.begin(), assets_to_build.end(), asset) == assets_to_build.end())
-        assets_to_build.push_back(asset);
-
-    if (isEditor && std::find(assets.begin(), assets.end(), asset) == assets.end())
+    if (std::find(assets.begin(), assets.end(), asset) == assets.end())
         assets.push_back(asset);
-
-    if (isPreload && std::find(assets_preload.begin(), assets_preload.end(), asset) == assets_preload.end())
-        assets_preload.push_back(asset);
 }
 
 
@@ -119,24 +110,6 @@ std::string AssetManager::GetThumbnail(const std::string& asset)
     
 
     return texture;
-}
-
-
-//---------------------------------
-
-
-std::string AssetManager::GetLocalBuildPath(const std::string& asset) 
-{
-
-    std::string path = "assets\\" + asset;
-
-    std::replace(path.begin(), path.end(), '\\', '/');
-
-    if (Editor::platform == "WebGL")
-        return "build/" + path;
-
-    else
-        return path;
 }
 
 
