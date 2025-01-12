@@ -2,7 +2,7 @@
 #include "../../../build/sdk/include/camera.h"
 
 
-void System::Renderer::Update(Camera* camera)
+void System::Renderer::Update(void* camera)
 {
 
     glfwSwapInterval(s_vsync); // Enable vsync
@@ -14,7 +14,7 @@ void System::Renderer::Update(Camera* camera)
  
     glClear(GL_COLOR_BUFFER_BIT);
 
-    auto bg = camera->GetBackgroundColor();
+    auto bg = ((Camera*)camera)->GetBackgroundColor();
     
     glClearColor(
         bg.x * bg.w,

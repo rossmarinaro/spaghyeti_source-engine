@@ -6,12 +6,12 @@
 #include "./tilemap.h"
 #include "./entity.h"
 #include "./physics.h"
-#include "./behaviors.h"
 #include "./time.h"
 #include "./utils.h"
 #include "./camera.h"
 #include "./scene.h"
 #include "./inputs.h"
+
 
 namespace System {
     
@@ -65,8 +65,7 @@ namespace System {
             }
 
             template <typename T>
-            static inline const std::shared_ptr<T> GetBehavior() 
-            { 
+            static inline const std::shared_ptr<T> GetBehavior() { 
 
                 auto it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), 
                     [&](auto behavior) { return behavior->key == typeid(T).name(); });

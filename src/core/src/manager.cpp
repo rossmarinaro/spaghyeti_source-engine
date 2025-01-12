@@ -54,11 +54,11 @@ void Manager::RegisterTextures()
 
     #ifndef __EMSCRIPTEN__
 
-        //load base texture (white 1 x 1)
+        //load base texture (white 10 x 10)
 
         static const char data[] = { 0xff, 0xff, 0xff, 0xff };
 
-        LoadRawImage("base", data, 1, 1, 4);
+        LoadRawImage("base", data, 10, 10, 4);
 
     #endif
 

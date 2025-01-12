@@ -288,7 +288,7 @@ void Game::UpdateFrame()
             physics->debug->Flush();
 
             #if STANDALONE == 1
-                displayInfo->Update(m_context);
+                displayInfo->Update(&m_context);
             #endif
         }
 

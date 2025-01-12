@@ -16,8 +16,7 @@ namespace entity_behaviors {
 
             std::atomic_char active;
             
-            inline Behavior(const std::string& ID, const std::string& key)
-            {
+            inline Behavior(const std::string& ID, const std::string& key) {
                 this->key = key; 
                 this->ID = ID;
                 layer = 0;

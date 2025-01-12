@@ -332,7 +332,7 @@ void editor::GUI::ShowSettings()
             ImGui::SameLine();
 
             if (ImGui::Button("delete")) {
-                std::string key = Editor::globals.back().first;
+                std::string key = Editor::shaders.back().first;
                 Editor::shaders.pop_back();
                 Editor::shaders_applied = false;
                 Editor::Log("shader: " + key + " removed.");
@@ -340,7 +340,7 @@ void editor::GUI::ShowSettings()
 
             if (ImGui::Button("apply"))
             {
-                for (auto& shader : Editor::shaders) {
+                for (const auto& shader : Editor::shaders) {
 
                     if ((!shader.first.length() || shader.second.first == "none selected" || shader.second.second == "none selected") || 
                         std::adjacent_find(Editor::shaders.begin(), Editor::shaders.end()) != Editor::shaders.end())

@@ -19,6 +19,7 @@ void AssetManager::Reset()
     loadedAssets.clear();
     assets.clear();
     assets_to_build.clear();
+    assets_preload.clear();
 }
 
 

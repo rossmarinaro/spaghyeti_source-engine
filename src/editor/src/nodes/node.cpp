@@ -739,7 +739,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 }
 
                 else 
-                    AssetManager::Register(data["currentTexture"], false);
+                    AssetManager::Register(data["currentTexture"]);
             }
 
             if (data.contains("frames") && data["frames"].size() > 1)
@@ -954,7 +954,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 an = Scene::CreateObject<AudioNode>(_scene); 
 
                 if (data.contains("source name"))   
-                    AssetManager::Register(data["source name"], false);
+                    AssetManager::Register(data["source name"]);
             } 
 
             if (data.contains("name"))

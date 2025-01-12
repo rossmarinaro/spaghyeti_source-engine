@@ -25,7 +25,7 @@ namespace editor {
 
             static void Reset();
             static void SetIcon(const std::string& key);
-            static void Register(const std::string& key, bool isEditor, bool isPreload = false);
+            static void Register(const std::string& key, bool isEditor = false, bool isPreload = false);
             static void LoadAsset(const std::string& asset);
             static bool SavePrefab(const std::string& nodeId);
             static bool LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes = Node::nodes);

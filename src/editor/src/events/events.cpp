@@ -755,11 +755,10 @@ void EventListener::BuildAndRun()
 
     //include shaders
 
-    const auto iterate_shader = [] (std::string path, const std::string& copiedFile) -> void
+    const auto iterate_shader = [] (const std::string& name, std::string path, const std::string& copiedFile) -> void
     {
 
-        std::string line,
-                    type;
+        std::string line, type;
 
         if (System::Utils::str_endsWith(path, ".vert"))
             type = ".vert";
@@ -775,7 +774,8 @@ void EventListener::BuildAndRun()
         std::ifstream shaderFile(path);
         std::ofstream out_file(tmp_file);
 
-        while (getline(shaderFile, line)) {
+        while (getline(shaderFile, line)) 
+        {
 
             for (int i = 0; i < line.length(); i++) {
                 if (Editor::platform == "WebGL" && line == "#version 330 core")
@@ -791,16 +791,11 @@ void EventListener::BuildAndRun()
         shaderFile.close();
         out_file.close();
 
-        remove(path.c_str());
-       // rename(tmp_file.c_str(), path.c_str());
-
-        std::replace(path.begin(), path.end(), '\\', '/');
-
         if (!std::filesystem::exists(copiedFile)) {
+            std::filesystem::rename(tmp_file, copiedFile); 
             Editor::Log("copying shaders: " + path + " to: " + copiedFile);
-            std::filesystem::copy_file(path, copiedFile, options);
         }
-        
+
     };
 
     for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::shader_dir)) 
@@ -812,11 +807,11 @@ void EventListener::BuildAndRun()
 
         if (shader.is_directory()) 
             for (const auto& folder : std::filesystem::recursive_directory_iterator(shader)) 
-                if (System::Utils::str_endsWith(path, ".vert") || !System::Utils::str_endsWith(path, ".frag"))
-                    iterate_shader(folder.path().string(), copiedFile);
+                if (System::Utils::str_endsWith(path, ".vert") || System::Utils::str_endsWith(path, ".frag"))
+                    iterate_shader(name, folder.path().string(), copiedFile);
             
-        else if (System::Utils::str_endsWith(path, ".vert") || !System::Utils::str_endsWith(path, ".frag"))
-            iterate_shader(path, copiedFile);
+        if (System::Utils::str_endsWith(path, ".vert") || System::Utils::str_endsWith(path, ".frag"))
+            iterate_shader(name, path, copiedFile);
     }
 
     //temp containers to track loaded configurations by key to avoid duplicate loads
@@ -824,39 +819,48 @@ void EventListener::BuildAndRun()
     std::vector<std::string> loadedFrames;
     std::vector<std::string> loadedAnims;
 
+    //iterate over scenes to include
+
+    const auto parseScene = []() -> void {
+
+        for (const auto& scene : Editor::scenes)
+        {
+            if (scene == System::Utils::ReplaceFrom(file.path().filename().string(), ".", ""))
+            {
+                std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
+
+                DecodeFile(tmp, file);
+
+                std::ifstream JSON(tmp);
+
+                if (JSON.good()) {
+                    ParseScene(scene, JSON);
+                    Editor::Log("Scene parsed.");
+                }
+
+                else 
+                    Editor::Log("There was a problem parsing scene.");
+
+                JSON.close();
+                
+                //remove temp json file
+
+                remove(tmp.c_str()); 
+            }
+        }
+    };
+
     //parse scene files
 
     for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath)) 
     {
-        //iterate over scenes to include
-
         if (System::Utils::str_endsWith(file.path().string(), ".spaghyeti")) 
+            parseScene();
 
-            for (const auto& scene : Editor::scenes)
-            {
-                if (scene == System::Utils::ReplaceFrom(file.path().filename().string(), ".", ""))
-                {
-                    std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
-
-                    DecodeFile(tmp, file);
-
-                    std::ifstream JSON(tmp);
-
-                    if (JSON.good()) {
-                        ParseScene(scene, JSON);
-                        Editor::Log("Scene parsed.");
-                    }
-
-                    else 
-                        Editor::Log("There was a problem parsing scene.");
-
-                    JSON.close();
-                    
-                    //remove temp json file
-
-                    remove(tmp.c_str()); 
-                }
-            }
+        else if (file.is_directory())
+            for (const auto& file : std::filesystem::directory_iterator(file + "/scenes"))
+                if (System::Utils::str_endsWith(file.path().string(), ".spaghyeti"))
+                    parseScene();
     }
 
     //now compile each scene
@@ -881,8 +885,17 @@ void EventListener::BuildAndRun()
 
         //load shaders
 
-        for (const auto& shader : target.second->shaders)
-            constructor_queue << "  Shader::Load(\"" + shader.first + "\", \"" + shader.second.first + "\", \"" + shader.second.second + "\");\n";
+        for (const auto& shader : target.second->shaders) 
+        { 
+            std::filesystem::path vertPath { shader.second.first },
+                                  fragPath { shader.second.second };
+
+            const std::string vertex = AssetManager::GetLocalBuildPath(vertPath.filename().string()),
+                              fragment = AssetManager::GetLocalBuildPath(fragPath.filename().string());
+
+            asset_queue << "  Shader::Load(\"" + shader.first + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
+        }
+            
 
         //load spritesheets (loaded data)
 
@@ -1379,6 +1392,8 @@ void EventListener::GenerateProject()
         Editor::Log("Project " + s_currentProject + " already exists.");
         return;
     }
+
+    std::filesystem::create_directory(Editor::projectPath + "\\scenes");
 
     std::filesystem::create_directory(resources);
     std::filesystem::create_directory(resources + "\\scripts");

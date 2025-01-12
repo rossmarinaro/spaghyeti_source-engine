@@ -48,7 +48,7 @@
     #include "./vendors/glText/gltext.h"
 #endif
 
-#include "./camera.h"
+
 
 //-----------------------------
 
@@ -60,7 +60,7 @@ namespace /* SPAGHYETI_CORE */ System {
 
             static void CreateFrameBuffer();
             static void RescaleFrameBuffer(float width, float height);
-            static void Update(Camera* camera);
+            static void Update(void* camera);
             
             static inline void BindFrameBuffer() { glBindBuffer(GL_FRAMEBUFFER, s_FBO); }
             static inline void UnbindFrameBuffer() { glBindBuffer(GL_FRAMEBUFFER, 0); }
