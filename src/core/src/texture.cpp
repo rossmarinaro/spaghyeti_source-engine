@@ -1,7 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../vendors/stb/stb_image.h" 
 
-#include "../../../build/sdk/include/manager.h"
 #include "../../../build/sdk/include/app.h"
 
 using namespace Graphics;

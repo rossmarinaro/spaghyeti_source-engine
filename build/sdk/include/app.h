@@ -30,6 +30,8 @@
 #include "./camera.h"
 #include "./events.h"
 
+
+
 /****** Application *****/
 
 namespace /* SPAGHYETI_CORE */ System {

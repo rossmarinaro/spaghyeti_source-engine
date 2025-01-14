@@ -322,7 +322,7 @@ void editor::GUI::ShowSettings()
             }
 
             if (ImGui::Button("add"))
-                Editor::shaders.push_back({"", { "none selected", "none selected" }});
+                Editor::shaders.push_back({ "", { "none selected", "none selected" }});
 
             ImGui::SameLine();
 
@@ -350,7 +350,9 @@ void editor::GUI::ShowSettings()
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("spritesheets"))
+        //preload spritesheets
+
+        if (ImGui::BeginMenu("preload spritesheets"))
         {
             int i = 0;
 
@@ -406,6 +408,87 @@ void editor::GUI::ShowSettings()
     
             ImGui::EndMenu();
             
+        }
+
+        //preload animations
+
+        if (ImGui::BeginMenu("preload animations"))
+        {
+
+            for (int i = 0; i < Editor::animations.size(); i++)
+            {
+
+                ImGui::PushID(i);
+
+                ImGui::InputText("sprite name", &Editor::animations[i].first);
+
+                if (ImGui::BeginMenu("animations")) 
+                {
+                    int j = 0;
+
+                    if (Editor::animations[i].second.size())
+                        for (auto& anim : Editor::animations[i].second) 
+                        {
+                            ImGui::PushID(j);
+
+                            ImGui::InputText("key", &anim.first);
+                            ImGui::InputInt("start", &anim.second.first);
+                            ImGui::InputInt("end", &anim.second.second);
+
+                            ImGui::PopID();
+
+                            if (Editor::animations[i].second.size() > 1)
+                                ImGui::Separator();
+
+                            j++;
+                        }
+                    else
+                        ImGui::Text("none applied.");
+
+                    ImGui::EndMenu();
+                }
+
+                if (ImGui::Button("add"))
+                    Editor::animations[i].second.push_back({ "", { 0, 0 }});
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("delete"))
+                    Editor::animations[i].second.pop_back();
+
+                ImGui::Separator();
+
+                ImGui::PopID();
+
+            }
+
+            if (ImGui::Button("add")) 
+                Editor::animations.push_back({ "", {}});
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("delete")) {
+                std::string key = Editor::animations.back().first;
+                Editor::animations.pop_back();
+                Editor::animations_applied = false;
+                Editor::Log("animation: " + key + " removed.");
+            }
+
+            if (ImGui::Button("apply"))
+            {
+                for (const auto& animation : Editor::animations) {
+
+                    if ((!animation.first.length()) || 
+                        std::adjacent_find(Editor::animations.begin(), Editor::animations.end()) != Editor::animations.end())
+                        break;
+
+                    Editor::animations_applied = true;
+
+                    Editor::Log("animation: " + animation.first + " added.");
+                }
+            }
+
+            ImGui::EndMenu();
         }
 
 

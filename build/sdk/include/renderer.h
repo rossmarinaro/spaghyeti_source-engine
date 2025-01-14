@@ -5,14 +5,16 @@
 #include <vector>
 
 #ifdef __EMSCRIPTEN__
+    #ifndef ES
+    #define ES
+        #include <unistd.h>
+        #include <emscripten.h>
+        #include <emscripten/html5.h>
 
-    #include <unistd.h>
-    #include <emscripten.h>
-    #include <emscripten/html5.h>
-
-    #define GL_GLEXT_PROTOTYPES
-    #define EGL_EGLEXT_PROTOTYPES
-    #include <GLES3/gl3.h>
+        #define GL_GLEXT_PROTOTYPES
+        #define EGL_EGLEXT_PROTOTYPES
+        #include <GLES3/gl3.h>
+    #endif
 
 #else 
 
@@ -23,20 +25,16 @@
 
 #endif
 
-#include "./vendors/GLFW/glfw3.h" 
-#include "./vendors/GLFW/glfw3native.h" 
-#include "./vendors/glm/glm.hpp" 
-#include "./vendors/glm/gtc/type_ptr.hpp"
-#include "./vendors/glm/gtc/matrix_transform.hpp" 
+#ifndef GLM
+#define GLM
+    #include "./vendors/GLFW/glfw3.h" 
+    #include "./vendors/GLFW/glfw3native.h" 
+    #include "./vendors/glm/glm.hpp" 
+    #include "./vendors/glm/gtc/type_ptr.hpp"
+    #include "./vendors/glm/gtc/matrix_transform.hpp" 
 
-#if USE_JSON == 1 
-	#include "./vendors/nlohmann/json.hpp"
-	using json = nlohmann::json;
+    #include "./vendors/glm/gtc/matrix_transform.hpp"  
 #endif
-
-#include "./vendors/glm/gtc/matrix_transform.hpp"  
-
-#include "./vendors/box2d/include/box2d/box2d.h"
 
 #ifndef GLT_IMPLEMENTATION
 
@@ -64,7 +62,6 @@ namespace /* SPAGHYETI_CORE */ System {
             
             static inline void BindFrameBuffer() { glBindBuffer(GL_FRAMEBUFFER, s_FBO); }
             static inline void UnbindFrameBuffer() { glBindBuffer(GL_FRAMEBUFFER, 0); }
-
             static inline void SetVSync(int rate) { s_vsync = rate; }
             static inline int GetVSync() { return s_vsync; }
             

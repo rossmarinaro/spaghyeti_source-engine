@@ -2,9 +2,9 @@
 
 #include <set>
 
-#include "./entity.h"
-#include "./collisionManager.h"
+#include "./vendors/box2d/include/box2d/box2d.h"
 
+#include "./collisionManager.h"
 #include "./debug.h"
 
 
@@ -16,11 +16,11 @@ class Physics {
         float gravityX, gravityY;
 
         bool enableDebug,
-             sleeping = true, 
-             setWarmStart = false, 
-             continuous = true, 
-             subStep = false,
-             clearForces = false;
+             sleeping, 
+             setWarmStart, 
+             continuous, 
+             subStep,
+             clearForces;
         
         CollisionManager collisions;
         
@@ -47,24 +47,21 @@ class Physics {
 
         void Update();
         void ClearBodies();
-
+        void SetGravity(float x, float y);
+        
         Physics();
         ~Physics() = default;
 
-        inline void SetGravity(float x, float y) {
-            gravityX = x;
-            gravityY = y;
+        inline b2World& GetWorld() { 
+            return this->m_world; 
         }
-
-        inline b2World& GetWorld() { return this->m_world; }
 
     private:
 
         uint32 m_flags;
         b2World m_world;
 
-        struct Body 
-        {
+        struct Body {
             b2BodyDef def;
             b2Body* self;
             b2Fixture* fixture;

@@ -3,9 +3,11 @@
 #include <any>
 #include <memory>
 #include <atomic>
+#include "./vendors/box2d/include/box2d/box2d.h"
 
 #include "./manager.h"
 #include "./inputs.h"
+
 
 //base gameobject entity class
 
@@ -29,9 +31,7 @@ class Entity {
 		const char* type;
 
 		glm::vec3 tint; 
-
 		glm::vec2 position, scale;
-
 		std::string ID, name;
 
 		//key val data to be assigned to entity object
@@ -56,32 +56,6 @@ class Entity {
 		inline void SetFlipX(bool flipX) { this->flipX = flipX; }
 		inline void SetFlipY(bool flipY) { this->flipY = flipY; }
         inline void SetScrollFactor(const glm::vec2& factor) { m_scrollFactor = factor; }
-     
-        inline bool IsSprite() {
-			return strcmp(this->type, "sprite") == 0 || 
-				   strcmp(this->type, "tile") == 0;
-		}
-
-		inline void SetFlip(bool flipX, bool flipY) { 
-			this->flipX = flipX; 
-			this->flipY = flipY; 
-		}
-		
-		inline void SetScale(float scaleX, float scaleY = 1.0f) { 
-			this->scale.x = scaleX;
-			this->scale.y = scaleY != 1.0f ? 
-				scaleY : scaleX; 
-		}
-
-		inline void SetEnabled(bool isEnabled) {
-			this->active = isEnabled;
-			this->renderable = isEnabled;
-		}
-
-        inline void SetPosition(float x, float y) { 
-			this->position.x = x;
-			this->position.y = y; 
-		}
 		 
 		virtual void Render(float projWidth, float projHeight) {}
         virtual ~Entity() { s_count--; }
@@ -89,8 +63,13 @@ class Entity {
 		Entity(const char* type);
 		Entity(const char* type, float x, float y);
         
+        bool IsSprite();
         void Cull(const glm::vec2& targetPosition);
         void SetData(const std::string& key, const std::any& value);
+		void SetFlip(bool flipX, bool flipY);
+		void SetScale(float scaleX, float scaleY = 1.0f);
+		void SetEnabled(bool isEnabled);
+        void SetPosition(float x, float y);
 
     protected:
 

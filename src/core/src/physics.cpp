@@ -7,16 +7,32 @@ Physics::Physics():
     m_world(m_gravity),
     m_flags(0)
 { 
-    this->gravityX = this->m_gravity.x; 
-    this->gravityY = this->m_gravity.y;
+    enableDebug = false;
+    sleeping = true;
+    setWarmStart = false; 
+    continuous = true;
+    subStep = false;
+    clearForces = false;
 
-    this->m_flags += b2Draw::e_shapeBit;
-    this->m_flags += b2Draw::e_jointBit;
-    this->m_flags += b2Draw::e_aabbBit;
-    this->m_flags += b2Draw::e_centerOfMassBit;
+    gravityX = m_gravity.x; 
+    gravityY = m_gravity.y;
+
+    m_flags += b2Draw::e_shapeBit;
+    m_flags += b2Draw::e_jointBit;
+    m_flags += b2Draw::e_aabbBit;
+    m_flags += b2Draw::e_centerOfMassBit;
 
     LOG("Physics: world enabled."); 
 } 
+
+
+//----------------------------------
+
+
+void Physics::SetGravity(float x, float y) {
+    gravityX = x;
+    gravityY = y;
+}
 
 
 //----------------------------------

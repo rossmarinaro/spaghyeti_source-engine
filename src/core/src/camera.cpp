@@ -19,6 +19,29 @@ Camera::Camera():
 //-------------------------------
 
 
+void Camera::StartFollow(glm::vec2* position, float offsetX, float offsetY) {
+    m_canFollow = true;
+    m_target = { position, { offsetX, offsetY } };
+}
+
+//-------------------------------
+
+
+void Camera::Reset() 
+{
+    
+    SetPosition({ 0.0f, 0.0f });
+    SetZoom(1.0f);
+    SetBackgroundColor({ 0.5f, 0.5f, 0.5f, 1.0f });
+    SetBounds(0.0f, 0.0f, 0.0f, 0.0f);
+
+    m_target = { nullptr, { 0.0f, 0.0f } };
+    m_rotation = 0.0f;
+}
+
+//-------------------------------
+
+
 void Camera::SetVignette(float alpha) 
 { 
 

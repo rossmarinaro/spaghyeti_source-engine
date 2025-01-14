@@ -3,7 +3,6 @@
 #endif
 
 #include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/manager.h"
 #include "../../vendors/UUID.hpp"
 
 //---------------------------------- empty entity
@@ -74,6 +73,52 @@ void Entity::Cull(const glm::vec2& targetPosition)
     renderable = (position.x > targetPosition.x && (position.x < targetPosition.x + width) * m_scrollFactor.x) ||
                  (position.x < targetPosition.x && (position.x > targetPosition.x - width) * m_scrollFactor.x);
 } 
+
+
+//------------------------------------ 
+
+
+bool Entity::IsSprite() {
+    return strcmp(type, "sprite") == 0 || 
+            strcmp(type, "tile") == 0;
+}
+
+
+//------------------------------------ 
+
+
+void Entity::SetFlip(bool flipX, bool flipY) { 
+    this->flipX = flipX; 
+    this->flipY = flipY; 
+}
+
+
+//------------------------------------ 		
+
+
+void Entity::SetScale(float scaleX, float scaleY) { 
+    scale.x = scaleX;
+    scale.y = scaleY != 1.0f ? 
+        scaleY : scaleX; 
+}
+
+
+//------------------------------------ 
+
+
+void Entity::SetEnabled(bool isEnabled) {
+    active = isEnabled;
+    renderable = isEnabled;
+}
+
+
+//------------------------------------ 
+
+
+void Entity::SetPosition(float x, float y) { 
+    position.x = x;
+    position.y = y; 
+}
 
 
 /* GEOMETRY */

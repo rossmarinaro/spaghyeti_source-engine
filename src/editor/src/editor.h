@@ -37,28 +37,26 @@ namespace editor {
 
 		public:
 
-			static inline int worldWidth = 2000, 
-							  worldHeight = 2000;
+			static inline int worldWidth, worldHeight;
 
-			static inline float gravityX = 0.0f,
-                                vignetteVisibility = 0.0f,
-								gravityY = 500.0f;
+			static inline float gravityX, gravityY, vignetteVisibility;
 
-			static inline bool projectOpen = false,
-                               shaders_applied = false,
-                               globals_applied = false,
-							   gravity_continuous = true, 
-							   gravity_sleeping = true,
-                               use_pthreads = true,
-                               shared_memory = false,
-                               allow_memory_growth = false,
-                               allow_exception_catching = true,
-                               export_all = true,
-                               wasm = true,
-                               gl_assertions = true,
-                               use_webgl2 = false,
-                               full_es3 = false,
-                               preserveSrc = false;
+			static inline bool projectOpen,
+                               shaders_applied,
+                               globals_applied,
+                               animations_applied,
+							   gravity_continuous, 
+							   gravity_sleeping,
+                               use_pthreads,
+                               shared_memory,
+                               allow_memory_growth,
+                               allow_exception_catching,
+                               export_all,
+                               wasm,
+                               gl_assertions,
+                               use_webgl2,
+                               full_es3,
+                               preserveSrc;
 
 			static inline EventListener events;
 			
@@ -68,6 +66,7 @@ namespace editor {
 			
 			static inline std::vector<std::pair<std::string, std::string>> globals;
             static inline std::vector<std::pair<std::string, std::string>> spritesheets;
+            static inline std::vector<std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>>> animations;
             static inline std::vector<std::pair<std::string, std::pair<std::string, std::string>>> shaders;
 
 			static inline std::vector<std::string> scenes;

@@ -114,6 +114,29 @@ void Editor::Update()
 
 Editor::Editor()
 {
+
+    worldWidth = 2000;
+    worldHeight = 2000;
+    gravityX = 0.0f;
+    gravityY = 500.0f;
+    vignetteVisibility = 0.0f;
+    projectOpen = false;
+    shaders_applied = false;
+    globals_applied = false;
+    animations_applied = false;
+    gravity_continuous = true;
+    gravity_sleeping = true;
+    use_pthreads = true;
+    shared_memory = false;
+    allow_memory_growth = false;
+    allow_exception_catching = true;
+    export_all = true;
+    wasm = true;
+    gl_assertions = true;
+    use_webgl2 = false;
+    full_es3 = false;
+    preserveSrc = false;
+
     //AllocConsole();
 
     remove("appLog.txt");

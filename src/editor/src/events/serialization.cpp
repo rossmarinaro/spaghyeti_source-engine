@@ -151,6 +151,7 @@ void EventListener::Serialize(json& data, bool newScene)
 
     json spritesheets = json::array(),
          assets = json::array(),
+         animations = json::array(),
          shaders = json::array(),
          globals = json::array();
 
@@ -172,6 +173,17 @@ void EventListener::Serialize(json& data, bool newScene)
             for (const auto& spritesheet : Editor::spritesheets)
                 spritesheets.push_back({ { "key", spritesheet.first }, { "path", spritesheet.second } });
 
+        if (Editor::animations.size())
+            for (const auto& animation : Editor::animations) 
+            {
+                json anims;
+
+                for (const auto& collection : animation.second) 
+                    anims.push_back({{ "key", collection.first }, { "start", collection.second.first }, { "end", collection.second.second }});
+                
+                animations.push_back({ { "sprite name", animation.first }, { "anims", anims } });
+            }
+            
         if (Editor::scenes.size() > 1) {
             for (int i = 0; i < Editor::scenes.size(); i++)
                 scenes.push_back({ { "key", Editor::scenes[i] } });
@@ -204,6 +216,7 @@ void EventListener::Serialize(json& data, bool newScene)
     }
 
     data["spritesheets"] = spritesheets;
+    data["animations"] = animations;
     data["assets"] = assets;
     data["shaders"] = shaders;
     data["globals"] = globals;
@@ -298,11 +311,22 @@ void EventListener::Deserialize(std::ifstream& JSON)
             Editor::shaders.push_back({ shader["key"], { shader["vertex"], shader["fragment"] } });
             Editor::shaders_applied = true;
         }
+
+    if (data.contains("animations"))
+        for (const auto& animation : data["animations"]) 
+        {
+            std::vector<std::pair<std::string, std::pair<int, int>>> anims;
+
+            for (const auto& collection : animation["anims"])
+               anims.push_back({ collection["key"], { collection["start"], collection["end"] }});
+            
+            Editor::animations.push_back({ animation["sprite name"], anims });
+            Editor::animations_applied = true;
+        }
         
     //global variables
     
-    if (data.contains("globals"))
-    {
+    if (data.contains("globals")) {
         for (const auto& global : data["globals"])
             Editor::globals.push_back({ global["key"], global["type"] });
 
@@ -372,6 +396,16 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
     if (data.contains("spritesheets")) 
         for (const auto& spritesheet : data["spritesheets"])
             scene->spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
+
+    if (data.contains("animations")) 
+        for (const auto& animation : data["animations"]) {
+            std::vector<std::pair<std::string, std::pair<int, int>>> anims;
+
+            for (const auto& collection : animation["anims"])
+                anims.push_back({ collection["key"], { collection["start"], collection["end"] }});
+
+            scene->animations.push_back({ animation["sprite name"], anims });
+        }
 
     //copy preloaded assets / shaders into scene
 

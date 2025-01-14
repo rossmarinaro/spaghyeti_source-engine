@@ -28,6 +28,7 @@ namespace editor {
                   currentBoundsHeightEnd;
 
             bool shaders_applied = false,
+                 animations_applied = false,
                  globals_applied = false, 
                  gravity_continuous = true,
                  gravity_sleeping = true;
@@ -37,6 +38,7 @@ namespace editor {
 
             std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;
+            std::vector<std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>>> animations;
             std::vector<std::pair<std::string, std::pair<std::string, std::string>>> shaders;
             std::vector<std::shared_ptr<editor::Node>> nodes;
             std::vector<std::string> assets;

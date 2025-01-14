@@ -854,13 +854,19 @@ void EventListener::BuildAndRun()
 
     for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath)) 
     {
-        if (file.exists() && System::Utils::str_endsWith(file.path().string(), ".spaghyeti")) 
+        std::string sceneDir = Editor::projectPath + "scenes",
+                    path = file.path().string();
+
+        std::replace(sceneDir.begin(), sceneDir.end(), '\\', '/');
+        std::replace(path.begin(), path.end(), '\\', '/');
+
+        if (file.exists() && System::Utils::str_endsWith(path, ".spaghyeti")) 
             parseScene(file);
 
-        else if (file.is_directory() && file.path().filename().string() == "scenes")
-            for (const auto& f : std::filesystem::directory_iterator(Editor::projectPath + "/scenes"))
-                if (file.exists() && System::Utils::str_endsWith(f.path().string(), ".spaghyeti"))
-                    parseScene(f);
+        else if (file.is_directory() && path == sceneDir)
+           for (const auto& f : std::filesystem::directory_iterator(sceneDir)) 
+               if (file.exists() && System::Utils::str_endsWith(f.path().string(), ".spaghyeti"))
+                   parseScene(f);
     }
 
     //now compile each scene
@@ -937,6 +943,34 @@ void EventListener::BuildAndRun()
                 }
                 
             }
+        }
+
+        //load animations (loaded data)
+
+        if (target.second->animations.size())
+        {
+
+            for (const auto& animation : target.second->animations)
+            {
+                
+                std::ostringstream anim_oss;
+                std::vector<std::string> animsToLoad;
+
+                for (const auto& anim : animation.second)
+                    animsToLoad.emplace_back("{\"" + std::string(anim.first) + "\"" + ", {" + std::to_string(anim.second.first) + ", " + std::to_string(anim.second.second) + "} }");
+
+                if (!animsToLoad.empty()) 
+                {
+                    std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
+                    anim_oss << animsToLoad.back();
+
+                    if (std::find(loadedAnims.begin(), loadedAnims.end(), animation.first) == loadedAnims.end()) {
+                        loadedAnims.emplace_back(animation.first);
+                        preload_queue << "  System::Resources::Manager::LoadAnims(\"" + animation.first + "\", {" + anim_oss.str() + "});\n";
+                    }
+                }
+            }
+
         }
 
         //set global vars

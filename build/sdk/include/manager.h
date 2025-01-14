@@ -8,6 +8,13 @@
 #include "./shader.h"
 #include "./texture.h"
 
+#if USE_JSON == 1
+
+	#include "./vendors/nlohmann/json.hpp"
+	using json = nlohmann::json;
+
+#endif
+
 namespace System {
 
     namespace Resources {
