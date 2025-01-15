@@ -52,7 +52,7 @@ void Component::Make()
         if (!filename.size())
             return;
 
-        std::string path = Editor::projectPath + AssetManager::shader_dir + "/" + filename,
+        std::string path = Editor::projectPath + AssetManager::Get()->shader_dir + "/" + filename,
                     vert = path + "/" + filename + ".vert",
                     frag = path + "/" + filename + ".frag";
 
@@ -106,7 +106,7 @@ void Component::Make()
         if (!filename.size())
             return;
 
-        const std::string path = Editor::projectPath + AssetManager::script_dir + "/" + filename + ".h";
+        const std::string path = Editor::projectPath + AssetManager::Get()->script_dir + "/" + filename + ".h";
 
         if (std::filesystem::exists(path)) {
             Editor::Log("Script path already exists!");
@@ -130,7 +130,7 @@ void Component::Make()
                 className[i + 1] = toupper(className[i + 1]);
         }
 
-        if (std::filesystem::exists(Editor::projectPath + AssetManager::script_dir + "/" + className + ".h")) {
+        if (std::filesystem::exists(Editor::projectPath + AssetManager::Get()->script_dir + "/" + className + ".h")) {
             Editor::Log("Script name already exists!");
             remove(path.c_str());
             return;

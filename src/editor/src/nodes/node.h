@@ -128,7 +128,9 @@ namespace editor {
                   alpha,
                   restitution,
                   density, 
-                  friction;
+                  friction,
+                  scrollFactorX,
+                  scrollFactorY;
 
             std::string key;
             glm::vec3 tint;

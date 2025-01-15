@@ -32,62 +32,69 @@
 
 namespace editor {
 
-	class Editor 
+    class Editor 
 	{
 
 		public:
 
-			static inline int worldWidth, worldHeight;
+			int worldWidth, worldHeight;
 
-			static inline float gravityX, gravityY, vignetteVisibility;
+			float gravityX, gravityY, vignetteVisibility;
 
-			static inline bool projectOpen,
-                               shaders_applied,
-                               globals_applied,
-                               animations_applied,
-							   gravity_continuous, 
-							   gravity_sleeping,
-                               use_pthreads,
-                               shared_memory,
-                               allow_memory_growth,
-                               allow_exception_catching,
-                               export_all,
-                               wasm,
-                               gl_assertions,
-                               use_webgl2,
-                               full_es3,
-                               preserveSrc;
-
-			static inline EventListener events;
+			bool projectOpen,
+                 shaders_applied,
+                 globals_applied,
+                 animations_applied,
+                 gravity_continuous, 
+                 gravity_sleeping,
+                 use_pthreads,
+                 shared_memory,
+                 allow_memory_growth,
+                 allow_exception_catching,
+                 export_all,
+                 wasm,
+                 gl_assertions,
+                 use_webgl2,
+                 full_es3,
+                 preserveSrc;
 			
-			static inline System::Game* game;
+			System::Game* game;
+            EventListener* events;
+			
+			std::vector<std::pair<std::string, std::string>> globals;
+            std::vector<std::pair<std::string, std::string>> spritesheets;
+            std::vector<std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>>> animations;
+            std::vector<std::pair<std::string, std::pair<std::string, std::string>>> shaders;
+
+			std::vector<std::string> scenes;
+
+            Editor() = default;
+			~Editor();
+            void Reset();
 
             static inline std::shared_ptr<Entity> selectedEntity;
-			
-			static inline std::vector<std::pair<std::string, std::string>> globals;
-            static inline std::vector<std::pair<std::string, std::string>> spritesheets;
-            static inline std::vector<std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>>> animations;
-            static inline std::vector<std::pair<std::string, std::pair<std::string, std::string>>> shaders;
-
-			static inline std::vector<std::string> scenes;
-
 			static inline std::string platform = "Windows",
                                       releaseType = "debug",
                                       buildType = "dynamic",
 									  projectPath = "",
 									  rootPath;
 
-			Editor();
-			~Editor();
-
 			static void Log(const std::string& message);
-			static void Reset();
+            static void Init(Editor* session);
+
+            static inline Editor* Get() {
+                return s_self;
+            }
 
 
 		private:
 
-            static inline std::shared_ptr<Geometry> s_selector;
-			static void Update();
+            std::shared_ptr<Geometry> s_selector;
+
+            void Update();
+
+            static inline Editor* s_self;
+
 	};
 
 }

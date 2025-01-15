@@ -31,6 +31,8 @@ SpriteNode::SpriteNode():
     V1 = 0.0f;
     U2 = 1.0f;
     V2 = 1.0f;
+    scrollFactorX = 1.0f;
+    scrollFactorY = 1.0f;
     frameBuf1.push_back(0);
     frameBuf2.push_back(0);
     frameBuf3.push_back(0);
@@ -354,7 +356,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
             if (HasComponent("Shader") && ImGui::BeginMenu("Shader")) {
 
-                GUI::RenderShaderOptions(ID);
+                GUI::Get()->RenderShaderOptions(ID);
                 
                 ImGui::EndMenu();
             }
@@ -365,7 +367,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
             if (HasComponent("Script") && ImGui::BeginMenu("Script")) {
 
-                GUI::RenderScriptOptions(ID);
+                GUI::Get()->RenderScriptOptions(ID);
                 
                 ImGui::EndMenu();
             }
@@ -463,10 +465,10 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                     //texture
         
-                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)m_currentTexture, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::selectedAsset) == "image")
-                        ApplyTexture(AssetManager::selectedAsset);
+                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)m_currentTexture, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == "image")
+                        ApplyTexture(AssetManager::Get()->selectedAsset);
 
-                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && AssetManager::selectedAsset.length() && System::Utils::GetFileType(AssetManager::selectedAsset) != "image")
+                    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && AssetManager::Get()->selectedAsset.length() && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) != "image")
                         ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
 
                     //if texture applied to sprite
@@ -619,7 +621,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                             if (ImGui::BeginMenu("load frame data"))
                             {
-                                for (const auto& asset : AssetManager::loadedAssets)
+                                for (const auto& asset : AssetManager::Get()->loadedAssets)
                                 {
 
                                     std::string key = asset.first;
@@ -725,6 +727,9 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                 }
 
                 ImGui::SliderInt("depth", &depth, 0, 1000);
+
+                ImGui::InputFloat("scroll factor x", &scrollFactorX);
+                ImGui::InputFloat("scroll factor y", &scrollFactorY);
 
                 ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width); 
                 ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_height); 

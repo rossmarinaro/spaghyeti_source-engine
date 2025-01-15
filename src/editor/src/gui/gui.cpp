@@ -12,8 +12,9 @@ using namespace editor;
 
 //------------------------------------- launch GUI
 
-void GUI::Launch()
+void GUI::Launch(GUI* gui)
 {
+    s_self = gui;
 
     //Poll and handle events (inputs, window resize, etc.)
     //You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -90,8 +91,9 @@ void GUI::Launch()
 
     Shader::Load("grid", checker_vertex, checker_fragment); 
 
-    s_grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    s_grid->shader = Shader::Get("grid");
+    gui->grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
+    gui->grid->shader = Shader::Get("grid");
+    gui->grid_quantity = 20.0f;
 
     //load embedded assets
 
@@ -105,10 +107,10 @@ void GUI::Launch()
 
     glfwSetScrollCallback(System::Window::s_instance, scroll_callback);
 
-    s_cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
-    s_cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
-    s_cursor->isStatic = true; 
-    s_cursor->SetAlpha(0.0f);
+    gui->cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
+    gui->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
+    gui->cursor->isStatic = true; 
+    gui->cursor->SetAlpha(0.0f);
 
     Editor::Log("GUI launched.");
 
@@ -138,7 +140,7 @@ void GUI::AlignForWidth(float width, float alignment)
 void GUI::Render()
 {
 
-    if (!s_running)
+    if (!running)
         return;
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -146,31 +148,31 @@ void GUI::Render()
 
     ImGui::NewFrame();
 
-    if (s_show_init)
+    if (show_init)
         ShowOptionsInit();
 
     else
         RenderDockSpace();
 
-    if (s_show_quit)
+    if (show_quit)
         ShowOptionsQuit();
 
-    if (Editor::events.buildFlag)
+    if (Editor::Get()->events->buildFlag)
         ShowOptionsSave(false);
 
-    else if (Editor::events.saveFlag)
+    else if (Editor::Get()->events->saveFlag)
         ShowOptionsSave(true);
 
     ImGui::Render();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    if (s_grid)
-       s_grid->shader.SetFloat("pitch", s_grid_quantity, true);
+    if (grid)
+       grid->shader.SetFloat("pitch", grid_quantity, true);
 
-    if (s_cursor) {
-        s_cursor->SetPosition(ImGui::GetMousePos().x, ImGui::GetMousePos().y);   
-        s_cursor->Render(System::Window::s_width, System::Window::s_height);
+    if (cursor) {
+        cursor->SetPosition(ImGui::GetMousePos().x, ImGui::GetMousePos().y);   
+        cursor->Render(System::Window::s_width, System::Window::s_height);
     }
      
     //Renderer::CreateFrameBuffer();
@@ -182,10 +184,10 @@ void GUI::Render()
 //---------------------
 
 
-void GUI::Close()
+GUI::~GUI()
 {
     
-    s_running = false;
+    running = false;
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -230,13 +232,13 @@ void GUI::ShowOptionsInit()
 
     if (ImGui::Button("New", ImVec2(System::Window::s_width, 0.0f))) {
  
-        if (Editor::events.NewProject())
-            s_show_init = false;
+        if (Editor::Get()->events->NewProject())
+            show_init = false;
     }
 
     if (ImGui::Button("Open", ImVec2(System::Window::s_width, 0.0f))) {
-        if (Editor::events.Open())
-            s_show_init = false;
+        if (Editor::Get()->events->Open())
+            show_init = false;
     }
 
     //render backsplash image to framebuffer
@@ -277,12 +279,12 @@ void GUI::ShowOptionsQuit()
     ImGui::Text("Do You Want To Quit?");
 
     if (ImGui::MenuItem("Yes")) {
-        s_show_quit = false;
+        show_quit = false;
         glfwSetWindowShouldClose(System::Window::s_instance, true);
     }
 
     if (ImGui::MenuItem("No"))
-        s_show_quit = false;
+        show_quit = false;
 }
 
 
@@ -293,28 +295,29 @@ void GUI::ShowOptionsQuit()
 void GUI::ShowOptionsSave(bool quit)
 {
 
+    auto session = Editor::Get();
+
     ImGui::Text("Do You Want To Save?");
 
     if (ImGui::MenuItem("Yes")) 
-        if(Editor::events.SaveScene()) 
+        if(session->events->SaveScene()) 
         {
-            Editor::events.buildFlag = false;
+            session->events->buildFlag = false;
 
             if (quit) 
-                Editor::events.exitFlag = true;
+                session->events->exitFlag = true;
             else 
-                Editor::events.BuildAndRun();
+                session->events->BuildAndRun();
         }
 
-    if (ImGui::MenuItem("No")) 
-    {
+    if (ImGui::MenuItem("No")) {
 
-        Editor::events.buildFlag = false;
+        session->events->buildFlag = false;
         
         if (quit)
-            Editor::events.exitFlag = true;
+            session->events->exitFlag = true;
         else 
-            Editor::events.BuildAndRun();
+            session->events->BuildAndRun();
     }
        
 }
@@ -329,23 +332,25 @@ void GUI::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
     if (!ImGui::IsAnyItemHovered()) 
     {
 
+        auto session = Editor::Get();
+
         //zoom camera
  
-        float zoom = Editor::game->camera->GetZoom();
+        float zoom = session->game->camera->GetZoom();
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
-            Editor::game->camera->SetZoom(yOffset > -1 ? zoom += 0.1 : zoom -= 0.1);
+            session->game->camera->SetZoom(yOffset > -1 ? zoom += 0.1 : zoom -= 0.1);
         
         //position camera
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            Editor::game->camera->SetPosition({ Editor::game->camera->GetPosition().x + yOffset * 10, Editor::game->camera->GetPosition().y });
+            session->game->camera->SetPosition({ session->game->camera->GetPosition().x + yOffset * 10, session->game->camera->GetPosition().y });
         
         else 
-            Editor::game->camera->SetPosition({ Editor::game->camera->GetPosition().x, Editor::game->camera->GetPosition().y + yOffset * 10 });
+            session->game->camera->SetPosition({ session->game->camera->GetPosition().x, session->game->camera->GetPosition().y + yOffset * 10 });
 
         if (xOffset != 0)
-            Editor::game->camera->SetPosition({ Editor::game->camera->GetPosition().x + xOffset * 10, Editor::game->camera->GetPosition().y });
+            session->game->camera->SetPosition({ session->game->camera->GetPosition().x + xOffset * 10, session->game->camera->GetPosition().y });
     }
 }
 

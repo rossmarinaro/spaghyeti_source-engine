@@ -7,10 +7,10 @@
 
 void SetFolder(bool isOpen, const std::string& type = "") 
 {
-    editor::AssetManager::folderSelected = isOpen;
+    editor::AssetManager::Get()->folderSelected = isOpen;
 
     if (type.length())
-        editor::AssetManager::currentFolder = type;
+        editor::AssetManager::Get()->currentFolder = type;
 }
 
 
@@ -27,13 +27,13 @@ void displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec)
             std::string folder = editor::AssetManager::GetFolder(vec[i].first);
             folder.erase(remove(folder.begin(), folder.end(), '\\'), folder.end());
 
-            if (folder == editor::AssetManager::currentFolder)
+            if (folder == editor::AssetManager::Get()->currentFolder)
             {
                 ImGui::PushID(i);
 
                 if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec[i].second, ImVec2(70, 70))) {
-                    editor::AssetManager::selectedAsset = vec[i].first;
-                    editor::Editor::Log("Current asset selected: " + editor::AssetManager::selectedAsset);
+                    editor::AssetManager::Get()->selectedAsset = vec[i].first;
+                    editor::Editor::Log("Current asset selected: " + editor::AssetManager::Get()->selectedAsset);
                 }
 
                 //asset tool tip
@@ -65,24 +65,24 @@ void editor::GUI::RenderAssets()
 {
 
     if (ImGui::MenuItem("Open", "Ctrl+A"))
-        Editor::events.OpenFile();
+        Editor::Get()->events->OpenFile();
 
-    if (AssetManager::folderSelected)
+    if (AssetManager::Get()->folderSelected)
         if (ImGui::MenuItem("Go Back"))
             SetFolder(false);
     
     ImGui::Separator(); 
 
-    if (AssetManager::folderSelected)
+    if (AssetManager::Get()->folderSelected)
     {
-        if (AssetManager::currentFolder == "images")
-            displayThumbnail(AssetManager::images);
+        if (AssetManager::Get()->currentFolder == "images")
+            displayThumbnail(AssetManager::Get()->images);
 
-        if (AssetManager::currentFolder == "audio")
-            displayThumbnail(AssetManager::audio);
+        if (AssetManager::Get()->currentFolder == "audio")
+            displayThumbnail(AssetManager::Get()->audio);
 
-        if (AssetManager::currentFolder == "data")
-            displayThumbnail(AssetManager::data);
+        if (AssetManager::Get()->currentFolder == "data")
+            displayThumbnail(AssetManager::Get()->data);
     }
 
     else 

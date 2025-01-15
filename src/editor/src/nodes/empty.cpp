@@ -115,7 +115,7 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
             if (HasComponent("Script") && ImGui::BeginMenu("Script")) {
 
-                GUI::RenderScriptOptions(ID);
+                GUI::Get()->RenderScriptOptions(ID);
                 
                 ImGui::EndMenu();
             }
@@ -125,7 +125,7 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
             if (HasComponent("Shader") && ImGui::BeginMenu("Shader")) {
 
-                GUI::RenderShaderOptions(ID);
+                GUI::Get()->RenderShaderOptions(ID);
                 
                 ImGui::EndMenu();
             }

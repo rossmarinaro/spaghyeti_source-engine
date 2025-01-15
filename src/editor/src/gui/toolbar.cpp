@@ -7,6 +7,9 @@
 void editor::GUI::ShowSettings()
 {
 
+    auto session = Editor::Get();
+    auto am = AssetManager::Get();
+
     //scenes
 
     if (ImGui::BeginMenu("Scenes")) 
@@ -14,8 +17,8 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("scenes in queue"))
         {
-            for (int i = 0; i < Editor::scenes.size(); i++) 
-                ImGui::Text(("scene " + std::to_string(i) + ": " + Editor::scenes[i]).c_str());
+            for (int i = 0; i < session->scenes.size(); i++) 
+                ImGui::Text(("scene " + std::to_string(i) + ": " + session->scenes[i]).c_str());
 
             ImGui::EndMenu();
         }
@@ -27,10 +30,10 @@ void editor::GUI::ShowSettings()
                 {
                     const std::string scene = System::Utils::ReplaceFrom(filename.path().filename().string(), ".", ""); 
                   
-                    if (Editor::events.s_currentScene != scene)
+                    if (session->events->s_currentScene != scene)
                         if (ImGui::MenuItem((scene).c_str())) 
-                            if (std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == scene; }) == Editor::scenes.end()) 
-                                Editor::scenes.push_back(scene);
+                            if (std::find_if(session->scenes.begin(), session->scenes.end(), [&](const std::string& s ) { return s == scene; }) == session->scenes.end()) 
+                                session->scenes.push_back(scene);
                 }
 
             ImGui::EndMenu();
@@ -38,23 +41,23 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("remove")) 
         {
-            for (auto scene_it = Editor::scenes.begin(); scene_it != Editor::scenes.end(); scene_it++) 
+            for (auto scene_it = session->scenes.begin(); scene_it != session->scenes.end(); scene_it++) 
             {
-                if (Editor::events.s_currentScene != *scene_it)
+                if (session->events->s_currentScene != *scene_it)
                 {
                     if (ImGui::MenuItem((*scene_it).c_str())) 
                     {
 
-                        auto it = std::find_if(Editor::scenes.begin(), Editor::scenes.end(), [&](const std::string& s ) { return s == *scene_it; });
+                        auto it = std::find_if(session->scenes.begin(), session->scenes.end(), [&](const std::string& s ) { return s == *scene_it; });
   
-                        if (it != Editor::scenes.end()) {
-                            scene_it = Editor::scenes.erase(it);
+                        if (it != session->scenes.end()) {
+                            scene_it = session->scenes.erase(it);
                             --scene_it;
                         }
                     }
                 } 
 
-                else if (Editor::scenes.size() == 1)
+                else if (session->scenes.size() == 1)
                     ImGui::Text("cannot remove base scene.");
             }
 
@@ -73,29 +76,29 @@ void editor::GUI::ShowSettings()
 
         ImGui::Separator();
 
-        for (int i = 0; i < Editor::globals.size(); i++)
+        for (int i = 0; i < session->globals.size(); i++)
         {
 
             ImGui::PushID(i);
 
             ImGui::Text("var: %d", i);
 
-            if (ImGui::InputText("name", &Editor::globals[i].first))
-                Editor::globals_applied = false;
+            if (ImGui::InputText("name", &session->globals[i].first))
+                session->globals_applied = false;
 
             ImGui::SameLine();
 
             static const char* items[] = { "int", "float", "bool", "string", "int[]", "float[]", "string[]" };
 
-            if (ImGui::BeginCombo("type", Editor::globals[i].second.c_str()))
+            if (ImGui::BeginCombo("type", session->globals[i].second.c_str()))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(items); n++)
                 {
-                    bool is_sel = (Editor::globals[i].second == items[n]);
+                    bool is_sel = (session->globals[i].second == items[n]);
 
                     if (ImGui::Selectable(items[n], is_sel)) {
-                        Editor::globals[i].second = items[n];
-                        Editor::globals_applied = false;
+                        session->globals[i].second = items[n];
+                        session->globals_applied = false;
                     }
 
                     if (is_sel)
@@ -111,19 +114,19 @@ void editor::GUI::ShowSettings()
         }
 
         if (ImGui::Button("add"))
-            Editor::globals.push_back({"", ""});
+            session->globals.push_back({"", ""});
 
         ImGui::SameLine();
 
         if (ImGui::Button("delete"))
         {
 
-            std::string type = Editor::globals.back().second,
-                        var = Editor::globals.back().first;
+            std::string type = session->globals.back().second,
+                        var = session->globals.back().first;
 
-            Editor::globals.pop_back();
+            session->globals.pop_back();
 
-            Editor::globals_applied = false;
+            session->globals_applied = false;
 
             Editor::Log("global variable: " + type + " " + var + " removed.");
         }
@@ -132,20 +135,20 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::Button("apply"))
         {
-            for (const auto &var : Editor::globals) {
+            for (const auto &var : session->globals) {
 
-                if ((!var.first.length() || !var.second.length()) || std::adjacent_find(Editor::globals.begin(), Editor::globals.end()) != Editor::globals.end())
+                if ((!var.first.length() || !var.second.length()) || std::adjacent_find(session->globals.begin(), session->globals.end()) != session->globals.end())
                     break;
 
                 Editor::Log("global variable: " + var.second + " " + var.first + " added.");
 
-                Editor::globals_applied = true;
+                session->globals_applied = true;
             }
         }
 
         ImGui::SameLine();
 
-        if (Editor::globals_applied)
+        if (session->globals_applied)
             ImGui::Text("variables applied.");
 
 
@@ -157,10 +160,10 @@ void editor::GUI::ShowSettings()
 
     if (ImGui::BeginMenu("Physics"))
     {
-        ImGui::InputFloat("gravity x", &Editor::gravityX);
-        ImGui::InputFloat("gravity y", &Editor::gravityY);
-        ImGui::Checkbox("continuous", &Editor::gravity_continuous);
-        ImGui::Checkbox("sleeping", &Editor::gravity_sleeping);
+        ImGui::InputFloat("gravity x", &session->gravityX);
+        ImGui::InputFloat("gravity y", &session->gravityY);
+        ImGui::Checkbox("continuous", &session->gravity_continuous);
+        ImGui::Checkbox("sleeping", &session->gravity_sleeping);
 
         ImGui::EndMenu();
     }
@@ -170,15 +173,15 @@ void editor::GUI::ShowSettings()
     if (ImGui::BeginMenu("World Bounds"))
     {
         if (ImGui::BeginMenu("width")) {
-            ImGui::InputFloat("begin", &Editor::game->camera->currentBoundsWidthBegin);
-            ImGui::InputFloat("end", &Editor::game->camera->currentBoundsWidthEnd);
+            ImGui::InputFloat("begin", &session->game->camera->currentBoundsWidthBegin);
+            ImGui::InputFloat("end", &session->game->camera->currentBoundsWidthEnd);
 
             ImGui::EndMenu();
         }
 
         if (ImGui::BeginMenu("height")) {
-            ImGui::InputFloat("begin", &Editor::game->camera->currentBoundsHeightBegin);
-            ImGui::InputFloat("end", &Editor::game->camera->currentBoundsHeightEnd);
+            ImGui::InputFloat("begin", &session->game->camera->currentBoundsHeightBegin);
+            ImGui::InputFloat("end", &session->game->camera->currentBoundsHeightEnd);
 
             ImGui::EndMenu();
         }
@@ -198,7 +201,7 @@ void editor::GUI::ShowSettings()
 
             if (ImGui::BeginMenu("add"))
             {
-                for (auto& asset : AssetManager::loadedAssets) 
+                for (auto& asset : am->loadedAssets) 
                 {
                     std::string key = asset.first,
                                 path = asset.second;
@@ -217,8 +220,8 @@ void editor::GUI::ShowSettings()
             
             int i = 0;
 
-            if (AssetManager::assets.size())
-                for (auto& asset : AssetManager::assets) 
+            if (am->assets.size())
+                for (auto& asset : am->assets) 
                 {
                     i++; 
 
@@ -231,16 +234,16 @@ void editor::GUI::ShowSettings()
                     {
                         if (ImGui::MenuItem("delete")) 
                         {
-                            auto it = std::find(AssetManager::assets.begin(), AssetManager::assets.end(), asset);
+                            auto it = std::find(am->assets.begin(), am->assets.end(), asset);
 
-                            if (it != AssetManager::assets.end())
-                                AssetManager::assets.erase(it);
+                            if (it != am->assets.end())
+                                am->assets.erase(it);
                         }
 
                         ImGui::EndMenu();
                     }
 
-                    if (i < AssetManager::assets.size())
+                    if (i < am->assets.size())
                         ImGui::Separator();
                 }
 
@@ -256,9 +259,9 @@ void editor::GUI::ShowSettings()
         if (ImGui::BeginMenu("preload shaders"))
         {
 
-            const auto searchShaderFolders = [](int index, const std::string& type) -> void {
+            const auto searchShaderFolders = [&am](int index, const std::string& type) -> void {
 
-                for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::shader_dir)) 
+                for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + am->shader_dir)) 
                 {
 
                     std::string path = shader.path().string();
@@ -272,9 +275,9 @@ void editor::GUI::ShowSettings()
                         if (System::Utils::str_endsWith(p, type)) 
                             if (ImGui::MenuItem(p.c_str())) {
                                 if (type == ".vert")
-                                    Editor::shaders[index].second.first = p;
+                                    Editor::Get()->shaders[index].second.first = p;
                                 if (type == ".frag")
-                                    Editor::shaders[index].second.second = p;
+                                    Editor::Get()->shaders[index].second.second = p;
                             }
                     };
 
@@ -290,14 +293,14 @@ void editor::GUI::ShowSettings()
                 }
             };
 
-            for (int i = 0; i < Editor::shaders.size(); i++)
+            for (int i = 0; i < session->shaders.size(); i++)
             {
 
                 ImGui::PushID(i);
 
-                ImGui::InputText("key", &Editor::shaders[i].first);
+                ImGui::InputText("key", &session->shaders[i].first);
 
-                ImGui::Text(("vertex: " + Editor::shaders[i].second.first).c_str());
+                ImGui::Text(("vertex: " + session->shaders[i].second.first).c_str());
 
                 ImGui::SameLine();
                 
@@ -306,7 +309,7 @@ void editor::GUI::ShowSettings()
                     ImGui::EndMenu();
                 }
 
-                ImGui::Text(("fragment: " + Editor::shaders[i].second.second).c_str());
+                ImGui::Text(("fragment: " + session->shaders[i].second.second).c_str());
 
                 ImGui::SameLine();
 
@@ -322,26 +325,26 @@ void editor::GUI::ShowSettings()
             }
 
             if (ImGui::Button("add"))
-                Editor::shaders.push_back({ "", { "none selected", "none selected" }});
+                session->shaders.push_back({ "", { "none selected", "none selected" }});
 
             ImGui::SameLine();
 
             if (ImGui::Button("delete")) {
-                std::string key = Editor::shaders.back().first;
-                Editor::shaders.pop_back();
-                Editor::shaders_applied = false;
+                std::string key = session->shaders.back().first;
+                session->shaders.pop_back();
+                session->shaders_applied = false;
                 Editor::Log("shader: " + key + " removed.");
             }
 
             if (ImGui::Button("apply"))
             {
-                for (const auto& shader : Editor::shaders) {
+                for (const auto& shader : session->shaders) {
 
                     if ((!shader.first.length() || shader.second.first == "none selected" || shader.second.second == "none selected") || 
-                        std::adjacent_find(Editor::shaders.begin(), Editor::shaders.end()) != Editor::shaders.end())
+                        std::adjacent_find(session->shaders.begin(), session->shaders.end()) != session->shaders.end())
                         break;
 
-                    Editor::shaders_applied = true;
+                    session->shaders_applied = true;
 
                     Editor::Log("shader: " + shader.first + " added.");
                 }
@@ -356,7 +359,7 @@ void editor::GUI::ShowSettings()
         {
             int i = 0;
 
-            for (auto& spritesheet : Editor::spritesheets)
+            for (auto& spritesheet : session->spritesheets)
             {
 
                 ImGui::PushID(i);
@@ -376,7 +379,7 @@ void editor::GUI::ShowSettings()
                 if (ImGui::BeginCombo("path", spritesheet.second.c_str()))
                 {
 
-                    for (const auto& asset : AssetManager::loadedAssets)
+                    for (const auto& asset : am->loadedAssets)
                     {
  
                         std::string key = asset.first,
@@ -399,12 +402,12 @@ void editor::GUI::ShowSettings()
             }
 
             if (ImGui::Button("add"))
-                Editor::spritesheets.push_back({ "", "" });
+                session->spritesheets.push_back({ "", "" });
 
             ImGui::SameLine();
 
             if (ImGui::Button("delete"))
-                Editor::spritesheets.pop_back();
+                session->spritesheets.pop_back();
     
             ImGui::EndMenu();
             
@@ -415,19 +418,19 @@ void editor::GUI::ShowSettings()
         if (ImGui::BeginMenu("preload animations"))
         {
 
-            for (int i = 0; i < Editor::animations.size(); i++)
+            for (int i = 0; i < session->animations.size(); i++)
             {
 
                 ImGui::PushID(i);
 
-                ImGui::InputText("sprite name", &Editor::animations[i].first);
+                ImGui::InputText("sprite name", &session->animations[i].first);
 
                 if (ImGui::BeginMenu("animations")) 
                 {
                     int j = 0;
 
-                    if (Editor::animations[i].second.size())
-                        for (auto& anim : Editor::animations[i].second) 
+                    if (session->animations[i].second.size())
+                        for (auto& anim : session->animations[i].second) 
                         {
                             ImGui::PushID(j);
 
@@ -437,7 +440,7 @@ void editor::GUI::ShowSettings()
 
                             ImGui::PopID();
 
-                            if (Editor::animations[i].second.size() > 1)
+                            if (session->animations[i].second.size() > 1)
                                 ImGui::Separator();
 
                             j++;
@@ -449,12 +452,12 @@ void editor::GUI::ShowSettings()
                 }
 
                 if (ImGui::Button("add"))
-                    Editor::animations[i].second.push_back({ "", { 0, 0 }});
+                    session->animations[i].second.push_back({ "", { 0, 0 }});
 
                 ImGui::SameLine();
 
                 if (ImGui::Button("delete"))
-                    Editor::animations[i].second.pop_back();
+                    session->animations[i].second.pop_back();
 
                 ImGui::Separator();
 
@@ -463,26 +466,26 @@ void editor::GUI::ShowSettings()
             }
 
             if (ImGui::Button("add")) 
-                Editor::animations.push_back({ "", {}});
+                session->animations.push_back({ "", {}});
 
             ImGui::SameLine();
 
             if (ImGui::Button("delete")) {
-                std::string key = Editor::animations.back().first;
-                Editor::animations.pop_back();
-                Editor::animations_applied = false;
+                std::string key = session->animations.back().first;
+                session->animations.pop_back();
+                session->animations_applied = false;
                 Editor::Log("animation: " + key + " removed.");
             }
 
             if (ImGui::Button("apply"))
             {
-                for (const auto& animation : Editor::animations) {
+                for (const auto& animation : session->animations) {
 
                     if ((!animation.first.length()) || 
-                        std::adjacent_find(Editor::animations.begin(), Editor::animations.end()) != Editor::animations.end())
+                        std::adjacent_find(session->animations.begin(), session->animations.end()) != session->animations.end())
                         break;
 
-                    Editor::animations_applied = true;
+                    session->animations_applied = true;
 
                     Editor::Log("animation: " + animation.first + " added.");
                 }
@@ -504,6 +507,7 @@ void editor::GUI::ShowSettings()
 
 void editor::GUI::ShowMenu()
 {
+    auto session = Editor::Get();
 
     ImGui::MenuItem(("Platform: " + Editor::platform).c_str(), NULL, false, false);
     ImGui::MenuItem(("Build: " + Editor::buildType).c_str(), NULL, false, false);
@@ -512,36 +516,36 @@ void editor::GUI::ShowMenu()
     ImGui::Separator();
 
     if (ImGui::MenuItem("Build / Run"))
-        Editor::events.buildFlag = true;
+        session->events->buildFlag = true;
 
     if (ImGui::BeginMenu("New")) 
     {
         if (ImGui::MenuItem("project"))
-            if (!Editor::events.NewProject())
+            if (!session->events->NewProject())
                 Editor::Log("could not create project.");
 
         if (ImGui::MenuItem("scene"))
-            if (!Editor::events.NewScene())
+            if (!session->events->NewScene())
                 Editor::Log("could not create scene.");
 
         ImGui::EndMenu();
     }
 
     if (ImGui::MenuItem("Open", "Ctrl+O"))
-        Editor::events.Open();
+        session->events->Open();
 
     if (ImGui::MenuItem("Save", "Ctrl+S"))
-        if(!Editor::events.SaveScene())
+        if(!session->events->SaveScene())
             Editor::Log("could not save scene.");
  
     if (ImGui::MenuItem("Save As.."))
-        if (!Editor::events.SaveScene(true))
+        if (!session->events->SaveScene(true))
             Editor::Log("could not save scene.");
 
     ImGui::Separator();
 
     if (ImGui::MenuItem("Quit", "Alt+F4"))
-        s_show_quit = true; 
+        show_quit = true; 
 
     if (ImGui::BeginMenu("Options"))
     {
@@ -589,22 +593,22 @@ void editor::GUI::ShowMenu()
 
             if (ImGui::BeginMenu("icon")) 
             {
-                const char* icon = AssetManager::projectIcon.length() ? 
-                    ("icon path: " + AssetManager::projectIcon).c_str() : "No icon assigned.";
+                const char* icon = AssetManager::Get()->projectIcon.length() ? 
+                    ("icon path: " + AssetManager::Get()->projectIcon).c_str() : "No icon assigned.";
                 
                 ImGui::Text(icon);
 
                 ImGui::Separator();
 
                 if (ImGui::MenuItem("select icon")) 
-                    Editor::events.OpenFile(); 
+                    session->events->OpenFile(); 
 
                 ImGui::EndMenu();
             }
 
             if (ImGui::BeginMenu("configurations")) 
             {
-                ImGui::Checkbox("preserve source file", &Editor::preserveSrc);
+                ImGui::Checkbox("preserve source file", &session->preserveSrc);
                 
                 ImGui::Text(("platform: " + Editor::platform).c_str());
 
@@ -612,15 +616,15 @@ void editor::GUI::ShowMenu()
 
                 if (Editor::platform == "WebGL")
                 {
-                    ImGui::Checkbox("use pthreads", &Editor::use_pthreads);
-                    ImGui::Checkbox("shared memory", &Editor::shared_memory);
-                    ImGui::Checkbox("allow memory growth", &Editor::allow_memory_growth);
-                    ImGui::Checkbox("allow exception catching", &Editor::allow_exception_catching);
-                    ImGui::Checkbox("export all", &Editor::export_all);
-                    ImGui::Checkbox("WASM", &Editor::wasm);
-                    ImGui::Checkbox("GL assertions", &Editor::gl_assertions);
-                    ImGui::Checkbox("use WebGL2", &Editor::use_webgl2);
-                    ImGui::Checkbox("full ES3", &Editor::full_es3);
+                    ImGui::Checkbox("use pthreads", &session->use_pthreads);
+                    ImGui::Checkbox("shared memory", &session->shared_memory);
+                    ImGui::Checkbox("allow memory growth", &session->allow_memory_growth);
+                    ImGui::Checkbox("allow exception catching", &session->allow_exception_catching);
+                    ImGui::Checkbox("export all", &session->export_all);
+                    ImGui::Checkbox("WASM", &session->wasm);
+                    ImGui::Checkbox("GL assertions", &session->gl_assertions);
+                    ImGui::Checkbox("use WebGL2", &session->use_webgl2);
+                    ImGui::Checkbox("full ES3", &session->full_es3);
                 }
 
                 else 
@@ -679,31 +683,33 @@ void editor::GUI::ShowMenu()
 
 void editor::GUI::ShowViewport()
 {
+    auto session = Editor::Get();
+
     ImGui::Text("viewport");
     ImGui::Separator();
 
-    ImGui::InputInt("width", &Editor::worldWidth);
-    ImGui::InputInt("height", &Editor::worldHeight); 
-    ImGui::SliderFloat("x", (float*)&Editor::game->camera->GetPosition().x, Editor::worldWidth, -Editor::worldWidth);
-    ImGui::SliderFloat("y", (float*)&Editor::game->camera->GetPosition().y, Editor::worldWidth, -Editor::worldHeight);
-    ImGui::SliderFloat("zoom", Editor::game->camera->GetZoomPtr(), -10.0f, 10.0f);
-    ImGui::SliderFloat("vignette", &Editor::vignetteVisibility, 0.0f, 1.0f);
-    ImGui::ColorEdit4("color", (float*)&Editor::game->camera->GetBackgroundColor()); 
+    ImGui::InputInt("width", &session->worldWidth);
+    ImGui::InputInt("height", &session->worldHeight); 
+    ImGui::SliderFloat("x", (float*)&session->game->camera->GetPosition().x, session->worldWidth, -session->worldWidth);
+    ImGui::SliderFloat("y", (float*)&session->game->camera->GetPosition().y, session->worldWidth, -session->worldHeight);
+    ImGui::SliderFloat("zoom", session->game->camera->GetZoomPtr(), -10.0f, 10.0f);
+    ImGui::SliderFloat("vignette", &session->vignetteVisibility, 0.0f, 1.0f);
+    ImGui::ColorEdit4("color", (float*)&session->game->camera->GetBackgroundColor()); 
 
     //vignette visibility
 
-    Editor::game->GetScene()->vignette->SetAlpha(Editor::vignetteVisibility);
+    session->game->GetScene()->vignette->SetAlpha(session->vignetteVisibility);
     ImGui::Text("grid");
     ImGui::Separator();
 
-    ImGui::SliderFloat("grid alpha", (float*)&s_grid->alpha, 0.0f, 1.0f);
-    ImGui::SliderFloat("pitch", (float*)&s_grid_quantity, 0.0f, 200.0f);
+    ImGui::SliderFloat("grid alpha", (float*)&grid->alpha, 0.0f, 1.0f);
+    ImGui::SliderFloat("pitch", (float*)&grid_quantity, 0.0f, 200.0f);
 
     //cursor
 
     ImGui::Text("cursor");
     ImGui::Separator();
 
-    ImGui::SliderFloat("cursor alpha", (float*)&s_cursor->alpha, 0.0f, 1.0f);
-    ImGui::ColorEdit3("tint", (float*)&s_cursor->tint);
+    ImGui::SliderFloat("cursor alpha", (float*)&cursor->alpha, 0.0f, 1.0f);
+    ImGui::ColorEdit3("tint", (float*)&cursor->tint);
 }

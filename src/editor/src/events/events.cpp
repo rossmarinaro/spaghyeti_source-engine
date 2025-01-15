@@ -41,6 +41,20 @@ static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPAR
 }
 
 
+//--------------------------------
+
+
+EventListener::EventListener() 
+{
+    exitFlag = false;
+    saveFlag = false;
+    buildFlag = false;
+    canSave = true;
+    
+    Editor::Log("Events initialized.");
+}
+
+
 
 //-------------------------------- new project layer
 
@@ -73,7 +87,7 @@ bool EventListener::NewProject(const char* root_path)
                 imalloc->Release();
             }
 
-            Editor::Reset();
+            Editor::Get()->Reset();
 
             Editor::projectPath = (std::string)path;
 
@@ -129,7 +143,7 @@ bool EventListener::NewScene(const char* root_path)
 
             DecodeFile(tmp, file);
 
-            Editor::Reset();
+            Editor::Get()->Reset();
 
             std::ifstream JSON(tmp);
 
@@ -193,7 +207,7 @@ bool EventListener::Open() //makes temporary json file to parse data from .spagh
 
             DecodeFile(tmp, result);
 
-            Editor::Reset();
+            Editor::Get()->Reset();
 
             const std::string asset_folders[] = { "images", "audio", "data" };
 
@@ -213,13 +227,13 @@ bool EventListener::Open() //makes temporary json file to parse data from .spagh
                     unsigned int id = Graphics::Texture2D::Get(texture).ID;
 
                     if (type == "images")
-                        AssetManager::images.push_back({ asset, id });
+                        AssetManager::Get()->images.push_back({ asset, id });
 
                     if (type == "audio")
-                        AssetManager::audio.push_back({ asset, id });
+                        AssetManager::Get()->audio.push_back({ asset, id });
 
                     if (type == "data")
-                        AssetManager::data.push_back({ asset, id });
+                        AssetManager::Get()->data.push_back({ asset, id });
                 }
 
             //load entity nodes
@@ -240,7 +254,7 @@ bool EventListener::Open() //makes temporary json file to parse data from .spagh
 
             remove(tmp.c_str());
 
-            Editor::projectOpen = true;
+            Editor::Get()->projectOpen = true;
 
             return true;
 
@@ -389,9 +403,9 @@ void EventListener::OpenFile()
 
             //register asset into temp cache
 
-            std::map<std::string, std::string>::iterator iterator = AssetManager::loadedAssets.find(asset);
+            std::map<std::string, std::string>::iterator iterator = AssetManager::Get()->loadedAssets.find(asset);
 
-            if (iterator == AssetManager::loadedAssets.end() || AssetManager::selectedAsset.length() < 0) 
+            if (iterator == AssetManager::Get()->loadedAssets.end() || AssetManager::Get()->selectedAsset.length() < 0) 
                 AssetManager::LoadAsset(asset);
 
             //apply image to assets menu if not there already
@@ -409,18 +423,18 @@ void EventListener::OpenFile()
             };
 
             if (folder == "images")
-                insertAsset(AssetManager::images);
+                insertAsset(AssetManager::Get()->images);
 
             if (folder == "audio")
-                insertAsset(AssetManager::audio);
+                insertAsset(AssetManager::Get()->audio);
 
             if (folder == "data")
-                insertAsset(AssetManager::data);
+                insertAsset(AssetManager::Get()->data);
 
             if (folder == "icon") {
                 std::string path = result.string();
                 std::replace(path.begin(), path.end(), '\\', '/');
-                AssetManager::projectIcon = path;
+                AssetManager::Get()->projectIcon = path;
             }
 
         }
@@ -532,9 +546,9 @@ void EventListener::BuildAndRun()
             remove((Editor::projectPath + "icon.rc").c_str());
 
     
-        if (std::filesystem::exists(AssetManager::projectIcon) && AssetManager::projectIcon.length()) {
+        if (std::filesystem::exists(AssetManager::Get()->projectIcon) && AssetManager::Get()->projectIcon.length()) {
             std::ofstream icon_rc(Editor::projectPath + "icon.rc");
-            icon_rc << "1 ICON \"" + AssetManager::projectIcon + "\"";
+            icon_rc << "1 ICON \"" + AssetManager::Get()->projectIcon + "\"";
             has_icon = true;
         }
 
@@ -591,15 +605,15 @@ void EventListener::BuildAndRun()
     else if (Editor::platform == "WebGL")
     {
 
-        const std::string use_pthreads = Editor::use_pthreads ? "1" : "0",
-                          shared_memory = Editor::shared_memory ? "1" : "0",
-                          allow_memory_growth = Editor::allow_memory_growth ? "1" : "0",
-                          allow_exception_catching = Editor::allow_memory_growth ? "1" : "0",
-                          export_all = Editor::export_all ? "1" : "0",
-                          wasm = Editor::wasm ? "1" : "0",
-                          gl_assertions = Editor::gl_assertions ? "1" : "0",
-                          use_webgl2 = Editor::use_webgl2 ? "1" : "0",
-                          full_es3 = Editor::full_es3 ? "1" : "0";
+        const std::string use_pthreads = Editor::Get()->use_pthreads ? "1" : "0",
+                          shared_memory = Editor::Get()->shared_memory ? "1" : "0",
+                          allow_memory_growth = Editor::Get()->allow_memory_growth ? "1" : "0",
+                          allow_exception_catching = Editor::Get()->allow_memory_growth ? "1" : "0",
+                          export_all = Editor::Get()->export_all ? "1" : "0",
+                          wasm = Editor::Get()->wasm ? "1" : "0",
+                          gl_assertions = Editor::Get()->gl_assertions ? "1" : "0",
+                          use_webgl2 = Editor::Get()->use_webgl2 ? "1" : "0",
+                          full_es3 = Editor::Get()->full_es3 ? "1" : "0";
                         
 
         std::string name_upper = s_currentProject;
@@ -727,7 +741,7 @@ void EventListener::BuildAndRun()
 
     //include scripts
 
-    for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) {
+    for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::Get()->projectPath + AssetManager::Get()->script_dir)) {
 
         std::string path = script.path().string();
 
@@ -782,7 +796,7 @@ void EventListener::BuildAndRun()
 
     };
 
-    for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::shader_dir)) 
+    for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->shader_dir)) 
     {
 
         std::string path = shader.path().string();
@@ -807,7 +821,7 @@ void EventListener::BuildAndRun()
 
     const auto parseScene = [this](const std::filesystem::directory_entry& filepath) -> void {
 
-        for (const auto& scene : Editor::scenes)
+        for (const auto& scene : Editor::Get()->scenes)
         {
             if (scene == System::Utils::ReplaceFrom(filepath.path().filename().string(), ".", ""))
             {
@@ -1079,6 +1093,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetAlpha(" + std::to_string(sn->alpha) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetScrollFactor({" + std::to_string(sn->scrollFactorX) + ", " + std::to_string(sn->scrollFactorY) + "});\n";
 
                     const std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
 
@@ -1351,7 +1366,7 @@ void EventListener::BuildAndRun()
     game_src <<	"   #endif\n";
     game_src <<	"       System::Game game;\n";
 
-    for (const auto& scene : Editor::scenes) 
+    for (const auto& scene : Editor::Get()->scenes) 
     {
         std::string className = scene;
 
@@ -1381,7 +1396,7 @@ void EventListener::BuildAndRun()
     else if (Editor::platform == "Windows")
         system(("chdir sdk && buildGame.bat " + Editor::projectPath + " " + s_currentProject).c_str());
 
-    if (!Editor::preserveSrc)
+    if (!Editor::Get()->preserveSrc)
         remove(srcPath.c_str());
         
     remove(makefile_path.c_str());

@@ -26,7 +26,7 @@ AudioNode::AudioNode():
 
 
 void AudioNode::Load() {
-    audio_source_name = AssetManager::selectedAsset;
+    audio_source_name = AssetManager::Get()->selectedAsset;
     AssetManager::Register(audio_source_name);
 }
 
@@ -77,7 +77,7 @@ void AudioNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
             {
 
                 if (ImGui::ImageButton("audio source", (void*)(intptr_t)m_audioTexture.ID, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0))) {
-                    if (System::Utils::GetFileType(AssetManager::selectedAsset) == "audio")
+                    if (System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == "audio")
                         Load();
                 }
                     

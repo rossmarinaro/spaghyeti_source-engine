@@ -9,15 +9,15 @@ namespace editor {
 
         public:
 
-            static inline bool exitFlag = false,
-                               saveFlag = false,
-                               buildFlag = false,
-                               canSave = true;
-            
-            static inline std::string s_currentProject = "",
-                                      s_currentScene = "";
+            bool exitFlag,
+                 saveFlag,
+                 buildFlag,
+                 canSave;
 
-            static inline std::vector<std::pair<std::string, Scene*>> compileQueue;
+            std::vector<std::pair<std::string, Scene*>> compileQueue;
+
+            EventListener();
+            ~EventListener() = default;
 
             bool NewScene(const char* root_path = "C:\\");
             bool NewProject(const char* root_path = "C:\\");
@@ -32,12 +32,17 @@ namespace editor {
             
             std::string GetScriptName(const std::string& path);
 
+            static inline std::string s_currentProject = "",
+                                      s_currentScene = "";
+
         private:
             
             void Serialize(json& data, bool newScene = false); 
             void Deserialize(std::ifstream& JSON);
             void InsertTo(const std::string& code, const std::string& directory);
             void ParseScene(const std::string& sceneKey, std::ifstream& JSON);
+
+            static inline EventListener* s_self;
     };
 }
 

@@ -116,36 +116,38 @@ void EventListener::Serialize(json& data, bool newScene)
          empty,
          groups;
     
-    data["icon"] = newScene ? "" : AssetManager::projectIcon;
+    data["icon"] = newScene ? "" : AssetManager::Get()->projectIcon;
+
+    auto session = Editor::Get();
 
     //camera
 
-    data["camera"]["vignetteVisibility"] = newScene ? 0.0f : Editor::vignetteVisibility;
-    data["camera"]["x"] = newScene ? 0.0f : Editor::game->camera->GetPosition().x;
-    data["camera"]["y"] = newScene ? 0.0f : Editor::game->camera->GetPosition().y;
-    data["camera"]["width"] = newScene ? 2000.0f : Editor::worldWidth;
-    data["camera"]["height"] = newScene ? 2000.0f : Editor::worldHeight;
-    data["camera"]["zoom"] = newScene ? 1.0f : Editor::game->camera->GetZoom(); 
-    data["camera"]["color"]["x"] = newScene ? 0.5f : Editor::game->camera->GetBackgroundColor().x;
-    data["camera"]["color"]["y"] = newScene ? 0.5f : Editor::game->camera->GetBackgroundColor().y;
-    data["camera"]["color"]["z"] = newScene ? 0.5f : Editor::game->camera->GetBackgroundColor().z;
-    data["camera"]["color"]["w"] = newScene ? 1.0f : Editor::game->camera->GetBackgroundColor().w;
-    data["camera"]["alpha"] = newScene ? 1.0f : GUI::s_grid->alpha;
-    data["camera"]["pitch"] = newScene ? 20.0f : GUI::s_grid_quantity;
-    data["camera"]["bounds"]["width"]["begin"] = newScene ? 0.0f : Editor::game->camera->currentBoundsWidthBegin;
-    data["camera"]["bounds"]["width"]["end"] = newScene ? 0.0f : Editor::game->camera->currentBoundsWidthEnd;
-    data["camera"]["bounds"]["height"]["begin"] = newScene ? 0.0f : Editor::game->camera->currentBoundsHeightBegin;
-    data["camera"]["bounds"]["height"]["end"] = newScene ? 0.0f : Editor::game->camera->currentBoundsHeightEnd;
+    data["camera"]["vignetteVisibility"] = newScene ? 0.0f : session->vignetteVisibility;
+    data["camera"]["x"] = newScene ? 0.0f : session->game->camera->GetPosition().x;
+    data["camera"]["y"] = newScene ? 0.0f : session->game->camera->GetPosition().y;
+    data["camera"]["width"] = newScene ? 2000.0f : session->worldWidth;
+    data["camera"]["height"] = newScene ? 2000.0f : session->worldHeight;
+    data["camera"]["zoom"] = newScene ? 1.0f : session->game->camera->GetZoom(); 
+    data["camera"]["color"]["x"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor().x;
+    data["camera"]["color"]["y"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor().y;
+    data["camera"]["color"]["z"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor().z;
+    data["camera"]["color"]["w"] = newScene ? 1.0f : session->game->camera->GetBackgroundColor().w;
+    data["camera"]["alpha"] = newScene ? 1.0f : GUI::Get()->grid->alpha;
+    data["camera"]["pitch"] = newScene ? 20.0f : GUI::Get()->grid_quantity;
+    data["camera"]["bounds"]["width"]["begin"] = newScene ? 0.0f : session->game->camera->currentBoundsWidthBegin;
+    data["camera"]["bounds"]["width"]["end"] = newScene ? 0.0f : session->game->camera->currentBoundsWidthEnd;
+    data["camera"]["bounds"]["height"]["begin"] = newScene ? 0.0f : session->game->camera->currentBoundsHeightBegin;
+    data["camera"]["bounds"]["height"]["end"] = newScene ? 0.0f : session->game->camera->currentBoundsHeightEnd;
 
     //settings
 
-    data["settings"]["physics"]["gravity"]["x"] = newScene ? 0.0f : Editor::gravityX;
-    data["settings"]["physics"]["gravity"]["y"] = newScene ? 500.0f : Editor::gravityY;
-    data["settings"]["physics"]["continuous"] = newScene ? true : Editor::gravity_continuous;
-    data["settings"]["physics"]["sleeping"] = newScene ? true : Editor::gravity_sleeping;
+    data["settings"]["physics"]["gravity"]["x"] = newScene ? 0.0f : session->gravityX;
+    data["settings"]["physics"]["gravity"]["y"] = newScene ? 500.0f : session->gravityY;
+    data["settings"]["physics"]["continuous"] = newScene ? true : session->gravity_continuous;
+    data["settings"]["physics"]["sleeping"] = newScene ? true : session->gravity_sleeping;
 
-    data["globals_applied"] = newScene ? false : Editor::globals_applied;
-    data["shaders_applied"] = newScene ? false : Editor::shaders_applied;
+    data["globals_applied"] = newScene ? false : session->globals_applied;
+    data["shaders_applied"] = newScene ? false : session->shaders_applied;
 
     //loaded data
 
@@ -157,24 +159,24 @@ void EventListener::Serialize(json& data, bool newScene)
 
     if (!newScene)
     {
-        if (Editor::globals_applied)
-            for (const auto& global : Editor::globals)
+        if (session->globals_applied)
+            for (const auto& global : session->globals)
                 globals.push_back({ { "key", global.first }, { "type", global.second } });
 
-        if (AssetManager::assets.size())
-            for (const auto& asset : AssetManager::assets)
+        if (AssetManager::Get()->assets.size())
+            for (const auto& asset : AssetManager::Get()->assets)
                 assets.push_back(asset);
 
-        if (Editor::shaders_applied)
-            for (const auto& shader : Editor::shaders)
+        if (session->shaders_applied)
+            for (const auto& shader : session->shaders)
                 shaders.push_back({ { "key", shader.first }, { "vertex", shader.second.first }, { "fragment", shader.second.second } });
 
-        if (Editor::spritesheets.size())
-            for (const auto& spritesheet : Editor::spritesheets)
+        if (session->spritesheets.size())
+            for (const auto& spritesheet : session->spritesheets)
                 spritesheets.push_back({ { "key", spritesheet.first }, { "path", spritesheet.second } });
 
-        if (Editor::animations.size())
-            for (const auto& animation : Editor::animations) 
+        if (session->animations.size())
+            for (const auto& animation : session->animations) 
             {
                 json anims;
 
@@ -184,9 +186,9 @@ void EventListener::Serialize(json& data, bool newScene)
                 animations.push_back({ { "sprite name", animation.first }, { "anims", anims } });
             }
             
-        if (Editor::scenes.size() > 1) {
-            for (int i = 0; i < Editor::scenes.size(); i++)
-                scenes.push_back({ { "key", Editor::scenes[i] } });
+        if (session->scenes.size() > 1) {
+            for (int i = 0; i < session->scenes.size(); i++)
+                scenes.push_back({ { "key", session->scenes[i] } });
 
             data["scenes"] = scenes;
         }
@@ -244,39 +246,41 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     json data = json::parse(JSON);
 
+    auto session = Editor::Get();
+
     //scenes 
 
     if (data["scenes"].size() > 1) //saved in queue
         for (const auto& scene : data["scenes"]) 
-            Editor::scenes.push_back(scene["key"]);
+            session->scenes.push_back(scene["key"]);
     
     else //register opened scene
-        Editor::scenes.push_back(Editor::events.s_currentScene);
+        session->scenes.push_back(session->events->s_currentScene);
 
-    AssetManager::projectIcon = data["icon"];
+    AssetManager::Get()->projectIcon = data["icon"];
 
     //camera 
 
-    Editor::vignetteVisibility = data["camera"]["vignetteVisibility"];
-    Editor::game->camera->SetPosition({ data["camera"]["x"], data["camera"]["y"] });
-    Editor::game->camera->SetZoom(data["camera"]["zoom"]);
-    Editor::game->camera->SetBackgroundColor({ data["camera"]["color"]["x"], data["camera"]["color"]["y"], data["camera"]["color"]["z"], data["camera"]["color"]["w"] }); 
+    session->vignetteVisibility = data["camera"]["vignetteVisibility"];
+    session->game->camera->SetPosition({ data["camera"]["x"], data["camera"]["y"] });
+    session->game->camera->SetZoom(data["camera"]["zoom"]);
+    session->game->camera->SetBackgroundColor({ data["camera"]["color"]["x"], data["camera"]["color"]["y"], data["camera"]["color"]["z"], data["camera"]["color"]["w"] }); 
 
-    Editor::game->camera->SetBounds(
+    session->game->camera->SetBounds(
         data["camera"]["bounds"]["width"]["begin"], data["camera"]["bounds"]["width"]["end"],
         data["camera"]["bounds"]["height"]["begin"], data["camera"]["bounds"]["height"]["end"]
     );
 
-    GUI::s_grid->alpha = data["camera"]["alpha"];
-    GUI::s_grid_quantity = data["camera"]["pitch"];
+    GUI::Get()->grid->alpha = data["camera"]["alpha"];
+    GUI::Get()->grid_quantity = data["camera"]["pitch"];
     
-    Editor::worldWidth = data["camera"]["width"];
-    Editor::worldHeight = data["camera"]["height"];
+    session->worldWidth = data["camera"]["width"];
+    session->worldHeight = data["camera"]["height"];
 
-    Editor::gravityX = data["settings"]["physics"]["gravity"]["x"];
-    Editor::gravityY = data["settings"]["physics"]["gravity"]["y"];
-    Editor::gravity_continuous = data["settings"]["physics"]["continuous"];
-    Editor::gravity_sleeping = data["settings"]["physics"]["sleeping"];
+    session->gravityX = data["settings"]["physics"]["gravity"]["x"];
+    session->gravityY = data["settings"]["physics"]["gravity"]["y"];
+    session->gravity_continuous = data["settings"]["physics"]["continuous"];
+    session->gravity_sleeping = data["settings"]["physics"]["sleeping"];
 
     for (auto& sprite : data["nodes"]["sprites"])
         Node::ReadData(sprite, true, nullptr);
@@ -300,16 +304,16 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     if (data.contains("spritesheets"))
         for (const auto& spritesheet : data["spritesheets"])
-            Editor::spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
+            session->spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
 
     if (data.contains("assets"))
         for (const auto& asset : data["assets"]) 
-            AssetManager::Register(asset);
+            AssetManager::Get()->Register(asset);
 
     if (data.contains("shaders"))
         for (const auto& shader : data["shaders"]) {
-            Editor::shaders.push_back({ shader["key"], { shader["vertex"], shader["fragment"] } });
-            Editor::shaders_applied = true;
+            session->shaders.push_back({ shader["key"], { shader["vertex"], shader["fragment"] } });
+            session->shaders_applied = true;
         }
 
     if (data.contains("animations"))
@@ -320,18 +324,18 @@ void EventListener::Deserialize(std::ifstream& JSON)
             for (const auto& collection : animation["anims"])
                anims.push_back({ collection["key"], { collection["start"], collection["end"] }});
             
-            Editor::animations.push_back({ animation["sprite name"], anims });
-            Editor::animations_applied = true;
+            session->animations.push_back({ animation["sprite name"], anims });
+            session->animations_applied = true;
         }
         
     //global variables
     
     if (data.contains("globals")) {
         for (const auto& global : data["globals"])
-            Editor::globals.push_back({ global["key"], global["type"] });
+            session->globals.push_back({ global["key"], global["type"] });
 
         if (data["globals_applied"]) 
-            Editor::globals_applied = true;
+            session->globals_applied = true;
     }
 
 }

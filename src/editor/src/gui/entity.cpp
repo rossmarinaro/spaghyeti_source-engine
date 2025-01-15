@@ -31,10 +31,10 @@ void GUI::RenderShaderOptions(const std::string& nodeId)
                 {
                     #ifdef _WIN32
                         if (ImGui::MenuItem("vertex"))
-                            system((Editor::projectPath + AssetManager::shader_dir + "/" + node->shader.first + "/" + node->shader.first + ".vert").c_str());
+                            system((Editor::Get()->projectPath + AssetManager::Get()->shader_dir + "/" + node->shader.first + "/" + node->shader.first + ".vert").c_str());
 
                         if (ImGui::MenuItem("fragment"))
-                            system((Editor::projectPath + AssetManager::shader_dir + "/" + node->shader.first + "/" + node->shader.first + ".frag").c_str());
+                            system((Editor::Get()->projectPath + AssetManager::Get()->shader_dir + "/" + node->shader.first + "/" + node->shader.first + ".frag").c_str());
                     #endif
 
                     ImGui::EndMenu();
@@ -66,11 +66,11 @@ void GUI::RenderShaderOptions(const std::string& nodeId)
             if (ImGui::BeginMenu("select shader"))
             {
 
-                if (std::filesystem::is_empty(Editor::projectPath + AssetManager::shader_dir))
+                if (std::filesystem::is_empty(Editor::projectPath + AssetManager::Get()->shader_dir))
                     ImGui::Text("no shaders in directory.");
 
                 else
-                    for (const auto &dir : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::shader_dir))
+                    for (const auto &dir : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->shader_dir))
                     {
 
                         if (dir.is_directory())
@@ -134,6 +134,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
 {
         
     auto node = Node::Get(nodeId);
+    auto am = AssetManager::Get();
      
     if (node)
     {
@@ -152,7 +153,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
                 {
                     if (ImGui::MenuItem("edit"))
                         #ifdef _WIN32
-                            system((Editor::projectPath + AssetManager::script_dir + "/" + behavior.second).c_str());
+                            system((Editor::projectPath + am->script_dir + "/" + behavior.second).c_str());
                         #endif
 
                     if (ImGui::BeginMenu("remove behavior?")) 
@@ -194,7 +195,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
             if (ImGui::BeginMenu("select behavior"))
             {
 
-                if (std::filesystem::is_empty(Editor::projectPath + AssetManager::script_dir))
+                if (std::filesystem::is_empty(Editor::projectPath + am->script_dir))
                     ImGui::Text("no behaviors in directory.");
 
                 else
@@ -209,7 +210,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
                         if (System::Utils::str_endsWith(filename, ".h"))
                             if (ImGui::MenuItem(System::Utils::ReplaceFrom(filename, ".", "").c_str())) 
                             {
-                                std::string assetDir = AssetManager::script_dir;
+                                std::string assetDir = am->script_dir;
                                 
                                 std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
                                 std::replace(assetDir.begin(), assetDir.end(), '\\', '/');
@@ -229,7 +230,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
 
                     //iterate over script dirs
 
-                    for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir)) 
+                    for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + am->script_dir)) 
                         if (!script.is_directory())
                             loadScript(script);
 
@@ -258,7 +259,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
 void GUI::RenderNodes()
 {
 
-    if (!s_running)
+    if (!running)
         return;
 
     if (ImGui::BeginMenu("New Node"))

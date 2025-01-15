@@ -10,14 +10,22 @@
 using namespace editor;
 
 
+void AssetManager::Init(AssetManager* am) {
+    s_self = am;
+    s_self->folderSelected = false;
+}
+
+//--------------------------
+
+
 void AssetManager::Reset() {
 
-    selectedAsset.clear();
-    images.clear();
-    audio.clear();
-    data.clear();
-    loadedAssets.clear();
-    assets.clear();
+    s_self->selectedAsset.clear();
+    s_self->images.clear();
+    s_self->audio.clear();
+    s_self->data.clear();
+    s_self->loadedAssets.clear();
+    s_self->assets.clear();
 }
 
 
@@ -26,8 +34,8 @@ void AssetManager::Reset() {
 
 void AssetManager::Register(const std::string& asset) {
 
-    if (std::find(assets.begin(), assets.end(), asset) == assets.end())
-        assets.push_back(asset);
+    if (std::find(s_self->assets.begin(), s_self->assets.end(), asset) == s_self->assets.end())
+        s_self->assets.push_back(asset);
 }
 
 
@@ -43,7 +51,7 @@ void AssetManager::LoadAsset(const std::string& asset)
                       key = "\"" + asset + "\"",
                       developmentPath = "resources\\assets" + folder + asset;
 
-    loadedAssets.insert({ key, developmentPath });
+    s_self->loadedAssets.insert({ key, developmentPath });
 
 }
 
@@ -224,9 +232,9 @@ bool AssetManager::LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes)
 
             //temporary file for decoding
  
-            const std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
+            const std::string tmp = Editor::Get()->projectPath + "spaghyeti_parse.json";
 
-            Editor::events.DecodeFile(tmp, result);
+            Editor::Get()->events->DecodeFile(tmp, result);
 
             std::ifstream JSON(tmp);
 

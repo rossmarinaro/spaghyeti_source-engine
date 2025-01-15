@@ -245,7 +245,7 @@ void GUI::RenderDockSpace()
 
     ImGui::Begin("Toolbar");
 
-        if (ImGui::BeginMenu(("Project: " + Editor::events.s_currentProject).c_str()))
+        if (ImGui::BeginMenu(("Project: " + Editor::Get()->events->s_currentProject).c_str()))
         {
             ShowMenu();
             ImGui::EndMenu();
@@ -253,7 +253,7 @@ void GUI::RenderDockSpace()
 
         ImGui::SameLine();
 
-        ImGui::Text(("Scene: " + Editor::events.s_currentScene).c_str());
+        ImGui::Text(("Scene: " + Editor::Get()->events->s_currentScene).c_str());
 
     ImGui::End();
 

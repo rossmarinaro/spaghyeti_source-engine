@@ -13,16 +13,14 @@
 using namespace /* SPAGHYETI_CORE */ System;
 using namespace editor;
 
-//-----------------------------
-
 
 void Editor::Update()
 {
 
-    Renderer::Update(game->camera);
+    Renderer::Update(game->camera); 
 
-    if (GUI::s_grid)
-        GUI::s_grid->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    if (GUI::Get()->grid)
+        GUI::Get()->grid->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
 
     Time::Update(glfwGetTime());
 
@@ -30,23 +28,23 @@ void Editor::Update()
        
     if (projectOpen)
     {
-        if (events.canSave && 
+        if (events->canSave && 
         (
             ImGui::IsKeyPressed(ImGuiKey_LeftCtrl) || ImGui::IsKeyPressed(ImGuiKey_RightCtrl)) && 
             ImGui::IsKeyPressed(ImGuiKey_S)) 
         {
 
-            events.canSave = false; 
-            events.SaveScene(events.saveFlag);
+            events->canSave = false; 
+            events->SaveScene(events->saveFlag);
         }
 
         else 
-            events.canSave = true;
+            events->canSave = true;
     }
 
     glfwPollEvents();
 
-    GUI::Render(); 
+    GUI::Get()->Render(); 
 
     //track mouse position by translating screen space to world space 
 
@@ -99,43 +97,45 @@ void Editor::Update()
     //save and close editor
 
     if (glfwWindowShouldClose(Window::s_instance))
-        if (events.canSave) {
+        if (events->canSave) {
             if (projectOpen)
-                events.saveFlag = true;
+                events->saveFlag = true;
             else 
-                events.exitFlag = true;
+                events->exitFlag = true;
         }
 
 }
 
 
+
 //-----------------------------
 
 
-Editor::Editor()
+void Editor::Init(Editor* session) 
 {
+    s_self = session;
 
-    worldWidth = 2000;
-    worldHeight = 2000;
-    gravityX = 0.0f;
-    gravityY = 500.0f;
-    vignetteVisibility = 0.0f;
-    projectOpen = false;
-    shaders_applied = false;
-    globals_applied = false;
-    animations_applied = false;
-    gravity_continuous = true;
-    gravity_sleeping = true;
-    use_pthreads = true;
-    shared_memory = false;
-    allow_memory_growth = false;
-    allow_exception_catching = true;
-    export_all = true;
-    wasm = true;
-    gl_assertions = true;
-    use_webgl2 = false;
-    full_es3 = false;
-    preserveSrc = false;
+    s_self->worldWidth = 2000;
+    s_self->worldHeight = 2000;
+    s_self->gravityX = 0.0f;
+    s_self->gravityY = 500.0f;
+    s_self->vignetteVisibility = 0.0f;
+    s_self->projectOpen = false;
+    s_self->shaders_applied = false;
+    s_self->globals_applied = false;
+    s_self->animations_applied = false;
+    s_self->gravity_continuous = true;
+    s_self->gravity_sleeping = true;
+    s_self->use_pthreads = true;
+    s_self->shared_memory = false;
+    s_self->allow_memory_growth = false;
+    s_self->allow_exception_catching = true;
+    s_self->export_all = true;
+    s_self->wasm = true;
+    s_self->gl_assertions = true;
+    s_self->use_webgl2 = false;
+    s_self->full_es3 = false;
+    s_self->preserveSrc = false;
 
     //AllocConsole();
 
@@ -145,20 +145,26 @@ Editor::Editor()
 
     Log("Editor Root: " + rootPath);
 
+    EventListener el;
+    s_self->events = &el;
+
     Game g;
-    game = &g; 
+    s_self->game = &g; 
 
     //init base sandox scene
 
-    game->LoadScene<System::Scene>();
+    s_self->game->LoadScene<System::Scene>();
 
     Application::name = "SPAGHYEDITOR";
 
     Window::Init();
+    Application::Init(s_self->game); 
 
-    Application::Init(game);
+    AssetManager am;
+    AssetManager::Init(&am);
 
-    GUI::Launch();    
+    GUI gui;
+    GUI::Launch(&gui);    
 
     //set top-left header and bottom toolbar icon
 
@@ -172,20 +178,19 @@ Editor::Editor()
 
     //create entity selector graphic
 
-    s_selector = System::Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
-    s_selector->SetTint(glm::vec3(0.0f, 1.0f, 0.0f));  
-    s_selector->SetDrawStyle(GL_LINE);
-    s_selector->SetThickness(2.0f);
-    s_selector->SetAlpha(0.0f);
+    s_self->s_selector = System::Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
+    s_self->s_selector->SetTint(glm::vec3(0.0f, 1.0f, 0.0f));  
+    s_self->s_selector->SetDrawStyle(GL_LINE);
+    s_self->s_selector->SetThickness(2.0f);
+    s_self->s_selector->SetAlpha(0.0f);
       
     //main update loop
 
-    while (!Editor::events.exitFlag) 
-        Update();
+    while (!s_self->events->exitFlag) 
+        s_self->Update();
         
     Node::ClearAll();
 
-    GUI::Close();
 }
 
 
@@ -217,7 +222,7 @@ Editor::~Editor()
 void Editor::Log(const std::string& message)
 {
 
-    std::filesystem::current_path(Editor::rootPath);
+    std::filesystem::current_path(rootPath);
 
     std::ofstream src("appLog.txt", std::ofstream::app | std::ofstream::out);
 
@@ -253,7 +258,7 @@ void Editor::Reset()
     scenes.clear();
     shaders.clear();
 
-    AssetManager::Reset();
+    AssetManager::Get()->Reset();
 
     Log("Workspace reset.");
 }

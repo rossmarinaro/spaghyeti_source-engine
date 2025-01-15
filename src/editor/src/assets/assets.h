@@ -9,19 +9,22 @@ namespace editor {
 
         public:
 
-            static inline const std::string script_dir = "resources\\scripts",
-                                            shader_dir = "resources\\shaders";
+            bool folderSelected;
 
-            static inline std::string currentFolder, projectIcon, selectedAsset;
-            static inline bool folderSelected = false;
+            const std::string script_dir = "resources\\scripts",
+                              shader_dir = "resources\\shaders";
 
-            static inline std::vector<std::pair<std::string, GLuint>> images; 
-            static inline std::vector<std::pair<std::string, GLuint>> audio; 
-            static inline std::vector<std::pair<std::string, GLuint>> data; 
+            std::string currentFolder, projectIcon, selectedAsset;
 
-            static inline std::vector<std::string> assets; 
+            std::vector<std::pair<std::string, GLuint>> images; 
+            std::vector<std::pair<std::string, GLuint>> audio; 
+            std::vector<std::pair<std::string, GLuint>> data; 
+            std::vector<std::string> assets; 
 
-            static inline std::map<std::string, std::string> loadedAssets;
+            std::map<std::string, std::string> loadedAssets;
+
+            AssetManager() = default;
+            ~AssetManager() = default;
 
             static void Reset();
             static void SetIcon(const std::string& key);
@@ -30,8 +33,17 @@ namespace editor {
             static bool SavePrefab(const std::string& nodeId);
             static bool LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes = Node::nodes);
 
+            static void Init(AssetManager* am);
             static std::string GetFolder(const std::string& asset);
             static std::string GetThumbnail(const std::string& asset);
+
+            static inline AssetManager* Get() {
+                return s_self;
+            }
+
+        private:
+
+            static inline AssetManager* s_self;
 
     };
 

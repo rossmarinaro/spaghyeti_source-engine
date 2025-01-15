@@ -438,6 +438,8 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "flipX", sn->flippedX },
             { "flipY", sn->flippedY },
             { "depth", sn->depth },
+            { "scroll factor x", sn->scrollFactorX },
+            { "scroll factor y", sn->scrollFactorY },
             { "lock", sn->lock_in_place },
             { "makeUI", sn->make_UI },
             { "frames", frames },
@@ -704,6 +706,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("depth"))
                 sn->depth = data["depth"];
 
+            if (data.contains("scroll factor x"))
+                sn->scrollFactorX = data["scroll factor x"];
+
+            if (data.contains("scroll factor y"))
+                sn->scrollFactorY = data["scroll factor y"];
+
             if (data.contains("lock"))
                 sn->lock_in_place = data["lock"]; 
 
@@ -841,8 +849,8 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                     if (data["components"]["script"]["scripts"].size())
                         for (const auto& scripts : data["components"]["script"]["scripts"])
-                            for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                                if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
+                            for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->script_dir))
+                                if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::Get()->events->GetScriptName(file.path().string()))
                                     sn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });   
                 }
 
@@ -1036,8 +1044,8 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                     if (data["components"]["script"]["scripts"].size())
                         for (const auto& scripts : data["components"]["script"]["scripts"])
-                            for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                                if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
+                            for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->script_dir))
+                                if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::Get()->events->GetScriptName(file.path().string()))
                                     en->behaviors.insert({ static_cast<std::string>(scripts["key"]), static_cast<std::string>(scripts["value"]) });
                 }
 
@@ -1113,8 +1121,8 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 if (data["components"]["script"]["scripts"].size())
                     for (const auto& scripts : data["components"]["script"]["scripts"])
-                        for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::script_dir))
-                            if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::events.GetScriptName(file.path().string()))
+                        for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->script_dir))
+                            if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::Get()->events->GetScriptName(file.path().string()))
                                 tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
 
             }

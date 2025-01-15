@@ -17,39 +17,48 @@ namespace editor {
 
         public:
 
-            static inline bool s_running = true,
-                               s_show_init = true,
-                               s_show_quit = false,
-                               s_show_grid = false;
-        
-            static void Launch();
-            static void Render();
-            static void Close();
+            bool running = true,
+                 show_init = true,
+                 show_quit = false,
+                 show_grid = false;
 
-            static void RenderShaderOptions(const std::string& nodeId);
-            static void RenderScriptOptions(const std::string& nodeId);
-
-            static inline std::unique_ptr<Geometry> s_grid;
-            static inline std::shared_ptr<Geometry> s_cursor;
+            std::unique_ptr<Geometry> grid;
+            std::shared_ptr<Geometry> cursor;
             
-            static inline float s_grid_quantity = 20.0f;
+            float grid_quantity;
+
+            GUI() = default;
+           ~GUI();
+
+            void Render();
+            void RenderShaderOptions(const std::string& nodeId);
+            void RenderScriptOptions(const std::string& nodeId);
+
+            static void Launch(GUI* gui);
+            
+            static inline GUI* Get() {
+                return s_self;
+            }
 
         private:
+ 
+            GLuint s_currentTexture = NULL;
 
-            static void RenderNodes();
-            static void RenderDockSpace();
-            static void RenderLogs();
-            static void RenderAssets();
-            static void ShowSettings();
-            static void ShowMenu();
-            static void ShowViewport();
-            static void ShowOptionsInit();
-            static void ShowOptionsQuit();
-            static void ShowOptionsSave(bool quit);
-            static void AlignForWidth(float width, float alignment = 0.5f);
+            void RenderNodes();
+            void RenderDockSpace();
+            void RenderLogs();
+            void RenderAssets();
+            void ShowSettings();
+            void ShowMenu();
+            void ShowViewport();
+            void ShowOptionsInit();
+            void ShowOptionsQuit();
+            void ShowOptionsSave(bool quit);
+            void AlignForWidth(float width, float alignment = 0.5f);
+
+            static inline GUI* s_self;
+            
             static void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
-
-            static inline GLuint s_currentTexture = NULL;
     };
 
 }
