@@ -31,8 +31,7 @@ void Editor::Update()
         if (events->canSave && 
         (
             ImGui::IsKeyPressed(ImGuiKey_LeftCtrl) || ImGui::IsKeyPressed(ImGuiKey_RightCtrl)) && 
-            ImGui::IsKeyPressed(ImGuiKey_S)) 
-        {
+            ImGui::IsKeyPressed(ImGuiKey_S)) {
 
             events->canSave = false; 
             events->SaveScene(events->saveFlag);
@@ -111,9 +110,9 @@ void Editor::Update()
 //-----------------------------
 
 
-void Editor::Init(Editor* session) 
+Editor::Editor() 
 {
-    s_self = session;
+    s_self = this;
 
     s_self->worldWidth = 2000;
     s_self->worldHeight = 2000;
@@ -139,6 +138,13 @@ void Editor::Init(Editor* session)
 
     //AllocConsole();
 
+    cullTargetPosition = { 0.0f, 0.0f };
+    platform = "Windows";
+    releaseType = "debug";
+    buildType = "dynamic";
+    projectPath = "";
+    rootPath;
+
     remove("appLog.txt");
 
     rootPath = std::filesystem::current_path().string();
@@ -161,10 +167,7 @@ void Editor::Init(Editor* session)
     Application::Init(s_self->game); 
 
     AssetManager am;
-    AssetManager::Init(&am);
-
-    GUI gui;
-    GUI::Launch(&gui);    
+    GUI gui; 
 
     //set top-left header and bottom toolbar icon
 
@@ -245,6 +248,8 @@ void Editor::Reset()
     Node::ClearAll();
 
     game->camera->Reset();
+
+    cullTargetPosition = { 0.0f, 0.0f };
 
     worldWidth = 2000;
 	worldHeight = 2000;

@@ -67,3 +67,6 @@ undo/redo functionality
 improve editor entity selection/mouse picking/raycasting
 
 map editor
+
+fix big .o files (audio.o manager.o game.o entity.o tilemap.o texture.o shader.o)
+

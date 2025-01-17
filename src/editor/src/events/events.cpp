@@ -1105,7 +1105,8 @@ void EventListener::BuildAndRun()
                         command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
                     }
 
-                    command_queue << "   sprite_" + node->ID + "->name = \"" + node->name + "\";\n"; 
+                    command_queue << "   sprite_" + node->ID + "->cull = " + std::to_string(sn->cull) + ";\n";
+                    command_queue << "   sprite_" + node->ID + "->name = \"" + node->name + "\";\n";   
 
                     //physics bodies
 
@@ -1244,8 +1245,7 @@ void EventListener::BuildAndRun()
 
                 //--------------- audio
 
-                if (node->type == "Audio")
-                {
+                if (node->type == "Audio") {
 
                     auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
@@ -1260,8 +1260,7 @@ void EventListener::BuildAndRun()
 
                 //--------------- group
 
-                if (node->type == "Group")
-                {
+                if (node->type == "Group") {
 
                     auto gn = std::dynamic_pointer_cast<GroupNode>(node);
 
@@ -1271,8 +1270,7 @@ void EventListener::BuildAndRun()
 
                 //define behaviors
 
-                for (const auto& behavior : node->behaviors) 
-                {
+                for (const auto& behavior : node->behaviors) {
 
                     std::string entity = (node->type + "_" + node->ID);
 
@@ -1295,6 +1293,8 @@ void EventListener::BuildAndRun()
         //write nodes
 
         writeNodes(target.second->nodes);
+
+        command_queue << "   Entity::SetCullPosition({" + std::to_string(Editor::cullTargetPosition.x) + ", " + std::to_string(Editor::cullTargetPosition.y) + "});\n";
 
         //convert data string stream to string
 

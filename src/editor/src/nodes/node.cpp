@@ -221,16 +221,16 @@ void Node::AddComponent(const char* type, bool init)
 
     //return if component exists 
     
-    if (std::find_if(this->components.begin(), this->components.end(), 
+    if (std::find_if(components.begin(), components.end(), 
         [&](std::shared_ptr<Component> component){ return component->type == type; }) 
-        != this->components.end()) {
+        != components.end()) {
             Editor::Log("Component " + (std::string)type + " already exists!");
             return;
         }
         
-    const auto component = std::make_shared<Component>(this->ID, type, this->type, init);
+    const auto component = std::make_shared<Component>(ID, type, this->type, init);
 
-    this->components.push_back(component); 
+    components.push_back(component); 
 
     if (init)
         component->Make();
@@ -244,12 +244,12 @@ void Node::AddComponent(const char* type, bool init)
 void Node::RemoveComponent(std::shared_ptr<Component>& component)
 {
 
-    std::vector<std::shared_ptr<Component>>::iterator it = std::find(this->components.begin(), this->components.end(), component);
+    std::vector<std::shared_ptr<Component>>::iterator it = std::find(components.begin(), components.end(), component);
 
-    if (it != this->components.end()) {
+    if (it != components.end()) {
 
-        this->Reset((*it)->type.c_str());
-        this->components.erase(it);
+        Reset((*it)->type.c_str());
+        components.erase(it);
     }
 
 }
@@ -261,7 +261,7 @@ void Node::RemoveComponent(std::shared_ptr<Component>& component)
 const std::shared_ptr<Component> Node::GetComponent(const std::string& type, const std::string& id)
 {
 
-    for (auto it = this->components.begin(); it != this->components.end(); ++it) 
+    for (auto it = components.begin(); it != components.end(); ++it) 
     {
         auto component = *it;
 
@@ -332,8 +332,8 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
 
 void Node::SavePrefab() {
 
-    if (AssetManager::SavePrefab(this->ID))
-        Editor::Log("Prefab " + this->name + " saved.");
+    if (AssetManager::SavePrefab(ID))
+        Editor::Log("Prefab " + name + " saved.");
     else    
         Editor::Log("There was a problem saving prefab.");
 }
@@ -441,6 +441,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "scroll factor x", sn->scrollFactorX },
             { "scroll factor y", sn->scrollFactorY },
             { "lock", sn->lock_in_place },
+            { "cull", sn->cull },
             { "makeUI", sn->make_UI },
             { "frames", frames },
             { "current frame", sn->currentFrame },
@@ -714,6 +715,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("lock"))
                 sn->lock_in_place = data["lock"]; 
+
+            if (data.contains("cull"))
+                sn->cull = data["cull"]; 
 
             if (data.contains("makeUI"))
                 sn->make_UI = data["makeUI"];

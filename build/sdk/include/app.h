@@ -31,39 +31,28 @@
 #include "./events.h"
 
 
-
 /****** Application *****/
 
 namespace /* SPAGHYETI_CORE */ System {
 
-
-	class Application 
+    class Application 
 	{
 
 		public:
 
-    		static inline std::string name = "";
-            
-			static inline bool isMobile = false;
+            Application(Game* layer = nullptr, const std::string& key = "");
+		    ~Application();
+
+    		static inline std::string name;
+            static inline bool isMobile;
 
 			static inline Game* game; 
             static inline EventPool* eventPool;
 			static inline Resources::Manager* resources;   
 
-			static void Init(Game* layer);
-
-			template<typename T>
-			static inline const T& GetData(std::string key) { return std::any_cast<T>(data.at(key)); }
-
-			static inline void SetData(std::string key, std::any value) { data.insert({key, value}); }
-			static inline void ClearData() { data.clear(); }
-		
-			Application(Game* layer = nullptr, const std::string& key = "");
-		    ~Application();
+            static void Init(Game* layer);
 
 		private:
- 
-			static std::map<std::string, std::any> data;
 
 			static void Update(void* layer);
 

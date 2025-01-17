@@ -23,7 +23,7 @@ namespace editor {
 
             std::map<std::string, std::string> loadedAssets;
 
-            AssetManager() = default;
+            AssetManager();
             ~AssetManager() = default;
 
             static void Reset();
@@ -32,8 +32,6 @@ namespace editor {
             static void LoadAsset(const std::string& asset);
             static bool SavePrefab(const std::string& nodeId);
             static bool LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes = Node::nodes);
-
-            static void Init(AssetManager* am);
             static std::string GetFolder(const std::string& asset);
             static std::string GetThumbnail(const std::string& asset);
 

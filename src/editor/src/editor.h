@@ -68,19 +68,19 @@ namespace editor {
 
 			std::vector<std::string> scenes;
 
-            Editor() = default;
+            Editor();
 			~Editor();
             void Reset();
 
             static inline std::shared_ptr<Entity> selectedEntity;
-			static inline std::string platform = "Windows",
-                                      releaseType = "debug",
-                                      buildType = "dynamic",
-									  projectPath = "",
+            static inline glm::vec2 cullTargetPosition;
+			static inline std::string platform,
+                                      releaseType,
+                                      buildType,
+									  projectPath,
 									  rootPath;
 
 			static void Log(const std::string& message);
-            static void Init(Editor* session);
 
             static inline Editor* Get() {
                 return s_self;

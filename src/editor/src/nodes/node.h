@@ -119,6 +119,7 @@ namespace editor {
                  flippedX,
                  flippedY,
                  lock_in_place,
+                 cull,
                  make_UI;
 
             float U1,
@@ -181,7 +182,7 @@ namespace editor {
 
         private:
 
-            bool m_show_sprite_texture;
+            bool m_show_sprite_texture, m_set_cull_target;
 
             std::pair<std::string, std::pair<bool, int>> m_currentAnim;
             std::vector<BoolContainer> m_do_yoyo;

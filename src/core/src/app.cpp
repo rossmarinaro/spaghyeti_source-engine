@@ -1,6 +1,5 @@
 #include "../../../build/sdk/include/app.h"
 
-
 void System::Application::Init(Game* layer)
 {
 
@@ -36,7 +35,7 @@ void System::Application::Init(Game* layer)
 void System::Application::Update(void* layer)
 {
 
-    if (game == nullptr)
+    if (layer == nullptr)
         return; 
 
     Game* game = static_cast<Game*>(layer);
@@ -60,7 +59,6 @@ void System::Application::Update(void* layer)
 
 System::Application::Application(Game* layer, const std::string& key)
 { 
-
     name = key;
 
     #if DEVELOPMENT == 1

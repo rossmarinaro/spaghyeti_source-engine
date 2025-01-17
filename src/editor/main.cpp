@@ -39,8 +39,6 @@ int main(int argc, char* args[])
 	
 	Application app;
 	editor::Editor session;
-    
-    editor::Editor::Init(&session);
 
 	return 0; 
 }

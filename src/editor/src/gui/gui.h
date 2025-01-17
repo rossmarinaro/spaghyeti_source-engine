@@ -17,24 +17,22 @@ namespace editor {
 
         public:
 
-            bool running = true,
-                 show_init = true,
-                 show_quit = false,
-                 show_grid = false;
+            bool running,
+                 show_init,
+                 show_quit,
+                 show_grid;
+
+            float grid_quantity;
 
             std::unique_ptr<Geometry> grid;
             std::shared_ptr<Geometry> cursor;
             
-            float grid_quantity;
-
-            GUI() = default;
+            GUI();
            ~GUI();
 
             void Render();
             void RenderShaderOptions(const std::string& nodeId);
             void RenderScriptOptions(const std::string& nodeId);
-
-            static void Launch(GUI* gui);
             
             static inline GUI* Get() {
                 return s_self;

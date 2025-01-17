@@ -1,4 +1,4 @@
-#include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/game.h"
 
 Camera::Camera():
     m_zoom(1.0f),
@@ -42,8 +42,7 @@ void Camera::Reset()
 //-------------------------------
 
 
-void Camera::SetVignette(float alpha) 
-{ 
+void Camera::SetVignette(float alpha) { 
 
     if (!System::Game::GetScene()->vignette)
         return;

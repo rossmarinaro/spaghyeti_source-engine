@@ -259,9 +259,23 @@ void Game::UpdateFrame()
     //entity render queue
 
     for (const auto& entity : currentScene->entities)
-        if ((entity.get() && entity) && entity.get()->renderable) 
-            entity->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+        if ((entity.get() && entity)) 
+        {
+            if (entity->cull)
+            {
+                float width = System::Window::s_scaleWidth;
 
+                if (!camera->InBounds() && Entity::s_cullPosition.x > System::Window::s_scaleWidth)
+                    width = width + (width / 2);
+
+                entity->renderable = (entity->position.x > Entity::s_cullPosition.x && (entity->position.x < Entity::s_cullPosition.x + width) * entity->scrollFactor.x) ||
+                                     (entity->position.x < Entity::s_cullPosition.x && (entity->position.x > Entity::s_cullPosition.x - width) * entity->scrollFactor.x);
+            }
+
+            if (entity->renderable)
+                entity->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+        }
+            
     //UI render queue
 
     for (const auto& UI : currentScene->UI)

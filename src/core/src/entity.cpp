@@ -19,18 +19,20 @@ Entity::Entity(const char* type) {
 //------------------------------------ active entity 
 
 
-Entity::Entity(const char* type, float x, float y):
-    m_scrollFactor(glm::vec2(1.0f))
+Entity::Entity(const char* type, float x, float y)
 { 
     this->type = type;
+
     position = glm::vec2(x, y);
+    scrollFactor = glm::vec2(1.0f);
     scale = glm::vec2(1.0f); 
+    tint = glm::vec3(1.0f, 1.0f, 1.0f);
     rotation = 0.0f;  
     alpha = 1.0f;
-    tint = glm::vec3(1.0f, 1.0f, 1.0f);
     active = true;
     alive = true;
     renderable = true;
+    cull = false;
     flipX = false;
     flipY = false;
     depth = s_depth + 1;
@@ -45,8 +47,7 @@ Entity::Entity(const char* type, float x, float y):
 //------------------------------------
 
 
-void Entity::SetData(const std::string& key, const std::any& value) 
-{ 
+void Entity::SetData(const std::string& key, const std::any& value) { 
 
     auto it = data.find(key);
 
@@ -60,25 +61,7 @@ void Entity::SetData(const std::string& key, const std::any& value)
 //------------------------------------ 
 
 
-void Entity::Cull(const glm::vec2& targetPosition)
-{
-
-    auto context = System::Game::GetScene()->GetContext();
-
-    float width = System::Window::s_scaleWidth;
-
-    if (!context.camera->InBounds() && targetPosition.x > System::Window::s_scaleWidth)
-        width = width + (width / 2);
-
-    renderable = (position.x > targetPosition.x && (position.x < targetPosition.x + width) * m_scrollFactor.x) ||
-                 (position.x < targetPosition.x && (position.x > targetPosition.x - width) * m_scrollFactor.x);
-} 
-
-
-//------------------------------------ 
-
-
-bool Entity::IsSprite() {
+const bool Entity::IsSprite() {
     return strcmp(type, "sprite") == 0 || 
             strcmp(type, "tile") == 0;
 }
@@ -175,7 +158,7 @@ void Geometry::Render(float projWidth, float projHeight)
         shader.SetFloat("alphaVal", alpha);
 
         glm::mat4 proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight),
-                  view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y, 0.0f));
+                  view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y, 0.0f));
 
         shader.SetMat4("mvp", proj * view * model);
 
@@ -454,7 +437,7 @@ void Sprite::Render(float projWidth, float projHeight)
     //sprite model transformations
 
     glm::mat4 model = glm::mat4(1.0f), 
-              view = !IsSprite() ? glm::mat4(1.0f) : System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * m_scrollFactor.x, System::Application::game->camera->GetPosition().y * m_scrollFactor.y), 
+              view = !IsSprite() ? glm::mat4(1.0f) : System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y), 
               proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
 
     model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 

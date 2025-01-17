@@ -149,6 +149,9 @@ void EventListener::Serialize(json& data, bool newScene)
     data["globals_applied"] = newScene ? false : session->globals_applied;
     data["shaders_applied"] = newScene ? false : session->shaders_applied;
 
+    data["cull target position x"] = Editor::cullTargetPosition.x;
+    data["cull target position y"] = Editor::cullTargetPosition.y;
+
     //loaded data
 
     json spritesheets = json::array(),
@@ -258,6 +261,9 @@ void EventListener::Deserialize(std::ifstream& JSON)
         session->scenes.push_back(session->events->s_currentScene);
 
     AssetManager::Get()->projectIcon = data["icon"];
+
+    if (data.contains("cull target position x") && data.contains("cull target position y"))
+        Editor::cullTargetPosition = { data["cull target position x"], data["cull target position y"] };
 
     //camera 
 

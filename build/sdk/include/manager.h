@@ -65,24 +65,14 @@ namespace System {
 
                 //asset storage
 
-                std::map<std::string, unsigned int> audio_size;
-                std::map<std::string, std::vector<std::array<int, 6>>> atlases;
-                std::map<std::string, std::map<std::string, std::pair<int, int>>> anims;
-                std::map<std::string, const char*> atlas_paths;
-                std::map<std::string, std::array<int, 3>> image_dimensions_and_channels;
+                std::map<std::string, unsigned int> m_audio_size;
+                std::map<std::string, std::vector<std::array<int, 6>>> m_atlases;
+                std::map<std::string, std::map<std::string, std::pair<int, int>>> m_anims;
+                std::map<std::string, const char*> m_atlas_paths;
+                std::map<std::string, std::array<int, 3>> m_image_dimensions_and_channels;
 
-                //file assets
- 
-                std::map<std::string, std::string> m_file_image_assets;
-                std::map<std::string, std::string> m_file_audio_assets;
-                std::map<std::string, std::string> m_file_text_assets;
-                std::map<std::string, std::string> m_file_assets;
-
-                //raw assets
-
-                std::map<std::string, const char*> m_raw_image_assets;
-                std::map<std::string, const char*> m_raw_audio_assets;
-                std::map<std::string, const char*> m_raw_assets;
+                std::map<std::string, std::pair<std::string, std::string>> m_file_assets;
+                std::map<std::string, std::pair<std::string, const char*>> m_raw_assets;
 
         };
     }

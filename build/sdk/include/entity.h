@@ -16,8 +16,6 @@ class Entity {
 
 	public: 
 
-		static inline int s_depth = 0, s_count = 0;
-
 		int depth;
 
 		float rotation, alpha;  
@@ -26,12 +24,13 @@ class Entity {
              flipY, 
              active, 
              renderable, 
+             cull,
              alive;
 
 		const char* type;
 
 		glm::vec3 tint; 
-		glm::vec2 position, scale;
+		glm::vec2 position, scale, scrollFactor;
 		std::string ID, name;
 
 		//key val data to be assigned to entity object
@@ -39,10 +38,9 @@ class Entity {
 		std::map<std::string, std::any> data;
 
 		template<typename T>
-		inline T GetData(const std::string& key) 
-        { 
-            if (this->data.find(key) != this->data.end())
-                return std::any_cast<T>(this->data.at(key)); 
+		inline T GetData(const std::string& key) { 
+            if (data.find(key) != data.end())
+                return std::any_cast<T>(data.at(key)); 
 
             return T();
         }
@@ -55,7 +53,7 @@ class Entity {
 		inline void SetTint(const glm::vec3& tint) { this->tint = tint; }
 		inline void SetFlipX(bool flipX) { this->flipX = flipX; }
 		inline void SetFlipY(bool flipY) { this->flipY = flipY; }
-        inline void SetScrollFactor(const glm::vec2& factor) { m_scrollFactor = factor; }
+        inline void SetScrollFactor(const glm::vec2& scrollFactor) { this->scrollFactor = scrollFactor; }
 		 
 		virtual void Render(float projWidth, float projHeight) {}
         virtual ~Entity() { s_count--; }
@@ -63,17 +61,17 @@ class Entity {
 		Entity(const char* type);
 		Entity(const char* type, float x, float y);
         
-        bool IsSprite();
-        void Cull(const glm::vec2& targetPosition);
+        const bool IsSprite();
         void SetData(const std::string& key, const std::any& value);
 		void SetFlip(bool flipX, bool flipY);
 		void SetScale(float scaleX, float scaleY = 1.0f);
 		void SetEnabled(bool isEnabled);
         void SetPosition(float x, float y);
 
-    protected:
+        static inline int s_depth = 0, s_count = 0;
+        static inline glm::vec2 s_cullPosition = { 0.0f, 0.0f };
 
-        glm::vec2 m_scrollFactor;
+        static inline void SetCullPosition(const glm::vec2& cullPosition) { s_cullPosition = cullPosition; }
 
 };
 
@@ -114,9 +112,7 @@ class Geometry : public Entity {
 	private:
 
         float m_thickness;
-        
         GLint m_drawStyle;
-
 		const char* m_type;
 		
 };
@@ -139,7 +135,6 @@ class Text : public Entity {
         const glm::vec2 GetTextDimensions();
  
         Text (const std::string& content, float x, float y, float scale = 1, glm::vec3 tint = glm::vec3(1.0f));
-		
        ~Text();
 
     private:
@@ -217,7 +212,6 @@ class Sprite : public Entity {
 			 m_anim_yoyo = false;
 
 		glm::vec2 m_velocity;
-
 		std::pair<std::string, std::pair<bool, int>> m_currentAnim;
 		
 		//internal spritesheet data

@@ -10,8 +10,8 @@
 using namespace editor;
 
 
-void AssetManager::Init(AssetManager* am) {
-    s_self = am;
+AssetManager::AssetManager() {
+    s_self = this;
     s_self->folderSelected = false;
 }
 

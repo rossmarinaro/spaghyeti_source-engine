@@ -12,9 +12,14 @@ using namespace editor;
 
 //------------------------------------- launch GUI
 
-void GUI::Launch(GUI* gui)
+GUI::GUI()
 {
-    s_self = gui;
+    s_self = this;
+
+    s_self->running = true;
+    s_self->show_init = true;
+    s_self->show_quit = false;
+    s_self->show_grid = false;
 
     //Poll and handle events (inputs, window resize, etc.)
     //You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -91,9 +96,9 @@ void GUI::Launch(GUI* gui)
 
     Shader::Load("grid", checker_vertex, checker_fragment); 
 
-    gui->grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    gui->grid->shader = Shader::Get("grid");
-    gui->grid_quantity = 20.0f;
+    s_self->grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
+    s_self->grid->shader = Shader::Get("grid");
+    s_self->grid_quantity = 20.0f;
 
     //load embedded assets
 
@@ -107,10 +112,10 @@ void GUI::Launch(GUI* gui)
 
     glfwSetScrollCallback(System::Window::s_instance, scroll_callback);
 
-    gui->cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
-    gui->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
-    gui->cursor->isStatic = true; 
-    gui->cursor->SetAlpha(0.0f);
+    s_self->cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
+    s_self->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
+    s_self->cursor->isStatic = true; 
+    s_self->cursor->SetAlpha(0.0f);
 
     Editor::Log("GUI launched.");
 

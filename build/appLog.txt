@@ -1,24 +1,163 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Wed Jan 15 15:54:02 2025
-IMGui Version: 1 @ Wed Jan 15 15:54:02 2025
-GUI launched. @ Wed Jan 15 15:54:02 2025
-Workspace reset. @ Wed Jan 15 15:54:07 2025
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Fri Jan 17 12:53:36 2025
+Events initialized. @ Fri Jan 17 12:53:36 2025
+IMGui Version: 1 @ Fri Jan 17 12:53:36 2025
+GUI launched. @ Fri Jan 17 12:53:36 2025
+Workspace reset. @ Fri Jan 17 12:53:40 2025
 Project TheFunkyAdventuresOfSwankyVelvet opened.
-Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Wed Jan 15 15:54:09 2025
-Sprite node Untitled created. @ Wed Jan 15 15:54:09 2025
-Sprite node Untitled created. @ Wed Jan 15 15:54:09 2025
-Sprite node Untitled created. @ Wed Jan 15 15:54:09 2025
-Empty node Untitled created. @ Wed Jan 15 15:54:09 2025
-Text node Untitled created. @ Wed Jan 15 15:54:09 2025
-Group node Untitled created. @ Wed Jan 15 15:54:09 2025
-Text node Untitled created. @ Wed Jan 15 15:54:09 2025
-Sprite node Untitled created. @ Wed Jan 15 15:54:09 2025
-Text node author deleted. @ Wed Jan 15 15:54:16 2025
-Sprite node text deleted. @ Wed Jan 15 15:54:16 2025
-Sprite node sv deleted. @ Wed Jan 15 15:54:16 2025
-Sprite node background deleted. @ Wed Jan 15 15:54:16 2025
-Sprite node glow deleted. @ Wed Jan 15 15:54:16 2025
-Empty node manager deleted. @ Wed Jan 15 15:54:16 2025
-Text node start deleted. @ Wed Jan 15 15:54:16 2025
-Group node title deleted. @ Wed Jan 15 15:54:16 2025
-GUI exited @ Wed Jan 15 15:54:16 2025
-Editor closed. @ Wed Jan 15 15:54:16 2025
+Project root path set: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\ @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Empty node Untitled created. @ Fri Jan 17 12:53:42 2025
+Text node Untitled created. @ Fri Jan 17 12:53:42 2025
+Group node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Group node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Group node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Group node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Tilemap node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Group node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Empty node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Sprite node Untitled created. @ Fri Jan 17 12:53:42 2025
+Project saved: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\town2.spaghyeti @ Fri Jan 17 12:53:55 2025
+Project saved: C:\project_data\projects\c++\TheFunkyAdventuresOfSwankyVelvet\town2.spaghyeti @ Fri Jan 17 12:53:58 2025
+Sprite node coin deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_0 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_5 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_6 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_7 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_8 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_9 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_10 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_11 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node box deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node box_14 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node box_14_15 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node box_14_15_16 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_17 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21_22 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21_22_23 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node hooligan deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node hooligan_2 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node hooligan_2_3 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node jogger deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node pitbull deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node hoodlum deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node pidgeon deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node player deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node town2_background0 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node buildings blk 1 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node background_bridge deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node building gray 1 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node buildings front 1 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node town2_background4 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node background_trees deleted. @ Fri Jan 17 12:53:58 2025
+Tilemap node bodies deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node foreground deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node pavement deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node pavement front deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node buildings blk 2 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node building gray 2 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node building gray 3 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node building gray 4 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node building gray 5 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node building gray 6 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node building gray 7 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node buildings front 2 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node buildings front 3 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node buildings front 4 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node buildings front 5 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node boss car deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node boss wheel1 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node boss wheel2 deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node boss thug deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node boss thug arm deleted. @ Fri Jan 17 12:53:58 2025
+Empty node manager deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node boss hoodlum deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node boss jogger deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node sky deleted. @ Fri Jan 17 12:53:58 2025
+Sprite node hooker deleted. @ Fri Jan 17 12:53:58 2025
+Empty node manager deleted. @ Fri Jan 17 12:53:58 2025
+Text node score deleted. @ Fri Jan 17 12:53:58 2025
+Group node items deleted. @ Fri Jan 17 12:53:58 2025
+Group node enemies deleted. @ Fri Jan 17 12:53:58 2025
+Group node player deleted. @ Fri Jan 17 12:53:58 2025
+Group node map deleted. @ Fri Jan 17 12:53:58 2025
+Group node boss deleted. @ Fri Jan 17 12:53:58 2025
+GUI exited @ Fri Jan 17 12:53:58 2025
+Editor closed. @ Fri Jan 17 12:53:58 2025

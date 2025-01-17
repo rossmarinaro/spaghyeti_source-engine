@@ -33,8 +33,8 @@ namespace System {
 
             template <typename T>
             inline void LoadScene() {
-                T* scene = new T(this->m_context);
-                this->scenes.push_back(scene);
+                T* scene = new T(m_context);
+                scenes.push_back(scene);
             }
            
             //game lifecycle

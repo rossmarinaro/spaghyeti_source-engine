@@ -143,11 +143,11 @@ void Physics::DestroyBody(b2Body* b) {
 
 void Physics::ClearBodies() 
 {
-    if (this->m_active_bodies.size())
-        for (const auto& body : this->m_active_bodies)
+    if (m_active_bodies.size())
+        for (const auto& body : m_active_bodies)
             DestroyBody(body);
 
-    this->m_active_bodies.clear();
+    m_active_bodies.clear();
 
     LOG("Physics: bodies cleared.");
 }
@@ -165,42 +165,42 @@ void Physics::Update()
 
     while (accumulator >= System::Application::game->time->timeStep) {
         
-        this->m_world.Step(System::Application::game->time->timeStep, s_velocityIterations, s_positionIterations);
+        m_world.Step(System::Application::game->time->timeStep, s_velocityIterations, s_positionIterations);
 
         accumulator -= System::Application::game->time->timeStep;
     }
 
     #if DEVELOPMENT == 1 
-        this->debug->SetFlags(this->m_flags);
+        debug->SetFlags(m_flags);
     #endif
 
-	this->m_world.SetAllowSleeping(this->sleeping);
-	this->m_world.SetWarmStarting(this->setWarmStart);
-	this->m_world.SetContinuousPhysics(this->continuous);
-	this->m_world.SetSubStepping(this->subStep);
-    this->m_world.SetAutoClearForces(this->clearForces);
+	m_world.SetAllowSleeping(sleeping);
+	m_world.SetWarmStarting(setWarmStart);
+	m_world.SetContinuousPhysics(continuous);
+	m_world.SetSubStepping(subStep);
+    m_world.SetAutoClearForces(clearForces);
 
     //cleanup removed bodies
 
-    std::set<b2Body*>::iterator it = this->m_bodiesToRemove.begin();
-    std::set<b2Body*>::iterator end = this->m_bodiesToRemove.end();
+    std::set<b2Body*>::iterator it = m_bodiesToRemove.begin();
+    std::set<b2Body*>::iterator end = m_bodiesToRemove.end();
 
     for (; it != end; ++it) 
     {
         auto b = *it;
-        auto b_it = std::find(this->m_active_bodies.begin(), this->m_active_bodies.end(), b);
+        auto b_it = std::find(m_active_bodies.begin(), m_active_bodies.end(), b);
 
-        if (b_it != this->m_active_bodies.end()) 
-            this->m_active_bodies.erase(b_it);
+        if (b_it != m_active_bodies.end()) 
+            m_active_bodies.erase(b_it);
 
         if (b != nullptr) {
-            this->m_world.DestroyBody(b);
+            m_world.DestroyBody(b);
             b = nullptr;
         }
     }
 
-    this->m_bodiesToRemove.clear();
+    m_bodiesToRemove.clear();
  
-    this->m_world.SetGravity(b2Vec2(this->gravityX, this->gravityY));
+    m_world.SetGravity(b2Vec2(gravityX, gravityY));
 }
 

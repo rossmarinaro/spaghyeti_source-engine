@@ -11,21 +11,15 @@ using namespace System::Resources;
 void Manager::Clear(bool all)
 {
     
-    System::Application::resources->atlases.clear();
-    System::Application::resources->atlas_paths.clear();
-    System::Application::resources->anims.clear();
-    System::Application::resources->image_dimensions_and_channels.clear();
-    System::Application::resources->audio_size.clear();
+    System::Application::resources->m_atlases.clear();
+    System::Application::resources->m_atlas_paths.clear();
+    System::Application::resources->m_anims.clear();
+    System::Application::resources->m_image_dimensions_and_channels.clear();
+    System::Application::resources->m_audio_size.clear();
 
     if (all)
     {
-        System::Application::resources->m_file_audio_assets.clear();
-        System::Application::resources->m_file_text_assets.clear();
         System::Application::resources->m_file_assets.clear();
-        System::Application::resources->m_file_image_assets.clear();
-        
-        System::Application::resources->m_raw_image_assets.clear();
-        System::Application::resources->m_raw_audio_assets.clear();
         System::Application::resources->m_raw_assets.clear();
 
         for (auto& texture : System::Application::resources->textures) 
@@ -41,7 +35,6 @@ void Manager::Clear(bool all)
     }
 
     LOG("Resources: assets cleared.");
-
 
 }
 
@@ -64,13 +57,13 @@ void Manager::RegisterTextures()
 
     //load textures
 
-    for (const auto& texture : System::Application::resources->m_raw_image_assets)
-        if (System::Application::resources->textures.find(texture.first) == System::Application::resources->textures.end())
-            Graphics::Texture2D::Load(texture.first);
+    for (const auto& asset : System::Application::resources->m_raw_assets)
+        if (asset.second.first == "image" && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
+            Graphics::Texture2D::Load(asset.first);
 
-    for (const auto& texture : System::Application::resources->m_file_image_assets)
-        if (System::Application::resources->textures.find(texture.first) == System::Application::resources->textures.end())
-            Graphics::Texture2D::Load(texture.first);
+    for (const auto& asset : System::Application::resources->m_file_assets)
+        if (asset.second.first == "image" && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
+            Graphics::Texture2D::Load(asset.first);
 
     LOG("Resources: assets registered.");
 
@@ -82,22 +75,23 @@ void Manager::RegisterTextures()
 //load individual files
 void Manager::LoadFile(const char* key, const char* path)
 {
+    std::string type;
 
     if (System::Utils::GetFileType(path) == "image")
-        System::Application::resources->m_file_image_assets.insert({ key, path });
+        type = "image";
 
     else if (System::Utils::GetFileType(path) == "audio")
-        System::Application::resources->m_file_audio_assets.insert({ key, path });
+        type = "audio";
 
     else if (System::Utils::GetFileType(path) == "data")
-        System::Application::resources->m_file_text_assets.insert({ key, path });
+        type = "data";
 
     else {
         LOG("Resources: filetype not available for loading.");
         return;
     }
     
-    System::Application::resources->m_file_assets.insert({ key, path });
+    System::Application::resources->m_file_assets.insert({ key, { type, path } });
 
 } 
 
@@ -106,7 +100,7 @@ void Manager::LoadFile(const char* key, const char* path)
 
 //load frames from vector of int arrays
 void Manager::LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames) {
-    System::Application::resources->atlases.insert( { key, frames } );
+    System::Application::resources->m_atlases.insert( { key, frames } );
 }
 
 
@@ -115,7 +109,7 @@ void Manager::LoadFrames(const std::string& key, const std::vector<std::array<in
 
 //load frames from file
 void Manager::LoadAtlas(const std::string& key, const char* path) {
-    System::Application::resources->atlas_paths.insert( { key, path } );
+    System::Application::resources->m_atlas_paths.insert( { key, path } );
 }
 
 
@@ -124,7 +118,7 @@ void Manager::LoadAtlas(const std::string& key, const char* path) {
 
 //load animations from map of start / end pairs defined by key
 void Manager::LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims) {
-    System::Application::resources->anims.insert( { key, anims } );
+    System::Application::resources->m_anims.insert( { key, anims } );
 }
 
 
@@ -132,52 +126,27 @@ void Manager::LoadAnims(const std::string& key, const std::map<std::string, std:
 
 
 //load raw char array image / dimensions and bytes per pixel channel
-void Manager::LoadRawImage(const char* key, const char* arr, int width, int height, int channel) 
-{
-    System::Application::resources->image_dimensions_and_channels.insert({ key, { width, height, channel } });
-
-    System::Application::resources->m_raw_image_assets.insert({ key, arr });
-
-    System::Application::resources->m_raw_assets.insert({ key, arr });
+void Manager::LoadRawImage(const char* key, const char* arr, int width, int height, int channel) {
+    System::Application::resources->m_image_dimensions_and_channels.insert({ key, { width, height, channel } });
+    System::Application::resources->m_raw_assets.insert({ key, { "image", arr } });
 }
 
 //------------------------------------- 
 
 
 //load raw char array audio / size in bytes
-void Manager::LoadRawAudio(const char* key, const char* arr, unsigned int bytes) 
-{
-
-    System::Application::resources->audio_size.insert({ key, bytes }); 
-
-    System::Application::resources->m_raw_audio_assets.insert({ key, arr });
-
-    System::Application::resources->m_raw_assets.insert({ key, arr }); 
-
+void Manager::LoadRawAudio(const char* key, const char* arr, unsigned int bytes) {
+    System::Application::resources->m_audio_size.insert({ key, bytes }); 
+    System::Application::resources->m_raw_assets.insert({ key, { "audio", arr } }); 
 }
 
 
-//------------------------------------- 
+//-------------------------------------  
 
 //unload files
-void Manager::UnLoadFile(const char* key)
-{
-
-    if (System::Application::resources->m_file_image_assets.find(key) != System::Application::resources->m_file_image_assets.end())
-        System::Application::resources->m_file_image_assets.erase(System::Application::resources->m_file_image_assets.find(key));
-
-    else if (System::Application::resources->m_file_audio_assets.find(key) != System::Application::resources->m_file_audio_assets.end() )
-        System::Application::resources->m_file_audio_assets.erase(System::Application::resources->m_file_audio_assets.find(key));
-
-    else if (System::Application::resources->m_file_text_assets.find(key) != System::Application::resources->m_file_text_assets.end())
-        System::Application::resources->m_file_text_assets.erase(System::Application::resources->m_file_text_assets.find(key));
-
-    else
-        return;
-
+void Manager::UnLoadFile(const char* key) {
     if (System::Application::resources->m_file_assets.find(key) != System::Application::resources->m_file_assets.end())
         System::Application::resources->m_file_assets.erase(System::Application::resources->m_file_assets.find(key));
-
 } 
 
 
@@ -185,10 +154,8 @@ void Manager::UnLoadFile(const char* key)
 
 // unload frames from vector of int arrays
 void Manager::UnLoadFrames(const std::string& key) {
-
-    if (System::Application::resources->atlases.find(key) != System::Application::resources->atlases.end())
-        System::Application::resources->atlases.erase(System::Application::resources->atlases.find(key));
- 
+    if (System::Application::resources->m_atlases.find(key) != System::Application::resources->m_atlases.end())
+        System::Application::resources->m_atlases.erase(System::Application::resources->m_atlases.find(key));
 }
 
 
@@ -197,8 +164,8 @@ void Manager::UnLoadFrames(const std::string& key) {
 //unload frames from file
 void Manager::UnLoadAtlas(const std::string& key) {
 
-    if (System::Application::resources->atlas_paths.find(key) != System::Application::resources->atlas_paths.end())
-        System::Application::resources->atlas_paths.erase(System::Application::resources->atlas_paths.find(key));
+    if (System::Application::resources->m_atlas_paths.find(key) != System::Application::resources->m_atlas_paths.end())
+        System::Application::resources->m_atlas_paths.erase(System::Application::resources->m_atlas_paths.find(key));
 }
 
 
@@ -207,21 +174,25 @@ void Manager::UnLoadAtlas(const std::string& key) {
 //unload animations 
 void Manager::UnLoadAnims(const std::string& key) {
 
-    if (System::Application::resources->anims.find(key) != System::Application::resources->anims.end())
-        System::Application::resources->anims.erase(System::Application::resources->anims.find(key));
+    if (System::Application::resources->m_anims.find(key) != System::Application::resources->m_anims.end())
+        System::Application::resources->m_anims.erase(System::Application::resources->m_anims.find(key));
 }
 
 
 //--------------------------------- 
 
 //unload raw char array image
-void Manager::UnLoadRawImage(const char* key) {
+void Manager::UnLoadRawImage(const char* key) 
+{
 
-    if (System::Application::resources->image_dimensions_and_channels.find(key) != System::Application::resources->image_dimensions_and_channels.end())
+    if (System::Application::resources->m_image_dimensions_and_channels.find(key) != System::Application::resources->m_image_dimensions_and_channels.end())
     {
-        System::Application::resources->image_dimensions_and_channels.erase(System::Application::resources->image_dimensions_and_channels.find(key));
-        System::Application::resources->m_raw_image_assets.erase(System::Application::resources->m_raw_image_assets.find(key));
-        System::Application::resources->m_raw_assets.erase(System::Application::resources->m_raw_assets.find(key));
+        System::Application::resources->m_image_dimensions_and_channels.erase(System::Application::resources->m_image_dimensions_and_channels.find(key));
+
+        auto it = System::Application::resources->m_raw_assets.find(key); 
+
+        if (it->second.first == "image")
+            System::Application::resources->m_raw_assets.erase(System::Application::resources->m_raw_assets.find(key));
     }
 
 }
@@ -232,11 +203,14 @@ void Manager::UnLoadRawImage(const char* key) {
 void Manager::UnLoadRawAudio(const char* key) 
 {
 
-    if (System::Application::resources->audio_size.find(key) != System::Application::resources->audio_size.end())
+    if (System::Application::resources->m_audio_size.find(key) != System::Application::resources->m_audio_size.end())
     {
-        System::Application::resources->audio_size.erase(System::Application::resources->audio_size.find(key));
-        System::Application::resources->m_raw_audio_assets.erase(System::Application::resources->m_raw_audio_assets.find(key));
-        System::Application::resources->m_raw_assets.erase(System::Application::resources->m_raw_assets.find(key));
+        System::Application::resources->m_audio_size.erase(System::Application::resources->m_audio_size.find(key));
+       
+        auto it = System::Application::resources->m_raw_assets.find(key); 
+
+        if (it->second.first == "audio")
+            System::Application::resources->m_raw_assets.erase(System::Application::resources->m_raw_assets.find(key));
     } 
 
 }
@@ -251,7 +225,7 @@ const char* Manager::GetRawData(const std::string& key)
     const auto resource = System::Application::resources->m_raw_assets.find(key.c_str());
 
     if (resource != System::Application::resources->m_raw_assets.end())
-        return resource->second;
+        return resource->second.second;
 
     return "not found";
 
@@ -264,9 +238,9 @@ const char* Manager::GetRawData(const std::string& key)
 const std::array<int, 3> Manager::GetRawDimensionsAndChannels(const std::string& key)
 {
 
-    const std::map<std::string, std::array<int, 3>>::iterator it = System::Application::resources->image_dimensions_and_channels.find(key);
+    const std::map<std::string, std::array<int, 3>>::iterator it = System::Application::resources->m_image_dimensions_and_channels.find(key);
 
-    if (it != System::Application::resources->image_dimensions_and_channels.end())
+    if (it != System::Application::resources->m_image_dimensions_and_channels.end())
     {
         int width = it->second[0],
             height = it->second[1],
@@ -285,9 +259,9 @@ const std::array<int, 3> Manager::GetRawDimensionsAndChannels(const std::string&
 const unsigned int Manager::GetSizeOfRawAudio(const std::string& key)
 {
 
-    const std::map<std::string, unsigned int>::iterator it = System::Application::resources->audio_size.find(key);
+    const std::map<std::string, unsigned int>::iterator it = System::Application::resources->m_audio_size.find(key);
 
-    return it != System::Application::resources->audio_size.end() ?
+    return it != System::Application::resources->m_audio_size.end() ?
         it->second : 0;
 
 };
@@ -299,9 +273,9 @@ const unsigned int Manager::GetSizeOfRawAudio(const std::string& key)
 std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::string& key) 
 {
 
-    const std::map<std::string, std::vector<std::array<int, 6>>>::iterator it = System::Application::resources->atlases.find(key);
+    const std::map<std::string, std::vector<std::array<int, 6>>>::iterator it = System::Application::resources->m_atlases.find(key);
  
-    if (it != System::Application::resources->atlases.end())
+    if (it != System::Application::resources->m_atlases.end())
         return it->second; 
         
     return {};
@@ -315,9 +289,9 @@ std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::string
 const char* Manager::GetSpritesheetPath(const std::string& key)
 {
 
-    const std::map<std::string, const char*>::iterator it = System::Application::resources->atlas_paths.find(key);
+    const std::map<std::string, const char*>::iterator it = System::Application::resources->m_atlas_paths.find(key);
 
-    if (it != System::Application::resources->atlas_paths.end())
+    if (it != System::Application::resources->m_atlas_paths.end())
         return it->second;
 
     else if (GetRawSpritesheetData(key).size())
@@ -333,9 +307,9 @@ const char* Manager::GetSpritesheetPath(const std::string& key)
 const std::map<std::string, std::pair<int, int>> Manager::GetAnimations(const std::string& key)
 {
 
-    const std::map<std::string, std::map<std::string, std::pair<int, int>>>::iterator it = System::Application::resources->anims.find(key);
+    const std::map<std::string, std::map<std::string, std::pair<int, int>>>::iterator it = System::Application::resources->m_anims.find(key);
 
-    if (it != System::Application::resources->anims.end())
+    if (it != System::Application::resources->m_anims.end())
         return it->second;
 
     return {};
@@ -349,10 +323,10 @@ const std::map<std::string, std::pair<int, int>> Manager::GetAnimations(const st
 const char* Manager::GetFilePath(const std::string& key)
 {
 
-   const std::map<std::string, std::string>::iterator it = System::Application::resources->m_file_assets.find(key);
+   const auto it = System::Application::resources->m_file_assets.find(key);
 
     return it != System::Application::resources->m_file_assets.end() ?
-        it->second.c_str() : "not found";
+        it->second.second.c_str() : "not found";
 
 }
 
@@ -368,14 +342,14 @@ std::vector<std::string> Manager::ParseCSV(const std::string& key, int index)
 
     result.reserve(10000);
 
-    const std::map<std::string, std::string>::iterator it = System::Application::resources->m_file_text_assets.find(key);
+    const auto it = System::Application::resources->m_file_assets.find(key);
  
-    if (it != System::Application::resources->m_file_text_assets.end()) 
+    if (it->second.first == "data" && it != System::Application::resources->m_file_assets.end()) 
     { 
 
-        std::ifstream in(it->second);
+        std::ifstream in(it->second.second);
 
-        if (System::Utils::str_endsWith(it->second, ".json")) //json array
+        if (System::Utils::str_endsWith(it->second.second, ".json")) //json array
         {
             #if USE_JSON == 1 
 
@@ -403,7 +377,7 @@ std::vector<std::string> Manager::ParseCSV(const std::string& key, int index)
                         
         }
 
-        else if (System::Utils::str_endsWith(it->second, ".csv")) //plain csv file
+        else if (System::Utils::str_endsWith(it->second.second, ".csv")) //plain csv file
             while(getline(in, line))
                 result.emplace_back(line + ",");
      

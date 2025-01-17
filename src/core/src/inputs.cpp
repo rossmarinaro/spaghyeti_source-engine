@@ -102,20 +102,17 @@ Inputs::Inputs():
 
     #ifdef __EMSCRIPTEN__
 
-       if (Application::isMobile)
-       {
+       if (Application::isMobile) {
             emscripten_set_touchstart_callback("canvas", 0, 1, web_touch_callback);
             emscripten_set_touchend_callback("canvas", 0, 1, web_touch_callback);
             emscripten_set_touchmove_callback("canvas", 0, 1, web_touch_callback);
-       }
-        
-       else
-       {
+        }
+        else {
             emscripten_set_click_callback("canvas", 0, 1, web_mouse_callback);
             emscripten_set_mouseup_callback("canvas", 0, 1, web_mouse_callback);
             emscripten_set_mousedown_callback("canvas", 0, 1, web_mouse_callback);
             emscripten_set_mousemove_callback("canvas", 0, 1, web_mouse_callback);
-       }
+        }
 
     #endif
 
