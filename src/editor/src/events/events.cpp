@@ -520,14 +520,14 @@ void EventListener::BuildAndRun()
     const std::string lib = Editor::buildType == "static" ? 
                                 Editor::platform == "WebGL" ? "spaghyeti-web.a" : "spaghyeti.a" 
                                 : (Editor::buildType == "dynamic" && Editor::releaseType == "debug") ? 
-                                        "spaghyeti-debug.dll" : "spaghyeti-release.dll",
+                                        "spaghyeti-debug.dll" : "spaghyeti.dll",
 
                       copy_lib = Editor::projectPath + "build\\" + lib;
 
     if (Editor::buildType == "dynamic") 
     {
         remove((Editor::projectPath + "build\\spaghyeti-debug.dll").c_str());
-        remove((Editor::projectPath + "build\\spaghyeti-release.dll").c_str());
+        remove((Editor::projectPath + "build\\spaghyeti.dll").c_str());
 
         if (!std::filesystem::exists(copy_lib))
             std::filesystem::copy_file(Editor::rootPath + "\\sdk\\" + lib, copy_lib, options);

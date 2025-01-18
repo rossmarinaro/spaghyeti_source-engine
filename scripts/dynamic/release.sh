@@ -1,1 +1,1 @@
-py buildCore.py "release" 0
+py buildCore.py "" 0
