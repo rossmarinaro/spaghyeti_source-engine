@@ -138,7 +138,7 @@ Editor::Editor()
 
     //AllocConsole();
 
-    cullTargetPosition = { 0.0f, 0.0f };
+    cullTarget = { "", { 0.0f, 0.0f } };
     platform = "Windows";
     releaseType = "debug";
     buildType = "dynamic";
@@ -249,7 +249,7 @@ void Editor::Reset()
 
     game->camera->Reset();
 
-    cullTargetPosition = { 0.0f, 0.0f };
+    cullTarget = { "", { 0.0f, 0.0f } };
 
     worldWidth = 2000;
 	worldHeight = 2000;

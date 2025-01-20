@@ -696,6 +696,37 @@ void editor::GUI::ShowViewport()
     ImGui::SliderFloat("vignette", &session->vignetteVisibility, 0.0f, 1.0f);
     ImGui::ColorEdit4("color", (float*)&session->game->camera->GetBackgroundColor()); 
 
+    //cull target
+
+    if (ImGui::BeginCombo("cull target", Editor::cullTarget.first.c_str()))
+    {
+        auto iterateSprites = [](auto node) -> void 
+        {
+            auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(node->ID));
+            bool is_sel = (Editor::cullTarget.first == sn->name);
+
+            if (ImGui::Selectable(sn->name.c_str())) 
+                Editor::cullTarget = { sn->name, { sn->positionX, sn->positionY } };
+
+            if (is_sel)
+                ImGui::SetItemDefaultFocus();
+        };
+
+        for (const auto& node : Node::nodes) {
+            if (node->type == "Sprite")
+                iterateSprites(node);
+
+            if (node->type == "Group") {
+                auto gn = std::dynamic_pointer_cast<GroupNode>(Node::Get(node->ID));
+                for (const auto& n : gn->_nodes)
+                    if (n->type == "Sprite")
+                        iterateSprites(n);
+            }
+        }
+
+        ImGui::EndCombo();
+    }
+
     //vignette visibility
 
     session->game->GetScene()->vignette->SetAlpha(session->vignetteVisibility);

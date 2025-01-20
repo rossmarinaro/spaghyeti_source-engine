@@ -149,8 +149,9 @@ void EventListener::Serialize(json& data, bool newScene)
     data["globals_applied"] = newScene ? false : session->globals_applied;
     data["shaders_applied"] = newScene ? false : session->shaders_applied;
 
-    data["cull target position x"] = Editor::cullTargetPosition.x;
-    data["cull target position y"] = Editor::cullTargetPosition.y;
+    data["cull target name"] = Editor::cullTarget.first;
+    data["cull target position x"] = Editor::cullTarget.second.x;
+    data["cull target position y"] = Editor::cullTarget.second.y;
 
     //loaded data
 
@@ -262,8 +263,8 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     AssetManager::Get()->projectIcon = data["icon"];
 
-    if (data.contains("cull target position x") && data.contains("cull target position y"))
-        Editor::cullTargetPosition = { data["cull target position x"], data["cull target position y"] };
+    if (data.contains("cull target name") && data.contains("cull target position x") && data.contains("cull target position y")) 
+        Editor::cullTarget = { data["cull target name"], { data["cull target position x"], data["cull target position y"] }};
 
     //camera 
 

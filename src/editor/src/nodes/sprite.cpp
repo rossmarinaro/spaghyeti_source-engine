@@ -9,8 +9,7 @@ using namespace editor;
 
 SpriteNode::SpriteNode():  
     Node("Sprite"),
-        m_show_sprite_texture(false),
-        m_set_cull_target(false)
+        m_show_sprite_texture(false)
 {
     key = "";
     tint = glm::vec3(1.0f);
@@ -732,11 +731,6 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                 ImGui::Checkbox("cull", &cull);
 
-                if (!cull)
-                    ImGui::Checkbox("set as culling target", &m_set_cull_target);
-                else
-                    m_set_cull_target = false;
-                
                 ImGui::Checkbox("filter nearest", &filter_nearest);
 
                 ImGui::InputFloat("scroll factor x", &scrollFactorX);
@@ -798,18 +792,11 @@ void SpriteNode::Render()
         
         if (bodies.size())
             for (int i = 0; i < bodies.size(); i++)   
-                bodies[i]->SetTransform(
-                    b2Vec2(
-                        spriteHandle->position.x + bodyX[i], 
-                        spriteHandle->position.y + bodyY[i]
-                    ), 0);
-
-        if (m_set_cull_target)
-            Editor::cullTargetPosition = spriteHandle->position;
+                bodies[i]->SetTransform(b2Vec2(spriteHandle->position.x + bodyX[i], spriteHandle->position.y + bodyY[i]), 0);
 
         //if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && (ImGui::IsMouseDown(ImGuiKey_RightShift) || ImGui::IsMouseDown(ImGuiKey_LeftShift)))
             //Editor::selectedEntity = spriteHandle;
-
+    
     }
 }
 

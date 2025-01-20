@@ -73,7 +73,7 @@ namespace editor {
             void Reset();
 
             static inline std::shared_ptr<Entity> selectedEntity;
-            static inline glm::vec2 cullTargetPosition;
+            static inline std::pair<std::string, glm::vec2> cullTarget;
 			static inline std::string platform,
                                       releaseType,
                                       buildType,

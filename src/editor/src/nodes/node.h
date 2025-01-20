@@ -36,7 +36,7 @@ namespace editor {
             std::map<std::string, std::string> behaviors;
             
             Node(const std::string& type, const std::string& name = "Untitled", std::vector<std::shared_ptr<Node>>& arr = nodes);
-            Node(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
+            //Node(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
 
             virtual ~Node() {}
             
@@ -182,8 +182,7 @@ namespace editor {
 
         private:
 
-            bool m_show_sprite_texture, m_set_cull_target;
-
+            bool m_show_sprite_texture;
             std::pair<std::string, std::pair<bool, int>> m_currentAnim;
             std::vector<BoolContainer> m_do_yoyo;
 

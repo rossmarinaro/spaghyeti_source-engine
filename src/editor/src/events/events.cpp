@@ -1294,7 +1294,7 @@ void EventListener::BuildAndRun()
 
         writeNodes(target.second->nodes);
 
-        command_queue << "   Entity::SetCullPosition({" + std::to_string(Editor::cullTargetPosition.x) + ", " + std::to_string(Editor::cullTargetPosition.y) + "});\n";
+        command_queue << "   Entity::SetCullPosition({" + std::to_string(Editor::cullTarget.second.x) + ", " + std::to_string(Editor::cullTarget.second.y) + "});\n";
 
         //convert data string stream to string
 
