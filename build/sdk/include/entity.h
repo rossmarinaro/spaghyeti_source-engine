@@ -57,7 +57,7 @@ class Entity {
 		 
 		virtual void Render(float projWidth, float projHeight) {}
         virtual ~Entity() { s_count--; }
- 
+  
 		Entity(const char* type);
 		Entity(const char* type, float x, float y);
         
@@ -69,9 +69,9 @@ class Entity {
         void SetPosition(float x, float y);
 
         static inline int s_depth = 0, s_count = 0;
-        static inline glm::vec2 s_cullPosition = { 0.0f, 0.0f };
+        static inline glm::vec2* s_cullPosition;
 
-        static inline void SetCullPosition(const glm::vec2& cullPosition) { s_cullPosition = cullPosition; }
+        static inline void SetCullPosition(glm::vec2* position) { s_cullPosition = position; }
 
 };
 

@@ -149,9 +149,9 @@ void EventListener::Serialize(json& data, bool newScene)
     data["globals_applied"] = newScene ? false : session->globals_applied;
     data["shaders_applied"] = newScene ? false : session->shaders_applied;
 
-    data["cull target name"] = Editor::cullTarget.first;
-    data["cull target position x"] = Editor::cullTarget.second.x;
-    data["cull target position y"] = Editor::cullTarget.second.y;
+    data["cull target name"] = newScene ? "" : session->cullTarget.first;
+    data["cull target position x"] = newScene ? 0.0f : session->cullTarget.second.x;
+    data["cull target position y"] = newScene ? 0.0f : session->cullTarget.second.y;
 
     //loaded data
 
@@ -264,7 +264,9 @@ void EventListener::Deserialize(std::ifstream& JSON)
     AssetManager::Get()->projectIcon = data["icon"];
 
     if (data.contains("cull target name") && data.contains("cull target position x") && data.contains("cull target position y")) 
-        Editor::cullTarget = { data["cull target name"], { data["cull target position x"], data["cull target position y"] }};
+        session->cullTarget = { data["cull target name"], { data["cull target position x"], data["cull target position y"] }};
+    else
+        session->cullTarget = { "", { 0.0f, 0.0f } };
 
     //camera 
 
@@ -383,6 +385,9 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
     scene->gravityY = data["settings"]["physics"]["gravity"]["y"];
     scene->gravity_continuous = data["settings"]["physics"]["continuous"];
     scene->gravity_sleeping = data["settings"]["physics"]["sleeping"];
+
+    if (data.contains("cull target name") && data.contains("cull target position x") && data.contains("cull target position y")) 
+        scene->cullTarget = { data["cull target name"], { data["cull target position x"], data["cull target position y"] }};
 
     for (auto& sprite : data["nodes"]["sprites"])
         Node::ReadData(sprite, false, scene);

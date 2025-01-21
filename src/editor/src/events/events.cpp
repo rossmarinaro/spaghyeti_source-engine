@@ -533,6 +533,10 @@ void EventListener::BuildAndRun()
             std::filesystem::copy_file(Editor::rootPath + "\\sdk\\" + lib, copy_lib, options);
     }
 
+    //cull target
+
+    std::string cullTarget = "";
+
     //Windows
 
     if (Editor::platform == "Windows")
@@ -1084,7 +1088,10 @@ void EventListener::BuildAndRun()
                     
                     else  
                         command_queue << "   auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
-            
+
+                    if (sn->name == target.second->cullTarget.first)
+                        cullTarget = "sprite_" + node->ID;
+
                     //sprite configurations
 
                     command_queue << "   sprite_" + node->ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
@@ -1294,7 +1301,10 @@ void EventListener::BuildAndRun()
 
         writeNodes(target.second->nodes);
 
-        command_queue << "   Entity::SetCullPosition({" + std::to_string(Editor::cullTarget.second.x) + ", " + std::to_string(Editor::cullTarget.second.y) + "});\n";
+        if (cullTarget.length())
+            command_queue << "   Entity::SetCullPosition(&" + cullTarget + "->position);\n";
+
+        cullTarget = "";
 
         //convert data string stream to string
 

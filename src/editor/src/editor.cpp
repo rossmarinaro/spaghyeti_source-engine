@@ -83,11 +83,6 @@ void Editor::Update()
        
     } 
 
-    //cull entities outside camera viewport
-
-    //for (const auto& entity : Game::GetScene()->entities)
-        //entity->Cull({ -game->camera->GetPosition().x / 2 * game->camera->GetZoom(), game->camera->GetPosition().y });
-
     glViewport(0, 0, Window::s_width, Window::s_height);
     
 	glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);
@@ -135,10 +130,10 @@ Editor::Editor()
     s_self->use_webgl2 = false;
     s_self->full_es3 = false;
     s_self->preserveSrc = false;
+    s_self->cullTarget = { "", { 0.0f, 0.0f } };
 
     //AllocConsole();
 
-    cullTarget = { "", { 0.0f, 0.0f } };
     platform = "Windows";
     releaseType = "debug";
     buildType = "dynamic";
@@ -186,7 +181,7 @@ Editor::Editor()
     s_self->s_selector->SetDrawStyle(GL_LINE);
     s_self->s_selector->SetThickness(2.0f);
     s_self->s_selector->SetAlpha(0.0f);
-      
+
     //main update loop
 
     while (!s_self->events->exitFlag) 
@@ -222,13 +217,10 @@ Editor::~Editor()
 //------------------------------
 
 
-void Editor::Log(const std::string& message)
-{
+void Editor::Log(const std::string& message) {
 
     std::filesystem::current_path(rootPath);
-
     std::ofstream src("appLog.txt", std::ofstream::app | std::ofstream::out);
-
     std::time_t time_stamp = std::time(nullptr);
 
     src << message << " @ " << std::ctime(&time_stamp);
@@ -248,8 +240,6 @@ void Editor::Reset()
     Node::ClearAll();
 
     game->camera->Reset();
-
-    cullTarget = { "", { 0.0f, 0.0f } };
 
     worldWidth = 2000;
 	worldHeight = 2000;

@@ -10,31 +10,28 @@ namespace editor {
 
         public:
 
-            ~Scene() {
-                nodes.clear();
-                globals.clear();
-            }
+            int worldWidth,
+                worldHeight;
 
-            int worldWidth = 2000,
-                worldHeight = 2000;
-
-            float gravityX = 0.0f,
-                  gravityY = 500.0f,
-                  vignetteVisibility = 0.0f,
-                  cameraZoom = 1,
+            float gravityX,
+                  gravityY,
+                  vignetteVisibility,
+                  cameraZoom,
                   currentBoundsWidthBegin,
                   currentBoundsWidthEnd,
                   currentBoundsHeightBegin,
                   currentBoundsHeightEnd;
 
-            bool shaders_applied = false,
-                 animations_applied = false,
-                 globals_applied = false, 
-                 gravity_continuous = true,
-                 gravity_sleeping = true;
+            bool shaders_applied,
+                 animations_applied,
+                 globals_applied, 
+                 gravity_continuous,
+                 gravity_sleeping;
     
             glm::vec2 cameraPosition;
             glm::vec4 cameraBackgroundColor;
+
+            std::pair<std::string, glm::vec2> cullTarget;
 
             std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;
@@ -43,13 +40,31 @@ namespace editor {
             std::vector<std::shared_ptr<editor::Node>> nodes;
             std::vector<std::string> assets;
 
+            Scene():
+                worldWidth(2000),
+                worldHeight(2000),
+                gravityX(0.0f),
+                gravityY(500.0f),
+                vignetteVisibility(0.0f),
+                cameraZoom(1),
+                shaders_applied(false),
+                animations_applied(false),
+                globals_applied(false), 
+                gravity_continuous(true),
+                gravity_sleeping(true),
+                cullTarget({ "", glm::vec2(0.0f) })
+            {}
+
+            ~Scene() {
+                nodes.clear();
+                globals.clear();
+            }
+
             template <typename T>
             static inline std::shared_ptr<T> CreateObject(Scene* scene) {
 
                 auto node = std::make_shared<T>();
-
                 scene->nodes.push_back(node);
-
                 return node;
 
             }

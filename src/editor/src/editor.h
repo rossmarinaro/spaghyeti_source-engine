@@ -60,6 +60,7 @@ namespace editor {
 			
 			System::Game* game;
             EventListener* events;
+            std::pair<std::string, glm::vec2> cullTarget;
 			
 			std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;
@@ -73,7 +74,7 @@ namespace editor {
             void Reset();
 
             static inline std::shared_ptr<Entity> selectedEntity;
-            static inline std::pair<std::string, glm::vec2> cullTarget;
+    
 			static inline std::string platform,
                                       releaseType,
                                       buildType,

@@ -698,18 +698,12 @@ void editor::GUI::ShowViewport()
 
     //cull target
 
-    if (ImGui::BeginCombo("cull target", Editor::cullTarget.first.c_str()))
+    if (ImGui::BeginCombo("cull target", session->cullTarget.first.c_str()))
     {
-        auto iterateSprites = [](auto node) -> void 
-        {
+        auto iterateSprites = [](auto node) -> void {
             auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(node->ID));
-            bool is_sel = (Editor::cullTarget.first == sn->name);
-
             if (ImGui::Selectable(sn->name.c_str())) 
-                Editor::cullTarget = { sn->name, { sn->positionX, sn->positionY } };
-
-            if (is_sel)
-                ImGui::SetItemDefaultFocus();
+                Editor::Get()->cullTarget = { sn->name, { sn->positionX, sn->positionY } };
         };
 
         for (const auto& node : Node::nodes) {

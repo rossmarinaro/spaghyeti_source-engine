@@ -67,7 +67,6 @@ Game::Game()
     //scene context handles
 
     m_context = { inputs, camera, physics, time };
-
 }
 
 
@@ -261,15 +260,15 @@ void Game::UpdateFrame()
     for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity)) 
         {
-            if (entity->cull)
-            {
+            if (entity->cull && Entity::s_cullPosition)
+            { 
                 float width = System::Window::s_scaleWidth;
 
-                if (!camera->InBounds() && Entity::s_cullPosition.x > System::Window::s_scaleWidth)
+                if (!camera->InBounds() && Entity::s_cullPosition->x > System::Window::s_scaleWidth)
                     width = width + (width / 2);
 
-                entity->renderable = (entity->position.x > Entity::s_cullPosition.x && (entity->position.x < Entity::s_cullPosition.x + width) * entity->scrollFactor.x) ||
-                                     (entity->position.x < Entity::s_cullPosition.x && (entity->position.x > Entity::s_cullPosition.x - width) * entity->scrollFactor.x);
+                entity->renderable = (entity->position.x > Entity::s_cullPosition->x && (entity->position.x < Entity::s_cullPosition->x + width) * entity->scrollFactor.x) ||
+                                     (entity->position.x < Entity::s_cullPosition->x && (entity->position.x > Entity::s_cullPosition->x - width) * entity->scrollFactor.x);
             }
 
             if (entity->renderable)
