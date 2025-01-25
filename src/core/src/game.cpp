@@ -328,7 +328,19 @@ void Game::UpdateFrame()
     //camera
  
     camera->Update();
-     
+
+    //execute timed events on the main thread
+
+    auto it = std::find_if(System::Application::eventPool->timed_events.begin(), System::Application::eventPool->timed_events.end(), [](const EventPool::TimedEvent& event) { return (/* System::Application::game->time->now */std::chrono::steady_clock::now() - event.time_initiated) >= std::chrono::milliseconds(event.delay); }); 
+    
+    if (it != System::Application::eventPool->timed_events.end()) 
+    {
+        auto event = *it;
+        event.callback(); 
+        
+        if (event.repeat == 0)
+            System::Application::eventPool->timed_events.erase(std::move(it));
+    }
 }  
 
 
@@ -379,7 +391,6 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
     if (behavior_it != Application::game->currentScene->behaviors.end()) 
         (*behavior_it)->active = false; 
-
 
 } 
 

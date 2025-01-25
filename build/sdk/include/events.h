@@ -22,11 +22,19 @@ class EventPool {
         // Flag to indicate whether the thread pool should stop 
         // or not 
         std::atomic_bool active { true };
-        
+
+        //container of timed events
+
+        struct TimedEvent {
+            int delay;
+            int repeat;
+            /* float */ std::chrono::steady_clock::time_point time_initiated;
+            std::function<void()> callback;
+        };
+
+        std::vector<TimedEvent> timed_events;
 
     private: 
-
-        size_t m_threadCount;
 
         // Vector to store worker threads 
         std::vector<std::thread> m_threads; 

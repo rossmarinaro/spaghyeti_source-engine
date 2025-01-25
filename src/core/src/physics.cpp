@@ -161,12 +161,10 @@ void Physics::Update()
 
     static double accumulator = 0.0;
 
-    accumulator += System::Application::game->time->m_delta;
+    accumulator += System::Application::game->time->delta;
 
     while (accumulator >= System::Application::game->time->timeStep) {
-        
         m_world.Step(System::Application::game->time->timeStep, s_velocityIterations, s_positionIterations);
-
         accumulator -= System::Application::game->time->timeStep;
     }
 
@@ -187,20 +185,19 @@ void Physics::Update()
 
     for (; it != end; ++it) 
     {
-        auto b = *it;
-        auto b_it = std::find(m_active_bodies.begin(), m_active_bodies.end(), b);
+        auto body = *it;
+        auto b_it = std::find(m_active_bodies.begin(), m_active_bodies.end(), body);
 
         if (b_it != m_active_bodies.end()) 
             m_active_bodies.erase(b_it);
 
-        if (b != nullptr) {
-            m_world.DestroyBody(b);
-            b = nullptr;
+        if (body != nullptr) {
+            m_world.DestroyBody(body);
+            body = nullptr;
         }
     }
 
     m_bodiesToRemove.clear();
- 
     m_world.SetGravity(b2Vec2(gravityX, gravityY));
 }
 

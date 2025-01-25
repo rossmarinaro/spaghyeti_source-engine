@@ -24,7 +24,7 @@ void DisplayInfo::Update(void* _context)
 
     //FPS counter
 
-    float fps = 60.0f - context->time->m_delta;
+    float fps = 60.0f - context->time->delta;
     fps_text->SetText("FPS: " + std::to_string(fps));
     fps_text->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
 

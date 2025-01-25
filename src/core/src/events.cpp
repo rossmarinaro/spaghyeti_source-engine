@@ -6,11 +6,10 @@
   
 //Constructor to creates a thread pool with given number of threads
 
-EventPool::EventPool(size_t count): 
-    m_threadCount(count)
+EventPool::EventPool(size_t thread_count)
 {
     // Creating worker threads 
-    for (size_t i = 0; i < m_threadCount; ++i) 
+    for (size_t i = 0; i < thread_count; ++i) 
     { 
         m_threads.emplace_back([this] 
         { 
@@ -37,7 +36,7 @@ EventPool::EventPool(size_t count):
 
                     // Get the next task from the queue 
                     task = std::move(m_tasks.front()); 
-                    m_tasks.pop(); 
+                    m_tasks.pop();  
                 } 
 
                 task(); 

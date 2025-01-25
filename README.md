@@ -70,3 +70,5 @@ map editor
 
 fix big .o files (audio.o manager.o game.o entity.o tilemap.o texture.o shader.o)
 
+-sEXPORT_NAME="Example"
+window.Example(i).then(module => {})

@@ -623,8 +623,6 @@ void EventListener::BuildAndRun()
         std::string name_upper = s_currentProject;
         transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
-        //todo: tmp assets folder
-
         std::ofstream web_makeFile(web + "/Makefile"),
                       web_preJS(web + "/pre-js.js"),
                       web_HTML(web + "/template.html");
@@ -648,10 +646,14 @@ void EventListener::BuildAndRun()
         web_makeFile << "   -sSHARED_MEMORY=" << shared_memory << " \\\n";
         web_makeFile << "   -sALLOW_MEMORY_GROWTH=" << allow_memory_growth << " \\\n";
         web_makeFile << "   -sNO_DISABLE_EXCEPTION_CATCHING=" << allow_exception_catching << " \\\n";
-        web_makeFile << "   -sINITIAL_MEMORY=420mb\\\n";
+        //web_makeFile << "   -sPTHREADS_DEBUG=1 \\\n";
+        //web_makeFile << "   -sPROXY_TO_PTHREAD=1 \\\n";
+        //web_makeFile << "   -sOFFSCREENCANVAS_SUPPORT=1 \\\n";
+        //web_makeFile << "   -sOFFSCREEN_FRAMEBUFFER=1 \\\n";
+        //web_makeFile << "   -sINITIAL_MEMORY=420mb \\\n";
         //web_makeFile << "   -sMAXIMUM_MEMORY=1000mb \\\n";
         //web_makeFile << "   -sPTHREAD_POOL_SIZE_STRICT=33 \\\n";
-        web_makeFile << "   -sPTHREAD_POOL_SIZE=33 \\\n"; //-sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency \\\n";
+        web_makeFile << "   -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency \\\n";
         web_makeFile << "   -sUSE_GLFW=3 \\\n";
         web_makeFile << "   -sLEGACY_GL_EMULATION=0 \\\n";
         web_makeFile << "   -sASSERTIONS \\\n";

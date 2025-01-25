@@ -12,24 +12,24 @@ class Time {
 
         Time(float t = 0.0f);
 
-        float m_delta;
+        float now, delta;
 
         std::chrono::duration<double> time_left;
 
-        operator float() const { return this->m_now; }
+        operator float() const { return now; }
 
-        inline float GetSeconds() const { return this->m_now; }
-        inline float GetMilliseconds() const { return this->m_now * 1000; }
-        
-        static void delayedCall(int milliseconds, std::function<void()>&& fn_ptr);
+        inline float GetSeconds() const { return now; }
+        inline float GetMilliseconds() const { return now * 1000; }
+        static void delayedCall(int milliseconds, std::function<void()>&& fn_ptr);   
         static void setInterval(int milliseconds, std::function<void()>&& fn_ptr, int timesRemaining = -1);
+        static void delayedCallThread(int milliseconds, std::function<void()>&& fn_ptr);
+        static void setIntervalThread(int milliseconds, std::function<void()>&& fn_ptr, int timesRemaining = -1);
 
         static void Update(double t);
         //static void RunClock(int milliseconds);
 
     private:
 
-        float m_now;
         static inline float s_last = 0.0f;
         
 };

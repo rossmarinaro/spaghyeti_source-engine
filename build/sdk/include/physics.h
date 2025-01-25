@@ -43,7 +43,7 @@ class Physics {
             float restitution = 0.0f
         );
 
-        static void DestroyBody(b2Body* b);
+        static void DestroyBody(b2Body* body);
 
         void Update();
         void ClearBodies();
