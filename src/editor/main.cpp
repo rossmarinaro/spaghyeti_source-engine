@@ -8,11 +8,6 @@
 	#include <windows.h>
 #endif
 
-using namespace System;
-
-//----------------
-
-
 #ifdef _WIN32
 
 	LONG UnhandledExceptionFilter(EXCEPTION_POINTERS *ExceptionInfo) {
@@ -37,8 +32,8 @@ int main(int argc, char* args[])
 		SetUnhandledExceptionFilter(UnhandledExceptionFilter);
 	#endif
 	
-	Application app;
-	editor::Editor session;
+	System::Application::Start();
+	editor::Editor::Start();
 
 	return 0; 
 }

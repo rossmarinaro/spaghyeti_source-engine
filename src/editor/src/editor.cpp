@@ -17,7 +17,7 @@ using namespace editor;
 void Editor::Update()
 {
 
-    Renderer::Update(game->camera); 
+    Renderer::Update(s_self->game->camera); 
 
     if (GUI::Get()->grid)
         GUI::Get()->grid->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
@@ -26,19 +26,19 @@ void Editor::Update()
 
     //save hotkey
        
-    if (projectOpen)
+    if (s_self->projectOpen)
     {
-        if (events->canSave && 
+        if (s_self->events->canSave && 
         (
             ImGui::IsKeyPressed(ImGuiKey_LeftCtrl) || ImGui::IsKeyPressed(ImGuiKey_RightCtrl)) && 
             ImGui::IsKeyPressed(ImGuiKey_S)) {
 
-            events->canSave = false; 
-            events->SaveScene(events->saveFlag);
+            s_self->events->canSave = false; 
+            s_self->events->SaveScene(s_self->events->saveFlag);
         }
 
         else 
-            events->canSave = true;
+            s_self->events->canSave = true;
     }
 
     glfwPollEvents();
@@ -50,36 +50,36 @@ void Editor::Update()
     double xPos, yPos;
     glfwGetCursorPos(Window::s_instance, &xPos, &yPos);
 
-    glm::mat4 localCoords = glm::inverse(game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight) * game->camera->GetViewMatrix(game->camera->GetPosition().x, game->camera->GetPosition().y));
+    glm::mat4 localCoords = glm::inverse(s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight) * s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition().x, s_self->game->camera->GetPosition().y));
     glm::vec4 ndc = glm::vec4(Window::GetPixelToNDC(xPos, yPos), 1.0f, 1.0f),
               worldCoords(ndc.x, ndc.y, 0.0f, 1.0f),
               resultPosition = localCoords * worldCoords;
 
-    game->inputs->mouseX = resultPosition.x - game->camera->GetPosition().x - 50;        
-    game->inputs->mouseY = resultPosition.y - game->camera->GetPosition().y;
+    s_self->game->inputs->mouseX = resultPosition.x - s_self->game->camera->GetPosition().x - 50;        
+    s_self->game->inputs->mouseY = resultPosition.y - s_self->game->camera->GetPosition().y;
 
     //current selected entity
        
-    if (s_selector) 
+    if (s_self->s_selector) 
     {
         if (selectedEntity)
         {
-            s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
-            s_selector->SetAlpha(1.0f);
+           s_self->s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
+            s_self->s_selector->SetAlpha(1.0f);
         
             if (strcmp(selectedEntity->type, "sprite") == 0) {
                 auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
-                s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
+                s_self->s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
             } 
 
             if (strcmp(selectedEntity->type, "text") == 0) {
                 auto text = std::static_pointer_cast<Text>(selectedEntity);
-                s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
+                s_self->s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
             }
         }
 
         else
-            s_selector->SetAlpha(0.0f);
+            s_self->s_selector->SetAlpha(0.0f);
        
     } 
 
@@ -91,11 +91,11 @@ void Editor::Update()
     //save and close editor
 
     if (glfwWindowShouldClose(Window::s_instance))
-        if (events->canSave) {
-            if (projectOpen)
-                events->saveFlag = true;
+        if (s_self->events->canSave) {
+            if (s_self->projectOpen)
+                s_self->events->saveFlag = true;
             else 
-                events->exitFlag = true;
+                s_self->events->exitFlag = true;
         }
 
 }
@@ -105,9 +105,10 @@ void Editor::Update()
 //-----------------------------
 
 
-Editor::Editor() 
+void Editor::Start() 
 {
-    s_self = this;
+    Editor session;
+    s_self = &session;
 
     s_self->worldWidth = 2000;
     s_self->worldHeight = 2000;
@@ -130,6 +131,7 @@ Editor::Editor()
     s_self->use_webgl2 = false;
     s_self->full_es3 = false;
     s_self->preserveSrc = false;
+    s_self->isMultiThreaded = false;
     s_self->cullTarget = { "", { 0.0f, 0.0f } };
 
     //AllocConsole();
@@ -185,7 +187,7 @@ Editor::Editor()
     //main update loop
 
     while (!s_self->events->exitFlag) 
-        s_self->Update();
+        Update();
         
     Node::ClearAll();
 
@@ -195,10 +197,10 @@ Editor::Editor()
 //------------------------------
 
 
-Editor::~Editor()
+void Editor::ShutDown()
 {
 
-    if (!preserveSrc)
+    if (!s_self->preserveSrc)
         remove((projectPath + "\\game.cpp").c_str());
     
     remove((projectPath + "\\spaghyeti_parse.json").c_str());
@@ -208,6 +210,8 @@ Editor::~Editor()
     Resources::Manager::UnLoadRawImage("audio src");
     Resources::Manager::UnLoadRawImage("data src");
     Resources::Manager::UnLoadRawImage("folder src");
+
+    Application::ShutDown();
 
     Editor::Log("Editor closed.");
 
@@ -239,19 +243,19 @@ void Editor::Reset()
 
     Node::ClearAll();
 
-    game->camera->Reset();
+    s_self->game->camera->Reset();
 
-    worldWidth = 2000;
-	worldHeight = 2000;
+    s_self->worldWidth = 2000;
+	s_self->worldHeight = 2000;
 
-    globals_applied = false;
-    gravity_continuous = true;
-    gravity_sleeping = true;
+    s_self->globals_applied = false;
+    s_self->gravity_continuous = true;
+    s_self->gravity_sleeping = true;
 
-    globals.clear();
-    spritesheets.clear();
-    scenes.clear();
-    shaders.clear();
+    s_self->globals.clear();
+    s_self->spritesheets.clear();
+    s_self->scenes.clear();
+    s_self->shaders.clear();
 
     AssetManager::Get()->Reset();
 

@@ -185,7 +185,6 @@ void GUI::Render()
 }
 
 
-
 //---------------------
 
 
@@ -199,7 +198,9 @@ GUI::~GUI()
 
     ImGui::DestroyContext();
 
-    Editor::Log("GUI exited");
+    Editor::Log("GUI exited.");
+
+    Editor::ShutDown();
 
 }
 

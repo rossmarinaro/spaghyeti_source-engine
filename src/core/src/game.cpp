@@ -17,7 +17,7 @@ void Game::Flush(bool removeBehaviors)
     
     inputs->ResetControls();
 
-    if (Application::eventPool) {
+    if (Application::isMultiThreaded && Application::eventPool) {
         delete Application::eventPool; 
         Application::eventPool = nullptr;
     }
@@ -28,7 +28,7 @@ void Game::Flush(bool removeBehaviors)
     maps->layers.clear();
     currentScene->UI.clear();   
     currentScene->entities.clear();
-   
+    time->timed_events.clear();
 }
 
 
@@ -154,7 +154,8 @@ void Game::StartScene(const std::string& key, bool loadMap)
         
         game->currentScene = *it;
 
-        Application::eventPool = new EventPool(THREAD_COUNT);
+        if (Application::isMultiThreaded)
+            Application::eventPool = new EventPool(THREAD_COUNT);
 
         if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {
             game->currentScene->Preload();
@@ -331,17 +332,31 @@ void Game::UpdateFrame()
 
     //execute timed events on the main thread
 
-    auto it = std::find_if(System::Application::eventPool->timed_events.begin(), System::Application::eventPool->timed_events.end(), [](const EventPool::TimedEvent& event) { return (/* System::Application::game->time->now */std::chrono::steady_clock::now() - event.time_initiated) >= std::chrono::milliseconds(event.delay); }); 
-    
-    if (it != System::Application::eventPool->timed_events.end()) 
+    if (time->timed_events.size())
     {
-        auto event = *it;
-        event.callback(); 
-        
-        if (event.repeat == 0)
-            System::Application::eventPool->timed_events.erase(std::move(it));
-    }
-}  
+        auto it = std::find_if(time->timed_events.begin(), time->timed_events.end(), [](std::shared_ptr<Time::TimedEvent> event) { return (std::chrono::steady_clock::now() - event->time_initiated) >= std::chrono::milliseconds(event->delay); }); 
+    
+        if (it != time->timed_events.end()) 
+        {
+            auto event = *it;
+            auto callback = &event->callback;
+           
+            (*callback)();
+
+            if (event->repeat <= 0 && event->repeat != -1) 
+                time->timed_events.erase(it);
+            
+            else {
+                
+                if (event->repeat != -1)
+                    event->repeat--; 
+
+                event->time_initiated = std::chrono::steady_clock::now();  
+            }
+        }
+    }  
+
+}
 
 
 //-----------------------------

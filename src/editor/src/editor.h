@@ -56,7 +56,8 @@ namespace editor {
                  gl_assertions,
                  use_webgl2,
                  full_es3,
-                 preserveSrc;
+                 preserveSrc,
+                 isMultiThreaded;
 			
 			System::Game* game;
             EventListener* events;
@@ -69,9 +70,9 @@ namespace editor {
 
 			std::vector<std::string> scenes;
 
-            Editor();
-			~Editor();
-            void Reset();
+            static void Start();
+            static void Reset();
+            static void ShutDown();
 
             static inline std::shared_ptr<Entity> selectedEntity;
     
@@ -92,7 +93,7 @@ namespace editor {
 
             std::shared_ptr<Geometry> s_selector;
 
-            void Update();
+            static void Update();
 
             static inline Editor* s_self;
 

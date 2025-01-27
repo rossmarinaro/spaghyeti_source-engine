@@ -11,15 +11,13 @@
 using namespace std::chrono_literals;
 
 
-Time::Time(float t): now(t) {}
+Time::Time(float _time): now(_time) {}
 
-void Time::Update(double t)
+void Time::Update(double _time)
 {
 
     Time* time = System::Application::game->time;
-
-    time->now = (float)t; //glQueryCounter
-
+    time->now = (float)_time; //glQueryCounter
     Time delta = time->now - s_last;
     
     s_last = time->now;
@@ -35,13 +33,15 @@ void Time::Update(double t)
 //--------------- delayed call (setTimeout)
 
 
-void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr) 
+void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat) 
 {
-    auto events = System::Application::eventPool->timed_events;
+    auto events = System::Application::game->time->timed_events;
 
-    EventPool::TimedEvent event = { milliseconds, 0, std::chrono::steady_clock::now() /* System::Application::game->time->now */, fn_ptr };
+    TimedEvent data { milliseconds, repeat, std::chrono::steady_clock::now(), fn_ptr };
 
-    System::Application::eventPool->timed_events.emplace_back(event);
+    auto event = std::make_shared<TimedEvent>(data);
+
+    System::Application::game->time->timed_events.push_back(event);
 
 }
 
@@ -49,58 +49,38 @@ void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr)
 //--------------- delayed call to thread pool (setTimeout)
 
 
-void Time::delayedCallThread(int milliseconds, std::function<void()>&& fn_ptr)
+void Time::delayedCallThread(int milliseconds, std::function<void()>&& fn_ptr, int repeat)
 {
 
     System::Application::eventPool->Enqueue([=] { 
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+        int times = repeat;
 
-        if (System::Application::eventPool->active.load())
-            fn_ptr();
-    });
-}
+        if (times == 0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 
-
-//-------------- recursive interval timeout
-
-
-void Time::setInterval(int milliseconds, std::function<void()>&& fn_ptr, int timesRemaining)
-{
-    auto events = System::Application::eventPool->timed_events;
-
-    EventPool::TimedEvent event = { milliseconds, timesRemaining, std::chrono::steady_clock::now() /* System::Application::game->time->now */, fn_ptr };
-
-    System::Application::eventPool->timed_events.emplace_back(event);
-}
-
-
-//-------------- recursive interval timeout thread
-
-
-void Time::setIntervalThread(int milliseconds, std::function<void()>&& fn_ptr, int timesRemaining)
-{
-
-    System::Application::eventPool->Enqueue([=] { 
-
-        int times = timesRemaining;
-
-        while(System::Application::eventPool->active.load() && times != 0) 
-        { 
             if (System::Application::eventPool->active.load())
-                std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
-
-            if (System::Application::eventPool->active.load()) 
-            {
-                fn_ptr(); 
-                
-                if (times != -1)
-                    times--;
-            }
+                fn_ptr();
         }
 
-    }); 
+        else {
 
+            while(System::Application::eventPool->active.load() && times != 0) 
+            { 
+                if (System::Application::eventPool->active.load())
+                    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+
+                if (System::Application::eventPool->active.load()) {
+
+                    fn_ptr(); 
+                    
+                    if (times != -1)
+                        times--;
+                }
+            }
+        }
+     
+    });
 }
 
 

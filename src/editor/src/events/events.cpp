@@ -1376,6 +1376,7 @@ void EventListener::BuildAndRun()
     game_src <<	"   #elif _ISMOBILE == 1\n";
     game_src <<	"       System::Application::isMobile = true;\n";
     game_src <<	"   #endif\n";
+    game_src <<	"       System::Application::isMultiThreaded = " << Editor::Get()->isMultiThreaded << ";\n";
     game_src <<	"       System::Game game;\n";
 
     for (const auto& scene : Editor::Get()->scenes) 
@@ -1389,7 +1390,7 @@ void EventListener::BuildAndRun()
         game_src << "       game.LoadScene<" + className + ">();\n";
     }
     
-    game_src << "       System::Application app { &game, \"" + s_currentProject + "\" };\n";
+    game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\" );\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       emscripten_exit_with_live_runtime();\n";
     game_src <<	"   #endif\n";

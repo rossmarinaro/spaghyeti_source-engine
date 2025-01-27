@@ -40,17 +40,16 @@ namespace /* SPAGHYETI_CORE */ System {
 
 		public:
 
-            Application(Game* layer = nullptr, const std::string& key = "");
-		    ~Application();
+            static void Init(Game* layer);
+            static void Start(Game* layer = nullptr, const std::string& key = "");
+            static void ShutDown();
 
-    		static inline std::string name;
-            static inline bool isMobile;
+            static inline std::string name;
+            static inline bool isMobile = false, isMultiThreaded = false;
 
 			static inline Game* game; 
             static inline EventPool* eventPool;
 			static inline Resources::Manager* resources;   
-
-            static void Init(Game* layer);
 
 		private:
 

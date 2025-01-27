@@ -57,7 +57,7 @@ void System::Application::Update(void* layer)
 //-----------------------------
 
 
-System::Application::Application(Game* layer, const std::string& key)
+void System::Application::Start(Game* layer, const std::string& key)
 { 
     name = key;
 
@@ -92,6 +92,8 @@ System::Application::Application(Game* layer, const std::string& key)
                 Update(game);
         #endif
 
+        ShutDown();
+
     #endif
 }
 
@@ -100,7 +102,7 @@ System::Application::Application(Game* layer, const std::string& key)
 //-----------------------------
 
 
-System::Application::~Application()
+void System::Application::ShutDown()
 {
 
     #if STANDALONE == 1

@@ -608,6 +608,7 @@ void editor::GUI::ShowMenu()
 
             if (ImGui::BeginMenu("configurations")) 
             {
+                ImGui::Checkbox("multi threaded", &session->isMultiThreaded);
                 ImGui::Checkbox("preserve source file", &session->preserveSrc);
                 
                 ImGui::Text(("platform: " + Editor::platform).c_str());
