@@ -35,13 +35,12 @@ void Time::Update(double _time)
 
 void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat) 
 {
-    auto events = System::Application::game->time->timed_events;
-
     TimedEvent data { milliseconds, repeat, std::chrono::steady_clock::now(), fn_ptr };
 
     auto event = std::make_shared<TimedEvent>(data);
 
-    System::Application::game->time->timed_events.push_back(event);
+    if (std::find(System::Application::game->time->timed_events.begin(), System::Application::game->time->timed_events.end(), event) == System::Application::game->time->timed_events.end())
+        System::Application::game->time->timed_events.push_back(event);
 
 }
 
@@ -52,35 +51,36 @@ void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr, int rep
 void Time::delayedCallThread(int milliseconds, std::function<void()>&& fn_ptr, int repeat)
 {
 
-    System::Application::eventPool->Enqueue([=] { 
+    if (System::Application::isMultiThreaded)
+        System::Application::eventPool->Enqueue([=] { 
 
-        int times = repeat;
+            int times = repeat;
 
-        if (times == 0) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+            if (times == 0) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 
-            if (System::Application::eventPool->active.load())
-                fn_ptr();
-        }
-
-        else {
-
-            while(System::Application::eventPool->active.load() && times != 0) 
-            { 
                 if (System::Application::eventPool->active.load())
-                    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+                    fn_ptr();
+            }
 
-                if (System::Application::eventPool->active.load()) {
+            else {
 
-                    fn_ptr(); 
-                    
-                    if (times != -1)
-                        times--;
+                while(System::Application::eventPool->active.load() && times != 0) 
+                { 
+                    if (System::Application::eventPool->active.load())
+                        std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+
+                    if (System::Application::eventPool->active.load()) {
+
+                        fn_ptr(); 
+                        
+                        if (times != -1)
+                            times--;
+                    }
                 }
             }
-        }
-     
-    });
+        
+        });
 }
 
 
