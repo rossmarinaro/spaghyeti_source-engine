@@ -11,7 +11,7 @@
 using namespace std::chrono_literals;
 
 
-Time::Time(float _time): now(_time) {}
+Time::Time(float time): now(time) {}
 
 void Time::Update(double _time)
 {

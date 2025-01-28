@@ -13,9 +13,6 @@ namespace System {
       static void stop();
       static void setVolume(float volume);
 
-    private:
-    
-
   };
 
 }

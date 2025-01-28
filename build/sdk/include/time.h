@@ -10,14 +10,13 @@ class Time {
 
         static inline const double timeStep = 1.0f / 1000.0f;
 
-        Time(float t = 0.0f);
+        Time(float time = 0.0f);
 
         float now, delta;
 
         std::chrono::duration<double> time_left;
 
-        //container of timed events
-
+        //timed event structure
         struct TimedEvent {
             int delay = 0;
             int repeat = 0;
@@ -25,6 +24,7 @@ class Time {
             std::function<void()> callback = []{};
         };
 
+        //container of timed events
         std::vector<std::shared_ptr<TimedEvent>> timed_events;
 
         operator float() const { return now; }
@@ -32,10 +32,13 @@ class Time {
         inline float GetSeconds() const { return now; }
         inline float GetMilliseconds() const { return now * 1000; }
 
-        static void delayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat = 0);   
+        //use this method for single threaded callbacks
+        static void delayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat = 0);  
+
+        //use this method for multi threaded callbacks. no-op if multi threading disabled 
         static void delayedCallThread(int milliseconds, std::function<void()>&& fn_ptr, int repeat = 0);
 
-        static void Update(double t);
+        static void Update(double time);
         //static void RunClock(int milliseconds);
 
     private:

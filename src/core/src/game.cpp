@@ -339,21 +339,15 @@ void Game::UpdateFrame()
         if (it != time->timed_events.end()) 
         {
             auto event = *it;
-            auto callback = &event->callback;
 
-            int repeat = event->repeat,
-                delay = event->delay;
+            event->callback();
 
-            (*callback)();
-
-            if (repeat > 0 || repeat == -1) {
+            if (event->repeat > 0 || event->repeat == -1) {
                 
-                if (repeat != -1)
-                    repeat--;
+                if (event->repeat != -1)
+                    event->repeat--;
                 
                 event->time_initiated = std::chrono::steady_clock::now();
-                event->repeat = repeat; 
-                event->delay = delay;  
             }
             else 
                 time->timed_events.erase(it);
