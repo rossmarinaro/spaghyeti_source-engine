@@ -36,7 +36,6 @@ namespace editor {
             std::map<std::string, std::string> behaviors;
             
             Node(const std::string& type, const std::string& name = "Untitled", std::vector<std::shared_ptr<Node>>& arr = nodes);
-            //Node(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
 
             virtual ~Node() {}
             
@@ -47,13 +46,9 @@ namespace editor {
             static inline std::vector<std::shared_ptr<Node>> nodes;
 
             template <typename T>
-            static inline std::shared_ptr<T> Make(std::vector<std::shared_ptr<Node>>& arr = nodes) 
-            {
-
+            static inline std::shared_ptr<T> Make(std::vector<std::shared_ptr<Node>>& arr = nodes) {
                 auto node = std::make_shared<T>();
-
                 arr != nodes ? arr.push_back(node) : nodes.push_back(node);
-
                 return node;
 
             }
@@ -92,8 +87,7 @@ namespace editor {
 
             static const char* s_Assign();
             
-            static inline std::string CheckName(const std::string& key, const std::vector<std::shared_ptr<Node>>& arr, int count) 
-            {
+            static inline std::string CheckName(const std::string& key, const std::vector<std::shared_ptr<Node>>& arr, int count) {
                 if (std::find_if(arr.begin(), arr.end(), [&](auto node) { return node->name == key; }) != arr.end())
                     return key + "_" + std::to_string(count + 1); 
                     
@@ -137,14 +131,16 @@ namespace editor {
             glm::vec3 tint;
 
             typedef struct Frames { int x, y, width, height, factorX, factorY; };
-            typedef struct Anims { std::string key; int start, end; };
+            typedef struct Anims { std::string key; int start, end, rate; bool yoyo; };
 
             std::vector<Frames> frames; 
             std::map<std::string, Anims> animations; 
 
+            std::pair<std::string, std::pair<int, bool>> anim_to_play_on_start; //key, rate, yoyo
+
             std::shared_ptr<Sprite> spriteHandle;
             std::vector<StringContainer> animBuf1; 
-            std::vector<BoolContainer> is_sensor;
+            std::vector<BoolContainer> is_sensor, do_yoyo;
 
             std::vector<int> frameBuf1,
                              frameBuf2,
@@ -169,7 +165,7 @@ namespace editor {
 
             void RegisterFrames();
             void ApplyTexture(const std::string& key);
-            void ApplyAnimation(const std::string& key, int start, int end);
+            void ApplyAnimation(const std::string& key, int start, int end, int rate, bool yoyo);
 
             void CreateBody(
                 float x = 0.0f, 
@@ -184,8 +180,6 @@ namespace editor {
 
             bool m_show_sprite_texture;
             std::pair<std::string, std::pair<bool, int>> m_currentAnim;
-            std::vector<BoolContainer> m_do_yoyo;
-
             GLuint m_currentTexture = NULL;
 
     };

@@ -171,6 +171,7 @@ void Component::Make()
 
                     auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(ID));
                     sn->anim++;
+                    sn->anim_to_play_on_start = { "", { 0, false } };
                 }
 
             }

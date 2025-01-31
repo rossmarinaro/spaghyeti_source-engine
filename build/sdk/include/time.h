@@ -18,8 +18,8 @@ class Time {
 
         //timed event structure
         struct TimedEvent {
-            int delay = 0;
-            int repeat = 0;
+            int delay = 0,
+                repeat = 0;
             std::chrono::steady_clock::time_point time_initiated = std::chrono::steady_clock::now();
             std::function<void()> callback = []{};
         };

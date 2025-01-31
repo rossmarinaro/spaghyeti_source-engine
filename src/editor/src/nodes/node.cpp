@@ -393,11 +393,13 @@ json Node::WriteData(std::shared_ptr<Node>& node)
         json animations = json::array();
 
         for (int i = 0; i < sn->anim; ++i)
-            if (sn->animBuf1.size())
+            if (sn->animBuf1.size()) 
                 animations.push_back({
                     { "key", sn->animBuf1[i].s },
                     { "start", sn->animBuf2[i] },
-                    { "end", sn->animBuf3[i] }
+                    { "end", sn->animBuf3[i] },
+                    { "rate", sn->animBuf4[i] },
+                    { "yoyo", sn->do_yoyo[i].b }
                 });
 
         //physics bodies
@@ -456,7 +458,13 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                     },
                     { "animator", {
                             { "exists", sn->HasComponent("Animator") },
-                            { "animations", animations }
+                            { "animations", animations },
+                            { "on start", {
+                                    { "key", sn->anim_to_play_on_start.first.length() ? sn->anim_to_play_on_start.first : "" }, 
+                                    { "rate", sn->anim_to_play_on_start.first.length() ? sn->anim_to_play_on_start.second.first : 0 }, 
+                                    { "yoyo", sn->anim_to_play_on_start.first.length() ? sn->anim_to_play_on_start.second.second : false } 
+                                } 
+                            }
                         }
                     },
                     { "script", {
@@ -471,7 +479,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                     }
                 }
             }
-        };
+        }; 
     } 
 
     //------------tilemap
@@ -795,22 +803,28 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             {
 
                 if (data["components"]["animator"]["exists"]) 
+                {
                     sn->AddComponent("Animator", false);
 
-                for (const auto& anim : data["components"]["animator"]["animations"]) 
-                { 
+                    for (const auto& anim : data["components"]["animator"]["animations"]) 
+                    { 
 
-                    SpriteNode::StringContainer sc = { anim["key"] };
+                        SpriteNode::StringContainer sc { anim["key"] };
+                        SpriteNode::BoolContainer bc { anim["yoyo"] };
 
-                    sn->animBuf1.push_back(sc);
-                    sn->animBuf2.push_back(anim["start"]); 
-                    sn->animBuf3.push_back(anim["end"]);
+                        sn->animBuf1.push_back(sc);
+                        sn->do_yoyo.push_back(bc);
+                        sn->animBuf2.push_back(anim["start"]); 
+                        sn->animBuf3.push_back(anim["end"]);
+                        sn->animBuf4.push_back(anim["rate"]);
+                    
+                        sn->ApplyAnimation(anim["key"], anim["start"], anim["end"], anim["rate"], anim["yoyo"]);
+                    }
                 
-                    sn->ApplyAnimation(anim["key"], anim["start"], anim["end"]);
-                }
-            
+                    sn->anim = sn->animations.size();  
+                    sn->anim_to_play_on_start = { data["components"]["animator"]["on start"]["key"], { data["components"]["animator"]["on start"]["rate"], data["components"]["animator"]["on start"]["yoyo"] } }; 
 
-                sn->anim = sn->animations.size();   
+                }
 
                 //physics 
 

@@ -174,14 +174,14 @@ void SpriteNode::ApplyTexture(const std::string& asset)
 //--------------------------------- applies texture to current seleted node 
 
 
-void SpriteNode::ApplyAnimation(const std::string& key, int start, int end)
+void SpriteNode::ApplyAnimation(const std::string& key, int start, int end, int rate, bool yoyo)
 {
 
     try {
 
         std::map<std::string, std::pair<int, int>> animsToLoad;
 
-        animations.insert({ key, { key, start, end } });
+        animations.insert({ key, { key, start, end, rate, yoyo } });
 
         for (const auto& anim : animations)
             animsToLoad.insert({ { anim.second.key, { anim.second.start, anim.second.end } } });
@@ -271,22 +271,22 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                         ImGui::Text("animation: %d", i);
 
-                        ImGui::PushID(i);
+                        ImGui::PushID(i); 
         
                         StringContainer sc;
                         BoolContainer bc;
 
-                        m_do_yoyo.push_back(bc);
+                        do_yoyo.push_back(bc);
+
                         animBuf1.push_back(sc);
                         animBuf2.push_back(i);
                         animBuf3.push_back(i);
                         animBuf4.push_back(2);
-
-                        if (spriteHandle && spriteHandle->IsSpritesheet())
-                        {
+ 
+                        if (spriteHandle && spriteHandle->IsSpritesheet()) {
 
                             if (ImGui::Button("play")) 
-                                m_currentAnim = { animBuf1[i].s, { m_do_yoyo[i].b, animBuf4[i] } };
+                                m_currentAnim = { animBuf1[i].s, { do_yoyo[i].b, animBuf4[i] } };
                                 
                             ImGui::SameLine(); 
 
@@ -300,7 +300,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                             ImGui::SameLine();
 
                             if (ImGui::Button("apply")) 
-                                ApplyAnimation(animBuf1[i].s, animBuf2[i], animBuf3[i]);
+                                ApplyAnimation(animBuf1[i].s, animBuf2[i], animBuf3[i], animBuf4[i], do_yoyo[i].b);
                             
                         }
 
@@ -325,7 +325,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                         ImGui::InputInt("start", &animBuf2[i]); 
                         ImGui::InputInt("end", &animBuf3[i]);
                         ImGui::InputInt("rate", &animBuf4[i]);
-                        ImGui::Checkbox("yoyo", &m_do_yoyo[i].b);
+                        ImGui::Checkbox("yoyo", &do_yoyo[i].b);
 
                         ImGui::Separator();
 
@@ -344,6 +344,14 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                             RemoveComponent(anim_component); 
 
                         ImGui::EndMenu();
+                    }
+
+                    if (ImGui::BeginCombo("set default animation", anim_to_play_on_start.first.c_str())) {
+                        for (const auto& anim : animations) 
+                            if (ImGui::Selectable(anim.first.c_str())) 
+                                anim_to_play_on_start = { anim.first, { anim.second.rate, anim.second.yoyo } };
+                            
+                        ImGui::EndCombo();
                     }
 
                 }

@@ -451,13 +451,15 @@ void editor::GUI::ShowSettings()
                     ImGui::EndMenu();
                 }
 
-                if (ImGui::Button("add"))
+                if (ImGui::Button("add")) {
+                    session->animations.push_back({ "", {} });
                     session->animations[i].second.push_back({ "", { 0, 0 }});
+                }
 
                 ImGui::SameLine();
 
                 if (ImGui::Button("delete"))
-                    session->animations[i].second.pop_back();
+                    session->animations.pop_back();
 
                 ImGui::Separator();
 

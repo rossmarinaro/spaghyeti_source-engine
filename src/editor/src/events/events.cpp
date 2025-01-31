@@ -1104,6 +1104,13 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->SetAlpha(" + std::to_string(sn->alpha) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetScrollFactor({" + std::to_string(sn->scrollFactorX) + ", " + std::to_string(sn->scrollFactorY) + "});\n";
 
+                    //set default animation if applied
+
+                    if (sn->anim_to_play_on_start.first.length()) {
+                        const std::string is_yoyo = sn->anim_to_play_on_start.second.second ? "true" : "false";
+                        command_queue << "   sprite_" + node->ID + "->SetAnimation(\"" + sn->anim_to_play_on_start.first + "\", " + is_yoyo + ", " + std::to_string(sn->anim_to_play_on_start.second.first) + ");\n";
+                    }
+
                     const std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
 
                     command_queue << "   sprite_" + node->ID + "->texture.Filter_Min = " + filtering + ";\n";
