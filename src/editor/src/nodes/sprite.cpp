@@ -533,14 +533,14 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                                             
                                             ImGui::PushID(i);
                                             
-                                            if (ImGui::Button("-x") && frameBuf5[i] > 1) {
+                                            if (ImGui::Button("-x") && frameBuf5[i] > 1.0f) {
                                                 framesApplied = false;
                                                 frameBuf5[i]--;
                                             }
 
                                             ImGui::SameLine();
 
-                                            if (ImGui::Button("+x") && frameBuf5[i]) {
+                                            if (ImGui::Button("+x") && frameBuf5[i] <= frame) {
                                                 framesApplied = false;
                                                 frameBuf5[i]++;
                                             }

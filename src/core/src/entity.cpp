@@ -325,9 +325,20 @@ void Sprite::SetTexture(const std::string& key)
         
     this->key = key; 
 
-    texture.FrameWidth = tex.Width;
-    texture.FrameHeight = tex.Height;
     texture.ID = tex.ID;
+    texture.Width = tex.Width; 
+    texture.Height = tex.Height;
+    texture.FrameWidth = tex.FrameWidth; 
+    texture.FrameHeight = tex.FrameHeight;
+    texture.U1 = tex.U1;
+    texture.U2 = tex.U2;
+    texture.V1 = tex.V1;
+    texture.V2 = tex.V2;
+    texture.Repeat = tex.Repeat;
+    texture.Wrap_S = tex.Wrap_S;
+    texture.Wrap_T = tex.Wrap_T;
+    texture.Filter_Min = tex.Filter_Min;
+    texture.Filter_Max = tex.Filter_Max; 
 
     m_currentAnim = {};
 }
