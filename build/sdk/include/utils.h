@@ -47,7 +47,14 @@ namespace System {
 
 			static std::string ReplaceFrom(const std::string& str, const char* position, const char* replace_str);
 			static std::string GetFileType(const std::string& path);
-				
+			static std::string SanitizePath(std::string path);
+
+        private:
+
+            struct removeDoubleSlash {
+                bool operator() (char a, char b) const {
+                return a == '/' && b == '/';
+            }};
 	};
 
 }

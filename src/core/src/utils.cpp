@@ -23,7 +23,7 @@ float System::Utils::floatBetween(float min, float max)
 }
 
 //---------------------------------------
-
+ 
 int System::Utils::intBetween(int min, int max) { 
     return rand() % (min - max + 1) + min; 
 } 
@@ -134,6 +134,13 @@ std::string System::Utils::GetFileType(const std::string& path)
     return "";
 } 
     
+//---------------------------------------
 
+std::string System::Utils::SanitizePath(std::string path) {
+    
+    std::replace(path.begin(), path.end(), '\\', '/');
+    path.erase(std::unique(path.begin(), path.end(), removeDoubleSlash()), path.end());
 
+    return path;
+}
 

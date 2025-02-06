@@ -88,12 +88,10 @@ bool EventListener::NewProject(const char* root_path)
 
             Editor::Get()->Reset();
 
-            Editor::projectPath = (std::string)path;
-            std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
+            Editor::projectPath = System::Utils::SanitizePath((((std::string)path) + "/"));
+       
+            s_currentProject = std::filesystem::path((std::string)path).filename().string();
 
-            s_currentProject = std::filesystem::path(Editor::projectPath).filename().string();
-
-            std::filesystem::current_path(Editor::projectPath);
             std::string root_path = Editor::rootPath;
             std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
@@ -122,7 +120,7 @@ bool EventListener::NewProject(const char* root_path)
             if (SaveScene()) 
             { 
                 const std::string tmp = Editor::projectPath + "scenes/spaghyeti_parse.json"; 
-  Editor::Log("!! "+tmp);
+ 
                 DecodeFile(tmp, Editor::projectPath + "scenes/" + s_currentScene + ".spaghyeti");
 
                 std::ifstream JSON(tmp);
@@ -156,6 +154,7 @@ bool EventListener::NewProject(const char* root_path)
 
 bool EventListener::NewScene(const char* root_path)
 {
+    std::filesystem::current_path(Editor::projectPath + "scenes");
 
     #ifdef _WIN32
 
@@ -220,9 +219,10 @@ bool EventListener::NewScene(const char* root_path)
 bool EventListener::SaveScene(bool saveAs)
 {
 
+    std::filesystem::current_path(Editor::projectPath + "/scenes");
+
     try {
 
-        std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
         std::string project_root = Editor::projectPath + "scenes/" + s_currentScene + ".spaghyeti";
 
         std::ifstream file(project_root);
@@ -236,8 +236,7 @@ bool EventListener::SaveScene(bool saveAs)
 
             EncodeFile(filepath);
 
-            Editor::projectPath = System::Utils::ReplaceFrom(std::filesystem::path{ filepath }.parent_path().string(), "scenes", "");
-            std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
+            Editor::projectPath = System::Utils::SanitizePath(System::Utils::ReplaceFrom(std::filesystem::path{ filepath }.parent_path().string(), "scenes", ""));
 
             s_currentScene = System::Utils::ReplaceFrom(std::filesystem::path{ filepath }.filename().string(), ".", "");
 
@@ -311,7 +310,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
         ofn.hwndOwner = NULL;
         ofn.hInstance = NULL;
         ofn.nMaxFile = sizeof(szFile);
-        ofn.lpstrFilter = _T("SpaghYeti Files (*.spaghyeti)\0*.spaghyeti");
+        ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.spaghyeti)\0*.spaghyeti");
         ofn.lpstrFile = szFile;
         ofn.nFilterIndex = 1;
         ofn.lpstrFileTitle = NULL;
@@ -324,8 +323,9 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             std::filesystem::path result((const char*)ofn.lpstrFile);
 
-            Editor::projectPath = System::Utils::ReplaceFrom(std::filesystem::path{ result.string() }.parent_path().string(), "scenes", ""); //result path
-            std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
+            //result path
+
+            Editor::projectPath = System::Utils::SanitizePath(System::Utils::ReplaceFrom(std::filesystem::path{ result.string() }.parent_path().string(), "scenes", "")); 
 
             //project name and current scene
 
@@ -477,16 +477,16 @@ void EventListener::OpenFile()
                     vec.push_back({ asset, id });
             };
 
-            if (folder == "images")
+            if (folder == "/images/")
                 insertAsset(AssetManager::Get()->images);
 
-            if (folder == "audio")
+            if (folder == "/audio/")
                 insertAsset(AssetManager::Get()->audio);
 
-            if (folder == "data")
+            if (folder == "/data/")
                 insertAsset(AssetManager::Get()->data);
 
-            if (folder == "icon") {
+            if (folder == "/icon/") {
                 std::string path = result.string();
                 std::replace(path.begin(), path.end(), '\\', '/');
                 AssetManager::Get()->projectIcon = path;
