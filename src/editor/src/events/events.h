@@ -22,9 +22,8 @@ namespace editor {
             bool NewScene(const char* root_path = "C:\\");
             bool NewProject(const char* root_path = "C:\\");
             bool SaveScene(bool saveAs = false);
-            bool Open();
+            bool OpenProject();
             
-            void GenerateProject();
             void BuildAndRun();
             void OpenFile();
             void DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath);
@@ -39,7 +38,6 @@ namespace editor {
             
             void Serialize(json& data, bool newScene = false); 
             void Deserialize(std::ifstream& JSON);
-            void InsertTo(const std::string& code, const std::string& directory);
             void ParseScene(const std::string& sceneKey, std::ifstream& JSON);
 
             static inline EventListener* s_self;

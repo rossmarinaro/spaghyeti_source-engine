@@ -45,13 +45,12 @@ void editor::GUI::ShowSettings()
             {
                 if (session->events->s_currentScene != *scene_it)
                 {
-                    if (ImGui::MenuItem((*scene_it).c_str())) 
-                    {
+                    if (ImGui::MenuItem((*scene_it).c_str())) {
 
                         auto it = std::find_if(session->scenes.begin(), session->scenes.end(), [&](const std::string& s ) { return s == *scene_it; });
   
                         if (it != session->scenes.end()) {
-                            scene_it = session->scenes.erase(it);
+                            scene_it = session->scenes.erase(it); 
                             --scene_it;
                         }
                     }
@@ -534,7 +533,7 @@ void editor::GUI::ShowMenu()
     }
 
     if (ImGui::MenuItem("Open", "Ctrl+O"))
-        session->events->Open();
+        session->events->OpenProject();
 
     if (ImGui::MenuItem("Save", "Ctrl+S"))
         if(!session->events->SaveScene())

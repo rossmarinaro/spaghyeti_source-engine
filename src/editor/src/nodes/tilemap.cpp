@@ -475,42 +475,48 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                                 };
 
-                                map_width = data["width"];
-                                map_height = data["height"];
-                                tile_width = data["tilewidth"];
-                                tile_height = data["tileheight"];
+                                if (!data.contains("width") || !data.contains("height") || !data.contains("tilewidth") || !data.contains("tileheight") || !data.contains("layers"))
+                                    Editor::Log("Bad JSON!");
 
-                                int i = 0, 
-                                    d = 0;
+                                else 
+                                {
+                                    map_width = data["width"];
+                                    map_height = data["height"];
+                                    tile_width = data["tilewidth"];
+                                    tile_height = data["tileheight"];
 
-                                if (data["layers"].size())
-                                    for (const auto& layer : data["layers"])    
-                                        if (layer.contains("data")) 
-                                        {
-                                            AddLayer();
+                                    int i = 0, 
+                                        d = 0;
 
-                                            layers[i][1] = path;
-                                            layers[i][2] = static_cast<std::string>(data["tilesets"][0]["name"]) + ".png";
-                                            depth[i] = d;
+                                    if (data["layers"].size())
+                                        for (const auto& layer : data["layers"])    
+                                            if (layer.contains("data")) 
+                                            {
+                                                AddLayer();
 
-                                            spr_sheet_width[i] = Graphics::Texture2D::Get(layers[2][1]).Width / tile_width;
-                                            spr_sheet_height[i] = Graphics::Texture2D::Get(layers[2][1]).Height / tile_height;
+                                                layers[i][1] = path;
+                                                layers[i][2] = static_cast<std::string>(data["tilesets"][0]["name"]) + ".png";
+                                                depth[i] = d;
 
-                                            Reset();
-                                            
-                                            if (layer.contains("objects")) {
+                                                spr_sheet_width[i] = Graphics::Texture2D::Get(layers[2][1]).Width / tile_width;
+                                                spr_sheet_height[i] = Graphics::Texture2D::Get(layers[2][1]).Height / tile_height;
 
-                                                AddComponent("Physics");
+                                                Reset();
+                                                
+                                                if (layer.contains("objects")) {
 
-                                                for (const auto& body : layer["objects"])
-                                                    createBodies(body["x"], body["y"], body["width"], body["height"]);
+                                                    AddComponent("Physics");
+
+                                                    for (const auto& body : layer["objects"])
+                                                        createBodies(body["x"], body["y"], body["width"], body["height"]);
+                                                }
+
+                                                i++;
+                                                d++;
                                             }
 
-                                            i++;
-                                            d++;
-                                        }
-
-                                ApplyTilemap(true, false, true);
+                                    ApplyTilemap(true, false, true);
+                                }
 
                             }
 

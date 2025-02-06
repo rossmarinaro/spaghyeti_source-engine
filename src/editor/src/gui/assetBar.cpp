@@ -5,8 +5,8 @@
 //-------------- apply currently opened folder
 
 
-void SetFolder(bool isOpen, const std::string& type = "") 
-{
+void SetFolder(bool isOpen, const std::string& type = "") {
+
     editor::AssetManager::Get()->folderSelected = isOpen;
 
     if (type.length())
@@ -24,8 +24,10 @@ void displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec)
     {
         if (vec[i].second != NULL)
         {
-            std::string folder = editor::AssetManager::GetFolder(vec[i].first);
-            folder.erase(remove(folder.begin(), folder.end(), '\\'), folder.end());
+            std::string folder = System::Utils::GetFileType(vec[i].first);
+
+            if (folder == "image")
+                folder = "images";
 
             if (folder == editor::AssetManager::Get()->currentFolder)
             {

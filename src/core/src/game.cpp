@@ -349,8 +349,10 @@ void Game::UpdateFrame()
                 
                 event->time_initiated = std::chrono::steady_clock::now();
             }
-            else 
-                time->timed_events.erase(it);
+            else {
+                it = time->timed_events.erase(it);
+                --it;
+            }
         }
     }  
 
@@ -367,14 +369,18 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
     auto it = std::find(Application::game->currentScene->entities.begin(), Application::game->currentScene->entities.end(), entity);
 
-    if (it != Application::game->currentScene->entities.end())
-        Application::game->currentScene->entities.erase(std::move(it));
+    if (it != Application::game->currentScene->entities.end()) {
+        it = Application::game->currentScene->entities.erase(std::move(it));
+        --it;
+    }
 
     else {
         auto UI_it = std::find(Application::game->currentScene->UI.begin(), Application::game->currentScene->UI.end(), entity);
 
-        if (UI_it != Application::game->currentScene->UI.end())
-            Application::game->currentScene->UI.erase(std::move(UI_it));
+        if (UI_it != Application::game->currentScene->UI.end()) {
+            it = Application::game->currentScene->UI.erase(std::move(UI_it));
+            --UI_it;
+        }
     }
 
     entity->renderable = false;

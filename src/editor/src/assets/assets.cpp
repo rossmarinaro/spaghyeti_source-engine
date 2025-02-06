@@ -46,10 +46,10 @@ void AssetManager::Register(const std::string& asset) {
 void AssetManager::LoadAsset(const std::string& asset)
 {
  
-    const std::string folder = GetFolder(asset),
+    const std::string folder = System::Utils::GetFileType(asset),
                       texture = GetThumbnail(asset),
                       key = "\"" + asset + "\"",
-                      developmentPath = "resources\\assets" + folder + asset;
+                      developmentPath = "resources/assets" + folder + asset;
 
     s_self->loadedAssets.insert({ key, developmentPath });
 
@@ -74,29 +74,6 @@ void AssetManager::SetIcon(const std::string& key)
         glfwSetWindowIcon(System::Window::s_instance, 1, &image);
 
     #endif
-}
-
-
-//----------------------------
-
-
-std::string AssetManager::GetFolder(const std::string& asset)
-{
-    std::string folder;
-
-    if (System::Utils::GetFileType(asset) == "image") 
-        folder = "\\images\\";
-
-    if (System::Utils::GetFileType(asset) == "audio") 
-        folder = "\\audio\\";
-
-    if (System::Utils::GetFileType(asset) == "data") 
-        folder = "\\data\\";
-
-    if (System::Utils::GetFileType(asset) == "icon") 
-        folder = "\\icon\\";
-
-    return folder;
 }
 
 

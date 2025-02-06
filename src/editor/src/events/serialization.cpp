@@ -75,7 +75,7 @@ void EventListener::DecodeFile(const std::string& outPath, const std::filesystem
     while (getline(ini_file, line))
     {
 
-        //decode spaghyet file format to json
+        //decode spaghyeti file format to json
 
         for (int i = 0; i < line.length(); i++)
             if (line[i] == '%')

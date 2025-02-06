@@ -24,9 +24,8 @@ using namespace editor;
 //--------------------------------- file open callbacks (windows only)
 
 
+static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData) {
 
-static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
-{
     #ifdef _WIN32
 
         if(uMsg == BFFM_INITIALIZED) {
@@ -44,8 +43,8 @@ static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPAR
 //--------------------------------
 
 
-EventListener::EventListener() 
-{
+EventListener::EventListener() {
+
     exitFlag = false;
     saveFlag = false;
     buildFlag = false;
@@ -90,13 +89,58 @@ bool EventListener::NewProject(const char* root_path)
             Editor::Get()->Reset();
 
             Editor::projectPath = (std::string)path;
+            std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
+
+            s_currentProject = std::filesystem::path(Editor::projectPath).filename().string();
 
             std::filesystem::current_path(Editor::projectPath);
+            std::string root_path = Editor::rootPath;
+            std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
-            if (SaveScene()) {
-                GenerateProject();
+            const std::string resources = Editor::projectPath + "/resources";
+
+            if (std::filesystem::exists(resources)) 
+                Editor::Log("Project " + s_currentProject + " already exists.");
+
+            else {
+
+                std::filesystem::create_directory(Editor::projectPath + "/scenes");
+
+                std::filesystem::create_directory(resources);
+                std::filesystem::create_directory(resources + "/scripts");
+                std::filesystem::create_directory(resources + "/shaders");
+                std::filesystem::create_directory(resources + "/assets");
+                std::filesystem::create_directory(resources + "/prefabs");
+                std::filesystem::create_directory(resources + "/assets/images");
+                std::filesystem::create_directory(resources + "/assets/audio");
+                std::filesystem::create_directory(resources + "/assets/data");
+
+
+                Editor::Log("New project " + s_currentProject + " generated.");
+            }
+
+            if (SaveScene()) 
+            { 
+                const std::string tmp = Editor::projectPath + "scenes/spaghyeti_parse.json"; 
+  Editor::Log("!! "+tmp);
+                DecodeFile(tmp, Editor::projectPath + "scenes/" + s_currentScene + ".spaghyeti");
+
+                std::ifstream JSON(tmp);
+
+                if (JSON.good()) 
+                    Deserialize(JSON);
+
+                JSON.close();
+
+                remove(tmp.c_str());
+
+                Editor::Get()->projectOpen = true;
+
                 return true;
             }
+
+            return false;
+
         }
 
     #endif
@@ -123,7 +167,7 @@ bool EventListener::NewScene(const char* root_path)
 
         ofn.lStructSize = sizeof(ofn); 
         ofn.hwndOwner = NULL;
-        ofn.lpstrFilter = _T("SpaghYeti Files (*.spaghyeti)\0*.spaghyeti");
+        ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.spaghyeti)\0*.spaghyeti");
         ofn.lpstrFile = szFileName;
         ofn.nMaxFile = MAX_PATH;
         ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
@@ -139,7 +183,7 @@ bool EventListener::NewScene(const char* root_path)
 
             s_currentScene = result.filename().string();
 
-            const std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
+            const std::string tmp = Editor::projectPath + "scenes/spaghyeti_parse.json";
 
             DecodeFile(tmp, file);
 
@@ -147,9 +191,13 @@ bool EventListener::NewScene(const char* root_path)
 
             std::ifstream JSON(tmp);
 
-            if (JSON.good()) {
+            if (JSON.good()) 
+            {
                 Editor::Log("scene " + s_currentScene + " opened.\n");
                 Deserialize(JSON);
+
+                JSON.close();
+                remove(tmp.c_str());
             }
 
             else {
@@ -166,10 +214,92 @@ bool EventListener::NewScene(const char* root_path)
 }
 
 
+//----------------------------- save current scene layer
+
+
+bool EventListener::SaveScene(bool saveAs)
+{
+
+    try {
+
+        std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
+        std::string project_root = Editor::projectPath + "scenes/" + s_currentScene + ".spaghyeti";
+
+        std::ifstream file(project_root);
+
+        if (!file.good()) //save as if file does not exist
+            saveAs = true;
+
+        file.close();
+
+        auto saveFile = [&](std::string filepath) -> bool {
+
+            EncodeFile(filepath);
+
+            Editor::projectPath = System::Utils::ReplaceFrom(std::filesystem::path{ filepath }.parent_path().string(), "scenes", "");
+            std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
+
+            s_currentScene = System::Utils::ReplaceFrom(std::filesystem::path{ filepath }.filename().string(), ".", "");
+
+            Editor::Log("Scene saved: " + Editor::projectPath + "scenes/" + std::filesystem::path{ filepath }.filename().string());
+
+            return true;
+
+        };
+
+        if (saveAs)
+        {
+
+            #ifdef _WIN32
+
+                OPENFILENAME ofn;
+
+                char szFileName[MAX_PATH] = "";
+
+                ZeroMemory(&ofn, sizeof(ofn));
+
+                ofn.lStructSize = sizeof(ofn);
+                ofn.hwndOwner = NULL;
+                ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.spaghyeti)\0*.spaghyeti");
+                ofn.lpstrFile = szFileName;
+                ofn.nMaxFile = MAX_PATH;
+                ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+                ofn.lpstrDefExt = NULL;
+
+                if (GetSaveFileName(&ofn) == TRUE)
+                {
+                    std::filesystem::path result((const char*)ofn.lpstrFile);
+
+                    s_currentScene = result.filename().string();
+
+                    if (saveFile(result.string() + ".spaghyeti"))
+                        return true;
+                }
+
+            #endif
+        }
+
+        else if (saveFile(project_root))
+            return true;
+
+        return false;
+
+    }
+
+    catch (std::runtime_error& err) {
+
+        Editor::Log("error saving project: " + (std::string)err.what());
+
+        return false;
+    }
+
+}
+
+
 //----------------------------- open project layer
 
 
-bool EventListener::Open() //makes temporary json file to parse data from .spaghyeti
+bool EventListener::OpenProject() //makes temporary json file to parse data from .spaghyeti
 {
 
    #ifdef _WIN32
@@ -194,7 +324,8 @@ bool EventListener::Open() //makes temporary json file to parse data from .spagh
 
             std::filesystem::path result((const char*)ofn.lpstrFile);
 
-            Editor::projectPath = std::filesystem::path{ result.string() }.parent_path().string() + "\\"; //result path
+            Editor::projectPath = System::Utils::ReplaceFrom(std::filesystem::path{ result.string() }.parent_path().string(), "scenes", ""); //result path
+            std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
 
             //project name and current scene
 
@@ -203,7 +334,7 @@ bool EventListener::Open() //makes temporary json file to parse data from .spagh
 
             //temporary file for decoding
 
-            const std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
+            const std::string tmp = Editor::projectPath + "scenes/spaghyeti_parse.json";
 
             DecodeFile(tmp, result);
 
@@ -212,13 +343,15 @@ bool EventListener::Open() //makes temporary json file to parse data from .spagh
             const std::string asset_folders[] = { "images", "audio", "data" };
 
             for (const std::string& type : asset_folders)
-                for (const auto& entry : std::filesystem::directory_iterator(Editor::projectPath + "resources\\assets\\" + type))
+                for (const auto& entry : std::filesystem::directory_iterator(Editor::projectPath + "resources/assets/" + type))
                 {
 
                     const std::string asset = entry.path().filename().string(),
-                                      dir = entry.path().string(), //includes filename
                                       texture = AssetManager::GetThumbnail(asset);
 
+                    std::string dir = entry.path().string(); //includes filename
+                                   
+                    std::replace(dir.begin(), dir.end(), '\\', '/');
                     System::Resources::Manager::LoadFile(asset.c_str(), dir.c_str());
                     System::Resources::Manager::RegisterTextures();
 
@@ -267,86 +400,6 @@ bool EventListener::Open() //makes temporary json file to parse data from .spagh
 }
 
 
-//----------------------------- save current scene layer
-
-
-bool EventListener::SaveScene(bool saveAs)
-{
-
-    try {
-
-        std::string project_root = Editor::projectPath + s_currentScene + ".spaghyeti";
-
-        std::ifstream file(project_root);
-
-        if (!file.good()) //save as if file does not exist
-            saveAs = true;
-
-        file.close();
-
-        auto saveFile = [&](std::string filepath) -> bool {
-
-            EncodeFile(filepath);
-
-            Editor::projectPath = std::filesystem::path{ filepath }.parent_path().string() + "\\";
-
-            s_currentScene = System::Utils::ReplaceFrom(std::filesystem::path{ filepath }.filename().string(), ".", "");
-
-            Editor::Log("Project saved: " + Editor::projectPath + std::filesystem::path{ filepath }.filename().string());
-
-            return true;
-
-        };
-
-        if (saveAs)
-        {
-
-            #ifdef _WIN32
-
-                OPENFILENAME ofn;
-
-                char szFileName[MAX_PATH] = "";
-
-                ZeroMemory(&ofn, sizeof(ofn));
-
-                ofn.lStructSize = sizeof(ofn);
-                ofn.hwndOwner = NULL;
-                ofn.lpstrFilter = _T("SpaghYeti Files (*.spaghyeti)\0*.spaghyeti");
-                ofn.lpstrFile = szFileName;
-                ofn.nMaxFile = MAX_PATH;
-                ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-                ofn.lpstrDefExt = NULL;
-
-                if (GetSaveFileName(&ofn) == TRUE)
-                {
-                    std::filesystem::path result((const char*)ofn.lpstrFile);
-
-                    s_currentScene = result.filename().string();
-
-                    if (saveFile(result.string() + ".spaghyeti"))
-                        return true;
-                }
-
-            #endif
-        }
-
-        else if (saveFile(project_root))
-            return true;
-
-        return false;
-
-    }
-
-    catch (std::runtime_error& err) {
-
-        std::cout << "error saving project: " << err.what() << "\n";
-
-        return false;
-    }
-
-}
-
-
 
 //--------------------------------- open asset
 
@@ -389,17 +442,20 @@ void EventListener::OpenFile()
 
             const auto options = std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive;
 
-            std::string folder = AssetManager::GetFolder(asset);
-            const std::string texture = AssetManager::GetThumbnail(asset);
+            std::string folder = "/" + System::Utils::GetFileType(asset) + "/";
 
-            std::ifstream file(Editor::projectPath + "resources\\assets" + folder + asset);
+            if (folder == "/image/")
+                folder = "/images/";
 
-            folder.erase(remove(folder.begin(), folder.end(), '\\'), folder.end());
+            const std::string texture = AssetManager::GetThumbnail(asset),
+                              path = Editor::projectPath + "resources/assets" + folder + asset;
+
+            std::ifstream file(path);
 
             //copy asset reference to respective project folder
 
-            if (!file.good() && folder != "icon") 
-                std::filesystem::copy_file(result.string(), Editor::projectPath + "resources\\assets" + asset, options);
+            if (!file.good() && !std::filesystem::exists(path) && folder != "/icon/") 
+                std::filesystem::copy_file(result.string(), path, options);
 
             //register asset into temp cache
 
@@ -412,8 +468,7 @@ void EventListener::OpenFile()
 
             unsigned int id = Graphics::Texture2D::Get(texture).ID;
 
-            auto insertAsset = [&](std::vector<std::pair<std::string, GLuint>>& vec) 
-            {
+            auto insertAsset = [&](std::vector<std::pair<std::string, GLuint>>& vec) {
                 if (
                     std::find_if( 
                         vec.begin(), vec.end(),
@@ -443,22 +498,6 @@ void EventListener::OpenFile()
 }
 
 
-//--------------------------------- embed calls to temp file for compilation
-
-
-void EventListener::InsertTo(const std::string& code, const std::string& directory)
-{
-
-    std::ofstream src;
-
-    src.open(directory, std::ofstream::app | std::ofstream::out);
-
-    src << code;
-
-    src.close();
-}
-
-
 
 //-------------------------------- build game from project source
 
@@ -468,15 +507,16 @@ void EventListener::BuildAndRun()
 {
     //directory / builder files
 
-    std::string makefile_path = Editor::projectPath + "\\Makefile";
+    std::string makefile_path = Editor::projectPath + "Makefile";
     std::replace(makefile_path.begin(), makefile_path.end(), '\\', '/');
+    std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
 
-    const std::string web = Editor::projectPath + "\\web",
+    const std::string web = Editor::projectPath + "web",
                       web_makeFile_path = web + "/Makefile",
                       web_preJS_path = web + "/pre-js.js",
                       web_HTML_path = web + "/template.html",
                       folder = Editor::platform == "WebGL" ? "web" : "build",
-                      assetsFolder = Editor::platform == "WebGL" ? Editor::projectPath + "web\\assets\\" : Editor::projectPath + "build\\assets\\",
+                      assetsFolder = Editor::platform == "WebGL" ? Editor::projectPath + "web/assets/" : Editor::projectPath + "build/assets/",
                       buildPath = Editor::projectPath + folder;
 
     if (!std::filesystem::exists(buildPath)) 
@@ -503,11 +543,13 @@ void EventListener::BuildAndRun()
     const std::string asset_folders[] = { "images", "audio", "data" };
 
     for (const std::string& type : asset_folders)
-        for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath + "resources\\assets\\" + type)) 
+        for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath + "resources/assets/" + type)) 
         {
             const std::string name = file.path().filename().string(),
-                              rsrcPath = file.path().string(),
                               copiedFile = assetsFolder + name;
+
+            std::string rsrcPath = file.path().string();
+            std::replace(rsrcPath.begin(), rsrcPath.end(), '\\', '/');
 
             if (!std::filesystem::exists(copiedFile)) {
                 Editor::Log("copying: " + rsrcPath + " to: " + copiedFile);
@@ -522,12 +564,11 @@ void EventListener::BuildAndRun()
                                 : (Editor::buildType == "dynamic" && Editor::releaseType == "debug") ? 
                                         "spaghyeti-debug.dll" : "spaghyeti.dll",
 
-                      copy_lib = Editor::projectPath + "build\\" + lib;
+                      copy_lib = Editor::projectPath + "build/" + lib;
 
-    if (Editor::buildType == "dynamic") 
-    {
-        remove((Editor::projectPath + "build\\spaghyeti-debug.dll").c_str());
-        remove((Editor::projectPath + "build\\spaghyeti.dll").c_str());
+    if (Editor::buildType == "dynamic") {
+        remove((Editor::projectPath + "build/spaghyeti-debug.dll").c_str());
+        remove((Editor::projectPath + "build/spaghyeti.dll").c_str());
 
         if (!std::filesystem::exists(copy_lib))
             std::filesystem::copy_file(Editor::rootPath + "\\sdk\\" + lib, copy_lib, options);
@@ -549,7 +590,6 @@ void EventListener::BuildAndRun()
         if (std::filesystem::exists(Editor::projectPath + "icon.rc")) 
             remove((Editor::projectPath + "icon.rc").c_str());
 
-    
         if (std::filesystem::exists(AssetManager::Get()->projectIcon) && AssetManager::Get()->projectIcon.length()) {
             std::ofstream icon_rc(Editor::projectPath + "icon.rc");
             icon_rc << "1 ICON \"" + AssetManager::Get()->projectIcon + "\"";
@@ -557,7 +597,7 @@ void EventListener::BuildAndRun()
         }
 
         //generate MakeFile
-        
+    
         std::ofstream main_makeFile;
         
         main_makeFile.open(makefile_path, std::ofstream::trunc);
@@ -728,7 +768,7 @@ void EventListener::BuildAndRun()
 
     //set game source input file stream
 
-    const std::string srcPath = Editor::projectPath + "\\game.cpp";
+    const std::string srcPath = Editor::projectPath + "game.cpp";
 
     std::ofstream game_src;
     
@@ -772,6 +812,8 @@ void EventListener::BuildAndRun()
 
         else 
             return;
+
+        std::replace(path.begin(), path.end(), '\\', '/');
 
         const std::string tmp_file = System::Utils::ReplaceFrom(path, ".", "") + "_tmp" + type;
 
@@ -1432,35 +1474,4 @@ void EventListener::BuildAndRun()
 }
 
 
-
-//----------------------------- generate new project layer
-
-
-void EventListener::GenerateProject()
-{
-
-    std::string root_path = Editor::rootPath;
-    std::replace(root_path.begin(), root_path.end(), '\\', '/');
-
-    const std::string resources = Editor::projectPath + "\\resources";
-
-    if (std::filesystem::exists(resources)) {
-        Editor::Log("Project " + s_currentProject + " already exists.");
-        return;
-    }
-
-    std::filesystem::create_directory(Editor::projectPath + "\\scenes");
-
-    std::filesystem::create_directory(resources);
-    std::filesystem::create_directory(resources + "\\scripts");
-    std::filesystem::create_directory(resources + "\\shaders");
-    std::filesystem::create_directory(resources + "\\assets");
-    std::filesystem::create_directory(resources + "\\prefabs");
-    std::filesystem::create_directory(resources + "\\assets\\images");
-    std::filesystem::create_directory(resources + "\\assets\\audio");
-    std::filesystem::create_directory(resources + "\\assets\\data");
-
-
-    Editor::Log("New project " + s_currentProject + " generated.");
-}
 
