@@ -43,13 +43,12 @@ void AssetManager::Register(const std::string& asset) {
 //---------------------------
 
 
-void AssetManager::LoadAsset(const std::string& asset)
-{
+void AssetManager::LoadAsset(const std::string& asset) {
  
     const std::string folder = System::Utils::GetFileType(asset),
                       texture = GetThumbnail(asset),
                       key = "\"" + asset + "\"",
-                      developmentPath = "resources/assets" + folder + asset;
+                      developmentPath = "resources/assets/" + folder + "/" + asset;
 
     s_self->loadedAssets.insert({ key, developmentPath });
 

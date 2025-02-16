@@ -693,7 +693,7 @@ void editor::GUI::ShowViewport()
     ImGui::InputInt("width", &session->worldWidth);
     ImGui::InputInt("height", &session->worldHeight); 
     ImGui::SliderFloat("x", (float*)&session->game->camera->GetPosition().x, session->worldWidth, -session->worldWidth);
-    ImGui::SliderFloat("y", (float*)&session->game->camera->GetPosition().y, session->worldWidth, -session->worldHeight);
+    ImGui::SliderFloat("y", (float*)&session->game->camera->GetPosition().y, session->worldHeight, -session->worldHeight);
     ImGui::SliderFloat("zoom", session->game->camera->GetZoomPtr(), -10.0f, 10.0f);
     ImGui::SliderFloat("vignette", &session->vignetteVisibility, 0.0f, 1.0f);
     ImGui::ColorEdit4("color", (float*)&session->game->camera->GetBackgroundColor()); 
