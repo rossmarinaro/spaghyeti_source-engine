@@ -303,8 +303,8 @@ void Sprite::RemoveBodies()
 
     //reset texture position to normal coords
 
-    float x = bodies[0].first->GetPosition().x / 2,
-          y = bodies[0].first->GetPosition().y / 2;
+    const float x = bodies[0].first->GetPosition().x + bodies[0].second.x,
+                y = bodies[0].first->GetPosition().y + bodies[0].second.y;
 
     for (auto it = bodies.begin(); it != bodies.end(); ++it) 
         Physics::DestroyBody((*it).first);
@@ -515,17 +515,17 @@ void Sprite::Render(float projWidth, float projHeight)
 
         //play current animation
 
-        if (m_isSpritesheet && m_currentAnim.first.length())
+        if (m_isSpritesheet && m_currentAnim.key.length())
         {
-            const std::string& animKey = m_currentAnim.first;
-            bool yoyo = m_currentAnim.second.first;
-            int rate = m_currentAnim.second.second;
-            uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
+            const std::string& animKey = m_currentAnim.key;
+            const bool yoyo = m_currentAnim.yoyo;
+            const int rate = m_currentAnim.rate,
+                      repeat = m_currentAnim.repeat;
 
-            m_currentAnim = { animKey, { yoyo, rate } }; 
+            uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
         
-            int startFrame = anims.find(m_currentAnim.first)->second.first,
-                endFrame = anims.find(m_currentAnim.first)->second.second,
+            int startFrame = anims.find(m_currentAnim.key)->second.first,
+                endFrame = anims.find(m_currentAnim.key)->second.second,
                 frame = yoyo ? startFrame : endFrame;
 
             m_animComplete = frame == currentFrame;
@@ -537,23 +537,27 @@ void Sprite::Render(float projWidth, float projHeight)
 
                     std::map<std::string, std::pair<int, int>>::iterator anim = anims.find(animKey);
 
-                    if (anim == anims.end() || System::Game::GetScene()->IsPaused()) 
+                    if (anim == anims.end() || System::Game::GetScene()->IsPaused() || (repeat <= 0 && repeat != -1)) {
+                        m_isAnimPlaying = false;
                         return;
+                    }
 
                     std::vector<int> frames; //frames to populate  
+
+                    m_isAnimPlaying = true;
 
                     if (yoyo)
                     {
 
                         for (int i = anim->second.first; i < anim->second.second + 1; i++) 
-                            frames.push_back(i);
+                            frames.emplace_back(i);
                         
                         uint32_t elapsed = seconds % frames.size();
 
                         std::vector<int> frames_reversed;
 
                         for (int i = anim->second.second; i > anim->second.first - 1; i--) 
-                            frames_reversed.push_back(i);
+                            frames_reversed.emplace_back(i);
 
                         uint32_t elapsed_reversed = seconds % frames_reversed.size();
 
@@ -574,12 +578,15 @@ void Sprite::Render(float projWidth, float projHeight)
                     else    
                     {
                         for (int i = anim->second.first; i < anim->second.second; i++) 
-                            frames.push_back(i);
+                            frames.emplace_back(i);
                         
                         uint32_t elapsed = seconds % frames.size();
 
                         SetFrame(currentFrame != anim->second.second ? frames[elapsed] : anim->second.first);
                     }
+
+                    if (m_currentAnim.repeat != -1)
+                        m_currentAnim.repeat--;
 
                 }
             }

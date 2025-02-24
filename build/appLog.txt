@@ -1,1334 +1,470 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sat Feb 15 18:10:13 2025
-Events initialized. @ Sat Feb 15 18:10:13 2025
-IMGui Version: 1 @ Sat Feb 15 18:10:13 2025
-GUI launched. @ Sat Feb 15 18:10:13 2025
-Workspace reset. @ Sat Feb 15 18:10:20 2025
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Sun Feb 23 23:22:38 2025
+Events initialized. @ Sun Feb 23 23:22:38 2025
+IMGui Version: 1 @ Sun Feb 23 23:22:39 2025
+GUI launched. @ Sun Feb 23 23:22:39 2025
+Workspace reset. @ Sun Feb 23 23:22:47 2025
 Project TheFunkyAdventuresOfSwankyVelvet opened.
-Project root path set: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/ @ Sat Feb 15 18:10:22 2025
-Sprite node Untitled created. @ Sat Feb 15 18:10:22 2025
-Sprite node Untitled created. @ Sat Feb 15 18:10:22 2025
-Sprite node Untitled created. @ Sat Feb 15 18:10:22 2025
-Empty node Untitled created. @ Sat Feb 15 18:10:22 2025
-Text node Untitled created. @ Sat Feb 15 18:10:22 2025
-Group node Untitled created. @ Sat Feb 15 18:10:22 2025
-Sprite node Untitled created. @ Sat Feb 15 18:10:22 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:34 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:34 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:34 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:34 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:34 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:34 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:34 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:34 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:34 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:34 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:34 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:34 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:34 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:34 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:34 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:34 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:34 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:34 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:34 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:34 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:34 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:34 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:34 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:34 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:34 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:34 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:34 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:34 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:34 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:34 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:34 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:34 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:34 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:34 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:34 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:34 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:34 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:34 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:34 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:34 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:34 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:34 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:34 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:34 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:34 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:34 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:34 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:34 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:34 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:34 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:34 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:34 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:34 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:34 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:34 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:34 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:34 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:34 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:34 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:34 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:34 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:34 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:34 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:34 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:34 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:34 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:34 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:34 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:34 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:34 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:34 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:34 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:34 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:34 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:34 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:34 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:34 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:34 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:34 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:34 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:34 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:34 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:34 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:34 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:34 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:34 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:34 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:34 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:34 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:34 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:34 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:34 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:34 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:34 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:34 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:34 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:34 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:34 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:34 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:34 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:34 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:34 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:34 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:34 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:34 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:34 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:34 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:34 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:34 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:34 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:34 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:34 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:34 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:34 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:34 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:34 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:34 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:34 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:34 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:34 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:34 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:34 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:34 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:34 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:34 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:34 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:34 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:34 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:34 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:34 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:34 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:34 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:34 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:34 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:34 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:34 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:34 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:34 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:34 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:34 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:34 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:34 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:34 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:34 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:34 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:34 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:34 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:34 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:34 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:34 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:34 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:34 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:34 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:34 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:34 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:34 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:34 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:34 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:34 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:34 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:34 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:34 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:34 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:34 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:34 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:34 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:34 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:34 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:34 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:34 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:34 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:34 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:34 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:34 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:34 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:34 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:34 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:34 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:34 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:34 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:34 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:34 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:34 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:34 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:34 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:34 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:34 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:34 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:34 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:34 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:34 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:34 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:34 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:34 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:34 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:34 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:34 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:34 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:34 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:34 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:34 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:34 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:34 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:34 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:34 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:34 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:34 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:34 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:34 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:34 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:34 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:34 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:34 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:34 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:34 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:34 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:34 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:34 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:34 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:34 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:34 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:34 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:34 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:34 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:34 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:34 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:34 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:34 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:34 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:34 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:34 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:34 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:34 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:34 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:34 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:34 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:34 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:34 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:34 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:34 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:34 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:34 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:34 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:34 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:34 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:34 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:34 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:34 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:34 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:34 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:34 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:34 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:34 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:34 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:34 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:35 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:35 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:35 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:35 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:35 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:35 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:35 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:35 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:35 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:35 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:35 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:35 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:35 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:35 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:35 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:35 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:35 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:35 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:35 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:35 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:35 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:35 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:35 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:35 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:35 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:35 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:35 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:35 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:35 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:35 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:35 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:35 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:35 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:35 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:35 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:35 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:35 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:35 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:35 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:35 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:35 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:35 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:35 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:35 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:35 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:35 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:35 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:35 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:35 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:35 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:35 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:35 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:35 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:35 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:35 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:35 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:35 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:35 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:35 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:35 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:35 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:35 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:35 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:35 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:35 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:35 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:35 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:35 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:35 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:35 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:35 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:35 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:35 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:35 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:35 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:35 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:35 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:35 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:35 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:35 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:35 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:35 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:35 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:35 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:35 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:35 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:35 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:35 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:35 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:35 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:35 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:35 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:35 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:35 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:35 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:35 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:35 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:35 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:35 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:35 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:35 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:35 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:35 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:35 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:35 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:35 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:35 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:35 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:35 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:35 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:35 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:35 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:35 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:35 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:35 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:35 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:35 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:35 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:35 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:35 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:35 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:35 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:35 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:35 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:35 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:35 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:35 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:35 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:35 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:35 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:35 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:35 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:35 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:35 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:35 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:35 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:35 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:35 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:35 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:35 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:35 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:35 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:35 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:35 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:35 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:35 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:35 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:35 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:35 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:35 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:35 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:35 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:35 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:35 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:35 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:35 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:35 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:35 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:35 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:35 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:35 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:35 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:35 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:35 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:35 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:35 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:35 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:35 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:35 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:35 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:35 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:35 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:35 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:35 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:35 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:35 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:35 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:35 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:35 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:35 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:35 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:35 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:35 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:35 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:35 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:35 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:35 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:35 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:35 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:35 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:35 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:35 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:35 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:35 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:35 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:35 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:35 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:35 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:35 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:35 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:35 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:35 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:35 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:35 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:35 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:35 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:35 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:35 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:35 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:35 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:35 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:35 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:35 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:35 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:35 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:35 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:35 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:35 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:35 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:35 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:35 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:35 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:35 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:35 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:35 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:35 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:35 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:35 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:35 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:35 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:35 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:35 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:35 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:35 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:35 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:35 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:35 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:35 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:35 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:35 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:35 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:35 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:35 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:35 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:35 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:35 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:35 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:35 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:35 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:35 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:35 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:35 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:35 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:35 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:35 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:35 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:35 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:35 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:35 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:35 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:35 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:35 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:35 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:35 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:35 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:35 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:35 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:35 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:35 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:35 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:35 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:35 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:35 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:35 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:35 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:35 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:35 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:35 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:35 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:35 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:35 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:35 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:35 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:35 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:35 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:35 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:35 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:35 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:35 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:35 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:35 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:35 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:35 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:35 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:35 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:35 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:35 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:35 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:35 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:35 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:35 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:35 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:35 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:35 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:35 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:35 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:35 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:35 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:35 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:35 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:35 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:35 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:35 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:35 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:35 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:35 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:35 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:35 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:35 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:35 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:35 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:35 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:35 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:35 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:35 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:35 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:35 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:35 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:35 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:35 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:35 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:35 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:35 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:35 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:35 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:35 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:35 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:35 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:35 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:35 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:35 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:35 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:35 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:35 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:35 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:35 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:35 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:35 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:35 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:35 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:35 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:35 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:35 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:35 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:35 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:35 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:35 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:35 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:35 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:35 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:35 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:35 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:35 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:35 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:35 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:35 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:35 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:35 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:35 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:35 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:35 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:35 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:35 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:35 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:35 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:35 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:35 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:35 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:35 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:35 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:35 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:35 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:35 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:35 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:35 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:35 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:35 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:35 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:35 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:35 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:35 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:35 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:35 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:35 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:35 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:35 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:35 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:35 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:35 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:35 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:36 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:36 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:36 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:36 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:36 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:36 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:36 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:36 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:36 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:36 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:36 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:36 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:36 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:36 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:36 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:36 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:36 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:36 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:36 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:36 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:36 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:36 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:36 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:36 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:36 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:36 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:36 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:36 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:36 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:36 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:36 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:36 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:36 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:36 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:36 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:36 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:36 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:36 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:36 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:36 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:36 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:36 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:36 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:36 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:36 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:36 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:36 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:36 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:36 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:36 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:36 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:36 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:36 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:36 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:36 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:36 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:36 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:36 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:36 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:36 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:36 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:36 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:36 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:36 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:36 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:36 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:36 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:36 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:36 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:36 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:36 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:36 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:36 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:36 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:36 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:36 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:36 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:36 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:36 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:36 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:36 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:36 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:36 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:36 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:36 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:36 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:36 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:36 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:36 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:36 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:36 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:36 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:36 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:36 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:36 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:36 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:36 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:36 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:36 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:36 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:36 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:36 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:36 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:36 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:36 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:36 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:36 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:36 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:36 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:36 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:36 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:36 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:36 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:36 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:36 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:36 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:36 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:36 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:36 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:36 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:36 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:36 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:36 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:36 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:36 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:36 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:36 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:36 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:36 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:36 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:36 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:36 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:36 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:36 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:36 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:36 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:36 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:36 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:36 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:36 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:36 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:36 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:36 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:36 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:36 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:36 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:36 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:36 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:36 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:36 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:36 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:36 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:36 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:36 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:36 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:36 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:36 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:36 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:36 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:36 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:36 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:36 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:36 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:36 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:36 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:36 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:36 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:36 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:36 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:36 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:36 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:36 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:36 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:36 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:36 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:36 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:36 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:36 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:36 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:36 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:36 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:36 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:36 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:36 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:36 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:36 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:36 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:36 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:36 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:36 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:36 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:36 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:36 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:36 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:36 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:36 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:36 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:36 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:36 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:36 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:36 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:36 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:36 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:36 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:36 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:36 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:36 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:36 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:36 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:36 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:36 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:36 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:36 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:36 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:36 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:36 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:36 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:36 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:36 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:36 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:36 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:36 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:36 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:36 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:36 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:36 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:36 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:36 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:36 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:36 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:36 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:36 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:36 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:36 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:36 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:36 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:36 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:36 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:36 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:36 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:36 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:36 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:36 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:36 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:36 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:36 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:36 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:36 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:36 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:36 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:36 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:36 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:36 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:36 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:36 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:36 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:36 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:36 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:36 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:36 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:36 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:36 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:36 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:36 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:36 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:36 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:36 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:36 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:36 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:36 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:36 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:36 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:36 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:36 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:36 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:36 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:36 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:36 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:36 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:36 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:36 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:36 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:36 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:36 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:36 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:36 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:36 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:36 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:36 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:36 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:36 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:36 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:36 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:36 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:36 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:36 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:36 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:36 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:36 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:36 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:36 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:36 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:36 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:36 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:36 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:36 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:36 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:36 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:36 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:36 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:36 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:36 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:36 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:36 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:36 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:36 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:36 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:36 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:36 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:36 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:36 2025
-???".foreground2.png-autosave.kra" : resources/assets//.foreground2.png-autosave.kra @ Sat Feb 15 18:10:36 2025
-???"background0.png" : resources/assets/image/background0.png @ Sat Feb 15 18:10:36 2025
-???"background1.png" : resources/assets/image/background1.png @ Sat Feb 15 18:10:36 2025
-???"background2.png" : resources/assets/image/background2.png @ Sat Feb 15 18:10:36 2025
-???"background3.png" : resources/assets/image/background3.png @ Sat Feb 15 18:10:36 2025
-???"background4.png" : resources/assets/image/background4.png @ Sat Feb 15 18:10:36 2025
-???"background5.png" : resources/assets/image/background5.png @ Sat Feb 15 18:10:36 2025
-???"bar-venue-good.png" : resources/assets/image/bar-venue-good.png @ Sat Feb 15 18:10:36 2025
-???"boing.ogg" : resources/assets/audio/boing.ogg @ Sat Feb 15 18:10:36 2025
-???"box.json" : resources/assets/data/box.json @ Sat Feb 15 18:10:36 2025
-???"box.png" : resources/assets/image/box.png @ Sat Feb 15 18:10:36 2025
-???"bridge railing.png" : resources/assets/image/bridge railing.png @ Sat Feb 15 18:10:36 2025
-???"bridge railing.png~" : resources/assets//bridge railing.png~ @ Sat Feb 15 18:10:36 2025
-???"brothel1_bkgnd.png" : resources/assets/image/brothel1_bkgnd.png @ Sat Feb 15 18:10:36 2025
-???"brothel1_bounds.json" : resources/assets/data/brothel1_bounds.json @ Sat Feb 15 18:10:36 2025
-???"brothel_building.png" : resources/assets/image/brothel_building.png @ Sat Feb 15 18:10:36 2025
-???"brothel_building_legs.json" : resources/assets/data/brothel_building_legs.json @ Sat Feb 15 18:10:36 2025
-???"brothel_building_legs.png" : resources/assets/image/brothel_building_legs.png @ Sat Feb 15 18:10:36 2025
-???"bullet.png" : resources/assets/image/bullet.png @ Sat Feb 15 18:10:36 2025
-???"car.json" : resources/assets/data/car.json @ Sat Feb 15 18:10:36 2025
-???"car.png" : resources/assets/image/car.png @ Sat Feb 15 18:10:36 2025
-???"cave.json" : resources/assets/data/cave.json @ Sat Feb 15 18:10:36 2025
-???"cave.png" : resources/assets/image/cave.png @ Sat Feb 15 18:10:36 2025
-???"coin.json" : resources/assets/data/coin.json @ Sat Feb 15 18:10:36 2025
-???"coin.png" : resources/assets/image/coin.png @ Sat Feb 15 18:10:36 2025
-???"dialogue window rectangle.png" : resources/assets/image/dialogue window rectangle.png @ Sat Feb 15 18:10:36 2025
-???"disco ball.png" : resources/assets/image/disco ball.png @ Sat Feb 15 18:10:36 2025
-???"error.flac" : resources/assets/audio/error.flac @ Sat Feb 15 18:10:36 2025
-???"fade.png" : resources/assets/image/fade.png @ Sat Feb 15 18:10:36 2025
-???"fire_sound.flac" : resources/assets/audio/fire_sound.flac @ Sat Feb 15 18:10:36 2025
-???"foreground0.png" : resources/assets/image/foreground0.png @ Sat Feb 15 18:10:36 2025
-???"foreground1.png" : resources/assets/image/foreground1.png @ Sat Feb 15 18:10:36 2025
-???"foreground2.png" : resources/assets/image/foreground2.png @ Sat Feb 15 18:10:36 2025
-???"foreground3.png" : resources/assets/image/foreground3.png @ Sat Feb 15 18:10:36 2025
-???"foreground4.png" : resources/assets/image/foreground4.png @ Sat Feb 15 18:10:36 2025
-???"foreground5.png" : resources/assets/image/foreground5.png @ Sat Feb 15 18:10:36 2025
-???"grunt.png" : resources/assets/image/grunt.png @ Sat Feb 15 18:10:36 2025
-???"heart.png" : resources/assets/image/heart.png @ Sat Feb 15 18:10:36 2025
-???"hoodlum.json" : resources/assets/data/hoodlum.json @ Sat Feb 15 18:10:36 2025
-???"hoodlum.png" : resources/assets/image/hoodlum.png @ Sat Feb 15 18:10:36 2025
-???"hooker.json" : resources/assets/data/hooker.json @ Sat Feb 15 18:10:36 2025
-???"hooker.png" : resources/assets/image/hooker.png @ Sat Feb 15 18:10:36 2025
-???"hooligan.json" : resources/assets/data/hooligan.json @ Sat Feb 15 18:10:36 2025
-???"hooligan.png" : resources/assets/image/hooligan.png @ Sat Feb 15 18:10:36 2025
-???"items.json" : resources/assets/data/items.json @ Sat Feb 15 18:10:36 2025
-???"items.png" : resources/assets/image/items.png @ Sat Feb 15 18:10:36 2025
-???"jogger.json" : resources/assets/data/jogger.json @ Sat Feb 15 18:10:36 2025
-???"jogger.png" : resources/assets/image/jogger.png @ Sat Feb 15 18:10:36 2025
-???"menu.png" : resources/assets/image/menu.png @ Sat Feb 15 18:10:36 2025
-???"miner1.png" : resources/assets/image/miner1.png @ Sat Feb 15 18:10:36 2025
-???"mountains.png" : resources/assets/image/mountains.png @ Sat Feb 15 18:10:36 2025
-???"music.flac" : resources/assets/audio/music.flac @ Sat Feb 15 18:10:36 2025
-???"pidgeon.json" : resources/assets/data/pidgeon.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon.png" : resources/assets/image/pidgeon.png @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.json" : resources/assets/data/pidgeon_poo.json @ Sat Feb 15 18:10:36 2025
-???"pidgeon_poo.png" : resources/assets/image/pidgeon_poo.png @ Sat Feb 15 18:10:36 2025
-???"pitbull.json" : resources/assets/data/pitbull.json @ Sat Feb 15 18:10:36 2025
-???"pitbull.png" : resources/assets/image/pitbull.png @ Sat Feb 15 18:10:36 2025
-???"platformer.png" : resources/assets/image/platformer.png @ Sat Feb 15 18:10:36 2025
-???"player.json" : resources/assets/data/player.json @ Sat Feb 15 18:10:36 2025
-???"player.png" : resources/assets/image/player.png @ Sat Feb 15 18:10:36 2025
-???"rat.json" : resources/assets/data/rat.json @ Sat Feb 15 18:10:36 2025
-???"rat.png" : resources/assets/image/rat.png @ Sat Feb 15 18:10:36 2025
-???"ring.flac" : resources/assets/audio/ring.flac @ Sat Feb 15 18:10:36 2025
-???"robber.json" : resources/assets/data/robber.json @ Sat Feb 15 18:10:36 2025
-???"robber.png" : resources/assets/image/robber.png @ Sat Feb 15 18:10:36 2025
-???"sky1.png" : resources/assets/image/sky1.png @ Sat Feb 15 18:10:36 2025
-???"sky2.png" : resources/assets/image/sky2.png @ Sat Feb 15 18:10:36 2025
-???"star.json" : resources/assets/data/star.json @ Sat Feb 15 18:10:36 2025
-???"star.png" : resources/assets/image/star.png @ Sat Feb 15 18:10:36 2025
-???"sv.png" : resources/assets/image/sv.png @ Sat Feb 15 18:10:36 2025
-???"sv_icon.png" : resources/assets/image/sv_icon.png @ Sat Feb 15 18:10:36 2025
-???"sv_menu.png" : resources/assets/image/sv_menu.png @ Sat Feb 15 18:10:36 2025
-???"swipe.flac" : resources/assets/audio/swipe.flac @ Sat Feb 15 18:10:36 2025
-???"swipe.ogg" : resources/assets/audio/swipe.ogg @ Sat Feb 15 18:10:36 2025
-???"title.png" : resources/assets/image/title.png @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.json" : resources/assets/data/title_sparkle.json @ Sat Feb 15 18:10:36 2025
-???"title_sparkle.png" : resources/assets/image/title_sparkle.png @ Sat Feb 15 18:10:36 2025
-???"town2_background0.png" : resources/assets/image/town2_background0.png @ Sat Feb 15 18:10:36 2025
-???"town2_background1.png" : resources/assets/image/town2_background1.png @ Sat Feb 15 18:10:36 2025
-???"town2_background3.png" : resources/assets/image/town2_background3.png @ Sat Feb 15 18:10:36 2025
-???"town2_background4.png" : resources/assets/image/town2_background4.png @ Sat Feb 15 18:10:36 2025
-???"town2_background_bridge.png" : resources/assets/image/town2_background_bridge.png @ Sat Feb 15 18:10:36 2025
-???"town2_bounds.json" : resources/assets/data/town2_bounds.json @ Sat Feb 15 18:10:36 2025
-???"town2_foreground.png" : resources/assets/image/town2_foreground.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground0.png" : resources/assets/image/town2_foreground0.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground1.png" : resources/assets/image/town2_foreground1.png @ Sat Feb 15 18:10:36 2025
-???"town2_foreground2.png" : resources/assets/image/town2_foreground2.png @ Sat Feb 15 18:10:36 2025
-???"town_bounds.json" : resources/assets/data/town_bounds.json @ Sat Feb 15 18:10:36 2025
-???"trippy.png" : resources/assets/image/trippy.png @ Sat Feb 15 18:10:36 2025
-???"ui_box.png" : resources/assets/image/ui_box.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water.png" : resources/assets/image/under bridge water.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water1.png" : resources/assets/image/under bridge water1.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water2.png" : resources/assets/image/under bridge water2.png @ Sat Feb 15 18:10:36 2025
-???"under bridge water3.png" : resources/assets/image/under bridge water3.png @ Sat Feb 15 18:10:36 2025
-???"under bridge.png" : resources/assets/image/under bridge.png @ Sat Feb 15 18:10:36 2025
-???"under_bridge_water.json" : resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:36 2025
-!!!!C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet//resources/assets/data/under_bridge_water.json @ Sat Feb 15 18:10:36 2025
-???"water.json" : resources/assets/data/water.json @ Sat Feb 15 18:10:36 2025
-???"water.png" : resources/assets/image/water.png @ Sat Feb 15 18:10:36 2025
-Scene saved: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/scenes/intro.spaghyeti @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/.foreground2.png-autosave.kra to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/.foreground2.png-autosave.kra @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background0.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background0.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background1.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background2.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background2.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background3.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background3.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background4.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background4.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background5.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background5.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/bar-venue-good.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/bar-venue-good.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/box.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/box.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/bridge railing.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/bridge railing.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/bridge railing.png~ to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/bridge railing.png~ @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/brothel1_bkgnd.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel1_bkgnd.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/brothel_building.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel_building.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/brothel_building_legs.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel_building_legs.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/bullet.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/bullet.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/car.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/car.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/cave.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/cave.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/coin.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/coin.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/dialogue window rectangle.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/dialogue window rectangle.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/disco ball.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/disco ball.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/fade.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/fade.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground0.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground0.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground1.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground2.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground2.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground3.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground3.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground4.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground4.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground5.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground5.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/grunt.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/grunt.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/heart.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/heart.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/hoodlum.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hoodlum.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/hooker.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hooker.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/hooligan.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hooligan.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/items.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/items.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/jogger.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/jogger.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/menu.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/menu.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/miner1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/miner1.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/mountains.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/mountains.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/pidgeon.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pidgeon.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/pidgeon_poo.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pidgeon_poo.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/pitbull.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pitbull.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/platformer.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/platformer.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/player.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/player.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/rat.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/rat.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/robber.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/robber.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sky1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sky1.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sky2.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sky2.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/star.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/star.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sv.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sv.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sv_icon.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sv_icon.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sv_menu.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sv_menu.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/title.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/title.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/title_sparkle.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/title_sparkle.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background0.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background0.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background1.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background3.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background3.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background4.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background4.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background_bridge.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background_bridge.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_foreground.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_foreground.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_foreground0.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_foreground0.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_foreground1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_foreground1.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_foreground2.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_foreground2.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/trippy.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/trippy.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/ui_box.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/ui_box.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/under bridge water.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/under bridge water.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/under bridge water1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/under bridge water1.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/under bridge water2.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/under bridge water2.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/under bridge water3.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/under bridge water3.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/under bridge.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/under bridge.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/water.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/water.png @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/boing.ogg to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/boing.ogg @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/error.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/error.flac @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/fire_sound.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/fire_sound.flac @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/music.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/music.flac @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/ring.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/ring.flac @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/swipe.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/swipe.flac @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/swipe.ogg to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/swipe.ogg @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/box.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/box.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/brothel1_bounds.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel1_bounds.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/brothel_building_legs.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel_building_legs.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/car.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/car.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/cave.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/cave.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/coin.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/coin.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/hoodlum.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hoodlum.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/hooker.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hooker.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/hooligan.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hooligan.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/items.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/items.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/jogger.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/jogger.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/pidgeon.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pidgeon.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/pidgeon_poo.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pidgeon_poo.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/pitbull.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pitbull.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/player.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/player.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/rat.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/rat.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/robber.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/robber.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/star.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/star.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/title_sparkle.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/title_sparkle.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/town2_bounds.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_bounds.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/town_bounds.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town_bounds.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/under_bridge_water.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/under_bridge_water.json @ Sat Feb 15 18:11:04 2025
-copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/water.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/water.json @ Sat Feb 15 18:11:04 2025
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/damage/damage.frag to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/damage.frag @ Sat Feb 15 18:11:05 2025
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/image.vert to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/image.vert @ Sat Feb 15 18:11:05 2025
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/tintshift/tintshift.frag to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/tintshift.frag @ Sat Feb 15 18:11:05 2025
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.frag to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/trippy.frag @ Sat Feb 15 18:11:05 2025
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.vert to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/trippy.vert @ Sat Feb 15 18:11:05 2025
-copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy2/trippy2.frag to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/trippy2.frag @ Sat Feb 15 18:11:05 2025
-Sprite node Untitled created. @ Sat Feb 15 18:11:05 2025
-Sprite node Untitled created. @ Sat Feb 15 18:11:05 2025
-Sprite node Untitled created. @ Sat Feb 15 18:11:05 2025
-Empty node Untitled created. @ Sat Feb 15 18:11:05 2025
-Text node Untitled created. @ Sat Feb 15 18:11:05 2025
-Group node Untitled created. @ Sat Feb 15 18:11:05 2025
-Sprite node Untitled created. @ Sat Feb 15 18:11:05 2025
-Scene parsed. @ Sat Feb 15 18:11:05 2025
-Sprite node underground deleted. @ Sat Feb 15 18:11:05 2025
-Sprite node bridge deleted. @ Sat Feb 15 18:11:05 2025
-Sprite node water deleted. @ Sat Feb 15 18:11:05 2025
-Empty node manager deleted. @ Sat Feb 15 18:11:05 2025
-Text node score deleted. @ Sat Feb 15 18:11:05 2025
-Group node player deleted. @ Sat Feb 15 18:11:05 2025
-Sprite node player deleted. @ Sat Feb 15 18:11:05 2025
-Project TheFunkyAdventuresOfSwankyVelvet built successfully. @ Sat Feb 15 18:11:56 2025
-Sprite node player deleted. @ Sat Feb 15 18:12:00 2025
-Sprite node underground deleted. @ Sat Feb 15 18:12:00 2025
-Sprite node bridge deleted. @ Sat Feb 15 18:12:00 2025
-Sprite node water deleted. @ Sat Feb 15 18:12:00 2025
-Empty node manager deleted. @ Sat Feb 15 18:12:00 2025
-Text node score deleted. @ Sat Feb 15 18:12:00 2025
-Group node player deleted. @ Sat Feb 15 18:12:00 2025
-GUI exited. @ Sat Feb 15 18:12:00 2025
-Editor closed. @ Sat Feb 15 18:12:00 2025
+Project root path set: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/ @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Empty node Untitled created. @ Sun Feb 23 23:22:49 2025
+Text node Untitled created. @ Sun Feb 23 23:22:49 2025
+Group node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Group node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Group node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Group node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:49 2025
+Tilemap node Untitled created. @ Sun Feb 23 23:22:49 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:50 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:50 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:50 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:50 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:50 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:50 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:50 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/.foreground2.png-autosave.kra to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/.foreground2.png-autosave.kra @ Sun Feb 23 23:22:52 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background0.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background0.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background1.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background2.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background2.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background3.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background3.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background4.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background4.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/background5.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/background5.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/bar-venue-good.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/bar-venue-good.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/box.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/box.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/bridge railing.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/bridge railing.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/brothel1_bkgnd.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel1_bkgnd.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/brothel_building.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel_building.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/brothel_building_legs.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel_building_legs.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/bullet.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/bullet.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/car.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/car.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/cave.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/cave.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/coin.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/coin.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/dialogue window rectangle.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/dialogue window rectangle.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/disco ball.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/disco ball.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/fade.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/fade.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground0.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground0.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground1.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground2.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground2.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground3.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground3.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground4.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground4.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/foreground5.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/foreground5.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/grunt.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/grunt.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/heart.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/heart.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/hoodlum.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hoodlum.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/hooker.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hooker.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/hooligan.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hooligan.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/items.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/items.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/jogger.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/jogger.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/menu.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/menu.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/miner1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/miner1.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/mountains.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/mountains.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/peace pipe.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/peace pipe.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/pidgeon.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pidgeon.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/pidgeon_poo.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pidgeon_poo.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/pitbull.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pitbull.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/platformer.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/platformer.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/player.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/player.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/rat.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/rat.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/robber.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/robber.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sky1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sky1.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sky2.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sky2.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/star.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/star.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sv.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sv.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sv_icon.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sv_icon.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sv_intro.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sv_intro.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/sv_menu.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sv_menu.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/title.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/title.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/title_sparkle.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/title_sparkle.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/tmp.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/tmp.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background0.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background0.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background1.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background3.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background3.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background4.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background4.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_background_bridge.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_background_bridge.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_foreground.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_foreground.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_foreground0.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_foreground0.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_foreground1.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_foreground1.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/town2_foreground2.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_foreground2.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/trippy.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/trippy.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/ui_box.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/ui_box.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/under bridge water.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/under bridge water.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/under bridge.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/under bridge.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/van_intro.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/van_intro.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/images/water.png to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/water.png @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/boing.ogg to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/boing.ogg @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/error.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/error.flac @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/fire_sound.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/fire_sound.flac @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/music.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/music.flac @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/ring.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/ring.flac @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/swipe.flac to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/swipe.flac @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/audio/swipe.ogg to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/swipe.ogg @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/box.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/box.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/brothel1_bounds.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel1_bounds.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/brothel_building_legs.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/brothel_building_legs.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/car.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/car.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/cave.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/cave.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/coin.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/coin.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/hoodlum.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hoodlum.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/hooker.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hooker.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/hooligan.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/hooligan.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/items.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/items.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/jogger.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/jogger.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/pidgeon.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pidgeon.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/pidgeon_poo.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pidgeon_poo.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/pitbull.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/pitbull.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/player.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/player.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/rat.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/rat.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/robber.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/robber.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/star.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/star.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/sv_intro.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/sv_intro.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/title_sparkle.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/title_sparkle.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/town2_bounds.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town2_bounds.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/town_bounds.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/town_bounds.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/under_bridge_water.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/under_bridge_water.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/van_intro.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/van_intro.json @ Sun Feb 23 23:22:53 2025
+copying: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/assets/data/water.json to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/water.json @ Sun Feb 23 23:22:53 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/damage/damage.frag to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/damage.frag @ Sun Feb 23 23:22:53 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/image.vert to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/image.vert @ Sun Feb 23 23:22:53 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/tintshift/tintshift.frag to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/tintshift.frag @ Sun Feb 23 23:22:53 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.frag to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/trippy.frag @ Sun Feb 23 23:22:53 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy/trippy.vert to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/trippy.vert @ Sun Feb 23 23:22:53 2025
+copying shaders: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/resources/shaders/trippy2/trippy2.frag to: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/build/assets/trippy2.frag @ Sun Feb 23 23:22:53 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Empty node Untitled created. @ Sun Feb 23 23:22:54 2025
+Text node Untitled created. @ Sun Feb 23 23:22:54 2025
+Group node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:54 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Group node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Group node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Group node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Tilemap node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:55 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:56 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:56 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:56 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:56 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:56 2025
+Sprite node Untitled created. @ Sun Feb 23 23:22:56 2025
+Scene parsed. @ Sun Feb 23 23:22:56 2025
+Sprite node sky deleted. @ Sun Feb 23 23:22:56 2025
+Empty node manager deleted. @ Sun Feb 23 23:22:56 2025
+Text node score deleted. @ Sun Feb 23 23:22:56 2025
+Group node items deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_0 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_5 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_6 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_7 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_8 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_9 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_10 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_11 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node box deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node box_14 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node box_14_15 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node box_14_15_16 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_17 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node box_14_15_16_38 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node box_14_15_16_39 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node box_14_15_16_39_40 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_42 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_43 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_44 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_45 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_46 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_47 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_48 deleted. @ Sun Feb 23 23:22:56 2025
+Group node enemies deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node hooligan deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node hooligan_2 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node hoodlum deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node pidgeon deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node pidgeon_6 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node pidgeon_6_7 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node pidgeon_6_7_8 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node pidgeon_6_7_8_9 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node jogger deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node jogger_11 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node jogger_11_12 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node pitbull deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node pitbull_14 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node hoodlum_15 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node pitbull_14_16 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node pitbull_14_16_17 deleted. @ Sun Feb 23 23:22:56 2025
+Group node player deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node player deleted. @ Sun Feb 23 23:22:56 2025
+Group node map deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node town_mountains deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node town_background0 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node town_background1 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node town_background2 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node town_background3 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node town_background4 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node town_background5 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node houses front 1 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node map_fence deleted. @ Sun Feb 23 23:22:56 2025
+Tilemap node bodies deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node foreground deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node foreground2 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node houses front 2 deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node sidewalk deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node grass front deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node brothel deleted. @ Sun Feb 23 23:22:56 2025
+Sprite node brothel building legs deleted. @ Sun Feb 23 23:22:56 2025
+Project TheFunkyAdventuresOfSwankyVelvet built successfully. @ Sun Feb 23 23:23:53 2025
+Sprite node coin deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_0 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_5 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_6 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_7 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_8 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_9 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_10 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_11 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node box deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node box_14 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node box_14_15 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node box_14_15_16 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_17 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node box_14_15_16_38 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node box_14_15_16_39 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node box_14_15_16_39_40 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_42 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_43 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_44 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_45 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_46 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_47 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node coin_12_13_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_41_48 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node hooligan deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node hooligan_2 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node hoodlum deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node pidgeon deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node pidgeon_6 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node pidgeon_6_7 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node pidgeon_6_7_8 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node pidgeon_6_7_8_9 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node jogger deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node jogger_11 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node jogger_11_12 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node pitbull deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node pitbull_14 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node hoodlum_15 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node pitbull_14_16 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node pitbull_14_16_17 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node player deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node town_mountains deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node town_background0 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node town_background1 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node town_background2 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node town_background3 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node town_background4 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node town_background5 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node houses front 1 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node map_fence deleted. @ Sun Feb 23 23:23:56 2025
+Tilemap node bodies deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node foreground deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node foreground2 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node houses front 2 deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node sidewalk deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node grass front deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node brothel deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node brothel building legs deleted. @ Sun Feb 23 23:23:56 2025
+Sprite node sky deleted. @ Sun Feb 23 23:23:56 2025
+Empty node manager deleted. @ Sun Feb 23 23:23:56 2025
+Text node score deleted. @ Sun Feb 23 23:23:56 2025
+Group node items deleted. @ Sun Feb 23 23:23:56 2025
+Group node enemies deleted. @ Sun Feb 23 23:23:56 2025
+Group node player deleted. @ Sun Feb 23 23:23:56 2025
+Group node map deleted. @ Sun Feb 23 23:23:56 2025
+GUI exited. @ Sun Feb 23 23:23:56 2025
+Editor closed. @ Sun Feb 23 23:23:56 2025

@@ -354,6 +354,14 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                         ImGui::EndCombo();
                     }
 
+                    if (ImGui::BeginMenu("remove default animation")) {
+                        
+                        if (ImGui::MenuItem("yes")) 
+                            anim_to_play_on_start = { "", { 0, 0 } };
+
+                        ImGui::EndMenu();
+                    }
+
                 }
               
                 ImGui::EndMenu();

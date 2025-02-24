@@ -1138,6 +1138,7 @@ void EventListener::BuildAndRun()
 
                     //sprite configurations
 
+                    command_queue << "   sprite_" + node->ID + "->SetFrame(" + std::to_string(sn->currentFrame) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetRotation(" + std::to_string(sn->rotation) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetTint({ " + std::to_string(sn->tint.x) + ", " + std::to_string(sn->tint.y) + ", " + std::to_string(sn->tint.z) + " });\n";

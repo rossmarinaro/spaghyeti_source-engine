@@ -176,12 +176,13 @@ class Sprite : public Entity {
 		}
 
 		inline void SetFrame(int frame) { currentFrame = frame; }
-		inline void SetAnimation(const char* key, bool yoyo = false, int rate = 2) { m_currentAnim = { key, { yoyo, rate } }; }
+		inline void SetAnimation(const char* key, bool yoyo = false, int rate = 2, int repeat = -1) { m_currentAnim = { key, yoyo, rate, repeat };/* m_currentAnim = { key, { yoyo, rate } }; */ }
 		inline void StopAnimation() { m_currentAnim = {}; }
 		inline void SetContact(bool isContact) { m_contacting = isContact; }
-		inline bool IsContacting() { return m_contacting; }
-		inline bool IsSpritesheet() { return m_isSpritesheet; } 
-		inline bool IsAnimComplete() { return m_animComplete; }
+		inline bool IsContacting() const { return m_contacting; }
+		inline bool IsSpritesheet() const { return m_isSpritesheet; } 
+		inline bool IsAnimComplete() const { return m_animComplete; }
+        inline bool IsAnimPlaying() const { return m_isAnimPlaying; }
 
 		void ReadSpritesheetData();
 		void RemoveBodies();
@@ -209,10 +210,12 @@ class Sprite : public Entity {
 		bool m_contacting, 
 			 m_isSpritesheet = false, 
 			 m_animComplete = true,
+             m_isAnimPlaying = false,
 			 m_anim_yoyo = false;
 
 		glm::vec2 m_velocity;
-		std::pair<std::string, std::pair<bool, int>> m_currentAnim;
+
+        struct Anim { std::string key; bool yoyo; int rate, repeat; } m_currentAnim;
 		
 		//internal spritesheet data
 
