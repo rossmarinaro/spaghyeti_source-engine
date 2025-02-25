@@ -948,7 +948,6 @@ void EventListener::BuildAndRun()
             asset_queue << "  Shader::Load(\"" + shader.first + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
         }
             
-
         //load spritesheets (loaded data)
 
         if (target.second->spritesheets.size())
@@ -1149,9 +1148,9 @@ void EventListener::BuildAndRun()
 
                     //set default animation if applied
 
-                    if (sn->anim_to_play_on_start.first.length()) {
-                        const std::string is_yoyo = sn->anim_to_play_on_start.second.second ? "true" : "false";
-                        command_queue << "   sprite_" + node->ID + "->SetAnimation(\"" + sn->anim_to_play_on_start.first + "\", " + is_yoyo + ", " + std::to_string(sn->anim_to_play_on_start.second.first) + ");\n";
+                    if (sn->anim_to_play_on_start.key.length()) {
+                        const std::string is_yoyo = sn->anim_to_play_on_start.yoyo ? "true" : "false";
+                        command_queue << "   sprite_" + node->ID + "->SetAnimation(\"" + sn->anim_to_play_on_start.key + "\", " + is_yoyo + ", " + std::to_string(sn->anim_to_play_on_start.rate) + ", " + std::to_string(sn->anim_to_play_on_start.repeat) + ");\n";
                     }
 
                     const std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";

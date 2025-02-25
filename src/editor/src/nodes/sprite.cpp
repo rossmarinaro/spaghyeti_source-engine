@@ -34,12 +34,12 @@ SpriteNode::SpriteNode():
     V2 = 1.0f;
     scrollFactorX = 1.0f;
     scrollFactorY = 1.0f;
-    frameBuf1.push_back(0);
-    frameBuf2.push_back(0);
-    frameBuf3.push_back(0);
-    frameBuf4.push_back(0);
-    frameBuf5.push_back(1);
-    frameBuf6.push_back(1);
+    frame_x.push_back(0);
+    frame_y.push_back(0);
+    frame_width.push_back(0);
+    frame_height.push_back(0);
+    frame_fX.push_back(1);
+    frame_fY.push_back(1);
     spriteHandle = nullptr;
 
     Editor::Log("Sprite node " + name + " created.");   
@@ -79,10 +79,12 @@ void SpriteNode::Reset(const char* component_type)
 
     if (strcmp(component_type, "Animator") == 0 || passAll)
     {
-        animBuf1.clear();
-        animBuf2.clear();
-        animBuf3.clear();
-        animBuf4.clear();
+        anim_key.clear();
+        anim_start.clear();
+        anim_end.clear();
+        anim_rate.clear();
+        anim_repeat.clear();
+        anim_yoyo.clear();
         anim = 0; 
     }
 
@@ -276,31 +278,32 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                         StringContainer sc;
                         BoolContainer bc;
 
-                        do_yoyo.push_back(bc);
+                        anim_yoyo.push_back(bc);
 
-                        animBuf1.push_back(sc);
-                        animBuf2.push_back(i);
-                        animBuf3.push_back(i);
-                        animBuf4.push_back(2);
- 
+                        anim_key.push_back(sc);
+                        anim_start.push_back(0);
+                        anim_end.push_back(0);
+                        anim_rate.push_back(2);
+                        anim_repeat.push_back(-1);
+
                         if (spriteHandle && spriteHandle->IsSpritesheet()) {
 
                             if (ImGui::Button("play")) 
-                                m_currentAnim = { animBuf1[i].s, { do_yoyo[i].b, animBuf4[i] } };
+                                m_currentAnim = { anim_key[i].s, anim_start[i], anim_end[i], anim_rate[i], anim_repeat[i], anim_yoyo[i].b };
                                 
                             ImGui::SameLine(); 
 
                             if (ImGui::Button("stop")) 
-                                m_currentAnim = { "", {} };
+                                m_currentAnim = { "", 0, 0, 2, -1, false };
 
                         }
 
-                        if (animBuf1.size() && animBuf1[i].s.length()) {
+                        if (anim_key.size() && anim_key[i].s.length()) {
 
                             ImGui::SameLine();
 
                             if (ImGui::Button("apply")) 
-                                ApplyAnimation(animBuf1[i].s, animBuf2[i], animBuf3[i], animBuf4[i], do_yoyo[i].b);
+                                ApplyAnimation(anim_key[i].s, anim_start[i], anim_end[i], anim_rate[i], anim_yoyo[i].b);
                             
                         }
 
@@ -311,7 +314,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                             if (ImGui::Button("remove")) {
 
-                                std::map<std::string, Anims>::iterator it = animations.find(animBuf1[i].s);
+                                std::map<std::string, Anims>::iterator it = animations.find(anim_key[i].s);
 
                                 if (it != animations.end())
                                     animations.erase(it);
@@ -321,16 +324,40 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                         }
 
-                        ImGui::InputText("key", &animBuf1[i].s);
-                        ImGui::InputInt("start", &animBuf2[i]); 
-                        ImGui::InputInt("end", &animBuf3[i]);
-                        ImGui::InputInt("rate", &animBuf4[i]);
-                        ImGui::Checkbox("yoyo", &do_yoyo[i].b);
+                        ImGui::InputText("key", &anim_key[i].s);
+                        ImGui::InputInt("start", &anim_start[i]); 
+                        ImGui::InputInt("end", &anim_end[i]);
+                        ImGui::InputInt("rate", &anim_rate[i]);
+
+                        if (anim_repeat[i] >= -1)
+                            ImGui::InputInt("repeat", &anim_repeat[i]);
+                        
+                        ImGui::Checkbox("yoyo", &anim_yoyo[i].b);
 
                         ImGui::Separator();
 
                         ImGui::PopID();
                         
+                    }
+
+                    if (ImGui::BeginCombo("set default animation", anim_to_play_on_start.key.c_str())) {
+                        for (const auto& anim : animations) 
+                            if (ImGui::Selectable(anim.first.c_str())) {
+                                anim_to_play_on_start.key = anim.first;
+                                anim_to_play_on_start.rate = anim.second.rate;
+                                anim_to_play_on_start.repeat = anim.second.repeat;
+                                anim_to_play_on_start.yoyo = anim.second.yoyo;
+                            }    
+                            
+                        ImGui::EndCombo();
+                    }
+
+                    if (ImGui::BeginMenu("remove default animation")) {
+                        
+                        if (ImGui::MenuItem("yes")) 
+                            anim_to_play_on_start = { "", 2, -1, false };
+
+                        ImGui::EndMenu();
                     }
 
                     if (ImGui::Button("add animation"))
@@ -345,23 +372,6 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                         ImGui::EndMenu();
                     }
-
-                    if (ImGui::BeginCombo("set default animation", anim_to_play_on_start.first.c_str())) {
-                        for (const auto& anim : animations) 
-                            if (ImGui::Selectable(anim.first.c_str())) 
-                                anim_to_play_on_start = { anim.first, { anim.second.rate, anim.second.yoyo } };
-                            
-                        ImGui::EndCombo();
-                    }
-
-                    if (ImGui::BeginMenu("remove default animation")) {
-                        
-                        if (ImGui::MenuItem("yes")) 
-                            anim_to_play_on_start = { "", { 0, 0 } };
-
-                        ImGui::EndMenu();
-                    }
-
                 }
               
                 ImGui::EndMenu();
@@ -499,13 +509,12 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                         {
                             //apply frames
  
-                            if (ImGui::Button("apply") && !framesApplied)
-                            {
+                            if (ImGui::Button("apply") && !framesApplied) {
                           
                                 frames.clear();
 
                                 for (int i = 0; i < frame; i++) 
-                                    frames.push_back({ frameBuf1[i], frameBuf2[i], frameBuf3[i], frameBuf4[i], frameBuf5[i], frameBuf6[i]}); 
+                                    frames.push_back({ frame_x[i], frame_y[i], frame_width[i], frame_height[i], frame_fX[i], frame_fY[i]}); 
 
                                 RegisterFrames();  
                                 
@@ -541,43 +550,43 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                                             
                                             ImGui::PushID(i);
                                             
-                                            if (ImGui::Button("-x") && frameBuf5[i] > 1.0f) {
+                                            if (ImGui::Button("-x") && frame_fX[i] > 1.0f) {
                                                 framesApplied = false;
-                                                frameBuf5[i]--;
+                                                frame_fX[i]--;
                                             }
 
                                             ImGui::SameLine();
 
-                                            if (ImGui::Button("+x") && frameBuf5[i] <= frame) {
+                                            if (ImGui::Button("+x") && frame_fX[i] <= frame) {
                                                 framesApplied = false;
-                                                frameBuf5[i]++;
+                                                frame_fX[i]++;
                                             }
 
                                             ImGui::SameLine();
 
-                                            ImGui::Text("factor x: %d", frameBuf5[i]);
+                                            ImGui::Text("factor x: %d", frame_fX[i]);
 
-                                            if (ImGui::Button("-y") && frameBuf6[i] > 1) {
+                                            if (ImGui::Button("-y") && frame_fY[i] > 1) {
                                                 framesApplied = false;
-                                                frameBuf6[i]--;
+                                                frame_fY[i]--;
                                             }
 
                                             ImGui::SameLine();
 
-                                            if (ImGui::Button("+y") && frameBuf6[i]) {
+                                            if (ImGui::Button("+y") && frame_fY[i]) {
                                                 framesApplied = false;
-                                                frameBuf6[i]++;
+                                                frame_fY[i]++;
                                             }
 
                                             ImGui::SameLine();
 
-                                            ImGui::Text("factor y: %d", frameBuf6[i]);
+                                            ImGui::Text("factor y: %d", frame_fY[i]);
 
                                             if (
-                                                ImGui::InputInt("position x", &frameBuf1[i]) ||
-                                                ImGui::InputInt("position y", &frameBuf2[i]) || 
-                                                ImGui::InputFloat("width", &frameBuf3[i]) || 
-                                                ImGui::InputFloat("height", &frameBuf4[i]) 
+                                                ImGui::InputInt("position x", &frame_x[i]) ||
+                                                ImGui::InputInt("position y", &frame_y[i]) || 
+                                                ImGui::InputFloat("width", &frame_width[i]) || 
+                                                ImGui::InputFloat("height", &frame_height[i]) 
                                             ) 
                                                 framesApplied = false;
 
@@ -608,12 +617,12 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                             if (ImGui::Button("add frame")) 
                             {
-                                frameBuf1.push_back(0);
-                                frameBuf2.push_back(0);
-                                frameBuf3.push_back(0);
-                                frameBuf4.push_back(0);
-                                frameBuf5.push_back(1);
-                                frameBuf6.push_back(1);
+                                frame_x.push_back(0);
+                                frame_y.push_back(0);
+                                frame_width.push_back(0);
+                                frame_height.push_back(0);
+                                frame_fX.push_back(1);
+                                frame_fY.push_back(1);
 
                                 frame++;
                             }
@@ -624,12 +633,12 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                             {
                                 frames.pop_back();
 
-                                frameBuf1.pop_back();
-                                frameBuf2.pop_back();
-                                frameBuf3.pop_back();
-                                frameBuf4.pop_back();
-                                frameBuf5.pop_back();
-                                frameBuf6.pop_back();
+                                frame_x.pop_back();
+                                frame_y.pop_back();
+                                frame_width.pop_back();
+                                frame_height.pop_back();
+                                frame_fX.pop_back();
+                                frame_fY.pop_back();
                                 
                                 frame--;
                             }
@@ -670,12 +679,12 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                                                 frame = 1;
                                                 frames.clear();
 
-                                                frameBuf1.clear();
-                                                frameBuf2.clear();
-                                                frameBuf3.clear();
-                                                frameBuf4.clear();
-                                                frameBuf5.clear();
-                                                frameBuf6.clear();
+                                                frame_x.clear();
+                                                frame_y.clear();
+                                                frame_width.clear();
+                                                frame_height.clear();
+                                                frame_fX.clear();
+                                                frame_fY.clear();
 
                                                 if (data["frames"].size() > 1)
                                                     for (const auto& index : data["frames"]) 
@@ -686,12 +695,12 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                                                         float width = index["frame"]["w"],
                                                             height = index["frame"]["h"];
 
-                                                        frameBuf1.push_back(x);
-                                                        frameBuf2.push_back(y);
-                                                        frameBuf3.push_back(width);
-                                                        frameBuf4.push_back(height);
-                                                        frameBuf5.push_back(1);
-                                                        frameBuf6.push_back(1);
+                                                        frame_x.push_back(x);
+                                                        frame_y.push_back(y);
+                                                        frame_width.push_back(width);
+                                                        frame_height.push_back(height);
+                                                        frame_fX.push_back(1);
+                                                        frame_fY.push_back(1);
 
                                                     };
                                                 
@@ -798,8 +807,8 @@ void SpriteNode::Render()
         spriteHandle->SetAlpha(alpha);
         spriteHandle->SetTint(tint);
 
-        if (m_currentAnim.first.length())   
-            spriteHandle->SetAnimation(m_currentAnim.first.c_str(), m_currentAnim.second.first, m_currentAnim.second.second);
+        if (m_currentAnim.key.length())   
+            spriteHandle->SetAnimation(m_currentAnim.key.c_str(), m_currentAnim.yoyo, m_currentAnim.rate, m_currentAnim.repeat);
 
         else
             spriteHandle->StopAnimation();

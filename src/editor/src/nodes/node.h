@@ -32,6 +32,9 @@ namespace editor {
                                bodyX, 
                                bodyY;
 
+            struct StringContainer { std::string s = ""; };
+            struct BoolContainer { bool b = false; };
+
             std::pair<std::string, std::pair<std::string, std::string>> shader;
             std::map<std::string, std::string> behaviors;
             
@@ -67,9 +70,6 @@ namespace editor {
             const std::shared_ptr<Component> GetComponent(const std::string& type, const std::string& id);
             const bool HasComponent(const char* type);
 
-            struct StringContainer { std::string s = ""; };
-            struct BoolContainer { bool b = false; };
-
         protected:
 
             bool virtual_node = false;
@@ -78,6 +78,7 @@ namespace editor {
             
             void SavePrefab();
             void ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
+            
 
         private:
         
@@ -100,6 +101,20 @@ namespace editor {
 
 
     class SpriteNode : public Node {
+
+        struct Frames { int x, y, width, height, factorX, factorY; };
+
+        struct Anims { 
+            
+            std::string key = ""; 
+
+            int start = 0, 
+                end = 0, 
+                rate = 2, 
+                repeat = -1; 
+
+            bool yoyo = false; 
+        };
 
         public:
 
@@ -130,29 +145,27 @@ namespace editor {
             std::string key;
             glm::vec3 tint;
 
-            typedef struct Frames { int x, y, width, height, factorX, factorY; };
-            typedef struct Anims { std::string key; int start, end, rate; bool yoyo; };
-
             std::vector<Frames> frames; 
             std::map<std::string, Anims> animations; 
 
-            std::pair<std::string, std::pair<int, bool>> anim_to_play_on_start; //key, rate, yoyo
+            Anims anim_to_play_on_start; 
 
             std::shared_ptr<Sprite> spriteHandle;
-            std::vector<StringContainer> animBuf1; 
-            std::vector<BoolContainer> is_sensor, do_yoyo;
+            std::vector<StringContainer> anim_key; 
+            std::vector<BoolContainer> is_sensor, anim_yoyo;
 
-            std::vector<int> frameBuf1,
-                             frameBuf2,
-                             animBuf2,
-                             animBuf3,
-                             animBuf4,
+            std::vector<int> frame_x,
+                             frame_y,
+                             anim_start,
+                             anim_end,
+                             anim_rate,
+                             anim_repeat,
                              body_pointer;
 
-            std::vector<float> frameBuf3,
-                               frameBuf4,
-                               frameBuf5,
-                               frameBuf6;
+            std::vector<float> frame_width,
+                               frame_height,
+                               frame_fX,
+                               frame_fY;
 
             std::vector<b2Body*> bodies; 
 
@@ -179,7 +192,7 @@ namespace editor {
         private:
 
             bool m_show_sprite_texture;
-            std::pair<std::string, std::pair<bool, int>> m_currentAnim;
+            Anims m_currentAnim;
             GLuint m_currentTexture = NULL;
 
     };

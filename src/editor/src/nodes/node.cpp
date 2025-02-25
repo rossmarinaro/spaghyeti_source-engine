@@ -380,12 +380,12 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
         for (int i = 0; i < sn->frame; ++i)
             frames.push_back({
-                { "offset x", sn->frameBuf1.size() ? sn->frameBuf1[i] : 0 },
-                { "offset y", sn->frameBuf2.size() ? sn->frameBuf2[i] : 0 },
-                { "width", sn->frameBuf3.size() ? sn->frameBuf3[i] : 0 },
-                { "height", sn->frameBuf4.size() ? sn->frameBuf4[i] : 0 },
-                { "factor x", sn->frameBuf5.size() ? sn->frameBuf5[i] : 1 },
-                { "factor y", sn->frameBuf6.size() ? sn->frameBuf6[i] : 1 }
+                { "offset x", sn->frame_x.size() ? sn->frame_x[i] : 0 },
+                { "offset y", sn->frame_y.size() ? sn->frame_y[i] : 0 },
+                { "width", sn->frame_width.size() ? sn->frame_width[i] : 0 },
+                { "height", sn->frame_height.size() ? sn->frame_height[i] : 0 },
+                { "factor x", sn->frame_fX.size() ? sn->frame_fX[i] : 1 },
+                { "factor y", sn->frame_fY.size() ? sn->frame_fY[i] : 1 }
             });
 
         //animations
@@ -393,15 +393,16 @@ json Node::WriteData(std::shared_ptr<Node>& node)
         json animations = json::array();
 
         for (int i = 0; i < sn->anim; ++i)
-            if (sn->animBuf1.size()) 
-                animations.push_back({
-                    { "key", sn->animBuf1[i].s },
-                    { "start", sn->animBuf2[i] },
-                    { "end", sn->animBuf3[i] },
-                    { "rate", sn->animBuf4[i] },
-                    { "yoyo", sn->do_yoyo[i].b }
-                });
-
+            if (sn->anim_key.size()) 
+                 animations.push_back({
+                    { "key", sn->anim_key[i].s },
+                    { "start", sn->anim_start.size() ? sn->anim_start[i] : 0 },
+                    { "end", sn->anim_end.size() ? sn->anim_end[i] : 0 },
+                    { "rate", sn->anim_rate.size() ? sn->anim_rate[i] : 2 },
+                    { "repeat", sn->anim_yoyo.size() ? sn->anim_repeat[i] : -1 },
+                    { "yoyo", sn->anim_yoyo.size() ? sn->anim_yoyo[i].b : false }
+                });  
+        
         //physics bodies
 
         json bodies = json::array();
@@ -460,9 +461,10 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                             { "exists", sn->HasComponent("Animator") },
                             { "animations", animations },
                             { "on start", {
-                                    { "key", sn->anim_to_play_on_start.first.length() ? sn->anim_to_play_on_start.first : "" }, 
-                                    { "rate", sn->anim_to_play_on_start.first.length() ? sn->anim_to_play_on_start.second.first : 0 }, 
-                                    { "yoyo", sn->anim_to_play_on_start.first.length() ? sn->anim_to_play_on_start.second.second : false } 
+                                    { "key", sn->anim_to_play_on_start.key.length() ? sn->anim_to_play_on_start.key : "" }, 
+                                    { "rate", sn->anim_to_play_on_start.key.length() ? sn->anim_to_play_on_start.rate : 2 }, 
+                                    { "repeat", sn->anim_to_play_on_start.key.length() ? sn->anim_to_play_on_start.repeat : -1 }, 
+                                    { "yoyo", sn->anim_to_play_on_start.key.length() ? sn->anim_to_play_on_start.yoyo : false } 
                                 } 
                             }
                         }
@@ -764,21 +766,21 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("frames") && data["frames"].size() > 1)
             {
-                sn->frameBuf1.clear();
-                sn->frameBuf2.clear();
-                sn->frameBuf3.clear();
-                sn->frameBuf4.clear();
-                sn->frameBuf5.clear();
-                sn->frameBuf6.clear();
+                sn->frame_x.clear();
+                sn->frame_y.clear();
+                sn->frame_width.clear();
+                sn->frame_height.clear();
+                sn->frame_fX.clear();
+                sn->frame_fY.clear();
 
                 for (int i = 0; i < data["frames"].size(); i++) 
                 {   
-                    sn->frameBuf1.push_back(data["frames"][i]["offset x"]);
-                    sn->frameBuf2.push_back(data["frames"][i]["offset y"]);
-                    sn->frameBuf3.push_back(data["frames"][i]["width"]);
-                    sn->frameBuf4.push_back(data["frames"][i]["height"]);
-                    sn->frameBuf5.push_back(data["frames"][i]["factor x"]);
-                    sn->frameBuf6.push_back(data["frames"][i]["factor y"]);
+                    sn->frame_x.push_back(data["frames"][i]["offset x"]);
+                    sn->frame_y.push_back(data["frames"][i]["offset y"]);
+                    sn->frame_width.push_back(data["frames"][i]["width"]);
+                    sn->frame_height.push_back(data["frames"][i]["height"]);
+                    sn->frame_fX.push_back(data["frames"][i]["factor x"]);
+                    sn->frame_fY.push_back(data["frames"][i]["factor y"]);
                 }
 
                 sn->frame = data["frames"].size();
@@ -787,7 +789,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     sn->currentFrame = data["current frame"];
       
                 for (int i = 0; i < sn->frame; i++) 
-                    sn->frames.push_back({ sn->frameBuf1[i], sn->frameBuf2[i], sn->frameBuf3[i], sn->frameBuf4[i], sn->frameBuf5[i], sn->frameBuf6[i]}); 
+                    sn->frames.push_back({ sn->frame_x[i], sn->frame_y[i], sn->frame_width[i], sn->frame_height[i], sn->frame_fX[i], sn->frame_fY[i]}); 
 
                 sn->RegisterFrames();
 
@@ -809,20 +811,24 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     for (const auto& anim : data["components"]["animator"]["animations"]) 
                     { 
 
-                        SpriteNode::StringContainer sc { anim["key"] };
-                        SpriteNode::BoolContainer bc { anim["yoyo"] };
+                        StringContainer sc { anim["key"] };
+                        BoolContainer bc { anim["yoyo"] };
 
-                        sn->animBuf1.push_back(sc);
-                        sn->do_yoyo.push_back(bc);
-                        sn->animBuf2.push_back(anim["start"]); 
-                        sn->animBuf3.push_back(anim["end"]);
-                        sn->animBuf4.push_back(anim["rate"]);
-                    
+                        sn->anim_key.push_back(sc);
+                        sn->anim_yoyo.push_back(bc);
+                        sn->anim_start.push_back(anim["start"]); 
+                        sn->anim_end.push_back(anim["end"]);
+                        sn->anim_rate.push_back(anim["rate"]);
+                        sn->anim_repeat.push_back(anim["repeat"]);
+
                         sn->ApplyAnimation(anim["key"], anim["start"], anim["end"], anim["rate"], anim["yoyo"]);
                     }
                 
                     sn->anim = sn->animations.size();  
-                    sn->anim_to_play_on_start = { data["components"]["animator"]["on start"]["key"], { data["components"]["animator"]["on start"]["rate"], data["components"]["animator"]["on start"]["yoyo"] } }; 
+                    sn->anim_to_play_on_start.key = data["components"]["animator"]["on start"]["key"];
+                    sn->anim_to_play_on_start.rate = data["components"]["animator"]["on start"]["rate"];
+                    sn->anim_to_play_on_start.repeat = data["components"]["animator"]["on start"]["repeat"];
+                    sn->anim_to_play_on_start.yoyo = data["components"]["animator"]["on start"]["yoyo"];
 
                 }
 

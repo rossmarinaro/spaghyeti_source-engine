@@ -537,14 +537,10 @@ void Sprite::Render(float projWidth, float projHeight)
 
                     std::map<std::string, std::pair<int, int>>::iterator anim = anims.find(animKey);
 
-                    if (anim == anims.end() || System::Game::GetScene()->IsPaused() || (repeat <= 0 && repeat != -1)) {
-                        m_isAnimPlaying = false;
+                    if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((repeat <= 0 && repeat != -1) && m_animComplete)) 
                         return;
-                    }
 
                     std::vector<int> frames; //frames to populate  
-
-                    m_isAnimPlaying = true;
 
                     if (yoyo)
                     {
@@ -572,7 +568,6 @@ void Sprite::Render(float projWidth, float projHeight)
 
                         else 
                             SetFrame(frames[elapsed]);
-                    
                     }
 
                     else    

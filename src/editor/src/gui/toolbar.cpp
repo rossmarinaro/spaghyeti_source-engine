@@ -4,6 +4,7 @@
 #include "./gui.h"
 
 
+
 void editor::GUI::ShowSettings()
 {
 
@@ -15,8 +16,7 @@ void editor::GUI::ShowSettings()
     if (ImGui::BeginMenu("Scenes")) 
     {
 
-        if (ImGui::BeginMenu("scenes in queue"))
-        {
+        if (ImGui::BeginMenu("scenes in queue")) {
             for (int i = 0; i < session->scenes.size(); i++) 
                 ImGui::Text(("scene " + std::to_string(i) + ": " + session->scenes[i]).c_str());
 
@@ -26,15 +26,30 @@ void editor::GUI::ShowSettings()
         if (ImGui::BeginMenu("add")) 
         {
             for (const auto& filename : std::filesystem::directory_iterator(Editor::projectPath)) 
-                if (System::Utils::str_endsWith(filename.path().string(), ".spaghyeti"))
+            {
+                const auto IterateScenes = [&](const std::filesystem::directory_entry& filename) -> void 
                 {
                     const std::string scene = System::Utils::ReplaceFrom(filename.path().filename().string(), ".", ""); 
-                  
+                    auto session = Editor::Get();
+
                     if (session->events->s_currentScene != scene)
                         if (ImGui::MenuItem((scene).c_str())) 
                             if (std::find_if(session->scenes.begin(), session->scenes.end(), [&](const std::string& s ) { return s == scene; }) == session->scenes.end()) 
                                 session->scenes.push_back(scene);
-                }
+                };
+
+                std::string sceneDir = Editor::projectPath + "scenes";
+
+                std::replace(sceneDir.begin(), sceneDir.end(), '\\', '/');
+
+                if (filename.exists() && System::Utils::str_endsWith(filename.path().string(), ".spaghyeti")) 
+                    IterateScenes(filename);
+
+                else if (filename.is_directory() && filename.path().string() == sceneDir)
+                    for (const auto& f : std::filesystem::directory_iterator(sceneDir)) 
+                        if (f.exists() && System::Utils::str_endsWith(f.path().string(), ".spaghyeti"))
+                            IterateScenes(f);
+            }
 
             ImGui::EndMenu();
         }
@@ -260,7 +275,7 @@ void editor::GUI::ShowSettings()
 
             const auto searchShaderFolders = [&am](int index, const std::string& type) -> void {
 
-                for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + am->shader_dir)) 
+                for (const auto& shader : std::filesystem::directory_iterator(Editor::projectPath + am->shader_dir)) 
                 {
 
                     std::string path = shader.path().string();
@@ -269,7 +284,7 @@ void editor::GUI::ShowSettings()
                     if (!System::Utils::str_endsWith(path, type))
                         continue;
 
-                    auto iterate = [&] (std::string& p) {
+                    const auto iterate = [&] (std::string& p) -> void {
 
                         if (System::Utils::str_endsWith(p, type)) 
                             if (ImGui::MenuItem(p.c_str())) {
@@ -281,12 +296,11 @@ void editor::GUI::ShowSettings()
                     };
 
                     if (shader.is_directory()) {
-                        for (const auto& folder : std::filesystem::recursive_directory_iterator(shader)) {
+                        for (const auto& folder : std::filesystem::directory_iterator(shader)) {
                             std::string p = folder.path().string();
                             iterate(p);
                         }
                     }
-
                     else
                         iterate(path);
                 }

@@ -31,6 +31,7 @@
 /****** Base Editor *****/
 
 namespace editor {
+    
 
     class Editor 
 	{
