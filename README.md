@@ -48,7 +48,9 @@ Written by Ross Marinaro - Pastaboss Enterprise 🍝👌
 
 Libraries used: GLFW / GLAD, GLM, GLText (embedded debug text), FreeType (in-app fonts) STB_IMAGE, MiniAudio, DearIMGUI, Box2D, nlohmann JSON
 
-Requires install of MingW compiler for Windows
+Other great external tools that work well with Spaghyeti Engine: UPX, Penguin Packer
+
+Requires install of MingW (gcc) for Windows, although the goal is to be compiler agnostic
 
 ![image info](./images/stack.jpg)
 

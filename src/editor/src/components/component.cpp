@@ -168,9 +168,7 @@ void Component::Make()
             if (node->ID == ID) {
 
                 if (nodeType == "Sprite") {
-
                     auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(ID));
-                    sn->anim++;
                     sn->anim_to_play_on_start = { "", 0, 0, 2, -1, false };
                 }
 

@@ -34,13 +34,13 @@ void Time::Update(double _time)
 
 
 void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat) 
-{
-    TimedEvent data { milliseconds, repeat, std::chrono::steady_clock::now(), fn_ptr };
+{ 
+    TimedEvent data { milliseconds, repeat, System::Application::game->time->now, fn_ptr };
 
     auto event = std::make_shared<TimedEvent>(data);
 
     if (std::find(System::Application::game->time->timed_events.begin(), System::Application::game->time->timed_events.end(), event) == System::Application::game->time->timed_events.end())
-        System::Application::game->time->timed_events.push_back(event);
+        System::Application::game->time->timed_events.emplace_back(event);
 
 }
 

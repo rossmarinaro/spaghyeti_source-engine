@@ -176,13 +176,14 @@ class Sprite : public Entity {
 		}
 
 		inline void SetFrame(int frame) { currentFrame = frame; }
-		inline void SetAnimation(const char* key, bool yoyo = false, int rate = 2, int repeat = -1) { m_currentAnim = { key, yoyo, rate, repeat }; }
-		inline void StopAnimation() { m_currentAnim = { "", false, 2, -1 }; }
 		inline void SetContact(bool isContact) { m_contacting = isContact; }
 		inline bool IsContacting() const { return m_contacting; }
 		inline bool IsSpritesheet() const { return m_isSpritesheet; } 
 		inline bool IsAnimComplete() const { return m_animComplete; }
 
+        void StopAnimation();
+		void SetAnimation(const char* key, bool yoyo = false, int rate = 2, int repeat = -1);
+		
 		void ReadSpritesheetData();
 		void RemoveBodies(); 
 		void SetTexture(const std::string& key);
@@ -197,12 +198,17 @@ class Sprite : public Entity {
 		void Render(float projWidth, float projHeight);
         std::shared_ptr<Sprite> Clone();
 
+        Sprite(
+            const std::string& key, 
+            float x = 0.0f, 
+            float y = 0.0f, 
+            int frame = 0, 
+            bool isTile = false
+        );
 		Sprite(const std::string& key, const glm::vec2& position);
-		Sprite(const std::string& key, float x = 0.0f, float y = 0.0f, int frame = 0, bool isTile = false);
         Sprite(Sprite& sprite);
 	   
 	   ~Sprite();
-
 
 	private:
 
@@ -214,7 +220,7 @@ class Sprite : public Entity {
 
 		glm::vec2 m_velocity;
 
-        struct Anim { std::string key; bool yoyo; int rate, repeat; } m_currentAnim;
+        struct Anim { std::string key; bool yoyo; int rate, repeat; bool can_decrement; } m_currentAnim;
 		
 		//internal spritesheet data
 

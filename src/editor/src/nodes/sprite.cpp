@@ -22,7 +22,7 @@ SpriteNode::SpriteNode():
     make_UI = false;
     frame = 0;
     currentFrame = 0;
-    anim = 1;
+    anim = 0;//1;
     depth = 1;
     restitution = 0.0f;
     density = 0.0f;
@@ -268,77 +268,70 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                 if (anim_component)
                 {
-                    for (int i = 0; i < anim; i++)
-                    {
-
-                        ImGui::Text("animation: %d", i);
-
-                        ImGui::PushID(i); 
-        
-                        StringContainer sc;
-                        BoolContainer bc;
-
-                        anim_yoyo.push_back(bc);
-
-                        anim_key.push_back(sc);
-                        anim_start.push_back(0);
-                        anim_end.push_back(0);
-                        anim_rate.push_back(2);
-                        anim_repeat.push_back(-1);
-
-                        if (spriteHandle && spriteHandle->IsSpritesheet()) {
-
-                            if (ImGui::Button("play")) 
-                                m_currentAnim = { anim_key[i].s, anim_start[i], anim_end[i], anim_rate[i], anim_repeat[i], anim_yoyo[i].b };
-                                
-                            ImGui::SameLine(); 
-
-                            if (ImGui::Button("stop")) 
-                                m_currentAnim = { "", 0, 0, 2, -1, false };
-
-                        }
-
-                        if (anim_key.size() && anim_key[i].s.length()) {
-
-                            ImGui::SameLine();
-
-                            if (ImGui::Button("apply")) 
-                                ApplyAnimation(anim_key[i].s, anim_start[i], anim_end[i], anim_rate[i], anim_yoyo[i].b);
-                            
-                        }
-
-                        if (i != 0 && anim > 1)
+                    if (anim <= 0) 
+                        ImGui::Text("no animations defined"); 
+                                   
+                    else 
+                        for (int i = 0; i < anim; i++)
                         {
 
-                            ImGui::SameLine(); 
+                            ImGui::Text("animation: %d", i);
 
-                            if (ImGui::Button("remove")) {
+                            ImGui::PushID(i); 
 
-                                std::map<std::string, Anims>::iterator it = animations.find(anim_key[i].s);
+                            if (spriteHandle && spriteHandle->IsSpritesheet()) {
 
-                                if (it != animations.end())
-                                    animations.erase(it);
+                                if (ImGui::Button("play")) 
+                                    m_currentAnim = { anim_key[i].s, anim_start[i], anim_end[i], anim_rate[i], anim_repeat[i], anim_yoyo[i].b };
+                                    
+                                ImGui::SameLine(); 
 
-                                anim--;
+                                if (ImGui::Button("stop")) 
+                                    m_currentAnim = { "", 0, 0, 2, -1, false };
+
                             }
 
+                            if (anim_key.size() && anim_key[i].s.length()) {
+
+                                ImGui::SameLine();
+
+                                if (ImGui::Button("apply")) 
+                                    ApplyAnimation(anim_key[i].s, anim_start[i], anim_end[i], anim_rate[i], anim_yoyo[i].b);
+                                
+                            }
+
+                            if (i != 0 && anim > 1)
+                            {
+
+                                ImGui::SameLine(); 
+
+                                if (ImGui::Button("remove")) {
+
+                                    std::map<std::string, Anims>::iterator it = animations.find(anim_key[i].s);
+
+                                    if (it != animations.end())
+                                        animations.erase(it);
+
+                                    anim--;
+                                }
+
+                            }
+
+                            ImGui::InputText("key", &anim_key[i].s);
+                            ImGui::InputInt("start", &anim_start[i]); 
+                            ImGui::InputInt("end", &anim_end[i]);
+                            ImGui::InputInt("rate", &anim_rate[i]);
+
+                            if (anim_repeat[i] >= -1)
+                                ImGui::InputInt("repeat", &anim_repeat[i]);
+                            
+                            ImGui::Checkbox("yoyo", &anim_yoyo[i].b);
+
+                            ImGui::Separator();
+
+                            ImGui::PopID();
+                            
                         }
-
-                        ImGui::InputText("key", &anim_key[i].s);
-                        ImGui::InputInt("start", &anim_start[i]); 
-                        ImGui::InputInt("end", &anim_end[i]);
-                        ImGui::InputInt("rate", &anim_rate[i]);
-
-                        if (anim_repeat[i] >= -1)
-                            ImGui::InputInt("repeat", &anim_repeat[i]);
-                        
-                        ImGui::Checkbox("yoyo", &anim_yoyo[i].b);
-
-                        ImGui::Separator();
-
-                        ImGui::PopID();
-                        
-                    }
 
                     if (ImGui::BeginCombo("set default animation", anim_to_play_on_start.key.c_str())) {
                         for (const auto& anim : animations) 
@@ -360,8 +353,22 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                         ImGui::EndMenu();
                     }
 
-                    if (ImGui::Button("add animation"))
+                    if (ImGui::Button("add animation")) {  
+                        
+                        StringContainer sc;
+                        BoolContainer bc;
+
+                        anim_yoyo.push_back(bc);
+
+                        anim_key.push_back(sc);
+                        anim_start.push_back(0);
+                        anim_end.push_back(0);
+                        anim_rate.push_back(2);
+                        anim_repeat.push_back(-1);
+                        
                         anim++;
+                    }
+                      
             
                     ImGui::SameLine();
 

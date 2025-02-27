@@ -332,30 +332,30 @@ void Game::UpdateFrame()
 
     //execute timed events on the main thread
 
-    if (time->timed_events.size())
-    {
-        auto it = std::find_if(time->timed_events.begin(), time->timed_events.end(), [](std::shared_ptr<Time::TimedEvent> event) { return (std::chrono::steady_clock::now() - event->time_initiated) >= std::chrono::milliseconds(event->delay); }); 
-    
-        if (it != time->timed_events.end()) 
+    for (auto& event : time->timed_events)
+        if (time->now - event->time_initiated >= event->delay / 1000 ) 
         {
-            auto event = *it;
-
             event->callback();
+
+            //refresh timed event token
 
             if (event->repeat > 0 || event->repeat == -1) {
                 
                 if (event->repeat != -1)
                     event->repeat--;
-                
-                event->time_initiated = std::chrono::steady_clock::now();
+
+                event->time_initiated = time->now; 
             }
-            else {
-                it = time->timed_events.erase(it);
-                --it;
+            else 
+            {
+                auto it = std::find(time->timed_events.begin(), time->timed_events.end(), event); 
+
+                if (it != time->timed_events.end()) {
+                    it = time->timed_events.erase(it);
+                    --it;
+                }
             }
         }
-    }  
-
 }
 
 

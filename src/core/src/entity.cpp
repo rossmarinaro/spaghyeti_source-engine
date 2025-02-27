@@ -340,7 +340,7 @@ void Sprite::SetTexture(const std::string& key)
     texture.Filter_Min = tex.Filter_Min;
     texture.Filter_Max = tex.Filter_Max; 
 
-    m_currentAnim = {};
+    m_currentAnim = { "", false, 0, 0, 0 }; 
 }
 
 
@@ -394,6 +394,23 @@ void Sprite::ReadSpritesheetData()
     m_isSpritesheet = true;
     frames = m_resourceData.size();
 
+}
+
+
+//------------------------------------------ animations
+
+
+void Sprite::SetAnimation(const char* key, bool yoyo, int rate, int repeat) { 
+    m_animComplete = false;
+    m_currentAnim = { key, yoyo, rate, repeat, true };
+}
+		
+
+//------------------------------------------ 
+
+void Sprite::StopAnimation() { 
+    m_animComplete = false;
+    m_currentAnim = { "", false, 0, 0, 0 }; 
 }
 
 
@@ -519,25 +536,18 @@ void Sprite::Render(float projWidth, float projHeight)
         {
             const std::string& animKey = m_currentAnim.key;
             const bool yoyo = m_currentAnim.yoyo;
-            const int rate = m_currentAnim.rate,
-                      repeat = m_currentAnim.repeat;
+            const int rate = m_currentAnim.rate;
 
             uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
-        
-            int startFrame = anims.find(m_currentAnim.key)->second.first,
-                endFrame = anims.find(m_currentAnim.key)->second.second,
-                frame = yoyo ? startFrame : endFrame;
-
-            m_animComplete = frame == currentFrame;
-
+           
             try {
 
                 if (m_isSpritesheet && active)
                 {
-
+                 
                     std::map<std::string, std::pair<int, int>>::iterator anim = anims.find(animKey);
 
-                    if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((repeat <= 0 && repeat != -1) && m_animComplete)) 
+                    if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1))) 
                         return;
 
                     std::vector<int> frames; //frames to populate  
@@ -570,19 +580,36 @@ void Sprite::Render(float projWidth, float projHeight)
                             SetFrame(frames[elapsed]);
                     }
 
-                    else    
-                    {
-                        for (int i = anim->second.first; i < anim->second.second; i++) 
+                    else {
+
+                        for (int i = anim->second.first; i < anim->second.second + 1; i++) 
                             frames.emplace_back(i);
                         
                         uint32_t elapsed = seconds % frames.size();
+                   
+                        SetFrame(frames[elapsed]);
 
-                        SetFrame(currentFrame != anim->second.second ? frames[elapsed] : anim->second.first);
                     }
 
-                    if (m_currentAnim.repeat != -1)
-                        m_currentAnim.repeat--;
+                    //animation complete
 
+                    if (currentFrame == anim->second.second) {
+                        if (m_currentAnim.can_decrement) {
+                            m_currentAnim.can_decrement = false;
+
+                            if (m_currentAnim.repeat > -1) 
+                                m_currentAnim.repeat--; 
+                        }
+                    }
+
+                    else 
+                        m_currentAnim.can_decrement = true;
+
+                    int startFrame = anims.find(m_currentAnim.key)->second.first,
+                        endFrame = anims.find(m_currentAnim.key)->second.second,
+                        frame = yoyo ? startFrame : endFrame;
+
+                    m_animComplete = frame == currentFrame;
                 }
             }
 
@@ -591,7 +618,6 @@ void Sprite::Render(float projWidth, float projHeight)
             }
         }
          
-
     }
 
 }

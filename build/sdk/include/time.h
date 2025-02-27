@@ -14,15 +14,8 @@ class Time {
 
         float now, delta;
 
-        std::chrono::duration<double> time_left;
-
         //timed event structure
-        struct TimedEvent {
-            int delay = 0,
-                repeat = 0;
-            std::chrono::steady_clock::time_point time_initiated = std::chrono::steady_clock::now();
-            std::function<void()> callback = []{};
-        };
+        struct TimedEvent { int delay, repeat; float time_initiated; std::function<void()> callback; };
 
         //container of timed events
         std::vector<std::shared_ptr<TimedEvent>> timed_events;
@@ -44,5 +37,6 @@ class Time {
     private:
 
         static inline float s_last = 0.0f;
+        std::chrono::duration<double> time_left;
         
 };
