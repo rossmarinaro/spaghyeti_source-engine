@@ -22,7 +22,7 @@ SpriteNode::SpriteNode():
     make_UI = false;
     frame = 0;
     currentFrame = 0;
-    anim = 0;//1;
+    anim = 0;
     depth = 1;
     restitution = 0.0f;
     density = 0.0f;

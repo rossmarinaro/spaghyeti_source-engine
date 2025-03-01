@@ -1,26 +1,25 @@
-#include <fstream>
-#include <ctime>
-
-#include <chrono>
-#include <iomanip>
-#include <thread>
-
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/renderer.h"
 
-using namespace std::chrono_literals;
+//#include <fstream>
+//#include <ctime>
+//#include <chrono>
+//#include <iomanip>
+//#include <thread>
+
+//using namespace std::chrono_literals;
 
 
-Time::Time(float time): now(time) {}
+Time::Time(float time): m_now(time) {}
 
 void Time::Update(double _time)
 {
 
     Time* time = System::Application::game->time;
-    time->now = (float)_time; //glQueryCounter
-    Time delta = time->now - s_last;
+    time->m_now = (float)_time; //glQueryCounter
+    Time delta = time->m_now - s_last;
     
-    s_last = time->now;
+    s_last = time->m_now;
     time->delta = delta;
 
     glfwPollEvents(); 
@@ -33,22 +32,22 @@ void Time::Update(double _time)
 //--------------- delayed call (setTimeout)
 
 
-void Time::delayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat) 
+void Time::DelayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat) 
 { 
-    TimedEvent data { milliseconds, repeat, System::Application::game->time->now, fn_ptr };
+    float now = System::Application::game->time->GetSeconds();
 
+    TimedEvent data { milliseconds, repeat, now, fn_ptr };
+    
     auto event = std::make_shared<TimedEvent>(data);
 
-    if (std::find(System::Application::game->time->timed_events.begin(), System::Application::game->time->timed_events.end(), event) == System::Application::game->time->timed_events.end())
-        System::Application::game->time->timed_events.emplace_back(event);
-
+    System::Application::game->time->timed_events.emplace_back(event);
 }
 
 
 //--------------- delayed call to thread pool (setTimeout)
 
 
-void Time::delayedCallThread(int milliseconds, std::function<void()>&& fn_ptr, int repeat)
+void Time::DelayedCallThread(int milliseconds, std::function<void()>&& fn_ptr, int repeat)
 {
 
     if (System::Application::isMultiThreaded)

@@ -40,14 +40,14 @@ void Actor::Update(float offsetX, float offsetY)
         if (System::Game::GetBehavior<GAMEPLAY>())
             System::Game::GetBehavior<GAMEPLAY>()->score++;
 
-        Time::delayedCall(400, [this] { this->m_canDestroy = true; });
+        Time::DelayedCall(400, [this] { this->m_canDestroy = true; });
     }
 
     else if (!this->m_canDamage && this->m_canHit)
     {
         this->m_canHit = false;
 
-        Time::delayedCall(700, [this] { 
+        Time::DelayedCall(700, [this] { 
             this->sprite->ClearTint(); 
             this->sprite->SetAlpha(1.0f);
             this->m_canDamage = true;

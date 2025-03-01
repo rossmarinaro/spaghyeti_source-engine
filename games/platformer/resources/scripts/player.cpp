@@ -200,7 +200,7 @@ void PlayerController::Attack(Physics* physics)
     //if (this->m_shootFireball)
     {
         //todo: implement fireball
-        //Time::delayedCall(1000, [&]() { });
+        //Time::DelayedCall(1000, [&]() { });
         auto ent = System::Game::GetScene()->GetEntity<Sprite>("star");
         auto star = ent ? ent->Clone() : ent->Clone(); //System::Game::CreateSprite("star.png", this->m_flipX ? this->player->position.x - 20 : this->player->position.x + 50, this->player->position.y + 20);
         star->SetAlpha(1.0f);
@@ -251,11 +251,11 @@ void PlayerController::DoDamage(int amount)
 
         this->player->SetTint({ 0.0f, 0.0f, 0.0f });
 
-        Time::delayedCall(500, [this] { this->m_active = false; });
+        Time::DelayedCall(500, [this] { this->m_active = false; });
     }
 
     else if (this->m_health > 0)
-        Time::delayedCall(500, [this] { 
+        Time::DelayedCall(500, [this] { 
             this->player->ClearTint(); 
             this->player->SetAlpha(1.0f);
             this->m_canDamage = true;

@@ -330,32 +330,45 @@ void Game::UpdateFrame()
  
     camera->Update();
 
+    //cleanup events
+
+    for (auto it = time->timed_events.begin(); it != time->timed_events.end(); ++it)
+        if (it != time->timed_events.end())
+        {
+            auto event = *it;
+
+            if (!event->active) {
+                it = time->timed_events.erase(std::move(it));
+                --it;
+            } 
+                        
+        }
+
     //execute timed events on the main thread
 
     for (auto& event : time->timed_events)
-        if (time->now - event->time_initiated >= event->delay / 1000 ) 
+        if (event->active && (time->GetSeconds() - event->time_initiated) >= (float)(event->delay / 1000.0f)) 
         {
-            event->callback();
-
             //refresh timed event token
 
             if (event->repeat > 0 || event->repeat == -1) {
                 
-                if (event->repeat != -1)
-                    event->repeat--;
+               if (event->repeat != -1)
+                  event->repeat--;
 
-                event->time_initiated = time->now; 
+                event->time_initiated = time->GetSeconds(); 
             }
+
             else 
-            {
-                auto it = std::find(time->timed_events.begin(), time->timed_events.end(), event); 
+                event->active = false;  
 
-                if (it != time->timed_events.end()) {
-                    it = time->timed_events.erase(it);
-                    --it;
-                }
-            }
+            //fire callback
+
+            event->callback();
+
         }
+
+
 }
 
 
