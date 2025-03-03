@@ -551,6 +551,12 @@ void Sprite::Render(float projWidth, float projHeight)
                         return;
 
                     std::vector<int> frames; //frames to populate  
+                    
+                    int startFrame = anims.find(m_currentAnim.key)->second.first,
+                        endFrame = anims.find(m_currentAnim.key)->second.second,
+                        frame = yoyo ? startFrame : endFrame;
+
+                    m_animComplete = frame == currentFrame;
 
                     if (yoyo)
                     {
@@ -605,11 +611,6 @@ void Sprite::Render(float projWidth, float projHeight)
                     else 
                         m_currentAnim.can_decrement = true;
 
-                    int startFrame = anims.find(m_currentAnim.key)->second.first,
-                        endFrame = anims.find(m_currentAnim.key)->second.second,
-                        frame = yoyo ? startFrame : endFrame;
-
-                    m_animComplete = frame == currentFrame;
                 }
             }
 

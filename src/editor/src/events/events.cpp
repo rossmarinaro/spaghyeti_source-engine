@@ -888,7 +888,7 @@ void EventListener::BuildAndRun()
                     Editor::Log("There was a problem parsing scene.");
 
                 JSON.close();
-                
+                 
                 //remove temp json file
 
                 remove(tmp.c_str()); 

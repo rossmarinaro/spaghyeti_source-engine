@@ -35,7 +35,7 @@ void editor::GUI::ShowSettings()
                     if (session->events->s_currentScene != scene)
                         if (ImGui::MenuItem((scene).c_str())) 
                             if (std::find_if(session->scenes.begin(), session->scenes.end(), [&](const std::string& s ) { return s == scene; }) == session->scenes.end()) 
-                                session->scenes.push_back(scene);
+                                session->scenes.push_back(scene); 
                 };
 
                 std::string sceneDir = Editor::projectPath + "scenes";

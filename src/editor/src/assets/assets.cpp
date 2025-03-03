@@ -29,7 +29,7 @@ void AssetManager::Reset() {
 }
 
 
-//--------------------------
+//-------------------------- 
 
 
 void AssetManager::Register(const std::string& asset) {
@@ -208,9 +208,9 @@ bool AssetManager::LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes)
 
             //temporary file for decoding
  
-            const std::string tmp = Editor::Get()->projectPath + "spaghyeti_parse.json";
+            const std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
 
-            Editor::Get()->events->DecodeFile(tmp, result);
+            Editor::Get()->events->DecodeFile(tmp, result); 
 
             std::ifstream JSON(tmp);
 

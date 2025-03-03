@@ -135,7 +135,7 @@ void SpriteNode::CreateBody(float x, float y, float width, float height, bool is
 }
 
 
-//---------------------------------
+//--------------------------------- load frames, overwrite previously cached key
 
 
 void SpriteNode::RegisterFrames() {

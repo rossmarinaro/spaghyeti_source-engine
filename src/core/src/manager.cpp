@@ -100,6 +100,7 @@ void Manager::LoadFile(const char* key, const char* path)
 
 //load frames from vector of int arrays
 void Manager::LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames) {
+    UnLoadFrames(key);
     System::Application::resources->m_atlases.insert( { key, frames } );
 }
 
@@ -109,6 +110,7 @@ void Manager::LoadFrames(const std::string& key, const std::vector<std::array<in
 
 //load frames from file
 void Manager::LoadAtlas(const std::string& key, const char* path) {
+    UnLoadAtlas(key);
     System::Application::resources->m_atlas_paths.insert( { key, path } );
 }
 
@@ -118,6 +120,7 @@ void Manager::LoadAtlas(const std::string& key, const char* path) {
 
 //load animations from map of start / end pairs defined by key
 void Manager::LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims) {
+    UnLoadAnims(key);
     System::Application::resources->m_anims.insert( { key, anims } );
 }
 
@@ -193,7 +196,7 @@ void Manager::UnLoadRawImage(const char* key)
 
         if (it->second.first == "image")
             System::Application::resources->m_raw_assets.erase(System::Application::resources->m_raw_assets.find(key));
-    }
+    } 
 
 }
 
