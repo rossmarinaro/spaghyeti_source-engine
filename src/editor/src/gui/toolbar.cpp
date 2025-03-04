@@ -4,7 +4,6 @@
 #include "./gui.h"
 
 
-
 void editor::GUI::ShowSettings()
 {
 
@@ -222,6 +221,9 @@ void editor::GUI::ShowSettings()
 
                     key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
                     path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+                    
+                    if (System::Utils::GetFileType(path) == "data") 
+                        continue;
 
                     if (ImGui::MenuItem(path.c_str())) 
                         AssetManager::Register(key);
@@ -464,15 +466,13 @@ void editor::GUI::ShowSettings()
                     ImGui::EndMenu();
                 }
 
-                if (ImGui::Button("add")) {
-                    session->animations.push_back({ "", {} });
+                if (ImGui::Button("add")) 
                     session->animations[i].second.push_back({ "", { 0, 0 }});
-                }
 
                 ImGui::SameLine();
 
                 if (ImGui::Button("delete"))
-                    session->animations.pop_back();
+                    session->animations[i].second.pop_back();
 
                 ImGui::Separator();
 

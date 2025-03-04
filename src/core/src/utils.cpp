@@ -1,18 +1,18 @@
 #include "../../../build/sdk/include/utils.h"
 
-int System::Utils::randInt(int n) { 
+const int System::Utils::randInt(int n) { 
     return rand() % n; 
 }
 
 //---------------------------------------
 
-float System::Utils::randFloat(float n) { 
+const float System::Utils::randFloat(float n) { 
     return ((float)(rand()) / (float)(RAND_MAX)) * n; 
 }
 
 //---------------------------------------
 
-float System::Utils::floatBetween(float min, float max)
+const float System::Utils::floatBetween(float min, float max)
 {
     float n = (float)(rand() & (RAND_LIMIT));
 
@@ -24,13 +24,13 @@ float System::Utils::floatBetween(float min, float max)
 
 //---------------------------------------
  
-int System::Utils::intBetween(int min, int max) { 
+const int System::Utils::intBetween(int min, int max) { 
     return rand() % (min - max + 1) + min; 
 } 
 
 //---------------------------------------
 
-bool System::Utils::str_includes(const std::string& str, const std::string& sub) 
+const bool System::Utils::str_includes(const std::string& str, const std::string& sub) 
 { 
     std::string sub_upper = sub;
     transform(sub_upper.begin(), sub_upper.end(), sub_upper.begin(), ::toupper); 
@@ -40,19 +40,19 @@ bool System::Utils::str_includes(const std::string& str, const std::string& sub)
 
 //---------------------------------------
 
-bool System::Utils::str_endsWith(const std::string_view& str, const std::string_view& suffix) {
+const bool System::Utils::str_endsWith(const std::string_view& str, const std::string_view& suffix) {
     return str.size() >= suffix.size() && 0 == str.compare(str.size() - suffix.size(), suffix.size(), suffix);
 }
 
 //---------------------------------------
 
-bool System::Utils::CoinFlip(void) {
+const bool System::Utils::CoinFlip(void) {
     return rand() % 10 >= 6;
 }
 
 //--------------------------------------- returns number of digits in tiletype
 
-int System::Utils::CountDigits (long long n) 
+const int System::Utils::CountDigits (long long n) 
 {
 
     if (n == 0)
@@ -71,7 +71,7 @@ int System::Utils::CountDigits (long long n)
 
 //---------------------------------------binary to dec
 
-int System::Utils::BinToDec (int n) 
+const int System::Utils::BinToDec (int n) 
 {
 
     int num = n, 
@@ -106,7 +106,7 @@ std::string System::Utils::ReplaceFrom(const std::string& str, const char* posit
 
 //---------------------------------------
 
-std::string System::Utils::GetFileType(const std::string& path)
+const std::string System::Utils::GetFileType(const std::string& path)
 {
 
     if (
@@ -136,7 +136,7 @@ std::string System::Utils::GetFileType(const std::string& path)
     
 //---------------------------------------
 
-std::string System::Utils::SanitizePath(std::string path) {
+const std::string System::Utils::SanitizePath(std::string path) {
     
     std::replace(path.begin(), path.end(), '\\', '/');
     path.erase(std::unique(path.begin(), path.end(), removeDoubleSlash()), path.end());

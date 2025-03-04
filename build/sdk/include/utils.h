@@ -24,7 +24,7 @@ namespace System {
         #else
             #define LOG(msg)
         #endif
-
+ 
     #endif
 
     //common utilities
@@ -33,21 +33,21 @@ namespace System {
 		
 		public:
 
-			static int randInt(int n);
-            static int intBetween(int min, int max);
-            static int CountDigits (long long n);
-			static int BinToDec (int n);
+			static const int randInt(int n);
+            static const int intBetween(int min, int max);
+            static const int CountDigits (long long n);
+			static const int BinToDec (int n);
 
-			static float randFloat(float n);
-			static float floatBetween(float min, float max);
+			static const float randFloat(float n);
+			static const float floatBetween(float min, float max);
 
-			static bool str_includes(const std::string& str, const std::string& sub);
-			static bool str_endsWith(const std::string_view& str, const std::string_view& suffix);
-			static bool CoinFlip(void);
+			static const bool str_includes(const std::string& str, const std::string& sub);
+			static const bool str_endsWith(const std::string_view& str, const std::string_view& suffix);
+			static const bool CoinFlip(void);
 
 			static std::string ReplaceFrom(const std::string& str, const char* position, const char* replace_str);
-			static std::string GetFileType(const std::string& path);
-			static std::string SanitizePath(std::string path);
+			static const std::string GetFileType(const std::string& path);
+			static const std::string SanitizePath(std::string path);
 
         private:
 

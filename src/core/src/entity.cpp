@@ -402,7 +402,7 @@ void Sprite::ReadSpritesheetData()
 
 void Sprite::SetAnimation(const char* key, bool yoyo, int rate, int repeat) { 
     m_animComplete = false;
-    m_currentAnim = { key, yoyo, rate, repeat, true };
+    m_currentAnim = { key, rate, repeat, yoyo, true, false };
 }
 		
 
@@ -410,7 +410,7 @@ void Sprite::SetAnimation(const char* key, bool yoyo, int rate, int repeat) {
 
 void Sprite::StopAnimation() { 
     m_animComplete = false;
-    m_currentAnim = { "", false, 0, 0, 0 }; 
+    m_currentAnim = { "", 0, 0, false, false, false }; 
 }
 
 
@@ -440,8 +440,7 @@ void Sprite::Render(float projWidth, float projHeight)
 
         //tilemap
 
-        if (strcmp(type, "tile") == 0)
-        {
+        if (strcmp(type, "tile") == 0) {
             texture.U1 = (currentFrameX * currentFrameWidth) / texture.Width;      
             texture.U2 = ((currentFrameX + 1) * currentFrameWidth) / texture.Width;
 
@@ -451,8 +450,7 @@ void Sprite::Render(float projWidth, float projHeight)
 
         //generic
 
-        else 
-        {
+        else {
             texture.U1 = (currentFrameX * factorX) / texture.Width;      
             texture.U2 = ((currentFrameX + currentFrameWidth) * factorX) / texture.Width;
 
@@ -556,7 +554,8 @@ void Sprite::Render(float projWidth, float projHeight)
                         endFrame = anims.find(m_currentAnim.key)->second.second,
                         frame = yoyo ? startFrame : endFrame;
 
-                    m_animComplete = frame == currentFrame;
+                    m_animComplete = frame == currentFrame && m_currentAnim.can_complete;
+                    m_currentAnim.can_complete = false;
 
                     if (yoyo)
                     {
@@ -582,7 +581,7 @@ void Sprite::Render(float projWidth, float projHeight)
                         if (m_anim_yoyo) 
                             SetFrame(frames_reversed[elapsed_reversed]);
 
-                        else 
+                        else  
                             SetFrame(frames[elapsed]);
                     }
 
@@ -598,6 +597,8 @@ void Sprite::Render(float projWidth, float projHeight)
                     }
 
                     //animation complete
+
+                    m_currentAnim.can_complete = true;
 
                     if (currentFrame == anim->second.second) {
                         if (m_currentAnim.can_decrement) {

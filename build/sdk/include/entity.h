@@ -220,7 +220,11 @@ class Sprite : public Entity {
 
 		glm::vec2 m_velocity;
 
-        struct Anim { std::string key; bool yoyo; int rate, repeat; bool can_decrement; } m_currentAnim;
+        struct Anim { 
+            std::string key; 
+            int rate, repeat; 
+            bool yoyo, can_decrement, can_complete; 
+        } m_currentAnim;
 		
 		//internal spritesheet data
 
