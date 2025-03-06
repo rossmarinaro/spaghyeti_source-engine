@@ -463,15 +463,12 @@ void Sprite::Render(float projWidth, float projHeight)
     //sprite model transformations
 
     glm::mat4 model = glm::mat4(1.0f), 
-              view = !IsSprite() ? glm::mat4(1.0f) : System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y), 
+              view = !IsSprite() ? glm::mat4(1.0f) : System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x, System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y), 
               proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
 
     model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
     model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
-
-    if (bodies.size())
-        model = glm::scale(model, glm::vec3(scale, 1.0f));
 
     //update shaders and textures 
 
@@ -491,11 +488,9 @@ void Sprite::Render(float projWidth, float projHeight)
                 shader.SetInt("repeat", texture.Repeat);
             #endif
 
-            shader.SetVec2f("scale", glm::vec2(
-                bodies.size() ? 1.0f : scale.x, 
-                bodies.size() ? 1.0f : scale.y
-            ), true);
-            
+            //set shader uniforms
+
+            shader.SetVec2f("scale", glm::vec2(scale.x, scale.y));
             shader.SetFloat("alphaVal", alpha); 
             shader.SetVec3f("tint", tint);
 
@@ -517,14 +512,13 @@ void Sprite::Render(float projWidth, float projHeight)
             for (int i = 0; i < bodies.size(); i++)
                 if (bodies[i].first->IsEnabled()) 
                 {
-                    if (i == 0 && bodies[i].first->GetType() == b2_dynamicBody) 
-                    { 
+                    if (i == 0 && bodies[i].first->GetType() == b2_dynamicBody) { 
                         b2Vec2 position = bodies[0].first->GetPosition(); 
                         position.y += bodies[0].second.w; //apply y offset
-                        SetPosition(glm::vec2((position.x - bodies[0].second.x), ((position.y - bodies[0].second.y) - bodies[0].second.w)));
+                        SetPosition(glm::vec2((position.x - (bodies[0].second.x * scale.x)), ((position.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w)));
                     }
                     else
-                        bodies[i].first->SetTransform(b2Vec2((position.x - bodies[0].second.x), ((position.y - bodies[0].second.y) - bodies[0].second.w)), 0);
+                        bodies[i].first->SetTransform(b2Vec2((position.x - (bodies[0].second.x * scale.x)), ((position.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w)), 0);
 
                 }
 
