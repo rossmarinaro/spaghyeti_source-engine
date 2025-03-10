@@ -7,8 +7,8 @@
 using namespace editor;
 
 
-SpriteNode::SpriteNode():  
-    Node("Sprite"),
+SpriteNode::SpriteNode(bool init):  
+    Node(init, "Sprite"),
         m_show_sprite_texture(false)
 {
     key = "";
@@ -42,7 +42,8 @@ SpriteNode::SpriteNode():
     frame_fY.push_back(1);
     spriteHandle = nullptr;
 
-    Editor::Log("Sprite node " + name + " created.");   
+    if (m_init)
+        Editor::Log("Sprite node " + name + " created.");   
 }
 
 
@@ -57,7 +58,7 @@ SpriteNode::~SpriteNode() {
     if (spriteHandle != nullptr)
         System::Game::DestroyEntity(spriteHandle);
     
-    if (!virtual_node)
+    if (m_init)
         Editor::Log("Sprite node " + name + " deleted.");
 }
 

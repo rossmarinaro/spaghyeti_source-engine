@@ -6,8 +6,8 @@
 using namespace editor;
 
 
-TilemapNode::TilemapNode(): 
-    Node("Tilemap"),
+TilemapNode::TilemapNode(bool init): 
+    Node(init, "Tilemap"),
         m_layersApplied(false),
         m_mapApplied(false)
 { 
@@ -17,20 +17,20 @@ TilemapNode::TilemapNode():
     tile_width = 64;
     tile_height = 64;
 
-    Editor::Log("Tilemap node " + name + " created."); 
+    if (m_init)
+        Editor::Log("Tilemap node " + name + " created."); 
 }
 
 
 //---------------------------
  
 
-TilemapNode::~TilemapNode() 
-{
-
+TilemapNode::~TilemapNode() {
+    
     if (m_mapApplied)
         MapManager::ClearMap();
 
-    if (!virtual_node)
+    if (m_init)
         Editor::Log("Tilemap node " + name + " deleted.");
 }
 
@@ -38,8 +38,7 @@ TilemapNode::~TilemapNode()
 //---------------------------
 
 
-void TilemapNode::AddLayer()
-{
+void TilemapNode::AddLayer() {
     layers.push_back({ "", "" });
     layer++;
     spr_sheet_width.push_back(0);

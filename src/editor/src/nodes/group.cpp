@@ -5,11 +5,11 @@
 using namespace editor;
 
 
-GroupNode::GroupNode():  
-    Node("Group")
+GroupNode::GroupNode(bool init):  
+    Node(init, "Group")
 {
-
-    Editor::Log("Group node " + name + " created.");   
+    if (m_init)
+        Editor::Log("Group node " + name + " created.");   
 }
 
          
@@ -17,8 +17,7 @@ GroupNode::GroupNode():
 
 
 GroupNode::~GroupNode() {
-
-    if (!virtual_node)
+    if (m_init)
         Editor::Log("Group node " + name + " deleted.");
 }
 

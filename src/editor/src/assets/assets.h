@@ -27,7 +27,6 @@ namespace editor {
             ~AssetManager() = default;
 
             static void Reset();
-            static void SetIcon(const std::string& key);
             static void Register(const std::string& key);
             static void LoadAsset(const std::string& asset);
             

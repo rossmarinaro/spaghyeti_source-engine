@@ -510,8 +510,7 @@ void Sprite::Render(float projWidth, float projHeight)
 
         if (bodies.size())
             for (int i = 0; i < bodies.size(); i++)
-                if (bodies[i].first->IsEnabled()) 
-                {
+                if (bodies[i].first->IsEnabled()) {
                     if (i == 0 && bodies[i].first->GetType() == b2_dynamicBody) { 
                         b2Vec2 position = bodies[0].first->GetPosition(); 
                         position.y += bodies[0].second.w; //apply y offset

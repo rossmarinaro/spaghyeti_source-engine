@@ -7,8 +7,7 @@ using namespace Graphics;
 
 
 Texture2D::Texture2D():
-    m_channels(3),
-    m_internal_format(GL_RGB), 
+    m_internal_format(GL_RGB32F), 
     m_image_format(GL_RGB),
     Width(0.0f),
     Height(0.0f),
@@ -22,14 +21,15 @@ Texture2D::Texture2D():
     Wrap_T(GL_REPEAT), 
     Filter_Min(GL_NEAREST),   
     Filter_Max(GL_NEAREST),
+    Channels(3),
     Repeat(1)
 { 
     glGenTextures(1, &ID); 
 
-    glGenVertexArrays(1, &VAO); 
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &UVBO);
-    glBindVertexArray(VAO); 
+    glGenVertexArrays(1, &m_VAO); 
+    glGenBuffers(1, &m_VBO);
+    glGenBuffers(1, &m_UVBO);
+    glBindVertexArray(m_VAO); 
 }
 
 
@@ -39,9 +39,9 @@ Texture2D::Texture2D():
 void Texture2D::Delete() {
     glDeleteTextures(1, &ID);    
     glBindTexture(GL_TEXTURE_2D, 0);
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &UVBO); 
+    glDeleteVertexArrays(1, &m_VAO);
+    glDeleteBuffers(1, &m_VBO);
+    glDeleteBuffers(1, &m_UVBO); 
 }
 
 
@@ -59,24 +59,7 @@ Texture2D& Texture2D::Get(const std::string& key) {
 //-----------------------------------
 
 
-void Texture2D::SetChannels(Texture2D& texture, unsigned int channels) 
-{
-    
-    texture.m_channels = channels;
-
-    if (texture.m_channels == 4) { 
-        texture.m_internal_format = GL_RGBA;
-        texture.m_image_format = GL_RGBA;
-    }
-}
-
-
-//-----------------------------------
-
-
-void Texture2D::SetFiltering() 
-{
-    
+void Texture2D::SetFiltering() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Wrap_S);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Wrap_T);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Filter_Min);
@@ -87,79 +70,63 @@ void Texture2D::SetFiltering()
 //-----------------------------------
 
 
-void Texture2D::Load(const std::string& key, bool flipY) 
+void Texture2D::Load(const std::string& key) 
 {
 
-    bool success = false;
+    std::string filetype = "none";
+
+    int width = 1, 
+        height = 1, 
+        nrChannels = 4;
 
     //creates texture objects
 
     Texture2D texture;
-
+    unsigned char* image = nullptr;
     const char* filepath = System::Resources::Manager::GetFilePath(key);
 
     //file asset found in cache
 
-    if (strcmp(filepath, "not found") != 0) 
-    {
-
-        int width, height, nrChannels;    
-
-        stbi_set_flip_vertically_on_load(flipY);
-
-        unsigned char* data = stbi_load(filepath, &width, &height, &nrChannels, 0);
-
-        SetChannels(texture, nrChannels);
-
-        if (data)
-        {
-            texture.Generate(width, height, data); 
-
-            stbi_image_free(data); 
-
-            success = true;
-        }
-
-        else  {
-            LOG("Texture2D: image file loading failed."); 
-            return;
-        }   
-      
+    if (strcmp(filepath, "not found") != 0) {
+        stbi_set_flip_vertically_on_load(false);
+        filetype = "filepath";
+        image = stbi_load(filepath, &width, &height, &nrChannels, 0);
     }
 
-    //raw asset
+    //byte encoded array buffer
 
-    else
+    else 
     {   
+        filetype = "binary";
+        
+        const auto data = System::Resources::Manager::GetResource(key);
+        #if STANDALONE == 0
+            stbi_set_flip_vertically_on_load(true);
+        #endif
 
-        auto rawData = System::Resources::Manager::GetRawData(key); 
+        image = stbi_load_from_memory((unsigned char*)data.array_buffer, data.byte_length, &width, &height, &nrChannels, 0);
 
-        if (strcmp(rawData, "not found") != 0) 
-        {        
+        //image is compressed pixel data
 
-            std::array<int, 3> dimensionsAndChannels = System::Resources::Manager::GetRawDimensionsAndChannels(key);
-   
-            SetChannels(texture, dimensionsAndChannels[2]);
-
-            texture.Generate(dimensionsAndChannels[0], dimensionsAndChannels[1], rawData);
-
-            success = true;
+        if (image == nullptr && data.byte_length) {
+            filetype = "comressed pixel data";
+            image = data.array_buffer;
         }
     }
 
-    if (!success) {
-
-        LOG("Texture2D: Image of key: " + key + " not found.");    
-   
+    if (image == nullptr) {
+        LOG("Texture2D: Image of key: " + key + " failed to load (" + filetype + ")");    
         return;
     }
-    
-    else 
-        LOG("Texture2D: " + key + " loaded.");
-      
-    //assign texture in manager
 
-    System::Application::resources->textures[key] = texture;  
+    texture.Generate(width, height, nrChannels, image); 
+
+    if (filetype != "comressed pixel data")
+        stbi_image_free(image);
+
+    System::Application::resources->textures[key] = texture; 
+    LOG("Texture2D: " + key + " loaded (" + filetype + ")");
+
 
 } 
 
@@ -167,8 +134,7 @@ void Texture2D::Load(const std::string& key, bool flipY)
 //--------------------------------------
 
 
-void Texture2D::UnLoad(const std::string& key) 
-{
+void Texture2D::UnLoad(const std::string& key) {
 
     auto it = System::Application::resources->textures.find(key);
 
@@ -177,7 +143,6 @@ void Texture2D::UnLoad(const std::string& key)
         (*it).second.Delete();
 
         System::Application::resources->textures.erase(it);
-
     }
 
     LOG("Texture2D: Deleted texture " + key);
@@ -188,14 +153,20 @@ void Texture2D::UnLoad(const std::string& key)
 //--------------------------------------
 
 
-void Texture2D::Generate(unsigned int width, unsigned int height, const void* data)
+void Texture2D::Generate(unsigned int width, unsigned int height, unsigned int channels, const void* data)
 {
-
     Width = width;
     Height = height; 
 
     FrameWidth = Width;
     FrameHeight = Height;
+
+    Channels = channels;
+
+    if (Channels == 4) { 
+        m_internal_format = GL_RGBA32F;
+        m_image_format = GL_RGBA;
+    }
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, ID);
@@ -205,7 +176,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, const void* da
     #endif
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
- 
+
     glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, Width, Height, 0, m_image_format, GL_UNSIGNED_BYTE, data);
 
     //set Texture wrap and filter modes
@@ -329,14 +300,14 @@ void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int dr
 
     Bind();
 
-    glBindVertexArray(VAO); 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);    
+    glBindVertexArray(m_VAO); 
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);    
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, 2 * sizeof(short), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glBindVertexArray(VAO); 
-    glBindBuffer(GL_ARRAY_BUFFER, UVBO);    
+    glBindVertexArray(m_VAO); 
+    glBindBuffer(GL_ARRAY_BUFFER, m_UVBO);    
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_UVs), m_UVs, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE, 2 * sizeof(GLfloat), (void*)0);
     glEnableVertexAttribArray(1);

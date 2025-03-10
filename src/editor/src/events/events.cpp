@@ -320,7 +320,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
         if (GetOpenFileName(&ofn) == TRUE)
         {
-
+    
             std::filesystem::path result((const char*)ofn.lpstrFile);
 
             //result path
@@ -350,11 +350,11 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
                                       texture = AssetManager::GetThumbnail(asset);
 
                     std::string dir = entry.path().string(); //includes filename
-                                   
+                                      
                     std::replace(dir.begin(), dir.end(), '\\', '/');
                     System::Resources::Manager::LoadFile(asset.c_str(), dir.c_str());
                     System::Resources::Manager::RegisterTextures();
-
+    
                     AssetManager::LoadAsset(asset);
 
                     unsigned int id = Graphics::Texture2D::Get(texture).ID;
@@ -505,6 +505,9 @@ void EventListener::OpenFile()
 
 void EventListener::BuildAndRun()
 {
+    system("cls");
+    ShowWindow(GetConsoleWindow(), SW_SHOW);
+
     //directory / builder files
 
     std::string makefile_path = Editor::projectPath + "Makefile";
@@ -536,26 +539,53 @@ void EventListener::BuildAndRun()
             if (std::filesystem::exists(entry))
                 remove(entry.path().string().c_str());
 
-    //copy assets from development to build folder
+
+    //copy / embed assets from development to build folder
 
     const auto options = std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive;
 
-    const std::string asset_folders[] = { "images", "audio", "data" };
+    const std::string asset_folders[] = { "images", "audio" };
 
-    for (const std::string& type : asset_folders)
-        for (const auto& file : std::filesystem::directory_iterator(Editor::projectPath + "resources/assets/" + type)) 
+    std::map<std::string, std::array<std::string, 2>> rawFiles;
+
+    for (const std::string& folder : asset_folders)
+    {
+        const std::string projResPath = Editor::projectPath + "resources/assets/" + folder;
+        std::string type = folder;
+
+        if (type == "images")
+            type = "image";
+
+        for (const auto& file : std::filesystem::directory_iterator(projResPath)) 
         {
             const std::string name = file.path().filename().string(),
-                              copiedFile = assetsFolder + name;
+                              destPath = assetsFolder + name;
 
             std::string rsrcPath = file.path().string();
             std::replace(rsrcPath.begin(), rsrcPath.end(), '\\', '/');
 
-            if (!std::filesystem::exists(copiedFile)) {
-                Editor::Log("copying: " + rsrcPath + " to: " + copiedFile);
-                std::filesystem::copy_file(rsrcPath, copiedFile, options);
+            if (Editor::Get()->embed_files) {
+
+                std::string rawFolder = Editor::projectPath + "resources/assets/raw/" + System::Utils::ReplaceFrom(name, ".", "") + ".hpp",
+                            pathWithoutSpecialChars = rsrcPath;
+
+                std::replace(rawFolder.begin(), rawFolder.end(), ' ', '_');
+                std::replace_if(pathWithoutSpecialChars.begin(), pathWithoutSpecialChars.end(), [](auto ch) { return ch != '_' && ::isblank(ch) || ::ispunct(ch); }, '_');
+                
+                rawFiles.insert({ name, { type, pathWithoutSpecialChars } });
+
+                if (!std::filesystem::exists(rawFolder)) {       
+                    system(("chdir sdk && packResource.sh " + projResPath + " \"" + rsrcPath + "\" " + rawFolder).c_str());
+                    Editor::Log("encoding asset: " + rawFolder); 
+                }
+  
+            }
+            else if (!std::filesystem::exists(destPath)) {
+                Editor::Log("copying asset to build folder: " + rsrcPath + " to: " + destPath);
+                std::filesystem::copy_file(rsrcPath, destPath, options);
             }
         }
+    }
 
     //copy runtime library to build folder
 
@@ -642,6 +672,7 @@ void EventListener::BuildAndRun()
 
         main_makeFile.close();
 
+
     }
 
     //WebGL 
@@ -657,9 +688,9 @@ void EventListener::BuildAndRun()
                           wasm = Editor::Get()->wasm ? "1" : "0",
                           gl_assertions = Editor::Get()->gl_assertions ? "1" : "0",
                           use_webgl2 = Editor::Get()->use_webgl2 ? "1" : "0",
-                          full_es3 = Editor::Get()->full_es3 ? "1" : "0";
-                        
-
+                          full_es3 = Editor::Get()->full_es3 ? "1" : "0",
+                          webgl_embed_files = Editor::Get()->webgl_embed_files ? "--embed-file" : "--preload-file";
+   
         std::string name_upper = s_currentProject;
         transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
@@ -705,7 +736,7 @@ void EventListener::BuildAndRun()
         web_makeFile << "   -Wl,--whole-archive \\\n";
         
         web_makeFile << "   --pre-js pre-js.js \\\n";
-        web_makeFile << "   --preload-file ./assets \\\n";
+        web_makeFile << "   " << webgl_embed_files << "./assets \\\n";
         web_makeFile << "   --use-preload-plugins \\\n";
         web_makeFile << "   --shell-file template.html\n\n";
 
@@ -785,9 +816,26 @@ void EventListener::BuildAndRun()
     game_src << "#endif\n";
     game_src << "\n#include \"" + root_path + "/sdk/include/app.h\"\n\n";
 
+    //include embeddable assets if any
+
+    if (Editor::Get()->embed_files) 
+    {
+        for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + "resources/assets/raw")) 
+        {
+            std::string path = file.path().string();
+
+            if (!file.is_directory() && System::Utils::str_endsWith(path, ".hpp")) {
+                std::replace(path.begin(), path.end(), '\\', '/');
+                game_src << "#include " << "\"" + path + "\"\n";
+            }
+        }
+
+        game_src << "\n";
+    }
+
     //include scripts
 
-    for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::Get()->projectPath + AssetManager::Get()->script_dir)) {
+    for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->script_dir)) {
 
         std::string path = script.path().string();
 
@@ -837,9 +885,13 @@ void EventListener::BuildAndRun()
         shaderFile.close();
         out_file.close();
 
+        //copy shaders 
+
         if (!std::filesystem::exists(copiedFile)) {
             std::filesystem::rename(tmp_file, copiedFile); 
-            Editor::Log("copying shaders: " + path + " to: " + copiedFile);
+
+            if (!Editor::Get()->embed_files)
+                Editor::Log("copying shaders to build folder: " + path + " to: " + copiedFile);
         }
 
     };
@@ -881,11 +933,11 @@ void EventListener::BuildAndRun()
 
                 if (JSON.good()) {
                     ParseScene(scene, JSON);
-                    Editor::Log("Scene parsed.");
+                    Editor::Log("Scene: " + scene + " parsed.");
                 }
 
                 else 
-                    Editor::Log("There was a problem parsing scene.");
+                    Editor::Log("There was a problem parsing scene: " + scene + ".");
 
                 JSON.close();
                  
@@ -926,26 +978,65 @@ void EventListener::BuildAndRun()
 
         //preload file assets
 
-        for (const auto& asset : target.second->assets) {
+        for (const auto& asset : target.second->assets) 
+        {
 
             const std::string key = "\"" + asset + "\"";
 
-            //assets are copied to user project's "build" directory, and then virtually referenced from this path, hence the prefix in webgl builds
+            //embedded assets
 
-            asset_queue << "  System::Resources::Manager::LoadFile(" + key + ", \"" + "assets/" + asset + "\");\n";
+            if (Editor::Get()->embed_files) 
+            {
+                const auto rawFile = rawFiles.find(asset); 
+
+                if (rawFile != rawFiles.end()) 
+                    asset_queue << "  System::Resources::Manager::LoadRaw(\"" + rawFile->second[0] + "\", " + key + ", " + rawFile->second[1] + ", " + rawFile->second[1] + "_len);\n";
+            }
+
+            //assets are copied to user project's "build" directory, and then virtually referenced from this path
+
+            else 
+                asset_queue << "  System::Resources::Manager::LoadFile(" + key + ", \"" + "assets/" + asset + "\");\n";
         }
 
         //load shaders
 
         for (const auto& shader : target.second->shaders) 
         { 
+            
+            std::string vertex, fragment;
             std::filesystem::path vertPath { shader.second.first },
                                   fragPath { shader.second.second };
 
-            const std::string vertex = "assets/" + vertPath.filename().string(),
-                              fragment = "assets/" + fragPath.filename().string();
+            //embedded shaders
 
-            asset_queue << "  Shader::Load(\"" + shader.first + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
+            if (Editor::Get()->embed_files) 
+            {
+                std::ifstream vertFile(vertPath),
+                              fragFile(fragPath);
+            
+                std::stringstream vertStream, fragStream;
+
+                vertStream << "R\"END(" << vertFile.rdbuf() << ")END\"";
+                fragStream << "R\"END(" << fragFile.rdbuf() << ")END\"";
+
+                vertex = vertStream.str(),
+                fragment = fragStream.str();
+                
+                vertFile.close();
+                fragFile.close();            
+                
+                asset_queue << "  Shader::Load(\"" + shader.first + "\", " + vertex + ", " + fragment + ");\n";
+            }
+
+            //copied shaders
+
+            else {
+                vertex = "assets/" + vertPath.filename().string(),
+                fragment = "assets/" + fragPath.filename().string();            
+                
+                asset_queue << "  Shader::Load(\"" + shader.first + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
+            }
         }
             
         //load spritesheets (loaded data)
@@ -1346,7 +1437,7 @@ void EventListener::BuildAndRun()
 
         //register scene textures
 
-        preload_queue << "   System::Resources::Manager::RegisterTextures();\n";
+        preload_queue << "   System::Resources::Manager::RegisterTextures();\n"; 
 
         //write nodes
 
@@ -1447,10 +1538,6 @@ void EventListener::BuildAndRun()
     game_src <<	"}";
 
     game_src.close();
-
-    system("cls");
-
-    ShowWindow(GetConsoleWindow(), SW_SHOW);
 
     if (Editor::platform == "WebGL")
         system(("chdir sdk && buildWebGL.bat " + Editor::projectPath).c_str());

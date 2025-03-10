@@ -38,7 +38,7 @@ namespace editor {
             std::pair<std::string, std::pair<std::string, std::string>> shader;
             std::map<std::string, std::string> behaviors;
             
-            Node(const std::string& type, const std::string& name = "Untitled", std::vector<std::shared_ptr<Node>>& arr = nodes);
+            Node(bool init, const std::string& type, const std::string& name = "Untitled");
 
             virtual ~Node() {}
             
@@ -72,7 +72,7 @@ namespace editor {
 
         protected:
 
-            bool virtual_node = false;
+            bool m_init;
             
             static int ChangeName(ImGuiInputTextCallbackData* data);
             
@@ -169,7 +169,7 @@ namespace editor {
 
             std::vector<b2Body*> bodies; 
 
-            SpriteNode();
+            SpriteNode(bool init = true);
             ~SpriteNode();      
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
@@ -218,7 +218,7 @@ namespace editor {
             std::vector<std::array<int, 6>> offset;
             std::vector<b2Body*> bodies;
 
-            TilemapNode();
+            TilemapNode(bool init = true);
             ~TilemapNode();
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
@@ -255,7 +255,7 @@ namespace editor {
 
             std::string textBuf;
 
-            TextNode();
+            TextNode(bool init = true);
             ~TextNode();     
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
@@ -277,7 +277,7 @@ namespace editor {
             
             std::string audio_source_name;
           
-            AudioNode();
+            AudioNode(bool init = true);
             ~AudioNode();
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
@@ -310,7 +310,7 @@ namespace editor {
             std::string currentShape;
             std::shared_ptr<Geometry> m_debugGraphic;
 
-            EmptyNode();
+            EmptyNode(bool init = true);
             ~EmptyNode();      
 
             void CreateShape(const std::string& shape);
@@ -331,7 +331,7 @@ namespace editor {
 
             std::vector<std::shared_ptr<Node>> _nodes;
 
-            GroupNode();
+            GroupNode(bool init = true);
             ~GroupNode();      
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;

@@ -329,18 +329,13 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
         glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
 
         if (result == GL_FALSE) {
-
             glGetShaderInfoLog(shader, 1024, &length, message);
-
             LOG("Shader: " + key + " of type " + type + " compilation error: " + message);
-
             return false;
         }
 
         else {
-
             LOG("Shader: " + key + " of type " + type + " compiled successfully.");  
-
             return true;
         }
     }
@@ -351,20 +346,14 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
         glGetProgramiv(shader, GL_LINK_STATUS, &result);
 
         if (result == GL_FALSE) {
-
             glGetProgramInfoLog(shader, 1024, &length, message);
-
             LOG("Shader: " + key + " of type " + type + " linking error: " + message);
-
             return false;
         }
 
         else {
-
             LOG("Shader: " + key + " of type " + type + " linked successfully.");  
-
             return true;
-        
         }
     }
 
@@ -380,7 +369,6 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&](auto s) { return s.first == key; }) != System::Application::resources->shaders.end())
     {
         LOG("Shader: already exists.");
-
         return;
     } 
 

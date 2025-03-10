@@ -130,6 +130,8 @@ void Editor::Start()
     s_self->gl_assertions = true;
     s_self->use_webgl2 = false;
     s_self->full_es3 = false;
+    s_self->embed_files = false;
+    s_self->webgl_embed_files = true;
     s_self->preserveSrc = false;
     s_self->isMultiThreaded = false;
     s_self->cullTarget = { "", { 0.0f, 0.0f } };
@@ -166,16 +168,18 @@ void Editor::Start()
     AssetManager am;
     GUI gui; 
 
-    //set top-left header and bottom toolbar icon
+    //set top-left header and bottom toolbar icon (not binary, this image is stored as pixel data)
+
+    const auto image_data = Resources::Manager::GetResource("icon small");
 
     GLFWimage image;
 
-    image.width = 66;
+    image.width = 66; 
     image.height = 65;
-    image.pixels = reinterpret_cast<unsigned char*>(const_cast<char*>(Resources::Manager::GetRawData("editor logo")));
+    image.pixels = image_data.array_buffer;
 
     glfwSetWindowIcon(Window::s_instance, 1, &image);
-
+    
     //create entity selector graphic
 
     s_self->s_selector = System::Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
@@ -205,11 +209,11 @@ void Editor::ShutDown()
     
     remove((projectPath + "\\spaghyeti_parse.json").c_str());
 
-    Resources::Manager::UnLoadRawImage("editor logo");
-    Resources::Manager::UnLoadRawImage("icon large");
-    Resources::Manager::UnLoadRawImage("audio src");
-    Resources::Manager::UnLoadRawImage("data src");
-    Resources::Manager::UnLoadRawImage("folder src");
+    Resources::Manager::UnLoadRaw("image", "editor logo");
+    Resources::Manager::UnLoadRaw("image", "icon large");
+    Resources::Manager::UnLoadRaw("image", "audio src");
+    Resources::Manager::UnLoadRaw("image", "data src");
+    Resources::Manager::UnLoadRaw("image", "folder src");
 
     Application::ShutDown();
 

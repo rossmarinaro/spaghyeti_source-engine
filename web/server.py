@@ -1,7 +1,11 @@
+import sys
 import http.server
 import socketserver
 
 PORT = 8000
+
+if len(sys.argv) > 1:
+    PORT = int(sys.argv[1])
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 	def end_headers(self):

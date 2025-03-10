@@ -57,6 +57,8 @@ namespace editor {
                  gl_assertions,
                  use_webgl2,
                  full_es3,
+                 embed_files,
+                 webgl_embed_files,
                  preserveSrc,
                  isMultiThreaded;
 			

@@ -630,8 +630,7 @@ void editor::GUI::ShowMenu()
 
                 ImGui::Separator();
 
-                if (Editor::platform == "WebGL")
-                {
+                if (Editor::platform == "WebGL") {
                     ImGui::Checkbox("use pthreads", &session->use_pthreads);
                     ImGui::Checkbox("shared memory", &session->shared_memory);
                     ImGui::Checkbox("allow memory growth", &session->allow_memory_growth);
@@ -641,15 +640,14 @@ void editor::GUI::ShowMenu()
                     ImGui::Checkbox("GL assertions", &session->gl_assertions);
                     ImGui::Checkbox("use WebGL2", &session->use_webgl2);
                     ImGui::Checkbox("full ES3", &session->full_es3);
+                    ImGui::Checkbox("embed assets", &session->webgl_embed_files);
                 }
 
                 else 
-                    ImGui::Text("N/A");
+                    ImGui::Checkbox("embed assets", &session->embed_files);
                 
-
                 ImGui::EndMenu();
             }
-
 
             ImGui::EndMenu();
         }

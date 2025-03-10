@@ -2,11 +2,11 @@
 #include "./gui.h"
 #include "../editor.h"
 
-#include "../assets/embedded/images/data_src.h"
-#include "../assets/embedded/images/audio_src.h"
-#include "../assets/embedded/images/editor_logo.h"
-#include "../assets/embedded/images/icon_large.h"
-#include "../assets/embedded/images/folder_src.h"
+#include "../assets/embedded/images/data.hpp"
+#include "../assets/embedded/images/audio.hpp"
+#include "../assets/embedded/images/icon_small.hpp"
+#include "../assets/embedded/images/icon_large.hpp"
+#include "../assets/embedded/images/folder.hpp"
 
 using namespace editor;
 
@@ -97,25 +97,25 @@ GUI::GUI()
     Shader::Load("grid", checker_vertex, checker_fragment); 
 
     s_self->grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    s_self->grid->shader = Shader::Get("grid");
+    s_self->grid->shader = Shader::Get("grid"); 
     s_self->grid_quantity = 20.0f;
 
     //load embedded assets
 
-    System::Resources::Manager::LoadRawImage("editor logo", Assets::Images::editor_logo, 66, 65, 4);
-    System::Resources::Manager::LoadRawImage("icon large", Assets::Images::icon_large, 211, 126, 4);
-    System::Resources::Manager::LoadRawImage("audio src", Assets::Images::audio_src, 75, 70, 3);
-    System::Resources::Manager::LoadRawImage("data src", Assets::Images::data_src, 75, 70, 4);
-    System::Resources::Manager::LoadRawImage("folder src", Assets::Images::folder_src, 202, 202, 4);
+    System::Resources::Manager::LoadRaw("image", "icon small", icon_small_png, icon_small_png_len); 
+    System::Resources::Manager::LoadRaw("image", "editor logo", icon_large_png, icon_large_png_len);
+    System::Resources::Manager::LoadRaw("image", "audio src", audio_png, audio_png_len); 
+    System::Resources::Manager::LoadRaw("image", "data src", data_png, data_png_len);
+    System::Resources::Manager::LoadRaw("image", "folder src", folder_png, folder_png_len);
 
     System::Resources::Manager::RegisterTextures();
 
-    glfwSetScrollCallback(System::Window::s_instance, scroll_callback);
+    glfwSetScrollCallback(System::Window::s_instance, scroll_callback); 
 
     s_self->cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
     s_self->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
-    s_self->cursor->isStatic = true; 
     s_self->cursor->SetAlpha(0.0f);
+    s_self->cursor->isStatic = true; 
 
     Editor::Log("GUI launched.");
 
@@ -256,20 +256,12 @@ void GUI::ShowOptionsInit()
 
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
-    ImGui::GetWindowDrawList()->AddImage(
-        (void*)Graphics::Texture2D::Get("icon large").ID,
-        ImVec2(pos.x, pos.y),
-        ImVec2(pos.x + window_width, pos.y + window_height),
-        ImVec2(0, 1),
-        ImVec2(1, 0)
-    );
+    ImGui::GetWindowDrawList()->AddImage((void*)Graphics::Texture2D::Get("editor logo").ID, ImVec2(pos.x, pos.y), ImVec2(pos.x + window_width, pos.y + window_height), ImVec2(0, 1), ImVec2(1, 0));
 
     System::Renderer::BindFrameBuffer();
-
     System::Renderer::UnbindFrameBuffer();
 
     ImGui::SetCursorPos((ImVec2((ImGui::GetWindowSize().x * 0.5f) - 270, (ImGui::GetWindowSize().y * 0.5f) - 230)));
-
 
     ImGui::End();
     ImGui::PopStyleVar();

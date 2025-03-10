@@ -7,8 +7,8 @@
 using namespace editor;
 
 
-AudioNode::AudioNode(): 
-    Node("Audio"),
+AudioNode::AudioNode(bool init): 
+    Node(init, "Audio"),
         m_audioTexture(Graphics::Texture2D::Get("audio src"))
      
 {
@@ -18,7 +18,8 @@ AudioNode::AudioNode():
 
     System::Resources::Manager::RegisterTextures();
     
-    Editor::Log("Audio node " + name + " created.");   
+    if (m_init)
+        Editor::Log("Audio node " + name + " created.");   
 }
 
 
@@ -36,8 +37,7 @@ void AudioNode::Load() {
  
 
 AudioNode::~AudioNode() {
-
-    if (!virtual_node)  
+    if (m_init)  
         Editor::Log("audio node " + name + " deleted.");
 }
 

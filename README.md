@@ -8,7 +8,9 @@ Features:
 
 Rendering system / content creation tool with audio generation, texturing, and logging. 
 
-Supports loading image, shader, json, and raw byte char files.
+Supports loading image (png), shaders (glsl text), json, csv, and raw byte encoded binary and compressed files.
+
+Build assets can be either embedded or referenced.
 
 Scene heirarchy supports sprites, CSV tilemaps (supports flipped tiles), audio, text, and empty nodes.
 
@@ -48,7 +50,7 @@ Written by Ross Marinaro - Pastaboss Enterprise 🍝👌
 
 Libraries used: GLFW / GLAD, GLM, GLText (embedded debug text), FreeType (in-app fonts) STB_IMAGE, MiniAudio, DearIMGUI, Box2D, nlohmann JSON
 
-Other great external tools that work well with Spaghyeti Engine: UPX, Penguin Packer
+Uses Unix tool xxd for byte encoding assets
 
 Requires install of MingW (gcc) for Windows, although the goal is to be compiler agnostic
 
@@ -63,6 +65,8 @@ When targeting specific entity from script use `System::Game::GetScene()->GetEnt
 ----------------------------------------------------------
 
 To Do:
+
+truetype implementation
 
 undo/redo functionality
 

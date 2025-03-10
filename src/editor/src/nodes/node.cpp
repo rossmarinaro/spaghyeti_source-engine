@@ -9,9 +9,9 @@
 using namespace editor;
 
 
-Node::Node(const std::string& type, const std::string& name, std::vector<std::shared_ptr<Node>>& arr)
+Node::Node(bool init, const std::string& type, const std::string& name):
+    m_init(init)
 {
-
     ID = s_Assign();
     created = false;
     active = true;
@@ -23,10 +23,8 @@ Node::Node(const std::string& type, const std::string& name, std::vector<std::sh
     rotation = 0.0f;
 
     this->type = type;
-    this->name = CheckName(name, arr, arr.size());
+    this->name = CheckName(name, nodes, nodes.size());
 }
-
-
 
 //--------------------------- get node
 
@@ -675,7 +673,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             return nullptr;
         }
         
-        Scene* _scene = static_cast<Scene*>(scene);
+        Scene* _scene = static_cast<Scene*>(scene); 
 
         //sprite
 

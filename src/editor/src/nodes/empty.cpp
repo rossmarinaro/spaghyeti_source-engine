@@ -6,8 +6,8 @@
 
 using namespace editor;
 
-EmptyNode::EmptyNode(): 
-    Node("Empty")
+EmptyNode::EmptyNode(bool init): 
+    Node(init, "Empty")
 { 
 
     rectWidth = 0.0f;
@@ -19,7 +19,8 @@ EmptyNode::EmptyNode():
     debug_fill = false;
     currentShape = "";
 
-    Editor::Log("Empty node " + name + " created."); 
+    if (m_init)
+        Editor::Log("Empty node " + name + " created."); 
 }
 
 
@@ -31,7 +32,7 @@ EmptyNode::~EmptyNode() {
     if (m_debugGraphic)
         System::Game::DestroyEntity(m_debugGraphic);
 
-    if (!virtual_node)
+    if (m_init)
         Editor::Log("Empty node " + name + " deleted.");
 }
 

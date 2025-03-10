@@ -37,7 +37,7 @@ void displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec)
                     editor::AssetManager::Get()->selectedAsset = vec[i].first;
                     editor::Editor::Log("Current asset selected: " + editor::AssetManager::Get()->selectedAsset);
                 }
-
+ 
                 //asset tool tip
 
                 if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))

@@ -7,8 +7,8 @@
 using namespace editor;
 
 
-TextNode::TextNode(): 
-    Node("Text")
+TextNode::TextNode(bool init): 
+    Node(init, "Text")
 {
     isUI = 2;
     size = 1;
@@ -20,7 +20,8 @@ TextNode::TextNode():
     textHandle = System::Game::CreateText(textBuf, positionX, positionY);
     System::Game::GetScene()->SetInteractive(textHandle);
 
-    Editor::Log("Text node " + name + " created.");   
+    if (m_init)
+        Editor::Log("Text node " + name + " created.");   
 }
 
 
@@ -32,7 +33,7 @@ TextNode::~TextNode() {
     if (textHandle != nullptr)
         System::Game::DestroyEntity(textHandle);
 
-    if (!virtual_node)
+    if (m_init)
         Editor::Log("Text node " + name + " deleted.");
 }
 

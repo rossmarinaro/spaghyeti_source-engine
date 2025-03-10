@@ -33,7 +33,6 @@ void AssetManager::Reset() {
 
 
 void AssetManager::Register(const std::string& asset) {
-
     if (std::find(s_self->assets.begin(), s_self->assets.end(), asset) == s_self->assets.end())
         s_self->assets.push_back(asset);
 }
@@ -52,27 +51,6 @@ void AssetManager::LoadAsset(const std::string& asset) {
 
     s_self->loadedAssets.insert({ key, developmentPath });
 
-}
-
-
-//----------------------------
-
-
-void AssetManager::SetIcon(const std::string& key)
-{
-    //splash image
-
-    #ifndef __EMSCRIPTEN__
-
-        GLFWimage image; 
-        
-        image.width = 70;
-        image.height = 70;
-        image.pixels = reinterpret_cast<unsigned char*>(const_cast<char*>(System::Resources::Manager::GetRawData(key)));
-    
-        glfwSetWindowIcon(System::Window::s_instance, 1, &image);
-
-    #endif
 }
 
 
