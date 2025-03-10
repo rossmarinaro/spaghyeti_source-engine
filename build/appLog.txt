@@ -1,36 +1,6 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Mar 10 15:29:02 2025
-Events initialized. @ Mon Mar 10 15:29:02 2025
-IMGui Version: 1 @ Mon Mar 10 15:29:02 2025
-GUI launched. @ Mon Mar 10 15:29:02 2025
-Workspace reset. @ Mon Mar 10 15:29:09 2025
-Project TheFunkyAdventuresOfSwankyVelvet opened.
-Project root path set: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/ @ Mon Mar 10 15:29:13 2025
-Sprite node Untitled created. @ Mon Mar 10 15:29:14 2025
-Sprite node Untitled created. @ Mon Mar 10 15:29:14 2025
-Sprite node Untitled created. @ Mon Mar 10 15:29:14 2025
-Sprite node Untitled created. @ Mon Mar 10 15:29:14 2025
-Empty node Untitled created. @ Mon Mar 10 15:29:14 2025
-Text node Untitled created. @ Mon Mar 10 15:29:14 2025
-Group node Untitled created. @ Mon Mar 10 15:29:14 2025
-Text node Untitled created. @ Mon Mar 10 15:29:14 2025
-Scene saved: C:/project_data/projects/c++/TheFunkyAdventuresOfSwankyVelvet/scenes/menu.spaghyeti @ Mon Mar 10 15:29:26 2025
-Scene: brothel parsed. @ Mon Mar 10 15:29:28 2025
-Scene: cave parsed. @ Mon Mar 10 15:29:28 2025
-Scene: continue parsed. @ Mon Mar 10 15:29:28 2025
-Scene: gameover parsed. @ Mon Mar 10 15:29:28 2025
-Scene: intro parsed. @ Mon Mar 10 15:29:28 2025
-Scene: menu parsed. @ Mon Mar 10 15:29:28 2025
-Scene: streets parsed. @ Mon Mar 10 15:29:29 2025
-Scene: town parsed. @ Mon Mar 10 15:29:31 2025
-Scene: town2 parsed. @ Mon Mar 10 15:29:32 2025
-Project TheFunkyAdventuresOfSwankyVelvet built successfully. @ Mon Mar 10 15:31:28 2025
-Text node author deleted. @ Mon Mar 10 15:31:38 2025
-Sprite node background deleted. @ Mon Mar 10 15:31:38 2025
-Sprite node glow deleted. @ Mon Mar 10 15:31:38 2025
-Sprite node sv deleted. @ Mon Mar 10 15:31:38 2025
-Sprite node sparkle deleted. @ Mon Mar 10 15:31:38 2025
-Empty node manager deleted. @ Mon Mar 10 15:31:38 2025
-Text node start deleted. @ Mon Mar 10 15:31:38 2025
-Group node title deleted. @ Mon Mar 10 15:31:38 2025
-GUI exited. @ Mon Mar 10 15:31:38 2025
-Editor closed. @ Mon Mar 10 15:31:38 2025
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Mar 10 19:02:59 2025
+Events initialized. @ Mon Mar 10 19:02:59 2025
+IMGui Version: 1 @ Mon Mar 10 19:02:59 2025
+GUI launched. @ Mon Mar 10 19:02:59 2025
+GUI exited. @ Mon Mar 10 19:03:13 2025
+Editor closed. @ Mon Mar 10 19:03:13 2025

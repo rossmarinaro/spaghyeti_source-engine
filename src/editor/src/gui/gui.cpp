@@ -256,7 +256,7 @@ void GUI::ShowOptionsInit()
 
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
-    ImGui::GetWindowDrawList()->AddImage((void*)Graphics::Texture2D::Get("editor logo").ID, ImVec2(pos.x, pos.y), ImVec2(pos.x + window_width, pos.y + window_height), ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::GetWindowDrawList()->AddImage((void*)Graphics::Texture2D::Get("editor logo").ID, ImVec2(pos.x, pos.y), ImVec2(pos.x + window_width, pos.y + window_height)/* , ImVec2(0, 1), ImVec2(1, 0) */);
 
     System::Renderer::BindFrameBuffer();
     System::Renderer::UnbindFrameBuffer();

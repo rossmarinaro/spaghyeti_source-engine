@@ -85,10 +85,11 @@ void Texture2D::Load(const std::string& key)
     unsigned char* image = nullptr;
     const char* filepath = System::Resources::Manager::GetFilePath(key);
 
+    stbi_set_flip_vertically_on_load(false);
+
     //file asset found in cache
 
     if (strcmp(filepath, "not found") != 0) {
-        stbi_set_flip_vertically_on_load(false);
         filetype = "filepath";
         image = stbi_load(filepath, &width, &height, &nrChannels, 0);
     }
@@ -100,9 +101,6 @@ void Texture2D::Load(const std::string& key)
         filetype = "binary";
         
         const auto data = System::Resources::Manager::GetResource(key);
-        #if STANDALONE == 0
-            stbi_set_flip_vertically_on_load(true);
-        #endif
 
         image = stbi_load_from_memory((unsigned char*)data.array_buffer, data.byte_length, &width, &height, &nrChannels, 0);
 
@@ -126,7 +124,6 @@ void Texture2D::Load(const std::string& key)
 
     System::Application::resources->textures[key] = texture; 
     LOG("Texture2D: " + key + " loaded (" + filetype + ")");
-
 
 } 
 
