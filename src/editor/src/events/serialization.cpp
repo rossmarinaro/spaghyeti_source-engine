@@ -200,22 +200,22 @@ void EventListener::Serialize(json& data, bool newScene)
         for (auto& node : Node::nodes)
         {
 
-            if (node->type == "Sprite")
+            if (node->type == Node::SPRITE)
                 sprites.push_back(Node::WriteData(node));
 
-            if (node->type == "Tilemap")
+            if (node->type == Node::TILEMAP)
                 tilemaps.push_back(Node::WriteData(node));
 
-            if (node->type == "Audio")
+            if (node->type == Node::AUDIO)
                 audio.push_back(Node::WriteData(node));
 
-            if (node->type == "Empty")
+            if (node->type == Node::EMPTY)
                 empty.push_back(Node::WriteData(node));
 
-            if (node->type == "Text")
+            if (node->type == Node::TEXT)
                 text.push_back(Node::WriteData(node));
                 
-            if (node->type == "Group")
+            if (node->type == Node::GROUP)
                 groups.push_back(Node::WriteData(node));
         
         }

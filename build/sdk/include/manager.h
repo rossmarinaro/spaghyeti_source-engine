@@ -29,6 +29,8 @@ namespace System {
 
             public:
 
+                enum { IMAGE, AUDIO, TEXT };
+
                 //resource storage
 
                 std::map<std::string, Shader> shaders;

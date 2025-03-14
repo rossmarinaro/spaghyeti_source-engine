@@ -8,7 +8,7 @@ using namespace editor;
 
 
 TextNode::TextNode(bool init): 
-    Node(init, "Text")
+    Node(init, TEXT)
 {
     isUI = 2;
     size = 1;
@@ -41,14 +41,14 @@ TextNode::~TextNode() {
 //---------------------------
 
 
-void TextNode::Reset(const char* component_type)
+void TextNode::Reset(int component_type)
 {
-    bool passAll = strcmp(component_type, "") == 0;
+    bool passAll = component_type == Component::NONE;
 
-    if (strcmp(component_type, "Shader") == 0 || passAll)
+    if (component_type == Component::SHADER || passAll)
     {}
 
-    if (strcmp(component_type, "Script") == 0 || passAll)
+    if (component_type == Component::SCRIPT || passAll)
       behaviors.clear();
 }
 
@@ -80,10 +80,10 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
             if (ImGui::BeginMenu("Add Component"))
             {
                 if (ImGui::MenuItem("Scripts")) 
-                    AddComponent("Script"); 
+                    AddComponent(Component::SCRIPT); 
 
                 if (ImGui::MenuItem("Shader")) 
-                    AddComponent("Shader");
+                    AddComponent(Component::SHADER);
             
                 ImGui::EndMenu();
             }
@@ -93,7 +93,7 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
             //------------------------------ script
 
 
-            if (HasComponent("Script") && ImGui::BeginMenu("Script")) {
+            if (HasComponent(Component::SCRIPT) && ImGui::BeginMenu("Script")) {
 
                 GUI::Get()->RenderScriptOptions(ID);
                 
@@ -103,7 +103,7 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
             //------------------------------ shader
 
 
-            if (HasComponent("Shader") && ImGui::BeginMenu("Shader")) {
+            if (HasComponent(Component::SHADER) && ImGui::BeginMenu("Shader")) {
 
                 GUI::Get()->RenderShaderOptions(ID);
                 

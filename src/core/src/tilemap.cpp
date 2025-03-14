@@ -25,9 +25,7 @@ bool MapManager::CreateLayer (
     auto data = System::Resources::Manager::ParseCSV(data_key);
 
     if (!data.size()) {                                       
-
         LOG("Tilemap: layer data not found.");
-
         return false;
     }
 
@@ -135,13 +133,13 @@ void MapManager::RemoveLayer(const std::string& key)
 
         layer.erase(
             std::remove_if(layer.begin(), layer.end(), [&](auto t) { 
-                return strcmp(t->type, "tile") == 0 && t->name == key; 
+                return t->type == Entity::TILE && t->name == key; 
             }), layer.end());
     }
 
     System::Game::GetScene()->entities.erase(
         std::remove_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [&](auto t) { 
-            return strcmp(t->type, "tile") == 0 && t->name == key; }), 
+            return t->type == Entity::TILE && t->name == key; }), 
                 System::Game::GetScene()->entities.end());
 
     LOG("Tilemap: layer " + key + " cleared.");
@@ -159,7 +157,7 @@ void MapManager::ClearMap()
 
     System::Game::GetScene()->entities.erase(
         std::remove_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [](auto t) { 
-            return strcmp(t->type, "tile") == 0; }), 
+            return t->type == Entity::TILE; }), 
                 System::Game::GetScene()->entities.end());
 
     LOG("Tilemap: layers cleared.");

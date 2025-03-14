@@ -10,7 +10,21 @@
 using namespace editor;
 
 
-Component::Component(const std::string& id, const std::string& type, const std::string& node_type, bool init):
+std::string Component::Get(int type) {
+
+    switch (type) {
+        case SHADER: return "Shader";
+        case SCRIPT: return "Script";
+        case ANIMATOR: return "Animator";
+        case PHYSICS: return "Physics";
+    }
+}
+
+
+//-------------------------------
+
+
+Component::Component(const std::string& id, int type, int node_type, bool init):
     m_init(init)
 {
     s_count++;
@@ -19,10 +33,10 @@ Component::Component(const std::string& id, const std::string& type, const std::
     name = "";
     
     this->type = type;
-    this->nodeType = node_type;
+    this->m_nodeType = node_type;
 
     if (m_init)
-        Editor::Log((std::string)this->type + " component added.");
+        Editor::Log(Get(this->type) + " component added.");
 }
 
 
@@ -30,12 +44,12 @@ Component::Component(const std::string& id, const std::string& type, const std::
 
 
 Component::~Component() {
-
     if (m_init) {
         s_count--;
-        Editor::Log((std::string)type + " component" + " removed.");
+        Editor::Log(Get(type) + " component" + " removed.");
     }
 }
+
 
 
 //-------------------------------
@@ -46,7 +60,7 @@ void Component::Make()
 
     //shader
 
-    if (type == "Shader")
+    if (type == SHADER)
     {
 
         if (!filename.size())
@@ -100,7 +114,7 @@ void Component::Make()
     //script
 
 
-    if (type == "Script")
+    if (type == SCRIPT)
     {
 
         if (!filename.size())
@@ -161,40 +175,33 @@ void Component::Make()
 
     //animator
 
-    if (type == "Animator")
+    if (type == ANIMATOR)
     {
-
         for (const auto& node : Node::nodes)
             if (node->ID == ID) {
-
-                if (nodeType == "Sprite") {
+                if (m_nodeType == Node::SPRITE) {
                     auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(ID));
                     sn->anim_to_play_on_start = { "", 0, 0, 2, -1, false };
                 }
-
             }
     }
 
     //physics
 
 
-    if (type == "Physics")
+    if (type == PHYSICS)
     {
-
         for (const auto& node : Node::nodes)
             if (node->ID == ID) {
 
-                if (nodeType == "Sprite") {
-
+                if (m_nodeType == Node::SPRITE) {
                     auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(ID));
                     sn->CreateBody();
                 }
 
-                if (nodeType == "Tilemap") {
-
+                if (m_nodeType == Node::TILEMAP) {
                     auto tmn = std::dynamic_pointer_cast<TilemapNode>(Node::Get(ID));
                     tmn->CreateBody();
-
                 }
 
             }

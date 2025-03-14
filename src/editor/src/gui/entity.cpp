@@ -17,7 +17,7 @@ void GUI::RenderShaderOptions(const std::string& nodeId)
     if (node)
     {
 
-        auto component = node->GetComponent("Shader", node->ID);
+        auto component = node->GetComponent(Component::SHADER, node->ID);
 
         if (!component)
             return;
@@ -139,7 +139,7 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
     if (node)
     {
 
-        auto component = node->GetComponent("Script", node->ID);
+        auto component = node->GetComponent(Component::SCRIPT, node->ID);
 
         if (!component)
             return; 

@@ -331,7 +331,7 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
         if (result == GL_FALSE) {
             glGetShaderInfoLog(shader, 1024, &length, message);
             LOG("Shader: " + key + " of type " + type + " compilation error: " + message);
-            return false;
+            return false; 
         }
 
         else {

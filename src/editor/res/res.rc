@@ -1,0 +1,25 @@
+IDI_ICON1               ICON    DISCARDABLE     "./icon.ico"
+1 VERSIONINFO
+FILEVERSION 1,0,0,0
+PRODUCTVERSION 1,0,0,0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "081604b0"
+        BEGIN
+            VALUE "Comments", "Spaghetaboutit!"
+            VALUE "CompanyName", "Pastaboss Enterprise"
+            VALUE "FileDescription", "game engine"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "spaghyeditor"
+            VALUE "LegalCopyright", "Copyright © Pastaboss 2025"
+            VALUE "OriginalName", "spaghyeti engine"
+            VALUE "ProductName", "spaghyeti engine"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0816, 1200
+    END
+END

@@ -721,13 +721,13 @@ void editor::GUI::ShowViewport()
         };
 
         for (const auto& node : Node::nodes) {
-            if (node->type == "Sprite")
+            if (node->type == Node::SPRITE)
                 iterateSprites(node);
 
-            if (node->type == "Group") {
+            if (node->type == Node::GROUP) {
                 auto gn = std::dynamic_pointer_cast<GroupNode>(Node::Get(node->ID));
                 for (const auto& n : gn->_nodes)
-                    if (n->type == "Sprite")
+                    if (n->type == Node::SPRITE)
                         iterateSprites(n);
             }
         }

@@ -6,7 +6,7 @@ using namespace editor;
 
 
 GroupNode::GroupNode(bool init):  
-    Node(init, "Group")
+    Node(init, GROUP)
 {
     if (m_init)
         Editor::Log("Group node " + name + " created.");   
@@ -25,8 +25,7 @@ GroupNode::~GroupNode() {
 //---------------------------
 
 
-void GroupNode::Reset(const char* component_type)
-{
+void GroupNode::Reset(int component_type) {
     for (const auto& node : _nodes) 
         node->Reset();
     
@@ -124,12 +123,10 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 }
 
 
-//------------------------------------
+//------------------------------------ render active nodes
 
 
-void GroupNode::Render()
-{
-    //render active nodes
+void GroupNode::Render() {
 
     if (_nodes.size())
         for (const auto &node : _nodes)

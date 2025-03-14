@@ -7,7 +7,7 @@ using namespace editor;
 
 
 TilemapNode::TilemapNode(bool init): 
-    Node(init, "Tilemap"),
+    Node(init, TILEMAP),
         m_layersApplied(false),
         m_mapApplied(false)
 { 
@@ -50,12 +50,12 @@ void TilemapNode::AddLayer() {
 //---------------------------
 
 
-void TilemapNode::Reset(const char* component_type)
+void TilemapNode::Reset(int component_type)
 {
 
-    bool passAll = strcmp(component_type, "") == 0;
+    bool passAll = component_type == Component::NONE;
 
-    if (strcmp(component_type, "Physics") == 0 || passAll) 
+    if (component_type == Component::PHYSICS || passAll) 
     {
         for (const auto& body : bodies)
             Physics::DestroyBody(body);
@@ -200,17 +200,17 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
             if (ImGui::BeginMenu("Add Component"))
             {
                 if (ImGui::MenuItem("Physics"))
-                    AddComponent("Physics");
+                    AddComponent(Component::PHYSICS);
             
                 ImGui::EndMenu();
             }
 
             //components
 
-            if (HasComponent("Physics") && ImGui::BeginMenu("Physics"))
+            if (HasComponent(Component::PHYSICS) && ImGui::BeginMenu("Physics"))
             { 
 
-                auto physics_component = GetComponent("Physics", ID);
+                auto physics_component = GetComponent(Component::PHYSICS, ID);
 
                 if (physics_component)
                 {
@@ -504,7 +504,7 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                                                 
                                                 if (layer.contains("objects")) {
 
-                                                    AddComponent("Physics");
+                                                    AddComponent(Component::PHYSICS);
 
                                                     for (const auto& body : layer["objects"])
                                                         createBodies(body["x"], body["y"], body["width"], body["height"]);

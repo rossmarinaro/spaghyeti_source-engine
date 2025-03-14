@@ -33,7 +33,7 @@ void displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec)
             {
                 ImGui::PushID(i);
 
-                if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec[i].second, ImVec2(70, 70))) {
+                if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec[i].second, ImVec2(70, 70))) { 
                     editor::AssetManager::Get()->selectedAsset = vec[i].first;
                     editor::Editor::Log("Current asset selected: " + editor::AssetManager::Get()->selectedAsset);
                 }
@@ -80,7 +80,7 @@ void editor::GUI::RenderAssets()
         if (AssetManager::Get()->currentFolder == "images")
             displayThumbnail(AssetManager::Get()->images);
 
-        if (AssetManager::Get()->currentFolder == "audio")
+        if (AssetManager::Get()->currentFolder == "audio") 
             displayThumbnail(AssetManager::Get()->audio);
 
         if (AssetManager::Get()->currentFolder == "data")
@@ -89,15 +89,15 @@ void editor::GUI::RenderAssets()
 
     else 
     {
-        if (ImGui::ImageButton("image", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
+        if (ImGui::ImageButton("image", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID/* , ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0) */))
             SetFolder(true, "images");
-
+ 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
             ImGui::SetTooltip("images");
 
         ImGui::SameLine(); 
 
-        if (ImGui::ImageButton("audio", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
+        if (ImGui::ImageButton("audio", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID/* , ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0) */))
             SetFolder(true, "audio");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
@@ -105,7 +105,7 @@ void editor::GUI::RenderAssets()
 
         ImGui::SameLine(); 
 
-        if (ImGui::ImageButton("data", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0)))
+        if (ImGui::ImageButton("data", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID/* , ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0) */))
             SetFolder(true, "data");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))

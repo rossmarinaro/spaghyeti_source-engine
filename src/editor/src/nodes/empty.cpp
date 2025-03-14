@@ -7,9 +7,8 @@
 using namespace editor;
 
 EmptyNode::EmptyNode(bool init): 
-    Node(init, "Empty")
+    Node(init, EMPTY)
 { 
-
     rectWidth = 0.0f;
     rectHeight = 0.0f;
     radius = 0.0f;
@@ -40,16 +39,15 @@ EmptyNode::~EmptyNode() {
 //---------------------------
 
 
-void EmptyNode::Reset(const char* component_type)
-{
+void EmptyNode::Reset(int component_type) {
 
-    bool passAll = strcmp(component_type, "") == 0;
+    bool passAll = component_type == Component::NONE;
 
-    if (strcmp(component_type, "Shader") == 0 || passAll)
+    if (component_type == Component::SHADER || passAll)
         if (m_debugGraphic.get())
                 m_debugGraphic->shader = Shader::Get("graphics");
 
-    if (strcmp(component_type, "Script") == 0 || passAll)
+    if (component_type == Component::SCRIPT || passAll)
         behaviors.clear();
 }
 
@@ -101,10 +99,10 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
             if (ImGui::BeginMenu("Add Component"))
             {
                 if (ImGui::MenuItem("Scripts")) 
-                    AddComponent("Script"); 
+                    AddComponent(Component::SCRIPT); 
 
                 if (ImGui::MenuItem("Shader")) 
-                    AddComponent("Shader");
+                    AddComponent(Component::SHADER);
             
                 ImGui::EndMenu();
             }
@@ -114,23 +112,20 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
             //------------------------------ script
 
 
-            if (HasComponent("Script") && ImGui::BeginMenu("Script")) {
+            if (HasComponent(Component::SCRIPT) && ImGui::BeginMenu("Script")) {
 
                 GUI::Get()->RenderScriptOptions(ID);
-                
                 ImGui::EndMenu();
             }
 
             //------------------------------ shader
 
 
-            if (HasComponent("Shader") && ImGui::BeginMenu("Shader")) {
+            if (HasComponent(Component::SHADER) && ImGui::BeginMenu("Shader")) {
 
                 GUI::Get()->RenderShaderOptions(ID);
-                
                 ImGui::EndMenu();
             }
-
 
             if (ImGui::BeginMenu("Options")) {
                 ShowOptions(node, arr);
@@ -184,7 +179,6 @@ void EmptyNode::Render()
         }
 
         if (currentShape == "rectangle") {
-
             ImGui::SliderFloat("width", &rectWidth, 10.0f, 1000.0f); 
             ImGui::SliderFloat("height", &rectHeight, 10.0f, 1000.0f); 
 
@@ -192,9 +186,7 @@ void EmptyNode::Render()
         }
 
         if (currentShape == "ellipse") {
-
             ImGui::SliderFloat("radius", &radius, 10.0f, 1000.0f);  
-
             m_debugGraphic->SetSize(radius);
         }
 

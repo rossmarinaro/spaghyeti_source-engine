@@ -554,7 +554,10 @@ void EventListener::BuildAndRun()
         std::string type = folder;
 
         if (type == "images")
-            type = "image";
+            type = "System::Resources::Manager::IMAGE";
+
+        else if (type == "audio")
+            type = "System::Resources::Manager::AUDIO";
 
         for (const auto& file : std::filesystem::directory_iterator(projResPath)) 
         {
@@ -1168,13 +1171,13 @@ void EventListener::BuildAndRun()
 
                 //load shaders
 
-                if (node->HasComponent("Shader") && node->shader.first.length())
+                if (node->HasComponent(Component::SHADER) && node->shader.first.length())
                     preload_queue << "  Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\", nullptr);\n";
 
 
                 //--------------- sprite
 
-                if (node->type == "Sprite")
+                if (node->type == Node::SPRITE)
                 {
                     std::ostringstream frame_oss;
                     std::vector<std::string> framesToLoad;
@@ -1250,7 +1253,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->texture.Filter_Max = " + filtering + ";\n";
 
                     if (sn->lock_in_place) {
-                        command_queue << "   sprite_" + node->ID + "->type = \"UI\";\n";
+                        command_queue << "   sprite_" + node->ID + "->type = \"Entity::UI\";\n";
                         command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
                     }
 
@@ -1259,10 +1262,10 @@ void EventListener::BuildAndRun()
 
                     //physics bodies
 
-                    if (sn->HasComponent("Physics"))
+                    if (sn->HasComponent(Component::PHYSICS))
                     {
                         for (int i = 0; i < sn->bodies.size(); i++) 
-                            command_queue << "   sprite_" + node->ID + "->bodies.push_back({ Physics::CreateDynamicBody(\"box\", " + std::to_string(sn->positionX + sn->bodyX[i]) + ", " + std::to_string(sn->positionY + sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + " } });\n"; 
+                            command_queue << "   sprite_" + node->ID + "->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, " + std::to_string(sn->positionX + sn->bodyX[i]) + ", " + std::to_string(sn->positionY + sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + " } });\n"; 
 
                         command_queue << "   for (const auto& body : sprite_" + node->ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
 
@@ -1270,14 +1273,14 @@ void EventListener::BuildAndRun()
         
                     //shader
 
-                    if (sn->HasComponent("Shader") && sn->shader.first.length()) 
+                    if (sn->HasComponent(Component::SHADER) && sn->shader.first.length()) 
                         command_queue << "   sprite_" + node->ID + "->shader = Shader::Get(\"" + sn->shader.first + "\");\n";
 
                 }
 
                 //--------------- text
 
-                if (node->type == "Text")
+                if (node->type == Node::TEXT)
                 {          
 
                     auto tn = std::dynamic_pointer_cast<TextNode>(node);
@@ -1300,7 +1303,7 @@ void EventListener::BuildAndRun()
 
                 //--------------- empty
 
-                if (node->type == "Empty")
+                if (node->type == Node::EMPTY)
                 {
 
                     auto en = std::dynamic_pointer_cast<EmptyNode>(node);
@@ -1321,7 +1324,7 @@ void EventListener::BuildAndRun()
 
                             //shader
 
-                            if (en->HasComponent("Shader") && en->shader.first.length()) 
+                            if (en->HasComponent(Component::SHADER) && en->shader.first.length()) 
                                 command_queue << "   empty_" + node->ID + "->shader = Shader::Get(\"" + en->shader.first + "\");\n";
                         }
                     }
@@ -1334,7 +1337,7 @@ void EventListener::BuildAndRun()
 
                 //--------------- tilemap
 
-                if (node->type == "Tilemap")
+                if (node->type == Node::TILEMAP)
                 {
 
                     auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
@@ -1386,7 +1389,7 @@ void EventListener::BuildAndRun()
 
                     //static physics bodies
 
-                    if (tmn->HasComponent("Physics") && tmn->bodies.size())
+                    if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies.size())
                         for (int i = 0; i < tmn->bodies.size(); i++)    
                             command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i] + tmn->body_width[i] / 2) + ", " + std::to_string(tmn->bodyY[i] + tmn->body_height[i] / 2) + ", " + std::to_string(tmn->body_width[i] / 2) + ", " + std::to_string(tmn->body_height[i] / 2) + ");\n";
 
@@ -1394,7 +1397,7 @@ void EventListener::BuildAndRun()
 
                 //--------------- audio
 
-                if (node->type == "Audio") {
+                if (node->type == Node::AUDIO) {
 
                     auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
@@ -1409,7 +1412,7 @@ void EventListener::BuildAndRun()
 
                 //--------------- group
 
-                if (node->type == "Group") {
+                if (node->type == Node::GROUP) {
 
                     auto gn = std::dynamic_pointer_cast<GroupNode>(node);
 
@@ -1421,10 +1424,8 @@ void EventListener::BuildAndRun()
 
                 for (const auto& behavior : node->behaviors) {
 
-                    std::string entity = (node->type + "_" + node->ID);
-
+                    std::string entity = (std::to_string(node->type) + "_" + node->ID);
                     transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
-
                     command_queue << "   System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
 
                 }

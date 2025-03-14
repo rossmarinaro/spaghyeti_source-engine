@@ -532,9 +532,9 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 //----------------------------- base entity wrapper
 
 
-std::shared_ptr<Entity> Game::CreateEntity(const std::string& type, int layer)
+std::shared_ptr<Entity> Game::CreateEntity(int type, int layer)
 {
-    auto entity = std::make_shared<Entity>(type.c_str());
+    auto entity = std::make_shared<Entity>(type);
 
     if (layer == 1)
         Application::game->currentScene->entities.emplace_back(entity);

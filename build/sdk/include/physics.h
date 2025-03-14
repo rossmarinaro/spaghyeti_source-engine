@@ -13,6 +13,8 @@ class Physics {
 
     public:
 
+        enum { BOX, CIRCLE };
+
         float gravityX, gravityY;
 
         bool enableDebug,
@@ -31,7 +33,7 @@ class Physics {
         static b2Body* CreateStaticBody(float x, float y, float width, float height, bool isSensor = false, int pointer = 0);
 
         static b2Body* CreateDynamicBody(
-            const std::string& type,
+            int type,
             float x,
             float y,
             float width,

@@ -9,7 +9,7 @@
 using namespace editor;
 
 
-Node::Node(bool init, const std::string& type, const std::string& name):
+Node::Node(bool init, int type, const std::string& name):
     m_init(init)
 {
     ID = s_Assign();
@@ -26,6 +26,23 @@ Node::Node(bool init, const std::string& type, const std::string& name):
     this->name = CheckName(name, nodes, nodes.size());
 }
 
+
+//--------------------------- get node type
+
+
+std::string Node::s_GetType(int type) {
+
+    switch (type) {
+        case SPRITE: return "Sprite";
+        case EMPTY: return "Empty";
+        case TILEMAP: return "Tilemap";
+        case AUDIO: return "Audio";
+        case GROUP: return "Group";
+        case TEXT: return "Text";
+    }
+}
+
+
 //--------------------------- get node
 
 
@@ -41,7 +58,7 @@ std::shared_ptr<Node> Node::Get(const std::string& id)
 
     for (const auto& node : nodes)
     {
-        if (node->type == "Group") 
+        if (node->type == SPRITE) 
         {
             auto group = std::dynamic_pointer_cast<GroupNode>(node);
 
@@ -51,7 +68,7 @@ std::shared_ptr<Node> Node::Get(const std::string& id)
 
             for (const auto& n : group->_nodes) 
             {
-                if (n->type == "Group")
+                if (n->type == GROUP)
                 {
                     auto _group = std::dynamic_pointer_cast<GroupNode>(n);
 
@@ -89,7 +106,7 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
         {
             for (const auto& node : nodes)
             {
-                if (node->type == "Group") {
+                if (node->type == GROUP) {
                     auto group = std::dynamic_pointer_cast<GroupNode>(node);
                     for (auto it = group->_nodes.begin(); it != group->_nodes.end(); ++it)
                         if ((*it)->ID == *id)
@@ -157,7 +174,7 @@ void Node::DeleteNode (std::shared_ptr<Node>& node)
     {
         for (const auto& n : nodes)
         {
-            if (n->type == "Group") 
+            if (n->type == GROUP) 
             {
                 auto group = std::dynamic_pointer_cast<GroupNode>(n);
 
@@ -175,8 +192,7 @@ void Node::DeleteNode (std::shared_ptr<Node>& node)
 //-------------------------- remove all
 
 
-void Node::ClearAll() 
-{
+void Node::ClearAll() {
 
     if (!nodes.size()) 
         return;
@@ -198,7 +214,7 @@ void Node::ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
     if (ImGui::MenuItem("Duplicate")) {
         json data = WriteData(node);
         ReadData(data, true, nullptr, arr, arr != nodes);
-        Editor::Log(node->type + " node " + name + " duplicated.");  
+        Editor::Log(node->name  + " node " + name + " duplicated.");  
     }
 
     if (ImGui::BeginMenu("Delete"))
@@ -214,7 +230,7 @@ void Node::ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 //-------------------------- add component
 
 
-void Node::AddComponent(const char* type, bool init)
+void Node::AddComponent(int type, bool init)
 {
 
     //return if component exists 
@@ -222,7 +238,7 @@ void Node::AddComponent(const char* type, bool init)
     if (std::find_if(components.begin(), components.end(), 
         [&](std::shared_ptr<Component> component){ return component->type == type; }) 
         != components.end()) {
-            Editor::Log("Component " + (std::string)type + " already exists!");
+            Editor::Log("Component " + Component::Get(type) + " already exists!");
             return;
         }
         
@@ -246,7 +262,7 @@ void Node::RemoveComponent(std::shared_ptr<Component>& component)
 
     if (it != components.end()) {
 
-        Reset((*it)->type.c_str());
+        Reset((*it)->type);
         components.erase(it);
     }
 
@@ -256,13 +272,10 @@ void Node::RemoveComponent(std::shared_ptr<Component>& component)
 //------------------------------ get component
 
 
-const std::shared_ptr<Component> Node::GetComponent(const std::string& type, const std::string& id)
-{
+const std::shared_ptr<Component> Node::GetComponent(int type, const std::string& id) {
 
-    for (auto it = components.begin(); it != components.end(); ++it) 
-    {
+    for (auto it = components.begin(); it != components.end(); ++it) {
         auto component = *it;
-
         if (id == component->ID && type == component->type) 
             return component;
     }
@@ -274,10 +287,9 @@ const std::shared_ptr<Component> Node::GetComponent(const std::string& type, con
 //------------------------------ node has component
 
 
-const bool Node::HasComponent(const char* type) {
-    
+const bool Node::HasComponent(int type) {
     return std::find_if(components.begin(), components.end(), [&](std::shared_ptr<Component> component) 
-        { return (std::string)type == component->type; }) 
+        { return (int)type == component->type; }) 
             != components.end(); 
 }
 
@@ -307,7 +319,7 @@ void Node::LoadShader(
 void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name) 
 {
 
-    if (node->type == "Sprite") 
+    if (node->type == SPRITE) 
     {
         auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
@@ -315,7 +327,7 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
             sn->spriteHandle->shader = Shader::Get(name);
     }
 
-    if (node->type == "Empty") 
+    if (node->type == EMPTY) 
     {
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
@@ -368,7 +380,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
     //-----------sprite
 
-    if (node->type == "Sprite")
+    if (node->type == SPRITE)
     {
         auto sn = std::dynamic_pointer_cast<SpriteNode>(node); 
 
@@ -448,7 +460,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "current frame", sn->currentFrame },
             { "components", {
                     { "physics", {
-                            { "exists", sn->HasComponent("Physics") },
+                            { "exists", sn->HasComponent(Component::PHYSICS) },
                             { "bodies", bodies },
                             { "friction", sn->friction },
                             { "restitution", sn->restitution },
@@ -456,7 +468,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                         }
                     },
                     { "animator", {
-                            { "exists", sn->HasComponent("Animator") },
+                            { "exists", sn->HasComponent(Component::ANIMATOR) },
                             { "animations", animations },
                             { "on start", {
                                     { "key", sn->anim_to_play_on_start.key.length() ? sn->anim_to_play_on_start.key : "" }, 
@@ -468,12 +480,12 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                         }
                     },
                     { "script", {
-                            { "exists", sn->HasComponent("Script") },
+                            { "exists", sn->HasComponent(Component::SCRIPT) },
                             { "scripts", scripts }
                         }
                     },
                     { "shader", {
-                            { "exists", sn->HasComponent("Shader") },
+                            { "exists", sn->HasComponent(Component::SHADER) },
                             { "shaders", shader }
                         }
                     }
@@ -484,7 +496,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
     //------------tilemap
 
-    if (node->type == "Tilemap")
+    if (node->type == TILEMAP)
     {
 
         auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
@@ -527,7 +539,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "tile_height", tmn->tile_height },
             { "components", {
                     { "physics", {
-                            { "exists", tmn->HasComponent("Physics") },
+                            { "exists", tmn->HasComponent(Component::PHYSICS) },
                             { "bodies", bodies }
                         }
                     }
@@ -538,7 +550,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
     //-------------audio
 
-    if (node->type == "Audio")
+    if (node->type == AUDIO)
     {
         auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
@@ -551,7 +563,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
     //------------- empty
 
-    if (node->type == "Empty")
+    if (node->type == EMPTY)
     {
 
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
@@ -576,12 +588,12 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "alpha", en->m_debugGraphic ? en->m_debugGraphic->alpha : 0 },
             { "components", {
                     { "script", {
-                            { "exists", en->HasComponent("Script") },
+                            { "exists", en->HasComponent(Component::SCRIPT) },
                             { "scripts", scripts }
                         }
                     },
                     { "shader", {
-                            { "exists", en->HasComponent("Shader") },
+                            { "exists", en->HasComponent(Component::SHADER) },
                             { "shaders", shader }
                         }
                     }
@@ -594,7 +606,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
     //--------------- text
 
 
-    if (node->type == "Text")
+    if (node->type == TEXT)
     {
 
         auto tn = std::dynamic_pointer_cast<TextNode>(node);
@@ -617,7 +629,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "depth", tn->depth },
             { "components", {
                     { "script", {
-                            { "exists", tn->HasComponent("Script") },
+                            { "exists", tn->HasComponent(Component::SCRIPT) },
                             { "scripts", scripts }
                         }
                     }
@@ -630,7 +642,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
     //--------------- group
 
 
-    if (node->type == "Group")
+    if (node->type == GROUP)
     {
 
         auto gn = std::dynamic_pointer_cast<GroupNode>(node);
@@ -651,7 +663,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
     }
 
 
-    data["type"] = node->type; 
+    data["type"] = s_GetType(node->type); 
     data["name"] = node->name;
 
     return data;
@@ -801,7 +813,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 if (data["components"]["animator"]["exists"]) 
                 {
-                    sn->AddComponent("Animator", false);
+                    sn->AddComponent(Component::ANIMATOR, false);
 
                     for (const auto& anim : data["components"]["animator"]["animations"]) 
                     { 
@@ -831,7 +843,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 if (data["components"]["physics"]["exists"]) 
                 {
-                    sn->AddComponent("Physics", false);
+                    sn->AddComponent(Component::PHYSICS, false);
 
                     sn->friction = data["components"]["physics"]["friction"];
                     sn->restitution = data["components"]["physics"]["restitution"];
@@ -864,7 +876,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 if (data["components"]["script"]["exists"]) 
                 {
                     
-                    sn->AddComponent("Script", false);
+                    sn->AddComponent(Component::SCRIPT, false);
 
                     if (data["components"]["script"]["scripts"].size())
                         for (const auto& scripts : data["components"]["script"]["scripts"])
@@ -878,7 +890,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 if (data["components"]["shader"]["exists"]) 
                 {
 
-                    sn->AddComponent("Shader", false); 
+                    sn->AddComponent(Component::SHADER, false); 
 
                     if (data["components"]["shader"]["shaders"].size())
                         LoadShader(sn, 
@@ -937,7 +949,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 //physics 
        
                 if (data["components"]["physics"]["exists"]) 
-                    tmn->AddComponent("Physics", false);
+                    tmn->AddComponent(Component::PHYSICS, false);
 
                 if (data["components"]["physics"]["bodies"].size())
                     for (const auto& body : data["components"]["physics"]["bodies"]) 
@@ -1050,8 +1062,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 if (data["components"]["script"]["exists"]) 
                 {
-
-                    en->AddComponent("Script", false);
+                    en->AddComponent(Component::SCRIPT, false);
 
                     if (data["components"]["script"]["scripts"].size())
                         for (const auto& scripts : data["components"]["script"]["scripts"])
@@ -1064,8 +1075,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 if (data["components"]["shader"]["exists"]) 
                 {
-                    
-                    en->AddComponent("Shader", false);
+                    en->AddComponent(Component::SHADER, false);
 
                     if (data["components"]["shader"]["shaders"].size())
                         LoadShader(en, 
@@ -1128,7 +1138,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("components") && data["components"]["script"]["exists"]) 
             {
-                tn->AddComponent("Script", false);
+                tn->AddComponent(Component::SCRIPT, false);
 
                 if (data["components"]["script"]["scripts"].size())
                     for (const auto& scripts : data["components"]["script"]["scripts"])

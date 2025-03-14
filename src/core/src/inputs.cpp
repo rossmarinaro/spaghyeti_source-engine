@@ -164,12 +164,12 @@ void Inputs::ProcessInput(GLFWwindow* window)
             if (!button.second->active)
                 continue; 
 
-            if (strcmp(button.second->type, "UI") == 0 || strcmp(button.second->type, "sprite") == 0) {
+            if (button.second->type == Entity::UI || button.second->type == Entity::SPRITE) {
                 auto sprite = std::static_pointer_cast<Sprite>(button.second); 
                 isOverlapping = do_check(sprite->position.x, sprite->position.y, sprite->texture.FrameWidth, sprite->texture.FrameHeight);  
             }
 
-            if (strcmp(button.second->type, "text") == 0) {
+            if (button.second->type == Entity::TEXT) {
                 auto text = std::static_pointer_cast<Text>(button.second);
                 isOverlapping = do_check(text->position.x + text->GetTextDimensions().x, text->position.y + text->GetTextDimensions().y, text->GetTextDimensions().x, text->GetTextDimensions().y);
             }

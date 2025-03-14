@@ -7,7 +7,7 @@
 
 //---------------------------------- empty entity
 
-Entity::Entity(const char* type) {
+Entity::Entity(int type) {
     this->type = type;
     name = "Untitled_" + std::to_string(s_count);
     ID = UUID::generate_uuid();
@@ -19,7 +19,7 @@ Entity::Entity(const char* type) {
 //------------------------------------ active entity 
 
 
-Entity::Entity(const char* type, float x, float y)
+Entity::Entity(int type, float x, float y)
 { 
     this->type = type;
 
@@ -62,8 +62,7 @@ void Entity::SetData(const std::string& key, const std::any& value) {
 
 
 const bool Entity::IsSprite() {
-    return strcmp(type, "sprite") == 0 || 
-            strcmp(type, "tile") == 0;
+    return type == SPRITE || type == TILE;
 }
 
 
@@ -109,8 +108,8 @@ void Entity::SetPosition(float x, float y) {
 
 //quad
 Geometry::Geometry(float x, float y, float width, float height): 
-    Entity("geometry", x, y),
-        m_type("quad")
+    Entity(GEOMETRY, x, y),
+        m_type(QUAD)
 { 
     this->width = width;
     this->height = height;
@@ -140,7 +139,7 @@ void Geometry::Render(float projWidth, float projHeight)
 
     glm::mat4 model = glm::mat4(1.0f); 
 
-    if (strcmp(m_type, "quad") == 0)
+    if (m_type == QUAD)
     {
  
         texture.FrameWidth = width;
@@ -183,7 +182,7 @@ std::shared_ptr<Sprite> Sprite::Clone()
     if (bodies.size())
         for (int i = 0; i < bodies.size(); i++)
             clone->bodies.push_back({ 
-                Physics::CreateDynamicBody("box", 
+                Physics::CreateDynamicBody(Physics::BOX, 
                     bodies[0].second.x, 
                     bodies[0].second.y, 
                     bodies[0].second.z, 
@@ -249,8 +248,7 @@ void Sprite::SetVelocityX(float velX)
 //---------------------------------
 
 
-void Sprite::SetVelocityY(float velY) 
-{ 
+void Sprite::SetVelocityY(float velY) { 
 
     if (!active)
         return;
@@ -440,7 +438,7 @@ void Sprite::Render(float projWidth, float projHeight)
 
         //tilemap
 
-        if (strcmp(type, "tile") == 0) {
+        if (type == TILE) {
             texture.U1 = (currentFrameX * currentFrameWidth) / texture.Width;      
             texture.U2 = ((currentFrameX + 1) * currentFrameWidth) / texture.Width;
 
@@ -622,7 +620,7 @@ void Sprite::Render(float projWidth, float projHeight)
 
 
 Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile): 
-    Entity("sprite", x, y)
+    Entity(SPRITE, x, y)
 {   
     this->key = key;
     currentFrame = frame;    
@@ -632,9 +630,8 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     texture = Graphics::Texture2D::Get(key);
     shader = Shader::Get("sprite");          
     
-    if (isTile) 
-    {
-        type = "tile"; 
+    if (isTile) {
+        type = TILE; 
         //shader = Shader::Get("batch");
         return;
     }
@@ -647,7 +644,7 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
 
 
 Sprite::Sprite(Sprite& sprite):
-    Entity("sprite", sprite.position.x, sprite.position.y)
+    Entity(SPRITE, sprite.position.x, sprite.position.y)
 {
     key = sprite.key;
     currentFrame = sprite.currentFrame;    
@@ -661,13 +658,12 @@ Sprite::Sprite(Sprite& sprite):
 
 }
 
-
-
+ 
 //-------------------------------------- UI sprite
 
  
 Sprite::Sprite(const std::string& key, const glm::vec2& position): 
-    Entity("UI", position.x, position.y)
+    Entity(UI, position.x, position.y)
 {
     this->key = key; 
     texture = Graphics::Texture2D::Get(key);
@@ -677,14 +673,13 @@ Sprite::Sprite(const std::string& key, const glm::vec2& position):
 }
 
 
-
+  
 //-------------------------------------------
 
 
 Sprite::~Sprite() {
-    if (strcmp(type, "tile") != 0) {
+    if (type != TILE) 
         LOG("Sprite: " + key + " Destroyed."); 
-    }
 }
 
 

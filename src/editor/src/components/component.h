@@ -10,21 +10,25 @@ namespace editor {
 
         public:
 
+            enum { NONE, SHADER, SCRIPT, ANIMATOR, PHYSICS };
+
+            int type;
+
             std::string ID, 
                         name,
-                        filename,
-                        type, 
-                        nodeType;
+                        filename;
+
+            Component(const std::string& id, int type, int node_type, bool init = true);
+            ~Component();
 
             void Make();
 
-            Component(const std::string& id, const std::string& type, const std::string& node_type, bool init = true);
-
-            ~Component();
+            static std::string Get(int type);
         
 
         private:
 
+            int m_nodeType;
             bool m_init;
             static inline int s_count = 0;
     };

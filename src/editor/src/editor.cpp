@@ -67,12 +67,12 @@ void Editor::Update()
            s_self->s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
             s_self->s_selector->SetAlpha(1.0f);
         
-            if (strcmp(selectedEntity->type, "sprite") == 0) {
+            if (selectedEntity->type == Entity::SPRITE)  {
                 auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
                 s_self->s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
             } 
 
-            if (strcmp(selectedEntity->type, "text") == 0) {
+            if (selectedEntity->type == Entity::TEXT)  {
                 auto text = std::static_pointer_cast<Text>(selectedEntity);
                 s_self->s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
             }

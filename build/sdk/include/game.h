@@ -44,9 +44,9 @@ namespace System {
             void Flush(bool removeBehaviors = true);
             void Exit();
 
-            //create objects
+            //create objects 
 
-            static std::shared_ptr<Entity> CreateEntity(const std::string& type = "empty", int layer = 1);
+            static std::shared_ptr<Entity> CreateEntity(int type = Entity::GENERIC, int layer = 1);
             static std::shared_ptr<Sprite> CreateUI(const std::string& key, float x, float y, int frame = 0);
             static std::shared_ptr<Sprite> CreateSprite(const std::string& key, float x, float y, int frame = 0, float scale = 1.0f, int layer = 1);
             static std::shared_ptr<Sprite> CreateTileSprite(const std::string& key, float x, float y, int frame);

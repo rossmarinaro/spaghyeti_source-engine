@@ -54,9 +54,7 @@ b2Body* Physics::CreateStaticBody(
     body.def.position.Set(x, y);     
 
     body.def.userData.pointer = pointer;
-
     body.self = System::Application::game->physics->m_world.CreateBody(&body.def);
-
     body.fixtureDef.isSensor = isSensor;
 
     b2PolygonShape box;
@@ -75,9 +73,9 @@ b2Body* Physics::CreateStaticBody(
 
 
 b2Body* Physics::CreateDynamicBody(
-    const std::string& type,
+    int type,
     float x,
-    float y,
+    float y, 
     float width,
     float height,
     bool isSensor,
@@ -91,22 +89,19 @@ b2Body* Physics::CreateDynamicBody(
     Body body;
 
     body.def.type = b2_dynamicBody;
-  
     body.def.position.Set(x, y);
- 
     body.def.userData.pointer = pointer;
- 
     body.self = System::Application::game->physics->m_world.CreateBody(&body.def);
 
     b2CircleShape circle;
     b2PolygonShape box;
 
-    if (type == "circle") { 
+    if (type == CIRCLE) { 
 	    circle.m_radius = 0.3f;
         body.fixtureDef.shape = &circle;
     }
 
-    if (type == "box") {
+    if (type == BOX) {
         box.SetAsBox(width, height);          
         body.fixtureDef.shape = &box;
     }

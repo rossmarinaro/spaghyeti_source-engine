@@ -1,6 +1,6 @@
-Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Mon Mar 10 19:02:59 2025
-Events initialized. @ Mon Mar 10 19:02:59 2025
-IMGui Version: 1 @ Mon Mar 10 19:02:59 2025
-GUI launched. @ Mon Mar 10 19:02:59 2025
-GUI exited. @ Mon Mar 10 19:03:13 2025
-Editor closed. @ Mon Mar 10 19:03:13 2025
+Editor Root: C:\project_data\projects\c++\spaghyeti_source_engine\build @ Thu Mar 13 22:33:22 2025
+Events initialized. @ Thu Mar 13 22:33:22 2025
+IMGui Version: 1 @ Thu Mar 13 22:33:22 2025
+GUI launched. @ Thu Mar 13 22:33:22 2025
+GUI exited. @ Thu Mar 13 22:33:24 2025
+Editor closed. @ Thu Mar 13 22:33:24 2025

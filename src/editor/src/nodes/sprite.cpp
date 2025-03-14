@@ -8,7 +8,7 @@ using namespace editor;
 
 
 SpriteNode::SpriteNode(bool init):  
-    Node(init, "Sprite"),
+    Node(init, SPRITE),
         m_show_sprite_texture(false)
 {
     key = "";
@@ -66,20 +66,19 @@ SpriteNode::~SpriteNode() {
 //---------------------------
 
 
-void SpriteNode::Reset(const char* component_type)
+void SpriteNode::Reset(int component_type)
 {
 
-    bool passAll = strcmp(component_type, "") == 0;
+    bool passAll = component_type == Component::NONE;
 
-    if (strcmp(component_type, "Shader") == 0 || passAll)
+    if (component_type == Component::SHADER || passAll)
         if (spriteHandle.get())
             spriteHandle->shader = Shader::Get("sprite");
 
-    if (strcmp(component_type, "Script") == 0 || passAll)
+    if (component_type == Component::SCRIPT || passAll)
         behaviors.clear();
 
-    if (strcmp(component_type, "Animator") == 0 || passAll)
-    {
+    if (component_type == Component::ANIMATOR || passAll) {
         anim_key.clear();
         anim_start.clear();
         anim_end.clear();
@@ -89,7 +88,7 @@ void SpriteNode::Reset(const char* component_type)
         anim = 0; 
     }
 
-    if (strcmp(component_type, "Physics") == 0 || passAll)
+    if (component_type == Component::PHYSICS || passAll)
     {
 
         for (const auto& body : bodies)
@@ -129,7 +128,7 @@ void SpriteNode::CreateBody(float x, float y, float width, float height, bool is
     is_sensor.push_back(bc);
     body_pointer.push_back(pointerType);
 
-    b2Body* body = Physics::CreateDynamicBody("box", x, y, width, height); 
+    b2Body* body = Physics::CreateDynamicBody(Physics::BOX, x, y, width, height); 
 
     bodies.push_back(body);
     
@@ -240,16 +239,16 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                 {
 
                     if (ImGui::MenuItem("Animator"))
-                        AddComponent("Animator");
+                        AddComponent(Component::ANIMATOR);
 
                     if (ImGui::MenuItem("Physics"))
-                        AddComponent("Physics");
+                        AddComponent(Component::PHYSICS);
                 
                     if (ImGui::MenuItem("Scripts"))
-                        AddComponent("Script");
+                        AddComponent(Component::SCRIPT);
 
                     if (ImGui::MenuItem("Shader"))
-                        AddComponent("Shader");
+                        AddComponent(Component::SHADER);
    
                 }
                 else
@@ -262,10 +261,10 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
             //-------------------------------- animator
 
-            if (HasComponent("Animator") && ImGui::BeginMenu("Animator"))
+            if (HasComponent(Component::ANIMATOR) && ImGui::BeginMenu("Animator"))
             {
 
-                auto anim_component = GetComponent("Animator", ID);
+                auto anim_component = GetComponent(Component::ANIMATOR, ID);
 
                 if (anim_component)
                 {
@@ -389,7 +388,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
             //------------------------------ shader
 
 
-            if (HasComponent("Shader") && ImGui::BeginMenu("Shader")) {
+            if (HasComponent(Component::SHADER) && ImGui::BeginMenu("Shader")) {
 
                 GUI::Get()->RenderShaderOptions(ID);
                 
@@ -400,7 +399,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
             //------------------------------ script
 
 
-            if (HasComponent("Script") && ImGui::BeginMenu("Script")) {
+            if (HasComponent(Component::SCRIPT) && ImGui::BeginMenu("Script")) {
 
                 GUI::Get()->RenderScriptOptions(ID);
                 
@@ -411,10 +410,10 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
             //------------------------------ physics
 
 
-            if (HasComponent("Physics") && ImGui::BeginMenu("Physics"))
+            if (HasComponent(Component::PHYSICS) && ImGui::BeginMenu("Physics"))
             {
 
-                auto physics_component = GetComponent("Physics", ID);
+                auto physics_component = GetComponent(Component::PHYSICS, ID);
 
                 if (physics_component)
                 {

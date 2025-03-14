@@ -36,7 +36,9 @@ namespace System {
 			static const int randInt(int n);
             static const int intBetween(int min, int max);
             static const int CountDigits (long long n);
-			static const int BinToDec (int n);
+
+            //binary to decimal - mainly used to convert csv map data, extracting tile position and rotation flags
+			static const int BinToDec (int n); 
 
 			static const float randFloat(float n);
 			static const float floatBetween(float min, float max);

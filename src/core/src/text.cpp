@@ -245,8 +245,7 @@ void main() {
 // }
 //GLuint program;
 
-void Text::Init()
-{
+void Text::Init() {
 
     if (!gltInit()) {
         LOG(stderr << "Text: Failed to initialize text: " << EXIT_FAILURE );
@@ -263,9 +262,7 @@ void Text::Init()
 //--------------------------
 
 
-void Text::ShutDown() 
-{
-    
+void Text::ShutDown() {
     gltDeleteText(s_buffer);
     gltTerminate();
 
@@ -279,7 +276,7 @@ void Text::ShutDown()
 
 Text::Text(const std::string& content, float x, float y, float scale, glm::vec3 tint)
 :
-    Entity("text", x, y),
+    Entity(TEXT, x, y),
         content(content)
 {
 

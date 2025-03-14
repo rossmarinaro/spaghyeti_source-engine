@@ -69,7 +69,7 @@ const int System::Utils::CountDigits (long long n)
 
 }
 
-//---------------------------------------binary to dec
+//--------------------------------------- binary to decimal 
 
 const int System::Utils::BinToDec (int n) 
 {

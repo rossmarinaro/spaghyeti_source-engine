@@ -101,12 +101,12 @@ GUI::GUI()
     s_self->grid_quantity = 20.0f;
 
     //load embedded assets
-
-    System::Resources::Manager::LoadRaw("image", "icon small", icon_small_png, icon_small_png_len); 
-    System::Resources::Manager::LoadRaw("image", "editor logo", icon_large_png, icon_large_png_len);
-    System::Resources::Manager::LoadRaw("image", "audio src", audio_png, audio_png_len); 
-    System::Resources::Manager::LoadRaw("image", "data src", data_png, data_png_len);
-    System::Resources::Manager::LoadRaw("image", "folder src", folder_png, folder_png_len);
+ 
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "icon small", icon_small_png, icon_small_png_len); 
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "editor logo", icon_large_png, icon_large_png_len);
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "audio src", audio_png, audio_png_len); 
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "data src", data_png, data_png_len);
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "folder src", folder_png, folder_png_len);
 
     System::Resources::Manager::RegisterTextures();
 

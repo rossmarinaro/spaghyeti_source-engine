@@ -8,7 +8,7 @@ using namespace editor;
 
 
 AudioNode::AudioNode(bool init): 
-    Node(init, "Audio"),
+    Node(init, AUDIO),
         m_audioTexture(Graphics::Texture2D::Get("audio src"))
      
 {
@@ -45,7 +45,7 @@ AudioNode::~AudioNode() {
 //---------------------------
 
 
-void AudioNode::Reset(const char* component_type)
+void AudioNode::Reset(int component_type)
 {}
 
 

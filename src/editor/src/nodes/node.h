@@ -13,6 +13,10 @@ namespace editor {
 
         public:
 
+            enum { SPRITE, TILEMAP, TEXT, AUDIO, EMPTY, GROUP };
+
+            int type;
+
             bool created, 
                  active, 
                  show_options;
@@ -23,9 +27,7 @@ namespace editor {
                   positionY,
                   rotation;
 
-            std::string ID,
-                        name,
-                        type;
+            std::string ID, name;
 
             std::vector<float> body_width, 
                                body_height,  
@@ -38,13 +40,13 @@ namespace editor {
             std::pair<std::string, std::pair<std::string, std::string>> shader;
             std::map<std::string, std::string> behaviors;
             
-            Node(bool init, const std::string& type, const std::string& name = "Untitled");
+            Node(bool init, int type, const std::string& name = "Untitled");
 
             virtual ~Node() {}
             
             virtual void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) = 0;
-            virtual void Reset(const char* component = "") = 0;
             virtual void Render() {}
+            virtual void Reset(const int component = Component::NONE) = 0;
 
             static inline std::vector<std::shared_ptr<Node>> nodes;
 
@@ -64,11 +66,11 @@ namespace editor {
             static json WriteData(std::shared_ptr<Node>& node);
             static std::shared_ptr<Node> Get(const std::string& id);
             
-            void AddComponent(const char* type, bool init = true);
+            void AddComponent(int type, bool init = true); 
             void RemoveComponent(std::shared_ptr<Component>& component);
             
-            const std::shared_ptr<Component> GetComponent(const std::string& type, const std::string& id);
-            const bool HasComponent(const char* type);
+            const std::shared_ptr<Component> GetComponent(int type, const std::string& id);
+            const bool HasComponent(int type);
 
         protected:
 
@@ -78,7 +80,6 @@ namespace editor {
             
             void SavePrefab();
             void ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
-            
 
         private:
         
@@ -87,6 +88,7 @@ namespace editor {
             static inline int s_MAX_NODES = 100; 
 
             static const char* s_Assign();
+            static std::string s_GetType(int type);
             
             static inline std::string CheckName(const std::string& key, const std::vector<std::shared_ptr<Node>>& arr, int count) {
                 if (std::find_if(arr.begin(), arr.end(), [&](auto node) { return node->name == key; }) != arr.end())
@@ -173,7 +175,7 @@ namespace editor {
             ~SpriteNode();      
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
-            void Reset(const char* component_type = "") override;
+            void Reset(const int component_type = Component::NONE) override;
             void Render() override;
 
             void RegisterFrames();
@@ -222,7 +224,7 @@ namespace editor {
             ~TilemapNode();
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
-            void Reset(const char* component_type = "") override; 
+            void Reset(const int component_type = Component::NONE) override; 
 
             void ApplyTilemap(bool clearPrevious = true, bool renderReversed = false, bool isJSON = false);
             void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
@@ -259,7 +261,7 @@ namespace editor {
             ~TextNode();     
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
-            void Reset(const char* component_type = "") override;
+            void Reset(const int component_type = Component::NONE) override;
             void Render() override;
 
     };
@@ -281,7 +283,7 @@ namespace editor {
             ~AudioNode();
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
-            void Reset(const char* component_type = "") override;
+            void Reset(const int component_type = Component::NONE) override;
             void Load();
 
         private:
@@ -316,7 +318,7 @@ namespace editor {
             void CreateShape(const std::string& shape);
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
-            void Reset(const char* component_type = "") override;
+            void Reset(const int component_type = Component::NONE) override;
             void Render() override;
 
     };
@@ -335,7 +337,7 @@ namespace editor {
             ~GroupNode();      
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
-            void Reset(const char* component_type = "") override;
+            void Reset(const int component_type = Component::NONE) override;
             void Render() override;
 
     };

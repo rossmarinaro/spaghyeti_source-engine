@@ -16,7 +16,9 @@ class Entity {
 
 	public: 
 
-		int depth;
+        enum { GENERIC, UI, SPRITE, GEOMETRY, TEXT, TILE };
+
+		int depth, type;
 
 		float rotation, alpha;  
 		
@@ -26,8 +28,6 @@ class Entity {
              renderable, 
              cull,
              alive;
-
-		const char* type;
 
 		glm::vec3 tint; 
 		glm::vec2 position, scale, scrollFactor;
@@ -58,8 +58,8 @@ class Entity {
 		virtual void Render(float projWidth, float projHeight) {}
         virtual ~Entity() { s_count--; }
   
-		Entity(const char* type);
-		Entity(const char* type, float x, float y);
+		Entity(int type);
+		Entity(int type, float x, float y);
         
         const bool IsSprite();
         void SetData(const std::string& key, const std::any& value);
@@ -111,9 +111,12 @@ class Geometry : public Entity {
 
 	private:
 
+        enum { QUAD, CIRCLE };
+
+    	int m_type;
+
         float m_thickness;
         GLint m_drawStyle;
-		const char* m_type;
 		
 };
 
