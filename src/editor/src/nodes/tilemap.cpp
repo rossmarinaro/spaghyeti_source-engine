@@ -394,13 +394,13 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                         ImGui::Text(csv_name.c_str()); 
 
-                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get(layers[i][2]).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == "image") 
+                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get(layers[i][2]).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE) 
                         {
                             layers[i][2] = AssetManager::Get()->selectedAsset;
                             m_layersApplied = false;
                         }
 
-                        else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) != "image")
+                        else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) != System::Resources::Manager::IMAGE)
                             ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
 
                         if (

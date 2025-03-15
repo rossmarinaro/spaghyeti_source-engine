@@ -64,7 +64,7 @@ bool EventListener::NewProject(const char* root_path)
 
     #ifdef _WIN32
 
-        TCHAR path[MAX_PATH];
+        TCHAR p[MAX_PATH];
 
         BROWSEINFO bi = { 0 };
 
@@ -77,7 +77,7 @@ bool EventListener::NewProject(const char* root_path)
 
         if (pidl != 0)
         {
-            SHGetPathFromIDList (pidl, path);
+            SHGetPathFromIDList (pidl, p);
 
             IMalloc* imalloc = 0;
 
@@ -88,9 +88,11 @@ bool EventListener::NewProject(const char* root_path)
 
             Editor::Get()->Reset();
 
-            Editor::projectPath = System::Utils::SanitizePath((((std::string)path) + "/"));
+            std::string path = (std::string)p;
+
+            Editor::projectPath = System::Utils::SanitizePath(path) + "/";
        
-            s_currentProject = std::filesystem::path((std::string)path).filename().string();
+            s_currentProject = std::filesystem::path{ path }.filename().string();
 
             std::string root_path = Editor::rootPath;
             std::replace(root_path.begin(), root_path.end(), '\\', '/');
@@ -236,11 +238,14 @@ bool EventListener::SaveScene(bool saveAs)
 
             EncodeFile(filepath);
 
-            Editor::projectPath = System::Utils::SanitizePath(System::Utils::ReplaceFrom(std::filesystem::path{ filepath }.parent_path().string(), "scenes", ""));
+            std::string path = std::filesystem::path{ filepath }.parent_path().string(),
+                        rep_path = System::Utils::ReplaceFrom(path, "scenes", "");
 
-            s_currentScene = System::Utils::ReplaceFrom(std::filesystem::path{ filepath }.filename().string(), ".", "");
+            Editor::projectPath = System::Utils::SanitizePath(rep_path);
 
-            Editor::Log("Scene saved: " + Editor::projectPath + "scenes/" + std::filesystem::path{ filepath }.filename().string());
+            s_currentScene = System::Utils::ReplaceFrom(path, ".", "");
+
+            Editor::Log("Scene saved: " + Editor::projectPath + "scenes/" + path);
 
             return true;
 
@@ -325,12 +330,16 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             //result path
 
-            Editor::projectPath = System::Utils::SanitizePath(System::Utils::ReplaceFrom(std::filesystem::path{ result.string() }.parent_path().string(), "scenes", "")); 
+            std::string resultPath = std::filesystem::path{ result.string() }.parent_path().string(),
+                        path = System::Utils::ReplaceFrom(resultPath, "scenes", ""),
+                        filename = result.filename().string();
+
+            Editor::projectPath = System::Utils::SanitizePath(path); 
 
             //project name and current scene
 
             s_currentProject = std::filesystem::path(Editor::projectPath).parent_path().filename().string();
-            s_currentScene = System::Utils::ReplaceFrom(result.filename().string(), ".", "");
+            s_currentScene = System::Utils::ReplaceFrom(filename, ".", "");
 
             //temporary file for decoding
 
@@ -340,34 +349,44 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             Editor::Get()->Reset();
 
-            const std::string asset_folders[] = { "images", "audio", "data" };
+            const std::string asset_types[] = { "images", "audio", "data", "fonts" };
 
-            for (const std::string& type : asset_folders)
-                for (const auto& entry : std::filesystem::directory_iterator(Editor::projectPath + "resources/assets/" + type))
-                {
+            for (const std::string& type : asset_types) 
+            {
+                const std::string asset_path = Editor::projectPath + "resources/assets/" + type;
 
-                    const std::string asset = entry.path().filename().string(),
-                                      texture = AssetManager::GetThumbnail(asset);
+                if (std::filesystem::exists(asset_path))
+                    for (const auto& entry : std::filesystem::directory_iterator(asset_path))
+                    {
+                        if (std::filesystem::is_empty(entry.path()) || entry.is_directory())
+                            continue;
 
-                    std::string dir = entry.path().string(); //includes filename
-                                      
-                    std::replace(dir.begin(), dir.end(), '\\', '/');
-                    System::Resources::Manager::LoadFile(asset.c_str(), dir.c_str());
-                    System::Resources::Manager::RegisterTextures();
-    
-                    AssetManager::LoadAsset(asset);
+                        const std::string asset = entry.path().filename().string(),
+                                          texture = AssetManager::GetThumbnail(asset);
 
-                    unsigned int id = Graphics::Texture2D::Get(texture).ID;
+                        std::string dir = entry.path().string(); //includes filename
+                                        
+                        std::replace(dir.begin(), dir.end(), '\\', '/');
+                        System::Resources::Manager::LoadFile(asset, dir);
+                        System::Resources::Manager::RegisterTextures();
+        
+                        AssetManager::LoadAsset(asset);
 
-                    if (type == "images")
-                        AssetManager::Get()->images.push_back({ asset, id });
+                        unsigned int id = Graphics::Texture2D::Get(texture).ID;
 
-                    if (type == "audio")
-                        AssetManager::Get()->audio.push_back({ asset, id });
+                        if (type == "images")
+                            AssetManager::Get()->images.push_back({ asset, id });
 
-                    if (type == "data")
-                        AssetManager::Get()->data.push_back({ asset, id });
-                }
+                        else if (type == "audio")
+                            AssetManager::Get()->audio.push_back({ asset, id });
+
+                        else if (type == "data")
+                            AssetManager::Get()->data.push_back({ asset, id });
+
+                        else if (type == "fonts")
+                            AssetManager::Get()->text.push_back({ asset, id });
+                    }
+            }
 
             //load entity nodes
 
@@ -390,7 +409,6 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
             Editor::Get()->projectOpen = true;
 
             return true;
-
         }
 
     #endif
@@ -435,19 +453,15 @@ void EventListener::OpenFile()
 
             //load asset in sandbox
 
-            System::Resources::Manager::LoadFile(asset.c_str(), result.string().c_str());
+            System::Resources::Manager::LoadFile(asset, result.string());
             System::Resources::Manager::RegisterTextures();
 
             //copy asset to game template
 
             const auto options = std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive;
 
-            std::string folder = "/" + System::Utils::GetFileType(asset) + "/";
-
-            if (folder == "/image/")
-                folder = "/images/";
-
-            const std::string texture = AssetManager::GetThumbnail(asset),
+            const std::string folder = AssetManager::GetFolder(asset),
+                              texture = AssetManager::GetThumbnail(asset),
                               path = Editor::projectPath + "resources/assets" + folder + asset;
 
             std::ifstream file(path);
@@ -466,14 +480,10 @@ void EventListener::OpenFile()
 
             //apply image to assets menu if not there already
 
-            unsigned int id = Graphics::Texture2D::Get(texture).ID;
+            const unsigned int id = Graphics::Texture2D::Get(texture).ID;
 
-            auto insertAsset = [&](std::vector<std::pair<std::string, GLuint>>& vec) {
-                if (
-                    std::find_if( 
-                        vec.begin(), vec.end(),
-                        [&](std::pair<std::string, GLuint> pair) { return pair.first == asset; }) == vec.end()
-                )
+            auto insertAsset = [&](std::vector<std::pair<std::string, GLuint>>& vec) -> void {
+                if (std::find_if(vec.begin(), vec.end(), [&](std::pair<std::string, GLuint> pair) { return pair.first == asset; }) == vec.end())
                     vec.push_back({ asset, id });
             };
 
@@ -486,12 +496,14 @@ void EventListener::OpenFile()
             if (folder == "/data/")
                 insertAsset(AssetManager::Get()->data);
 
+            if (folder == "/fonts/")
+                insertAsset(AssetManager::Get()->text);
+
             if (folder == "/icon/") {
                 std::string path = result.string();
                 std::replace(path.begin(), path.end(), '\\', '/');
                 AssetManager::Get()->projectIcon = path;
             }
-
         }
 
     #endif
@@ -544,11 +556,11 @@ void EventListener::BuildAndRun()
 
     const auto options = std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive;
 
-    const std::string asset_folders[] = { "images", "audio" };
+    const std::string asset_types[] = { "images", "audio" };
 
     std::map<std::string, std::array<std::string, 2>> rawFiles;
 
-    for (const std::string& folder : asset_folders)
+    for (const std::string& folder : asset_types)
     {
         const std::string projResPath = Editor::projectPath + "resources/assets/" + folder;
         std::string type = folder;
@@ -561,8 +573,8 @@ void EventListener::BuildAndRun()
 
         for (const auto& file : std::filesystem::directory_iterator(projResPath)) 
         {
-            const std::string name = file.path().filename().string(),
-                              destPath = assetsFolder + name;
+            std::string name = file.path().filename().string();
+            const std::string destPath = assetsFolder + name;
 
             std::string rsrcPath = file.path().string();
             std::replace(rsrcPath.begin(), rsrcPath.end(), '\\', '/');
@@ -922,11 +934,13 @@ void EventListener::BuildAndRun()
 
     //iterate over scenes to include
 
-    const auto parseScene = [this](const std::filesystem::directory_entry& filepath) -> void {
+    const auto parseScene = [this](const std::filesystem::directory_entry& filepath) -> void 
+    {
+        std::string path = filepath.path().filename().string();
 
         for (const auto& scene : Editor::Get()->scenes)
         {
-            if (scene == System::Utils::ReplaceFrom(filepath.path().filename().string(), ".", ""))
+            if (scene == System::Utils::ReplaceFrom(path, ".", ""))
             {
                 std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
 
@@ -988,12 +1002,11 @@ void EventListener::BuildAndRun()
 
             //embedded assets
 
-            if (Editor::Get()->embed_files) 
-            {
+            if (Editor::Get()->embed_files) {
                 const auto rawFile = rawFiles.find(asset); 
 
                 if (rawFile != rawFiles.end()) 
-                    asset_queue << "  System::Resources::Manager::LoadRaw(\"" + rawFile->second[0] + "\", " + key + ", " + rawFile->second[1] + ", " + rawFile->second[1] + "_len);\n";
+                    asset_queue << "  System::Resources::Manager::LoadRaw(" + rawFile->second[0] + ", " + key + ", " + rawFile->second[1] + ", " + rawFile->second[1] + "_len);\n";
             }
 
             //assets are copied to user project's "build" directory, and then virtually referenced from this path
@@ -1253,7 +1266,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->texture.Filter_Max = " + filtering + ";\n";
 
                     if (sn->lock_in_place) {
-                        command_queue << "   sprite_" + node->ID + "->type = \"Entity::UI\";\n";
+                        command_queue << "   sprite_" + node->ID + "->type = Entity::UI;\n";
                         command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
                     }
 
@@ -1379,7 +1392,7 @@ void EventListener::BuildAndRun()
                         //create map if layers are defined
 
                         if (tmn->layers[0][0].length()) {
-                            command_queue << "   auto map_" + node->ID + " = System::Game::CreateEntity(\"" + "tilemap" + "\");\n\t";
+                            command_queue << "   auto map_" + node->ID + " = System::Game::CreateEntity(Entity::TILE);\n\t";
                             command_queue << "   map_" + node->ID + "->name = \"" + tmn->name + "\";\n";
                         }
 
@@ -1424,7 +1437,7 @@ void EventListener::BuildAndRun()
 
                 for (const auto& behavior : node->behaviors) {
 
-                    std::string entity = (std::to_string(node->type) + "_" + node->ID);
+                    std::string entity = Node::GetType(node->type) + "_" + node->ID;
                     transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
                     command_queue << "   System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
 

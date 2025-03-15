@@ -59,15 +59,15 @@ void process_audio(const char* key, bool loop, float volume)
 
     ma_device_config deviceConfig; 
     std::string filetype = "none";
-    const char* filepath = System::Resources::Manager::GetFilePath(key);      
+    const std::string& filepath = System::Resources::Manager::GetFilePath(key);      
 
     //file asset or raw char data
 
     ma_result result;
     
-    if (strcmp(filepath, "not found") != 0)  {
+    if (filepath != "not found")  {
         filetype = "filepath";
-        result = ma_decoder_init_file(filepath, NULL, loop ? &music_decoder : &sound_decoder);
+        result = ma_decoder_init_file(filepath.c_str(), NULL, loop ? &music_decoder : &sound_decoder);
     }
 
     else {

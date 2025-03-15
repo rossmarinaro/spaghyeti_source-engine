@@ -44,16 +44,16 @@ class Camera {
         inline void Pan(float rateX, float rateY) { SetPosition(glm::vec2(m_position.x + rateX, m_position.y + rateY)); }
         inline void StopFollow() { m_canFollow = false; }
         
-        void StartFollow(glm::vec2* position, float offsetX = 0.0f, float offsetY = 0.0f);
         void Reset();
         void Update(); 
+        void StartFollow(glm::vec2* position, float offsetX = 0.0f, float offsetY = 0.0f);
         void SetVignette(float alpha);
-        void Fade(float rate, const char* direction);
+        void Fade(float rate, const std::string& direction);
         void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd); 
-        bool InBounds(); 
+        const bool InBounds(); 
 
-        glm::highp_mat4 GetProjectionMatrix(float width, float height),
-                        GetViewMatrix(float x, float y);
+        const glm::highp_mat4 GetProjectionMatrix(float width, float height),
+                              GetViewMatrix(float x, float y);
 
         Camera();
         ~Camera() = default;

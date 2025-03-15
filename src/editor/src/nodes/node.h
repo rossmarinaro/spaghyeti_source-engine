@@ -55,7 +55,6 @@ namespace editor {
                 auto node = std::make_shared<T>();
                 arr != nodes ? arr.push_back(node) : nodes.push_back(node);
                 return node;
-
             }
 
             static void ClearAll();
@@ -65,6 +64,7 @@ namespace editor {
             static std::shared_ptr<Node> ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr = nodes, bool isChild = false);
             static json WriteData(std::shared_ptr<Node>& node);
             static std::shared_ptr<Node> Get(const std::string& id);
+            static const std::string GetType(int type);
             
             void AddComponent(int type, bool init = true); 
             void RemoveComponent(std::shared_ptr<Component>& component);
@@ -87,8 +87,7 @@ namespace editor {
 
             static inline int s_MAX_NODES = 100; 
 
-            static const char* s_Assign();
-            static std::string s_GetType(int type);
+            static const std::string s_Assign();
             
             static inline std::string CheckName(const std::string& key, const std::vector<std::shared_ptr<Node>>& arr, int count) {
                 if (std::find_if(arr.begin(), arr.end(), [&](auto node) { return node->name == key; }) != arr.end())
@@ -96,7 +95,6 @@ namespace editor {
                     
                 return key;
             }
-
     };
 
     //---------------------------------

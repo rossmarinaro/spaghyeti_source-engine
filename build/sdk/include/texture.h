@@ -28,10 +28,9 @@ namespace Graphics {
             Texture2D();
             ~Texture2D() = default;
 
-            static Texture2D& Get(const std::string& key);
+            static const Texture2D& Get(const std::string& key);
             static void Load(const std::string& key);
             static void UnLoad(const std::string& key);
-            static void SetChannels(Texture2D& texture, unsigned int channels);
             
             void SetFiltering();
             void Generate(unsigned int width, unsigned int height, unsigned int channels, const void* data);  // generates texture from image data

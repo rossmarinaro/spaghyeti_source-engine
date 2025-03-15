@@ -27,7 +27,7 @@ class Shader {
         static void InitBaseShaders(); 
         static void Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomShader = nullptr);
         static void UnLoad(const std::string& key);
-        static Shader& Get(const std::string& key);
+        static const Shader& Get(const std::string& key);
 
         Shader() = default;
         ~Shader() = default;
@@ -35,7 +35,7 @@ class Shader {
     private:
 
         void Generate(const std::string& key, const char* vertexPath, const char* fragmentPath, const char* geomPath = nullptr);
-        Shader& Use();
+        const Shader& Use();
 
 };
 

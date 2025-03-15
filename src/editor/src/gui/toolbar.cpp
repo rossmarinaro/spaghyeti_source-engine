@@ -26,9 +26,10 @@ void editor::GUI::ShowSettings()
         {
             for (const auto& filename : std::filesystem::directory_iterator(Editor::projectPath)) 
             {
-                const auto IterateScenes = [&](const std::filesystem::directory_entry& filename) -> void 
+                const auto IterateScenes = [&](const std::filesystem::directory_entry& path) -> void 
                 {
-                    const std::string scene = System::Utils::ReplaceFrom(filename.path().filename().string(), ".", ""); 
+                    std::string name = path.path().filename().string();
+                    const std::string scene = System::Utils::ReplaceFrom(name, ".", ""); 
                     auto session = Editor::Get();
 
                     if (session->events->s_currentScene != scene)
@@ -222,7 +223,7 @@ void editor::GUI::ShowSettings()
                     key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
                     path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
                     
-                    if (System::Utils::GetFileType(path) == "data") 
+                    if (System::Utils::GetFileType(path) == System::Resources::Manager::DATA) 
                         continue;
 
                     if (ImGui::MenuItem(path.c_str())) 
@@ -393,10 +394,8 @@ void editor::GUI::ShowSettings()
 
                 if (ImGui::BeginCombo("path", spritesheet.second.c_str()))
                 {
-
                     for (const auto& asset : am->loadedAssets)
                     {
- 
                         std::string key = asset.first,
                                     path = asset.second;
 
@@ -432,10 +431,8 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("preload animations"))
         {
-
             for (int i = 0; i < session->animations.size(); i++)
             {
-
                 ImGui::PushID(i);
 
                 ImGui::InputText("sprite name", &session->animations[i].first);

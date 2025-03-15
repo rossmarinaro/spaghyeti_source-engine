@@ -47,9 +47,9 @@ namespace System {
 			static const bool str_endsWith(const std::string_view& str, const std::string_view& suffix);
 			static const bool CoinFlip(void);
 
-			static std::string ReplaceFrom(const std::string& str, const char* position, const char* replace_str);
-			static const std::string GetFileType(const std::string& path);
-			static const std::string SanitizePath(std::string path);
+			static const int GetFileType(const std::string& path);
+			static std::string SanitizePath(std::string& path);
+            static std::string ReplaceFrom(std::string& str, const char* position, const char* replace_str);
 
         private:
 

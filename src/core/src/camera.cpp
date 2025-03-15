@@ -55,16 +55,16 @@ void Camera::SetVignette(float alpha) {
 //-------------------------------
 
 
-void Camera::Fade(float rate, const char* direction) 
+void Camera::Fade(float rate, const std::string& direction) 
 { 
 
     if (!System::Game::GetScene()->vignette)
         return;
 
-    if (strcmp(direction, "in") == 0)
+    if (direction == "in")
         System::Game::GetScene()->vignette->alpha += rate;
 
-    if (strcmp(direction, "out") == 0)
+    if (direction == "out")
         System::Game::GetScene()->vignette->alpha -= rate;
 }
 
@@ -73,7 +73,6 @@ void Camera::Fade(float rate, const char* direction)
 
 void Camera::SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd) 
 {
- 
     currentBoundsWidthBegin = widthBegin;
     currentBoundsWidthEnd = widthEnd;
     currentBoundsHeightBegin = heightBegin;
@@ -84,9 +83,8 @@ void Camera::SetBounds(float widthBegin, float widthEnd, float heightBegin, floa
 //-------------------------------
 
 
-bool Camera::InBounds() 
+const bool Camera::InBounds() 
 { 
-
     if (!m_target.first)
         return false;
 
@@ -100,7 +98,7 @@ bool Camera::InBounds()
 //------------------------------
 
 
-glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
+const glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 {
     return (glm::highp_mat4)glm::ortho(
         1.0f / m_zoom, width / m_zoom,  
@@ -112,7 +110,7 @@ glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
 //------------------------------
 
 
-glm::highp_mat4 Camera::GetViewMatrix(float x, float y)
+const glm::highp_mat4 Camera::GetViewMatrix(float x, float y)
 {
     glm::mat4 view = glm::mat4(1.0f);
     glm::vec2 midOffset = GetPosition();

@@ -29,11 +29,9 @@ void Manager::Clear(bool all)
             shader.second.Delete();
 
         System::Application::resources->shaders.clear();
-        
     }
 
     LOG("Resources: assets cleared.");
-
 }
 
 
@@ -42,24 +40,22 @@ void Manager::Clear(bool all)
 //register the textures
 void Manager::RegisterTextures()
 {
-
     #ifndef __EMSCRIPTEN__
 
         //load base texture (white 1 x 1)
-
         static unsigned char data[] = { 0xff, 0xff, 0xff, 0xff };
-        LoadRaw("image", "base", data, 4);
+        LoadRaw(IMAGE, "base", data, 4);
 
     #endif
 
     //load textures
 
     for (const auto& asset : System::Application::resources->m_raw_assets)
-        if (asset.second.type == "image" && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
+        if (asset.second.type == IMAGE && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(asset.first);
 
     for (const auto& asset : System::Application::resources->m_file_assets)
-        if (asset.second.first == "image" && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
+        if (asset.second.first == IMAGE && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(asset.first);
 
     LOG("Resources: assets registered.");
@@ -70,36 +66,24 @@ void Manager::RegisterTextures()
 //----------------------------------- 
 
 //load individual files
-void Manager::LoadFile(const char* key, const char* path)
-{
-    std::string type;
+void Manager::LoadFile(const std::string& key, const std::string& path) {
 
-    if (System::Utils::GetFileType(path) == "image")
-        type = "image";
-
-    else if (System::Utils::GetFileType(path) == "audio")
-        type = "audio";
-
-    else if (System::Utils::GetFileType(path) == "data")
-        type = "data";
-
-    else {
+    if (System::Utils::GetFileType(path) == NOT_SUPPORTED) {
         LOG("Resources: filetype not available for loading.");
         return;
     }
     
-    System::Application::resources->m_file_assets.insert({ key, { type, path } });
-
+    System::Application::resources->m_file_assets.insert({ key, { System::Utils::GetFileType(path), path } });
 } 
 
-
+ 
 //------------------------------------- 
 
 
 //load raw char array / size in bytes
-void Manager::LoadRaw(const std::string& type, const char* key, unsigned char* arr, unsigned int bytes) {
+void Manager::LoadRaw(int type, const std::string& key, unsigned char* arr, unsigned int bytes) {
 
-    if (type != "image" && type != "audio") {
+    if (type != IMAGE && type != AUDIO) {
         LOG("Resources: file not available for loading.");
         return;
     }
@@ -121,7 +105,7 @@ void Manager::LoadFrames(const std::string& key, const std::vector<std::array<in
 
 
 //load frames from file
-void Manager::LoadAtlas(const std::string& key, const char* path) {
+void Manager::LoadAtlas(const std::string& key, const std::string& path) {
     UnLoadAtlas(key);
     System::Application::resources->m_atlas_paths.insert( { key, path } );
 }
@@ -140,7 +124,7 @@ void Manager::LoadAnims(const std::string& key, const std::map<std::string, std:
 //-------------------------------------  
 
 //unload files
-void Manager::UnLoadFile(const char* key) {
+void Manager::UnLoadFile(const std::string& key) {
     if (System::Application::resources->m_file_assets.find(key) != System::Application::resources->m_file_assets.end())
         System::Application::resources->m_file_assets.erase(System::Application::resources->m_file_assets.find(key));
 } 
@@ -176,7 +160,7 @@ void Manager::UnLoadAnims(const std::string& key) {
 //------------------------------------- 
 
 //unload raw char array audio
-void Manager::UnLoadRaw(const char* type, const char* key) {
+void Manager::UnLoadRaw(int type, const std::string& key) {
     auto it = System::Application::resources->m_raw_assets.find(key); 
     if (System::Application::resources->m_raw_assets.find(key) != System::Application::resources->m_raw_assets.end()) 
         if (it->second.type == type)
@@ -200,7 +184,7 @@ const BinaryResource Manager::GetResource(const std::string& key) {
 
 //get raw atlas
 const std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::string& key) {
-    const std::map<std::string, std::vector<std::array<int, 6>>>::iterator it = System::Application::resources->m_atlases.find(key);
+    const auto it = System::Application::resources->m_atlases.find(key);
     if (it != System::Application::resources->m_atlases.end())
         return it->second; 
         
@@ -212,7 +196,7 @@ const std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::
 
 //get anims by sprite key
 const std::map<std::string, std::pair<int, int>> Manager::GetAnimations(const std::string& key) {
-    const std::map<std::string, std::map<std::string, std::pair<int, int>>>::iterator it = System::Application::resources->m_anims.find(key);
+    const auto it = System::Application::resources->m_anims.find(key);
     if (it != System::Application::resources->m_anims.end())
         return it->second;
 
@@ -223,8 +207,8 @@ const std::map<std::string, std::pair<int, int>> Manager::GetAnimations(const st
 //--------------------------------
 
 //get atlas path
-const char* Manager::GetSpritesheetPath(const std::string& key) {
-    const std::map<std::string, const char*>::iterator it = System::Application::resources->m_atlas_paths.find(key);
+const std::string Manager::GetSpritesheetPath(const std::string& key) {
+    const auto it = System::Application::resources->m_atlas_paths.find(key);
     return it != System::Application::resources->m_atlas_paths.end() ? 
         it->second : "not found";
 }
@@ -233,11 +217,10 @@ const char* Manager::GetSpritesheetPath(const std::string& key) {
 //--------------------------- 
 
 //get asset path
-const char* Manager::GetFilePath(const std::string& key) {
+const std::string Manager::GetFilePath(const std::string& key) {
    const auto it = System::Application::resources->m_file_assets.find(key);
     return it != System::Application::resources->m_file_assets.end() ?
-        it->second.second.c_str() : "not found";
-
+        it->second.second : "not found";
 }
 
 
@@ -246,7 +229,6 @@ const char* Manager::GetFilePath(const std::string& key) {
 //parse CSV
 const std::vector<std::string> Manager::ParseCSV(const std::string& key, int index)
 {
-
     std::vector<std::string> result;
     std::string line;
 
@@ -254,9 +236,8 @@ const std::vector<std::string> Manager::ParseCSV(const std::string& key, int ind
 
     const auto it = System::Application::resources->m_file_assets.find(key);
  
-    if (it->second.first == "data" && it != System::Application::resources->m_file_assets.end()) 
+    if (it->second.first == DATA && it != System::Application::resources->m_file_assets.end()) 
     { 
-
         std::ifstream in(it->second.second);
 
         if (System::Utils::str_endsWith(it->second.second, ".json")) //json array
@@ -270,8 +251,7 @@ const std::vector<std::string> Manager::ParseCSV(const std::string& key, int ind
                     for (int i = 0; i < data["layers"].size(); i++) 
                         if (index == i && data["layers"][i].contains("data")) 
                         {
-                            for (auto& d : data["layers"][i]["data"]) 
-                            { 
+                            for (auto& d : data["layers"][i]["data"]) { 
                                 if (d == 0)
                                     d = -1;
 
@@ -280,7 +260,6 @@ const std::vector<std::string> Manager::ParseCSV(const std::string& key, int ind
 
                             while(getline(ss, line))
                                 result.emplace_back(line);
-                            
                         }
             
             #endif

@@ -24,12 +24,7 @@ void displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec)
     {
         if (vec[i].second != NULL)
         {
-            std::string folder = System::Utils::GetFileType(vec[i].first);
-
-            if (folder == "image")
-                folder = "images";
-
-            if (folder == editor::AssetManager::Get()->currentFolder)
+            if (editor::AssetManager::GetFolder(vec[i].first) == editor::AssetManager::Get()->currentFolder)
             {
                 ImGui::PushID(i);
 
@@ -77,39 +72,50 @@ void editor::GUI::RenderAssets()
 
     if (AssetManager::Get()->folderSelected)
     {
-        if (AssetManager::Get()->currentFolder == "images")
+        if (AssetManager::Get()->currentFolder == "/images/")
             displayThumbnail(AssetManager::Get()->images);
 
-        if (AssetManager::Get()->currentFolder == "audio") 
+        if (AssetManager::Get()->currentFolder == "/audio/") 
             displayThumbnail(AssetManager::Get()->audio);
 
-        if (AssetManager::Get()->currentFolder == "data")
+        if (AssetManager::Get()->currentFolder == "/data/")
             displayThumbnail(AssetManager::Get()->data);
+
+        if (AssetManager::Get()->currentFolder == "/fonts/")
+            displayThumbnail(AssetManager::Get()->text);
     }
 
     else 
     {
-        if (ImGui::ImageButton("image", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID/* , ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0) */))
-            SetFolder(true, "images");
+        if (ImGui::ImageButton("image", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
+            SetFolder(true, "/images/");
  
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
             ImGui::SetTooltip("images");
 
         ImGui::SameLine(); 
 
-        if (ImGui::ImageButton("audio", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID/* , ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0) */))
-            SetFolder(true, "audio");
+        if (ImGui::ImageButton("audio", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
+            SetFolder(true, "/audio/");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
             ImGui::SetTooltip("audio");
 
         ImGui::SameLine(); 
 
-        if (ImGui::ImageButton("data", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID/* , ImVec2(70, 70), ImVec2(0, 1), ImVec2(1, 0) */))
-            SetFolder(true, "data");
+        if (ImGui::ImageButton("data", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
+            SetFolder(true, "/data/");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
             ImGui::SetTooltip("data");
+
+        ImGui::SameLine(); 
+
+        if (ImGui::ImageButton("fonts", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
+            SetFolder(true, "/fonts/");
+
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+            ImGui::SetTooltip("fonts");
     }
 
 }

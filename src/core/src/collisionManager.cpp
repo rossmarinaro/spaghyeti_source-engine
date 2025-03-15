@@ -91,7 +91,7 @@ void CollisionManager::EndContact(b2Contact* contact)
 //-----------------------------------
 
 
-bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB)
+const bool CollisionManager::CheckCollisions(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB)
 {
     //x axis
 

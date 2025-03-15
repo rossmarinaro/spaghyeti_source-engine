@@ -10,7 +10,7 @@ void Shader::Delete() {
 //-------------------------------
 
 
-Shader& Shader::Get(const std::string& key) {
+const Shader& Shader::Get(const std::string& key) {
     return System::Application::resources->shaders[key];
 } 
 
@@ -18,7 +18,7 @@ Shader& Shader::Get(const std::string& key) {
 //-------------------------------
 
 
-Shader& Shader::Use() {
+const Shader& Shader::Use() {
     glUseProgram(this->ID);
     return *this;
 }

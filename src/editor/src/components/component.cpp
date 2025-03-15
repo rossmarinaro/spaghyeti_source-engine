@@ -10,7 +10,7 @@
 using namespace editor;
 
 
-std::string Component::Get(int type) {
+const std::string Component::Get(int type) {
 
     switch (type) {
         case SHADER: return "Shader";

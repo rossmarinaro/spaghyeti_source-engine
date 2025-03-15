@@ -23,7 +23,7 @@ namespace editor {
 
             void Make();
 
-            static std::string Get(int type);
+            static const std::string Get(int type);
         
 
         private:

@@ -77,11 +77,11 @@ void AudioNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
             {
 
                 if (ImGui::ImageButton("audio source", (void*)(intptr_t)m_audioTexture.ID, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0))) {
-                    if (System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == "audio")
+                    if (System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::AUDIO)
                         Load();
                 }
                     
-                else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(audio_source_name) != "audio") 
+                else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(audio_source_name) != System::Resources::Manager::AUDIO) 
                     ImGui::SetTooltip("cannot set texture because selected asset is not of type audio.");
 
                 ImGui::SameLine();

@@ -348,7 +348,7 @@ void Sprite::SetTexture(const std::string& key)
 void Sprite::ReadSpritesheetData()
 {    
     
-    const char* spritesheet = System::Resources::Manager::GetSpritesheetPath(key);
+    const std::string& spritesheet = System::Resources::Manager::GetSpritesheetPath(key);
  
     //json file
 

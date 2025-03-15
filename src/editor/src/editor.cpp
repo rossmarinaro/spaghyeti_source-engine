@@ -209,11 +209,11 @@ void Editor::ShutDown()
     
     remove((projectPath + "\\spaghyeti_parse.json").c_str());
 
-    Resources::Manager::UnLoadRaw("image", "editor logo");
-    Resources::Manager::UnLoadRaw("image", "icon large");
-    Resources::Manager::UnLoadRaw("image", "audio src");
-    Resources::Manager::UnLoadRaw("image", "data src");
-    Resources::Manager::UnLoadRaw("image", "folder src");
+    Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "editor logo");
+    Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "icon large");
+    Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "audio src");
+    Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "data src"); 
+    Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "folder src");
 
     Application::ShutDown();
 

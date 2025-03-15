@@ -19,7 +19,6 @@ AssetManager::AssetManager() {
 
 
 void AssetManager::Reset() {
-
     s_self->selectedAsset.clear();
     s_self->images.clear();
     s_self->audio.clear();
@@ -37,50 +36,53 @@ void AssetManager::Register(const std::string& asset) {
         s_self->assets.push_back(asset);
 }
 
-
  
 //---------------------------
 
 
 void AssetManager::LoadAsset(const std::string& asset) {
  
-    const std::string folder = System::Utils::GetFileType(asset),
+    const std::string folder = GetFolder(asset), 
                       texture = GetThumbnail(asset),
                       key = "\"" + asset + "\"",
-                      developmentPath = "resources/assets/" + folder + "/" + asset;
+                      developmentPath = "resources/assets" + folder + asset;
 
     s_self->loadedAssets.insert({ key, developmentPath });
 
+}
+
+//-----------------------------
+
+
+const std::string AssetManager::GetFolder(const std::string& asset) {
+    switch(System::Utils::GetFileType(asset)) {
+        case System::Resources::Manager::IMAGE: return "/images/";       
+        case System::Resources::Manager::AUDIO: return "/audio/"; 
+        case System::Resources::Manager::DATA: return "/data/"; 
+        case System::Resources::Manager::TEXT: return "/fonts/"; 
+        case System::Resources::Manager::ICON: return "/icon/"; 
+    }
 }
 
 
 //-----------------------------
 
 
-std::string AssetManager::GetThumbnail(const std::string& asset)
-{
-    std::string texture;
-
-    if (System::Utils::GetFileType(asset) == "image") 
-        texture = asset; 
-    
-    if (System::Utils::GetFileType(asset) == "audio") 
-        texture = "audio src";
-    
-    if (System::Utils::GetFileType(asset) == "data") 
-        texture = "data src";
-    
-
-    return texture;
+const std::string AssetManager::GetThumbnail(const std::string& asset) {
+    switch(System::Utils::GetFileType(asset)) {
+        case System::Resources::Manager::DATA: return "data src";       
+        case System::Resources::Manager::TEXT: return "text src";       
+        case System::Resources::Manager::AUDIO: return "audio src"; 
+        case System::Resources::Manager::IMAGE: return asset; 
+    }
 }
 
 
 //---------------------------------
 
 
-bool AssetManager::SavePrefab(const std::string& nodeId)
+const bool AssetManager::SavePrefab(const std::string& nodeId)
 {
-
     auto node = Node::Get(nodeId);
     
     if (!node)
@@ -159,7 +161,7 @@ bool AssetManager::SavePrefab(const std::string& nodeId)
 //---------------------------------
 
 
-bool AssetManager::LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes)
+const bool AssetManager::LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes)
 {
 
    #ifdef _WIN32

@@ -10,7 +10,7 @@
 
 
 //create layer from csv
-bool MapManager::CreateLayer (
+const bool MapManager::CreateLayer (
 
     const char* texture_key,
     const char* data_key,

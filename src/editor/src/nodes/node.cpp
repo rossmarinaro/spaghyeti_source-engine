@@ -30,7 +30,7 @@ Node::Node(bool init, int type, const std::string& name):
 //--------------------------- get node type
 
 
-std::string Node::s_GetType(int type) {
+const std::string Node::GetType(int type) {
 
     switch (type) {
         case SPRITE: return "Sprite";
@@ -129,7 +129,7 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
 //--------------------------- assign UUID to node and increment global counter
 
 
-const char* Node::s_Assign()
+const std::string Node::s_Assign()
 {
 
     if (nodes.size() > s_MAX_NODES) {
@@ -145,8 +145,7 @@ const char* Node::s_Assign()
         if (uuid[i] == '-')
             uuid[i] = '_'; 
             
-    return uuid.c_str();
-
+    return uuid;
 }
 
 
@@ -663,7 +662,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
     }
 
 
-    data["type"] = s_GetType(node->type); 
+    data["type"] = GetType(node->type); 
     data["name"] = node->name;
 
     return data;

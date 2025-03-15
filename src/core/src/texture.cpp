@@ -31,7 +31,7 @@ Texture2D::Texture2D():
     glGenBuffers(1, &m_UVBO);
     glBindVertexArray(m_VAO); 
 }
-
+ 
 
 //-------------------------------
 
@@ -49,7 +49,7 @@ void Texture2D::Delete() {
 //-------------------------------
 
 
-Texture2D& Texture2D::Get(const std::string& key) {
+const Texture2D& Texture2D::Get(const std::string& key) {
     return System::Application::resources->textures[
         System::Application::resources->textures.find(key) != System::Application::resources->textures.end() ? 
             key : "base"];
@@ -83,15 +83,15 @@ void Texture2D::Load(const std::string& key)
 
     Texture2D texture;
     unsigned char* image = nullptr;
-    const char* filepath = System::Resources::Manager::GetFilePath(key);
-
+    const std::string& filepath = System::Resources::Manager::GetFilePath(key);
+ 
     stbi_set_flip_vertically_on_load(false);
 
     //file asset found in cache
 
-    if (strcmp(filepath, "not found") != 0) {
+    if (filepath != "not found") {
         filetype = "filepath";
-        image = stbi_load(filepath, &width, &height, &nrChannels, 0);
+        image = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
     }
 
     //byte encoded array buffer

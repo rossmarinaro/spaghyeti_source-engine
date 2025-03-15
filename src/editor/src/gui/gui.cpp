@@ -7,6 +7,7 @@
 #include "../assets/embedded/images/icon_small.hpp"
 #include "../assets/embedded/images/icon_large.hpp"
 #include "../assets/embedded/images/folder.hpp"
+#include "../assets/embedded/images/text.hpp"
 
 using namespace editor;
 
@@ -107,6 +108,7 @@ GUI::GUI()
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "audio src", audio_png, audio_png_len); 
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "data src", data_png, data_png_len);
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "folder src", folder_png, folder_png_len);
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "text src", text_png, text_png_len);
 
     System::Resources::Manager::RegisterTextures();
 
@@ -253,7 +255,7 @@ void GUI::ShowOptionsInit()
     const float window_height = ImGui::GetContentRegionAvail().y;
 
     System::Renderer::RescaleFrameBuffer(window_width, window_height);
-
+ 
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
     ImGui::GetWindowDrawList()->AddImage((void*)Graphics::Texture2D::Get("editor logo").ID, ImVec2(pos.x, pos.y), ImVec2(pos.x + window_width, pos.y + window_height)/* , ImVec2(0, 1), ImVec2(1, 0) */);
