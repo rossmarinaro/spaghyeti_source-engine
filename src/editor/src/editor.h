@@ -96,9 +96,8 @@ namespace editor {
 
             std::shared_ptr<Geometry> s_selector;
 
-            static void Update();
-
             static inline Editor* s_self;
+            static void Update();
 
 	};
 

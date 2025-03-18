@@ -17,40 +17,39 @@ void SetFolder(bool isOpen, const std::string& type = "") {
 //--------------- display thumbnail
 
 
-void displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec) 
+void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec) 
 {
 
-    for (int i = 0; i < vec.size(); i++)  
+    for (int i = s_self->m_page.first; i < s_self->m_page.second; i++)  
     {
-        if (vec[i].second != NULL)
+        if (vec[i].second == NULL)
+            continue;
+
+        if (editor::AssetManager::GetFolder(vec[i].first) == editor::AssetManager::Get()->currentFolder)
         {
-            if (editor::AssetManager::GetFolder(vec[i].first) == editor::AssetManager::Get()->currentFolder)
-            {
-                ImGui::PushID(i);
+            ImGui::PushID(i);
 
-                if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec[i].second, ImVec2(70, 70))) { 
-                    editor::AssetManager::Get()->selectedAsset = vec[i].first;
-                    editor::Editor::Log("Current asset selected: " + editor::AssetManager::Get()->selectedAsset);
-                }
- 
-                //asset tool tip
-
-                if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-                    ImGui::SetTooltip(vec[i].first.c_str());
-
-                if (i != 0 && i % 10 == 0) {
-                    ImGui::PopID();
-                    continue;
-                }
-                
-                else
-                    ImGui::SameLine(); 
-
-                ImGui::PopID();
+            if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec[i].second, ImVec2(70, 70))) { 
+                editor::AssetManager::Get()->selectedAsset = vec[i].first;
+                editor::Editor::Log("Current asset selected: " + editor::AssetManager::Get()->selectedAsset);
             }
-        }
 
-        else break;
+            //asset tool tip
+
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip(vec[i].first.c_str());
+
+            if (i != 0 && i % 10 == 0) {
+                ImGui::PopID();
+                continue;
+            }
+            
+            else
+                ImGui::SameLine(); 
+
+            ImGui::PopID();
+        }
+        
     }
 }
 
@@ -67,8 +66,37 @@ void editor::GUI::RenderAssets()
     if (AssetManager::Get()->folderSelected)
         if (ImGui::MenuItem("Go Back"))
             SetFolder(false);
+
+    if (editor::AssetManager::Get()->folderSelected) 
+    {
+        std::vector<std::pair<std::string, GLuint>>* vec;
+
+        if (AssetManager::Get()->currentFolder == "/images/")
+            vec = &AssetManager::Get()->images;
+
+        if (AssetManager::Get()->currentFolder == "/audio/") 
+            vec = &AssetManager::Get()->audio;
+
+        if (AssetManager::Get()->currentFolder == "/data/")
+            vec = &AssetManager::Get()->data;
+
+        if (AssetManager::Get()->currentFolder == "/fonts/")
+            vec = &AssetManager::Get()->text;
+
+        if (s_self->m_page.second < vec->size() - 1)
+            if (ImGui::MenuItem("next")) {
+                s_self->m_page.first++;
+                s_self->m_page.second++;
+            }
+
+        if (s_self->m_page.first > 0)
+            if (ImGui::MenuItem("back")) {
+                s_self->m_page.first--;
+                s_self->m_page.second--;
+            }
+    }
     
-    ImGui::Separator(); 
+    ImGui::Separator();  
 
     if (AssetManager::Get()->folderSelected)
     {

@@ -34,6 +34,13 @@ namespace editor {
             static inline std::string s_currentProject = "",
                                       s_currentScene = "";
 
+            /* 
+            struct Event { int index; std::function<void()>&& fn; };
+
+            std::vector<Event> events;
+            
+            void SetState(); */                      
+
         private:
             
             void Serialize(json& data, bool newScene = false); 

@@ -59,7 +59,7 @@ const bool MapManager::CreateLayer (
 
             //convert string to int at index
 
-            int tileType = atoi(/* map */data[x + y * mapWidth].c_str());
+            int tileType = atoi(data[x + y * mapWidth].c_str());
 
             //skip if no tile
 

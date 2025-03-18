@@ -69,22 +69,22 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
                 ImGui::Separator();
                
                 if (ImGui::MenuItem("Group"))
-                    Node::Make<GroupNode>(_nodes);
+                    Node::Make<GroupNode>(true, _nodes);
 
                 if (ImGui::MenuItem("Empty"))
-                    Node::Make<EmptyNode>(_nodes); 
+                    Node::Make<EmptyNode>(true, _nodes); 
 
                 if (ImGui::MenuItem("Audio"))
-                    Node::Make<AudioNode>(_nodes); 
+                    Node::Make<AudioNode>(true, _nodes); 
 
                 if (ImGui::MenuItem("Text"))
-                    Node::Make<TextNode>(_nodes); 
+                    Node::Make<TextNode>(true, _nodes); 
 
                 if (ImGui::MenuItem("Sprite"))
-                    Node::Make<SpriteNode>(_nodes); 
+                    Node::Make<SpriteNode>(true, _nodes); 
 
                 if (ImGui::MenuItem("Tilemap"))
-                    Node::Make<TilemapNode>(_nodes); 
+                    Node::Make<TilemapNode>(true, _nodes); 
 
                 ImGui::EndMenu(); 
             }

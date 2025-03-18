@@ -51,8 +51,8 @@ namespace editor {
             static inline std::vector<std::shared_ptr<Node>> nodes;
 
             template <typename T>
-            static inline std::shared_ptr<T> Make(std::vector<std::shared_ptr<Node>>& arr = nodes) {
-                auto node = std::make_shared<T>();
+            static inline std::shared_ptr<T> Make(bool init = true, std::vector<std::shared_ptr<Node>>& arr = nodes) {
+                auto node = std::make_shared<T>(init);
                 arr != nodes ? arr.push_back(node) : nodes.push_back(node);
                 return node;
             }
@@ -119,7 +119,6 @@ namespace editor {
         public:
 
             int frame, 
-                anim, 
                 depth,
                 currentFrame;
 
@@ -146,20 +145,15 @@ namespace editor {
             glm::vec3 tint;
 
             std::vector<Frames> frames; 
-            std::map<std::string, Anims> animations; 
+            std::vector<Anims> animations; 
 
             Anims anim_to_play_on_start; 
 
             std::shared_ptr<Sprite> spriteHandle;
-            std::vector<StringContainer> anim_key; 
             std::vector<BoolContainer> is_sensor, anim_yoyo;
 
             std::vector<int> frame_x,
                              frame_y,
-                             anim_start,
-                             anim_end,
-                             anim_rate,
-                             anim_repeat,
                              body_pointer;
 
             std::vector<float> frame_width,
@@ -178,7 +172,7 @@ namespace editor {
 
             void RegisterFrames();
             void ApplyTexture(const std::string& key);
-            void ApplyAnimation(const std::string& key, int start, int end, int rate, bool yoyo);
+            void ApplyAnimation(const std::string& key);
 
             void CreateBody(
                 float x = 0.0f, 

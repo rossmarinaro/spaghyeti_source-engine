@@ -238,14 +238,14 @@ bool EventListener::SaveScene(bool saveAs)
 
             EncodeFile(filepath);
 
-            std::string path = std::filesystem::path{ filepath }.parent_path().string(),
+            std::string path = System::Utils::ReplaceFrom(filepath, ".", ""),
                         rep_path = System::Utils::ReplaceFrom(path, "scenes", "");
 
             Editor::projectPath = System::Utils::SanitizePath(rep_path);
 
-            s_currentScene = System::Utils::ReplaceFrom(path, ".", "");
+            s_currentScene = std::filesystem::path{ path }.filename().string();
 
-            Editor::Log("Scene saved: " + Editor::projectPath + "scenes/" + path);
+            Editor::Log("Scene saved: " + s_currentScene);
 
             return true;
 
@@ -349,7 +349,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             Editor::Get()->Reset();
 
-            const std::string asset_types[] = { "images", "audio", "data", "fonts" };
+            const std::string asset_types[4] = { "images", "audio", "data", "fonts" };
 
             for (const std::string& type : asset_types) 
             {
@@ -362,7 +362,14 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
                             continue;
 
                         const std::string asset = entry.path().filename().string(),
-                                          texture = AssetManager::GetThumbnail(asset);
+                                          folder = AssetManager::GetFolder(asset);
+
+                        if (!folder.length()) {
+                            Editor::Log("Skipping file: \"" + asset + "\" - invalid file type");
+                            continue;
+                        }
+         
+                        const std::string texture = AssetManager::GetThumbnail(asset);
 
                         std::string dir = entry.path().string(); //includes filename
                                         
@@ -460,8 +467,14 @@ void EventListener::OpenFile()
 
             const auto options = std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive;
 
-            const std::string folder = AssetManager::GetFolder(asset),
-                              texture = AssetManager::GetThumbnail(asset),
+            const std::string folder = AssetManager::GetFolder(asset);
+
+            if (!folder.length()) {
+                Editor::Log("cannot open file: invalid file type");
+                return;
+            }
+
+            const std::string texture = AssetManager::GetThumbnail(asset),
                               path = Editor::projectPath + "resources/assets" + folder + asset;
 
             std::ifstream file(path);
@@ -520,6 +533,8 @@ void EventListener::BuildAndRun()
     system("cls");
     ShowWindow(GetConsoleWindow(), SW_SHOW);
 
+    Editor::Log("building for: " + Editor::platform + ", build type: " + Editor::buildType + ", release type: " + Editor::releaseType);
+
     //directory / builder files
 
     std::string makefile_path = Editor::projectPath + "Makefile";
@@ -558,6 +573,8 @@ void EventListener::BuildAndRun()
 
     const std::string asset_types[] = { "images", "audio" };
 
+    Editor::Log(Editor::Get()->embed_files ? "embedding assets" : "copying assets to build folder"); 
+
     std::map<std::string, std::array<std::string, 2>> rawFiles;
 
     for (const std::string& folder : asset_types)
@@ -579,8 +596,8 @@ void EventListener::BuildAndRun()
             std::string rsrcPath = file.path().string();
             std::replace(rsrcPath.begin(), rsrcPath.end(), '\\', '/');
 
-            if (Editor::Get()->embed_files) {
-
+            if (Editor::Get()->embed_files) 
+            {
                 std::string rawFolder = Editor::projectPath + "resources/assets/raw/" + System::Utils::ReplaceFrom(name, ".", "") + ".hpp",
                             pathWithoutSpecialChars = rsrcPath;
 
@@ -593,12 +610,9 @@ void EventListener::BuildAndRun()
                     system(("chdir sdk && packResource.sh " + projResPath + " \"" + rsrcPath + "\" " + rawFolder).c_str());
                     Editor::Log("encoding asset: " + rawFolder); 
                 }
-  
             }
-            else if (!std::filesystem::exists(destPath)) {
-                Editor::Log("copying asset to build folder: " + rsrcPath + " to: " + destPath);
+            else if (!std::filesystem::exists(destPath)) 
                 std::filesystem::copy_file(rsrcPath, destPath, options);
-            }
         }
     }
 
@@ -739,6 +753,7 @@ void EventListener::BuildAndRun()
         //web_makeFile << "   -sINITIAL_MEMORY=420mb \\\n";
         //web_makeFile << "   -sMAXIMUM_MEMORY=1000mb \\\n";
         //web_makeFile << "   -sPTHREAD_POOL_SIZE_STRICT=33 \\\n";
+        //-sEXPORT_NAME="Example" //in html: window.Example(i).then(module => {})
         web_makeFile << "   -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency \\\n";
         web_makeFile << "   -sUSE_GLFW=3 \\\n";
         web_makeFile << "   -sLEGACY_GL_EMULATION=0 \\\n";
@@ -862,6 +877,8 @@ void EventListener::BuildAndRun()
 
     //include shaders
 
+    Editor::Log(Editor::Get()->embed_files ? "embedding shaders" : "copying shaders to build folder");
+
     const auto iterate_shader = [] (const std::string& name, std::string path, const std::string& copiedFile) -> void
     {
 
@@ -902,13 +919,8 @@ void EventListener::BuildAndRun()
 
         //copy shaders 
 
-        if (!std::filesystem::exists(copiedFile)) {
-            std::filesystem::rename(tmp_file, copiedFile); 
-
-            if (!Editor::Get()->embed_files)
-                Editor::Log("copying shaders to build folder: " + path + " to: " + copiedFile);
-        }
-
+        if (!std::filesystem::exists(copiedFile)) 
+            std::filesystem::rename(tmp_file, copiedFile);
     };
 
     for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->shader_dir)) 
@@ -1220,7 +1232,7 @@ void EventListener::BuildAndRun()
                     //load animations
 
                     for (const auto& anim : sn->animations)
-                        animsToLoad.emplace_back("{\"" + std::string(anim.second.key) + "\"" + ", {" + std::to_string(anim.second.start) + ", " + std::to_string(anim.second.end) + "} }");
+                        animsToLoad.emplace_back("{\"" + std::string(anim.key) + "\"" + ", {" + std::to_string(anim.start) + ", " + std::to_string(anim.end) + "} }");
 
                     if (!animsToLoad.empty()) 
                     {
@@ -1255,9 +1267,12 @@ void EventListener::BuildAndRun()
 
                     //set default animation if applied
 
-                    if (sn->anim_to_play_on_start.key.length()) {
-                        const std::string is_yoyo = sn->anim_to_play_on_start.yoyo ? "true" : "false";
-                        command_queue << "   sprite_" + node->ID + "->SetAnimation(\"" + sn->anim_to_play_on_start.key + "\", " + is_yoyo + ", " + std::to_string(sn->anim_to_play_on_start.rate) + ", " + std::to_string(sn->anim_to_play_on_start.repeat) + ");\n";
+                    if (sn->anim_to_play_on_start.key.length()) 
+                    {
+                        const std::string is_yoyo = sn->anim_to_play_on_start.yoyo ? "true" : "false",
+                                          repeat = sn->anim_to_play_on_start.repeat <= -1 ? std::to_string(sn->anim_to_play_on_start.repeat) : "-" + std::to_string(sn->anim_to_play_on_start.repeat);
+
+                        command_queue << "   sprite_" + node->ID + "->SetAnimation(\"" + sn->anim_to_play_on_start.key + "\", " + is_yoyo + ", " + std::to_string(sn->anim_to_play_on_start.rate) + ", " + repeat + ");\n";
                     }
 
                     const std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";

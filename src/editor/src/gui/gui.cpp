@@ -21,6 +21,7 @@ GUI::GUI()
     s_self->show_init = true;
     s_self->show_quit = false;
     s_self->show_grid = false;
+    s_self->m_page = { 0, 50 };
 
     //Poll and handle events (inputs, window resize, etc.)
     //You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -248,7 +249,7 @@ void GUI::ShowOptionsInit()
         if (Editor::Get()->events->OpenProject())
             show_init = false;
     }
-
+ 
     //render backsplash image to framebuffer
 
     const float window_width = ImGui::GetContentRegionAvail().x;

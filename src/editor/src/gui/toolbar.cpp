@@ -22,7 +22,7 @@ void editor::GUI::ShowSettings()
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("add")) 
+        if (ImGui::BeginMenu("add"))  
         {
             for (const auto& filename : std::filesystem::directory_iterator(Editor::projectPath)) 
             {

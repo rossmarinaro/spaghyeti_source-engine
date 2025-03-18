@@ -401,15 +401,15 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
         json animations = json::array();
 
-        for (int i = 0; i < sn->anim; ++i)
-            if (sn->anim_key.size()) 
+        for (const auto& anim : sn->animations)
+            if (anim.key.size()) 
                  animations.push_back({
-                    { "key", sn->anim_key[i].s },
-                    { "start", sn->anim_start.size() ? sn->anim_start[i] : 0 },
-                    { "end", sn->anim_end.size() ? sn->anim_end[i] : 0 },
-                    { "rate", sn->anim_rate.size() ? sn->anim_rate[i] : 2 },
-                    { "repeat", sn->anim_yoyo.size() ? sn->anim_repeat[i] : -1 },
-                    { "yoyo", sn->anim_yoyo.size() ? sn->anim_yoyo[i].b : false }
+                    { "key", anim.key },
+                    { "start", anim.start },
+                    { "end", anim.end },
+                    { "rate", anim.rate },
+                    { "repeat", anim.repeat },
+                    { "yoyo", anim.yoyo }
                 });  
         
         //physics bodies
@@ -470,10 +470,10 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                             { "exists", sn->HasComponent(Component::ANIMATOR) },
                             { "animations", animations },
                             { "on start", {
-                                    { "key", sn->anim_to_play_on_start.key.length() ? sn->anim_to_play_on_start.key : "" }, 
-                                    { "rate", sn->anim_to_play_on_start.key.length() ? sn->anim_to_play_on_start.rate : 2 }, 
-                                    { "repeat", sn->anim_to_play_on_start.key.length() ? sn->anim_to_play_on_start.repeat : -1 }, 
-                                    { "yoyo", sn->anim_to_play_on_start.key.length() ? sn->anim_to_play_on_start.yoyo : false } 
+                                    { "key", sn->anim_to_play_on_start.key }, 
+                                    { "rate", sn->anim_to_play_on_start.rate }, 
+                                    { "repeat", sn->anim_to_play_on_start.repeat }, 
+                                    { "yoyo", sn->anim_to_play_on_start.yoyo } 
                                 } 
                             }
                         }
@@ -694,7 +694,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             std::shared_ptr<SpriteNode> sn;
 
             if (makeNode)
-                sn = Make<SpriteNode>(arr); 
+                sn = Make<SpriteNode>(false, arr);  
             
             else 
                 sn = Scene::CreateObject<SpriteNode>(_scene); 
@@ -814,23 +814,11 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 {
                     sn->AddComponent(Component::ANIMATOR, false);
 
-                    for (const auto& anim : data["components"]["animator"]["animations"]) 
-                    { 
-
-                        StringContainer sc { anim["key"] };
-                        BoolContainer bc { anim["yoyo"] };
-
-                        sn->anim_key.push_back(sc);
-                        sn->anim_yoyo.push_back(bc);
-                        sn->anim_start.push_back(anim["start"]); 
-                        sn->anim_end.push_back(anim["end"]);
-                        sn->anim_rate.push_back(anim["rate"]);
-                        sn->anim_repeat.push_back(anim["repeat"]);
-
-                        sn->ApplyAnimation(anim["key"], anim["start"], anim["end"], anim["rate"], anim["yoyo"]);
+                    for (const auto& anim : data["components"]["animator"]["animations"]) {  
+                        sn->animations.push_back({ anim["key"], anim["start"], anim["end"], anim["rate"], anim["repeat"], anim["yoyo"] });
+                        sn->ApplyAnimation(anim["key"]);
                     }
-                
-                    sn->anim = sn->animations.size();  
+                 
                     sn->anim_to_play_on_start.key = data["components"]["animator"]["on start"]["key"];
                     sn->anim_to_play_on_start.rate = data["components"]["animator"]["on start"]["rate"];
                     sn->anim_to_play_on_start.repeat = data["components"]["animator"]["on start"]["repeat"];
@@ -912,7 +900,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             std::shared_ptr<TilemapNode> tmn;
 
             if (makeNode)
-                tmn = Make<TilemapNode>(arr); 
+                tmn = Make<TilemapNode>(false, arr); 
             
             else 
                 tmn = Scene::CreateObject<TilemapNode>(_scene);  
@@ -985,7 +973,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             std::shared_ptr<AudioNode> an;
 
             if (makeNode)
-                an = Make<AudioNode>(arr);  
+                an = Make<AudioNode>(false, arr);  
 
             if (data.contains("name"))
                 an->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
@@ -1008,7 +996,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             std::shared_ptr<EmptyNode> en;
 
             if (makeNode)
-                en = Make<EmptyNode>(arr); 
+                en = Make<EmptyNode>(false, arr); 
             
             else 
                 en = Scene::CreateObject<EmptyNode>(_scene);   
@@ -1095,7 +1083,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             std::shared_ptr<TextNode> tn;
 
             if (makeNode)
-                tn = Make<TextNode>(arr); 
+                tn = Make<TextNode>(false, arr); 
             
             else 
                 tn = Scene::CreateObject<TextNode>(_scene);
@@ -1157,7 +1145,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             std::shared_ptr<GroupNode> gn;
 
             if (makeNode)
-                gn = Make<GroupNode>(arr); 
+                gn = Make<GroupNode>(false, arr); 
             
             else 
                 gn = Scene::CreateObject<GroupNode>(_scene);

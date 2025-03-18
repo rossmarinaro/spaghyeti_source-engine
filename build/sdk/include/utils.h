@@ -35,17 +35,17 @@ namespace System {
 
 			static const int randInt(int n);
             static const int intBetween(int min, int max);
-            static const int CountDigits (long long n);
 
             //binary to decimal - mainly used to convert csv map data, extracting tile position and rotation flags
-			static const int BinToDec (int n); 
+			static const int BinToDec (const int n); 
+            static const int CountDigits (long long n);
 
 			static const float randFloat(float n);
 			static const float floatBetween(float min, float max);
 
 			static const bool str_includes(const std::string& str, const std::string& sub);
 			static const bool str_endsWith(const std::string_view& str, const std::string_view& suffix);
-			static const bool CoinFlip(void);
+			static const bool CoinFlip();
 
 			static const int GetFileType(const std::string& path);
 			static std::string SanitizePath(std::string& path);
@@ -54,7 +54,7 @@ namespace System {
         private:
 
             struct removeDoubleSlash {
-                bool operator() (char a, char b) const {
+                constexpr bool operator() (char a, char b) const {
                 return a == '/' && b == '/';
             }};
 	};

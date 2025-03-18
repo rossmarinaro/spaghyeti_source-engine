@@ -2,13 +2,13 @@
 #include "../../../build/sdk/include/manager.h"
 
 const int System::Utils::randInt(int n) { 
-    return rand() % n; 
+    return (rand() % n);
 }
 
 //---------------------------------------
 
 const float System::Utils::randFloat(float n) { 
-    return ((float)(rand()) / (float)(RAND_MAX)) * n; 
+    return (((float)(rand()) / (float)(RAND_MAX)) * n);
 }
 
 //---------------------------------------
@@ -25,7 +25,7 @@ const float System::Utils::floatBetween(float min, float max) {
 //---------------------------------------
  
 const int System::Utils::intBetween(int min, int max) { 
-    return rand() % (min - max + 1) + min; 
+    return rand() % (min - max + 1) + min;
 } 
 
 //---------------------------------------
@@ -49,13 +49,14 @@ const bool System::Utils::str_endsWith(const std::string_view& str, const std::s
 //---------------------------------------
 
 
-const bool System::Utils::CoinFlip(void) {
+const bool System::Utils::CoinFlip() {
     return rand() % 10 >= 6;
 }
 
 //--------------------------------------- returns number of digits in tiletype
 
-const int System::Utils::CountDigits (long long n) {
+const int System::Utils::CountDigits (long long n) 
+{
     if (n == 0)
         return 1;
 
@@ -72,7 +73,7 @@ const int System::Utils::CountDigits (long long n) {
 
 //--------------------------------------- binary to decimal 
 
-const int System::Utils::BinToDec (int n) 
+const int System::Utils::BinToDec (const int n) 
 {
     int num = n, 
         dec_val = 0,

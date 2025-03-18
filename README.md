@@ -44,7 +44,7 @@ Test Game:
 
 Written by Ross Marinaro - Pastaboss Enterprise 🍝👌
 
-![image info](./src/editor/icon/icon.ico)  
+![image info](./src/editor/res/icon.ico)  
 
 ----------------------------------------------------------
 
@@ -66,9 +66,9 @@ When targeting specific entity from script use `System::Game::GetScene()->GetEnt
 
 To Do:
 
-truetype implementation
+freetype implementation
 
-undo/redo functionality
+state management: undo/redo functionality
 
 improve editor entity selection/mouse picking/raycasting
 
@@ -76,5 +76,3 @@ map editor
 
 fix big .o files (audio.o manager.o game.o entity.o tilemap.o texture.o shader.o)
 
--sEXPORT_NAME="Example"
-window.Example(i).then(module => {})

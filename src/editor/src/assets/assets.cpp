@@ -56,6 +56,7 @@ void AssetManager::LoadAsset(const std::string& asset) {
 
 const std::string AssetManager::GetFolder(const std::string& asset) {
     switch(System::Utils::GetFileType(asset)) {
+        default: return "";
         case System::Resources::Manager::IMAGE: return "/images/";       
         case System::Resources::Manager::AUDIO: return "/audio/"; 
         case System::Resources::Manager::DATA: return "/data/"; 
@@ -70,6 +71,7 @@ const std::string AssetManager::GetFolder(const std::string& asset) {
 
 const std::string AssetManager::GetThumbnail(const std::string& asset) {
     switch(System::Utils::GetFileType(asset)) {
+        default: return "";
         case System::Resources::Manager::DATA: return "data src";       
         case System::Resources::Manager::TEXT: return "text src";       
         case System::Resources::Manager::AUDIO: return "audio src"; 
