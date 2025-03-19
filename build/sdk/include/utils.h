@@ -54,7 +54,7 @@ namespace System {
         private:
 
             struct removeDoubleSlash {
-                constexpr bool operator() (char a, char b) const {
+                bool operator() (char a, char b) const {
                 return a == '/' && b == '/';
             }};
 	};

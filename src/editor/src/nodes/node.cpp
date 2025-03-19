@@ -58,8 +58,8 @@ std::shared_ptr<Node> Node::Get(const std::string& id)
 
     for (const auto& node : nodes)
     {
-        if (node->type == SPRITE) 
-        {
+        if (node->type == GROUP) 
+        {        
             auto group = std::dynamic_pointer_cast<GroupNode>(node);
 
             for (auto it = group->_nodes.begin(); it != group->_nodes.end(); ++it)
@@ -76,7 +76,7 @@ std::shared_ptr<Node> Node::Get(const std::string& id)
                         if ((*it)->ID == id)
                             return *it;
                 }
-            }
+            };        
         }
     }
 

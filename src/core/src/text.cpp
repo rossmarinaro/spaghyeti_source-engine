@@ -22,7 +22,7 @@
 // #define TEXTURE_FONT_SIZE 200.0f
 
 /* Vertex shader ==================================
-#version 430
+#version 430 
 layout(location = 0) in vec2 inPosition;
 layout(location = 0) out vec2 texturePos;
 

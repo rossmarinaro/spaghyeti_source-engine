@@ -351,6 +351,46 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             const std::string asset_types[4] = { "images", "audio", "data", "fonts" };
 
+            const auto loadAsset = [](const std::filesystem::directory_entry& entry, const std::string& type) -> void 
+            {
+                const std::string asset = entry.path().filename().string(),
+                                  folder = AssetManager::GetFolder(asset);
+
+                if (!folder.length()) {
+                    Editor::Log("Skipping file: \"" + asset + "\" - invalid file type");
+                    return;
+                }
+    
+                const std::string texture = AssetManager::GetThumbnail(asset);
+
+                if (!texture.length()) {
+                    Editor::Log("thumbnail error, cannot load asset");
+                    return;
+                }
+
+                std::string dir = entry.path().string(); //includes filename
+                                
+                std::replace(dir.begin(), dir.end(), '\\', '/');
+                System::Resources::Manager::LoadFile(asset, dir);
+                System::Resources::Manager::RegisterTextures();
+
+                AssetManager::LoadAsset(asset);
+
+                unsigned int id = Graphics::Texture2D::Get(texture).ID;
+
+                if (type == "images")
+                    AssetManager::Get()->images.push_back({ asset, id });
+
+                else if (type == "audio")
+                    AssetManager::Get()->audio.push_back({ asset, id });
+
+                else if (type == "data")
+                    AssetManager::Get()->data.push_back({ asset, id });
+
+                else if (type == "fonts")
+                    AssetManager::Get()->text.push_back({ asset, id });
+            };
+
             for (const std::string& type : asset_types) 
             {
                 const std::string asset_path = Editor::projectPath + "resources/assets/" + type;
@@ -358,40 +398,16 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
                 if (std::filesystem::exists(asset_path))
                     for (const auto& entry : std::filesystem::directory_iterator(asset_path))
                     {
-                        if (std::filesystem::is_empty(entry.path()) || entry.is_directory())
+                        if (std::filesystem::is_empty(entry.path()))
                             continue;
 
-                        const std::string asset = entry.path().filename().string(),
-                                          folder = AssetManager::GetFolder(asset);
-
-                        if (!folder.length()) {
-                            Editor::Log("Skipping file: \"" + asset + "\" - invalid file type");
-                            continue;
+                        if (entry.is_directory()) {
+                            for (const auto& e : std::filesystem::directory_iterator(entry))
+                                if (!std::filesystem::is_empty(e.path()))
+                                    loadAsset(e, type);
                         }
-         
-                        const std::string texture = AssetManager::GetThumbnail(asset);
-
-                        std::string dir = entry.path().string(); //includes filename
-                                        
-                        std::replace(dir.begin(), dir.end(), '\\', '/');
-                        System::Resources::Manager::LoadFile(asset, dir);
-                        System::Resources::Manager::RegisterTextures();
-        
-                        AssetManager::LoadAsset(asset);
-
-                        unsigned int id = Graphics::Texture2D::Get(texture).ID;
-
-                        if (type == "images")
-                            AssetManager::Get()->images.push_back({ asset, id });
-
-                        else if (type == "audio")
-                            AssetManager::Get()->audio.push_back({ asset, id });
-
-                        else if (type == "data")
-                            AssetManager::Get()->data.push_back({ asset, id });
-
-                        else if (type == "fonts")
-                            AssetManager::Get()->text.push_back({ asset, id });
+                        else
+                            loadAsset(entry, type);
                     }
             }
 
@@ -504,7 +520,7 @@ void EventListener::OpenFile()
                 insertAsset(AssetManager::Get()->images);
 
             if (folder == "/audio/")
-                insertAsset(AssetManager::Get()->audio);
+                insertAsset(AssetManager::Get()->audio);     
 
             if (folder == "/data/")
                 insertAsset(AssetManager::Get()->data);

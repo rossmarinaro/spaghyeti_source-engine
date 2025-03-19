@@ -132,10 +132,10 @@ void GUI::RenderShaderOptions(const std::string& nodeId)
 
 void GUI::RenderScriptOptions(const std::string& nodeId)
 {
-        
+
     auto node = Node::Get(nodeId);
     auto am = AssetManager::Get();
-     
+
     if (node)
     {
 

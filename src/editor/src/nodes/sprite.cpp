@@ -357,7 +357,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                         ImGui::EndMenu();
                     }
                 }
-              
+
                 ImGui::EndMenu();
             }
 

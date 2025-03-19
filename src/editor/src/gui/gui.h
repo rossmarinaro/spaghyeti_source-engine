@@ -41,8 +41,6 @@ namespace editor {
         private:
 
             GLuint s_currentTexture = NULL;
-
-            std::pair<int, int> m_page;
  
             void RenderNodes();
             void RenderDockSpace();

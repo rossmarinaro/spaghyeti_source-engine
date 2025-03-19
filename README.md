@@ -72,7 +72,11 @@ state management: undo/redo functionality
 
 improve editor entity selection/mouse picking/raycasting
 
-map editor
+tilemap editor
+
+sprite texture packer
 
 fix big .o files (audio.o manager.o game.o entity.o tilemap.o texture.o shader.o)
+
+add CMakeLists.txt build option and build script with: `cmake -S . -B build -G "Your Generator" -DCMAKE_C_COMPILER=gcc -DCMAKE_POLICY_VERSION_MINIMUM=3.5` note: "Your Generator" ie: "MinGW MakeFiles", "CodeBlocks", etc.
 
