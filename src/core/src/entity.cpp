@@ -1,6 +1,11 @@
 #if USE_JSON == 1
     #include <fstream>
+	#include "../../vendors/nlohmann/json.hpp"
+	using json = nlohmann::json;
 #endif
+
+#include "../../window/renderer.h"
+#include "../../../build/sdk/include/vendors/glm/gtc/matrix_transform.hpp" 
 
 #include "../../../build/sdk/include/app.h"
 #include "../../vendors/UUID.hpp"
@@ -156,8 +161,8 @@ void Geometry::Render(float projWidth, float projHeight)
         shader.SetMat4("model", model);  
         shader.SetFloat("alphaVal", alpha);
 
-        glm::mat4 proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight),
-                  view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y, 0.0f));
+        const glm::mat4 proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight),
+                        view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y, 0.0f));
 
         shader.SetMat4("mvp", proj * view * model);
 
@@ -173,7 +178,7 @@ void Geometry::Render(float projWidth, float projHeight)
 
 std::shared_ptr<Sprite> Sprite::Clone() 
 {
-    auto clone = std::make_shared<Sprite>(*this);
+    const auto clone = std::make_shared<Sprite>(*this);
 
     clone->ReadSpritesheetData();
 
@@ -319,7 +324,7 @@ void Sprite::RemoveBodies()
 void Sprite::SetTexture(const std::string& key)
 {  
 
-    auto tex = Graphics::Texture2D::Get(key); 
+    const auto& tex = Graphics::Texture2D::Get(key); 
         
     this->key = key; 
 
@@ -359,7 +364,7 @@ void Sprite::ReadSpritesheetData()
 
             std::ifstream JSON(spritesheet);
 
-            json data = json::parse(JSON);
+            const json data = json::parse(JSON);
 
                 for (const auto& frame : data["frames"])
                     if (frame.contains("frame")) 
@@ -426,12 +431,12 @@ void Sprite::Render(float projWidth, float projHeight)
     if (m_isSpritesheet) 
     {
         
-        float currentFrameX = (float)m_resourceData[currentFrame][0],
-              currentFrameY = (float)m_resourceData[currentFrame][1],
-              currentFrameWidth = (float)m_resourceData[currentFrame][2],
-              currentFrameHeight = (float)m_resourceData[currentFrame][3],
-              factorX = (float)m_resourceData[currentFrame][4],
-              factorY = (float)m_resourceData[currentFrame][5];
+        const float currentFrameX = (float)m_resourceData[currentFrame][0],
+                    currentFrameY = (float)m_resourceData[currentFrame][1],
+                    currentFrameWidth = (float)m_resourceData[currentFrame][2],
+                    currentFrameHeight = (float)m_resourceData[currentFrame][3],
+                    factorX = (float)m_resourceData[currentFrame][4],
+                    factorY = (float)m_resourceData[currentFrame][5];
 
         texture.FrameWidth = currentFrameWidth;
         texture.FrameHeight = currentFrameHeight;
@@ -460,9 +465,10 @@ void Sprite::Render(float projWidth, float projHeight)
 
     //sprite model transformations
 
-    glm::mat4 model = glm::mat4(1.0f), 
-              view = !IsSprite() ? glm::mat4(1.0f) : System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x, System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y), 
-              proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+    glm::mat4 model = glm::mat4(1.0f); 
+    
+    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x, System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y), 
+                    proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
 
     model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
@@ -527,7 +533,7 @@ void Sprite::Render(float projWidth, float projHeight)
             const bool yoyo = m_currentAnim.yoyo;
             const int rate = m_currentAnim.rate;
 
-            uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
+            const uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
            
             try {
 
@@ -554,14 +560,14 @@ void Sprite::Render(float projWidth, float projHeight)
                         for (int i = anim->second.first; i < anim->second.second + 1; i++) 
                             frames.emplace_back(i);
                         
-                        uint32_t elapsed = seconds % frames.size();
+                        const uint32_t elapsed = seconds % frames.size();
 
                         std::vector<int> frames_reversed;
 
                         for (int i = anim->second.second; i > anim->second.first - 1; i--) 
                             frames_reversed.emplace_back(i);
 
-                        uint32_t elapsed_reversed = seconds % frames_reversed.size();
+                        const uint32_t elapsed_reversed = seconds % frames_reversed.size();
 
                         if (!m_anim_yoyo && currentFrame == anim->second.second && frames[elapsed] != anim->second.second) 
                             m_anim_yoyo = true;
@@ -581,7 +587,7 @@ void Sprite::Render(float projWidth, float projHeight)
                         for (int i = anim->second.first; i < anim->second.second + 1; i++) 
                             frames.emplace_back(i);
                         
-                        uint32_t elapsed = seconds % frames.size();
+                        const uint32_t elapsed = seconds % frames.size();
                    
                         SetFrame(frames[elapsed]);
 

@@ -1,332 +1,251 @@
+#include <fstream>
+
 #include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/window.h"
 
-//#include <ft2build.h>
-//#include FT_FREETYPE_H
+#include "../../window/renderer.h"
+#include "../../../build/sdk/include/vendors/glm/gtc/matrix_transform.hpp" 
+#include "../../../build/sdk/include/vendors/glm/gtc/type_ptr.hpp"
 
-//debug text, default embedded
-// #define STB_TRUETYPE_IMPLEMENTATION
-// #define STB_RECT_PACK_IMPLEMENTATION
-// #include "../../../../vendors/stb/stb_rect_pack.h"
-// #include "../../../../vendors/stb/stb_truetype.h"
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "../../vendors/stb/stb_truetype.h"
 
-
-// stbtt_packedchar* comic;
-
-// #include <fstream>
+#define GLT_MANUAL_VIEWPORT
+#define GLT_IMPLEMENTATION
+#include "../../vendors/glText/gltext.h"
 
 
-// #define OUTPUT_WIDTH 1920
-// #define OUTPUT_HEIGHT 1080
-// #define TEXTURE_WIDTH 1024
-// #define TEXTURE_HEIGHT 1024
-// #define TEXTURE_FONT_SIZE 200.0f
+//font data: (data required to render a quad for each glyph)
+static std::map<std::string, std::array<stbtt_packedchar, Text::charsToIncludeInFontAtlas>> _packedChars;
+static std::map<std::string, std::array<stbtt_aligned_quad, Text::charsToIncludeInFontAtlas>> _alignedQuads;
 
-/* Vertex shader ==================================
-#version 430 
-layout(location = 0) in vec2 inPosition;
-layout(location = 0) out vec2 texturePos;
+//default embedded text data
+static GLTtext* GLT_text_buffer;
+static std::map<std::string, GLTtext*> GLT_text_handles;
 
-uniform vec2 resolution; // Resolution of window/display
 
-uniform vec2 position; // Position of character based on above resolution.
-                       // The coordinate is the leftmost pixel at the baseline of character.
-                       // Text may go below the baseline (e.g. the bottom of g and j).
-
-uniform vec2 size; // Size of character based on above resolution.
-
-void main() {
-    // Adjust inPosition (0,0 => 1,1 square) to the size and position provided by uniform values.
-    vec2 pos = (inPosition * size / resolution);
-    pos = pos + (position / resolution);
-
-    // Move -1,-1 and scale by 2x since opengl viewport is 2x2 (-1,-1 => 1,1).
-    gl_Position = vec4(pos * 2.0 - vec2(1.0, 1.0), 0.0, 1.0);
-
-    // The inPosition with y flipped is used for texture position in fragment shader.
-    texturePos = vec2(inPosition.x, (inPosition.y - 1.0) * -1.0);
-}
-=================================================*/
-// const char *vertSource = "#version 330\nlayout(location = 0) in vec2 inPosition; layout(location = 0) out vec2 tex\
-// turePos; uniform vec2 resolution; uniform vec2 position; uniform vec2 size; void main() { vec2 pos = (inPosition *\
-//  size / resolution); pos = pos + (position / resolution); gl_Position = vec4(pos * 2.0 - vec2(1.0, 1.0), 0.0, 1.0)\
-//  ; texturePos = vec2(inPosition.x, (inPosition.y - 1.0) * -1.0); }";
-
-/* Fragment shader ================================
-#version 430
-layout(location = 0) in vec2 texturePos;
-layout(location = 0) out vec4 outColor;
-
-uniform sampler2D fontTexture; // Texture from stb_truetype
-uniform vec4 charPosition; // Position and size of character in texture
-
-void main() {
-    // Get size of texture in pixels and scale charPosition for texture(...) function
-    ivec2 texSize = textureSize(fontTexture, 0);
-    vec2 texPos = texturePos * ((charPosition.zw - charPosition.xy) / texSize.x) + charPosition.xy / texSize.y;
-
-    // Get color/alpha mask of fragment from texture.
-    float col = texture(fontTexture, texPos).r;
-
-    // Generate a color pattern for text for demo.
-    vec3 textColor = vec3(texPos.x, texturePos.y, texPos.y);
-
-    // Set color using mask from front texture as alpha channel.
-    outColor = vec4(textColor, col);
-}
-=================================================*/
-// const char* fragSource = "#version 330\nlayout(location = 0) in vec2 texturePos; layout(location = 0) out vec4 out\
-// Color; uniform sampler2D fontTexture; uniform vec4 charPosition; void main() { ivec2 texSize = textureSize(fontTex\
-// ture, 0); vec2 texPos = texturePos * ((charPosition.zw - charPosition.xy) / texSize.x) + charPosition.xy / texSize\
-// .y; float col = texture(fontTexture, texPos).r; vec3 textColor = vec3(texPos.x, texturePos.y, texPos.y); outColor \
-// = vec4(textColor, col); }";
-
-// // Load a TTF file into a texture and return the character data.
-// stbtt_packedchar* LoadFont(const char* filename) {
-//     // Load TTF file into memory.
-//     std::ifstream file(filename, std::ios::ate | std::ios::binary); //if (!file.good()) std::cout<<"NOOO"; else  std::cout<<"YESSS";
-//     size_t fileSize = (size_t)file.tellg();
-//     char* ttfData = (char*)calloc(fileSize + 1, sizeof(char));
-//     file.seekg(0);
-//     file.read(ttfData, fileSize);
-//     file.close();
-
-//     // Pack TTF into pixel data using stb_truetype.
-//     stbtt_pack_context packContext;
-//     stbtt_packedchar *charData = (stbtt_packedchar*)calloc(126, sizeof(stbtt_packedchar));
-//     unsigned char* pixels = (unsigned char*)calloc(TEXTURE_WIDTH * TEXTURE_HEIGHT, sizeof(char));
-//     stbtt_PackBegin(&packContext, pixels, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, 1, NULL);
-
-//     // // Pack unicode codepoints 0 to 125 into the texture and character data. If a different starting
-//     // // point than 0 is picked then lookups in charData array must be offset by that number.
-//     // // With 0-125 the uppercase A will be at charData[65].
-//     // // With 32-125 the uppercase A will be at charData[65-32].
-//     stbtt_PackFontRange(&packContext, (unsigned char*)ttfData, 0, TEXTURE_FONT_SIZE, 0, 125, charData);
-//     stbtt_PackEnd(&packContext);
-
-//     // // Create OpenGL texture with the font pack pixel data.
-//     // // Only uses one color channel since font data is a monochrome alpha mask.
-//     GLuint fontTexture;
-//     glGenTextures(1, &fontTexture);
-//     glBindTexture(GL_TEXTURE_2D, fontTexture);
-//     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, pixels);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-//     return charData;
-// }
-
-// // Calculate pixel width of a string.
-// float TextWidth(const char* text, float height, stbtt_packedchar *charData) {
-//     float w = 0.0f;
-
-//     for (int i = 0; i < strlen(text); i++) {
-//         stbtt_packedchar c = charData[text[i]];
-//         w += c.xadvance;
-//     }
-//     // Scale width by rendered height to texture generated height ratio for final size.
-//     return w * (height / TEXTURE_FONT_SIZE);
-// }
-
-// // Render string using glDrawArrays.
-// // X indicates the leftmost, center or rightmost point of the based on align (0:left, 1:center, 2:rigght).
-// // Y is the baseline of the text.
-// void RenderString(const char* text, float x, float y, float height, int align, stbtt_packedchar *charData, GLuint program) {
-//     // Scale of actual text compared to size on stb_truetype generated texture.
-//     float scale = height / TEXTURE_FONT_SIZE;
-
-//     // Resolution of window/display for shader position calculations.
-//     float resolution[2] = {OUTPUT_WIDTH, OUTPUT_HEIGHT};
-
-//     float position[2] = {x, y};
-//     if (align == 1) {
-//         // Center align
-//         position[0] -= TextWidth(text, height, charData) / 2.0f;
-//     } else if (align == 2) {
-//         // Right align
-//         position[0] -= TextWidth(text, height, charData);
-//     }
-
-//     glUniform2fv(glGetUniformLocation(program, "resolution"), 1, resolution);
-//     for (int i = 0; i < strlen(text); i++) {
-//         // Lookup current character data from stb_truetype.
-//         stbtt_packedchar c = charData[text[i]];
-
-//         // Position of character in texture.
-//         float charPosition[4] = {c.x0, c.y0, c.x1, c.y1};
-
-//         // Find the actual size of character since fonts can be variable width.
-//         // 'M' usually is wider than '!', 'L' taller than 'o', etc.
-//         // Calculated by substracting start-offset from end-offset.
-//         // xoff is start offset from the left.
-//         // xoff2 is end offset from the left.
-//         // yoff is start offset from the baseline (will be negative if above baseline).
-//         // yoff2 is end offset from the baseline.
-//         float size[2] = {(c.xoff2 - c.xoff) * scale, (c.yoff2 - c.yoff) * scale};
-
-//         // The actual position of character based on its offset form left/baseline.
-//         float renderPos[2] = {position[0] + c.xoff * scale, position[1] - c.yoff2 * scale};
-
-//         glUniform4fv(glGetUniformLocation(program, "charPosition"), 1, charPosition);
-//         glUniform2fv(glGetUniformLocation(program, "position"), 1, renderPos);
-//         glUniform2fv(glGetUniformLocation(program, "size"), 1, size);
-
-//         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-//         // Advance x position to start of next character.
-//         position[0] += c.xadvance * scale;
-//     }
-// }
-
-// int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
-//     // Setup basic OpenGL instance and window with GLFW.
-//     glfwInit();
-//     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-//     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-//     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//     glfwWindowHint(GLFW_SAMPLES, 4);
-//     GLFWwindow* window = glfwCreateWindow(OUTPUT_WIDTH, OUTPUT_HEIGHT, "stb_truetype_example", NULL, NULL);
-//     glfwMakeContextCurrent(window);
-//     glViewport(0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT);
-
-//     // Setup OpenGL buffer and vertex array with a 2D square that can be rendered
-//     // with GL_TRIANGLE_STRIP.
-//     GLuint vbo, vao, fbo, fbTexture;
-//     float vertexdata[8] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f };
-//     glGenBuffers(1, &vbo);
-//     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-//     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, vertexdata, GL_STATIC_DRAW);
-//     glGenVertexArrays(1, &vao);
-//     glBindVertexArray(vao);
-
-//     // Enable alpha blending since the font will be created as a monochrome mask.
-//     glEnable(GL_BLEND);
-//     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//     // Build shader.
-//     GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
-//     glShaderSource(vertShader, 1, &vertSource, NULL);
-//     glCompileShader(vertShader);
-//     GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-//     glShaderSource(fragShader, 1, &fragSource, NULL);
-//     glCompileShader(fragShader);
-//     GLuint program = glCreateProgram();
-//     glAttachShader(program, vertShader);
-//     glAttachShader(program, fragShader);
-//     glLinkProgram(program);
-//     GLint attrib = glGetAttribLocation(program, "inPosition");
-//     glEnableVertexAttribArray(attrib);
-//     size_t attriboffset = 0;
-//     glVertexAttribPointer(attrib, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)(attriboffset));
-//     glUseProgram(program);
-
-//     // Load a font and render some text until window is closed.
-//     stbtt_packedchar *comic = LoadFont("c:\\windows\\fonts\\candara.ttf");
-//     while (true) {
-//         double dtime = 0;
-//         glfwPollEvents();
-//         if (glfwWindowShouldClose(window)) { break; }
-
-//         glClearColor(0.10f, 0.15f, 0.20f, 1.0f);
-//         glClear(GL_COLOR_BUFFER_BIT);
-
-//         // Render text.
-//         RenderString("Left!", 100, 50, 200, 0, comic, program);
-//         RenderString("Center!", OUTPUT_WIDTH / 2.0f, 200, 100, 1, comic, program);
-//         RenderString("Right!", OUTPUT_WIDTH -100, 400, 150, 2, comic, program);
-//         RenderString("Center", OUTPUT_WIDTH / 2.0f, 600, 300, 1, comic, program);
-//         RenderString("Left!", 100, 800, 50, 0, comic, program);
-//         RenderString("Right!", OUTPUT_WIDTH - 100, 900, 250, 2, comic, program);
-
-//         glfwSwapBuffers(window);
-//     }
-
-//     return 0;
-// }
-//GLuint program;
-
-void Text::Init() {
-
+void Text::Init() 
+{
     if (!gltInit()) {
-        LOG(stderr << "Text: Failed to initialize text: " << EXIT_FAILURE );
+        LOG(stderr << "Text: Failed to initialize text: " << EXIT_FAILURE);
         return;
 	}
 
-    s_buffer = gltCreateText();
+    GLT_text_buffer = gltCreateText();
 
-    LOG("Text: initialized.");
-
+    LOG("Text: initialized.");  
 }
-
 
 //--------------------------
 
 
-void Text::ShutDown() {
-    gltDeleteText(s_buffer);
+void Text::ShutDown() 
+{
+    GLT_text_handles.clear();
+    _packedChars.clear();
+    _alignedQuads.clear();
+
+    gltDeleteText(GLT_text_buffer);
     gltTerminate();
 
     LOG("Text: uninitialized.");
-
 }
 
 
 //--------------------------
 
 
-Text::Text(const std::string& content, float x, float y, float scale, glm::vec3 tint)
-:
+Text::Text(const std::string& content, float x, float y, const std::string& font, float scale, glm::vec3 tint):
     Entity(TEXT, x, y),
-        content(content)
+        textType(DEFAULT)
 {
 
-    this->scale = glm::vec2(scale);
-    this->tint = tint;
-    this->m_handle = s_buffer;
+    //font
 
-    this->SetText(content);
+    if (font.length())
+    {
+        const std::string& filepath = System::Resources::Manager::GetFilePath(font);
 
-    LOG("Text: " + (std::string)content + " created.");
+        if (filepath != "not found") 
+        {
+            textType = FONT;
+            this->content = content;
+            this->font = font;
+            this->tint = tint;
+            this->scale = glm::vec2(scale);
+            position = glm::vec2(x, y);
 
+            glGenBuffers(1, &m_vboID);
+            glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+            glBufferData(GL_ARRAY_BUFFER, s_VBO_SIZE, nullptr, GL_DYNAMIC_DRAW);
 
-    // GLuint vbo, vao, fbo, fbTexture;
-    // float vertexdata[8] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f };
-    // glGenBuffers(1, &vbo);
-    // glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, vertexdata, GL_STATIC_DRAW);
-    // glGenVertexArrays(1, &vao);
-    // glBindVertexArray(vao);
+            glGenVertexArrays(1, &m_vaoID);
+            glBindVertexArray(m_vaoID);
 
-    // // Enable alpha blending since the font will be created as a monochrome mask.
-    // glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            //position attribute:
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0);
+            glEnableVertexAttribArray(0);
 
-    // Build shader.
-    //GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
-    //glShaderSource(vertShader, 1, &vertSource, NULL);
-    //glCompileShader(vertShader);
-    //GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-    //glShaderSource(fragShader, 1, &fragSource, NULL);
-    //glCompileShader(fragShader);
-    //program = glCreateProgram();
-    //glAttachShader(program, vertShader);
-    //glAttachShader(program, fragShader);
-    //glLinkProgram(program);
-    // GLint attrib = glGetAttribLocation(Shader::Get("text").ID/* program */, "inPosition");
-    // glEnableVertexAttribArray(attrib);
-    // size_t attriboffset = 0;
-    // glVertexAttribPointer(attrib, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)(attriboffset));
-    // glUseProgram(Shader::Get("text").ID/* program */);
-    // comic = LoadFont("C:\\project_data\\projects\\c++\\spaghyeti_source_engine\\games\\TestGame\\resources\\assets\\fonts\\Silkscreen\\slkscr.ttf"/* "resources\\assets\\fonts\\Silkscreen\\slkscr.ttf" */);
+            //color attribute:
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (const void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
 
+            //texCoord attribute:
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (const void*)(7 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+
+            glBindVertexArray(0);
+
+            //read font file
+            std::ifstream inputStream(filepath.c_str(), std::ios::binary);
+
+            inputStream.seekg(0, std::ios::end);
+            auto&& fontFileSize = inputStream.tellg();
+            inputStream.seekg(0, std::ios::beg);
+
+            uint8_t* fontDataBuf = new uint8_t[fontFileSize];
+
+            inputStream.read((char*)fontDataBuf, fontFileSize);
+
+            stbtt_fontinfo fontInfo = {};
+        
+            if (!stbtt_InitFont(&fontInfo, fontDataBuf, 0)) {
+                LOG("Font: failed to load: " + filepath);
+                return;
+            }
+
+            stbtt_packedchar packedChars[charsToIncludeInFontAtlas];
+            stbtt_aligned_quad alignedQuads[charsToIncludeInFontAtlas];
+
+            uint8_t* fontAtlasTextureData = new uint8_t[s_fontAtlasWidth * s_fontAtlasHeight];
+            
+            stbtt_pack_context ctx;
+
+            stbtt_PackBegin(
+                &ctx,                                     // stbtt_pack_context (this call will initialize it) 
+                (unsigned char*)fontAtlasTextureData,     // Font Atlas texture data
+                s_fontAtlasWidth,                           // Width of the font atlas texture
+                s_fontAtlasHeight,                          // Height of the font atlas texture
+                0,                                        // Stride in bytes
+                1,                                        // Padding between the glyphs
+                nullptr);
+
+            stbtt_PackFontRange(
+                &ctx,                                     // stbtt_pack_context
+                fontDataBuf,                              // Font Atlas texture data
+                0,                                        // Font Index                                 
+                m_fontSize,                                 // Size of font in pixels. (Use STBTT_POINT_SIZE(m_fontSize) to use points) 
+                s_codePointOfFirstChar,                     // Code point of the first charecter
+                charsToIncludeInFontAtlas,                // No. of charecters to be included in the font atlas 
+                packedChars                    // stbtt_packedchar array, this struct will contain the data to render a glyph
+            );
+            stbtt_PackEnd(&ctx);
+
+            for (int i = 0; i < charsToIncludeInFontAtlas; i++)
+            {
+                float unusedX, unusedY;
+
+                stbtt_GetPackedQuad(
+                    packedChars,              // Array of stbtt_packedchar
+                    s_fontAtlasWidth,                      // Width of the font atlas texture
+                    s_fontAtlasHeight,                     // Height of the font atlas texture
+                    i,                                   // Index of the glyph
+                    &unusedX, &unusedY,                  // current position of the glyph in screen pixel coordinates, (not required as we have a different corrdinate system)
+                    &alignedQuads[i],         // stbtt_alligned_quad struct. (this struct mainly consists of the texture coordinates)
+                    0                                    // Allign X and Y position to a integer (doesn't matter because we are not using 'unusedX' and 'unusedY')
+                );
+            }
+            
+            std::array<stbtt_packedchar, charsToIncludeInFontAtlas> pChars;
+            std::array<stbtt_aligned_quad, charsToIncludeInFontAtlas> aQuads;  
+            std::copy(std::begin(packedChars), std::end(packedChars), std::begin(pChars)); 
+            std::copy(std::begin(alignedQuads), std::end(alignedQuads), std::begin(aQuads)); 
+            _packedChars.insert({ font, pChars });
+            _alignedQuads.insert({ font, aQuads });
+
+            delete[] fontDataBuf;
+
+            if (fontAtlasTextureData) {
+            
+                glGenTextures(1, &m_fontTextureID);
+                glBindTexture(GL_TEXTURE_2D, m_fontTextureID);
+
+                //the given texture data is a single channel 1 byte per pixel data 
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, s_fontAtlasWidth, s_fontAtlasHeight, 0, GL_RED, GL_UNSIGNED_BYTE, fontAtlasTextureData);
+
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+                glBindTexture(GL_TEXTURE_2D, 0);
+                
+                delete[] fontAtlasTextureData;
+            }
+        }
+    } 
+
+    //default text
+
+    if (textType == DEFAULT) {
+        
+        this->scale = glm::vec2(scale);
+        this->tint = tint;
+        this->content = content;
+        this->SetText(content);
+
+        GLT_text_handles.insert({ ID, GLT_text_buffer });
+    }
+
+    const std::string text_type = textType == DEFAULT ? "default" : font + ".ttf";
+    LOG("Text: " + content + " created. (" +  text_type + ")");
 }
 
 
 //--------------------------
 
 
-Text::~Text() {
-    LOG("Text: " + (std::string)content + " destroyed.");
+Text::~Text() 
+{
+    if (textType == DEFAULT) {
+        auto it = std::find_if(GLT_text_handles.begin(), GLT_text_handles.end(), [this](const std::pair<std::string, GLTtext*>& text){ return this->ID == text.first; });
+        if (it != GLT_text_handles.end()) {
+            it = GLT_text_handles.erase(std::move(it));
+            --it;
+        }
+    }
+
+    if (textType == FONT) 
+    {
+
+        auto packed_char_it = std::find_if(_packedChars.begin(), _packedChars.end(), [this](const std::pair<std::string, std::array<stbtt_packedchar, charsToIncludeInFontAtlas>>& ch){ return this->font == ch.first; });
+        if (packed_char_it != _packedChars.end()) {
+            packed_char_it = _packedChars.erase(std::move(packed_char_it));
+            --packed_char_it;
+        }
+
+        auto aligned_quads_it = std::find_if(_alignedQuads.begin(), _alignedQuads.end(), [this](const std::pair<std::string, std::array<stbtt_aligned_quad, charsToIncludeInFontAtlas>>& ch){ return this->font == ch.first; });
+        if (aligned_quads_it != _alignedQuads.end()) {
+            aligned_quads_it = _alignedQuads.erase(std::move(aligned_quads_it));
+            --aligned_quads_it;
+        }
+
+    }
+
+    LOG("Text: " + content + " destroyed.");
+}
+
+
+//--------------------------
+
+
+void* Text::GetGLTPointer() 
+{
+    if (textType == DEFAULT) {
+        auto it = GLT_text_handles.find(ID);
+        return it != GLT_text_handles.end() ? it->second : nullptr;
+    }
+    return nullptr;
 }
 
 
@@ -335,29 +254,157 @@ Text::~Text() {
 
 void Text::Render(float projWidth, float projHeight)
 {
+    if (textType == DEFAULT) 
+    {
+        glm::mat4 model = glm::mat4(1.0f);
+    
+        model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
+        model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.0f));
 
-    SetText(content);
+        const glm::highp_mat4 mp = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight) * model;
 
-    gltBeginDraw();
+        SetText(content);
+        gltBeginDraw();
+        gltColor(tint.x, tint.y, tint.z, alpha);
 
-    gltColor(tint.x, tint.y, tint.z, alpha);
+        GLTtext* handle = static_cast<GLTtext*>(GetGLTPointer());
 
-    glm::mat4 model = glm::mat4(1.0f);
- 
-    model = glm::translate(model, glm::vec3(position.x, position.y /* + gltGetTextHeight(m_handle, scale.y) */, 0.0f));
-    model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.0f));
+        if (handle) 
+            gltDrawText(handle, (GLfloat*)&mp);
 
-    glm::highp_mat4 mvp = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight) * model;
+        #ifndef __EMSCRIPTEN__
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        #endif
 
-    gltDrawText(m_handle, (GLfloat*)&mvp);
+        gltEndDraw();
+    }
 
-    #ifndef __EMSCRIPTEN__
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    #endif
+    if (textType == FONT) 
+    {
 
-    gltEndDraw();
+        const float aspectRatio = (projWidth / projHeight); 
 
-   //RenderString("Left!", 100, 50, 200, 0, comic, Shader::Get("text").ID);
+        const glm::mat4 projectionMat =  glm::ortho(-aspectRatio, aspectRatio, -1.0f, 1.0f), //System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight),
+                        viewProjectionMat = projectionMat; 
+
+        m_vertexIndex = 0;
+
+        constexpr int order[6] = { 0, 1, 2, 0, 2, 3 };
+        const float pixelScale = 2.0f / projHeight;
+
+        glm::vec3 localPosition = glm::vec3(System::Window::GetPixelToNDC(position.x, position.y), 0.0f);
+
+        const auto it_packed_chars = _packedChars.find(font);
+        const auto it_aligned_quads = _alignedQuads.find(font);
+
+        auto packed_chars = (*it_packed_chars).second;
+        auto aligned_quads = (*it_aligned_quads).second;
+
+        for (char ch : content)
+        {
+            // Check if the charecter glyph is in the font atlas.
+            if (ch >= s_codePointOfFirstChar && ch <= s_codePointOfFirstChar + charsToIncludeInFontAtlas)
+            {
+                if (m_vertices.size() <= m_vertexIndex)
+                    m_vertices.resize(m_vertices.size() + 6);
+
+                // Retrive the data that is used to render a glyph of charecter 'ch'
+                const stbtt_packedchar* packedChar = &packed_chars[ch - s_codePointOfFirstChar]; 
+                const stbtt_aligned_quad* alignedQuad = &aligned_quads[ch - s_codePointOfFirstChar];
+
+                // The units of the fields of the above structs are in pixels, 
+                // convert them to a unit of what we want be multilplying to pixelScale  
+                const glm::vec2 glyphSize = {
+                    (packedChar->x1 - packedChar->x0) * pixelScale * scale.x,
+                    (packedChar->y1 - packedChar->y0) * pixelScale * scale.y
+                },
+
+                glyphBoundingBoxBottomLeft = {
+                    localPosition.x + (packedChar->xoff * pixelScale * scale.x),
+                    localPosition.y - (packedChar->yoff + packedChar->y1 - packedChar->y0) * pixelScale * scale.y
+                },
+
+                // The order of vertices of a quad goes top-right, top-left, bottom-left, bottom-right
+                glyphVertices[4] = {
+                    { glyphBoundingBoxBottomLeft.x + glyphSize.x, glyphBoundingBoxBottomLeft.y + glyphSize.y },
+                    { glyphBoundingBoxBottomLeft.x, glyphBoundingBoxBottomLeft.y + glyphSize.y },
+                    { glyphBoundingBoxBottomLeft.x, glyphBoundingBoxBottomLeft.y },
+                    { glyphBoundingBoxBottomLeft.x + glyphSize.x, glyphBoundingBoxBottomLeft.y },
+                },
+
+                glyphTextureCoords[4] = {
+                    { alignedQuad->s1, alignedQuad->t0 },
+                    { alignedQuad->s0, alignedQuad->t0 },
+                    { alignedQuad->s0, alignedQuad->t1 },
+                    { alignedQuad->s1, alignedQuad->t1 },
+                };
+
+                // Fill the vertex buffer by 6 vertices to render a quad as we are rendering a quad as 2 triangles
+                // The order used is in the 'order' array
+                // order = [0, 1, 2, 0, 2, 3] is meant to represent 2 triangles: 
+                // one by glyphVertices[0], glyphVertices[1], glyphVertices[2] and one by glyphVertices[0], glyphVertices[2], glyphVertices[3]
+                for (int i = 0; i < 6; i++) {
+                    m_vertices[m_vertexIndex + i].position = glm::vec3(glyphVertices[order[i]], 0.0f);
+                    m_vertices[m_vertexIndex + i].color = glm::vec4(tint, alpha);
+                    m_vertices[m_vertexIndex + i].texCoord = glyphTextureCoords[order[i]];
+                }
+
+                m_vertexIndex += 6;
+
+                // Update the position to render the next glyph specified by packedChar->xadvance.
+                localPosition.x += packedChar->xadvance * pixelScale * scale.x;
+            }
+
+            // Handle newlines seperately.
+            else if(ch == '\n') {
+                // advance y by m_fontSize, reset x-coordinate
+                localPosition.y -= m_fontSize * pixelScale * scale.y;
+                localPosition.x = position.x;
+            }
+        }
+        
+        const int shaderID = Shader::Get("text").ID,
+                  uniformLoc = glGetUniformLocation(shaderID, "uFontAtlasTexture");
+
+        glBindTexture(GL_TEXTURE_2D, m_fontTextureID);
+        glActiveTexture(GL_TEXTURE0);
+        glUseProgram(shaderID); 
+
+        const size_t sizeOfVertices = m_vertices.size() * sizeof(Vertex);
+        const uint32_t drawCallCount = (sizeOfVertices / s_VBO_SIZE) + 1; //number of chunks
+    /*  glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+            glBufferData(GL_ARRAY_BUFFER, s_VBO_SIZE, nullptr, GL_DYNAMIC_DRAW);
+
+
+            glBindVertexArray(m_vaoID);
+
+            //position attribute:
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0);
+            glEnableVertexAttribArray(0);
+
+            //color attribute:
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (const void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+
+            //texCoord attribute:
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (const void*)(7 * sizeof(float)));
+            glEnableVertexAttribArray(2); */
+        // Render each chunk of vertex data.
+        for (int i = 0; i < drawCallCount; i++)
+        {
+            const Vertex* data = m_vertices.data() + i * s_VBO_SIZE;
+            const uint32_t vertexCount = i == drawCallCount - 1 ? (sizeOfVertices % s_VBO_SIZE) / sizeof(Vertex) : s_VBO_SIZE / (sizeof(Vertex) * 6);
+
+            const int uniformLocation = glGetUniformLocation(shaderID, "uViewProjectionMat");
+            glUniformMatrix4fv(uniformLocation, 1, GL_TRUE, glm::value_ptr(viewProjectionMat));
+
+            glBindVertexArray(m_vaoID);
+            glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, i == drawCallCount - 1 ? sizeOfVertices % s_VBO_SIZE : s_VBO_SIZE, data);
+
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        } 
+    }
 }
 
 
@@ -365,9 +412,11 @@ void Text::Render(float projWidth, float projHeight)
 
 
 void Text::SetText(const std::string& content) {
-
     this->content = content;
-    gltSetText(m_handle, this->content.c_str());
+    if (textType == DEFAULT) {
+        GLTtext* handle = static_cast<GLTtext*>(GetGLTPointer());
+        gltSetText(handle, this->content.c_str());
+    } 
 }
 
 
@@ -376,9 +425,12 @@ void Text::SetText(const std::string& content) {
 
 const glm::vec2 Text::GetTextDimensions() 
 {
+    if (textType == FONT)
+        return { 64.0f, m_textHeight };
 
-    GLfloat width = gltGetTextWidth(m_handle, scale.x),
-            height = gltGetTextHeight(m_handle, scale.y);
+    const GLTtext* handle = static_cast<GLTtext*>(GetGLTPointer());
+    const GLfloat width = gltGetTextWidth(handle, scale.x),
+            height = gltGetTextHeight(handle, scale.y);
 
     return { width, height };
 }

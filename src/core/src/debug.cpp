@@ -1,8 +1,10 @@
 #if DEVELOPMENT == 1
 
 #include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/window.h"
 #include "../../../build/sdk/include/physics.h"
 #include "../../../build/sdk/include/debug.h"
+#include "../../window/renderer.h"
 
 using namespace System;
 using namespace Graphics;

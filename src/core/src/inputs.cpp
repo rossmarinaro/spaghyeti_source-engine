@@ -1,4 +1,6 @@
 #include "../../../build/sdk/include/app.h"
+#include "../../window/renderer.h"
+
 
 using namespace System;
 
@@ -19,17 +21,17 @@ using namespace System;
             Application::game->inputs->mouseX = position.x;
             Application::game->inputs->mouseY = position.y;
 
-            Inputs::cursor_callback(Window::s_instance, event->targetX, event->targetY);
+            Inputs::cursor_callback(Renderer::GLFW_window_instance, event->targetX, event->targetY);
         }
 
         if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
             Application::game->inputs->numInputs++; 
-            Inputs::input_callback(Window::s_instance, 1, 1, 0);
+            Inputs::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
         }
 
         if (eventType == EMSCRIPTEN_EVENT_MOUSEUP) {
             Application::game->inputs->numInputs--;
-            Inputs::input_callback(Window::s_instance, 0, 0, 0);
+            Inputs::input_callback(Renderer::GLFW_window_instance, 0, 0, 0);
         }
 
         if (eventType == EMSCRIPTEN_EVENT_CLICK)
@@ -63,8 +65,8 @@ using namespace System;
                 Application::game->inputs->mouseX = position.x;
                 Application::game->inputs->mouseY = position.y;
 
-                Inputs::cursor_callback(Window::s_instance, touch->targetX, touch->targetY);
-                Inputs::input_callback(Window::s_instance, 1, 1, 0);
+                Inputs::cursor_callback(Renderer::GLFW_window_instance, touch->targetX, touch->targetY);
+                Inputs::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
 
                 Application::game->inputs->numInputs++;
             }
@@ -73,7 +75,7 @@ using namespace System;
         else
         {
             Application::game->inputs->cursorReset = true;
-            Inputs::input_callback(Window::s_instance, 0, 0, 0);
+            Inputs::input_callback(Renderer::GLFW_window_instance, 0, 0, 0);
 
             Application::game->inputs->numInputs--;
         }
@@ -124,7 +126,7 @@ Inputs::Inputs():
 //----------------------------------------
 
 
-void Inputs::ProcessInput(GLFWwindow* window)
+void Inputs::ProcessInput()
 {
 
     //input state
@@ -143,7 +145,7 @@ void Inputs::ProcessInput(GLFWwindow* window)
         SetGamepadInputs(GLFW_JOYSTICK_1);
 
     if (Application::isMobile && cursorReset)
-        cursor_callback(Window::s_instance, 0.0f, 0.0f);
+        Renderer::cursor_callback(Renderer::GLFW_window_instance, 0.0f, 0.0f);
 
     bool isOverlapping = false;
 
@@ -182,93 +184,33 @@ void Inputs::ProcessInput(GLFWwindow* window)
 }
 
 
-
 //----------------------------------------
 
 
-void Inputs::cursor_callback(GLFWwindow* window, double xPos, double yPos)
-{
-
-    //set cursor object to movement, translate ndc coords to clip space
-
-    auto position = Window::GetNDCToPixel((float)xPos, (float)yPos);
-   
-    Application::game->inputs->mouseX = position.x;
-    Application::game->inputs->mouseY = position.y;
-
-}
-
-
-//----------------------------------------
-
-
-void Inputs::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-
-    if (action == GLFW_PRESS) {
-        Application::game->inputs->SetKeyInputs(true, key, window);  
-        Application::game->inputs->numInputs++;
-    }
-
-    if (action == GLFW_RELEASE) {
-        Application::game->inputs->SetKeyInputs(false, key, window);  
-        Application::game->inputs->numInputs--;
-    }
-
-}
-
-
-//----------------------------------------
-
-
-void Inputs::SetKeyInputs(bool boolean, int key, GLFWwindow* window)
-{
+void Inputs::SetKeyInputs(bool boolean, int key, void* window_ptr)
+{            
 
     switch (key)
     {
-        case GLFW_KEY_ESCAPE:
+        case GLFW_KEY_ESCAPE: {
+            GLFWwindow* window = static_cast<GLFWwindow*>(window_ptr);
             glfwSetWindowShouldClose(window, GLFW_TRUE);
-        break;
-        case GLFW_KEY_LEFT:
-            LEFT = boolean;
-        break;
-        case GLFW_KEY_RIGHT:
-            RIGHT = boolean;
-        break;
-        case GLFW_KEY_UP:
-            UP = boolean;
-        break;
-        case GLFW_KEY_DOWN:
-           DOWN = boolean;
-        break;
+            break;
+        }
+        case GLFW_KEY_LEFT: LEFT = boolean; break;
+        case GLFW_KEY_RIGHT: RIGHT = boolean; break;
+        case GLFW_KEY_UP: UP = boolean; break;
+        case GLFW_KEY_DOWN: DOWN = boolean; break;
         case GLFW_KEY_LEFT_SHIFT:
-        case GLFW_KEY_RIGHT_SHIFT:
-            SHIFT = boolean;
-        break;
-        case GLFW_KEY_SPACE:
-            SPACE = boolean;
-        break;
-        case GLFW_KEY_ENTER:
-            ENTER = boolean;
-        break;
-        case GLFW_KEY_TAB:
-            TAB = boolean;
-        break;
-        case GLFW_KEY_G:
-            G = boolean;
-        break;
-        case GLFW_KEY_W:
-            W = boolean;
-        break;
-        case GLFW_KEY_A:
-            A = boolean;
-        break;
-        case GLFW_KEY_S:
-            S = boolean;
-        break;
-        case GLFW_KEY_D:
-            D = boolean;
-        break;
+        case GLFW_KEY_RIGHT_SHIFT: SHIFT = boolean; break;
+        case GLFW_KEY_SPACE: SPACE = boolean; break;
+        case GLFW_KEY_ENTER: ENTER = boolean; break;
+        case GLFW_KEY_TAB: TAB = boolean; break;
+        case GLFW_KEY_G: G = boolean; break;
+        case GLFW_KEY_W: W = boolean; break;
+        case GLFW_KEY_A: A = boolean; break;
+        case GLFW_KEY_S: S = boolean; break;
+        case GLFW_KEY_D: D = boolean; break;
     }
 }
 
@@ -380,33 +322,6 @@ void Inputs::SetGamepadInputs(unsigned int joystick)
 }
 
 
-//----------------------------------------
-
-
-void Inputs::input_callback(GLFWwindow* window, int input, int action, int mods)
-{
-
-    if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) 
-        Application::game->inputs->RIGHT_CLICK = true;
-
-    else
-        Application::game->inputs->RIGHT_CLICK = false;
-
-    if (input == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) 
-        Application::game->inputs->LEFT_CLICK = true;
-
-    else
-        Application::game->inputs->LEFT_CLICK = false;
-
-    if (action == GLFW_PRESS)
-        Application::game->inputs->numInputs++;
-
-    if (action == GLFW_RELEASE)
-        Application::game->inputs->numInputs--;
-
-}
-
-
 //-----------------------------------------
 
 
@@ -421,7 +336,6 @@ void Inputs::ShutDown()
     }
 
     LOG("Inputs: shutdown.");
-
 }
 
 

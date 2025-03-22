@@ -13,7 +13,6 @@
 
 class Entity {
 
-
 	public: 
 
         enum { GENERIC, UI, SPRITE, GEOMETRY, TEXT, TILE };
@@ -89,7 +88,7 @@ class Geometry : public Entity {
 		float width, height, radius;
         bool isStatic;
 
-		inline void SetDrawStyle(GLint style) { m_drawStyle = style; } 
+		inline void SetDrawStyle(int style) { m_drawStyle = style; } 
         inline void SetThickness(float thickness) { m_thickness = thickness; } 
 
 		inline void SetSize(float width, float height) { 
@@ -114,11 +113,10 @@ class Geometry : public Entity {
         enum { QUAD, CIRCLE };
 
     	int m_type;
-
-        float m_thickness;
-        GLint m_drawStyle;
+        float m_thickness, m_drawStyle;
 		
 };
+
 
 
 //----------------------------- text
@@ -127,26 +125,56 @@ class Geometry : public Entity {
 class Text : public Entity {
 
     public:	
+    
+        enum { DEFAULT, FONT };
 
-        std::string content; 
+        //include 95 charecters
+        static inline const uint32_t charsToIncludeInFontAtlas = 95; 
 
         static void Init();
         static void ShutDown();
- 
+
+        int textType;
+
+        std::string content, font; 
+       
         void Render(float projWidth, float projHeight);
 		void SetText(const std::string& content);
         const glm::vec2 GetTextDimensions();
  
-        Text (const std::string& content, float x, float y, float scale = 1, glm::vec3 tint = glm::vec3(1.0f));
+       Text(const std::string& content, float x, float y, const std::string& font = "", float scale = 1, glm::vec3 tint = glm::vec3(1.0f));
        ~Text();
 
     private:
 
-        static inline GLTtext* s_buffer;
-        GLTtext* m_handle;
+        struct Vertex {
+            glm::vec3 position;
+            glm::vec4 color;
+            glm::vec2 texCoord;
+        };
+
+        //ASCII ' ' space
+        static const uint32_t s_codePointOfFirstChar = 32,
+                              s_fontAtlasWidth = 512,
+                              s_fontAtlasHeight = 512;
+        
+        //VBO size in bytes - enough for 600000 vertices (100000 quads)
+        static const size_t s_VBO_SIZE = 600000 * sizeof(Vertex); 
+
+        const float m_fontSize = 64.0f; 
+
+        std::vector<Vertex> m_vertices;
+        
+        //maximum pixel height of the text.
+        uint32_t m_textHeight,
+                 m_vertexIndex,
+                 m_vaoID, m_vboID,
+                 m_shaderProgramID,
+                 m_fontTextureID;
+
+        void* GetGLTPointer();
 
 };
-
 
 
 //----------------------------- base sprite class
@@ -173,7 +201,7 @@ class Sprite : public Entity {
 		std::vector<std::pair<b2Body*, glm::vec4>> bodies; 
 
 		inline int GetBodyDataType() const { 
-			for (const auto &body : bodies)
+			for (const auto& body : bodies)
 				return body.first->GetFixtureList()->GetBody()->GetUserData().pointer; 
 			return 0;
 		}

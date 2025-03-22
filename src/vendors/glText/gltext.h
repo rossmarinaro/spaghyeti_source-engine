@@ -160,7 +160,7 @@ GLT_API GLint gltCountNewLines(const char *str);
 
 #define _GLT_TEXT2D_POSITION_OFFSET 0
 #define _GLT_TEXT2D_TEXCOORD_OFFSET _GLT_TEXT2D_POSITION_SIZE
- 
+
 #define _GLT_MAT4_INDEX(row, column) ((row) + (column) * 4)
 
 static const char *_gltFontGlyphCharacters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`*#=[]$\"";
@@ -244,7 +244,7 @@ GLT_API GLTtext* gltCreateText(void)
 	_GLT_ASSERT(text->_vbo);
 
 	if (!text->_vao || !text->_vbo)
-	{ 
+	{
 		gltDeleteText(text);
 		return GLT_NULL;
 	}
@@ -380,7 +380,6 @@ GLT_API void gltViewport(GLsizei width, GLsizei height)
 
 GLT_API void gltBeginDraw()
 {
-    
 	glUseProgram(_gltText2DShader);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -512,7 +511,7 @@ GLT_API void gltGetColor(GLfloat *r, GLfloat *g, GLfloat *b, GLfloat *a)
 GLT_API GLfloat gltGetLineHeight(GLfloat scale)
 {
 	return (GLfloat)_gltFontGlyphHeight * scale;
-}
+} 
 
 GLT_API GLfloat gltGetTextWidth(const GLTtext *text, GLfloat scale)
 {
@@ -851,7 +850,7 @@ static const GLchar* _gltText2DVertexShaderSource =
 	"{\n"
 	"	fTexCoord = texCoord;\n"
 	"	\n"
-	"	gl_Position = mvp * vec4(position, 0.0, 1.0);\n"
+	"	gl_Position = mvp * vec4(position, 0.0, 1.0);\n" 
 	"}\n";
 
 static const GLchar* _gltText2DFragmentShaderSource =
@@ -867,7 +866,7 @@ static const GLchar* _gltText2DFragmentShaderSource =
 	"\n"
 	"uniform sampler2D diffuse;\n"
 	"\n"
-#ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__ 
 	"uniform vec4 color;\n"
 #else
 	"uniform vec4 color = vec4(1.0, 1.0, 1.0, 1.0);\n"
@@ -921,7 +920,7 @@ GLT_API GLboolean _gltCreateText2DShader(void)
 		gltTerminate();
 
 #ifdef GLT_DEBUG
-		_GLT_ASSERT(compileStatus == GL_TRUE);  
+		_GLT_ASSERT(compileStatus == GL_TRUE);
 		return GL_FALSE;
 #else
 		return GL_FALSE;

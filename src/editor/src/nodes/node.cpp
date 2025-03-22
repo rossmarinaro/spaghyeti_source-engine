@@ -626,6 +626,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "scale x", tn->scaleX },     
             { "scale y", tn->scaleY },
             { "depth", tn->depth },
+            { "current font", tn->currentFont },
             { "components", {
                     { "script", {
                             { "exists", tn->HasComponent(Component::SCRIPT) },
@@ -1120,6 +1121,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("UIFlag"))
                 tn->UIFlag = data["UIFlag"];
+
+            if (data.contains("current font")) {
+                tn->currentFont = data["current font"];
+                if (makeNode)
+                    tn->ChangeFont(tn->currentFont);
+            }
 
             //script
 

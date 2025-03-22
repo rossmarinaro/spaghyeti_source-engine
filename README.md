@@ -48,7 +48,7 @@ Written by Ross Marinaro - Pastaboss Enterprise 🍝👌
 
 ----------------------------------------------------------
 
-Libraries used: GLFW / GLAD, GLM, GLText (embedded debug text), FreeType (in-app fonts) STB_IMAGE, MiniAudio, DearIMGUI, Box2D, nlohmann JSON
+Libraries used: GLFW / GLAD, GLM, GLText (embedded default text), STB_TRUETYPE (in-app fonts) STB_IMAGE, MiniAudio, DearIMGUI, Box2D, nlohmann JSON
 
 Uses Unix tool xxd for byte encoding assets
 
@@ -66,8 +66,6 @@ When targeting specific entity from script use `System::Game::GetScene()->GetEnt
 
 To Do:
 
-freetype implementation
-
 state management: undo/redo functionality
 
 improve editor entity selection/mouse picking/raycasting
@@ -78,5 +76,6 @@ sprite texture packer
 
 fix big .o files (audio.o manager.o game.o entity.o tilemap.o texture.o shader.o)
 
-add CMakeLists.txt build option and build script with: `cmake -S . -B build -G "Your Generator" -DCMAKE_C_COMPILER=gcc -DCMAKE_POLICY_VERSION_MINIMUM=3.5` note: "Your Generator" ie: "MinGW MakeFiles", "CodeBlocks", etc.
+add CMakeLists.txt build option and build script with: `cmake -S . -B build -G "Your Generator" -DCMAKE_C_COMPILER=gcc -DCMAKE_POLICY_VERSION_MINIMUM=3.5` 
+note: "Your Generator" ie: "MinGW MakeFiles", "CodeBlocks", etc.
 

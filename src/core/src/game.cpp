@@ -1,13 +1,14 @@
 #include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/window.h"
+#include "../../window/renderer.h"
 
 #if DEVELOPMENT == 1 && STANDALONE == 1
-
     #include "../../../build/sdk/include/displayInfo.h"
     DisplayInfo* displayInfo;
-
 #endif
 
 using namespace System;      
+
 
 
 void Game::Flush(bool removeBehaviors)
@@ -79,13 +80,13 @@ void Game::Boot()
 
     currentScene = nullptr;
 
-    text->Init(); 
+    text->Init();
 
     //preload / run game layer
 
     StartScene(scenes[0]->key, true); 
 
-    glfwSetWindowTitle(Window::s_instance, Application::name.c_str());
+    glfwSetWindowTitle(Renderer::GLFW_window_instance, Application::name.c_str());
 
     inputs->ResetControls();
 
@@ -157,7 +158,7 @@ void Game::StartScene(const std::string& key, bool loadMap)
         if (Application::isMultiThreaded)
             Application::eventPool = new EventPool(THREAD_COUNT);
 
-        if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {
+        if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) { 
             game->currentScene->Preload();
             cachedScenes.emplace_back(game->currentScene->key);
         }
@@ -180,7 +181,7 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
         const std::string state = loadMap ? " started" : " restarted.";
 
-        LOG("Scene: " + key + state);
+        LOG("Scene: " + key + state);    
 
         return;
     }
@@ -250,11 +251,10 @@ void Game::Exit()
 
 void Game::UpdateFrame()
 {
-
     if (!m_gameState)
         return;
 
-    inputs->ProcessInput(Window::s_instance);
+    inputs->ProcessInput();
 
     //entity render queue
 
@@ -275,13 +275,13 @@ void Game::UpdateFrame()
             if (entity->renderable)
                 entity->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
         }
-            
+ 
     //UI render queue
 
     for (const auto& UI : currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
             UI->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-
+        
     //vignette overlay
 
     if(currentScene->vignette) {
@@ -307,7 +307,6 @@ void Game::UpdateFrame()
         }
 
     #endif
-
 
     //update behaviors, pass game process context to subclasses
 
@@ -391,7 +390,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         auto UI_it = std::find(Application::game->currentScene->UI.begin(), Application::game->currentScene->UI.end(), entity);
 
         if (UI_it != Application::game->currentScene->UI.end()) {
-            it = Application::game->currentScene->UI.erase(std::move(UI_it));
+            UI_it = Application::game->currentScene->UI.erase(std::move(UI_it));
             --UI_it;
         }
     }
@@ -491,13 +490,12 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
 }
 
 
-//----------------------------- debug text
+//----------------------------- text
 
 
-std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, float y, int layer)
+std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, float y, const std::string& font, int layer)
 {
-
-    auto text = std::make_shared<Text>(content, x, y); 
+    auto text = std::make_shared<Text>(content, x, y, font); 
 
     if (layer == 1)
         Application::game->currentScene->entities.emplace_back(text);

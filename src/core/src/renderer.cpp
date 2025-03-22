@@ -1,17 +1,94 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/camera.h"
+#include "../../../build/sdk/include/window.h"
+#include "../../window/renderer.h"
 
 
-void System::Renderer::Update(void* camera)
+using namespace System;
+
+void Renderer::cursor_callback(GLFWwindow* window, double xPos, double yPos)
+{
+    //set cursor object to movement, translate ndc coords to clip space
+
+    auto position = Window::GetNDCToPixel((float)xPos, (float)yPos);
+   
+    Application::game->inputs->mouseX = position.x;
+    Application::game->inputs->mouseY = position.y;
+}
+
+ 
+//----------------------------------------
+
+
+void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (action == GLFW_PRESS) {
+        Application::game->inputs->SetKeyInputs(true, key, window);  
+        Application::game->inputs->numInputs++;
+    }
+
+    if (action == GLFW_RELEASE) {
+        Application::game->inputs->SetKeyInputs(false, key, window);  
+        Application::game->inputs->numInputs--;
+    }
+}
+
+
+//----------------------------------------
+
+
+void Renderer::input_callback(GLFWwindow* window, int input, int action, int mods)
+{
+
+    if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) 
+        Application::game->inputs->RIGHT_CLICK = true;
+
+    else
+        Application::game->inputs->RIGHT_CLICK = false;
+
+    if (input == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) 
+        Application::game->inputs->LEFT_CLICK = true;
+
+    else
+        Application::game->inputs->LEFT_CLICK = false;
+
+    if (action == GLFW_PRESS)
+        Application::game->inputs->numInputs++;
+
+    if (action == GLFW_RELEASE)
+        Application::game->inputs->numInputs--;
+
+}
+
+
+//----------------------------------------
+
+
+void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    Window::s_width = width;
+    Window::s_height = height;    
+}
+
+//-----------------------------------
+
+
+void Renderer::window_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, Window::s_width, Window::s_height);   
+}
+
+
+//-----------------------------------
+
+void Renderer::Update(void* camera)
 {
 
     glfwSwapInterval(s_vsync); // Enable vsync
 
     glEnable(GL_TEXTURE_2D); 
     glEnable(GL_BLEND);
-
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
- 
+    glBlendEquation(GL_FUNC_ADD);
+
     glClear(GL_COLOR_BUFFER_BIT);
 
     auto bg = ((Camera*)camera)->GetBackgroundColor();
@@ -28,9 +105,25 @@ void System::Renderer::Update(void* camera)
 
 //---------------------------------
 
+
+void Renderer::BindFrameBuffer() { 
+    glBindBuffer(GL_FRAMEBUFFER, s_FBO); 
+}
+
+
+//---------------------------------
+
+
+
+void Renderer::UnbindFrameBuffer() { 
+    glBindBuffer(GL_FRAMEBUFFER, 0); 
+}
+
+//---------------------------------
+
 GLuint texture_id;
 
-void System::Renderer::CreateFrameBuffer()
+void Renderer::CreateFrameBuffer()
 {
 
     for (auto &tex : System::Application::resources->textures)
@@ -64,7 +157,7 @@ void System::Renderer::CreateFrameBuffer()
 //---------------------------------
 
 
-void System::Renderer::RescaleFrameBuffer(float width, float height)
+void Renderer::RescaleFrameBuffer(float width, float height)
 {
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);

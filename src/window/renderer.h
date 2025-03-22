@@ -1,49 +1,12 @@
 #pragma once
 
-
 #include <map>
 #include <vector>
-
-#ifdef __EMSCRIPTEN__
-    #ifndef ES
-    #define ES
-        #include <unistd.h>
-        #include <emscripten.h>
-        #include <emscripten/html5.h>
-
-        #define GL_GLEXT_PROTOTYPES
-        #define EGL_EGLEXT_PROTOTYPES
-        #include <GLES3/gl3.h>
-    #endif
-
-#else 
-
-    #ifndef _GLFW_WIN32
-        #define _GLFW_WIN32
-        #include "./vendors/glad/include/glad/glad.h" 
-    #endif
-
-#endif
-
-#ifndef GLM
-#define GLM
-    #include "./vendors/GLFW/glfw3.h" 
-    #include "./vendors/GLFW/glfw3native.h" 
-    #include "./vendors/glm/glm.hpp" 
-    #include "./vendors/glm/gtc/type_ptr.hpp"
-    #include "./vendors/glm/gtc/matrix_transform.hpp" 
-
-    #include "./vendors/glm/gtc/matrix_transform.hpp"  
-#endif
-
-#ifndef GLT_IMPLEMENTATION
-
-    #if defined(_MSC_VER) && (_MSC_VER >= 1310)
-    #	pragma warning(disable: 4996) // Disable the fopen, strcpy, sprintf being unsafe warning
-    #endif
-#define GLT_MANUAL_VIEWPORT
-    #define GLT_IMPLEMENTATION
-    #include "./vendors/glText/gltext.h"
+#ifndef _GLFW_WIN32
+    #define _GLFW_WIN32
+    #include "../vendors/glad/include/glad/glad.h" 
+    #include "../vendors/GLFW/glfw3.h" 
+    #include "../vendors/GLFW/glfw3native.h" 
 #endif
 
 
@@ -59,16 +22,22 @@ namespace /* SPAGHYETI_CORE */ System {
             static void CreateFrameBuffer();
             static void RescaleFrameBuffer(float width, float height);
             static void Update(void* camera);
-            
-            static inline void BindFrameBuffer() { glBindBuffer(GL_FRAMEBUFFER, s_FBO); }
-            static inline void UnbindFrameBuffer() { glBindBuffer(GL_FRAMEBUFFER, 0); }
+            static void BindFrameBuffer();
+            static void UnbindFrameBuffer();
             static inline void SetVSync(int rate) { s_vsync = rate; }
             static inline int GetVSync() { return s_vsync; }
             
+            static void cursor_callback(GLFWwindow* window, double xPos, double yPos);
+            static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+            static void input_callback(GLFWwindow* window, int input, int action, int mods);
+            static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+            static void window_size_callback(GLFWwindow* window, int width, int height);
+
+            static inline GLFWwindow* GLFW_window_instance;
 
         private:
 
-            static inline GLuint s_FBO, s_RBO;
+            static inline unsigned int s_FBO, s_RBO;
         
             static inline int s_vsync = 1;
     };

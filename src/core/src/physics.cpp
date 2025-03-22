@@ -23,7 +23,7 @@ Physics::Physics():
     m_flags += b2Draw::e_centerOfMassBit;
 
     LOG("Physics: world enabled."); 
-} 
+}  
 
 
 //----------------------------------

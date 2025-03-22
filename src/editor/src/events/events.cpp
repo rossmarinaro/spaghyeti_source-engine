@@ -549,7 +549,7 @@ void EventListener::BuildAndRun()
     system("cls");
     ShowWindow(GetConsoleWindow(), SW_SHOW);
 
-    Editor::Log("building for: " + Editor::platform + ", build type: " + Editor::buildType + ", release type: " + Editor::releaseType);
+    Editor::Log("building for " + Editor::platform + ", build type: " + Editor::buildType + ", release type: " + Editor::releaseType);
 
     //directory / builder files
 
@@ -653,6 +653,17 @@ void EventListener::BuildAndRun()
 
     std::string cullTarget = "";
 
+    //set game source input file stream
+
+    const std::string srcPath = Editor::projectPath + "game.cpp";
+
+    std::ofstream game_src;
+    
+    game_src.open(srcPath, std::ofstream::trunc);
+
+    std::string root_path = Editor::rootPath;
+    std::replace(root_path.begin(), root_path.end(), '\\', '/');
+
     //Windows
 
     if (Editor::platform == "Windows")
@@ -717,6 +728,12 @@ void EventListener::BuildAndRun()
 
         main_makeFile.close();
 
+        //include core funtions
+
+        game_src << "#ifdef _WIN32\n";
+        game_src <<	"#define WIN32_LEAN_AND_MEAN\n";
+        game_src <<	"#include <windows.h>\n";
+        game_src << "#endif\n";
 
     }
 
@@ -840,26 +857,22 @@ void EventListener::BuildAndRun()
 
         web_HTML << "</body>\n";
         web_HTML << "</html>";
+
+        //include core funtions
+    
+        game_src << "#ifndef ES\n";
+        game_src << "#define ES\n";
+        game_src << "   #include <unistd.h>\n";
+        game_src << "   #include <emscripten.h>\n";
+        game_src << "   #include <emscripten/html5.h>\n";
+        game_src << "   #include <emscripten/eventloop.h>\n";
+        game_src << "   #define GL_GLEXT_PROTOTYPES\n";
+        game_src << "   #define EGL_EGLEXT_PROTOTYPES\n";
+        game_src << "   #include <GLES3/gl3.h>\n";
+
+        game_src << "#endif\n";
     }
 
-
-    //set game source input file stream
-
-    const std::string srcPath = Editor::projectPath + "game.cpp";
-
-    std::ofstream game_src;
-    
-    game_src.open(srcPath, std::ofstream::trunc);
-
-    //include core funtions
-
-    std::string root_path = Editor::rootPath;
-    std::replace(root_path.begin(), root_path.end(), '\\', '/');
-
-    game_src << "#ifdef _WIN32\n";
-    game_src <<	"#define WIN32_LEAN_AND_MEAN\n";
-    game_src <<	"#include <windows.h>\n";
-    game_src << "#endif\n";
     game_src << "\n#include \"" + root_path + "/sdk/include/app.h\"\n\n";
 
     //include embeddable assets if any
@@ -1333,7 +1346,7 @@ void EventListener::BuildAndRun()
 
                     tn->isUI = tn->UIFlag ? 2 : 1;
 
-                    command_queue << "   auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + std::to_string(tn->isUI) + ");\n"; 
+                    command_queue << "   auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + "\"" +  tn->currentFont + "\"," + std::to_string(tn->isUI) + ");\n"; 
 
                     command_queue << "   text_" + node->ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";

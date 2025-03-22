@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "./renderer.h"
+#include "./vendors/glm/glm.hpp" 
 
 namespace Graphics {
 
@@ -32,15 +32,15 @@ namespace Graphics {
             static void Load(const std::string& key);
             static void UnLoad(const std::string& key);
             
+            const void Bind();
             void SetFiltering();
-            void Generate(unsigned int width, unsigned int height, unsigned int channels, const void* data);  // generates texture from image data
+            void Generate(unsigned int width, unsigned int height, unsigned int channels, const void* data);  
             void Update(const glm::vec2& position, bool flipX, bool flipY, int drawStyle, float thickness = 1.0f);
-            void Bind() const { glBindTexture(GL_TEXTURE_2D, ID); }; // binds the texture as the current active GL_TEXTURE_2D texture object
             void Delete();
 
         private: 
 
-            GLuint m_VBO, m_UVBO;
+            unsigned int m_VBO, m_UVBO;
 
             float m_UVs[12];
 

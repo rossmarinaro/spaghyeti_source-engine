@@ -8,13 +8,11 @@ OBJS = \
 	$(wildcard ../vendors/box2d/src/**/*.cpp) \
 	$(wildcard ../vendors/glad/src/*.c)
 
-
-
 CC = g++ -g -O -std=c++17  
 
 INCLUDE_PATHS = -IC:\libs\glad\include\glad 
 
-LIBRARY_PATHS = -LC:\libs\glad  #-LC:\libs\openAL\Win32
+LIBRARY_PATHS = -LC:\libs\glad #-LC:\libs\openAL\Win32
 
 #-w suppresses all warnings -Wl,-subsystem,windows gets rid of the console window
 

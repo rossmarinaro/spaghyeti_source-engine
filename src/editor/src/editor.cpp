@@ -9,6 +9,7 @@
 #include "./gui/gui.h"
 #include "./nodes/node.h"
 #include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/renderer.h"
 
 using namespace /* SPAGHYETI_CORE */ System;
 using namespace editor;
@@ -48,10 +49,10 @@ void Editor::Update()
     //track mouse position by translating screen space to world space 
 
     double xPos, yPos;
-    glfwGetCursorPos(Window::s_instance, &xPos, &yPos);
+    glfwGetCursorPos(Renderer::GLFW_window_instance, &xPos, &yPos);
 
-    glm::mat4 localCoords = glm::inverse(s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight) * s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition().x, s_self->game->camera->GetPosition().y));
-    glm::vec4 ndc = glm::vec4(Window::GetPixelToNDC(xPos, yPos), 1.0f, 1.0f),
+    const glm::mat4 localCoords = glm::inverse(s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight) * s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition().x, s_self->game->camera->GetPosition().y));
+    const glm::vec4 ndc = glm::vec4(Window::GetPixelToNDC(xPos, yPos), 1.0f, 1.0f),
               worldCoords(ndc.x, ndc.y, 0.0f, 1.0f),
               resultPosition = localCoords * worldCoords;
 
@@ -85,12 +86,12 @@ void Editor::Update()
 
     glViewport(0, 0, Window::s_width, Window::s_height);
     
-	glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback);
-	glfwSwapBuffers(Window::s_instance);
+	glfwSetFramebufferSizeCallback(Renderer::GLFW_window_instance, Renderer::framebuffer_size_callback);
+	glfwSwapBuffers(Renderer::GLFW_window_instance);
 
     //save and close editor
 
-    if (glfwWindowShouldClose(Window::s_instance))
+    if (glfwWindowShouldClose(Renderer::GLFW_window_instance))
         if (s_self->events->canSave) {
             if (s_self->projectOpen)
                 s_self->events->saveFlag = true;
@@ -178,7 +179,7 @@ void Editor::Start()
     image.height = 65;
     image.pixels = image_data.array_buffer;
 
-    glfwSetWindowIcon(Window::s_instance, 1, &image);
+    glfwSetWindowIcon(Renderer::GLFW_window_instance, 1, &image);
     
     //create entity selector graphic
 

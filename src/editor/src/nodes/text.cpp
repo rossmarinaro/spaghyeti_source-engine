@@ -17,7 +17,9 @@ TextNode::TextNode(bool init):
     tint = glm::vec3(1.0f);
     depth = 1;
     textBuf = "";
+    currentFont = "";
     textHandle = System::Game::CreateText(textBuf, positionX, positionY);
+
     System::Game::GetScene()->SetInteractive(textHandle);
 
     if (m_init)
@@ -52,6 +54,14 @@ void TextNode::Reset(int component_type)
       behaviors.clear();
 }
 
+
+//---------------------------
+
+
+void TextNode::ChangeFont(const std::string& font) {
+    System::Game::DestroyEntity(textHandle);
+    textHandle = System::Game::CreateText(textBuf, positionX, positionY, font);
+}
 
 //---------------------------
 
@@ -119,6 +129,9 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
 
             if (show_options)
             {
+                const std::string currFont = currentFont.length() ? currentFont : "default";
+
+                ImGui::Text(("current font: " + currFont).c_str());
                 ImGui::InputText("content", &textBuf);
                 ImGui::Checkbox("UI", &UIFlag);
                 ImGui::ColorEdit3("tint", (float*)&tint); 
@@ -129,6 +142,30 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
                 ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f); 
                 ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
                 ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
+
+                if (ImGui::BeginMenu("select font"))
+                {
+                    for (const auto& asset : AssetManager::Get()->loadedAssets)
+                    {
+                        std::string key = asset.first;
+                        std::string path = asset.second;
+
+                        key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
+                        path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+
+                        if (System::Utils::GetFileType(key) == System::Resources::Manager::TEXT) {
+                            if (ImGui::MenuItem(key.c_str())) 
+                                ChangeFont(key);
+                        }
+
+                        else if (!AssetManager::Get()->text.size()) {
+                            if (ImGui::MenuItem("default")) 
+                                ChangeFont();
+                        }
+                    }
+
+                    ImGui::EndMenu();
+                }
             }
 
             ImGui::TreePop();

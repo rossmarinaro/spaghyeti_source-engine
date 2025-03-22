@@ -1,7 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../vendors/stb/stb_image.h" 
-
 #include "../../../build/sdk/include/app.h"
+#include "../../window/renderer.h"
 
 using namespace Graphics;
 
@@ -44,6 +44,13 @@ void Texture2D::Delete() {
     glDeleteBuffers(1, &m_UVBO); 
 }
 
+
+//-------------------------------
+
+
+const void Texture2D::Bind() { 
+    glBindTexture(GL_TEXTURE_2D, ID); 
+}; 
 
 
 //-------------------------------
@@ -287,13 +294,7 @@ void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int dr
     //top left
 
         m_UVs[10] = texture.format.u1;
-        m_UVs[11] = texture.format.v2;
-
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, ID); 
-
-    //glActiveTexture(GL_TEXTURE1);
-    //glBindTexture(GL_TEXTURE_2D, Get("base").ID); 
+        m_UVs[11] = texture.format.v2; 
 
     Bind();
 

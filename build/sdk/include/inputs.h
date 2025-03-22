@@ -1,7 +1,5 @@
 #pragma once
 
-#include "./renderer.h"
-
 //system inputs
 class Inputs {
 
@@ -31,11 +29,9 @@ class Inputs {
 
         void ShutDown();
         void ResetControls();
-        void ProcessInput(GLFWwindow* window);
-
-        static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-        static void cursor_callback(GLFWwindow* window, double xPos, double yPos);
-        static void input_callback(GLFWwindow* window, int input, int action, int mods);
+        void ProcessInput();
+        void SetKeyInputs(bool boolean, int key, void* window_ptr);
+        void SetGamepadInputs(unsigned int joystick);
 
         Inputs();
        ~Inputs() = default;
@@ -43,10 +39,6 @@ class Inputs {
     private:
 
         bool m_initVirtualControls;
-
-        void SetGamepadInputs(unsigned int joystick);
-        void SetKeyInputs(bool boolean, int key, GLFWwindow* window);
-
 };
     
  

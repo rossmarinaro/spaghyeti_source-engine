@@ -1,7 +1,21 @@
 #include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/window.h"
+#include "../../window/renderer.h"
 
 void System::Application::Init(Game* layer)
 {
+
+    //set top-left header and bottom toolbar icon (not binary, this image is stored as pixel data)
+
+    /* const auto image_data = Resources::Manager::GetResource("icon small");
+
+    GLFWimage image;
+
+    image.width = 66; 
+    image.height = 65;
+    image.pixels = image_data.array_buffer;
+
+    glfwSetWindowIcon(Renderer::GLFW_window_instance, 1, &image); */
 
     #if STANDALONE == 0
         game = layer;
@@ -13,15 +27,15 @@ void System::Application::Init(Game* layer)
      
     game->Boot();
 
-    //glfwMaximizeWindow(Window::s_instance);
+    //glfwMaximizeWindow(Renderer::GLFW_window_instance);
 
     //init input callbacks 
 
-    glfwSetKeyCallback(Window::s_instance, Inputs::key_callback); 
-    glfwSetCursorPosCallback(Window::s_instance, Inputs::cursor_callback); 
+    glfwSetKeyCallback(Renderer::GLFW_window_instance, Renderer::key_callback); 
+    glfwSetCursorPosCallback(Renderer::GLFW_window_instance, Renderer::cursor_callback); 
  
     #ifndef __EMSCRIPTEN__
-        glfwSetMouseButtonCallback(Window::s_instance, Inputs::input_callback);
+        glfwSetMouseButtonCallback(Renderer::GLFW_window_instance, Renderer::input_callback);
     //#else 
         //emscripten_set_canvas_element_size("#canvas", m_width, m_height); 
     #endif
@@ -34,7 +48,6 @@ void System::Application::Init(Game* layer)
 
 void System::Application::Update(void* layer)
 {
-
     if (layer == nullptr)
         return; 
 
@@ -44,11 +57,9 @@ void System::Application::Update(void* layer)
  
     Time::Update(glfwGetTime());
 
-    glViewport(0, 0, Window::s_width, Window::s_height);
-
-    glfwSetFramebufferSizeCallback(Window::s_instance, Window::framebuffer_size_callback); 
-    glfwSwapBuffers(Window::s_instance); 
-
+    glfwSetFramebufferSizeCallback(Renderer::GLFW_window_instance, Renderer::framebuffer_size_callback);
+    glfwSetWindowSizeCallback(Renderer::GLFW_window_instance, Renderer::window_size_callback); 
+    glfwSwapBuffers(Renderer::GLFW_window_instance); 
 
 }
 
@@ -88,7 +99,7 @@ void System::Application::Start(Game* layer, const std::string& key)
         #ifdef __EMSCRIPTEN__
             emscripten_set_main_loop_arg(Update, game, 0, 1);
         #else
-            while (!glfwWindowShouldClose(Window::s_instance))
+            while (!glfwWindowShouldClose(Renderer::GLFW_window_instance))
                 Update(game);
         #endif
 
@@ -112,8 +123,8 @@ void System::Application::ShutDown()
     Resources::Manager::Clear();
 
     #ifndef __EMSCRIPTEN__
-        if (Window::s_instance != nullptr)
-            delete Window::s_instance;   
+        if (Renderer::GLFW_window_instance != nullptr)
+            delete Renderer::GLFW_window_instance;   
     #endif
 
     delete resources;

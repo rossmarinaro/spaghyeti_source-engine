@@ -4,18 +4,11 @@
 
 #include "../../build/sdk/include/app.h"
 #include "../../build/sdk/include/utils.h"
-
-#ifdef __EMSCRIPTEN__
-    #include <emscripten/eventloop.h>
-#endif
+#include "../../build/sdk/include/window.h"
+#include "./renderer.h"
 
 using namespace System;
 
-
-void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    s_width = width;
-    s_height = height;    
-}
 
 
 //-----------------------------------
@@ -23,8 +16,8 @@ void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height
 
 const glm::vec2 Window::GetPixelToNDC(float x, float y) 
 {
-    float ndcX = ((2.0f * x) / s_width - 1.0f),
-          ndcY = (1.0f - (2.0f * y) / s_height);  
+    const float ndcX = ((2.0f * x) / s_width - 1.0f),
+                ndcY = (1.0f - (2.0f * y) / s_height);  
 
     return { ndcX, ndcY };
 }
@@ -37,8 +30,8 @@ const glm::vec2 Window::GetNDCToPixel(float x, float y)
 {
     glm::vec2 ndc = GetPixelToNDC(x, y);
 
-    float pixelX = (ndc.x + 1.0f) * (s_scaleWidth / 2), 
-          pixelY = s_scaleHeight - (ndc.y + 1.0f) * (s_scaleHeight / 2); 
+    const float pixelX = (ndc.x + 1.0f) * (s_scaleWidth / 2), 
+                pixelY = s_scaleHeight - (ndc.y + 1.0f) * (s_scaleHeight / 2); 
 
     return { pixelX, pixelY };
 }
@@ -91,11 +84,11 @@ void Window::Init()
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
     #else
         // GL 3.0 + GLSL 130
-        s_glsl_version = "#version 330"; //"#version 330";
+        s_glsl_version = "#version 430"; //"#version 330";
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-        //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
     #endif
 
     glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
@@ -132,7 +125,7 @@ void Window::Init()
 
     //create window
 
-    s_instance = glfwCreateWindow(
+    Renderer::GLFW_window_instance = glfwCreateWindow(
         s_width, 
         s_height,
         (Application::name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2025 🍝👌").c_str(), 
@@ -140,17 +133,17 @@ void Window::Init()
         NULL
     );
 
-    //glfwSetWindowMonitor(s_instance, monitor, 0, 0, s_width, s_height, 60);
+    //glfwSetWindowMonitor(Renderer::GLFW_window_instance, monitor, 0, 0, s_width, s_height, 60);
 
-    if (!s_instance) 
+    if (!Renderer::GLFW_window_instance) 
     {
-        LOG("GLFW: GLFW window could not be created.");
+        LOG("GLFW: window could not be created.");
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
     
-    glfwShowWindow(s_instance);
-    glfwMakeContextCurrent(s_instance);
+    glfwShowWindow(Renderer::GLFW_window_instance);
+    glfwMakeContextCurrent(Renderer::GLFW_window_instance);
 
     LOG("Window: initialized.");
 
@@ -163,7 +156,7 @@ void Window::Init()
 
     #endif
 
-    LOG("GLFW: GL Version - " << glGetString(GL_VERSION));
+    LOG("Window: GL Version - " << glGetString(GL_VERSION));
 
 }
 

@@ -5,6 +5,7 @@
 
 #include "../gui/gui.h"
 #include "../components/component.h"
+#include "../../../vendors/nlohmann/json.hpp"
 
 namespace editor {
 
@@ -238,24 +239,20 @@ namespace editor {
         public:
 
             int depth, isUI;
-
             float size, alpha;
-
             bool UIFlag;
 
             glm::vec3 tint;
-
             std::shared_ptr<Text> textHandle;
-
-            std::string textBuf;
+            std::string textBuf, currentFont;
 
             TextNode(bool init = true);
             ~TextNode();     
 
+            void ChangeFont(const std::string& font = "");
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
             void Render() override;
-
     };
 
 

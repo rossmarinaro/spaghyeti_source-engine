@@ -1,7 +1,8 @@
 #include <fstream>
 #include <sstream>
 #include "../../../build/sdk/include/app.h"
-
+#include "../../../build/sdk/include/vendors/glm/gtc/type_ptr.hpp"
+#include "../../window/renderer.h"
 
 void Shader::Delete() {
     glDeleteProgram(ID);
@@ -135,20 +136,21 @@ void Shader::InitBaseShaders()
             "#version 330 core\n"
         #endif
 
-        "layout(location = 0) in vec2 inPosition;\n" 
-        "layout(location = 0) out vec2 texturePos;\n" 
+        "layout (location = 0) in vec3 aPosition;\n"
+        "layout (location = 1) in vec4 aColor;\n"
+        "layout (location = 2) in vec2 aTexCoord;\n"
 
-        "uniform vec2 resolution;\n" 
-        "uniform vec2 position;\n" 
-        "uniform mat4 projection;\n" 
-        "uniform vec2 size;\n" 
+        "out vec4 color;\n"
+        "out vec2 texCoord;\n"
 
-        "void main() {\n" 
-            "vec2 pos = (inPosition * size / resolution);\n" 
-            "pos = pos + (position / resolution);\n" 
-            "gl_Position = projection * vec4(pos * 2.0 - vec2(1.0, 1.0), 0.0, 1.0);\n" 
-            "texturePos = vec2(inPosition.x, (inPosition.y - 1.0) * -1.0);\n" 
-        "}"; 
+        "uniform mat4 uViewProjectionMat;\n"
+
+        "void main()\n"
+        "{\n"
+            "gl_Position = uViewProjectionMat * vec4(aPosition, 1.0);\n" 
+            "color = aColor;\n"
+            "texCoord = aTexCoord;\n"
+        "}";
 
     static const char* textFragment = \
 
@@ -156,21 +158,18 @@ void Shader::InitBaseShaders()
             "#version 300 es\n"
             "precision mediump float;\n"
         #else
-            "#version 330 core\n"
+            "#version 330 core\n"       
         #endif
 
-        "layout(location = 0) in vec2 texturePos;\n" 
-        "layout(location = 0) out vec4 outColor;\n" 
+        "in vec4 color;\n"
+        "in vec2 texCoord;\n"
 
-        "uniform sampler2D fontTexture;\n" 
-        "uniform vec4 charPosition;\n" 
+        "uniform sampler2D uFontAtlasTexture;\n"
+        "out vec4 fragColor;\n"
 
-        "void main() {\n" 
-            "ivec2 texSize = textureSize(fontTexture, 0);\n" 
-            "vec2 texPos = texturePos * ((charPosition.zw - charPosition.xy) / texSize.x) + charPosition.xy / texSize.y;\n"  
-            "float col = texture(fontTexture, texPos).r;\n"  
-            "vec3 textColor = vec3(texPos.x, texturePos.y, texPos.y);\n"  
-            "outColor = vec4(textColor, col);\n"  
+        "void main()\n"
+        "{\n"
+            "fragColor = texture(uFontAtlasTexture, texCoord).r * color;\n"
         "}";
 
     static const char* geom_vertex1 = \
@@ -243,58 +242,58 @@ void Shader::InitBaseShaders()
 
     //batch
 
-    static const char* spriteBatchShader_vertex = 
+    // static const char* spriteBatchShader_vertex = 
                     
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
+    //     #ifdef __EMSCRIPTEN__
+    //         "#version 300 es\n"
+    //         "precision mediump float;\n"
+    //     #else
+    //         "#version 330 core\n"
+    //     #endif
 
-        "layout (location = 0) in vec2 vert;\n"
-        "layout (location = 1) in vec4 UV;\n"
+    //     "layout (location = 0) in vec2 vert;\n"
+    //     "layout (location = 1) in vec4 UV;\n"
 
-        "uniform mat4 vp;\n"
+    //     "uniform mat4 vp;\n"
 
-        "out vec4 uv;\n"
+    //     "out vec4 uv;\n"
 
-        "void main()\n"
-        "{\n"           
-            "uv = UV;\n"
-            "gl_Position = vp * vec4(vert.xy, 0.0, 1.0);\n"
-        "}\n"; 
+    //     "void main()\n"
+    //     "{\n"           
+    //         "uv = UV;\n"
+    //         "gl_Position = vp * vec4(vert.xy, 0.0, 1.0);\n"
+    //     "}\n"; 
 
 
-    static const char* spriteBatchShader_fragment =  
+    // static const char* spriteBatchShader_fragment =  
 
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
+    //     #ifdef __EMSCRIPTEN__
+    //         "#version 300 es\n"
+    //         "precision mediump float;\n"
+    //     #else
+    //         "#version 330 core\n"
+    //     #endif
 
-        "in vec2 uv;\n"
-        "out vec4 color;\n"
+    //     "in vec2 uv;\n"
+    //     "out vec4 color;\n"
 
-        "uniform sampler2D images[32];\n" 
-        "uniform vec3 tint;\n"
-        "uniform float alphaVal;\n"
+    //     "uniform sampler2D images[32];\n" 
+    //     "uniform vec3 tint;\n"
+    //     "uniform float alphaVal;\n"
 
-        "void main()\n"
-        "{\n"    
-            "int index = int(uv);\n" 
-            "color = texture(images[index], uv) * tint * alphaVal;\n"   
-        "}\n"; 
+    //     "void main()\n"
+    //     "{\n"    
+    //         "int index = int(uv);\n" 
+    //         "color = texture(images[index], uv) * tint * alphaVal;\n"   
+    //     "}\n"; 
 
 
     //shader char arrays
 
     Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment); 
     Load("graphics", debugGraphicShader_vertex, debugGraphicShader_fragment);
+    Load("text", textVertex, textFragment);
     //Load("batch", spriteBatchShader_vertex, spriteBatchShader_fragment);
-    //Load("text", textVertex, textFragment);
      
     #if DEVELOPMENT == 1
 

@@ -1,6 +1,11 @@
 #include <sstream>
 #include <fstream>
 
+#if USE_JSON == 1
+	#include "../../vendors/nlohmann/json.hpp"
+	using json = nlohmann::json;
+#endif
+
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/manager.h"
 

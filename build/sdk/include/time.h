@@ -39,6 +39,6 @@ class Time {
         float m_now;
 
         static inline float s_last = 0.0f;
-        std::chrono::duration<double> time_left;
+        //std::chrono::duration<double> time_left;
         
 };

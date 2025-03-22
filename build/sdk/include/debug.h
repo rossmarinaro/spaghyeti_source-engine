@@ -31,11 +31,11 @@ class DebugGraphic {
 
         int32 m_count, m_maxVertices;
 
-        GLuint m_vaoId;
+        unsigned int m_vaoId;
 
-        GLint m_vertexAttribute;
-        GLint m_colorAttribute;
-        GLint m_sizeAttribute;
+        int m_vertexAttribute,
+            m_colorAttribute,
+            m_sizeAttribute;
 
         Shader shader;
 
@@ -54,7 +54,7 @@ class Points : public DebugGraphic
 
         float m_sizes[points];
 
-        GLuint m_vboIds[3];
+        unsigned int m_vboIds[3];
 
         void Create();
         void Flush();
@@ -71,7 +71,7 @@ class Lines : public DebugGraphic
         b2Vec2 m_vertices[lines];
         b2Color m_colors[lines];
 
-        GLuint m_vboIds[2];
+        unsigned int m_vboIds[2];
     
         void Create();
         void Flush();
@@ -93,7 +93,7 @@ class Triangles : public DebugGraphic
         b2Vec2 m_vertices[triangles];
         b2Color m_colors[triangles]; 
 
-        GLuint m_vboIds[2];
+        unsigned int m_vboIds[2];
 
         void Create();
         void Flush();

@@ -9,7 +9,7 @@
                 "C:\\libs\\glad\\include",
                 "C:\\libs\\openAL\\include",
                 "C:\\libs\\freetype-windows-binaries-master\\freetype-windows-binaries-master\\include",
-                "C:\\libs\\ft2132\\freetype-2.13.2\\include\\freetype\\internal",
+                "C:\\libs\\ft2132\\freetype-2.13.2\\include",
                 "C:\\project_data\\emscripten_standalone\\emsdk",
                 "C:\\project_data\\emscripten_standalone\\emsdk\\upstream\\include",
                 "C:\\project_data\\emscripten_old\\emsdk\\upstream\\emscripten\\system\\include",

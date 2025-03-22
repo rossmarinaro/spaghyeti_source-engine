@@ -60,7 +60,7 @@ class Physics {
 
     private:
 
-        uint32 m_flags;
+        uint32 m_flags; 
         b2World m_world;
 
         struct Body {

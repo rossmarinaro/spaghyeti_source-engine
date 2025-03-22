@@ -50,7 +50,7 @@ namespace System {
             static std::shared_ptr<Sprite> CreateUI(const std::string& key, float x, float y, int frame = 0);
             static std::shared_ptr<Sprite> CreateSprite(const std::string& key, float x, float y, int frame = 0, float scale = 1.0f, int layer = 1);
             static std::shared_ptr<Sprite> CreateTileSprite(const std::string& key, float x, float y, int frame);
-            static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y, int layer = 2);
+            static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y, const std::string& font = "", int layer = 2);
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height, int layer = 1, bool isStatic = false);
             static void DestroyEntity(std::shared_ptr<Entity> entity);
             
@@ -59,14 +59,12 @@ namespace System {
             
             template <typename T>
             static inline void CreateBehavior(std::shared_ptr<Entity> entity, Scene* scene) {
-
                 auto behavior = std::make_shared<T>(entity);
                 scene->behaviors.push_back(behavior); 
             }
 
             template <typename T>
             static inline const std::shared_ptr<T> GetBehavior() { 
-
                 auto it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), 
                     [&](auto behavior) { return behavior->key == typeid(T).name(); });
 

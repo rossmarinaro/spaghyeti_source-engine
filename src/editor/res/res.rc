@@ -5,21 +5,21 @@ PRODUCTVERSION 1,0,0,0
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "081604b0"
+        BLOCK "040904E4"
         BEGIN
             VALUE "Comments", "Spaghetaboutit!"
             VALUE "CompanyName", "Pastaboss Enterprise"
-            VALUE "FileDescription", "game engine"
+            VALUE "FileDescription", "2d game engine / content creation tool"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "spaghyeditor"
-            VALUE "LegalCopyright", "Copyright © Pastaboss 2025"
-            VALUE "OriginalName", "spaghyeti engine"
-            VALUE "ProductName", "spaghyeti engine"
+            VALUE "LegalCopyright", "Copyright Pastaboss Enterprise 2025"
+            VALUE "OriginalName", "Spaghyeti Engine"
+            VALUE "ProductName", "Spaghyeti Engine"
             VALUE "ProductVersion", "1.0.0.0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x0816, 1200
+        VALUE "Translation", 0x0409, 1200
     END
 END

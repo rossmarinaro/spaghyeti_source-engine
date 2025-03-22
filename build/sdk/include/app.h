@@ -11,7 +11,7 @@
 #endif
 
 #ifndef THREAD_COUNT
-    #define THREAD_COUNT 10
+    #define THREAD_COUNT 69
 #endif
 
 
@@ -23,11 +23,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "./audio.h"
-#include "./window.h"       
-#include "./time.h"
 #include "./game.h"
-#include "./camera.h"
 #include "./events.h"
 
 

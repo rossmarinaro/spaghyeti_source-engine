@@ -54,7 +54,7 @@ GUI::GUI()
 
     //setup platform/renderer backends
 
-    ImGui_ImplGlfw_InitForOpenGL(System::Window::s_instance, true);
+    ImGui_ImplGlfw_InitForOpenGL(System::Renderer::GLFW_window_instance, true);
     ImGui_ImplOpenGL3_Init(System::Window::s_glsl_version);
 
     static const char* checker_vertex = 
@@ -112,7 +112,7 @@ GUI::GUI()
 
     System::Resources::Manager::RegisterTextures();
 
-    glfwSetScrollCallback(System::Window::s_instance, scroll_callback); 
+    glfwSetScrollCallback(System::Renderer::GLFW_window_instance, scroll_callback); 
 
     s_self->cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
     s_self->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
@@ -280,7 +280,7 @@ void GUI::ShowOptionsQuit()
 
     if (ImGui::MenuItem("Yes")) {
         show_quit = false;
-        glfwSetWindowShouldClose(System::Window::s_instance, true);
+        glfwSetWindowShouldClose(System::Renderer::GLFW_window_instance, true);
     }
 
     if (ImGui::MenuItem("No"))

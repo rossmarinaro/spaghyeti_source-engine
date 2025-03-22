@@ -1,5 +1,5 @@
 #include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/renderer.h"
+#include "../../window/renderer.h"
 
 //#include <fstream>
 //#include <ctime>
