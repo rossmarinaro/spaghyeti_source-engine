@@ -44,7 +44,7 @@ void System::Scene::SetInteractive(std::shared_ptr<Entity> entity, bool interact
 
 //--------------------------------- check if cursor is hovering entity
 
-bool System::Scene::ListenForInteraction(std::shared_ptr<Entity> entity) {
+const bool System::Scene::ListenForInteraction(std::shared_ptr<Entity> entity) {
     
     auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity; });
 
@@ -64,20 +64,14 @@ const Process::Context& System::Scene::GetContext() {
 
 //---------------------------------
 
-bool System::Scene::IsPaused() {
+const bool System::Scene::IsPaused() {
     return m_paused;
 }
 
 //---------------------------------
 
-void System::Scene::SetData(const char* key, std::any value) { 
-    m_data.insert({ key, value }); 
-}
-
-//---------------------------------
-
-const glm::vec2 System::Scene::GetWorldDimensions() { 
-    return glm::vec2(m_worldWidth, m_worldHeight);
+const Math::Vector2 System::Scene::GetWorldDimensions() { 
+    return { m_worldWidth, m_worldHeight };
 }
 
 //---------------------------------

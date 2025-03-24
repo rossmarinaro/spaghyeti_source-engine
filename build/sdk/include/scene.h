@@ -2,7 +2,6 @@
 
 #include "./context.h"
 #include "./behaviors.h"
-#include "./vendors/miniaudio.h"
 
 namespace System {
     
@@ -27,30 +26,22 @@ namespace System {
             virtual void Preload() {}
             virtual void Run(bool onSceneLoad) {}
 
-            bool IsPaused();
-            void SetData(const char* key, std::any value);
-            const glm::vec2 GetWorldDimensions();
-            void SetPause(bool isPaused);
+            const bool IsPaused();
+            const Math::Vector2 GetWorldDimensions();
             const Process::Context& GetContext();
 
-            //assign entity to react to input
+            void SetPause(bool isPaused);
 
+            //assign entity to react to input
             void SetInteractive(std::shared_ptr<Entity> entity, bool interactive = true);
             void SetWorldDimensions(float width, float height);
 
             //check if cursor is hovering entity
-
-            bool ListenForInteraction(std::shared_ptr<Entity> entity);
-
-            template<typename T>
-            inline T GetData(const char* key) const { 
-                return std::any_cast<T>(m_data.at(key));
-            }
+            const bool ListenForInteraction(std::shared_ptr<Entity> entity);
 
             template <typename T>
             const inline std::shared_ptr<T> GetEntity(const std::string& name) 
             {
-
                 auto entity_it = std::find_if(entities.begin(), entities.end(), [&](auto entity) { return entity->name == name; });
                 auto UI_it = std::find_if(UI.begin(), UI.end(), [&](auto UI) { return UI->name == name; });
 
@@ -71,11 +62,8 @@ namespace System {
                 m_worldHeight;
 
             bool m_paused;
-
-            ma_device m_music;     
+   
             Process::Context m_context;
-
-            std::map<const char*, std::any> m_data;
 
             void Init(const std::string& key);
 

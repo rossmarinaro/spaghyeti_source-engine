@@ -13,6 +13,10 @@
 
 class Entity {
 
+    //key val data to be assigned to entity object
+
+	std::map<std::string, std::any> m_data;
+
 	public: 
 
         enum { GENERIC, UI, SPRITE, GEOMETRY, TEXT, TILE };
@@ -28,31 +32,26 @@ class Entity {
              cull,
              alive;
 
-		glm::vec3 tint; 
-		glm::vec2 position, scale, scrollFactor;
+		Math::Vector3 tint; 
+		Math::Vector2 position, scale, scrollFactor;
 		std::string ID, name;
 
-		//key val data to be assigned to entity object
-
-		std::map<std::string, std::any> data;
-
 		template<typename T>
-		inline T GetData(const std::string& key) { 
-            if (data.find(key) != data.end())
-                return std::any_cast<T>(data.at(key)); 
-
+		inline const T GetData(const std::string& key) { 
+            if (m_data.find(key) != m_data.end())
+                return std::any_cast<T>(m_data.at(key)); 
             return T();
         }
 
 		inline void SetDepth(int depth) { this->depth = depth; }
 		inline void SetAlpha(float alpha) { this->alpha = alpha; }
 		inline void SetRotation(float rotation) { this->rotation = rotation; }
-		inline void SetPosition(const glm::vec2& position) { this->position = position; }
-		inline void ClearTint() { tint = glm::vec3(1.0f); }
-		inline void SetTint(const glm::vec3& tint) { this->tint = tint; }
+		inline void SetPosition(const Math::Vector2& position) { this->position = position; }
+		inline void ClearTint() { tint = { 1.0f, 1.0f, 1.0f }; }
+		inline void SetTint(const Math::Vector3& tint) { this->tint = tint; }
 		inline void SetFlipX(bool flipX) { this->flipX = flipX; }
 		inline void SetFlipY(bool flipY) { this->flipY = flipY; }
-        inline void SetScrollFactor(const glm::vec2& scrollFactor) { this->scrollFactor = scrollFactor; }
+        inline void SetScrollFactor(const Math::Vector2& scrollFactor) { this->scrollFactor = scrollFactor; }
 		 
 		virtual void Render(float projWidth, float projHeight) {}
         virtual ~Entity() { s_count--; }
@@ -68,9 +67,9 @@ class Entity {
         void SetPosition(float x, float y);
 
         static inline int s_depth = 0, s_count = 0;
-        static inline glm::vec2* s_cullPosition;
+        static inline Math::Vector2* s_cullPosition;
 
-        static inline void SetCullPosition(glm::vec2* position) { s_cullPosition = position; }
+        static inline void SetCullPosition(Math::Vector2* position) { s_cullPosition = position; }
 
 };
 
@@ -140,17 +139,17 @@ class Text : public Entity {
        
         void Render(float projWidth, float projHeight);
 		void SetText(const std::string& content);
-        const glm::vec2 GetTextDimensions();
+        const Math::Vector2 GetTextDimensions();
  
-       Text(const std::string& content, float x, float y, const std::string& font = "", float scale = 1, glm::vec3 tint = glm::vec3(1.0f));
+       Text(const std::string& content, float x, float y, const std::string& font = "", float scale = 1, const Math::Vector3& tint = { 1.0f, 1.0f, 1.0f });
        ~Text();
 
     private:
 
         struct Vertex {
-            glm::vec3 position;
-            glm::vec4 color;
-            glm::vec2 texCoord;
+            Math::Vector3 position;
+            Math::Vector4 color;
+            Math::Vector2 texCoord;
         };
 
         //ASCII ' ' space
@@ -195,12 +194,12 @@ class Sprite : public Entity {
 
 		std::string key;
 		std::map<std::string, std::pair<int, int>> anims;
-
+ 
 		//physics body
 
-		std::vector<std::pair<b2Body*, glm::vec4>> bodies; 
+		std::vector<std::pair<b2Body*, Math::Vector4>> bodies; 
 
-		inline int GetBodyDataType() const { 
+		inline const int GetBodyDataType() const { 
 			for (const auto& body : bodies)
 				return body.first->GetFixtureList()->GetBody()->GetUserData().pointer; 
 			return 0;
@@ -208,9 +207,9 @@ class Sprite : public Entity {
 
 		inline void SetFrame(int frame) { currentFrame = frame; }
 		inline void SetContact(bool isContact) { m_contacting = isContact; }
-		inline bool IsContacting() const { return m_contacting; }
-		inline bool IsSpritesheet() const { return m_isSpritesheet; } 
-		inline bool IsAnimComplete() const { return m_animComplete; }
+		inline const bool IsContacting() { return m_contacting; }
+		inline const bool IsSpritesheet() { return m_isSpritesheet; } 
+		inline const bool IsAnimComplete() { return m_animComplete; }
 
         void StopAnimation();
 		void SetAnimation(const char* key, bool yoyo = false, int rate = 2, int repeat = -1);
@@ -227,7 +226,7 @@ class Sprite : public Entity {
 		void SetImpulseX(float x);
 		void SetImpulseY(float y);
 		void Render(float projWidth, float projHeight);
-        std::shared_ptr<Sprite> Clone();
+        const std::shared_ptr<Sprite> Clone();
 
         Sprite(
             const std::string& key, 
@@ -236,7 +235,8 @@ class Sprite : public Entity {
             int frame = 0, 
             bool isTile = false
         );
-		Sprite(const std::string& key, const glm::vec2& position);
+
+		Sprite(const std::string& key, const Math::Vector2& position);
         Sprite(Sprite& sprite);
 	   
 	   ~Sprite();
@@ -249,7 +249,7 @@ class Sprite : public Entity {
              m_isAnimPlaying = false,
 			 m_anim_yoyo = false;
 
-		glm::vec2 m_velocity;
+		Math::Vector2 m_velocity;
 
         struct Anim { 
             std::string key; 
@@ -257,7 +257,7 @@ class Sprite : public Entity {
             bool yoyo, can_decrement, can_complete; 
         } m_currentAnim;
 		
-		//internal spritesheet data
+		//internal spritesheet data 
 
 		std::vector<std::array<int, 6>> m_resourceData; 
 };

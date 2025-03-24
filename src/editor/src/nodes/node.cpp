@@ -306,7 +306,7 @@ void Node::LoadShader(
 
     node->shader = { name, { vertPath, fragPath } };  
 
-    Shader::Load(name, vertPath.c_str(), fragPath.c_str(), nullptr);
+    Shader::Load(name, vertPath.c_str(), fragPath.c_str());
 
     ApplyShader(node, name);
 }
@@ -1096,7 +1096,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 tn->textBuf = data["content"];
 
             if (data.contains("tint"))
-                tn->tint = glm::vec3(data["tint"]["x"], data["tint"]["y"], data["tint"]["z"]);     
+                tn->tint = { data["tint"]["x"], data["tint"]["y"], data["tint"]["z"] };     
 
             if (data.contains("alpha"))
                 tn->alpha = data["alpha"];   

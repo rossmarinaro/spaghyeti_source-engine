@@ -17,7 +17,7 @@ void SetFolder(bool isOpen, const std::string& type = "") {
 //--------------- display thumbnail
 
 
-void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec) 
+void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsigned int>>& vec) 
 {
     if (vec.size())
         for (int i = 0; i < vec.size(); i++) 

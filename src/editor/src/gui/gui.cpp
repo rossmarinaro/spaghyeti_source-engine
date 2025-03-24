@@ -57,7 +57,7 @@ GUI::GUI()
     ImGui_ImplGlfw_InitForOpenGL(System::Renderer::GLFW_window_instance, true);
     ImGui_ImplOpenGL3_Init(System::Window::s_glsl_version);
 
-    static const char* checker_vertex = 
+    static constexpr const char* checker_vertex = 
 
         "#version 330 core\n"
 
@@ -71,7 +71,7 @@ GUI::GUI()
         "}\n"; 
 
 
-    static const char* checker_fragment =  
+    static constexpr const char* checker_fragment =  
 
         "#version 330 core\n"
 
@@ -115,7 +115,7 @@ GUI::GUI()
     glfwSetScrollCallback(System::Renderer::GLFW_window_instance, scroll_callback); 
 
     s_self->cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
-    s_self->cursor->SetTint(glm::vec3(1.0f, 0.0f, 0.0f)); 
+    s_self->cursor->SetTint({ 1.0f, 0.0f, 0.0f }); 
     s_self->cursor->SetAlpha(0.0f);
     s_self->cursor->isStatic = true; 
 

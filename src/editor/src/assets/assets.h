@@ -11,8 +11,8 @@ namespace editor {
 
             bool folderSelected;
 
-            const std::string script_dir = "resources/scripts", 
-                              shader_dir = "resources/shaders";
+            static inline const std::string script_dir = "resources/scripts", 
+                                            shader_dir = "resources/shaders";
 
             std::string currentFolder, projectIcon, selectedAsset;
 

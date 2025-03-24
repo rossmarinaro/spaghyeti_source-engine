@@ -64,7 +64,7 @@ namespace editor {
 			
 			System::Game* game;
             EventListener* events;
-            std::pair<std::string, glm::vec2> cullTarget;
+            std::pair<std::string, Math::Vector2> cullTarget;
 			
 			std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;

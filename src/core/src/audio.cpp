@@ -3,7 +3,7 @@
 #endif
 
 #define MINIAUDIO_IMPLEMENTATION
-#include "../../../build/sdk/include/vendors/miniaudio.h"
+#include "../../vendors/miniaudio.h"
 
 #include <stdio.h>
 #include <thread>

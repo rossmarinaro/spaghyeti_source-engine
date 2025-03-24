@@ -1,7 +1,7 @@
-#include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/camera.h"
-#include "../../../build/sdk/include/window.h"
-#include "../../window/renderer.h"
+#include "../../build/sdk/include/app.h"
+#include "../../build/sdk/include/camera.h"
+#include "../../build/sdk/include/window.h"
+#include "./renderer.h"
 
 
 using namespace System;
@@ -100,6 +100,7 @@ void Renderer::Update(void* camera)
         bg.w 
     );
 
+    glViewport(0, 0, Window::s_width, Window::s_height);   
 }
 
 

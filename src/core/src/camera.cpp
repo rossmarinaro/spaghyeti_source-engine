@@ -1,13 +1,12 @@
 #include "../../../build/sdk/include/game.h"
-#include "../../../build/sdk/include/vendors/glm/glm.hpp"
-#include "../../../build/sdk/include/vendors/glm/gtc/matrix_transform.hpp" 
-
+#include "../../vendors/glm/glm.hpp"
+#include "../../vendors/glm/gtc/matrix_transform.hpp"
 
 Camera::Camera():
     m_zoom(1.0f),
     m_rotation(0.0f),
-    m_position(glm::vec2(0.0f, 0.0f)),
-    m_backgroundColor(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)),
+    m_position({ 0.0f, 0.0f }),
+    m_backgroundColor({ 0.5f, 0.5f, 0.5f, 1.0f }),
     m_target({ nullptr, { 0.0f, 0.0f } }),
     m_canFollow(true)
 {
@@ -22,7 +21,7 @@ Camera::Camera():
 //-------------------------------
 
 
-void Camera::StartFollow(glm::vec2* position, float offsetX, float offsetY) {
+void Camera::StartFollow(Math::Vector2* position, float offsetX, float offsetY) {
     m_canFollow = true;
     m_target = { position, { offsetX, offsetY } };
 }
@@ -101,22 +100,24 @@ const bool Camera::InBounds()
 //------------------------------
 
 
-const glm::highp_mat4 Camera::GetProjectionMatrix(float width, float height)
+const Math::Vector4 Camera::GetProjectionMatrix(float width, float height)
 {
-    return (glm::highp_mat4)glm::ortho(
-        1.0f / m_zoom, width / m_zoom,  
-        height / m_zoom, 0.0f / m_zoom, 
-        -1.0f, 1.0f 
-    );
+    float x = 1.0f / m_zoom, 
+          y = width / m_zoom, 
+          z = height / m_zoom, 
+          w = 0.0f / m_zoom;
+                
+    return { x, y, z, w };
 }
 
 //------------------------------
 
 
-const glm::highp_mat4 Camera::GetViewMatrix(float x, float y)
-{
+const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
+{    
+    const glm::vec2 midOffset = { GetPosition().x, GetPosition().y };
+
     glm::mat4 view = glm::mat4(1.0f);
-    glm::vec2 midOffset = GetPosition();
 
     view = glm::translate(view, glm::vec3(midOffset, 0.0f)); 
     view = glm::rotate(view, glm::radians(m_rotation), { 0.0f, 0.0f, 1.0f }); 
@@ -124,7 +125,12 @@ const glm::highp_mat4 Camera::GetViewMatrix(float x, float y)
 
     view = glm::translate(view, glm::vec3(x, y, 0.0f));
 
-    return view;
+    return { 
+        { view[0][0], view[0][1], view[0][2], view[0][3] }, 
+        { view[1][0], view[1][1], view[1][2], view[1][3] },   
+        { view[2][0], view[2][1], view[2][2], view[2][3] },  
+        { view[3][0], view[3][1], view[3][2], view[3][3] }
+    };
 }
 
 

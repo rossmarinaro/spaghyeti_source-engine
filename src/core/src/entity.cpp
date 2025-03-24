@@ -5,10 +5,13 @@
 #endif
 
 #include "../../window/renderer.h"
-#include "../../../build/sdk/include/vendors/glm/gtc/matrix_transform.hpp" 
+#include "../../vendors/glm/gtc/matrix_transform.hpp" 
+#include "../../vendors/UUID.hpp"
 
 #include "../../../build/sdk/include/app.h"
-#include "../../vendors/UUID.hpp"
+#include "../../../build/sdk/include/window.h"
+
+
 
 //---------------------------------- empty entity
 
@@ -28,10 +31,10 @@ Entity::Entity(int type, float x, float y)
 { 
     this->type = type;
 
-    position = glm::vec2(x, y);
-    scrollFactor = glm::vec2(1.0f);
-    scale = glm::vec2(1.0f); 
-    tint = glm::vec3(1.0f, 1.0f, 1.0f);
+    position = { x, y };
+    scrollFactor = { 1.0f, 1.0f };
+    scale = { 1.0f, 1.0f }; 
+    tint = { 1.0f, 1.0f, 1.0f };
     rotation = 0.0f;  
     alpha = 1.0f;
     active = true;
@@ -54,12 +57,12 @@ Entity::Entity(int type, float x, float y)
 
 void Entity::SetData(const std::string& key, const std::any& value) { 
 
-    auto it = data.find(key);
+    auto it = m_data.find(key);
 
-    if (it != data.end())
-        data.erase(it);
+    if (it != m_data.end())
+        m_data.erase(it);
 
-    data.insert({ key, value }); 
+    m_data.insert({ key, value }); 
 }
 
 
@@ -125,7 +128,7 @@ Geometry::Geometry(float x, float y, float width, float height):
         m_drawStyle = 1;
     #endif
     
-    tint = glm::vec3(0.0f, 0.0f, 1.0f);
+    tint = { 0.0f, 0.0f, 1.0f };
     texture = Graphics::Texture2D::Get("base");
     shader = Shader::Get("graphics");
     renderable = true;
@@ -150,33 +153,108 @@ void Geometry::Render(float projWidth, float projHeight)
         texture.FrameWidth = width;
         texture.FrameHeight = height;
   
-        model = glm::translate(model, glm::vec3(0.5f * width + position.x, 0.5f * height + position.y, 0.0f)); 
+        model = glm::translate(model, { 0.5f * width + position.x, 0.5f * height + position.y, 0.0f }); 
+        model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
+        model = glm::translate(model, { -0.5f * width - position.x, -0.5f * height - position.y, 0.0f });
 
-        if (rotation > 0)
-            model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f)); 
-
-        model = glm::translate(model, glm::vec3(-0.5f * width - position.x, -0.5f * height - position.y, 0.0f));
+        const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
         
+        const glm::mat4 proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f), 
+                        view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y, 0.0f)),
+                        mvp = proj * view * model;
+                                
         shader.SetVec3f("tint", tint);
-        shader.SetMat4("model", model);  
         shader.SetFloat("alphaVal", alpha);
 
-        const glm::mat4 proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight),
-                        view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y, 0.0f));
-
-        shader.SetMat4("mvp", proj * view * model);
+        shader.SetMat4("mvp", { 
+            { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
+            { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
+            { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
+            { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
+        });  
 
         texture.Update(position, false, false, m_drawStyle, m_thickness); 
 
     }
 
+    //render other shapes...
 }
 
 
 /* SPRITE */
 
+//-------------------------------------- standard sprite / tile
 
-std::shared_ptr<Sprite> Sprite::Clone() 
+
+Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile): 
+    Entity(SPRITE, x, y)
+{   
+    this->key = key;
+    currentFrame = frame;    
+    anims = System::Resources::Manager::GetAnimations(key);
+    velocityX = 0.0f;
+    velocityY = 0.0f;
+    texture = Graphics::Texture2D::Get(key);
+    shader = Shader::Get("sprite");          
+    
+    if (isTile) {
+        type = TILE; 
+        //shader = Shader::Get("batch");
+        return;
+    }
+
+    LOG("Sprite: " + key + " Created. (generic)");
+}
+
+
+//------------------------------ clone
+
+
+Sprite::Sprite(Sprite& sprite):
+    Entity(SPRITE, sprite.position.x, sprite.position.y)
+{
+    key = sprite.key;
+    currentFrame = sprite.currentFrame;    
+    anims = System::Resources::Manager::GetAnimations(sprite.key);
+    velocityX = sprite.velocityX;
+    velocityY = sprite.velocityY;
+    texture = Graphics::Texture2D::Get(sprite.key);
+    shader = Shader::Get("sprite");     
+
+    LOG("Sprite: " + key + " Cloned."); 
+
+}
+
+ 
+//-------------------------------------- UI sprite
+
+ 
+Sprite::Sprite(const std::string& key, const Math::Vector2& position): 
+    Entity(UI, position.x, position.y)
+{
+    this->key = key; 
+    texture = Graphics::Texture2D::Get(key);
+    shader = Shader::Get("sprite");  
+    
+    LOG("Sprite: " + key + " created. (UI)"); 
+}
+
+
+  
+//-------------------------------------------
+
+
+Sprite::~Sprite() {
+    if (type != TILE) 
+        LOG("Sprite: " + key + " Destroyed."); 
+}
+
+
+
+//-------------------------------------------
+
+
+const std::shared_ptr<Sprite> Sprite::Clone() 
 {
     const auto clone = std::make_shared<Sprite>(*this);
 
@@ -460,15 +538,18 @@ void Sprite::Render(float projWidth, float projHeight)
             texture.V1 = (currentFrameY * factorY) / texture.Height; 
             texture.V2 = ((currentFrameY + currentFrameHeight) * factorY) / texture.Height; 
         }
-
+ 
     }
 
     //sprite model transformations
 
-    glm::mat4 model = glm::mat4(1.0f); 
+    const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+    const Math::Matrix4 vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y));
     
-    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x, System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y), 
-                    proj = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
+                    proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f);
+
+    glm::mat4 model = glm::mat4(1.0f); 
 
     model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
@@ -494,13 +575,20 @@ void Sprite::Render(float projWidth, float projHeight)
 
             //set shader uniforms
 
-            shader.SetVec2f("scale", glm::vec2(scale.x, scale.y));
+            shader.SetVec2f("scale", { scale.x, scale.y });
             shader.SetFloat("alphaVal", alpha); 
             shader.SetVec3f("tint", tint);
 
-            shader.SetMat4("mvp", proj * view * model);
+            const glm::mat4 mvp = proj * view * model;
 
-            int fill = 1;
+            shader.SetMat4("mvp", { 
+                { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
+                { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
+                { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
+                { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
+            });  
+
+            unsigned int fill = 1;
 
             #ifndef __EMSCRIPTEN__
                 fill = GL_FILL;
@@ -516,13 +604,12 @@ void Sprite::Render(float projWidth, float projHeight)
             for (int i = 0; i < bodies.size(); i++)
                 if (bodies[i].first->IsEnabled()) {
                     if (i == 0 && bodies[i].first->GetType() == b2_dynamicBody) { 
-                        b2Vec2 position = bodies[0].first->GetPosition(); 
-                        position.y += bodies[0].second.w; //apply y offset
-                        SetPosition(glm::vec2((position.x - (bodies[0].second.x * scale.x)), ((position.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w)));
+                        b2Vec2 pos = bodies[0].first->GetPosition(); 
+                        pos.y += bodies[0].second.w; //apply y offset
+                        SetPosition(pos.x - (bodies[0].second.x * scale.x), (pos.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w);
                     }
                     else
                         bodies[i].first->SetTransform(b2Vec2((position.x - (bodies[0].second.x * scale.x)), ((position.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w)), 0);
-
                 }
 
         //play current animation
@@ -621,73 +708,6 @@ void Sprite::Render(float projWidth, float projHeight)
 
 }
  
-
-//-------------------------------------- standard sprite / tile
-
-
-Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile): 
-    Entity(SPRITE, x, y)
-{   
-    this->key = key;
-    currentFrame = frame;    
-    anims = System::Resources::Manager::GetAnimations(key);
-    velocityX = 0.0f;
-    velocityY = 0.0f;
-    texture = Graphics::Texture2D::Get(key);
-    shader = Shader::Get("sprite");          
-    
-    if (isTile) {
-        type = TILE; 
-        //shader = Shader::Get("batch");
-        return;
-    }
-
-    LOG("Sprite: " + key + " Created.");
-}
-
-
-//------------------------------ cc
-
-
-Sprite::Sprite(Sprite& sprite):
-    Entity(SPRITE, sprite.position.x, sprite.position.y)
-{
-    key = sprite.key;
-    currentFrame = sprite.currentFrame;    
-    anims = System::Resources::Manager::GetAnimations(sprite.key);
-    velocityX = sprite.velocityX;
-    velocityY = sprite.velocityY;
-    texture = Graphics::Texture2D::Get(sprite.key);
-    shader = Shader::Get("sprite");     
-
-    LOG("Sprite: " + key + " Cloned."); 
-
-}
-
- 
-//-------------------------------------- UI sprite
-
- 
-Sprite::Sprite(const std::string& key, const glm::vec2& position): 
-    Entity(UI, position.x, position.y)
-{
-    this->key = key; 
-    texture = Graphics::Texture2D::Get(key);
-    shader = Shader::Get("sprite");  
-    
-    LOG("Sprite: UI " + key + " created."); 
-}
-
-
-  
-//-------------------------------------------
-
-
-Sprite::~Sprite() {
-    if (type != TILE) 
-        LOG("Sprite: " + key + " Destroyed."); 
-}
-
 
 
 

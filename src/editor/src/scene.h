@@ -28,10 +28,10 @@ namespace editor {
                  gravity_continuous,
                  gravity_sleeping;
     
-            glm::vec2 cameraPosition;
-            glm::vec4 cameraBackgroundColor;
+            Math::Vector2 cameraPosition;
+            Math::Vector4 cameraBackgroundColor;
 
-            std::pair<std::string, glm::vec2> cullTarget;
+            std::pair<std::string, Math::Vector2> cullTarget;
 
             std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;
@@ -52,7 +52,7 @@ namespace editor {
                 globals_applied(false), 
                 gravity_continuous(true),
                 gravity_sleeping(true),
-                cullTarget({ "", glm::vec2(0.0f) })
+                cullTarget({ "", { 0.0f, 0.0f } })
             {}
 
             ~Scene() {

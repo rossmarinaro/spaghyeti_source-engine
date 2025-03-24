@@ -6,6 +6,10 @@
 #include "../gui/gui.h"
 #include "../components/component.h"
 #include "../../../vendors/nlohmann/json.hpp"
+#include "../../../../build/sdk/include/math.h"
+
+
+using json = nlohmann::json;
 
 namespace editor {
 
@@ -143,7 +147,7 @@ namespace editor {
                   scrollFactorY;
 
             std::string key;
-            glm::vec3 tint;
+            Math::Vector3 tint;
 
             std::vector<Frames> frames; 
             std::vector<Anims> animations; 
@@ -188,7 +192,7 @@ namespace editor {
 
             bool m_show_sprite_texture;
             Anims m_currentAnim;
-            GLuint m_currentTexture = NULL;
+            unsigned int m_currentTexture = NULL;
 
     };
 
@@ -242,7 +246,7 @@ namespace editor {
             float size, alpha;
             bool UIFlag;
 
-            glm::vec3 tint;
+            Math::Vector3 tint;
             std::shared_ptr<Text> textHandle;
             std::string textBuf, currentFont;
 

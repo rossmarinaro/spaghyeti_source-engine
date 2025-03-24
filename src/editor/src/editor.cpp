@@ -3,13 +3,16 @@
 #include <sstream>
 #include <time.h>
 #include <ctime>
+#include "../../vendors/glm/glm.hpp"
+#include "../../vendors/glm/gtc/matrix_transform.hpp"
+#include "../../../build/sdk/include/app.h"
+#include "../../window/renderer.h"
 
 #include "./editor.h"
 #include "./assets/assets.h"
 #include "./gui/gui.h"
 #include "./nodes/node.h"
-#include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/renderer.h"
+
 
 using namespace /* SPAGHYETI_CORE */ System;
 using namespace editor;
@@ -29,11 +32,7 @@ void Editor::Update()
        
     if (s_self->projectOpen)
     {
-        if (s_self->events->canSave && 
-        (
-            ImGui::IsKeyPressed(ImGuiKey_LeftCtrl) || ImGui::IsKeyPressed(ImGuiKey_RightCtrl)) && 
-            ImGui::IsKeyPressed(ImGuiKey_S)) {
-
+        if (s_self->events->canSave && (ImGui::IsKeyPressed(ImGuiKey_LeftCtrl) || ImGui::IsKeyPressed(ImGuiKey_RightCtrl)) && ImGui::IsKeyPressed(ImGuiKey_S)) {
             s_self->events->canSave = false; 
             s_self->events->SaveScene(s_self->events->saveFlag);
         }
@@ -41,7 +40,7 @@ void Editor::Update()
         else 
             s_self->events->canSave = true;
     }
-
+ 
     glfwPollEvents();
 
     GUI::Get()->Render(); 
@@ -50,11 +49,15 @@ void Editor::Update()
 
     double xPos, yPos;
     glfwGetCursorPos(Renderer::GLFW_window_instance, &xPos, &yPos);
+    
+    
+    const Math::Vector4 pm = s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight);
+    const Math::Matrix4 vm = s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition().x, s_self->game->camera->GetPosition().y);
 
-    const glm::mat4 localCoords = glm::inverse(s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight) * s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition().x, s_self->game->camera->GetPosition().y));
-    const glm::vec4 ndc = glm::vec4(Window::GetPixelToNDC(xPos, yPos), 1.0f, 1.0f),
-              worldCoords(ndc.x, ndc.y, 0.0f, 1.0f),
-              resultPosition = localCoords * worldCoords;
+    const glm::mat4 localCoords = glm::inverse(glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }));
+    const glm::vec2 ndc = { Window::GetPixelToNDC(xPos, yPos).x, Window::GetPixelToNDC(xPos, yPos).y };
+    const glm::vec4 worldCoords(ndc.x, ndc.y, 0.0f, 1.0f),
+                    resultPosition = localCoords * worldCoords;
 
     s_self->game->inputs->mouseX = resultPosition.x - s_self->game->camera->GetPosition().x - 50;        
     s_self->game->inputs->mouseY = resultPosition.y - s_self->game->camera->GetPosition().y;
@@ -83,10 +86,9 @@ void Editor::Update()
             s_self->s_selector->SetAlpha(0.0f);
        
     } 
-
-    glViewport(0, 0, Window::s_width, Window::s_height);
     
 	glfwSetFramebufferSizeCallback(Renderer::GLFW_window_instance, Renderer::framebuffer_size_callback);
+    glfwSetWindowSizeCallback(Renderer::GLFW_window_instance, Renderer::window_size_callback); 
 	glfwSwapBuffers(Renderer::GLFW_window_instance);
 
     //save and close editor
@@ -172,19 +174,19 @@ void Editor::Start()
     //set top-left header and bottom toolbar icon (not binary, this image is stored as pixel data)
 
     const auto image_data = Resources::Manager::GetResource("icon small");
-
+    unsigned char* image_buffer = (unsigned char*)image_data.array_buffer;
     GLFWimage image;
 
     image.width = 66; 
     image.height = 65;
-    image.pixels = image_data.array_buffer;
+    image.pixels = image_buffer;
 
     glfwSetWindowIcon(Renderer::GLFW_window_instance, 1, &image);
     
     //create entity selector graphic
 
     s_self->s_selector = System::Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
-    s_self->s_selector->SetTint(glm::vec3(0.0f, 1.0f, 0.0f));  
+    s_self->s_selector->SetTint({ 0.0f, 1.0f, 0.0f });  
     s_self->s_selector->SetDrawStyle(GL_LINE);
     s_self->s_selector->SetThickness(2.0f);
     s_self->s_selector->SetAlpha(0.0f);

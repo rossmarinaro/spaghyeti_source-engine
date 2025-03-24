@@ -1,6 +1,7 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/window.h"
 #include "../../window/renderer.h"
+#include "../../vendors/glm/glm.hpp" 
 
 #if DEVELOPMENT == 1 && STANDALONE == 1
     #include "../../../build/sdk/include/displayInfo.h"
@@ -263,9 +264,9 @@ void Game::UpdateFrame()
         {
             if (entity->cull && Entity::s_cullPosition)
             { 
-                float width = System::Window::s_scaleWidth;
+                float width = Window::s_scaleWidth;
 
-                if (!camera->InBounds() && Entity::s_cullPosition->x > System::Window::s_scaleWidth)
+                if (!camera->InBounds() && Entity::s_cullPosition->x > Window::s_scaleWidth)
                     width = width + (width / 2);
 
                 entity->renderable = (entity->position.x > Entity::s_cullPosition->x && (entity->position.x < Entity::s_cullPosition->x + width) * entity->scrollFactor.x) ||
@@ -273,20 +274,20 @@ void Game::UpdateFrame()
             }
 
             if (entity->renderable)
-                entity->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+                entity->Render(Window::s_scaleWidth, Window::s_scaleHeight);
         }
  
     //UI render queue
 
     for (const auto& UI : currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
-            UI->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+            UI->Render(Window::s_scaleWidth, Window::s_scaleHeight);
         
     //vignette overlay
 
     if(currentScene->vignette) {
         currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
-        currentScene->vignette->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+        currentScene->vignette->Render(Window::s_scaleWidth, Window::s_scaleHeight);
     }
 
     //depth sort
@@ -458,11 +459,12 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
 
 std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y, int frame)
 {
-
-    auto element = std::make_shared<Sprite>(key, glm::vec2(x, y));
+    Math::Vector2 pos = { x, y };
+    
+    auto element = std::make_shared<Sprite>(key, pos);
 
     #if STANDALONE == 1
-        element->ReadSpritesheetData(); 
+        element->ReadSpritesheetData();  
     #endif
     
     element->SetFrame(frame);

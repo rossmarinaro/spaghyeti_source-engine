@@ -1,7 +1,7 @@
 #include <fstream>
 #include <sstream>
 #include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/vendors/glm/gtc/type_ptr.hpp"
+#include "../../vendors/glm/gtc/type_ptr.hpp"
 #include "../../window/renderer.h"
 
 void Shader::Delete() {
@@ -33,7 +33,7 @@ void Shader::InitBaseShaders()
 
     //quad (sprite)
 
-    static const char* spriteQuadShader_vertex = \
+    static constexpr const char* spriteQuadShader_vertex = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -57,7 +57,7 @@ void Shader::InitBaseShaders()
         "}"; 
 
 
-    static const char* spriteQuadShader_fragment = \
+    static constexpr const char* spriteQuadShader_fragment = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -90,7 +90,7 @@ void Shader::InitBaseShaders()
 
     //debug
 
-    static const char* debugGraphicShader_vertex = \
+    static constexpr const char* debugGraphicShader_vertex = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -108,7 +108,7 @@ void Shader::InitBaseShaders()
             "gl_Position = mvp * vec4(pos.xy, 0.0, 1.0);\n" 
         "}";
 
-    static const char* debugGraphicShader_fragment = \
+    static constexpr const char* debugGraphicShader_fragment = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -127,7 +127,7 @@ void Shader::InitBaseShaders()
         "}";
 
 
-    static const char* textVertex = \
+    static constexpr const char* textVertex = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -152,7 +152,7 @@ void Shader::InitBaseShaders()
             "texCoord = aTexCoord;\n"
         "}";
 
-    static const char* textFragment = \
+    static constexpr const char* textFragment = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -172,7 +172,7 @@ void Shader::InitBaseShaders()
             "fragColor = texture(uFontAtlasTexture, texCoord).r * color;\n"
         "}";
 
-    static const char* geom_vertex1 = \
+    static constexpr const char* geom_vertex1 = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -199,7 +199,7 @@ void Shader::InitBaseShaders()
 
     //geometry
 
-    static const char* geom_vertex2 = \
+    static constexpr const char* geom_vertex2 = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -222,7 +222,7 @@ void Shader::InitBaseShaders()
         "}\n";
 
 
-    static const char* geom_fragment = \
+    static constexpr const char* geom_fragment = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -242,7 +242,7 @@ void Shader::InitBaseShaders()
 
     //batch
 
-    // static const char* spriteBatchShader_vertex = 
+    // static constexpr const char* spriteBatchShader_vertex = 
                     
     //     #ifdef __EMSCRIPTEN__
     //         "#version 300 es\n"
@@ -265,7 +265,7 @@ void Shader::InitBaseShaders()
     //     "}\n"; 
 
 
-    // static const char* spriteBatchShader_fragment =  
+    // static constexpr const char* spriteBatchShader_fragment =  
 
     //     #ifdef __EMSCRIPTEN__
     //         "#version 300 es\n"
@@ -315,14 +315,16 @@ void Shader::InitBaseShaders()
 //--------------------------------- 
 
 
-bool checkCompileErrors(const std::string& key, unsigned int shader, const std::string& type)
+const bool checkCompileErrors(const std::string& key, unsigned int shader, const std::string& type)
 { 
 
     GLint result;
     GLsizei length = 0;
     GLchar message[1024];
 
-    if (type != "program") //vert, frag, geom
+    //vertex, fragment
+
+    if (type != "program") 
     {
 
         glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
@@ -338,6 +340,8 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
             return true;
         }
     }
+
+    //link program
 
     else
     {
@@ -355,14 +359,12 @@ bool checkCompileErrors(const std::string& key, unsigned int shader, const std::
             return true;
         }
     }
-
-
 }
 
 //-------------------------------------------- load shader
 
 
-void Shader::Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomShader)
+void Shader::Load(const std::string& key, const char* vertShader, const char* fragShader)
 {
 
     if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&](auto s) { return s.first == key; }) != System::Application::resources->shaders.end())
@@ -382,49 +384,25 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     )
     {
 
-        // open files
+        //open files
 
         std::ifstream vertexShaderFile(vertShader), 
-                      fragmentShaderFile(fragShader),
-                      geomShaderFile(geomShader);
+                      fragmentShaderFile(fragShader);
 
         std::stringstream vShaderStream, 
-                          fShaderStream, 
-                          gShaderStream;
-
-        //read file's buffer contents into streams
+                          fShaderStream;
 
         vShaderStream << vertexShaderFile.rdbuf();
         fShaderStream << fragmentShaderFile.rdbuf();
-        gShaderStream << geomShaderFile.rdbuf();
-
-        //close file handlers
 
         vertexShaderFile.close();
         fragmentShaderFile.close();
-        geomShaderFile.close();
 
-        //convert stream into string
-
-        std::string vertexCode = vShaderStream.str(),
-                    fragmentCode = fShaderStream.str(),
-                    geometryCode = gShaderStream.str();
-
-        //if geometry shader path is present, also load a geometry shader
-
-        if (geomShader != nullptr)
-        {
-            std::ifstream geometryShaderFile(geomShader);
-            std::stringstream gShaderStream;
-
-            gShaderStream << geometryShaderFile.rdbuf();
-            geometryShaderFile.close();
-            geometryCode = gShaderStream.str();
-        }
+        const std::string vertexCode = vShaderStream.str(),
+                          fragmentCode = fShaderStream.str();
 
         const char* vs = vertexCode.c_str();
         const char* fs = fragmentCode.c_str();
-        const char* gs = geometryCode.c_str();
 
         LOG("Shader: Loading " + key + " from file.");
 
@@ -435,10 +413,8 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     //from raw char
     
     else {
-
         LOG("Shader: Loading " + key + " from string.");
         shader.Generate(key, vertShader, fragShader);
-
     }
 
     System::Application::resources->shaders[key] = shader; 
@@ -447,14 +423,12 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
 //--------------------------- generate
 
 
-void Shader::Generate(const std::string& key, const char* vertexPath, const char* fragmentPath, const char* geomPath)
+void Shader::Generate(const std::string& key, const char* vertexPath, const char* fragmentPath)
 {
 
-    //compile shaders
+    unsigned int vertex, fragment;
 
-    unsigned int vertex, fragment, geometry;
-
-    //vertex shader
+    //vertex 
 
     vertex = glCreateShader(GL_VERTEX_SHADER);  
 
@@ -464,7 +438,7 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
     if (!checkCompileErrors(key, vertex, "vertex"))
         return;
 
-    //fragment Shader
+    //fragment 
 
     if (fragmentPath != nullptr)
     {
@@ -477,23 +451,6 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
             return;
     }
 
-    //geometry shader
-
-    #ifndef __EMSCRIPTEN__
-
-        if (geomPath != nullptr)
-        {
-            geometry = glCreateShader(GL_GEOMETRY_SHADER);
-
-            glShaderSource(geometry, 1, &geomPath, NULL);
-            glCompileShader(geometry);
-
-            if (!checkCompileErrors(key, geometry, "geometry"))
-                return;
-        }
-
-    #endif
-
     //shader Program
 
     this->ID = glCreateProgram();
@@ -502,9 +459,6 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
 
     if (fragmentPath != nullptr)
         glAttachShader(this->ID, fragment);
-
-    if (geomPath != nullptr)
-        glAttachShader(this->ID, geometry);
 
     glLinkProgram(this->ID);
 
@@ -520,10 +474,7 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
     glDeleteShader(vertex);
 
     if (fragmentPath != nullptr)
-        glDeleteShader(fragment);
-
-    if (geomPath != nullptr)
-        glDeleteShader(geometry);  
+        glDeleteShader(fragment); 
 }
 
 
@@ -582,7 +533,7 @@ void Shader::SetVec2f(const char* name, float x, float y, bool useShader)
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec2f(const char* name, const glm::vec2& value, bool useShader)
+void Shader::SetVec2f(const char* name, const Math::Vector2& value, bool useShader)
 {
     if (useShader)
         this->Use();
@@ -604,7 +555,7 @@ void Shader::SetVec3f(const char* name, float x, float y, float z, bool useShade
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec3f(const char* name, const glm::vec3& value, bool useShader)
+void Shader::SetVec3f(const char* name, const Math::Vector3& value, bool useShader)
 {
     if (useShader)
         this->Use();
@@ -627,7 +578,7 @@ void Shader::SetVec4f(const char* name, float x, float y, float z, float w, bool
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec4f(const char* name, const glm::vec4& value, bool useShader)
+void Shader::SetVec4f(const char* name, const Math::Vector4& value, bool useShader)
 {
     if (useShader)
         this->Use();
@@ -638,11 +589,20 @@ void Shader::SetVec4f(const char* name, const glm::vec4& value, bool useShader)
 
 // -----------------------------------------------------------------------
 
-void Shader::SetMat4(const char* name, const glm::mat4& matrix, bool useShader)
+void Shader::SetMat4(const char* name, const Math::Matrix4& matrix, bool useShader)
 {
     if (useShader)
         this->Use();
 
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, false, glm::value_ptr(matrix));
+    if (glGetUniformLocation(ID, name) != -1) 
+    {
+        const glm::highp_mat4 mat = { 
+            { matrix.a.x, matrix.a.y, matrix.a.z, matrix.a.w }, 
+            { matrix.b.x, matrix.b.y, matrix.b.z, matrix.b.w }, 
+            { matrix.c.x, matrix.c.y, matrix.c.z, matrix.c.w }, 
+            { matrix.d.x, matrix.d.y, matrix.d.z, matrix.d.w }
+        };
+        
+        glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, false, glm::value_ptr(mat));
+    }
 }

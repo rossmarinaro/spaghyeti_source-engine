@@ -66,7 +66,13 @@ const Texture2D& Texture2D::Get(const std::string& key) {
 //-----------------------------------
 
 
-void Texture2D::SetFiltering() {
+void Texture2D::SetFiltering(bool filterMin, bool filterMax, bool wrapS, bool wrapT) 
+{
+    Filter_Min = filterMin ? GL_NEAREST : GL_LINEAR;
+    Filter_Max = filterMax ? GL_NEAREST : GL_LINEAR;
+    Wrap_S = wrapS ? GL_REPEAT : GL_CLAMP;
+    Wrap_T = wrapT ? GL_REPEAT : GL_CLAMP;
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Wrap_S);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Wrap_T);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Filter_Min);
@@ -108,14 +114,15 @@ void Texture2D::Load(const std::string& key)
         filetype = "binary";
         
         const auto data = System::Resources::Manager::GetResource(key);
+        unsigned char* image_buffer = (unsigned char*)data.array_buffer;
 
-        image = stbi_load_from_memory((unsigned char*)data.array_buffer, data.byte_length, &width, &height, &nrChannels, 0);
+        image = stbi_load_from_memory(image_buffer, data.byte_length, &width, &height, &nrChannels, 0);
 
         //image is compressed pixel data
 
         if (image == nullptr && data.byte_length) {
-            filetype = "comressed pixel data";
-            image = data.array_buffer;
+            filetype = "compressed pixel data";
+            image = image_buffer;
         }
     }
 
@@ -126,7 +133,7 @@ void Texture2D::Load(const std::string& key)
 
     texture.Generate(width, height, nrChannels, image); 
 
-    if (filetype != "comressed pixel data")
+    if (filetype != "compressed pixel data")
         stbi_image_free(image);
 
     System::Application::resources->textures[key] = texture; 
@@ -198,7 +205,7 @@ void Texture2D::Generate(unsigned int width, unsigned int height, unsigned int c
 //----------------------------------------
 
 
-void Texture2D::Update(const glm::vec2& position, bool flipX, bool flipY, int drawStyle, float thickness) 
+void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, int drawStyle, float thickness) 
 {   
 
     //format texture

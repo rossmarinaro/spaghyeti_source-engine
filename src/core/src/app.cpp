@@ -51,11 +51,13 @@ void System::Application::Update(void* layer)
     if (layer == nullptr)
         return; 
 
-    Game* game = static_cast<Game*>(layer);
+    Game* game = static_cast<Game*>(layer); 
 
     Renderer::Update(game->camera);
  
-    Time::Update(glfwGetTime());
+    Time::Update(glfwGetTime());  
+
+    glfwPollEvents(); 
 
     glfwSetFramebufferSizeCallback(Renderer::GLFW_window_instance, Renderer::framebuffer_size_callback);
     glfwSetWindowSizeCallback(Renderer::GLFW_window_instance, Renderer::window_size_callback); 

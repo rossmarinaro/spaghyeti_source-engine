@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./vendors/glm/glm.hpp"
+#include "./math.h"
 
 
 namespace /* SPAGHYETI_CORE */ System {
@@ -18,8 +18,8 @@ namespace /* SPAGHYETI_CORE */ System {
             static inline const char* s_glsl_version;
 
             static void Init();
-            static const glm::vec2 GetNDCToPixel(float x, float y);
-            static const glm::vec2 GetPixelToNDC(float x, float y);
+            static const Math::Vector2 GetNDCToPixel(float x, float y);
+            static const Math::Vector2 GetPixelToNDC(float x, float y);
      
     };
 

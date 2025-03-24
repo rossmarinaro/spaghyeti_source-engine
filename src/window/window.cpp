@@ -14,7 +14,7 @@ using namespace System;
 //-----------------------------------
 
 
-const glm::vec2 Window::GetPixelToNDC(float x, float y) 
+const Math::Vector2 Window::GetPixelToNDC(float x, float y) 
 {
     const float ndcX = ((2.0f * x) / s_width - 1.0f),
                 ndcY = (1.0f - (2.0f * y) / s_height);  
@@ -26,9 +26,9 @@ const glm::vec2 Window::GetPixelToNDC(float x, float y)
 //-----------------------------------
 
 
-const glm::vec2 Window::GetNDCToPixel(float x, float y) 
+const Math::Vector2 Window::GetNDCToPixel(float x, float y) 
 {
-    glm::vec2 ndc = GetPixelToNDC(x, y);
+    Math::Vector2 ndc = GetPixelToNDC(x, y);
 
     const float pixelX = (ndc.x + 1.0f) * (s_scaleWidth / 2), 
                 pixelY = s_scaleHeight - (ndc.y + 1.0f) * (s_scaleHeight / 2); 
@@ -135,8 +135,7 @@ void Window::Init()
 
     //glfwSetWindowMonitor(Renderer::GLFW_window_instance, monitor, 0, 0, s_width, s_height, 60);
 
-    if (!Renderer::GLFW_window_instance) 
-    {
+    if (!Renderer::GLFW_window_instance) {
         LOG("GLFW: window could not be created.");
         glfwTerminate();
         exit(EXIT_FAILURE);

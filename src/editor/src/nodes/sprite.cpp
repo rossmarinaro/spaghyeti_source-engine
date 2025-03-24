@@ -12,7 +12,7 @@ SpriteNode::SpriteNode(bool init):
         m_show_sprite_texture(false)
 {
     key = "";
-    tint = glm::vec3(1.0f);
+    tint = { 1.0f, 1.0f, 1.0f };
     framesApplied = false;
     filter_nearest = true;
     flippedX = false;

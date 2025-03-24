@@ -86,7 +86,7 @@ void Manager::LoadFile(const std::string& key, const std::string& path) {
 
 
 //load raw char array / size in bytes
-void Manager::LoadRaw(int type, const std::string& key, unsigned char* arr, unsigned int bytes) {
+void Manager::LoadRaw(const int type, const std::string& key, const unsigned char* arr, const unsigned int bytes) {
 
     if (type != IMAGE && type != AUDIO) {
         LOG("Resources: file not available for loading.");
@@ -165,7 +165,7 @@ void Manager::UnLoadAnims(const std::string& key) {
 //------------------------------------- 
 
 //unload raw char array audio
-void Manager::UnLoadRaw(int type, const std::string& key) {
+void Manager::UnLoadRaw(const int type, const std::string& key) {
     auto it = System::Application::resources->m_raw_assets.find(key); 
     if (System::Application::resources->m_raw_assets.find(key) != System::Application::resources->m_raw_assets.end()) 
         if (it->second.type == type)

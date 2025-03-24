@@ -40,7 +40,7 @@ namespace editor {
 
         private:
 
-            GLuint s_currentTexture = NULL;
+            unsigned int s_currentTexture = NULL;
  
             void RenderNodes();
             void RenderDockSpace();
@@ -53,7 +53,7 @@ namespace editor {
             void ShowOptionsQuit();
             void ShowOptionsSave(bool quit);
             void AlignForWidth(float width, float alignment = 0.5f);
-            void displayThumbnail(const std::vector<std::pair<std::string, GLuint>>& vec);
+            void displayThumbnail(const std::vector<std::pair<std::string, unsigned int>>& vec);
 
             static inline GUI* s_self;
             

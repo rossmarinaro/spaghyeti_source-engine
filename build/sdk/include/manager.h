@@ -12,7 +12,11 @@ namespace System {
 
     namespace Resources {
 
-        struct BinaryResource { int type; unsigned char* array_buffer; unsigned int byte_length; };
+        struct BinaryResource { 
+            const int type; 
+            const unsigned char* array_buffer; 
+            const unsigned int byte_length; 
+        };
 
         // load Textures and Shaders. Each loaded texture
         // and/or shader is also stored for future reference by string
@@ -42,13 +46,13 @@ namespace System {
                 static void RegisterTextures();
                 static void Clear(bool all = true);
                 static void LoadFile(const std::string& key, const std::string& path);
-                static void LoadRaw(int type, const std::string& key, unsigned char* arr, unsigned int bytes);
+                static void LoadRaw(const int type, const std::string& key, const unsigned char* arr, const unsigned int bytes);
                 static void LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims);
                 static void LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames); 
                 static void LoadAtlas(const std::string& key, const std::string& path); 
 
                 static void UnLoadFile(const std::string& key);
-                static void UnLoadRaw(int type, const std::string& key);
+                static void UnLoadRaw(const int type, const std::string& key);
                 static void UnLoadAnims(const std::string& key);
                 static void UnLoadFrames(const std::string& key);  
                 static void UnLoadAtlas(const std::string& key); 

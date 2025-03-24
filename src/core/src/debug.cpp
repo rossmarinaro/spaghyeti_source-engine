@@ -5,6 +5,7 @@
 #include "../../../build/sdk/include/physics.h"
 #include "../../../build/sdk/include/debug.h"
 #include "../../window/renderer.h"
+#include "../../vendors/glm/gtc/matrix_transform.hpp" 
 
 using namespace System;
 using namespace Graphics;
@@ -66,9 +67,18 @@ void Points::Flush()
 
 	if (m_count == 0)
         return;
-
-    shader.SetMat4("vp", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y));
-    shader.SetVec2f("offset", System::Application::game->camera->GetPosition());
+    
+    const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Matrix4 vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y);
+    
+    const glm::mat4 vp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w });
+ 
+    shader.SetMat4("vp", {  
+        { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
+        { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
+        { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  
+        { vp[3][0], vp[3][1], vp[3][2], vp[3][3] }
+    });
 
     glBindVertexArray(m_vaoId);
 
@@ -150,8 +160,17 @@ void Lines::Flush()
     if (m_count == 0)
         return;     
 
-    shader.SetMat4("vp", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y));
-    shader.SetVec2f("offset", System::Application::game->camera->GetPosition());
+    const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Matrix4 vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y);
+    
+    const glm::mat4 vp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w });
+
+    shader.SetMat4("vp", {  
+        { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
+        { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
+        { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  
+        { vp[3][0], vp[3][1], vp[3][2], vp[3][3] }
+    });
 
     glBindVertexArray(m_vaoId);
 
@@ -227,8 +246,17 @@ void Triangles::Flush()
     if (m_count == 0)
         return;
 
-    shader.SetMat4("vp", System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight) * System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y));
-    shader.SetVec2f("offset", System::Application::game->camera->GetPosition());
+    const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Matrix4 vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition().x, System::Application::game->camera->GetPosition().y);
+    
+    const glm::mat4 vp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w });
+
+    shader.SetMat4("vp", {  
+        { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
+        { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
+        { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  
+        { vp[3][0], vp[3][1], vp[3][2], vp[3][3] }
+    });
 
     glBindVertexArray(m_vaoId);
 

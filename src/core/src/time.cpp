@@ -1,5 +1,4 @@
 #include "../../../build/sdk/include/app.h"
-#include "../../window/renderer.h"
 
 //#include <fstream>
 //#include <ctime>
@@ -20,9 +19,7 @@ void Time::Update(double _time)
     Time delta = time->m_now - s_last;
     
     s_last = time->m_now;
-    time->delta = delta;
-
-    glfwPollEvents(); 
+    time->delta = delta; 
 
     System::Application::game->UpdateFrame(); 
 
@@ -30,7 +27,7 @@ void Time::Update(double _time)
 
 
 //--------------- delayed call (setTimeout)
-
+ 
 
 void Time::DelayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat) 
 { 

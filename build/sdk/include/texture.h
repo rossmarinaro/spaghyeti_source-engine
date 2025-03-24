@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-#include "./vendors/glm/glm.hpp" 
-
-namespace Graphics {
+#include "./math.h"
+ 
+namespace Graphics {  
 
     struct Format { float width, height; float u1, v1, u2, v2; };
     struct Renderable { float x, y; Format format; };
@@ -33,9 +33,9 @@ namespace Graphics {
             static void UnLoad(const std::string& key);
             
             const void Bind();
-            void SetFiltering();
+            void SetFiltering(bool filterMin = true, bool filterMax = true, bool wrapS = true, bool wrapT = true);
             void Generate(unsigned int width, unsigned int height, unsigned int channels, const void* data);  
-            void Update(const glm::vec2& position, bool flipX, bool flipY, int drawStyle, float thickness = 1.0f);
+            void Update(const Math::Vector2& position, bool flipX, bool flipY, int drawStyle, float thickness = 1.0f);
             void Delete();
 
         private: 

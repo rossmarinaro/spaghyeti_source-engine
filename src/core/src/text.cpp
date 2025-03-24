@@ -4,8 +4,9 @@
 #include "../../../build/sdk/include/window.h"
 
 #include "../../window/renderer.h"
-#include "../../../build/sdk/include/vendors/glm/gtc/matrix_transform.hpp" 
-#include "../../../build/sdk/include/vendors/glm/gtc/type_ptr.hpp"
+#include "../../vendors/glm/glm.hpp"
+#include "../../vendors/glm/gtc/matrix_transform.hpp"
+#include "../../vendors/glm/gtc/type_ptr.hpp"
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "../../vendors/stb/stb_truetype.h"
@@ -42,6 +43,7 @@ void Text::Init()
 void Text::ShutDown() 
 {
     GLT_text_handles.clear();
+
     _packedChars.clear();
     _alignedQuads.clear();
 
@@ -55,7 +57,7 @@ void Text::ShutDown()
 //--------------------------
 
 
-Text::Text(const std::string& content, float x, float y, const std::string& font, float scale, glm::vec3 tint):
+Text::Text(const std::string& content, float x, float y, const std::string& font, float scale, const Math::Vector3& tint):
     Entity(TEXT, x, y),
         textType(DEFAULT)
 {
@@ -69,11 +71,11 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
         if (filepath != "not found") 
         {
             textType = FONT;
+            position = { x, y };
+            this->scale = { scale, scale };
             this->content = content;
             this->font = font;
             this->tint = tint;
-            this->scale = glm::vec2(scale);
-            position = glm::vec2(x, y);
 
             glGenBuffers(1, &m_vboID);
             glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
@@ -189,7 +191,7 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
 
     if (textType == DEFAULT) {
         
-        this->scale = glm::vec2(scale);
+        this->scale = { scale, scale };
         this->tint = tint;
         this->content = content;
         this->SetText(content);
@@ -198,6 +200,7 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
     }
 
     const std::string text_type = textType == DEFAULT ? "default" : font + ".ttf";
+
     LOG("Text: " + content + " created. (" +  text_type + ")");
 }
 
@@ -261,7 +264,8 @@ void Text::Render(float projWidth, float projHeight)
         model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
         model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.0f));
 
-        const glm::highp_mat4 mp = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight) * model;
+        const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+        const glm::highp_mat4 mp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
 
         SetText(content);
         gltBeginDraw();
@@ -292,7 +296,8 @@ void Text::Render(float projWidth, float projHeight)
         constexpr int order[6] = { 0, 1, 2, 0, 2, 3 };
         const float pixelScale = 2.0f / projHeight;
 
-        glm::vec3 localPosition = glm::vec3(System::Window::GetPixelToNDC(position.x, position.y), 0.0f);
+        Math::Vector2 ndc = System::Window::GetPixelToNDC(position.x, position.y);
+        glm::vec3 localPosition = glm::vec3(ndc.x, ndc.y, 0.0f);
 
         const auto it_packed_chars = _packedChars.find(font);
         const auto it_aligned_quads = _alignedQuads.find(font);
@@ -344,9 +349,9 @@ void Text::Render(float projWidth, float projHeight)
                 // order = [0, 1, 2, 0, 2, 3] is meant to represent 2 triangles: 
                 // one by glyphVertices[0], glyphVertices[1], glyphVertices[2] and one by glyphVertices[0], glyphVertices[2], glyphVertices[3]
                 for (int i = 0; i < 6; i++) {
-                    m_vertices[m_vertexIndex + i].position = glm::vec3(glyphVertices[order[i]], 0.0f);
-                    m_vertices[m_vertexIndex + i].color = glm::vec4(tint, alpha);
-                    m_vertices[m_vertexIndex + i].texCoord = glyphTextureCoords[order[i]];
+                    m_vertices[m_vertexIndex + i].position = { glyphVertices[order[i]].x, glyphVertices[order[i]].y, 0.0f };
+                    m_vertices[m_vertexIndex + i].color = { tint.x, tint.y, tint.z, alpha };
+                    m_vertices[m_vertexIndex + i].texCoord = { glyphTextureCoords[order[i]].x, glyphTextureCoords[order[i]].y };
                 }
 
                 m_vertexIndex += 6;
@@ -368,7 +373,9 @@ void Text::Render(float projWidth, float projHeight)
 
         glBindTexture(GL_TEXTURE_2D, m_fontTextureID);
         glActiveTexture(GL_TEXTURE0);
-        glUseProgram(shaderID); 
+
+        glUniform1i(uniformLoc, GL_TEXTURE0);
+        //glUseProgram(shaderID); 
 
         const size_t sizeOfVertices = m_vertices.size() * sizeof(Vertex);
         const uint32_t drawCallCount = (sizeOfVertices / s_VBO_SIZE) + 1; //number of chunks
@@ -404,6 +411,8 @@ void Text::Render(float projWidth, float projHeight)
 
             glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         } 
+
+        glUseProgram(shaderID); 
     }
 }
 
@@ -423,14 +432,14 @@ void Text::SetText(const std::string& content) {
 //-----------------------------
 
 
-const glm::vec2 Text::GetTextDimensions() 
+const Math::Vector2 Text::GetTextDimensions() 
 {
     if (textType == FONT)
-        return { 64.0f, m_textHeight };
+        return { m_fontSize, m_textHeight };
 
     const GLTtext* handle = static_cast<GLTtext*>(GetGLTPointer());
     const GLfloat width = gltGetTextWidth(handle, scale.x),
-            height = gltGetTextHeight(handle, scale.y);
+                  height = gltGetTextHeight(handle, scale.y);
 
     return { width, height };
 }

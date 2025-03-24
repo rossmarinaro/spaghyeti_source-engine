@@ -349,7 +349,7 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             Editor::Get()->Reset();
 
-            const std::string asset_types[4] = { "images", "audio", "data", "fonts" };
+            const std::string asset_types[] = { "images", "audio", "data", "fonts" };
 
             const auto loadAsset = [](const std::filesystem::directory_entry& entry, const std::string& type) -> void 
             {
@@ -612,6 +612,8 @@ void EventListener::BuildAndRun()
             std::string rsrcPath = file.path().string();
             std::replace(rsrcPath.begin(), rsrcPath.end(), '\\', '/');
 
+            //encode / embed assets
+
             if (Editor::Get()->embed_files) 
             {
                 std::string rawFolder = Editor::projectPath + "resources/assets/raw/" + System::Utils::ReplaceFrom(name, ".", "") + ".hpp",
@@ -622,11 +624,35 @@ void EventListener::BuildAndRun()
                 
                 rawFiles.insert({ name, { type, pathWithoutSpecialChars } });
 
-                if (!std::filesystem::exists(rawFolder)) {       
-                    system(("chdir sdk && packResource.sh " + projResPath + " \"" + rsrcPath + "\" " + rawFolder).c_str());
+                if (!std::filesystem::exists(rawFolder)) 
+                {       
+                    const std::string tmp_file = rawFolder + "_tmp";
+
+                    system(("chdir sdk && packResource.sh " + projResPath + " \"" + rsrcPath + "\" " + tmp_file).c_str());
+
+                    std::stringstream ss;
+                    std::ifstream is(tmp_file);
+                    std::ofstream os;
+
+                    ss << is.rdbuf();
+
+                    const std::string contents = "static constexpr " + ss.str();
+
+                    is.close();
+                    ss.clear();
+
+                    os.open(rawFolder);  
+                    os << contents;
+                    os.close();
+
+                    remove(tmp_file.c_str());
+
                     Editor::Log("encoding asset: " + rawFolder); 
                 }
             }
+
+            //or copy them
+
             else if (!std::filesystem::exists(destPath)) 
                 std::filesystem::copy_file(rsrcPath, destPath, options);
         }
@@ -676,9 +702,39 @@ void EventListener::BuildAndRun()
         if (std::filesystem::exists(Editor::projectPath + "icon.rc")) 
             remove((Editor::projectPath + "icon.rc").c_str());
 
-        if (std::filesystem::exists(AssetManager::Get()->projectIcon) && AssetManager::Get()->projectIcon.length()) {
+        if (std::filesystem::exists(Editor::projectPath + "icon.o")) 
+            remove((Editor::projectPath + "icon.o").c_str());
+
+        if (std::filesystem::exists(AssetManager::Get()->projectIcon) && AssetManager::Get()->projectIcon.length()) 
+        {
             std::ofstream icon_rc(Editor::projectPath + "icon.rc");
-            icon_rc << "1 ICON \"" + AssetManager::Get()->projectIcon + "\"";
+
+            icon_rc << "1 ICON \"" + AssetManager::Get()->projectIcon + "\"\n";
+            icon_rc << "1 VERSIONINFO\n";
+            icon_rc << "FILEVERSION 1,0,0,0\n";
+            icon_rc << "PRODUCTVERSION 1,0,0,0\n";
+            icon_rc << "BEGIN\n";
+            icon_rc << "    BLOCK \"""StringFileInfo""\"\n";
+            icon_rc << "    BEGIN\n";
+            icon_rc << "        BLOCK \"""040904E4\"""\n";
+            icon_rc << "        BEGIN\n"; 
+            icon_rc << "            VALUE \"""Comments""\"," "\"""Produced with SpaghYeti Engine\""" \n";
+            icon_rc << "            VALUE \"""CompanyName\""", \"""Pastaboss Enterprise\""" \n";
+            icon_rc << "            VALUE \"""FileDescription\""", \"""entertainment software\"""\n";
+            icon_rc << "            VALUE \"""FileVersion\""", \"""1.0.0.0\"""\n";
+            icon_rc << "            VALUE \"""InternalName\""", \"""SpaghYeti Engine\"""\n";
+            icon_rc << "            VALUE \"""LegalCopyright\""", \"""Copyright Pastaboss Enterprise\"""\n";
+            icon_rc << "            VALUE \"""OriginalName\""", \"""SpaghYeti Engine\"""\n";
+            icon_rc << "            VALUE \"""ProductName\""", \"""" << s_currentProject << "\"""\n";
+            icon_rc << "            VALUE \"""ProductVersion\""", \"""1.0.0.0\"""\n";
+            icon_rc << "        END\n";
+            icon_rc << "    END\n";
+            icon_rc << "    BLOCK \"""VarFileInfo\"""\n";
+            icon_rc << "    BEGIN\n";
+            icon_rc << "        VALUE \"""Translation\""", 0x0409, 1200\n";
+            icon_rc << "    END\n";
+            icon_rc << "END\n";
+
             has_icon = true;
         }
 
@@ -868,7 +924,7 @@ void EventListener::BuildAndRun()
         game_src << "   #include <emscripten/eventloop.h>\n";
         game_src << "   #define GL_GLEXT_PROTOTYPES\n";
         game_src << "   #define EGL_EGLEXT_PROTOTYPES\n";
-        game_src << "   #include <GLES3/gl3.h>\n";
+        game_src << "   #include <GLES3/gl3.h>\n"; 
 
         game_src << "#endif\n";
     }
@@ -904,70 +960,71 @@ void EventListener::BuildAndRun()
         }
     }
 
-    //include shaders
+    //copy shaders (Windows)
 
     Editor::Log(Editor::Get()->embed_files ? "embedding shaders" : "copying shaders to build folder");
 
-    const auto iterate_shader = [] (const std::string& name, std::string path, const std::string& copiedFile) -> void
+    if (!Editor::Get()->embed_files) 
     {
-
-        std::string line, type;
-
-        if (System::Utils::str_endsWith(path, ".vert"))
-            type = ".vert";
-
-        else if (System::Utils::str_endsWith(path, ".frag"))
-            type = ".frag";
-
-        else 
-            return;
-
-        std::replace(path.begin(), path.end(), '\\', '/');
-
-        const std::string tmp_file = System::Utils::ReplaceFrom(path, ".", "") + "_tmp" + type;
-
-        std::ifstream shaderFile(path);
-        std::ofstream out_file(tmp_file);
-
-        while (getline(shaderFile, line)) 
+        const auto iterate_shader = [] (const std::string& name, std::string path, const std::string& copiedFile) -> void
         {
+            std::string line, type;
 
-            for (int i = 0; i < line.length(); i++) {
-                if (Editor::platform == "WebGL" && line == "#version 330 core")
-                    line = "#version 300 es";
+            if (System::Utils::str_endsWith(path, ".vert"))
+                type = ".vert";
 
-                else if (line == "#version 300 es")
-                    line = "#version 330 core";
+            else if (System::Utils::str_endsWith(path, ".frag"))
+                type = ".frag";
+
+            else 
+                return;
+
+            std::replace(path.begin(), path.end(), '\\', '/');
+
+            const std::string tmp_file = System::Utils::ReplaceFrom(path, ".", "") + "_tmp" + type;
+
+            std::ifstream shaderFile(path);
+            std::ofstream out_file(tmp_file);
+
+            while (getline(shaderFile, line)) 
+            {
+
+                for (int i = 0; i < line.length(); i++) {
+                    if (Editor::platform == "WebGL" && line == "#version 330 core")
+                        line = "#version 300 es";
+
+                    else if (line == "#version 300 es")
+                        line = "#version 330 core";
+                }
+
+                out_file << line << "\n";
             }
 
-            out_file << line << "\n";
+            shaderFile.close();
+            out_file.close();
+
+            if (!std::filesystem::exists(copiedFile)) 
+                std::filesystem::rename(tmp_file, copiedFile);
+        };
+
+       for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->shader_dir)) 
+        {
+
+            std::string path = shader.path().string();
+            const std::string name = shader.path().filename().string(),
+                            copiedFile = assetsFolder + name;
+
+            if (shader.is_directory()) 
+                for (const auto& folder : std::filesystem::recursive_directory_iterator(shader)) 
+                    if (System::Utils::str_endsWith(path, ".vert") || System::Utils::str_endsWith(path, ".frag"))
+                        iterate_shader(name, folder.path().string(), copiedFile);
+                
+            if (System::Utils::str_endsWith(path, ".vert") || System::Utils::str_endsWith(path, ".frag"))
+                iterate_shader(name, path, copiedFile);
         }
 
-        shaderFile.close();
-        out_file.close();
-
-        //copy shaders 
-
-        if (!std::filesystem::exists(copiedFile)) 
-            std::filesystem::rename(tmp_file, copiedFile);
-    };
-
-    for (const auto& shader : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->shader_dir)) 
-    {
-
-        std::string path = shader.path().string();
-        const std::string name = shader.path().filename().string(),
-                          copiedFile = assetsFolder + name;
-
-        if (shader.is_directory()) 
-            for (const auto& folder : std::filesystem::recursive_directory_iterator(shader)) 
-                if (System::Utils::str_endsWith(path, ".vert") || System::Utils::str_endsWith(path, ".frag"))
-                    iterate_shader(name, folder.path().string(), copiedFile);
-            
-        if (System::Utils::str_endsWith(path, ".vert") || System::Utils::str_endsWith(path, ".frag"))
-            iterate_shader(name, path, copiedFile);
     }
-
+ 
     //temp containers to track loaded configurations by key to avoid duplicate loads
 
     std::vector<std::string> loadedFrames;
@@ -1293,21 +1350,21 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetAlpha(" + std::to_string(sn->alpha) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetScrollFactor({" + std::to_string(sn->scrollFactorX) + ", " + std::to_string(sn->scrollFactorY) + "});\n";
-
+ 
                     //set default animation if applied
 
-                    if (sn->anim_to_play_on_start.key.length()) 
-                    {
+                    if (sn->anim_to_play_on_start.key.length()) {
                         const std::string is_yoyo = sn->anim_to_play_on_start.yoyo ? "true" : "false",
                                           repeat = sn->anim_to_play_on_start.repeat <= -1 ? std::to_string(sn->anim_to_play_on_start.repeat) : "-" + std::to_string(sn->anim_to_play_on_start.repeat);
 
                         command_queue << "   sprite_" + node->ID + "->SetAnimation(\"" + sn->anim_to_play_on_start.key + "\", " + is_yoyo + ", " + std::to_string(sn->anim_to_play_on_start.rate) + ", " + repeat + ");\n";
                     }
 
-                    const std::string filtering = sn->filter_nearest ? "GL_NEAREST" : "GL_LINEAR";
+                    const std::string filtering = sn->filter_nearest ? "true" : "false";
 
-                    command_queue << "   sprite_" + node->ID + "->texture.Filter_Min = " + filtering + ";\n";
-                    command_queue << "   sprite_" + node->ID + "->texture.Filter_Max = " + filtering + ";\n";
+                    //maybe add texture wrapping too?
+
+                    command_queue << "   sprite_" + node->ID + "->texture.SetFiltering(" + filtering + ", " + filtering + ");\n";
 
                     if (sn->lock_in_place) {
                         command_queue << "   sprite_" + node->ID + "->type = Entity::UI;\n";
@@ -1370,13 +1427,13 @@ void EventListener::BuildAndRun()
                         //TODO: set shape
 
                         if (en->currentShape == "rectangle") {
-                            command_queue << "   empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
+                            command_queue << "   auto empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
                             command_queue << "   empty_" + node->ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
                         }
 
                         if (en->currentShape.length()) {
-                            command_queue << "   empty_" + node->ID + "->SetThickness" + std::to_string(en->line_weight) + ");\n";
-                            command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->m_debugGraphic->tint.r) + ", " + std::to_string(en->m_debugGraphic->tint.g) + ", " + std::to_string(en->m_debugGraphic->tint.b) + "});\n";
+                            command_queue << "   empty_" + node->ID + "->SetThickness(" + std::to_string(en->line_weight) + ");\n";
+                            command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->m_debugGraphic->tint.x) + ", " + std::to_string(en->m_debugGraphic->tint.y) + ", " + std::to_string(en->m_debugGraphic->tint.z) + "});\n";
                             command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->alpha) + ");\n";
 
                             //shader
@@ -1387,7 +1444,7 @@ void EventListener::BuildAndRun()
                     }
 
                     else 
-                        command_queue << "   std::shared_ptr<Entity> empty_" + node->ID + " = System::Game::CreateEntity();\n\t";
+                        command_queue << "   auto empty_" + node->ID + " = System::Game::CreateEntity();\n\t";
 
                     command_queue << "   empty_" + node->ID + "->name = \"" + node->name + "\";\n";
                 }

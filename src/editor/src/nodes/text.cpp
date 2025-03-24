@@ -14,7 +14,7 @@ TextNode::TextNode(bool init):
     size = 1;
     alpha = 1;
     UIFlag = true;
-    tint = glm::vec3(1.0f);
+    tint = { 1.0f, 1.0f, 1.0f };
     depth = 1;
     textBuf = "";
     currentFont = "";
@@ -131,18 +131,6 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
             {
                 const std::string currFont = currentFont.length() ? currentFont : "default";
 
-                ImGui::Text(("current font: " + currFont).c_str());
-                ImGui::InputText("content", &textBuf);
-                ImGui::Checkbox("UI", &UIFlag);
-                ImGui::ColorEdit3("tint", (float*)&tint); 
-                ImGui::SliderInt("depth", &depth, 0, 1000);
-                ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
-                ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_scaleWidth); 
-                ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_scaleHeight); 
-                ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f); 
-                ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
-                ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
-
                 if (ImGui::BeginMenu("select font"))
                 {
                     for (const auto& asset : AssetManager::Get()->loadedAssets)
@@ -166,6 +154,19 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
 
                     ImGui::EndMenu();
                 }
+
+                ImGui::Text(("current font: " + currFont).c_str());
+                ImGui::InputText("content", &textBuf);
+                ImGui::Checkbox("UI", &UIFlag);
+                ImGui::ColorEdit3("tint", (float*)&tint); 
+                ImGui::SliderInt("depth", &depth, 0, 1000);
+                ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
+                ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_scaleWidth); 
+                ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_scaleHeight); 
+                ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f); 
+                ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
+                ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
+
             }
 
             ImGui::TreePop();
