@@ -2,8 +2,6 @@
 
 #include <map>
 #include <vector>
-#include <string>
-#include <list>
 
 #include "./shader.h"
 #include "./texture.h"
@@ -30,8 +28,8 @@ namespace System {
 
                 //resource storage
 
-                std::map<std::string, Shader> shaders;
-                std::map<std::string, Graphics::Texture2D> textures;
+                std::map<const std::string, Shader> shaders;
+                std::map<const std::string, Graphics::Texture2D> textures;
 
                 Manager() = default;
                 ~Manager() = default;
@@ -39,7 +37,7 @@ namespace System {
                 static const std::string GetFilePath(const std::string& name);
                 static const std::string GetSpritesheetPath(const std::string& key);
                 static const BinaryResource GetResource(const std::string& key);   
-                static const std::map<std::string, std::pair<int, int>> GetAnimations(const std::string& key);
+                static const std::map<const std::string, std::pair<int, int>> GetAnimations(const std::string& key);
                 static const std::vector<std::array<int, 6>> GetRawSpritesheetData(const std::string& key);
                 static const std::vector<std::string> ParseCSV(const std::string& key, int index = 0);
 
@@ -47,7 +45,7 @@ namespace System {
                 static void Clear(bool all = true);
                 static void LoadFile(const std::string& key, const std::string& path);
                 static void LoadRaw(const int type, const std::string& key, const unsigned char* arr, const unsigned int bytes);
-                static void LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims);
+                static void LoadAnims(const std::string& key, const std::map<const std::string, std::pair<int, int>>& anims);
                 static void LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames); 
                 static void LoadAtlas(const std::string& key, const std::string& path); 
 
@@ -61,11 +59,11 @@ namespace System {
 
                 //asset storage
 
-                std::map<std::string, std::vector<std::array<int, 6>>> m_atlases;
-                std::map<std::string, std::map<std::string, std::pair<int, int>>> m_anims;
-                std::map<std::string, std::string> m_atlas_paths;
-                std::map<std::string, std::pair<int, std::string>> m_file_assets;
-                std::map<std::string, BinaryResource> m_raw_assets;
+                std::map<const std::string, std::vector<std::array<int, 6>>> m_atlases;
+                std::map<const std::string, std::map<const std::string, std::pair<int, int>>> m_anims;
+                std::map<const std::string, const std::string> m_atlas_paths;
+                std::map<const std::string, std::pair<int, const std::string>> m_file_assets;
+                std::map<const std::string, BinaryResource> m_raw_assets;
 
         };
     }

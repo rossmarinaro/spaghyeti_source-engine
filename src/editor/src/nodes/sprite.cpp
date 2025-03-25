@@ -4,6 +4,8 @@
 #include "../assets/assets.h"
 #include "../../../../build/sdk/include/app.h"
 
+#include "../../../vendors/box2d/include/box2d/box2d.h"
+
 using namespace editor;
 
 
@@ -121,7 +123,7 @@ void SpriteNode::CreateBody(float x, float y, float width, float height, bool is
     is_sensor.push_back(bc);
     body_pointer.push_back(pointerType);
 
-    b2Body* body = Physics::CreateDynamicBody(Physics::BOX, x, y, width, height); 
+    const auto body = Physics::CreateDynamicBody(Physics::BOX, x, y, width, height); 
 
     bodies.push_back(body);
     
@@ -170,12 +172,11 @@ void SpriteNode::ApplyTexture(const std::string& asset)
 
 void SpriteNode::ApplyAnimation(const std::string& key)
 {
-
     try {
 
-        std::map<std::string, std::pair<int, int>> animsToLoad;
+        std::map<const std::string, std::pair<int, int>> animsToLoad;
 
-        for (const auto& anim : animations)
+        for (const auto& anim : animations) 
             animsToLoad.insert({ { anim.key, { anim.start, anim.end } } });
         
         System::Resources::Manager::LoadAnims(key, animsToLoad);
@@ -184,7 +185,6 @@ void SpriteNode::ApplyAnimation(const std::string& key)
             spriteHandle->anims = System::Resources::Manager::GetAnimations(key);
             spriteHandle->ReadSpritesheetData();    
         }
-  
     }
 
     catch (std::runtime_error& err) { 
@@ -418,9 +418,9 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                             b2FixtureDef fixtureDef;
                             fixtureDef.shape = &body;
 
-                            bodies[i]->DestroyFixture(bodies[i]->GetFixtureList());
+                            bodies[i]->DestroyFixture();
                             bodies[i]->CreateFixture(&fixtureDef);    
-
+ 
                         }
 
                         ImGui::PopID();
@@ -801,7 +801,7 @@ void SpriteNode::Render()
         
         if (bodies.size())
             for (int i = 0; i < bodies.size(); i++)   
-                bodies[i]->SetTransform(b2Vec2(spriteHandle->position.x + bodyX[i], spriteHandle->position.y + bodyY[i]), 0);
+                bodies[i]->SetTransform(spriteHandle->position.x + bodyX[i], spriteHandle->position.y + bodyY[i]);
 
         //if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && (ImGui::IsMouseDown(ImGuiKey_RightShift) || ImGui::IsMouseDown(ImGuiKey_LeftShift)))
             //Editor::selectedEntity = spriteHandle;

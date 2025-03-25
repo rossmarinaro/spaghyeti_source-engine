@@ -3,7 +3,7 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/window.h"
 
-#include "../../window/renderer.h"
+#include "../../shared/renderer.h"
 #include "../../vendors/glm/glm.hpp"
 #include "../../vendors/glm/gtc/matrix_transform.hpp"
 #include "../../vendors/glm/gtc/type_ptr.hpp"
@@ -258,7 +258,7 @@ void* Text::GetGLTPointer()
 void Text::Render(float projWidth, float projHeight)
 {
     if (textType == DEFAULT) 
-    {
+    { 
         glm::mat4 model = glm::mat4(1.0f);
     
         model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
@@ -297,7 +297,7 @@ void Text::Render(float projWidth, float projHeight)
         const float pixelScale = 2.0f / projHeight;
 
         Math::Vector2 ndc = System::Window::GetPixelToNDC(position.x, position.y);
-        glm::vec3 localPosition = glm::vec3(ndc.x, ndc.y, 0.0f);
+        glm::vec3 localPosition = { ndc.x, ndc.y, 0.0f };
 
         const auto it_packed_chars = _packedChars.find(font);
         const auto it_aligned_quads = _alignedQuads.find(font);
@@ -371,11 +371,11 @@ void Text::Render(float projWidth, float projHeight)
         const int shaderID = Shader::Get("text").ID,
                   uniformLoc = glGetUniformLocation(shaderID, "uFontAtlasTexture");
 
+        glUseProgram(shaderID); 
         glBindTexture(GL_TEXTURE_2D, m_fontTextureID);
         glActiveTexture(GL_TEXTURE0);
 
         glUniform1i(uniformLoc, GL_TEXTURE0);
-        //glUseProgram(shaderID); 
 
         const size_t sizeOfVertices = m_vertices.size() * sizeof(Vertex);
         const uint32_t drawCallCount = (sizeOfVertices / s_VBO_SIZE) + 1; //number of chunks
@@ -412,7 +412,7 @@ void Text::Render(float projWidth, float projHeight)
             glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         } 
 
-        glUseProgram(shaderID); 
+
     }
 }
 

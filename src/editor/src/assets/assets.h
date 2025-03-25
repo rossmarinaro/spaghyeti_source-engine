@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../window/renderer.h"
+#include "../../../shared/renderer.h"
 #include "../nodes/node.h"
 
 namespace editor {

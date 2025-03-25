@@ -174,8 +174,8 @@ void EmptyNode::Render()
             ImGui::SliderFloat("line weight", &line_weight, 0.1f, 3.0f); 
             ImGui::ColorEdit3("tint", (float*)&m_debugGraphic->tint); 
             ImGui::SliderFloat("alpha", &m_debugGraphic->alpha, 0.0f, 1.0f);
-            ImGui::SliderFloat("position x", &positionX, 10.0f, 1000.0f);  
-            ImGui::SliderFloat("position y", &positionY, 10.0f, 1000.0f);
+            ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);  
+            ImGui::SliderFloat("position y", &positionY, -System::Window::s_width, System::Window::s_width); 
         }
 
         if (currentShape == "rectangle") {

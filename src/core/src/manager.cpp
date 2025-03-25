@@ -120,7 +120,7 @@ void Manager::LoadAtlas(const std::string& key, const std::string& path) {
 
 
 //load animations from map of start / end pairs defined by key
-void Manager::LoadAnims(const std::string& key, const std::map<std::string, std::pair<int, int>>& anims) {
+void Manager::LoadAnims(const std::string& key, const std::map<const std::string, std::pair<int, int>>& anims) {
     UnLoadAnims(key);
     System::Application::resources->m_anims.insert( { key, anims } );
 }
@@ -166,7 +166,7 @@ void Manager::UnLoadAnims(const std::string& key) {
 
 //unload raw char array audio
 void Manager::UnLoadRaw(const int type, const std::string& key) {
-    auto it = System::Application::resources->m_raw_assets.find(key); 
+    const auto it = System::Application::resources->m_raw_assets.find(key); 
     if (System::Application::resources->m_raw_assets.find(key) != System::Application::resources->m_raw_assets.end()) 
         if (it->second.type == type)
             System::Application::resources->m_raw_assets.erase(System::Application::resources->m_raw_assets.find(key));
@@ -200,12 +200,11 @@ const std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::
 //--------------------------------- 
 
 //get anims by sprite key
-const std::map<std::string, std::pair<int, int>> Manager::GetAnimations(const std::string& key) {
+const std::map<const std::string, std::pair<int, int>> Manager::GetAnimations(const std::string& key) {
     const auto it = System::Application::resources->m_anims.find(key);
     if (it != System::Application::resources->m_anims.end())
         return it->second;
 
-    return {};
 }
 
 

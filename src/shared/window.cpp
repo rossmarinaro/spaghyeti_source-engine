@@ -11,9 +11,6 @@ using namespace System;
 
 
 
-//-----------------------------------
-
-
 const Math::Vector2 Window::GetPixelToNDC(float x, float y) 
 {
     const float ndcX = ((2.0f * x) / s_width - 1.0f),
@@ -34,7 +31,7 @@ const Math::Vector2 Window::GetNDCToPixel(float x, float y)
                 pixelY = s_scaleHeight - (ndc.y + 1.0f) * (s_scaleHeight / 2); 
 
     return { pixelX, pixelY };
-}
+} 
 
 
 //------------------------------------ Initialize Window

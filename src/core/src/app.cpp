@@ -1,6 +1,6 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/window.h"
-#include "../../window/renderer.h"
+#include "../../shared/renderer.h"
 
 void System::Application::Init(Game* layer)
 {

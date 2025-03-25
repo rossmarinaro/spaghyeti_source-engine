@@ -1,7 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../vendors/stb/stb_image.h" 
 #include "../../../build/sdk/include/app.h"
-#include "../../window/renderer.h"
+#include "../../shared/renderer.h"
 
 using namespace Graphics;
 
@@ -127,7 +127,7 @@ void Texture2D::Load(const std::string& key)
     }
 
     if (image == nullptr) {
-        LOG("Texture2D: Image of key: " + key + " failed to load (" + filetype + ")");    
+        LOG("Texture2D: Image of key: \"" + key + "\" failed to load. (" + filetype + ")");    
         return;
     }
 
@@ -137,7 +137,8 @@ void Texture2D::Load(const std::string& key)
         stbi_image_free(image);
 
     System::Application::resources->textures[key] = texture; 
-    LOG("Texture2D: " + key + " loaded (" + filetype + ")");
+
+    LOG("Texture2D: \"" + key + "\" loaded. (" + filetype + ")");
 
 } 
 
@@ -147,7 +148,7 @@ void Texture2D::Load(const std::string& key)
 
 void Texture2D::UnLoad(const std::string& key) {
 
-    auto it = System::Application::resources->textures.find(key);
+    const auto it = System::Application::resources->textures.find(key.c_str());
 
     if (it != System::Application::resources->textures.end()) {
 
@@ -156,7 +157,7 @@ void Texture2D::UnLoad(const std::string& key) {
         System::Application::resources->textures.erase(it);
     }
 
-    LOG("Texture2D: Deleted texture " + key);
+    LOG("Texture2D: \"" + key + "\" deleted.");
 
 }
 

@@ -79,6 +79,7 @@ GUI::GUI()
 
         "uniform float alphaVal;\n"
         "uniform float pitch;\n"
+        "out vec4 fColor;\n"
 
         "void main()\n" 
         "{\n"    
@@ -87,9 +88,9 @@ GUI::GUI()
 
             "if (mod(gl_FragCoord.x, pitch[0]) < 1. ||\n"
                 "mod(gl_FragCoord.y, pitch[1]) < 1.) {\n"
-                "gl_FragColor = vec4(0.25, 0.25, 0.25, alphaVal);\n"
+                "fColor = vec4(0.25, 0.25, 0.25, alphaVal);\n"
             "} else {\n"
-                "gl_FragColor = vec4(0.);\n"
+                "fColor = vec4(0.0);\n"
                 
             "}\n"
         "}\n";

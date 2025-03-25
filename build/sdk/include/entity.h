@@ -3,11 +3,9 @@
 #include <any>
 #include <memory>
 #include <atomic>
-#include "./vendors/box2d/include/box2d/box2d.h"
-
 #include "./manager.h"
 #include "./inputs.h"
-
+#include "./physics.h"
 
 //base gameobject entity class
 
@@ -103,7 +101,7 @@ class Geometry : public Entity {
 
         //TODO: circle
 
-		~Geometry() = default;
+		~Geometry();
 
 		void Render(float projWidth, float projHeight);
 
@@ -193,26 +191,27 @@ class Sprite : public Entity {
 		float velocityX, velocityY;
 
 		std::string key;
-		std::map<std::string, std::pair<int, int>> anims;
+		std::map<const std::string, std::pair<int, int>> anims;
  
-		//physics body
+        //physics bodies
 
-		std::vector<std::pair<b2Body*, Math::Vector4>> bodies; 
+		std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> bodies;  
 
 		inline const int GetBodyDataType() const { 
 			for (const auto& body : bodies)
-				return body.first->GetFixtureList()->GetBody()->GetUserData().pointer; 
+				return body.first->pointer; 
 			return 0;
 		}
 
 		inline void SetFrame(int frame) { currentFrame = frame; }
 		inline void SetContact(bool isContact) { m_contacting = isContact; }
+        
 		inline const bool IsContacting() { return m_contacting; }
 		inline const bool IsSpritesheet() { return m_isSpritesheet; } 
 		inline const bool IsAnimComplete() { return m_animComplete; }
 
         void StopAnimation();
-		void SetAnimation(const char* key, bool yoyo = false, int rate = 2, int repeat = -1);
+		void SetAnimation(const std::string& key, bool yoyo = false, int rate = 2, int repeat = -1);
 		
 		void ReadSpritesheetData();
 		void RemoveBodies(); 
@@ -226,18 +225,13 @@ class Sprite : public Entity {
 		void SetImpulseX(float x);
 		void SetImpulseY(float y);
 		void Render(float projWidth, float projHeight);
+
         const std::shared_ptr<Sprite> Clone();
+        const bool CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB);
 
-        Sprite(
-            const std::string& key, 
-            float x = 0.0f, 
-            float y = 0.0f, 
-            int frame = 0, 
-            bool isTile = false
-        );
-
+        Sprite(const std::string& key, float x = 0.0f, float y = 0.0f, int frame = 0, bool isTile = false);
 		Sprite(const std::string& key, const Math::Vector2& position);
-        Sprite(Sprite& sprite);
+        Sprite(const Sprite& sprite);
 	   
 	   ~Sprite();
 

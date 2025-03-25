@@ -2,7 +2,7 @@
 #include <sstream>
 #include "../../../build/sdk/include/app.h"
 #include "../../vendors/glm/gtc/type_ptr.hpp"
-#include "../../window/renderer.h"
+#include "../../shared/renderer.h"
 
 void Shader::Delete() {
     glDeleteProgram(ID);
@@ -331,14 +331,12 @@ const bool checkCompileErrors(const std::string& key, unsigned int shader, const
 
         if (result == GL_FALSE) {
             glGetShaderInfoLog(shader, 1024, &length, message);
-            LOG("Shader: " + key + " of type " + type + " compilation error: " + message);
+            LOG("Shader: \"" + key + "\" of type " + type + " compilation error: " + message);
             return false; 
         }
 
-        else {
-            LOG("Shader: " + key + " of type " + type + " compiled successfully.");  
+        else 
             return true;
-        }
     }
 
     //link program
@@ -350,12 +348,12 @@ const bool checkCompileErrors(const std::string& key, unsigned int shader, const
 
         if (result == GL_FALSE) {
             glGetProgramInfoLog(shader, 1024, &length, message);
-            LOG("Shader: " + key + " of type " + type + " linking error: " + message);
+            LOG("Shader: \"" + key + "\" linking error: " + message);
             return false;
         }
 
         else {
-            LOG("Shader: " + key + " of type " + type + " linked successfully.");  
+            LOG("Shader: \"" + key + "\" compiled and linked successfully.");  
             return true;
         }
     }
@@ -367,9 +365,9 @@ const bool checkCompileErrors(const std::string& key, unsigned int shader, const
 void Shader::Load(const std::string& key, const char* vertShader, const char* fragShader)
 {
 
-    if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&](auto s) { return s.first == key; }) != System::Application::resources->shaders.end())
+    if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [key](const std::pair<const std::string&, Shader>& s) { return s.first == key; }) != System::Application::resources->shaders.end())
     {
-        LOG("Shader: already exists.");
+        LOG("Shader: \"" + key + "\" already exists.");
         return;
     } 
 
@@ -404,17 +402,19 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         const char* vs = vertexCode.c_str();
         const char* fs = fragmentCode.c_str();
 
-        LOG("Shader: Loading " + key + " from file.");
+        LOG("Shader: \"" + key + "\" loading from file.");
 
-        shader.Generate(key, vs, fs);
+        if (!shader.Generate(key, vs, fs))
+            return;
  
     }
 
     //from raw char
     
     else {
-        LOG("Shader: Loading " + key + " from string.");
-        shader.Generate(key, vertShader, fragShader);
+        LOG("Shader: \"" + key + "\" loading from string.");
+        if (!shader.Generate(key, vertShader, fragShader))
+            return;
     }
 
     System::Application::resources->shaders[key] = shader; 
@@ -423,7 +423,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
 //--------------------------- generate
 
 
-void Shader::Generate(const std::string& key, const char* vertexPath, const char* fragmentPath)
+const bool Shader::Generate(const std::string& key, const char* vertexPath, const char* fragmentPath)
 {
 
     unsigned int vertex, fragment;
@@ -436,7 +436,7 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
     glCompileShader(vertex);
 
     if (!checkCompileErrors(key, vertex, "vertex"))
-        return;
+        return false;
 
     //fragment 
 
@@ -448,7 +448,7 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
         glCompileShader(fragment);
         
         if (!checkCompileErrors(key, fragment, "fragment"))
-            return;
+            return false;
     }
 
     //shader Program
@@ -463,7 +463,7 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
     glLinkProgram(this->ID);
 
     if (!checkCompileErrors(key, this->ID, "program"))
-        return;
+        return false;
 
     //use program
 
@@ -475,6 +475,8 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
 
     if (fragmentPath != nullptr)
         glDeleteShader(fragment); 
+
+    return true;
 }
 
 
@@ -484,14 +486,14 @@ void Shader::Generate(const std::string& key, const char* vertexPath, const char
 void Shader::UnLoad(const std::string& key)
 { 
 
-    auto it = System::Application::resources->shaders.find(key);
+    const auto it = System::Application::resources->shaders.find(key);
 
     if (it != System::Application::resources->shaders.end()) {
         (*it).second.Delete();
         System::Application::resources->shaders.erase(it);
     }
 
-    LOG("Shader: Deleted shader " + key);
+    LOG("Shader: \"" + key + "\" deleted.");
     
 }
 

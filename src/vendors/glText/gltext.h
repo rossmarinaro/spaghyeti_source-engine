@@ -1026,7 +1026,7 @@ GLT_API GLboolean _gltCreateText2DShader(void)
 
 	glUseProgram(0);
 
-	return GL_TRUE;
+	return GL_TRUE; 
 }
 
 static const uint64_t _gltFontGlyphRects[_gltFontGlyphCount] = {

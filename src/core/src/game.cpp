@@ -1,34 +1,47 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/window.h"
-#include "../../window/renderer.h"
-#include "../../vendors/glm/glm.hpp" 
 
-#if DEVELOPMENT == 1 && STANDALONE == 1
-    #include "../../../build/sdk/include/displayInfo.h"
-    DisplayInfo* displayInfo;
+#include "../../shared/renderer.h"
+#include "../../shared/collisionManager.h"
+
+#if DEVELOPMENT == 1 
+
+    #if STANDALONE == 1
+        #include "../../shared/displayInfo.h"
+        static DisplayInfo* _displayInfo;
+    #endif
+    
+    #include "../../shared/debug.h"
+
+    static DebugDraw* _debug;
+    unsigned int _debug_flags = 0;
+
 #endif
 
-using namespace System;      
+#include "../../vendors/glm/glm.hpp"
+#include "../../vendors/box2d/include/box2d/box2d.h"
 
+using namespace System;
 
+static CollisionManager _collisions;
 
 void Game::Flush(bool removeBehaviors)
 {
 
     LOG("Scene: " + currentScene->key + " stopped.");
-    
+
     inputs->ResetControls();
 
-    if (Application::isMultiThreaded && Application::eventPool) {
-        delete Application::eventPool; 
+    if (Application::isMultiThreaded && Application::eventPool)  {
+        delete Application::eventPool;
         Application::eventPool = nullptr;
     }
 
     if (removeBehaviors)
-       currentScene->behaviors.clear();
+        currentScene->behaviors.clear();
 
     maps->layers.clear();
-    currentScene->UI.clear();   
+    currentScene->UI.clear();
     currentScene->entities.clear();
     time->timed_events.clear();
 }
@@ -37,21 +50,21 @@ void Game::Flush(bool removeBehaviors)
 //------------------------------
 
 
-Scene* Game::GetScene(const std::string& key) 
+Scene *Game::GetScene(const std::string &key)
 {
     if (!key.length())
         return Application::game->currentScene;
 
     auto it = std::find_if(Application::game->scenes.begin(), Application::game->scenes.end(), [&](auto scene) { return scene->key == key; });
 
-    if (it == Application::game->scenes.end()) 
+    if (it == Application::game->scenes.end())
         return *it;
 
     return nullptr;
 }
 
-  
-//------------------------- backend game layer functionality   
+
+//------------------------- backend game layer functionality
 
 
 Game::Game()
@@ -68,16 +81,15 @@ Game::Game()
 
     //scene context handles
 
-    m_context = { inputs, camera, physics, time };
+    m_context = {inputs, camera, physics, time};
 }
 
 
 //---------------------------- boot entry scene
 
 
-void Game::Boot()   
-{     
-    LOG("Game: " + Application::name + " initializing.");
+void Game::Boot()
+{
 
     currentScene = nullptr;
 
@@ -85,23 +97,30 @@ void Game::Boot()
 
     //preload / run game layer
 
-    StartScene(scenes[0]->key, true); 
+    StartScene(scenes[0]->key, true);
 
     glfwSetWindowTitle(Renderer::GLFW_window_instance, Application::name.c_str());
 
     inputs->ResetControls();
 
-    physics->GetWorld().SetContactListener(&physics->collisions);
-    
+    const auto& world = static_cast<b2World*>(physics->GetWorld());
+
+    world->SetContactListener(&_collisions);
+
     //physics listener and debug
 
-    #if DEVELOPMENT == 1 
+    #if DEVELOPMENT == 1
 
-        physics->debug = new DebugDraw;
-	    physics->GetWorld().SetDebugDraw(physics->debug); 
+        _debug_flags += b2Draw::e_shapeBit;
+        _debug_flags += b2Draw::e_jointBit;
+        _debug_flags += b2Draw::e_aabbBit;
+        _debug_flags += b2Draw::e_centerOfMassBit;
+
+        _debug = new DebugDraw;
+        world->SetDebugDraw(_debug);
 
         #if STANDALONE == 1
-            displayInfo = new DisplayInfo; 
+            _displayInfo = new DisplayInfo;
             physics->enableDebug = false;
         #else
             physics->enableDebug = true;
@@ -109,22 +128,24 @@ void Game::Boot()
 
     #endif
 
+    LOG("Game: " + Application::name + " initialized.");
+
 }
 
 
 //-----------------------------
 
 
-void Game::StartScene(const std::string& key, bool loadMap) 
+void Game::StartScene(const std::string& key, bool loadMap)
 {
 
-    Game* game = Application::game; 
+    Game *game = Application::game;
 
     game->m_gameState = false;
- 
+
     //find loaded scene
 
-    auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](Scene* scene) { return scene->key == key; });
+    auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](Scene *scene) { return scene->key == key; });
 
     if (it != game->scenes.end())
     {
@@ -133,63 +154,61 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
             //refresh physics
 
-            game->physics->ClearBodies();  
+            game->physics->ClearBodies();
 
-            //game->physics->GetWorld().SetContactListener(&game->physics->collisions);
+            static_cast<b2World*>(game->physics->GetWorld())->SetContactListener(&_collisions);
 
         #endif
 
         //clear entities if applicable (after first initialization)
 
-        if (game->currentScene) 
+        if (game->currentScene)
         {
             if (game->currentScene->key == game->scenes[0]->key) {
-               Resources::Manager::Clear(false);  
-               cachedScenes.clear();
+                Resources::Manager::Clear(false);
+                cachedScenes.clear();
             }
 
             game->Flush(game->currentScene->key == key);
-
-        }   
+        }
 
         //assign / load current scene
-        
+
         game->currentScene = *it;
 
         if (Application::isMultiThreaded)
             Application::eventPool = new EventPool(THREAD_COUNT);
 
-        if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) { 
+        if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {
             game->currentScene->Preload();
             cachedScenes.emplace_back(game->currentScene->key);
         }
 
         game->currentScene->vignette = std::make_unique<Geometry>(0.0f, -50.0f, 0.0f, 0.0f);
-        game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
+        game->currentScene->vignette->SetTint({0.0f, 0.0f, 0.0f});
         game->currentScene->vignette->SetAlpha(0.0f);
-        game->currentScene->vignette->SetScrollFactor({ 0.0f, 1.0f });
+        game->currentScene->vignette->SetScrollFactor({0.0f, 1.0f});
 
-        game->currentScene->Run(loadMap);  
+        game->currentScene->Run(loadMap);
 
         game->m_gameState = true;
 
-        //clear behaviors from other scenes
+        // clear behaviors from other scenes
 
         if (loadMap)
-            for (const auto& scene : game->scenes)
-                if (scene != game->currentScene) 
+            for (const auto &scene : game->scenes)
+                if (scene != game->currentScene)
                     scene->behaviors.clear();
 
         const std::string state = loadMap ? " started" : " restarted.";
 
-        LOG("Scene: " + key + state);    
+        LOG("Scene: " + key + state);
 
         return;
     }
 
-    else 
+    else
         LOG("Scene: key not found.");
-
 }
 
 
@@ -197,32 +216,31 @@ void Game::StartScene(const std::string& key, bool loadMap)
 //-----------------------------
 
 
-void Game::Exit() 
+
+void Game::Exit()
 {
 
     m_gameState = false;
 
     Flush();
 
-    for (auto& scene : scenes) {
+    for (auto &scene : scenes) {
         delete scene;
         scene = nullptr;
     }
 
-    scenes.clear();   
-    cachedScenes.clear(); 
+    scenes.clear();
+    cachedScenes.clear();
     text->ShutDown();
 
-    #if DEVELOPMENT == 1 
+    #if DEVELOPMENT == 1
 
-       delete physics->debug;
-       physics->debug = nullptr;
+        delete _debug;
+        _debug = nullptr;
 
         #if STANDALONE == 1
-
-            delete displayInfo;
-            displayInfo = nullptr;
-
+            delete _displayInfo;
+            _displayInfo = nullptr;
         #endif
 
     #endif
@@ -243,11 +261,12 @@ void Game::Exit()
     maps = nullptr;
 
     LOG("Game: exited.");
-
 }
 
 
+
 //----------------------------
+
 
 
 void Game::UpdateFrame()
@@ -257,13 +276,13 @@ void Game::UpdateFrame()
 
     inputs->ProcessInput();
 
-    //entity render queue
+    // entity render queue
 
-    for (const auto& entity : currentScene->entities)
-        if ((entity.get() && entity)) 
+    for (const auto &entity : currentScene->entities)
+        if ((entity.get() && entity))
         {
             if (entity->cull && Entity::s_cullPosition)
-            { 
+            {
                 float width = Window::s_scaleWidth;
 
                 if (!camera->InBounds() && Entity::s_cullPosition->x > Window::s_scaleWidth)
@@ -276,34 +295,36 @@ void Game::UpdateFrame()
             if (entity->renderable)
                 entity->Render(Window::s_scaleWidth, Window::s_scaleHeight);
         }
- 
+
     //UI render queue
 
-    for (const auto& UI : currentScene->UI)
-        if ((UI.get() && UI) && UI.get()->renderable) 
+    for (const auto &UI : currentScene->UI)
+        if ((UI.get() && UI) && UI.get()->renderable)
             UI->Render(Window::s_scaleWidth, Window::s_scaleHeight);
-        
+
     //vignette overlay
 
-    if(currentScene->vignette) {
+    if (currentScene->vignette) {
         currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
         currentScene->vignette->Render(Window::s_scaleWidth, Window::s_scaleHeight);
     }
 
     //depth sort
 
-    std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b){ return a->depth < b->depth; });
-    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b){ return a->depth < b->depth; });
+    std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
 
-    #if DEVELOPMENT == 1 
+    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
 
-        if (physics->enableDebug) 
+    #if DEVELOPMENT == 1
+
+        if (physics->enableDebug)
         {
-            physics->GetWorld().DebugDraw();
-            physics->debug->Flush();
+            static_cast<b2World*>(physics->GetWorld())->DebugDraw();
+            _debug->SetFlags(_debug_flags);
+            _debug->Flush();
 
             #if STANDALONE == 1
-                displayInfo->Update(&m_context);
+                _displayInfo->Update(&m_context);
             #endif
         }
 
@@ -311,12 +332,12 @@ void Game::UpdateFrame()
 
     //update behaviors, pass game process context to subclasses
 
-    for (const auto& behavior : currentScene->behaviors)
-        if (behavior.get() && behavior->active) 
+    for (const auto &behavior : currentScene->behaviors)
+        if (behavior.get() && behavior->active)
         {
-            if ((!currentScene->IsPaused() && behavior->layer == 0)) 
-                behavior->Update();  
-                
+            if ((!currentScene->IsPaused() && behavior->layer == 0))
+                behavior->Update();
+
             else if (behavior->layer == 1)
                 behavior->Update();
         }
@@ -327,7 +348,7 @@ void Game::UpdateFrame()
         physics->Update();
 
     //camera
- 
+
     camera->Update();
 
     //cleanup events
@@ -337,44 +358,44 @@ void Game::UpdateFrame()
         {
             auto event = *it;
 
-            if (!event->active) {
+            if (!event->active)
+            {
                 it = time->timed_events.erase(std::move(it));
                 --it;
-            } 
-                        
+            }
         }
 
     //execute timed events on the main thread
 
-    for (auto& event : time->timed_events)
-        if (event->active && (time->GetSeconds() - event->time_initiated) >= (float)(event->delay / 1000.0f)) 
+    for (auto &event : time->timed_events)
+        if (event->active && (time->GetSeconds() - event->time_initiated) >= (float)(event->delay / 1000.0f))
         {
             //refresh timed event token
 
-            if (event->repeat > 0 || event->repeat == -1) {
-                
-               if (event->repeat != -1)
-                  event->repeat--;
+            if (event->repeat > 0 || event->repeat == -1)
+            {
 
-                event->time_initiated = time->GetSeconds(); 
+                if (event->repeat != -1)
+                    event->repeat--;
+
+                event->time_initiated = time->GetSeconds();
             }
 
-            else 
-                event->active = false;  
+            else
+                event->active = false;
 
             //fire callback
 
             event->callback();
-
         }
-
-
 }
+
 
 
 //-----------------------------
 
- 
+
+
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
 
@@ -387,10 +408,12 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         --it;
     }
 
-    else {
+    else
+    {
         auto UI_it = std::find(Application::game->currentScene->UI.begin(), Application::game->currentScene->UI.end(), entity);
 
-        if (UI_it != Application::game->currentScene->UI.end()) {
+        if (UI_it != Application::game->currentScene->UI.end())
+        {
             UI_it = Application::game->currentScene->UI.erase(std::move(UI_it));
             --UI_it;
         }
@@ -400,45 +423,46 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     entity->active = false;
     entity->alive = false;
 
-    if (entity->IsSprite()) 
+    if (entity->IsSprite())
     {
-        auto sprite = std::static_pointer_cast<Sprite>(entity); 
+        auto sprite = std::static_pointer_cast<Sprite>(entity);
 
-        if (sprite->bodies.size()) {
-            for (const auto& body : sprite->bodies)
-                Physics::DestroyBody(body.first); 
+        if (sprite->bodies.size())
+        {
+            for (const auto &body : sprite->bodies)
+                Physics::DestroyBody(body.first);
 
             sprite->bodies.clear();
         }
     }
 
-    //remove from vector and disappear into the void
+    // remove from vector and disappear into the void
 
     if (entity.unique())
-       entity.reset(); 
+        entity.reset();
 
-    //reset associated behavior if applicable
+    // reset associated behavior if applicable
 
-    auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b) { return b->ID == ID; });
+    auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b)
+                                    { return b->ID == ID; });
 
-    if (behavior_it != Application::game->currentScene->behaviors.end()) 
-        (*behavior_it)->active = false; 
+    if (behavior_it != Application::game->currentScene->behaviors.end())
+        (*behavior_it)->active = false;
+}
 
-} 
 
 
-//----------------------------- entity containers for instantiation
+/* entity containers for instantiation */
 
 //----------------------------- sprite
 
-
-std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, float y, int frame, float scale, int layer)
+std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, float y, int frame, float scale, int layer)
 {
 
-    auto sprite = std::make_shared<Sprite>(key, x, y, frame);
+    const auto sprite = std::make_shared<Sprite>(key, x, y, frame);
 
     #if STANDALONE == 1
-        sprite->ReadSpritesheetData(); 
+        sprite->ReadSpritesheetData();
     #endif
 
     sprite->SetScale(scale);
@@ -447,26 +471,25 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
         Application::game->currentScene->entities.emplace_back(sprite);
 
     if (layer == 2)
-        Application::game->currentScene->UI.emplace_back(sprite); 
+        Application::game->currentScene->UI.emplace_back(sprite);
 
     return sprite;
 }
 
 
-
 //----------------------------- ui sprite
 
 
-std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y, int frame)
+std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y, int frame)
 {
-    Math::Vector2 pos = { x, y };
-    
-    auto element = std::make_shared<Sprite>(key, pos);
+    const Math::Vector2 pos = {x, y};
+
+    const auto element = std::make_shared<Sprite>(key, pos);
 
     #if STANDALONE == 1
-        element->ReadSpritesheetData();  
+        element->ReadSpritesheetData();
     #endif
-    
+
     element->SetFrame(frame);
 
     Application::game->currentScene->UI.emplace_back(element);
@@ -478,26 +501,25 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y,
 //----------------------------- tile
 
 
-std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, float y, int frame)
+std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, float y, int frame)
 {
 
-    auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
+    const auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
 
-    ts->ReadSpritesheetData(); 
+    ts->ReadSpritesheetData();
 
     Application::game->currentScene->entities.emplace_back(ts);
 
     return ts;
-
 }
 
 
 //----------------------------- text
 
 
-std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, float y, const std::string& font, int layer)
+std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, float y, const std::string &font, int layer)
 {
-    auto text = std::make_shared<Text>(content, x, y, font); 
+    const auto text = std::make_shared<Text>(content, x, y, font);
 
     if (layer == 1)
         Application::game->currentScene->entities.emplace_back(text);
@@ -514,7 +536,7 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 
 std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height, int layer, bool isStatic)
 {
-    auto geom = std::make_shared<Geometry>(x, y, width, height);
+    const auto geom = std::make_shared<Geometry>(x, y, width, height);
 
     if (isStatic)
         geom->isStatic = true;
@@ -534,7 +556,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
 
 std::shared_ptr<Entity> Game::CreateEntity(int type, int layer)
 {
-    auto entity = std::make_shared<Entity>(type);
+    const auto entity = std::make_shared<Entity>(type);
 
     if (layer == 1)
         Application::game->currentScene->entities.emplace_back(entity);
@@ -543,7 +565,4 @@ std::shared_ptr<Entity> Game::CreateEntity(int type, int layer)
         Application::game->currentScene->UI.emplace_back(entity);
 
     return entity;
-} 
-
-
-
+}

@@ -28,13 +28,13 @@ class Shader {
         static void Load(const std::string& key, const char* vertShader, const char* fragShader);
         static void UnLoad(const std::string& key);
         static const Shader& Get(const std::string& key);
-
+ 
         Shader() = default;
         ~Shader() = default;
 
     private:
 
-        void Generate(const std::string& key, const char* vertexPath, const char* fragmentPath);
+        const bool Generate(const std::string& key, const char* vertexPath, const char* fragmentPath);
         const Shader& Use();
 
 };

@@ -38,7 +38,7 @@ void read_frames(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint3
     if (pDecoder == NULL) 
     {
         #if DEVELOPMENT == 1 && STANDALONE == 1
-            LOG("Audio: There was a problem decoding audio.");
+            LOG("Audio: there was a problem decoding audio.");
         #endif
 
         return;
@@ -57,7 +57,6 @@ void read_frames(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint3
 void process_audio(const char* key, bool loop, float volume)
 {
 
-    ma_device_config deviceConfig; 
     std::string filetype = "none";
     const std::string& filepath = System::Resources::Manager::GetFilePath(key);      
 
@@ -79,7 +78,7 @@ void process_audio(const char* key, bool loop, float volume)
 
     if (result != MA_SUCCESS) {
         #if DEVELOPMENT == 1 && STANDALONE == 1
-            LOG("Audio: Failed to init sound: " + filetype);
+            LOG("Audio: failed to init audio: " + filetype);
         #endif
         return;
     }
@@ -97,7 +96,7 @@ void process_audio(const char* key, bool loop, float volume)
     //volume
         System::Audio::setVolume(volume);
 
-    deviceConfig = ma_device_config_init(ma_device_type_playback);
+    ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
 
     deviceConfig.playback.format   = loop ? music_decoder.outputFormat : sound_decoder.outputFormat;      
     deviceConfig.playback.channels = loop ? music_decoder.outputChannels : sound_decoder.outputChannels;     
@@ -105,11 +104,10 @@ void process_audio(const char* key, bool loop, float volume)
     deviceConfig.dataCallback      = read_frames;
     deviceConfig.pUserData         = loop ? &music_decoder : &sound_decoder;
 
-
     if (ma_device_init(NULL, &deviceConfig, loop ? &music_device : &sound_device) != MA_SUCCESS) {
 
         #if DEVELOPMENT == 1 && STANDALONE == 1
-            LOG("Audio: Failed to open playback device.");
+            LOG("Audio: failed to open playback device.");
         #endif
         ma_decoder_uninit(loop ? &music_decoder : &sound_decoder);
         return;
@@ -117,7 +115,7 @@ void process_audio(const char* key, bool loop, float volume)
 
     if (ma_device_start(loop ? &music_device : &sound_device) != MA_SUCCESS) {
         #if DEVELOPMENT == 1 && STANDALONE == 1
-            LOG("Audio: Failed to start playback device.");
+            LOG("Audio: failed to start playback device.");
         #endif
         ma_device_uninit(loop ? &music_device : &sound_device);
         ma_decoder_uninit(loop ? &music_decoder : &sound_decoder);

@@ -166,7 +166,7 @@ namespace editor {
                                frame_fX,
                                frame_fY;
 
-            std::vector<b2Body*> bodies; 
+            std::vector<std::shared_ptr<Physics::Body>> bodies;  
 
             SpriteNode(bool init = true);
             ~SpriteNode();      
@@ -215,7 +215,7 @@ namespace editor {
 
             std::vector<std::array<std::string, 3>> layers;
             std::vector<std::array<int, 6>> offset;
-            std::vector<b2Body*> bodies;
+            std::vector<std::shared_ptr<Physics::Body>> bodies;
 
             TilemapNode(bool init = true);
             ~TilemapNode();

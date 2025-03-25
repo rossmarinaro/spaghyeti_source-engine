@@ -3,6 +3,9 @@
 #include "../assets/assets.h"
 #include "../../../../build/sdk/include/app.h"
 
+#include "../../../vendors/box2d/include/box2d/box2d.h"
+
+
 using namespace editor;
 
 
@@ -114,9 +117,9 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
                 }
             }
 
-        std::string csv = layers[i][0], 
-                    path = layers[i][1], 
-                    texture = layers[i][2]; 
+        std::string csv = layers[i][0];
+        const std::string path = layers[i][1], 
+                          texture = layers[i][2]; 
 
         AssetManager::Register(texture); 
         AssetManager::Register(csv); 
@@ -156,7 +159,7 @@ void TilemapNode::CreateBody(float x, float y, float width, float height)
     body_width.push_back(width);
     body_height.push_back(height);
 
-    auto body = Physics::CreateStaticBody(x, y, width, height);
+    const auto body = Physics::CreateStaticBody(x, y, width, height);
 
     bodies.push_back(body);
 }
@@ -168,15 +171,15 @@ void TilemapNode::CreateBody(float x, float y, float width, float height)
 void TilemapNode::UpdateBody(int index) 
 {
 
-    b2PolygonShape body; 
+    b2PolygonShape body;  
     body.SetAsBox(body_width[index] / 2, body_height[index] / 2);
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &body; 
 
-    bodies[index]->DestroyFixture(bodies[index]->GetFixtureList());
+    bodies[index]->DestroyFixture();
     bodies[index]->CreateFixture(&fixtureDef);
-    bodies[index]->SetTransform(b2Vec2(bodyX[index] + body_width[index] / 2, bodyY[index] + body_height[index] / 2), 0);
+    bodies[index]->SetTransform(bodyX[index] + body_width[index] / 2, bodyY[index] + body_height[index] / 2);
 }
 
 

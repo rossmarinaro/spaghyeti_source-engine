@@ -4,9 +4,10 @@
 	using json = nlohmann::json;
 #endif
 
-#include "../../window/renderer.h"
+#include "../../shared/renderer.h"
 #include "../../vendors/glm/gtc/matrix_transform.hpp" 
 #include "../../vendors/UUID.hpp"
+#include "../../vendors/box2d/include/box2d/box2d.h"
 
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/window.h"
@@ -134,8 +135,19 @@ Geometry::Geometry(float x, float y, float width, float height):
     renderable = true;
     isStatic = false;
 
-    LOG("Entity: quad created."); 
+    LOG("Geometry: quad created."); 
 
+}
+
+
+//-------------------------------------------
+
+
+Geometry::~Geometry() { 
+    if (m_type == QUAD)
+        LOG("Geometry: quad destroyed."); 
+
+    //...more shapes?
 }
 
 
@@ -157,7 +169,7 @@ void Geometry::Render(float projWidth, float projHeight)
         model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
         model = glm::translate(model, { -0.5f * width - position.x, -0.5f * height - position.y, 0.0f });
 
-        const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
         
         const glm::mat4 proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f), 
                         view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y, 0.0f)),
@@ -183,6 +195,7 @@ void Geometry::Render(float projWidth, float projHeight)
 
 /* SPRITE */
 
+
 //-------------------------------------- standard sprite / tile
 
 
@@ -190,10 +203,11 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     Entity(SPRITE, x, y)
 {   
     this->key = key;
-    currentFrame = frame;    
-    anims = System::Resources::Manager::GetAnimations(key);
+    currentFrame = frame;   
     velocityX = 0.0f;
-    velocityY = 0.0f;
+    velocityY = 0.0f; 
+
+    anims = System::Resources::Manager::GetAnimations(key);
     texture = Graphics::Texture2D::Get(key);
     shader = Shader::Get("sprite");          
     
@@ -203,25 +217,26 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
         return;
     }
 
-    LOG("Sprite: " + key + " Created. (generic)");
+    LOG("Sprite: \"" + key + "\" Created. (generic)");
 }
 
 
 //------------------------------ clone
 
 
-Sprite::Sprite(Sprite& sprite):
+Sprite::Sprite(const Sprite& sprite):
     Entity(SPRITE, sprite.position.x, sprite.position.y)
 {
     key = sprite.key;
-    currentFrame = sprite.currentFrame;    
-    anims = System::Resources::Manager::GetAnimations(sprite.key);
+    currentFrame = sprite.currentFrame; 
     velocityX = sprite.velocityX;
-    velocityY = sprite.velocityY;
+    velocityY = sprite.velocityY;   
+
+    anims = System::Resources::Manager::GetAnimations(sprite.key);
     texture = Graphics::Texture2D::Get(sprite.key);
     shader = Shader::Get("sprite");     
 
-    LOG("Sprite: " + key + " Cloned."); 
+    LOG("Sprite: \"" + key + "\" Cloned."); 
 
 }
 
@@ -236,7 +251,7 @@ Sprite::Sprite(const std::string& key, const Math::Vector2& position):
     texture = Graphics::Texture2D::Get(key);
     shader = Shader::Get("sprite");  
     
-    LOG("Sprite: " + key + " created. (UI)"); 
+    LOG("Sprite: \"" + key + "\" created. (UI)"); 
 }
 
 
@@ -246,7 +261,7 @@ Sprite::Sprite(const std::string& key, const Math::Vector2& position):
 
 Sprite::~Sprite() {
     if (type != TILE) 
-        LOG("Sprite: " + key + " Destroyed."); 
+        LOG("Sprite: \"" + key + "\" Destroyed."); 
 }
 
 
@@ -270,11 +285,11 @@ const std::shared_ptr<Sprite> Sprite::Clone()
                     bodies[0].second.y, 
                     bodies[0].second.z, 
                     bodies[0].second.w, 
-                    bodies[0].first->GetFixtureList()->IsSensor(), 
-                    bodies[0].first->GetFixtureList()->GetUserData().pointer, 
-                    bodies[0].first->GetFixtureList()->GetDensity(), 
-                    bodies[0].first->GetFixtureList()->GetFriction(), 
-                    bodies[0].first->GetFixtureList()->GetRestitution()), { 
+                    bodies[0].first->isSensor, 
+                    bodies[0].first->pointer, 
+                    bodies[0].first->density, 
+                    bodies[0].first->friction, 
+                    bodies[0].first->restitution), { 
                         bodies[0].second.z, 
                         bodies[0].second.w, 
                         bodies[0].second.z, 
@@ -299,7 +314,7 @@ void Sprite::SetVelocity(float velX, float velY)
     velocityY = velY;
 
     if (bodies.size()) 
-        bodies[0].first->SetLinearVelocity(b2Vec2(velocityX, velocityY));
+        bodies[0].first->SetLinearVelocity(velocityX, velocityY);
 
     else {
         position.x += velocityX /* * System::Application::game->time->GetSeconds() */; 
@@ -321,7 +336,7 @@ void Sprite::SetVelocityX(float velX)
     velocityX = velX; 
 
     if (bodies.size() && IsContacting()) 
-        bodies[0].first->SetLinearVelocity(b2Vec2(velocityX, bodies[0].first->GetLinearVelocity().y));
+        bodies[0].first->SetLinearVelocity(velocityX, bodies[0].first->GetLinearVelocity().y);
 
     else
         position.x += velocityX; // System::Application::game->time->GetSeconds();     
@@ -339,7 +354,7 @@ void Sprite::SetVelocityY(float velY) {
     velocityY = velY;
 
     if (bodies.size()) 
-        bodies[0].first->SetLinearVelocity(b2Vec2(bodies[0].first->GetLinearVelocity().x, velocityY));
+        bodies[0].first->SetLinearVelocity(bodies[0].first->GetLinearVelocity().x, velocityY);
     
     else
         position.y += velocityY; // System::Application::game->time->GetSeconds(); 
@@ -352,7 +367,7 @@ void Sprite::SetVelocityY(float velY) {
 void Sprite::SetImpulse(float x, float y) {
 
     if (active && bodies.size())
-        bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 10000, y * 10000), bodies[0].first->GetWorldCenter(), true);
+        bodies[0].first->ApplyLinearImpulse(x * 10000, y * 10000);
 }
 
 
@@ -362,7 +377,7 @@ void Sprite::SetImpulse(float x, float y) {
 void Sprite::SetImpulseX(float x) {
 
     if (active && bodies.size())
-        bodies[0].first->ApplyLinearImpulse(b2Vec2(x * 10000, bodies[0].first->GetLinearVelocity().y), bodies[0].first->GetWorldCenter(), true);
+        bodies[0].first->ApplyLinearImpulse(x * 10000, bodies[0].first->GetLinearVelocity().y);
 }
 
 
@@ -372,7 +387,7 @@ void Sprite::SetImpulseX(float x) {
 void Sprite::SetImpulseY(float y) {
 
     if (active && bodies.size())
-        bodies[0].first->ApplyLinearImpulse(b2Vec2(bodies[0].first->GetLinearVelocity().x, y * 10000), bodies[0].first->GetWorldCenter(), true);
+        bodies[0].first->ApplyLinearImpulse(bodies[0].first->GetLinearVelocity().x, y * 10000);
 }
 
 
@@ -481,7 +496,7 @@ void Sprite::ReadSpritesheetData()
 //------------------------------------------ animations
 
 
-void Sprite::SetAnimation(const char* key, bool yoyo, int rate, int repeat) { 
+void Sprite::SetAnimation(const std::string& key, bool yoyo, int rate, int repeat) { 
     m_animComplete = false;
     m_currentAnim = { key, rate, repeat, yoyo, true, false };
 }
@@ -543,8 +558,8 @@ void Sprite::Render(float projWidth, float projHeight)
 
     //sprite model transformations
 
-    const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
-    const Math::Matrix4 vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y));
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y));
     
     const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
                     proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f);
@@ -604,12 +619,12 @@ void Sprite::Render(float projWidth, float projHeight)
             for (int i = 0; i < bodies.size(); i++)
                 if (bodies[i].first->IsEnabled()) {
                     if (i == 0 && bodies[i].first->GetType() == b2_dynamicBody) { 
-                        b2Vec2 pos = bodies[0].first->GetPosition(); 
+                        Math::Vector2 pos = bodies[0].first->GetPosition(); 
                         pos.y += bodies[0].second.w; //apply y offset
                         SetPosition(pos.x - (bodies[0].second.x * scale.x), (pos.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w);
                     }
                     else
-                        bodies[i].first->SetTransform(b2Vec2((position.x - (bodies[0].second.x * scale.x)), ((position.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w)), 0);
+                        bodies[i].first->SetTransform((position.x - (bodies[0].second.x * scale.x)), ((position.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w));
                 }
 
         //play current animation
@@ -627,15 +642,15 @@ void Sprite::Render(float projWidth, float projHeight)
                 if (m_isSpritesheet && active)
                 {
                  
-                    std::map<std::string, std::pair<int, int>>::iterator anim = anims.find(animKey);
+                    const auto anim = anims.find(animKey.c_str());
 
                     if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1))) 
                         return;
 
                     std::vector<int> frames; //frames to populate  
                     
-                    int startFrame = anims.find(m_currentAnim.key)->second.first,
-                        endFrame = anims.find(m_currentAnim.key)->second.second,
+                    int startFrame = anims.find(m_currentAnim.key.c_str())->second.first,
+                        endFrame = anims.find(m_currentAnim.key.c_str())->second.second,
                         frame = yoyo ? startFrame : endFrame;
 
                     m_animComplete = frame == currentFrame && m_currentAnim.can_complete;
@@ -710,5 +725,22 @@ void Sprite::Render(float projWidth, float projHeight)
  
 
 
+//----------------------------------- (sprite overlap not box2d related)
 
+
+const bool Sprite::CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB)
+{
+    //x axis
+
+    bool collisionX = spriteA->position.x + spriteA->texture.FrameWidth / 2 >= spriteB->position.x &&
+                      spriteB->position.x + spriteB->texture.FrameWidth / 2 >= spriteA->position.x;
+
+    //y axis
+
+    bool collisionY = spriteA->position.y + spriteA->texture.FrameHeight / 2 >= spriteB->position.y &&
+                      spriteB->position.y + spriteB->texture.FrameHeight / 2 >= spriteA->position.y;
+
+    return collisionX && collisionY;
+
+}
  

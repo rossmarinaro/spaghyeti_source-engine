@@ -1,12 +1,6 @@
 #pragma once
 
-#include <set>
-
-#include "./vendors/box2d/include/box2d/box2d.h"
-
-#include "./collisionManager.h"
-#include "./debug.h"
-
+#include <memory>
 
 //game physics powered by Box2D
 class Physics {
@@ -15,24 +9,48 @@ class Physics {
 
         enum { BOX, CIRCLE };
 
-        float gravityX, gravityY;
+        struct Body 
+        {
+            bool isSensor, isEnabled;
+            int pointer;
+            float density, friction, restitution;
+
+            std::string id;
+
+            Body(int pointer, bool isSensor, float density = 0.0f, float friction = 0.0f, float restitution = 0.0f);
+
+            const Math::Vector2& GetPosition();
+            const Math::Vector2& GetLinearVelocity();
+            
+            void SetTransform(float x, float y, float angle = 0.0f);
+            void SetLinearVelocity(float velocityX, float velocityY);
+            void ApplyLinearImpulse(float velocityX, float velocityY);
+            void SetEnabled(bool enabled);
+            void SetSensor(bool sensor);
+            void SetFixedRotation(bool isFixedRotation);
+            void DestroyFixture();
+            void CreateFixture(void* fixtureDef);
+
+            const int GetType();
+            const bool CollidesWith(const std::shared_ptr<Body>& bodyB);
+            const bool Exists();
+            const bool IsEnabled();
+            const bool IsSensor(); 
+        };
+
+        float gravityX = 0.0f, 
+              gravityY = 500.0f;
 
         bool enableDebug,
              sleeping, 
-             setWarmStart, 
+             setWarmStart,  
              continuous, 
              subStep,
              clearForces;
-        
-        CollisionManager collisions;
-        
-        #if DEVELOPMENT == 1
-            DebugDraw* debug;
-        #endif
 
-        static b2Body* CreateStaticBody(float x, float y, float width, float height, bool isSensor = false, int pointer = 0);
+        static std::shared_ptr<Body> CreateStaticBody(float x, float y, float width, float height, bool isSensor = false, int pointer = 0);
 
-        static b2Body* CreateDynamicBody(
+        static std::shared_ptr<Body> CreateDynamicBody(
             int type,
             float x,
             float y,
@@ -45,37 +63,23 @@ class Physics {
             float restitution = 0.0f
         );
 
-        static void DestroyBody(b2Body* body);
+        //does not destroy body immediately. body will be destroyed after next timestep
+        static void DestroyBody(const std::shared_ptr<Body>& body);
 
         void Update();
         void ClearBodies();
         void SetGravity(float x, float y);
         
         Physics();
-        ~Physics() = default;
+        ~Physics();
 
-        inline b2World& GetWorld() { 
-            return this->m_world; 
-        }
+        void* GetWorld();
 
     private:
 
-        uint32 m_flags; 
-        b2World m_world;
-
-        struct Body {
-            b2BodyDef def;
-            b2Body* self;
-            b2Fixture* fixture;
-            b2FixtureDef fixtureDef;
-        };
-
-        b2Vec2 m_gravity;
-        std::set<b2Body*> m_bodiesToRemove;
-        std::vector<b2Body*> m_active_bodies;
-
-        static inline const int32 s_velocityIterations = 3;
-        static inline const int32 s_positionIterations = 2;
+        static inline const signed int s_velocityIterations = 3,
+                                       s_positionIterations = 2;
 
 };
 
+ 

@@ -6,7 +6,7 @@
 #include "../../vendors/glm/glm.hpp"
 #include "../../vendors/glm/gtc/matrix_transform.hpp"
 #include "../../../build/sdk/include/app.h"
-#include "../../window/renderer.h"
+#include "../../shared/renderer.h"
 
 #include "./editor.h"
 #include "./assets/assets.h"
@@ -49,7 +49,6 @@ void Editor::Update()
 
     double xPos, yPos;
     glfwGetCursorPos(Renderer::GLFW_window_instance, &xPos, &yPos);
-    
     
     const Math::Vector4 pm = s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight);
     const Math::Matrix4 vm = s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition().x, s_self->game->camera->GetPosition().y);

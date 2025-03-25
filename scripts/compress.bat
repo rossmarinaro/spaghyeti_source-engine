@@ -1,3 +1,1 @@
 chdir C:\software\upx-4.1.0-win64\upx-4.1.0-win64 && upx --ultra-brute spaghyeti.dll && upx --ultra-brute spaghyeti-debug.dll && upx --ultra-brute spaghyeditor.dll && upx --ultra-brute spaghyeditor.exe 
- BLOCK "081604b0"
-        VALUE "Translation", 0x0409, 1252

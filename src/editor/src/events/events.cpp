@@ -59,7 +59,7 @@ EventListener::EventListener() {
 
 
 
-bool EventListener::NewProject(const char* root_path)
+const bool EventListener::NewProject(const char* root_path)
 {
 
     #ifdef _WIN32
@@ -154,7 +154,7 @@ bool EventListener::NewProject(const char* root_path)
 
 
 
-bool EventListener::NewScene(const char* root_path)
+const bool EventListener::NewScene(const char* root_path)
 {
     std::filesystem::current_path(Editor::projectPath + "scenes");
 
@@ -218,7 +218,7 @@ bool EventListener::NewScene(const char* root_path)
 //----------------------------- save current scene layer
 
 
-bool EventListener::SaveScene(bool saveAs)
+const bool EventListener::SaveScene(bool saveAs)
 {
 
     std::filesystem::current_path(Editor::projectPath + "/scenes");
@@ -303,7 +303,7 @@ bool EventListener::SaveScene(bool saveAs)
 //----------------------------- open project layer
 
 
-bool EventListener::OpenProject() //makes temporary json file to parse data from .spaghyeti
+const bool EventListener::OpenProject() //makes temporary json file to parse data from .spaghyeti
 {
 
    #ifdef _WIN32
@@ -349,9 +349,13 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
 
             Editor::Get()->Reset();
 
+            std::vector<std::array<const std::string, 3>> loaded_assets;
+
             const std::string asset_types[] = { "images", "audio", "data", "fonts" };
 
-            const auto loadAsset = [](const std::filesystem::directory_entry& entry, const std::string& type) -> void 
+            //load the asset into memory
+
+            const auto loadAsset = [&](const std::filesystem::directory_entry& entry, const std::string& type) -> void 
             {
                 const std::string asset = entry.path().filename().string(),
                                   folder = AssetManager::GetFolder(asset);
@@ -372,24 +376,14 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
                                 
                 std::replace(dir.begin(), dir.end(), '\\', '/');
                 System::Resources::Manager::LoadFile(asset, dir);
-                System::Resources::Manager::RegisterTextures();
 
-                AssetManager::LoadAsset(asset);
+                std::array<const std::string, 3> asset_info {{ type, asset, texture }};
+                
+                loaded_assets.push_back(asset_info);
 
-                unsigned int id = Graphics::Texture2D::Get(texture).ID;
-
-                if (type == "images")
-                    AssetManager::Get()->images.push_back({ asset, id });
-
-                else if (type == "audio")
-                    AssetManager::Get()->audio.push_back({ asset, id });
-
-                else if (type == "data")
-                    AssetManager::Get()->data.push_back({ asset, id });
-
-                else if (type == "fonts")
-                    AssetManager::Get()->text.push_back({ asset, id });
             };
+
+            //loop over asset dirs
 
             for (const std::string& type : asset_types) 
             {
@@ -410,6 +404,35 @@ bool EventListener::OpenProject() //makes temporary json file to parse data from
                             loadAsset(entry, type);
                     }
             }
+
+            //register the textures
+
+            System::Resources::Manager::RegisterTextures();
+
+            //load thumbnails
+
+            for (const auto& loaded : loaded_assets) 
+            {
+                const std::string type = loaded[0],
+                                  asset = loaded[1],
+                                  texture = loaded[2];
+                                  
+                AssetManager::LoadAsset(asset);
+
+                const unsigned int id = Graphics::Texture2D::Get(texture).ID;
+
+                if (type == "images")
+                    AssetManager::Get()->images.push_back({ asset, id });
+
+                else if (type == "audio")
+                    AssetManager::Get()->audio.push_back({ asset, id });
+
+                else if (type == "data")
+                    AssetManager::Get()->data.push_back({ asset, id });
+
+                else if (type == "fonts")
+                    AssetManager::Get()->text.push_back({ asset, id });
+            } 
 
             //load entity nodes
 
@@ -1376,7 +1399,7 @@ void EventListener::BuildAndRun()
 
                     //physics bodies
 
-                    if (sn->HasComponent(Component::PHYSICS))
+                    if (sn->HasComponent(Component::PHYSICS)) 
                     {
                         for (int i = 0; i < sn->bodies.size(); i++) 
                             command_queue << "   sprite_" + node->ID + "->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, " + std::to_string(sn->positionX + sn->bodyX[i]) + ", " + std::to_string(sn->positionY + sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + " } });\n"; 
@@ -1427,7 +1450,7 @@ void EventListener::BuildAndRun()
                         //TODO: set shape
 
                         if (en->currentShape == "rectangle") {
-                            command_queue << "   auto empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->m_debugGraphic->width) + ", " + std::to_string(en->m_debugGraphic->height) + ");\n";
+                            command_queue << "   auto empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->rectWidth) + ", " + std::to_string(en->rectHeight) + ");\n";
                             command_queue << "   empty_" + node->ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
                         }
 

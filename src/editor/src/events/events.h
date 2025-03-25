@@ -19,10 +19,10 @@ namespace editor {
             EventListener();
             ~EventListener() = default;
 
-            bool NewScene(const char* root_path = "C:\\");
-            bool NewProject(const char* root_path = "C:\\");
-            bool SaveScene(bool saveAs = false);
-            bool OpenProject();
+            const bool NewScene(const char* root_path = "C:\\");
+            const bool NewProject(const char* root_path = "C:\\");
+            const bool SaveScene(bool saveAs = false);
+            const bool OpenProject();
             
             void BuildAndRun();
             void OpenFile();

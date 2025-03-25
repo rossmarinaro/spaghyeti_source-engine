@@ -5,7 +5,7 @@ OBJS = \
 	$(wildcard src/**/*.cpp) \
 	$(wildcard src/**/**/*.cpp) \
 	$(wildcard src/**/**/**/*.cpp) \
-	$(wildcard ../window/*.cpp) \
+	$(wildcard ../shared/*.cpp) \
 	$(wildcard ../vendors/**/*.cpp) \
 	../../build/spaghyeditor.dll
 

@@ -13,7 +13,7 @@ namespace System {
 
     #define	RAND_LIMIT 32767
 
-    //debug only logging
+    //debug only logging 
 
     #ifndef LOG
 

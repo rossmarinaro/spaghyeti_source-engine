@@ -1,14 +1,16 @@
 #if DEVELOPMENT == 1
+
 #pragma once
 
-#include "./entity.h"
+
+#include "../../build/sdk/include/shader.h"
 
 
 class DebugGraphic {
 
     public:
 
-        virtual void Create() = 0;
+        virtual void Create() = 0; 
         virtual void Flush() = 0;
 
         static void Destroy(auto *shape);

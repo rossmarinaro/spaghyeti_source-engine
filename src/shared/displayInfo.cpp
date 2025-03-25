@@ -1,8 +1,8 @@
 #if DEVELOPMENT == 1
 
-#include "../../../build/sdk/include/window.h"
-#include "../../../build/sdk/include/context.h"
-#include "../../../build/sdk/include/displayInfo.h"
+#include "../../build/sdk/include/window.h"
+#include "../../build/sdk/include/context.h"
+#include "./displayInfo.h"
 
 DisplayInfo::DisplayInfo()
 {
