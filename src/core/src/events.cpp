@@ -52,7 +52,7 @@ EventPool::EventPool(size_t thread_count)
 
 //------------------------------------
 
-EventPool::~EventPool() 
+EventPool::~EventPool()  
 {
     { 
         // Lock the queue to update the stop flag safely 

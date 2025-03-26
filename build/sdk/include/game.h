@@ -1,7 +1,5 @@
 #pragma once
 
-#include <set> 
-
 #include "./particles.h"
 #include "./tilemap.h"
 #include "./entity.h"
@@ -29,7 +27,7 @@ namespace System {
             std::vector<Scene*> scenes;
 
             Game();
-            virtual ~Game() = default;
+            virtual ~Game() = default; 
 
             template <typename T>
             inline void LoadScene() {
@@ -75,7 +73,7 @@ namespace System {
             }
 
             //map manager
-
+ 
             static inline MapManager* maps;
             
         private:

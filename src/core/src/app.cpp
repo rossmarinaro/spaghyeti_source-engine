@@ -21,7 +21,7 @@ void System::Application::Init(Game* layer)
         game = layer;
     #endif
 
-    Shader::InitBaseShaders();
+    //Shader::InitBaseShaders();
  
     //run game layer
      

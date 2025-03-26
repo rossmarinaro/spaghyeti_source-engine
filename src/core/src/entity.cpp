@@ -169,7 +169,7 @@ void Geometry::Render(float projWidth, float projHeight)
         model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
         model = glm::translate(model, { -0.5f * width - position.x, -0.5f * height - position.y, 0.0f });
 
-        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+        const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
         
         const glm::mat4 proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f), 
                         view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y, 0.0f)),
@@ -641,7 +641,6 @@ void Sprite::Render(float projWidth, float projHeight)
 
                 if (m_isSpritesheet && active)
                 {
-                 
                     const auto anim = anims.find(animKey.c_str());
 
                     if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1))) 
@@ -732,13 +731,13 @@ const bool Sprite::CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const st
 {
     //x axis
 
-    bool collisionX = spriteA->position.x + spriteA->texture.FrameWidth / 2 >= spriteB->position.x &&
-                      spriteB->position.x + spriteB->texture.FrameWidth / 2 >= spriteA->position.x;
+    const bool collisionX = spriteA->position.x + spriteA->texture.FrameWidth / 2 >= spriteB->position.x &&
+                    spriteB->position.x + spriteB->texture.FrameWidth / 2 >= spriteA->position.x,
 
     //y axis
 
-    bool collisionY = spriteA->position.y + spriteA->texture.FrameHeight / 2 >= spriteB->position.y &&
-                      spriteB->position.y + spriteB->texture.FrameHeight / 2 >= spriteA->position.y;
+        collisionY = spriteA->position.y + spriteA->texture.FrameHeight / 2 >= spriteB->position.y &&
+                    spriteB->position.y + spriteB->texture.FrameHeight / 2 >= spriteA->position.y;
 
     return collisionX && collisionY;
 

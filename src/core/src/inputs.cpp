@@ -160,19 +160,18 @@ void Inputs::ProcessInput()
     if (Game::GetScene()->virtual_buttons.size())
         for (int i = 0; i < Game::GetScene()->virtual_buttons.size(); i++)
         {
-
             auto button = Game::GetScene()->virtual_buttons[i];
 
             if (!button.second->active)
                 continue; 
 
             if (button.second->type == Entity::UI || button.second->type == Entity::SPRITE) {
-                auto sprite = std::static_pointer_cast<Sprite>(button.second); 
+                const auto sprite = std::static_pointer_cast<Sprite>(button.second); 
                 isOverlapping = do_check(sprite->position.x, sprite->position.y, sprite->texture.FrameWidth, sprite->texture.FrameHeight);  
             }
 
             if (button.second->type == Entity::TEXT) {
-                auto text = std::static_pointer_cast<Text>(button.second);
+                const auto text = std::static_pointer_cast<Text>(button.second);
                 isOverlapping = do_check(text->position.x + text->GetTextDimensions().x, text->position.y + text->GetTextDimensions().y, text->GetTextDimensions().x, text->GetTextDimensions().y);
             }
 

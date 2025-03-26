@@ -21,16 +21,15 @@
 #define DEVICE_SAMPLE_RATE  48000
 
 
-ma_device sound_device;
-ma_device music_device;
+static ma_device _sound_device;
+static ma_device _music_device;
 
-ma_decoder music_decoder; 
-ma_decoder sound_decoder;
-
-//-----------------------------------------
+static ma_decoder _music_decoder; 
+static ma_decoder _sound_decoder;
 
 
-void read_frames(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
+#include "../../../build/sdk/include/app.h"
+static void _ReadFrames(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
 
     ma_decoder* pDecoder = (ma_decoder*)pDevice->pUserData; 
@@ -54,7 +53,7 @@ void read_frames(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint3
 //---------------------------------------------
 
 
-void process_audio(const char* key, bool loop, float volume)
+static void _ProcessAudio(const char* key, bool loop, float volume)
 {
 
     std::string filetype = "none";
@@ -66,14 +65,14 @@ void process_audio(const char* key, bool loop, float volume)
     
     if (filepath != "not found")  {
         filetype = "filepath";
-        result = ma_decoder_init_file(filepath.c_str(), NULL, loop ? &music_decoder : &sound_decoder);
+        result = ma_decoder_init_file(filepath.c_str(), NULL, loop ? &_music_decoder : &_sound_decoder);
     }
 
     else {
         filetype = "binary";
         const auto data = System::Resources::Manager::GetResource(key);
         if (data.byte_length)
-            result = ma_decoder_init_memory(data.array_buffer, data.byte_length, NULL, loop ? &music_decoder : &sound_decoder);
+            result = ma_decoder_init_memory(data.array_buffer, data.byte_length, NULL, loop ? &_music_decoder : &_sound_decoder);
     }
 
     if (result != MA_SUCCESS) {
@@ -87,38 +86,39 @@ void process_audio(const char* key, bool loop, float volume)
 
     if (loop) {
         System::Audio::musicPlaying = true;
-        ma_data_source_set_looping(loop ? &music_decoder : &sound_decoder, MA_TRUE);    
+        ma_data_source_set_looping(loop ? &_music_decoder : &_sound_decoder, MA_TRUE);    
     } 
 
-    if (ma_device_get_state(loop ? &music_device : &sound_device) == ma_device_state_started) 
+    if (ma_device_get_state(loop ? &_music_device : &_sound_device) == ma_device_state_started) 
         return;
 
     //volume
-        System::Audio::setVolume(volume);
+    
+    System::Audio::setVolume(volume);
 
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
 
-    deviceConfig.playback.format   = loop ? music_decoder.outputFormat : sound_decoder.outputFormat;      
-    deviceConfig.playback.channels = loop ? music_decoder.outputChannels : sound_decoder.outputChannels;     
-    deviceConfig.sampleRate        = loop ? music_decoder.outputSampleRate : sound_decoder.outputSampleRate;     
-    deviceConfig.dataCallback      = read_frames;
-    deviceConfig.pUserData         = loop ? &music_decoder : &sound_decoder;
+    deviceConfig.playback.format   = loop ? _music_decoder.outputFormat : _sound_decoder.outputFormat;      
+    deviceConfig.playback.channels = loop ? _music_decoder.outputChannels : _sound_decoder.outputChannels;     
+    deviceConfig.sampleRate        = loop ? _music_decoder.outputSampleRate : _sound_decoder.outputSampleRate;     
+    deviceConfig.dataCallback      = _ReadFrames;
+    deviceConfig.pUserData         = loop ? &_music_decoder : &_sound_decoder;
 
-    if (ma_device_init(NULL, &deviceConfig, loop ? &music_device : &sound_device) != MA_SUCCESS) {
+    if (ma_device_init(NULL, &deviceConfig, loop ? &_music_device : &_sound_device) != MA_SUCCESS) {
 
         #if DEVELOPMENT == 1 && STANDALONE == 1
             LOG("Audio: failed to open playback device.");
         #endif
-        ma_decoder_uninit(loop ? &music_decoder : &sound_decoder);
+        ma_decoder_uninit(loop ? &_music_decoder : &_sound_decoder);
         return;
     }
 
-    if (ma_device_start(loop ? &music_device : &sound_device) != MA_SUCCESS) {
+    if (ma_device_start(loop ? &_music_device : &_sound_device) != MA_SUCCESS) {
         #if DEVELOPMENT == 1 && STANDALONE == 1
             LOG("Audio: failed to start playback device.");
         #endif
-        ma_device_uninit(loop ? &music_device : &sound_device);
-        ma_decoder_uninit(loop ? &music_decoder : &sound_decoder);
+        ma_device_uninit(loop ? &_music_device : &_sound_device);
+        ma_decoder_uninit(loop ? &_music_decoder : &_sound_decoder);
         return;
     }
 
@@ -126,8 +126,8 @@ void process_audio(const char* key, bool loop, float volume)
 
         getchar();
 
-        ma_device_uninit(loop ? &music_device : &sound_device);
-        ma_decoder_uninit(loop ? &music_decoder : &sound_decoder);
+        ma_device_uninit(loop ? &_music_device : &_sound_device);
+        ma_decoder_uninit(loop ? &_music_decoder : &_sound_decoder);
 
     #endif
 
@@ -139,9 +139,9 @@ void process_audio(const char* key, bool loop, float volume)
 
 void System::Audio::play(const char* key, bool loop, float volume) {    
     #ifdef __EMSCRIPTEN__
-        process_audio(key, loop, volume);
+        _ProcessAudio(key, loop, volume);
     #else   
-       std::thread(&process_audio, key, loop, volume).detach(); 
+       /* System::Application::eventPool->Enqueue([=] { _ProcessAudio(key, loop, volume); }); */  std::thread(&_ProcessAudio, key, loop, volume).detach(); 
     #endif
 }
 
@@ -151,11 +151,11 @@ void System::Audio::play(const char* key, bool loop, float volume) {
 
 
 void System::Audio::stop() {
-    if (ma_device_get_state(&music_device) == ma_device_state_started) 
-        ma_data_source_set_looping(&music_decoder, MA_FALSE);
+    if (ma_device_get_state(&_music_device) == ma_device_state_started) 
+        ma_data_source_set_looping(&_music_decoder, MA_FALSE);
 
-    if (ma_device_get_state(&sound_device) == ma_device_state_started) 
-        ma_data_source_set_looping(&sound_decoder, MA_FALSE);
+    if (ma_device_get_state(&_sound_device) == ma_device_state_started) 
+        ma_data_source_set_looping(&_sound_decoder, MA_FALSE);
 
     #if DEVELOPMENT == 1 && STANDALONE == 1
         LOG("Audio: audio stopped.");
@@ -169,9 +169,9 @@ void System::Audio::stop() {
 
 
 void System::Audio::setVolume(float volume) {
-    if (ma_device_get_state(&music_device) == ma_device_state_started)
-        ma_device_set_master_volume(&music_device, volume);
+    if (ma_device_get_state(&_music_device) == ma_device_state_started)
+        ma_device_set_master_volume(&_music_device, volume);
 
-    if (ma_device_get_state(&sound_device) == ma_device_state_started)
-        ma_device_set_master_volume(&sound_device, volume);
+    if (ma_device_get_state(&_sound_device) == ma_device_state_started)
+        ma_device_set_master_volume(&_sound_device, volume);
 }

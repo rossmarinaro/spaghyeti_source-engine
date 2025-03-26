@@ -34,7 +34,7 @@ void Text::Init()
 
     GLT_text_buffer = gltCreateText();
 
-    LOG("Text: initialized.");  
+    LOG("Text: GLText initialized. (embedded)");  
 }
 
 //--------------------------

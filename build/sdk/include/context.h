@@ -14,6 +14,5 @@ namespace Process {
         Camera* camera;
         Physics* physics;
         Time* time;
-
     };
 }

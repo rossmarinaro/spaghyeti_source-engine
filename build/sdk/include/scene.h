@@ -37,7 +37,7 @@ namespace System {
             void SetWorldDimensions(float width, float height);
 
             //check if cursor is hovering entity
-            const bool ListenForInteraction(std::shared_ptr<Entity> entity);
+            const bool ListenForInteraction(std::shared_ptr<Entity> entity); 
 
             template <typename T>
             const inline std::shared_ptr<T> GetEntity(const std::string& name) 

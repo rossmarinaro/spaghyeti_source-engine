@@ -19,8 +19,8 @@ class Physics {
 
             Body(int pointer, bool isSensor, float density = 0.0f, float friction = 0.0f, float restitution = 0.0f);
 
-            const Math::Vector2& GetPosition();
-            const Math::Vector2& GetLinearVelocity();
+            const Math::Vector2 GetPosition();
+            const Math::Vector2 GetLinearVelocity();
             
             void SetTransform(float x, float y, float angle = 0.0f);
             void SetLinearVelocity(float velocityX, float velocityY);
@@ -58,7 +58,7 @@ class Physics {
             float height,
             bool isSensor = true,
             int pointer = 0, 
-            float density = 0.0f, 
+            float density = 0.0f,  
             float friction = 0.0f, 
             float restitution = 0.0f
         );
