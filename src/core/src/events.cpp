@@ -1,12 +1,25 @@
-#if DEVELOPMENT == 1 && STANDALONE == 1
-    #include "../../../build/sdk/include/utils.h"
-#endif
-
+#include "../../../build/sdk/include/utils.h"
 #include "../../../build/sdk/include/events.h"
+
+
+Events::Events():
+    isMobile(false), 
+    isMultiThreaded(false) {
+        LOG("Events: initialized.");
+}
+
+//----------------------------
+
+Events::~Events() {
+    LOG("Events: shut down.");
+}
+
+
+//----------------------------
   
 //Constructor to creates a thread pool with given number of threads
 
-EventPool::EventPool(size_t thread_count)
+Events::EventPool::EventPool(size_t thread_count)
 {
     // Creating worker threads 
     for (size_t i = 0; i < thread_count; ++i) 
@@ -44,15 +57,13 @@ EventPool::EventPool(size_t thread_count)
         }); 
     } 
 
-    #if DEVELOPMENT == 1 && STANDALONE == 1
-        LOG("Events: thread pool started.");
-    #endif
+    LOG("Events: thread pool started.");
 
 }
 
 //------------------------------------
 
-EventPool::~EventPool()  
+Events::EventPool::~EventPool()  
 {
     { 
         // Lock the queue to update the stop flag safely 
@@ -80,7 +91,7 @@ EventPool::~EventPool()
 //------------------------------------
   
 // Enqueue task for execution by the thread pool 
-void EventPool::Enqueue(std::function<void()> task) 
+void Events::EventPool::Enqueue(std::function<void()> task) 
 { 
     { 
         std::unique_lock<std::mutex> lock(m_queue_mutex); 

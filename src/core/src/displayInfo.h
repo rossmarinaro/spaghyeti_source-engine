@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../../build/sdk/include/entity.h"
+#include "../../../build/sdk/include/entity.h"
 
 class DisplayInfo {
 

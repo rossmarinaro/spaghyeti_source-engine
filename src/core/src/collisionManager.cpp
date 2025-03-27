@@ -1,8 +1,8 @@
 
-#include "../../build/sdk/include/game.h"
-#include "../../build/sdk/include/entity.h"
+#include "../../../build/sdk/include/game.h"
+#include "../../../build/sdk/include/entity.h"
 
-#include "../vendors/box2d/include/box2d/box2d.h"
+#include "../../vendors/box2d/include/box2d/box2d.h"
 
 #include "./collisionManager.h"
 

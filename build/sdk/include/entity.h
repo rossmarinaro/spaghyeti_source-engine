@@ -197,7 +197,7 @@ class Sprite : public Entity {
 
 		std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> bodies;  
 
-		inline const int GetBodyDataType() const { 
+		inline const int GetBodyDataType() { 
 			for (const auto& body : bodies)
 				return body.first->pointer; 
 			return 0;
@@ -226,7 +226,7 @@ class Sprite : public Entity {
 		void SetImpulseY(float y);
 		void Render(float projWidth, float projHeight);
 
-        const std::shared_ptr<Sprite> Clone();
+        std::shared_ptr<Sprite> Clone();
         const bool CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB);
 
         Sprite(const std::string& key, float x = 0.0f, float y = 0.0f, int frame = 0, bool isTile = false);

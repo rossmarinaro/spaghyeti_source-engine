@@ -1,12 +1,12 @@
 #if DEVELOPMENT == 1
 
-#include "../../build/sdk/include/app.h"
-#include "../../build/sdk/include/window.h"
+#include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/window.h"
 
-#include "../vendors/glm/gtc/matrix_transform.hpp" 
-#include "../vendors/box2d/include/box2d/box2d.h"
+#include "../../vendors/glm/gtc/matrix_transform.hpp" 
+#include "../../vendors/box2d/include/box2d/box2d.h"
 
-#include "./renderer.h"
+#include "../../shared/renderer.h"
 #include "./debug.h"
 
 

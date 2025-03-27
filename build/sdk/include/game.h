@@ -56,15 +56,15 @@ namespace System {
             static Scene* GetScene(const std::string& key = "");
             
             template <typename T>
-            static inline void CreateBehavior(std::shared_ptr<Entity> entity, Scene* scene) {
-                auto behavior = std::make_shared<T>(entity);
+            static inline void CreateBehavior(const std::shared_ptr<Entity> entity, Scene* scene) {
+                const auto behavior = std::make_shared<T>(entity);
                 scene->behaviors.push_back(behavior); 
             }
 
             template <typename T>
             static inline const std::shared_ptr<T> GetBehavior() { 
                 auto it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), 
-                    [&](auto behavior) { return behavior->key == typeid(T).name(); });
+                    [&](const auto behavior) { return behavior->key == typeid(T).name(); });
 
                 if (it != GetScene()->behaviors.end())
                     return std::dynamic_pointer_cast<T>(*it);

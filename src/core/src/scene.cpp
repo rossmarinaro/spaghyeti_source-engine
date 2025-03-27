@@ -14,6 +14,7 @@ System::Scene::Scene(const Process::Context& context, const std::string& key):
 
 void System::Scene::Init(const std::string& key) {
     s_ID++;
+    m_paused = false;
     m_worldWidth = 0; 
     m_worldHeight = 0;
     this->key = key;

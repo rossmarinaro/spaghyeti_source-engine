@@ -2,19 +2,19 @@
 #include "../../../build/sdk/include/window.h"
 
 #include "../../shared/renderer.h"
-#include "../../shared/collisionManager.h"
+#include "./collisionManager.h"
 
 #if DEVELOPMENT == 1 
 
     #if STANDALONE == 1
-        #include "../../shared/displayInfo.h"
+        #include "./displayInfo.h"
         static DisplayInfo* _displayInfo;
     #endif
     
-    #include "../../shared/debug.h"
+    #include "./debug.h"
 
     static DebugDraw* _debug;
-    unsigned int _debug_flags = 0;
+    static unsigned int _debug_flags = 0;
 
 #endif
 
@@ -32,9 +32,9 @@ void Game::Flush(bool removeBehaviors)
 
     inputs->ResetControls();
 
-    if (Application::isMultiThreaded && Application::eventPool)  {
-        delete Application::eventPool;
-        Application::eventPool = nullptr;
+    if (Application::events->isMultiThreaded && Application::events->pool)  {
+        delete Application::events->pool;
+        Application::events->pool = nullptr;
     }
 
     if (removeBehaviors)
@@ -55,7 +55,7 @@ Scene* Game::GetScene(const std::string& key)
     if (!key.length())
         return Application::game->currentScene;
 
-    auto it = std::find_if(Application::game->scenes.begin(), Application::game->scenes.end(), [&](auto scene) { return scene->key == key; });
+    const auto it = std::find_if(Application::game->scenes.begin(), Application::game->scenes.end(), [&](auto scene) { return scene->key == key; });
 
     if (it == Application::game->scenes.end())
         return *it;
@@ -91,6 +91,10 @@ Game::Game()
 
 void Game::Boot()
 {
+    if (!&m_context) {
+        LOG("Game: Error - there was a problem initializing context.");
+        return;
+    }
 
     currentScene = nullptr;
 
@@ -144,18 +148,18 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
     //find loaded scene
 
-    auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](Scene* scene) { return scene->key == key; });
+    const auto it = std::find_if(game->scenes.begin(), game->scenes.end(), [&](Scene* scene) { return scene->key == key; });
 
     if (it != game->scenes.end())
     {
-
         #if STANDALONE == 1
 
             //refresh physics
 
             if (game->physics) 
             {
-                game->physics->ClearBodies();
+                if (game->currentScene)
+                    game->physics->ClearBodies();
 
                 const auto& world = static_cast<b2World*>(game->physics->GetWorld());
 
@@ -181,10 +185,11 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
         game->currentScene = *it;
 
-        if (Application::isMultiThreaded)
-            Application::eventPool = new EventPool(THREAD_COUNT);
+        if (Application::events->isMultiThreaded)
+            Application::events->pool = new Events::EventPool(THREAD_COUNT);
 
         if (std::find(cachedScenes.begin(), cachedScenes.end(), game->currentScene->key) == cachedScenes.end()) {
+            LOG("Scene: " + key + " loading.");
             game->currentScene->Preload();
             cachedScenes.emplace_back(game->currentScene->key);
         }
@@ -338,8 +343,7 @@ void Game::UpdateFrame()
     //update behaviors, pass game process context to subclasses
 
     for (const auto& behavior : currentScene->behaviors)
-        if (behavior.get() && behavior->active)
-        {
+        if (behavior.get() && behavior->active) {
             if ((!currentScene->IsPaused() && behavior->layer == 0))
                 behavior->Update();
 
@@ -428,7 +432,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
     if (entity->IsSprite())
     {
-        auto sprite = std::static_pointer_cast<Sprite>(entity);
+        const auto sprite = std::static_pointer_cast<Sprite>(entity);
 
         if (sprite->bodies.size())
         {

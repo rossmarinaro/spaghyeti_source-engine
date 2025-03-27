@@ -20,8 +20,6 @@ void System::Application::Init(Game* layer)
     #if STANDALONE == 0
         game = layer;
     #endif
-
-    //Shader::InitBaseShaders();
  
     //run game layer
      
@@ -51,7 +49,7 @@ void System::Application::Update(void* layer)
     if (layer == nullptr)
         return; 
 
-    Game* game = static_cast<Game*>(layer); 
+    const auto game = static_cast<Game*>(layer); 
 
     Renderer::Update(game->camera);
  
@@ -65,23 +63,25 @@ void System::Application::Update(void* layer)
 
 }
 
-
+ 
 
 //-----------------------------
 
 
-void System::Application::Start(Game* layer, const std::string& key)
+
+void System::Application::Start(Game* layer, const std::string& key, bool isMultithreaded, bool isMobileSupported)
 { 
     name = key;
 
-    #if DEVELOPMENT == 1
-        remove("log.txt");
-        LOG("PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌");  
-    #endif
+    remove("log.txt");
 
-    //set global time object  
+    LOG("PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌");  
 
     resources = new Resources::Manager;
+    events = new Events;
+
+    events->isMultiThreaded = isMultithreaded;
+    events->isMobile = isMobileSupported;
 
     #if STANDALONE == 1
 
@@ -131,6 +131,9 @@ void System::Application::ShutDown()
 
     delete resources;
     resources = nullptr;
+
+    delete events;
+    events = nullptr;
 
     #if DEVELOPMENT == 1
         LOG("Application terminated successfully. 👌");

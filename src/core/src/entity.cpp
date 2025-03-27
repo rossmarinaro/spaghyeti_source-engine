@@ -217,7 +217,7 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
         return;
     }
 
-    LOG("Sprite: \"" + key + "\" Created. (generic)");
+    LOG("Sprite: \"" + key + "\" created. (generic)");
 }
 
 
@@ -236,7 +236,7 @@ Sprite::Sprite(const Sprite& sprite):
     texture = Graphics::Texture2D::Get(sprite.key);
     shader = Shader::Get("sprite");     
 
-    LOG("Sprite: \"" + key + "\" Cloned."); 
+    LOG("Sprite: \"" + key + "\" cloned."); 
 
 }
 
@@ -261,7 +261,7 @@ Sprite::Sprite(const std::string& key, const Math::Vector2& position):
 
 Sprite::~Sprite() {
     if (type != TILE) 
-        LOG("Sprite: \"" + key + "\" Destroyed."); 
+        LOG("Sprite: \"" + key + "\" destroyed."); 
 }
 
 
@@ -269,7 +269,7 @@ Sprite::~Sprite() {
 //-------------------------------------------
 
 
-const std::shared_ptr<Sprite> Sprite::Clone() 
+std::shared_ptr<Sprite> Sprite::Clone() 
 {
     const auto clone = std::make_shared<Sprite>(*this);
 
@@ -557,7 +557,7 @@ void Sprite::Render(float projWidth, float projHeight)
     }
 
     //sprite model transformations
-
+ 
     const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
     const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y));
     

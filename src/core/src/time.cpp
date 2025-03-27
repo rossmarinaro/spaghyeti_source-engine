@@ -47,26 +47,26 @@ void Time::DelayedCall(int milliseconds, std::function<void()>&& fn_ptr, int rep
 void Time::DelayedCallThread(int milliseconds, std::function<void()>&& fn_ptr, int repeat)
 {
 
-    if (System::Application::isMultiThreaded)
-        System::Application::eventPool->Enqueue([=] { 
+    if (System::Application::events->isMultiThreaded)
+        System::Application::events->pool->Enqueue([=] { 
 
             int times = repeat;
 
             if (times == 0) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 
-                if (System::Application::eventPool->active.load())
+                if (System::Application::events->pool->active.load())
                     fn_ptr();
             }
 
             else {
 
-                while(System::Application::eventPool->active.load() && times != 0) 
+                while(System::Application::events->pool->active.load() && times != 0) 
                 { 
-                    if (System::Application::eventPool->active.load())
+                    if (System::Application::events->pool->active.load())
                         std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 
-                    if (System::Application::eventPool->active.load()) {
+                    if (System::Application::events->pool->active.load()) {
 
                         fn_ptr(); 
                         

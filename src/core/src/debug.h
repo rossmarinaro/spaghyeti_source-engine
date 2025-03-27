@@ -2,9 +2,7 @@
 
 #pragma once
 
-
-#include "../../build/sdk/include/shader.h"
-
+#include "../../../build/sdk/include/shader.h"
 
 class DebugGraphic {
 

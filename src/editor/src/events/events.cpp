@@ -1627,6 +1627,8 @@ void EventListener::BuildAndRun()
 
     //game template
 
+    const std::string isMultiThreaded = Editor::Get()->isMultiThreaded ? "true" : "false";
+
     game_src << "\n\n//-----------------------------------------------------------------------------\n\n";
     game_src << "\n#ifdef __EMSCRIPTEN__\n";
     game_src <<	"   EM_JS(float, getScreenWidth, (), { return window.screen.width; });\n";
@@ -1648,15 +1650,17 @@ void EventListener::BuildAndRun()
     game_src <<	"       ShowWindow(GetConsoleWindow(), SW_HIDE);\n";
     game_src <<	"       SetUnhandledExceptionFilter(UnhandledExceptionFilter);\n";
     game_src <<	"   #endif\n";
+    game_src <<	"       bool isMobile = false;\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
-    game_src <<	"       System::Application::isMobile = checkMobile();\n";
+    game_src <<	"       isMobile = checkMobile();\n";
     game_src <<	"       fetchData();\n";
-    game_src <<	"   #elif _ISMOBILE == 1\n";
-    game_src <<	"       System::Application::isMobile = true;\n";
     game_src <<	"   #endif\n";
-    game_src <<	"       System::Application::isMultiThreaded = " << Editor::Get()->isMultiThreaded << ";\n";
-    game_src <<	"       System::Game game;\n";
+    game_src <<	"   #if _ISMOBILE == 1\n";
+    game_src <<	"       isMobile = true;\n";
+    game_src <<	"   #endif\n";
 
+    game_src <<	"       System::Game game;\n";
+ 
     for (const auto& scene : Editor::Get()->scenes) 
     {
         std::string className = scene;
@@ -1668,7 +1672,7 @@ void EventListener::BuildAndRun()
         game_src << "       game.LoadScene<" + className + ">();\n";
     }
     
-    game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\" );\n";
+    game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\", " + isMultiThreaded + ", isMobile);\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       emscripten_exit_with_live_runtime();\n";
     game_src <<	"   #endif\n";

@@ -104,7 +104,7 @@ Inputs::Inputs():
 
     #ifdef __EMSCRIPTEN__
 
-       if (Application::isMobile) {
+       if (Application::events->isMobile) {
             emscripten_set_touchstart_callback("canvas", 0, 1, web_touch_callback);
             emscripten_set_touchend_callback("canvas", 0, 1, web_touch_callback);
             emscripten_set_touchmove_callback("canvas", 0, 1, web_touch_callback);
@@ -144,7 +144,7 @@ void Inputs::ProcessInput()
     if (1 == present)
         SetGamepadInputs(GLFW_JOYSTICK_1);
 
-    if (Application::isMobile && cursorReset)
+    if (Application::events->isMobile)
         Renderer::cursor_callback(Renderer::GLFW_window_instance, 0.0f, 0.0f);
 
     bool isOverlapping = false;
@@ -329,7 +329,7 @@ void Inputs::ShutDown()
 
     ResetControls();
 
-    if (Application::isMobile) {
+    if (Application::events->isMobile) {
         m_initVirtualControls = false;
         Game::GetScene()->virtual_buttons.clear();
     }

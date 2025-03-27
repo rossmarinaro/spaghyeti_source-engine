@@ -160,8 +160,10 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
             
             std::array<stbtt_packedchar, charsToIncludeInFontAtlas> pChars;
             std::array<stbtt_aligned_quad, charsToIncludeInFontAtlas> aQuads;  
+
             std::copy(std::begin(packedChars), std::end(packedChars), std::begin(pChars)); 
             std::copy(std::begin(alignedQuads), std::end(alignedQuads), std::begin(aQuads)); 
+            
             _packedChars.insert({ font, pChars });
             _alignedQuads.insert({ font, aQuads });
 
@@ -257,21 +259,21 @@ void* Text::GetGLTPointer()
 
 void Text::Render(float projWidth, float projHeight)
 {
-    if (textType == DEFAULT) 
+    if (textType == DEFAULT && GLT_text_buffer) 
     { 
         glm::mat4 model = glm::mat4(1.0f);
     
         model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
         model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.0f));
 
-        const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
-        const glm::highp_mat4 mp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
+        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+        const glm::highp_mat4& mp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
 
         SetText(content);
         gltBeginDraw();
         gltColor(tint.x, tint.y, tint.z, alpha);
 
-        GLTtext* handle = static_cast<GLTtext*>(GetGLTPointer());
+        auto handle = static_cast<GLTtext*>(GetGLTPointer());
 
         if (handle) 
             gltDrawText(handle, (GLfloat*)&mp);
@@ -287,16 +289,17 @@ void Text::Render(float projWidth, float projHeight)
     {
 
         const float aspectRatio = (projWidth / projHeight); 
-
-        const glm::mat4 projectionMat =  glm::ortho(-aspectRatio, aspectRatio, -1.0f, 1.0f), //System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight),
-                        viewProjectionMat = projectionMat; 
+        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(/* projWidth */-300,300 /* projHeight */);
+        const glm::mat4 projectionMat =  (glm::highp_mat4)glm::ortho(pm.x, pm.y/* , pm.z, pm.w */, -1.0f, 1.0f);//glm::ortho(-aspectRatio, aspectRatio, -1.0f, 1.0f); 
+        const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition().x), (System::Application::game->camera->GetPosition().y));
+        const glm::mat4 viewProjectionMat = projectionMat*glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }); 
 
         m_vertexIndex = 0;
 
         constexpr int order[6] = { 0, 1, 2, 0, 2, 3 };
         const float pixelScale = 2.0f / projHeight;
 
-        Math::Vector2 ndc = System::Window::GetPixelToNDC(position.x, position.y);
+        Math::Vector2 ndc = System::Window::GetPixelToNDC(/* position.x */100,100 /* position.y */);
         glm::vec3 localPosition = { ndc.x, ndc.y, 0.0f };
 
         const auto it_packed_chars = _packedChars.find(font);

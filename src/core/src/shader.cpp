@@ -402,7 +402,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         const char* vs = vertexCode.c_str();
         const char* fs = fragmentCode.c_str();
 
-        LOG("Shader: \"" + key + "\" loading from file.");
+        LOG("Shader: \"" + key + "\" loaded. (filepath)");
 
         if (!shader.Generate(key, vs, fs))
             return;
@@ -412,7 +412,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     //from raw char
     
     else {
-        LOG("Shader: \"" + key + "\" loading from string.");
+        LOG("Shader: \"" + key + "\" loaded. (embedded)");
         if (!shader.Generate(key, vertShader, fragShader))
             return;
     }

@@ -9,7 +9,6 @@
 #include <thread>
 
 #include "../../../build/sdk/include/audio.h"
-#include "../../../build/sdk/include/time.h"
 #include "../../../build/sdk/include/manager.h"
 
 #if DEVELOPMENT == 1 && STANDALONE == 1
@@ -28,7 +27,6 @@ static ma_decoder _music_decoder;
 static ma_decoder _sound_decoder;
 
 
-#include "../../../build/sdk/include/app.h"
 static void _ReadFrames(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
 
@@ -47,7 +45,6 @@ static void _ReadFrames(ma_device* pDevice, void* pOutput, const void* pInput, m
 
     (void)pInput;
 }
-
 
 
 //---------------------------------------------
@@ -93,7 +90,7 @@ static void _ProcessAudio(const char* key, bool loop, float volume)
         return;
 
     //volume
-    
+
     System::Audio::setVolume(volume);
 
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
@@ -141,7 +138,7 @@ void System::Audio::play(const char* key, bool loop, float volume) {
     #ifdef __EMSCRIPTEN__
         _ProcessAudio(key, loop, volume);
     #else   
-       /* System::Application::eventPool->Enqueue([=] { _ProcessAudio(key, loop, volume); }); */  std::thread(&_ProcessAudio, key, loop, volume).detach(); 
+       std::thread(&_ProcessAudio, key, loop, volume).detach(); 
     #endif
 }
 
