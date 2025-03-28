@@ -131,7 +131,7 @@ Geometry::Geometry(float x, float y, float width, float height):
     
     tint = { 0.0f, 0.0f, 1.0f };
     texture = Graphics::Texture2D::Get("base");
-    shader = Shader::Get("graphics");
+    shader = Graphics::Shader::Get("graphics");
     renderable = true;
     isStatic = false;
 
@@ -154,7 +154,7 @@ Geometry::~Geometry() {
 //------------------------------------- 
  
 
-void Geometry::Render(float projWidth, float projHeight)
+void Geometry::Render()
 {
 
     glm::mat4 model = glm::mat4(1.0f); 
@@ -169,7 +169,7 @@ void Geometry::Render(float projWidth, float projHeight)
         model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
         model = glm::translate(model, { -0.5f * width - position.x, -0.5f * height - position.y, 0.0f });
 
-        const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+        const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
         
         const glm::mat4 proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f), 
                         view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y, 0.0f)),
@@ -209,11 +209,11 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
 
     anims = System::Resources::Manager::GetAnimations(key);
     texture = Graphics::Texture2D::Get(key);
-    shader = Shader::Get("sprite");          
+    shader = Graphics::Shader::Get("sprite");          
     
     if (isTile) {
         type = TILE; 
-        //shader = Shader::Get("batch");
+        //shader = Graphics::Shader::Get("batch");
         return;
     }
 
@@ -234,7 +234,7 @@ Sprite::Sprite(const Sprite& sprite):
 
     anims = System::Resources::Manager::GetAnimations(sprite.key);
     texture = Graphics::Texture2D::Get(sprite.key);
-    shader = Shader::Get("sprite");     
+    shader = Graphics::Shader::Get("sprite");     
 
     LOG("Sprite: \"" + key + "\" cloned."); 
 
@@ -249,7 +249,7 @@ Sprite::Sprite(const std::string& key, const Math::Vector2& position):
 {
     this->key = key; 
     texture = Graphics::Texture2D::Get(key);
-    shader = Shader::Get("sprite");  
+    shader = Graphics::Shader::Get("sprite");  
     
     LOG("Sprite: \"" + key + "\" created. (UI)"); 
 }
@@ -513,7 +513,7 @@ void Sprite::StopAnimation() {
 //------------------------------------------ render sprite / update transformations
 
 
-void Sprite::Render(float projWidth, float projHeight)
+void Sprite::Render()
 {  
 
     if (!alive)
@@ -558,7 +558,7 @@ void Sprite::Render(float projWidth, float projHeight)
 
     //sprite model transformations
  
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y));
     
     const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 

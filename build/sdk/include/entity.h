@@ -51,7 +51,7 @@ class Entity {
 		inline void SetFlipY(bool flipY) { this->flipY = flipY; }
         inline void SetScrollFactor(const Math::Vector2& scrollFactor) { this->scrollFactor = scrollFactor; }
 		 
-		virtual void Render(float projWidth, float projHeight) {}
+		virtual void Render() {}
         virtual ~Entity() { s_count--; }
   
 		Entity(int type);
@@ -79,7 +79,7 @@ class Geometry : public Entity {
 
     public:
 
-        Shader shader;
+        Graphics::Shader shader;
         Graphics::Texture2D texture;
 
 		float width, height, radius;
@@ -103,7 +103,7 @@ class Geometry : public Entity {
 
 		~Geometry();
 
-		void Render(float projWidth, float projHeight);
+		void Render() override;
 
 	private:
 
@@ -132,14 +132,15 @@ class Text : public Entity {
         static void ShutDown();
 
         int textType;
+        float point;
 
         std::string content, font; 
        
-        void Render(float projWidth, float projHeight);
+        void Render() override;
 		void SetText(const std::string& content);
         const Math::Vector2 GetTextDimensions();
  
-       Text(const std::string& content, float x, float y, const std::string& font = "", float scale = 1, const Math::Vector3& tint = { 1.0f, 1.0f, 1.0f });
+       Text(const std::string& content, float x, float y, const std::string& font = "", float scale = 1.0f, const Math::Vector3& tint = { 1.0f, 1.0f, 1.0f });
        ~Text();
 
     private:
@@ -181,7 +182,7 @@ class Sprite : public Entity {
 
 	public:  
 
-        Shader shader;
+        Graphics::Shader shader;
         Graphics::Texture2D texture;
 
 		int frames, 
@@ -224,7 +225,7 @@ class Sprite : public Entity {
 		void SetImpulse(float x, float y);
 		void SetImpulseX(float x);
 		void SetImpulseY(float y);
-		void Render(float projWidth, float projHeight);
+		void Render() override;
 
         std::shared_ptr<Sprite> Clone();
         const bool CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB);

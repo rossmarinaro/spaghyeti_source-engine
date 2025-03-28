@@ -28,7 +28,7 @@ namespace System {
 
                 //resource storage
 
-                std::map<const std::string, Shader> shaders;
+                std::map<const std::string, Graphics::Shader> shaders;
                 std::map<const std::string, Graphics::Texture2D> textures;
 
                 Manager() = default;

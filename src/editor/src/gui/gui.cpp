@@ -96,10 +96,10 @@ GUI::GUI()
         "}\n";
 
 
-    Shader::Load("grid", checker_vertex, checker_fragment); 
+    Graphics::Shader::Load("grid", checker_vertex, checker_fragment); 
 
     s_self->grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    s_self->grid->shader = Shader::Get("grid"); 
+    s_self->grid->shader = Graphics::Shader::Get("grid"); 
     s_self->grid_quantity = 20.0f;
 
     //load embedded assets
@@ -180,7 +180,7 @@ void GUI::Render()
 
     if (cursor) {
         cursor->SetPosition(ImGui::GetMousePos().x, ImGui::GetMousePos().y);   
-        cursor->Render(System::Window::s_width, System::Window::s_height);
+        cursor->Render();
     }
      
     //Renderer::CreateFrameBuffer();

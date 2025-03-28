@@ -1163,7 +1163,7 @@ void EventListener::BuildAndRun()
                 vertFile.close();
                 fragFile.close();            
                 
-                asset_queue << "  Shader::Load(\"" + shader.first + "\", " + vertex + ", " + fragment + ");\n";
+                asset_queue << "  Graphics::Shader::Load(\"" + shader.first + "\", " + vertex + ", " + fragment + ");\n";
             }
 
             //copied shaders
@@ -1172,7 +1172,7 @@ void EventListener::BuildAndRun()
                 vertex = "assets/" + vertPath.filename().string(),
                 fragment = "assets/" + fragPath.filename().string();            
                 
-                asset_queue << "  Shader::Load(\"" + shader.first + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
+                asset_queue << "  Graphics::Shader::Load(\"" + shader.first + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
             }
         }
             
@@ -1306,7 +1306,7 @@ void EventListener::BuildAndRun()
                 //load shaders
 
                 if (node->HasComponent(Component::SHADER) && node->shader.first.length())
-                    preload_queue << "  Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\", nullptr);\n";
+                    preload_queue << "  Graphics::Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\", nullptr);\n";
 
 
                 //--------------- sprite
@@ -1411,7 +1411,7 @@ void EventListener::BuildAndRun()
                     //shader
 
                     if (sn->HasComponent(Component::SHADER) && sn->shader.first.length()) 
-                        command_queue << "   sprite_" + node->ID + "->shader = Shader::Get(\"" + sn->shader.first + "\");\n";
+                        command_queue << "   sprite_" + node->ID + "->shader = Graphics::Shader::Get(\"" + sn->shader.first + "\");\n";
 
                 }
 
@@ -1462,7 +1462,7 @@ void EventListener::BuildAndRun()
                             //shader
 
                             if (en->HasComponent(Component::SHADER) && en->shader.first.length()) 
-                                command_queue << "   empty_" + node->ID + "->shader = Shader::Get(\"" + en->shader.first + "\");\n";
+                                command_queue << "   empty_" + node->ID + "->shader = Graphics::Shader::Get(\"" + en->shader.first + "\");\n";
                         }
                     }
 

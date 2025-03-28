@@ -37,7 +37,7 @@ class DebugGraphic {
             m_colorAttribute,
             m_sizeAttribute;
 
-        Shader shader;
+        Graphics::Shader shader;
 
 };
 

@@ -102,12 +102,12 @@ const bool Camera::InBounds()
 
 const Math::Vector4 Camera::GetProjectionMatrix(float width, float height)
 {
-    float x = 1.0f / m_zoom, 
-          y = width / m_zoom, 
-          z = height / m_zoom, 
-          w = 0.0f / m_zoom;
-                
-    return { x, y, z, w };
+    const float left = 1.0f / m_zoom, 
+                right = width / m_zoom, 
+                bottom = height / m_zoom,  
+                top = 0.0f / m_zoom;
+                    
+    return { left, right, bottom, top };
 }
 
 //------------------------------

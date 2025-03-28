@@ -102,7 +102,7 @@ void Game::Boot()
 
     LOG("Game: " + Application::name + " initialized.");
     
-    Shader::InitBaseShaders();
+    Graphics::Shader::InitBaseShaders();
     
     //preload / run game layer
 
@@ -303,20 +303,20 @@ void Game::UpdateFrame()
             }
 
             if (entity->renderable)
-                entity->Render(Window::s_scaleWidth, Window::s_scaleHeight);
+                entity->Render();
         }
 
     //UI render queue
 
     for (const auto& UI : currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable)
-            UI->Render(Window::s_scaleWidth, Window::s_scaleHeight);
+            UI->Render();
 
     //vignette overlay
 
     if (currentScene->vignette) {
         currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
-        currentScene->vignette->Render(Window::s_scaleWidth, Window::s_scaleHeight);
+        currentScene->vignette->Render();
     }
 
     //depth sort

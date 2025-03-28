@@ -24,7 +24,7 @@ void Editor::Update()
     Renderer::Update(s_self->game->camera); 
 
     if (GUI::Get()->grid)
-        GUI::Get()->grid->Render(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+        GUI::Get()->grid->Render();
 
     Time::Update(glfwGetTime());
 

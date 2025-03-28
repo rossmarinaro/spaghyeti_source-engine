@@ -830,7 +830,7 @@ GLT_API void gltTerminate(void)
 	gltInitialized = GL_FALSE;
 }
 
-static const GLchar* _gltText2DVertexShaderSource =          
+static constexpr GLchar* _gltText2DVertexShaderSource =          
 
 #ifdef __EMSCRIPTEN__
 	"#version 300 es\n"
@@ -853,9 +853,9 @@ static const GLchar* _gltText2DVertexShaderSource =
 	"	gl_Position = mvp * vec4(position, 0.0, 1.0);\n" 
 	"}\n";
 
-static const GLchar* _gltText2DFragmentShaderSource =
+static constexpr GLchar* _gltText2DFragmentShaderSource =
 
-#ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__ 
 	"#version 300 es\n"
 	"precision mediump float;\n"
 #else
@@ -1029,7 +1029,7 @@ GLT_API GLboolean _gltCreateText2DShader(void)
 	return GL_TRUE; 
 }
 
-static const uint64_t _gltFontGlyphRects[_gltFontGlyphCount] = {
+static constexpr uint64_t _gltFontGlyphRects[_gltFontGlyphCount] = {
 	0x1100040000, 0x304090004, 0x30209000D, 0x304090016, 0x30209001F, 0x304090028, 0x302090031, 0x409003A,
 	0x302090043, 0x30109004C, 0x1080055, 0x30209005D, 0x302090066, 0x3040A006F, 0x304090079, 0x304090082,
 	0x409008B, 0x4090094, 0x30409009D, 0x3040900A6, 0x3020900AF, 0x3040900B8, 0x3040900C1, 0x3040A00CA,
@@ -1048,7 +1048,7 @@ static const uint64_t _gltFontGlyphRects[_gltFontGlyphCount] = {
  
 #define _gltFontGlyphDataCount 387
 
-static const _GLT_FONT_GLYPH_DATA_TYPE _gltFontGlyphData[_gltFontGlyphDataCount] = {
+static constexpr _GLT_FONT_GLYPH_DATA_TYPE _gltFontGlyphData[_gltFontGlyphDataCount] = {
 	0x551695416A901554, 0x569695A5A56AA55A, 0x555554155545AA9, 0x916AA41569005A40, 0xA5A569695A5A5696, 0x51555556AA569695, 0x696916A941554155, 0x69155A55569555A5,
 	0x15541555456A9569, 0xA9569545A4005500, 0x569695A5A569695A, 0x5545AA9569695A5A, 0x916A941554555415, 0x55A56AA95A5A5696, 0x40555416A9555695, 0x55A45AA505550155,
 	0xA55AAA455A555691, 0x169005A45569155, 0xA945554015400554, 0x569695A5A569695A, 0x9545AA9569695A5A, 0x4555555AA95A5556, 0x55A4016900154555, 0xA569695A5A45AA90,

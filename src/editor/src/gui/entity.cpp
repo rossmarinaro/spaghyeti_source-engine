@@ -118,7 +118,7 @@ void GUI::RenderShaderOptions(const std::string& nodeId)
                 node->RemoveComponent(component); 
                 
                 if (node->shader.first.length())
-                    Shader::UnLoad(node->shader.first);
+                    Graphics::Shader::UnLoad(node->shader.first);
             }
             
             ImGui::EndMenu();

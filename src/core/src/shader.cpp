@@ -1,8 +1,12 @@
 #include <fstream>
 #include <sstream>
+
 #include "../../../build/sdk/include/app.h"
 #include "../../vendors/glm/gtc/type_ptr.hpp"
 #include "../../shared/renderer.h"
+
+using namespace Graphics;
+
 
 void Shader::Delete() {
     glDeleteProgram(ID);
@@ -160,7 +164,7 @@ void Shader::InitBaseShaders()
         #else
             "#version 330 core\n"       
         #endif
-
+ 
         "in vec4 color;\n"
         "in vec2 texCoord;\n"
 

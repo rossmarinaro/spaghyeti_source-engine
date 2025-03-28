@@ -75,7 +75,7 @@ void SpriteNode::Reset(int component_type)
 
     if (component_type == Component::SHADER || passAll)
         if (spriteHandle.get())
-            spriteHandle->shader = Shader::Get("sprite");
+            spriteHandle->shader = Graphics::Shader::Get("sprite");
 
     if (component_type == Component::SCRIPT || passAll)
         behaviors.clear();

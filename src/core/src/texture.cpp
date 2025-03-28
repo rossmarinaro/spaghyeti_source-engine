@@ -234,7 +234,7 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
         offset = { FrameWidth, FrameHeight, U1, V2, U2, V1 };
 
     
-    Renderable texture = { position.x, position.y, offset }; //posX, posY, UV
+    const Renderable texture = { position.x, position.y, offset }; //posX, posY, UV
 
 
     //----------------- vertices 

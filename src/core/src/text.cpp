@@ -13,16 +13,16 @@
 
 #define GLT_MANUAL_VIEWPORT
 #define GLT_IMPLEMENTATION
-#include "../../vendors/glText/gltext.h"
+#include "../../vendors/glText/gltext.hpp"
 
 
 //font data: (data required to render a quad for each glyph)
-static std::map<std::string, std::array<stbtt_packedchar, Text::charsToIncludeInFontAtlas>> _packedChars;
-static std::map<std::string, std::array<stbtt_aligned_quad, Text::charsToIncludeInFontAtlas>> _alignedQuads;
+static std::map<const std::string, std::array<stbtt_packedchar, Text::charsToIncludeInFontAtlas>> _packedChars;
+static std::map<const std::string, std::array<stbtt_aligned_quad, Text::charsToIncludeInFontAtlas>> _alignedQuads;
 
 //default embedded text data
 static GLTtext* GLT_text_buffer;
-static std::map<std::string, GLTtext*> GLT_text_handles;
+static std::map<const std::string, GLTtext*> GLT_text_handles;
 
 
 void Text::Init() 
@@ -72,6 +72,7 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
         {
             textType = FONT;
             position = { x, y };
+            point = scale;
             this->scale = { scale, scale };
             this->content = content;
             this->font = font;
@@ -257,16 +258,17 @@ void* Text::GetGLTPointer()
 //--------------------------
 
 
-void Text::Render(float projWidth, float projHeight)
+void Text::Render()
 {
+    glm::mat4 model = glm::mat4(1.0f);
+
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+
     if (textType == DEFAULT && GLT_text_buffer) 
     { 
-        glm::mat4 model = glm::mat4(1.0f);
-    
-        model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
-        model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.0f));
+        model = glm::translate(model, { position.x, position.y, 0.0f });
+        model = glm::scale(model, { scale.x, scale.y, 1.0f });
 
-        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(projWidth, projHeight);
         const glm::highp_mat4& mp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
 
         SetText(content);
@@ -287,19 +289,17 @@ void Text::Render(float projWidth, float projHeight)
 
     if (textType == FONT) 
     {
+        model = glm::scale(model, { scale.x, scale.y, 1.0f });
 
-        const float aspectRatio = (projWidth / projHeight); 
-        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(/* projWidth */-300,300 /* projHeight */);
-        const glm::mat4 projectionMat =  (glm::highp_mat4)glm::ortho(pm.x, pm.y/* , pm.z, pm.w */, -1.0f, 1.0f);//glm::ortho(-aspectRatio, aspectRatio, -1.0f, 1.0f); 
-        const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition().x), (System::Application::game->camera->GetPosition().y));
-        const glm::mat4 viewProjectionMat = projectionMat*glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }); 
+        const float aspectRatio = (System::Window::s_width / System::Window::s_height); 
+        const glm::mat4 modelProjection = /* glm::ortho(-pm.x, pm.y, -pm.z, pm.w); */ glm::ortho(-aspectRatio, aspectRatio, -aspectRatio, aspectRatio) * model;
 
         m_vertexIndex = 0;
 
         constexpr int order[6] = { 0, 1, 2, 0, 2, 3 };
-        const float pixelScale = 2.0f / projHeight;
+        const float pixelScale = /* point */ aspectRatio / System::Window::s_height;
 
-        Math::Vector2 ndc = System::Window::GetPixelToNDC(/* position.x */100,100 /* position.y */);
+        const Math::Vector2 ndc = System::Window::GetPixelToNDC(position.x, position.y);
         glm::vec3 localPosition = { ndc.x, ndc.y, 0.0f };
 
         const auto it_packed_chars = _packedChars.find(font);
@@ -316,7 +316,7 @@ void Text::Render(float projWidth, float projHeight)
                 if (m_vertices.size() <= m_vertexIndex)
                     m_vertices.resize(m_vertices.size() + 6);
 
-                // Retrive the data that is used to render a glyph of charecter 'ch'
+                // Retrieve the data that is used to render a glyph of charecter 'ch'
                 const stbtt_packedchar* packedChar = &packed_chars[ch - s_codePointOfFirstChar]; 
                 const stbtt_aligned_quad* alignedQuad = &aligned_quads[ch - s_codePointOfFirstChar];
 
@@ -371,7 +371,7 @@ void Text::Render(float projWidth, float projHeight)
             }
         }
         
-        const int shaderID = Shader::Get("text").ID,
+        const int shaderID = Graphics::Shader::Get("text").ID,
                   uniformLoc = glGetUniformLocation(shaderID, "uFontAtlasTexture");
 
         glUseProgram(shaderID); 
@@ -382,23 +382,7 @@ void Text::Render(float projWidth, float projHeight)
 
         const size_t sizeOfVertices = m_vertices.size() * sizeof(Vertex);
         const uint32_t drawCallCount = (sizeOfVertices / s_VBO_SIZE) + 1; //number of chunks
-    /*  glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-            glBufferData(GL_ARRAY_BUFFER, s_VBO_SIZE, nullptr, GL_DYNAMIC_DRAW);
 
-
-            glBindVertexArray(m_vaoID);
-
-            //position attribute:
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), 0);
-            glEnableVertexAttribArray(0);
-
-            //color attribute:
-            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (const void*)(3 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-
-            //texCoord attribute:
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (const void*)(7 * sizeof(float)));
-            glEnableVertexAttribArray(2); */
         // Render each chunk of vertex data.
         for (int i = 0; i < drawCallCount; i++)
         {
@@ -406,7 +390,7 @@ void Text::Render(float projWidth, float projHeight)
             const uint32_t vertexCount = i == drawCallCount - 1 ? (sizeOfVertices % s_VBO_SIZE) / sizeof(Vertex) : s_VBO_SIZE / (sizeof(Vertex) * 6);
 
             const int uniformLocation = glGetUniformLocation(shaderID, "uViewProjectionMat");
-            glUniformMatrix4fv(uniformLocation, 1, GL_TRUE, glm::value_ptr(viewProjectionMat));
+            glUniformMatrix4fv(uniformLocation, 1, GL_TRUE, glm::value_ptr(modelProjection));
 
             glBindVertexArray(m_vaoID);
             glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
