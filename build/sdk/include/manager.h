@@ -36,8 +36,8 @@ namespace System {
 
                 static const std::string GetFilePath(const std::string& name);
                 static const std::string GetSpritesheetPath(const std::string& key);
-                static const BinaryResource GetResource(const std::string& key);   
-                static const std::map<const std::string, std::pair<int, int>> GetAnimations(const std::string& key);
+                static const BinaryResource& GetResource(const std::string& key);   
+                static const std::map<const std::string, std::pair<int, int>>& GetAnimations(const std::string& key);
                 static const std::vector<std::array<int, 6>> GetRawSpritesheetData(const std::string& key);
                 static const std::vector<std::string> ParseCSV(const std::string& key, int index = 0);
 

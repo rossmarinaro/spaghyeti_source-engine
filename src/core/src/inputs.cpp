@@ -1,6 +1,9 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../shared/renderer.h"
 
+#ifdef __EMSCRIPTEN__
+    #include "../../../build/sdk/include/window.h"
+#endif
 
 using namespace System;
 
@@ -21,17 +24,17 @@ using namespace System;
             Application::game->inputs->mouseX = position.x;
             Application::game->inputs->mouseY = position.y;
 
-            Inputs::cursor_callback(Renderer::GLFW_window_instance, event->targetX, event->targetY);
+            Renderer::cursor_callback(Renderer::GLFW_window_instance, event->targetX, event->targetY);
         }
 
         if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
             Application::game->inputs->numInputs++; 
-            Inputs::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
+            Renderer::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
         }
 
         if (eventType == EMSCRIPTEN_EVENT_MOUSEUP) {
             Application::game->inputs->numInputs--;
-            Inputs::input_callback(Renderer::GLFW_window_instance, 0, 0, 0);
+            Renderer::input_callback(Renderer::GLFW_window_instance, 0, 0, 0);
         }
 
         if (eventType == EMSCRIPTEN_EVENT_CLICK)
@@ -65,8 +68,8 @@ using namespace System;
                 Application::game->inputs->mouseX = position.x;
                 Application::game->inputs->mouseY = position.y;
 
-                Inputs::cursor_callback(Renderer::GLFW_window_instance, touch->targetX, touch->targetY);
-                Inputs::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
+                Renderer::cursor_callback(Renderer::GLFW_window_instance, touch->targetX, touch->targetY);
+                Renderer::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
 
                 Application::game->inputs->numInputs++;
             }
@@ -75,7 +78,7 @@ using namespace System;
         else
         {
             Application::game->inputs->cursorReset = true;
-            Inputs::input_callback(Renderer::GLFW_window_instance, 0, 0, 0);
+            Renderer::input_callback(Renderer::GLFW_window_instance, 0, 0, 0);
 
             Application::game->inputs->numInputs--;
         }

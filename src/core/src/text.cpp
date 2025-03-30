@@ -17,21 +17,36 @@
 
 
 //default embedded text data
-static GLTtext* GLT_text_buffer;
-static std::map<const std::string, GLTtext*> GLT_text_handles;
+static GLTtext* _GLT_text_buffer;
+static std::map<const std::string, GLTtext*> _GLT_text_handles;
 
-    
+//loaded true type fonts via FreeType
+static FT_Library* _freetype;
+
+
 
 void Text::Init() 
 {
+    //GLtext
+
     if (!gltInit()) {
         LOG(stderr << "Text: Failed to initialize text: " << EXIT_FAILURE);
-        return;
 	}
+    else {
+        _GLT_text_buffer = gltCreateText();
+        LOG("Text: GLText initialized. (embedded)");  
+    }
 
-    GLT_text_buffer = gltCreateText();
+    //FreeType
 
-    LOG("Text: GLText initialized. (embedded)");  
+    _freetype = new FT_Library;
+
+    if (FT_Init_FreeType(_freetype)) {
+        LOG("Text: ERROR::FREETYPE: Could not init FreeType Library");
+    }
+    else {
+        LOG("Text: FreeType initialized. (.ttf loading)");  
+    }
 }
 
 //--------------------------
@@ -39,10 +54,16 @@ void Text::Init()
 
 void Text::ShutDown() 
 {
-    GLT_text_handles.clear();
+    _GLT_text_handles.clear();
 
-    gltDeleteText(GLT_text_buffer);
+    gltDeleteText(_GLT_text_buffer);
     gltTerminate();
+
+    if (_freetype) {
+        FT_Done_FreeType(*_freetype);
+        delete _freetype;
+        _freetype = nullptr;
+    }
 
     LOG("Text: uninitialized.");
 }
@@ -57,7 +78,7 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
 {
 
     position = { x, y };
-    point = scale;
+
     this->scale = { scale, scale };
     this->content = content;
     this->font = font;
@@ -69,107 +90,127 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
 
     if (font.length())
     {
+        if (!_freetype) {
+            LOG("Text: cannot create font, FreeType not initialized.");
+            return;
+        }
+
         const std::string& filepath = System::Resources::Manager::GetFilePath(font);
-        shader = Graphics::Shader::Get("text"); 
 
-        if (filepath != "not found") 
-        {
-            textType = FONT;
+        FT_Face face;
 
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            
-            // FreeType
-            // --------
-            FT_Library ft;
-            // All functions return a value different than 0 whenever an error occurred
-            
-            if (FT_Init_FreeType(&ft)) {
-            LOG("ERROR::FREETYPE: Could not init FreeType Library");
-                return;
-            }
-
-            // find path to font
-    
-            if (ffilepath.empty()) {
-                LOG("ERROR::FREETYPE: Failed to load font_name");
+        if (filepath != "not found") {
+            if (filepath.empty()) {
+                LOG("Text: ERROR::FREETYPE: Failed to load font_name");
                 return;
             }
             
-            // load font as face
-            FT_Face face;
-            if (FT_New_Face(ft, filepath.c_str(), 0, &face)) {
-                LOG("ERROR::FREETYPE: Failed to load font");
+            if (FT_New_Face(*_freetype, filepath.c_str(), 0, &face)) {
+                LOG("Text: ERROR::FREETYPE: Failed to load font");
                 return;
             }
+            else {
+                LOG("Text: font " + font + " loaded from file. (.ttf)");
+            }
+        }
 
-            else 
+        //raw data 
+
+        else {
+
+            const auto data = System::Resources::Manager::GetResource(font);
+
+            if (data.byte_length)
             {
-                // set size to load glyphs as
-                FT_Set_Pixel_Sizes(face, 0, 48);
-
-                // disable byte-alignment restriction
-                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-                // load first 128 characters of ASCII set
-                for (unsigned char c = 0; c < 128; c++)
-                {
-                    // Load character glyph 
-                    if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-                        LOG("ERROR::FREETYTPE: Failed to load Glyph");
-                        continue;
-                    }
-                    // generate texture
-                    unsigned int texture;
-                    glGenTextures(1, &texture);
-                    glBindTexture(GL_TEXTURE_2D, texture);
-                    glTexImage2D(
-                        GL_TEXTURE_2D,
-                        0,
-                        GL_RED,
-                        face->glyph->bitmap.width,
-                        face->glyph->bitmap.rows,
-                        0,
-                        GL_RED,
-                        GL_UNSIGNED_BYTE,
-                        face->glyph->bitmap.buffer
-                    );
-                    // set texture options
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                    // now store character for later use
-                    Character character = {
-                        texture,
-                        { face->glyph->bitmap.width, face->glyph->bitmap.rows },
-                        { face->glyph->bitmap_left, face->glyph->bitmap_top },
-                        static_cast<unsigned int>(face->glyph->advance.x)
-                    };
-                    Characters.insert(std::pair<char, Character>(c, character));
+                if (FT_New_Memory_Face(*_freetype, data.array_buffer, data.byte_length, 0, &face)) {
+                    LOG("Text: ERROR::FREETYPE: Failed to load font");
+                    return;
                 }
-                glBindTexture(GL_TEXTURE_2D, 0);
+                else {
+                    LOG("Text: font " + font + " loaded from memory. (.ttf)");
+                }
             }
-            // destroy FreeType once we're finished
-            FT_Done_Face(face);
-            FT_Done_FreeType(ft);
+            else {
+                LOG("Text: failed to load data resource.");
+                return;
+            }
+        }
 
-            // configure VAO/VBO for texture quads
-            // -----------------------------------
-            glGenVertexArrays(1, &VAO);
-            glGenBuffers(1, &VBO);
-            glBindVertexArray(VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
-        } 
+        FT_Set_Pixel_Sizes(face, 0, 48);
+
+        //disable byte-alignment restriction
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        //load first 128 m_chars of ASCII set
+
+        for (unsigned char c = 0; c < 128; c++)
+        {
+            //Load character glyph 
+
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+                LOG("Text: ERROR::FREETYTPE: Failed to load Glyph");
+                continue;
+            }
+
+            //generate texture
+
+            unsigned int texture;
+            glGenTextures(1, &texture);
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_RED,
+                face->glyph->bitmap.width,
+                face->glyph->bitmap.rows,
+                0,
+                GL_RED,
+                GL_UNSIGNED_BYTE,
+                face->glyph->bitmap.buffer
+            );
+
+            //set texture options
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                
+            //now store character for later use
+
+            Character character = {
+                texture,
+                { (float)face->glyph->bitmap.width, (float)face->glyph->bitmap.rows },
+                { (float)face->glyph->bitmap_left, (float)face->glyph->bitmap_top },
+                static_cast<unsigned int>(face->glyph->advance.x)
+            };
+
+            m_chars.insert(std::pair<char, Character>(c, character));
+        }
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glGenVertexArrays(1, &m_VAO);
+        glGenBuffers(1, &m_VBO);
+        glBindVertexArray(m_VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+        FT_Done_Face(face);
+
+        textType = FONT;
+        m_shader = Graphics::Shader::Get("text"); 
+
     }
+
     //default text
 
     if (textType == DEFAULT) 
-        GLT_text_handles.insert({ ID, GLT_text_buffer });
+        _GLT_text_handles.insert({ ID, _GLT_text_buffer });
     
     const std::string text_type = textType == DEFAULT ? "default" : font + ".ttf";
 
@@ -183,15 +224,11 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
 Text::~Text() 
 {
     if (textType == DEFAULT) {
-        auto it = std::find_if(GLT_text_handles.begin(), GLT_text_handles.end(), [this](const std::pair<std::string, GLTtext*>& text){ return this->ID == text.first; });
-        if (it != GLT_text_handles.end()) {
-            it = GLT_text_handles.erase(std::move(it));
+        auto it = std::find_if(_GLT_text_handles.begin(), _GLT_text_handles.end(), [this](const std::pair<std::string, GLTtext*>& text){ return this->ID == text.first; });
+        if (it != _GLT_text_handles.end()) {
+            it = _GLT_text_handles.erase(std::move(it));
             --it;
         }
-    }
-
-    if (textType == FONT) 
-    {
     }
 
     LOG("Text: " + content + " destroyed.");
@@ -204,8 +241,8 @@ Text::~Text()
 void* Text::GetGLTPointer() 
 {
     if (textType == DEFAULT) {
-        auto it = GLT_text_handles.find(ID);
-        return it != GLT_text_handles.end() ? it->second : nullptr;
+        auto it = _GLT_text_handles.find(ID);
+        return it != _GLT_text_handles.end() ? it->second : nullptr;
     }
     return nullptr;
 }
@@ -220,7 +257,7 @@ void Text::Render()
 
     glm::mat4 model = glm::mat4(1.0f);
 
-    if (textType == DEFAULT && GLT_text_buffer) 
+    if (textType == DEFAULT && _GLT_text_buffer) 
     {   
         model = glm::translate(model, { position.x, position.y, 0.0f });
         model = glm::scale(model, { scale.x, scale.y, 1.0f });
@@ -249,32 +286,33 @@ void Text::Render()
 
         const glm::highp_mat4& proj = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
 
-        shader.SetMat4("mvp", {
+        m_shader.SetMat4("mvp", {
             { proj[0][0], proj[0][1], proj[0][2], proj[0][3] }, 
             { proj[1][0], proj[1][1], proj[1][2], proj[1][3] },   
             { proj[2][0], proj[2][1], proj[2][2], proj[2][3] },  
             { proj[3][0], proj[3][1], proj[3][2], proj[3][3] }
         });
 
-        shader.SetVec3f("textColor", tint.x, tint.y, tint.z);
+        m_shader.SetVec3f("textColor", tint.x, tint.y, tint.z);
+        m_shader.SetFloat("alphaVal", alpha); 
 
         glActiveTexture(GL_TEXTURE0);
-        glBindVertexArray(VAO);
+        glBindVertexArray(m_VAO);
 
-        float x = position.x;
+        float localX = position.x;
 
-        //iterate through all characters
+        //iterate through all m_chars
 
         for (std::string::const_iterator c = content.begin(); c != content.end(); c++) 
         {
-            Character ch = Characters[*c];
+            Character ch = m_chars[*c];
 
-            const float xpos = x + ch.Bearing.x * scale.x,
+            const float xpos = localX + ch.Bearing.x * scale.x,
                         ypos = position.y - (ch.Size.y - ch.Bearing.y) * scale.y,
                         w = ch.Size.x * scale.x,
                         h = ch.Size.y * scale.y;
 
-            //update VBO for each character
+            //update m_VBO for each character
 
             const float vertices[6][4] = {
                 { xpos,     ypos + h,   0.0f, 1.0f },            
@@ -288,14 +326,14 @@ void Text::Render()
 
             //render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-            // update content of VBO memory
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            // update content of m_VBO memory
+            glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             //render quad
             glDrawArrays(GL_TRIANGLES, 0, 6);
             //now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            x += (ch.Advance >> 6) * scale.x;// bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+            localX += (ch.Advance >> 6) * scale.x;// bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
         }
 
         glBindVertexArray(0);

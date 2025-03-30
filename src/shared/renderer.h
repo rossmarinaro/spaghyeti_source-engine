@@ -3,13 +3,26 @@
 #include <map>
 #include <vector>
 
+#ifdef __EMSCRIPTEN__
+    #ifndef ES
+    #define ES
+        #include <unistd.h>
+        #include <emscripten.h>
+        #include <emscripten/html5.h>
+
+        #define GL_GLEXT_PROTOTYPES
+        #define EGL_EGLEXT_PROTOTYPES
+        #include <GLES3/gl3.h>
+    #endif
+
+#endif
+
 #ifndef _GLFW_WIN32
     #define _GLFW_WIN32
     #include "../vendors/glad/include/glad/glad.h" 
     #include "../vendors/GLFW/glfw3.h" 
     #include "../vendors/GLFW/glfw3native.h" 
 #endif
-
 
 
 //-----------------------------

@@ -203,13 +203,16 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     Entity(SPRITE, x, y)
 {   
     this->key = key;
+
     currentFrame = frame;   
     velocityX = 0.0f;
     velocityY = 0.0f; 
 
-    anims = System::Resources::Manager::GetAnimations(key);
     texture = Graphics::Texture2D::Get(key);
-    shader = Graphics::Shader::Get("sprite");          
+    shader = Graphics::Shader::Get("sprite");   
+
+    const auto animations = System::Resources::Manager::GetAnimations(key);
+    anims.insert(animations.begin(), animations.end());       
     
     if (isTile) {
         type = TILE; 
@@ -232,7 +235,9 @@ Sprite::Sprite(const Sprite& sprite):
     velocityX = sprite.velocityX;
     velocityY = sprite.velocityY;   
 
-    anims = System::Resources::Manager::GetAnimations(sprite.key);
+    const auto animations = System::Resources::Manager::GetAnimations(key);
+    anims.insert(animations.begin(), animations.end()); 
+
     texture = Graphics::Texture2D::Get(sprite.key);
     shader = Graphics::Shader::Get("sprite");     
 
@@ -447,6 +452,7 @@ void Sprite::ReadSpritesheetData()
 {    
     
     const std::string& spritesheet = System::Resources::Manager::GetSpritesheetPath(key);
+    const auto rawSpritesheetData = System::Resources::Manager::GetRawSpritesheetData(key);
  
     //json file
 
@@ -479,8 +485,8 @@ void Sprite::ReadSpritesheetData()
 
     //int array
 
-    else if (System::Resources::Manager::GetRawSpritesheetData(key).size())
-        m_resourceData = System::Resources::Manager::GetRawSpritesheetData(key);  
+    else if (rawSpritesheetData.size())
+        m_resourceData = rawSpritesheetData;  
 
     //not a spritesheet
 

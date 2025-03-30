@@ -156,10 +156,12 @@ void Shader::InitBaseShaders()
 
         "uniform sampler2D text;\n"
         "uniform vec3 textColor;\n"
+        "uniform float alphaVal;\n"
+
         "void main()\n"
         "{ \n"
             "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n"
-            "color = vec4(textColor, 1.0) * sampled; \n"
+            "color = vec4(textColor, alphaVal) * sampled; \n"
 
         "}";
 

@@ -176,7 +176,7 @@ void Manager::UnLoadRaw(const int type, const std::string& key) {
 //----------------------------
 
 //get raw data
-const BinaryResource Manager::GetResource(const std::string& key) {
+const BinaryResource& Manager::GetResource(const std::string& key) {
     const auto resource = System::Application::resources->m_raw_assets.find(key);
     if (resource != System::Application::resources->m_raw_assets.end())
         return resource->second;
@@ -200,7 +200,7 @@ const std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::
 //--------------------------------- 
 
 //get anims by sprite key
-const std::map<const std::string, std::pair<int, int>> Manager::GetAnimations(const std::string& key) {
+const std::map<const std::string, std::pair<int, int>>& Manager::GetAnimations(const std::string& key) {
     const auto it = System::Application::resources->m_anims.find(key);
     if (it != System::Application::resources->m_anims.end())
         return it->second;

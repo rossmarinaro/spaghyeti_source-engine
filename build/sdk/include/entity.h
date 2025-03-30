@@ -125,14 +125,10 @@ class Text : public Entity {
     
         enum { DEFAULT, FONT };
 
-        //include 95 charecters
-        static inline const uint32_t charsToIncludeInFontAtlas = 95; 
-
         static void Init(); 
         static void ShutDown();
 
         int textType;
-        float point;
 
         std::string content, font; 
        
@@ -145,14 +141,17 @@ class Text : public Entity {
 
     private:
 
-        Graphics::Shader shader;
-
         struct Character {
             unsigned int TextureID; // ID handle of the glyph texture
             Math::Vector2   Size;      // Size of glyph
             Math::Vector2   Bearing;   // Offset from baseline to left/top of glyph
             unsigned int Advance;   // Horizontal offset to advance to next glyph
-        };unsigned int VAO, VBO; std::map<char, Character> Characters;
+        };
+
+        unsigned int m_VAO, m_VBO; 
+        std::map<char, Character> m_chars;
+
+        Graphics::Shader m_shader;
 
         void* GetGLTPointer();
 

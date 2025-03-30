@@ -72,7 +72,10 @@ const bool System::Scene::IsPaused() {
 //---------------------------------
 
 const Math::Vector2 System::Scene::GetWorldDimensions() { 
-    return { m_worldWidth, m_worldHeight };
+    return { 
+        static_cast<float>(m_worldWidth), 
+        static_cast<float>(m_worldHeight) 
+    };
 }
 
 //---------------------------------
