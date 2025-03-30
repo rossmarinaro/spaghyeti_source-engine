@@ -11,24 +11,24 @@ void Renderer::cursor_callback(GLFWwindow* window, double xPos, double yPos)
     //set cursor object to movement, translate ndc coords to clip space
 
     auto position = Window::GetNDCToPixel((float)xPos, (float)yPos);
-   
+
     Application::game->inputs->mouseX = position.x;
     Application::game->inputs->mouseY = position.y;
 }
 
- 
+
 //----------------------------------------
 
 
 void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action == GLFW_PRESS) {
-        Application::game->inputs->SetKeyInputs(true, key, window);  
+        Application::game->inputs->SetKeyInputs(true, key, window);
         Application::game->inputs->numInputs++;
     }
 
     if (action == GLFW_RELEASE) {
-        Application::game->inputs->SetKeyInputs(false, key, window);  
+        Application::game->inputs->SetKeyInputs(false, key, window);
         Application::game->inputs->numInputs--;
     }
 }
@@ -40,13 +40,13 @@ void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int actio
 void Renderer::input_callback(GLFWwindow* window, int input, int action, int mods)
 {
 
-    if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) 
+    if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         Application::game->inputs->RIGHT_CLICK = true;
 
     else
         Application::game->inputs->RIGHT_CLICK = false;
 
-    if (input == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) 
+    if (input == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
         Application::game->inputs->LEFT_CLICK = true;
 
     else
@@ -66,14 +66,17 @@ void Renderer::input_callback(GLFWwindow* window, int input, int action, int mod
 
 void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     Window::s_width = width;
-    Window::s_height = height;    
+    Window::s_height = height;
+    glViewport(0, 0, Window::s_width, Window::s_height);
 }
 
 //-----------------------------------
 
 
 void Renderer::window_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, Window::s_width, Window::s_height);   
+    Window::s_width = width;
+    Window::s_height = height;
+    glViewport(0, 0, Window::s_width, Window::s_height);
 }
 
 
@@ -81,34 +84,31 @@ void Renderer::window_size_callback(GLFWwindow* window, int width, int height) {
 
 void Renderer::Update(void* camera)
 {
+    auto bg = ((Camera*)camera)->GetBackgroundColor();
 
     glfwSwapInterval(s_vsync); // Enable vsync
 
-    glEnable(GL_TEXTURE_2D); 
-    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    auto bg = ((Camera*)camera)->GetBackgroundColor();
-    
     glClearColor(
         bg.x * bg.w,
         bg.y * bg.w,
-        bg.z * bg.w, 
-        bg.w 
+        bg.z * bg.w,
+        bg.w
     );
 
-    glViewport(0, 0, Window::s_width, Window::s_height);   
+    glViewport(0, 0, Window::s_width, Window::s_height);
 }
 
 
 //---------------------------------
 
 
-void Renderer::BindFrameBuffer() { 
-    glBindBuffer(GL_FRAMEBUFFER, s_FBO); 
+void Renderer::BindFrameBuffer() {
+    glBindBuffer(GL_FRAMEBUFFER, s_FBO);
 }
 
 
@@ -116,8 +116,8 @@ void Renderer::BindFrameBuffer() {
 
 
 
-void Renderer::UnbindFrameBuffer() { 
-    glBindBuffer(GL_FRAMEBUFFER, 0); 
+void Renderer::UnbindFrameBuffer() {
+    glBindBuffer(GL_FRAMEBUFFER, 0);
 }
 
 //---------------------------------
@@ -145,9 +145,9 @@ void Renderer::CreateFrameBuffer()
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_RBO);
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         LOG("Error Framebuffer: Incomplete Buffer.");
-    
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -185,9 +185,9 @@ void Renderer::RescaleFrameBuffer(float width, float height)
 
 //     m_Data.QuadBuffer = new Vertex[MaxVertexCount];
 
-//     glGenVertexArrays(1, &m_Data.QuadVA); 
-//     glBindVertexArray(m_Data.QuadVA); 
-    
+//     glGenVertexArrays(1, &m_Data.QuadVA);
+//     glBindVertexArray(m_Data.QuadVA);
+
 //     glGenBuffers(1, &m_Data.QuadVB);
 //     glBind_Buffer(GL_ARRAY_BUFFER, m_Data.QuadVB);
 //     glBufferData(GL_ARRAY_BUFFER, MaxVertexCount * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
@@ -234,11 +234,11 @@ void Renderer::RescaleFrameBuffer(float width, float height)
 
 //     uint32_t color = 0xffffffff;
 //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color);
-    
+
 //     TextureSlots[0] = m_Data.WhiteTexture;
 
 //     for (size_t i = 1; i < MaxTextures; i++)
-//         TextureSlots[i] = 0; 
+//         TextureSlots[i] = 0;
 // }
 
 // void BatchRenderer::Render(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color, float textureIndex)
@@ -269,7 +269,7 @@ void Renderer::RescaleFrameBuffer(float width, float height)
 //     m_Data.QuadBufferPtr++;
 
 //     m_Data.IndexCount += 6;
-    
+
 //     RenderStats.QuadCount++;
 
 
@@ -278,7 +278,7 @@ void Renderer::RescaleFrameBuffer(float width, float height)
 // void BatchRenderer::ShutDown()
 // {
 
-//     glDeleteVertexArrays(1, &m_Data.QuadVA); 
+//     glDeleteVertexArrays(1, &m_Data.QuadVA);
 //     glDeleteBuffers(1, &m_Data.QuadVB);
 //     glDeleteBuffers(1, &m_Data.QuadIB);
 
@@ -312,7 +312,7 @@ void Renderer::RescaleFrameBuffer(float width, float height)
 //     glDrawElements(GL_TRIANGLES, m_Data.IndexCount, GL_UNSIGNED_INT, nullptr);
 //     /* m_Data. */RenderStats.DrawCount++;
 //     m_Data.IndexCount = 0;
-    
+
 // }
 
 

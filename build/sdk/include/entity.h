@@ -128,7 +128,7 @@ class Text : public Entity {
         //include 95 charecters
         static inline const uint32_t charsToIncludeInFontAtlas = 95; 
 
-        static void Init();
+        static void Init(); 
         static void ShutDown();
 
         int textType;
@@ -145,30 +145,14 @@ class Text : public Entity {
 
     private:
 
-        struct Vertex {
-            Math::Vector3 position;
-            Math::Vector4 color;
-            Math::Vector2 texCoord;
-        };
+        Graphics::Shader shader;
 
-        //ASCII ' ' space
-        static const uint32_t s_codePointOfFirstChar = 32,
-                              s_fontAtlasWidth = 512,
-                              s_fontAtlasHeight = 512;
-        
-        //VBO size in bytes - enough for 600000 vertices (100000 quads)
-        static const size_t s_VBO_SIZE = 600000 * sizeof(Vertex); 
-
-        const float m_fontSize = 64.0f; 
-
-        std::vector<Vertex> m_vertices;
-        
-        //maximum pixel height of the text.
-        uint32_t m_textHeight,
-                 m_vertexIndex,
-                 m_vaoID, m_vboID,
-                 m_shaderProgramID,
-                 m_fontTextureID;
+        struct Character {
+            unsigned int TextureID; // ID handle of the glyph texture
+            Math::Vector2   Size;      // Size of glyph
+            Math::Vector2   Bearing;   // Offset from baseline to left/top of glyph
+            unsigned int Advance;   // Horizontal offset to advance to next glyph
+        };unsigned int VAO, VBO; std::map<char, Character> Characters;
 
         void* GetGLTPointer();
 

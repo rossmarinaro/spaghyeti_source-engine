@@ -49,7 +49,9 @@ void Texture2D::Delete() {
 
 
 const void Texture2D::Bind() { 
-    glBindTexture(GL_TEXTURE_2D, ID); 
+    glBindTexture(GL_TEXTURE_2D, ID);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
 }; 
 
 

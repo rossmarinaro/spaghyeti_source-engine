@@ -10,9 +10,16 @@ OBJS = \
 
 CC = g++ -g -O -std=c++17  
 
-INCLUDE_PATHS = -IC:\libs\glad\include\glad 
+INCLUDE_PATHS = \
+	-IC:\libs\glad\include\glad \
+	-IC:/libs/ft29/include \
+	-IC:/libs/ft29/freetype-2.9/include \
+	-IC:/libs/ft29/freetype-2.9/build/include/freetype/config
 
-LIBRARY_PATHS = -LC:\libs\glad #-LC:\libs\openAL\Win32
+LIBRARY_PATHS = \
+	-LC:\libs\glad \
+	-LC:/libs/ft29/freetype-2.9 \
+	-LC:/libs/ft29/freetype-2.9/build #-LC:\libs\openAL\Win32
 
 #-w suppresses all warnings -Wl,-subsystem,windows gets rid of the console window
 
@@ -30,7 +37,7 @@ COMPILER_FLAGS_WEB = \
 	-DUSE_JSON=0 \
 	-DSTANDALONE=1
 
-LINKER_FLAGS = -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 -mwindows -lm  
+LINKER_FLAGS = -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 -mwindows -lm  
 
 #targets standard and web builds as static or dynamic libs
 

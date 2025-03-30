@@ -133,47 +133,34 @@ void Shader::InitBaseShaders()
 
     static constexpr const char* textVertex = \
 
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
+        "#version 330 core\n"
 
-        "layout (location = 0) in vec3 aPosition;\n"
-        "layout (location = 1) in vec4 aColor;\n"
-        "layout (location = 2) in vec2 aTexCoord;\n"
+        "layout(location = 0) in vec4 vertex;\n"
+        "out vec2 TexCoords;\n"
 
-        "out vec4 color;\n"
-        "out vec2 texCoord;\n"
-
-        "uniform mat4 uViewProjectionMat;\n"
-
+        "uniform mat4 mvp;\n"
+        
         "void main()\n"
-        "{\n"
-            "gl_Position = uViewProjectionMat * vec4(aPosition, 1.0);\n" 
-            "color = aColor;\n"
-            "texCoord = aTexCoord;\n"
-        "}";
+        "{\n"            
+            "gl_Position = mvp * vec4(vertex.xy, 0.0, 1.0);\n" 
+            "TexCoords = vertex.zw;\n"
+        "}"; 
+
 
     static constexpr const char* textFragment = \
 
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"       
-        #endif
- 
-        "in vec4 color;\n"
-        "in vec2 texCoord;\n"
+        "#version 330 core\n"
 
-        "uniform sampler2D uFontAtlasTexture;\n"
-        "out vec4 fragColor;\n"
+        "in vec2 TexCoords;\n"
+        "out vec4 color;\n"
 
+        "uniform sampler2D text;\n"
+        "uniform vec3 textColor;\n"
         "void main()\n"
-        "{\n"
-            "fragColor = texture(uFontAtlasTexture, texCoord).r * color;\n"
+        "{ \n"
+            "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n"
+            "color = vec4(textColor, 1.0) * sampled; \n"
+
         "}";
 
     static constexpr const char* geom_vertex1 = \

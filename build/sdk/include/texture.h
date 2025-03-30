@@ -2,7 +2,8 @@
 
 #include <string>
 #include "./math.h"
- 
+ /// Holds all state information relevant to a character as loaded using FreeType
+
 namespace Graphics {  
 
     struct Format { float width, height; float u1, v1, u2, v2; };
