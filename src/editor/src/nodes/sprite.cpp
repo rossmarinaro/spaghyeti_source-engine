@@ -737,23 +737,19 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                 }
 
                 ImGui::SliderInt("depth", &depth, 0, 1000);
-
                 ImGui::Checkbox("cull", &cull);
-
                 ImGui::Checkbox("filter nearest", &filter_nearest);
-
                 ImGui::InputFloat("scroll factor x", &scrollFactorX);
                 ImGui::InputFloat("scroll factor y", &scrollFactorY);
-
                 ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width); 
                 ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_height); 
-
                 ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f); 
-
                 ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
                 ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f); 
 
-
+                ImGui::Checkbox("stroke", &isStroked); 
+                ImGui::ColorEdit3("stroke color", (float*)&strokeColor); 
+                ImGui::SliderFloat("stroke width", &strokeWidth, 0.0f, 100.0f);
             }
 
             ImGui::TreePop();
@@ -790,6 +786,7 @@ void SpriteNode::Render()
         spriteHandle->SetFlip(flippedX, flippedY);
         spriteHandle->SetAlpha(alpha);
         spriteHandle->SetTint(tint);
+        spriteHandle->SetStroke(isStroked, strokeColor, strokeWidth);
 
         if (m_currentAnim.key.length())   
             spriteHandle->SetAnimation(m_currentAnim.key.c_str(), m_currentAnim.yoyo, m_currentAnim.rate, m_currentAnim.repeat);

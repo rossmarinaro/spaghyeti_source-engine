@@ -158,7 +158,9 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
                 ImGui::Text(("current font: " + currFont).c_str());
                 ImGui::InputText("content", &textBuf);
                 ImGui::Checkbox("UI", &UIFlag);
+                ImGui::Checkbox("stroke", &isStroked);
                 ImGui::ColorEdit3("tint", (float*)&tint); 
+                ImGui::ColorEdit3("stroke color", (float*)&strokeColor); 
                 ImGui::SliderInt("depth", &depth, 0, 1000);
                 ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
                 ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_scaleWidth); 
@@ -166,6 +168,7 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
                 ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f); 
                 ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
                 ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
+                ImGui::SliderFloat("stroke width", &strokeWidth, 0.0f, 100.0f);
 
             }
 
@@ -187,13 +190,14 @@ void TextNode::Render()
 
     if (textHandle)
     {
-
         textHandle->SetText(textBuf);
         textHandle->SetScale(scaleX, scaleY);
         textHandle->SetPosition(positionX, positionY);
         textHandle->SetRotation(rotation);
         textHandle->SetTint(tint);
+        textHandle->SetAlpha(alpha);
         textHandle->SetDepth(depth);
+        textHandle->SetStroke(isStroked, strokeColor, strokeWidth);
 
         if (System::Game::GetScene()->ListenForInteraction(textHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             Editor::selectedEntity = textHandle;

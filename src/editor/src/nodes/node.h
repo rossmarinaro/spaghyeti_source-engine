@@ -24,13 +24,15 @@ namespace editor {
 
             bool created, 
                  active, 
-                 show_options;
+                 show_options, 
+                 isStroked;
 
             float scaleX, 
                   scaleY,
                   positionX, 
                   positionY,
-                  rotation;
+                  rotation,
+                  strokeWidth;
 
             std::string ID, name;
 
@@ -38,6 +40,8 @@ namespace editor {
                                body_height,  
                                bodyX, 
                                bodyY;
+
+            Math::Vector3 strokeColor;
 
             struct StringContainer { std::string s = ""; };
             struct BoolContainer { bool b = false; };
@@ -244,7 +248,7 @@ namespace editor {
 
             int depth, isUI;
             float size, alpha;
-            bool UIFlag;
+            bool UIFlag; 
 
             Math::Vector3 tint;
             std::shared_ptr<Text> textHandle;

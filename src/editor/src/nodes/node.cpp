@@ -16,11 +16,14 @@ Node::Node(bool init, int type, const std::string& name):
     created = false;
     active = true;
     show_options = false;
+    isStroked = false;
     positionX = 0.0f;
     positionY = 0.0f; 
     scaleX = 1.0f;
     scaleY = 1.0f;
     rotation = 0.0f;
+    strokeWidth = 1.0f;
+    strokeColor = { 0.0f, 0.0f, 0.0f };
 
     this->type = type;
     this->name = CheckName(name, nodes, nodes.size());
@@ -442,6 +445,14 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                 }
             },
             { "alpha", sn->alpha },
+            { "stroke", tn->isStroked }, 
+            { "stroke color", {
+                    { "x", tn->strokeColor.x },
+                    { "y", tn->strokeColor.y },
+                    { "z", tn->strokeColor.z }
+                }
+            },   
+            { "stroke width", tn->strokeWidth,
             { "positionX", sn->positionX },
             { "positionY", sn->positionY },
             { "rotation", sn->rotation },
@@ -618,6 +629,14 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                     { "z", tn->tint.z }
                 }
             },
+            { "stroke", tn->isStroked }, 
+            { "stroke color", {
+                    { "x", tn->strokeColor.x },
+                    { "y", tn->strokeColor.y },
+                    { "z", tn->strokeColor.z }
+                }
+            },   
+            { "stroke width", tn->strokeWidth,
             { "UIFlag", tn->UIFlag }, 
             { "alpha", tn->alpha },    
             { "position x", tn->positionX },      
@@ -762,6 +781,15 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("tint"))
                 sn->tint = { data["tint"]["x"], data["tint"]["y"], data["tint"]["z"] };
+
+            if (data.contains("stroke"))
+                sn->isStroked = data["stroke"];
+
+            if (data.contains("stroke color"))
+                sn->strokeColor = { data["stroke color"]["x"], data["stroke color"]["y"], data["stroke color"]["z"] };
+
+            if (data.contains("stroke width"))
+                sn->strokeWidth = data["stroke width"];
 
             if (data.contains("currentTexture"))
             {
@@ -1099,7 +1127,16 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 tn->tint = { data["tint"]["x"], data["tint"]["y"], data["tint"]["z"] };     
 
             if (data.contains("alpha"))
-                tn->alpha = data["alpha"];   
+                tn->alpha = data["alpha"];  
+                
+            if (data.contains("stroke"))
+                tn->isStroked = data["stroke"];
+
+            if (data.contains("stroke color"))
+                tn->strokeColor = { data["stroke color"]["x"], data["stroke color"]["y"], data["stroke color"]["z"] };
+
+            if (data.contains("stroke width"))
+                tn->strokeWidth = data["stroke width"]; 
 
             if (data.contains("position x"))
                 tn->positionX = data["position x"];   

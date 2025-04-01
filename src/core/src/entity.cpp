@@ -36,11 +36,14 @@ Entity::Entity(int type, float x, float y)
     scrollFactor = { 1.0f, 1.0f };
     scale = { 1.0f, 1.0f }; 
     tint = { 1.0f, 1.0f, 1.0f };
+    outlineColor = { 0.0f, 0.0f, 0.0f };
     rotation = 0.0f;  
     alpha = 1.0f;
+    outlineWidth = 1.0f;
     active = true;
     alive = true;
     renderable = true;
+    outlineEnabled = false;
     cull = false;
     flipX = false;
     flipY = false;
@@ -109,6 +112,20 @@ void Entity::SetEnabled(bool isEnabled) {
 void Entity::SetPosition(float x, float y) { 
     position.x = x;
     position.y = y; 
+}
+
+
+//-----------------------------
+
+
+void Entity::SetStroke(bool isOutlined, const Math::Vector3& color, float width) 
+{
+    outlineEnabled = isOutlined;
+
+    if (outlineEnabled) {
+        outlineWidth = width;
+        outlineColor = color;
+    }
 }
 
 
@@ -576,6 +593,12 @@ void Sprite::Render()
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
     model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
 
+    unsigned int fill = 1;
+
+    #ifndef __EMSCRIPTEN__
+        fill = GL_FILL;
+    #endif
+
     //update shaders and textures 
 
     if (active)
@@ -585,35 +608,43 @@ void Sprite::Render()
 
         if (renderable)
         {
-            //if (strcmp(type, "tile") == 0)
-            //shader.SetInt("images", 1, true);
-            //else
-                shader.SetInt("image", 0);    
+
+            const glm::mat4 _mvp = proj * view * model;
+
+            const Math::Matrix4 mvp = { 
+                { _mvp[0][0], _mvp[0][1], _mvp[0][2], _mvp[0][3] }, 
+                { _mvp[1][0], _mvp[1][1], _mvp[1][2], _mvp[1][3] },   
+                { _mvp[2][0], _mvp[2][1], _mvp[2][2], _mvp[2][3] },  
+                { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
+            };
+
+            //stroke pass
+
+            if (outlineEnabled) 
+            {
+                shader = Graphics::Shader::Get("outline"); 
+                shader.SetInt("image", 0); 
+                shader.SetMat4("mvp", mvp);  
+                shader.SetVec3f("outlineColor", outlineColor);
+                shader.SetFloat("alphaVal", alpha); 
+                shader.SetFloat("outlineWidth", outlineWidth); 
+
+                texture.Update(position, flipX, flipY, fill);  
+            }
+
+            //fill pass
+
+            shader = Graphics::Shader::Get("sprite"); 
+
+            shader.SetMat4("mvp", mvp);  
+            shader.SetInt("image", 0);    
 
             #ifndef __EMSCRIPTEN__
                 shader.SetInt("repeat", texture.Repeat);
             #endif
-
-            //set shader uniforms
-
             shader.SetVec2f("scale", { scale.x, scale.y });
             shader.SetFloat("alphaVal", alpha); 
             shader.SetVec3f("tint", tint);
-
-            const glm::mat4 mvp = proj * view * model;
-
-            shader.SetMat4("mvp", { 
-                { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
-                { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
-                { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
-                { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
-            });  
-
-            unsigned int fill = 1;
-
-            #ifndef __EMSCRIPTEN__
-                fill = GL_FILL;
-            #endif
 
             texture.Update(position, flipX, flipY, fill);   
  

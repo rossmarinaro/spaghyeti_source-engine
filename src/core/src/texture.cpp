@@ -308,6 +308,7 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
 
     Bind();
 
+    //glStencilMask(0x00);
     glBindVertexArray(m_VAO); 
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);    
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
@@ -328,6 +329,6 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
     
     glLineWidth(thickness);
     glDrawArrays(GL_TRIANGLES, 0, 6);
-    
+    glBindVertexArray(0); 
 }
 

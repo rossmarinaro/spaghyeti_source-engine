@@ -15,7 +15,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-
 //default embedded text data
 static GLTtext* _GLT_text_buffer;
 static std::map<const std::string, GLTtext*> _GLT_text_handles;
@@ -138,12 +137,6 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
 
         FT_Set_Pixel_Sizes(face, 0, 48);
 
-        //disable byte-alignment restriction
-
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        //load first 128 m_chars of ASCII set
-
         for (unsigned char c = 0; c < 128; c++)
         {
             //Load character glyph 
@@ -156,8 +149,14 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
             //generate texture
 
             unsigned int texture;
+
             glGenTextures(1, &texture);
             glBindTexture(GL_TEXTURE_2D, texture);
+
+            //disable byte-alignment restriction
+
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
             glTexImage2D(
                 GL_TEXTURE_2D,
                 0,
@@ -176,7 +175,7 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                
+       
             //now store character for later use
 
             Character character = {
@@ -203,7 +202,6 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
         FT_Done_Face(face);
 
         textType = FONT;
-        m_shader = Graphics::Shader::Get("text"); 
 
     }
 
@@ -259,7 +257,12 @@ void Text::Render()
 
     if (textType == DEFAULT && _GLT_text_buffer) 
     {   
-        model = glm::translate(model, { position.x, position.y, 0.0f });
+        auto handle = static_cast<GLTtext*>(GetGLTPointer());
+
+        if (!handle) 
+            return;
+
+        model = glm::translate(model, { position.x, position.y, 0.0f }); 
         model = glm::scale(model, { scale.x, scale.y, 1.0f });
         
         const glm::highp_mat4& mp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
@@ -268,10 +271,7 @@ void Text::Render()
         gltBeginDraw();
         gltColor(tint.x, tint.y, tint.z, alpha);
 
-        auto handle = static_cast<GLTtext*>(GetGLTPointer());
-
-        if (handle) 
-            gltDrawText(handle, (GLfloat*)&mp);
+        gltDrawText(handle, (GLfloat*)&mp);
 
         #ifndef __EMSCRIPTEN__
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -281,27 +281,80 @@ void Text::Render()
     }
 
     if (textType == FONT) 
-    {                    
-        model = glm::scale(model, { scale.x, scale.y, 1.0f });
+    {        
 
-        const glm::highp_mat4& proj = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
+        float localX = position.x;
 
-        m_shader.SetMat4("mvp", {
+        model = glm::translate(model, { -scale.x, -scale.y, 0.0f });
+        model = glm::scale(model, { scale.x, scale.y, 0.0f });
+
+        glm::highp_mat4 proj = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
+
+        const Math::Matrix4 mvp = {
             { proj[0][0], proj[0][1], proj[0][2], proj[0][3] }, 
             { proj[1][0], proj[1][1], proj[1][2], proj[1][3] },   
             { proj[2][0], proj[2][1], proj[2][2], proj[2][3] },  
             { proj[3][0], proj[3][1], proj[3][2], proj[3][3] }
-        });
+        };
 
+        glActiveTexture(GL_TEXTURE0);
+
+        //stroke pass
+
+        if (outlineEnabled)
+        {
+            glBindVertexArray(m_VAO);
+
+            m_shader = Graphics::Shader::Get("outline");  
+
+            m_shader.SetMat4("mvp", mvp);
+            m_shader.SetVec3f("outlineColor", outlineColor);
+            m_shader.SetFloat("alphaVal", alpha); 
+            m_shader.SetFloat("outlineWidth", outlineWidth); 
+
+            //render each char
+
+            for (std::string::const_iterator c = content.begin(); c != content.end(); c++) 
+            {
+                Character ch = m_chars[*c];
+
+                const float xpos = localX + ch.Bearing.x * scale.x,
+                            ypos = position.y - (ch.Size.y - ch.Bearing.y) * scale.y,
+                            w = ch.Size.x * scale.x,
+                            h = ch.Size.y * scale.y;
+
+                const float vertices[6][4] = {
+                    { xpos,     ypos + h,   0.0f, 1.0f },            
+                    { xpos,     ypos,       0.0f, 0.0f },
+                    { xpos + w, ypos,       1.0f, 0.0f },
+
+                    { xpos,     ypos + h,   0.0f, 1.0f },
+                    { xpos + w, ypos,       1.0f, 0.0f },
+                    { xpos + w, ypos + h,   1.0f, 1.0f }           
+                };
+
+                glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+                glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+
+                localX += (ch.Advance >> 6) * scale.x;
+            }
+
+        }
+        
+        //fill pass
+
+        localX = position.x;
+
+        m_shader = Graphics::Shader::Get("text");  
+
+        m_shader.SetMat4("mvp", mvp);
         m_shader.SetVec3f("textColor", tint.x, tint.y, tint.z);
         m_shader.SetFloat("alphaVal", alpha); 
 
-        glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(m_VAO);
-
-        float localX = position.x;
-
-        //iterate through all m_chars
 
         for (std::string::const_iterator c = content.begin(); c != content.end(); c++) 
         {
@@ -311,8 +364,6 @@ void Text::Render()
                         ypos = position.y - (ch.Size.y - ch.Bearing.y) * scale.y,
                         w = ch.Size.x * scale.x,
                         h = ch.Size.y * scale.y;
-
-            //update m_VBO for each character
 
             const float vertices[6][4] = {
                 { xpos,     ypos + h,   0.0f, 1.0f },            
@@ -324,20 +375,18 @@ void Text::Render()
                 { xpos + w, ypos + h,   1.0f, 1.0f }           
             };
 
-            //render glyph texture over quad
+            glLineWidth(0.0f);
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-            // update content of m_VBO memory
             glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
-            //render quad
             glDrawArrays(GL_TRIANGLES, 0, 6);
-            //now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            localX += (ch.Advance >> 6) * scale.x;// bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
-        }
 
+            localX += (ch.Advance >> 6) * scale.x;
+        }
+        
         glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
+
     }
 }
 
@@ -365,3 +414,5 @@ const Math::Vector2 Text::GetTextDimensions()
 
     return { width, height };
 }
+
+

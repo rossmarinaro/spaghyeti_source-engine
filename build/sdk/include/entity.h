@@ -21,16 +21,17 @@ class Entity {
 
 		int depth, type;
 
-		float rotation, alpha;  
+		float rotation, alpha, outlineWidth;  
 		
         bool flipX, 
              flipY, 
              active, 
              renderable, 
              cull,
-             alive;
+             alive,
+             outlineEnabled;
 
-		Math::Vector3 tint; 
+		Math::Vector3 tint, outlineColor; 
 		Math::Vector2 position, scale, scrollFactor;
 		std::string ID, name;
 
@@ -63,6 +64,7 @@ class Entity {
 		void SetScale(float scaleX, float scaleY = 1.0f);
 		void SetEnabled(bool isEnabled);
         void SetPosition(float x, float y);
+        void SetStroke(bool isOutlined, const Math::Vector3& color = { 0.0f, 0.0f, 0.0f }, float width = 1.0f);
 
         static inline int s_depth = 0, s_count = 0;
         static inline Math::Vector2* s_cullPosition;
@@ -134,6 +136,7 @@ class Text : public Entity {
        
         void Render() override;
 		void SetText(const std::string& content);
+
         const Math::Vector2 GetTextDimensions();
  
        Text(const std::string& content, float x, float y, const std::string& font = "", float scale = 1.0f, const Math::Vector3& tint = { 1.0f, 1.0f, 1.0f });
