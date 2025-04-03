@@ -153,14 +153,41 @@ void Shader::InitBaseShaders()
         #endif
 
         "layout(location = 0) in vec4 vertex;\n"
-        "out vec2 TexCoords;\n"
-        "const float outlineWidth = 2.0;\n"
+        "out vec2 uv;\n"
+
         "uniform mat4 mvp;\n"
 
         "void main(){\n"
             "gl_Position = mvp * vec4(vertex.xy, 0.0, 1.0);\n"
-            "TexCoords = vertex.zw;\n"
+            "uv = vertex.zw;\n"
         "}";
+
+
+    //--------------------------------------------
+
+
+    static constexpr const char* textFragment = \
+
+        #ifdef __EMSCRIPTEN__
+            "#version 300 es\n"
+            "precision mediump float;\n"
+        #else
+            "#version 330 core\n"
+        #endif
+
+        "in vec2 uv;\n"
+        "out vec4 color;\n"
+
+        "uniform sampler2D image;\n"
+        "uniform vec3 textColor;\n"
+        "uniform float alphaVal;\n"
+
+        "void main()\n"
+        "{ \n"
+            "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(image, uv).r);\n"
+            "color = vec4(textColor, alphaVal) * sampled; \n"
+        "}";
+
 
 
     //--------------------------------------------
@@ -176,65 +203,72 @@ void Shader::InitBaseShaders()
         #endif
 
         "layout(location = 0) in vec4 vertex;\n"
-        "out vec2 TexCoords;\n"
-        "out vec2 params;\n"
+
         "uniform float outlineWidth;\n"
 
         "uniform mat4 mvp;\n"
-        "vec2 _params;\n"
 
-        "vec2 addOutlineWidth(vec2 vertex){\n"
-           // "vertex.x +=  outlineWidth;\n"
-          //  "vertex.y +=  outlineWidth;\n"
-            "vertex.x += (gl_VertexID % 2 == 0 ? -outlineWidth : outlineWidth);\n"
-            "vertex.y += (gl_VertexID % 4 < 2 ? -outlineWidth : outlineWidth);\n"
-            "_params.x = (gl_VertexID % 2 == 0 ? 0 : 1);\n"
-            "_params.y = (gl_VertexID % 4 < 2 ? 0 : 1);\n"
+        "out vec2 uv;\n"
+ 
+        "vec2 addOutlineWidth(vec2 vertex) {\n"
+           
+           "vertex.x += (gl_VertexID % 2 == 0 ? -outlineWidth : outlineWidth);\n"
+           "vertex.y += (gl_VertexID % 4 < 2 ? -outlineWidth : outlineWidth);\n"
+
             "return vertex;\n"
         "}\n"
 
         "void main(){\n"
+            "uv = vertex.zw;\n"
             "gl_Position = mvp * vec4(addOutlineWidth(vertex.xy), 0.0, 1.0);\n"
-            "TexCoords = vertex.zw;\n"
-            "params = _params;\n"
-        "}";
 
+        "}";
 
     //--------------------------------------------
 
 
     static constexpr const char* outlineFragment = \
 
-        #ifdef __EMSCRIPTEN__
+         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
             "precision mediump float;\n"
         #else
             "#version 330 core\n"
         #endif
 
+        "uniform sampler2D image;\n"  
+
+        "uniform float outlineWidth;\n" 
+
         "out vec4 color;\n"
+        
+        "in vec2 uv;\n"
 
-        "in vec2 TexCoords;\n"
-        "in vec2 params;\n"
-        "uniform vec3 outlineColor;\n"
-        "uniform float alphaVal;\n"
-        "uniform sampler2D image;\n"
-
-        "float mapWithoutlineWidth(sampler2D s, vec2 uv){\n"
-            "float f = texture(s, vec2(uv.x,uv.y)).r;\n"
-            "return f;\n"
-        "}\n"
-        "void main(){\n"
-            "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(image, TexCoords).r);\n"
-            "color = vec4(outlineColor, mapWithoutlineWidth(image, TexCoords) * alphaVal) * sampled;\n"
+        "void main() {\n"
+            "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(image, vec2(uv.x * outlineWidth, uv.y * outlineWidth)).r);\n"
+            "float alpha = sampled.a;\n"
+            "vec3 outlineColor = vec3(0.0, 1.0, 0.0);"
+            "vec2 tex_size = textureSize(image, 0);\n"
+            //"vec2 texelSize = 1.0 / tex_size;\n"
+            "vec2 offsetX;\n"
+            "offsetX.x = tex_size.x * 10.1;\n"
+            "vec2 offsetY;\n"
+            "offsetY.y = tex_size.y * 10.1;\n"
+            //"float alpha = texture(image, uv).a;\n"
+            // "alpha += ceil(texture(image, uv.x + offsetX).a);\n"
+            // "alpha += ceil(texture(image, uv.x - offsetX).a);\n"
+            // "alpha += ceil(texture(image, uv.y + offsetY).a);\n"
+            // "alpha += ceil(texture(image, uv.y - offsetY).a);\n"
+            "alpha += ceil(texture(image, uv.x + offsetX).a) * sampled.a;\n"
+            "alpha += ceil(texture(image, uv.x - offsetX).a) * sampled.a;\n"
+            "alpha += ceil(texture(image, uv.y + offsetY).a) * sampled.a;\n"
+            "alpha += ceil(texture(image, uv.y - offsetY).a) * sampled.a;\n"
+            "color =  sampled * vec4(outlineColor, alpha);\n"
         "}";
-
-
 
     //--------------------------------------------
 
-
-    static constexpr const char* textFragment = \
+    static constexpr const char* outlineGeometry = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -243,19 +277,43 @@ void Shader::InitBaseShaders()
             "#version 330 core\n"
         #endif
 
-        "in vec2 TexCoords;\n"
-        "out vec4 color;\n"
+        "in VS_OUT {\n"
+            "vec2 uv;\n"
+        "} gs_in[];\n"
 
-        "uniform sampler2D text;\n"
-        "uniform vec3 textColor;\n"
-        "uniform float alphaVal;\n"
+        "layout (triangles) in;\n"
+        "layout (triangle_strip, max_vertices = 3) out;\n"
 
-        "void main()\n"
-        "{ \n"
-            "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n"
-            "color = vec4(textColor, alphaVal) * sampled; \n"
-        "}";
+        "out vec2 uv;\n" 
 
+        "uniform float time;\n"
+
+        "vec4 explode(vec4 position, vec3 normal) {\n" 
+            "float magnitude = 2.0;\n"
+            "vec3 direction = normal * ((sin(time) + 1.0) / 2.0) * magnitude;\n" 
+            "return position + vec4(direction, 0.0);\n"
+        "}\n"
+
+        "vec3 GetNormal() {\n" 
+            "vec3 a = vec3(gl_in[0].gl_Position) - vec3(gl_in[1].gl_Position);\n"
+            "vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[1].gl_Position);\n"
+            "return normalize(cross(a, b));\n"
+        "}\n"
+
+        "void main() {\n"    
+            "vec3 normal = GetNormal();\n"
+
+            "gl_Position = explode(gl_in[0].gl_Position, normal);\n"
+            "uv = gs_in[0].uv;\n"
+            "EmitVertex();\n"
+            "gl_Position = explode(gl_in[1].gl_Position, normal);\n"
+            "uv = gs_in[1].uv;\n"
+            "EmitVertex();\n"
+            "gl_Position = explode(gl_in[2].gl_Position, normal);\n"
+            "uv = gs_in[2].uv;\n"
+            "EmitVertex();\n"
+            "EndPrimitive();\n"
+        "}";  
 
     //--------------------------------------------
 
@@ -386,7 +444,8 @@ void Shader::InitBaseShaders()
     Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment);
     Load("graphics", debugGraphicShader_vertex, debugGraphicShader_fragment);
     Load("text", textVertex, textFragment);
-    Load("outline", outlineVertex, outlineFragment);  
+    Load("outline", textVertex, outlineFragment);    
+    //Load("outline", outlineVertex, outlineFragment, outlineGeometry);    
     //Load("batch", spriteBatchShader_vertex, spriteBatchShader_fragment);
 
     #if DEVELOPMENT == 1
@@ -420,7 +479,6 @@ const bool checkCompileErrors(const std::string& key, unsigned int shader, const
 
     if (type != "program")
     {
-
         glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
 
         if (result == GL_FALSE) {
@@ -437,7 +495,6 @@ const bool checkCompileErrors(const std::string& key, unsigned int shader, const
 
     else
     {
-
         glGetProgramiv(shader, GL_LINK_STATUS, &result);
 
         if (result == GL_FALSE) {
@@ -456,7 +513,7 @@ const bool checkCompileErrors(const std::string& key, unsigned int shader, const
 //-------------------------------------------- load shader
 
 
-void Shader::Load(const std::string& key, const char* vertShader, const char* fragShader)
+void Shader::Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomShader)
 {
 
     if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [key](const std::pair<const std::string&, Shader>& s) { return s.first == key; }) != System::Application::resources->shaders.end())
@@ -472,7 +529,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     if (
         System::Utils::str_includes(vertShader, ".vert") && System::Utils::str_includes(fragShader, ".frag") ||
         System::Utils::str_includes(vertShader, ".glsl") && System::Utils::str_includes(fragShader, ".glsl") ||
-        System::Utils::str_includes(vertShader, ".shader") && System::Utils::str_includes(fragShader, ".shader")
+        System::Utils::str_includes(vertShader, ".shader") && System::Utils::str_includes(fragShader, ".shader") 
     )
     {
 
@@ -496,19 +553,38 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         const char* vs = vertexCode.c_str();
         const char* fs = fragmentCode.c_str();
 
-        LOG("Shader: \"" + key + "\" loaded. (filepath)");
+        std::string geometryCode;
 
-        if (!shader.Generate(key, vs, fs))
+        if (geomShader) {
+            
+            std::ifstream geometryShaderFile(vertShader);
+            std::stringstream gShaderStream;
+
+            gShaderStream << geometryShaderFile.rdbuf();
+            geometryShaderFile.close();
+            geometryCode = gShaderStream.str();
+
+        }
+
+        if (!shader.Generate(key, vs, fs, geometryCode.size() ? geometryCode.c_str() : nullptr)) {
+            LOG("Shader: \"" + key + "\" failed to load. (filepath)");
             return;
+        }
+
+        LOG("Shader: \"" + key + "\" loaded. (filepath)");
 
     }
 
     //from raw char
 
-    else {
-        LOG("Shader: \"" + key + "\" loaded. (embedded)");
-        if (!shader.Generate(key, vertShader, fragShader))
+    else 
+    {
+        if (!shader.Generate(key, vertShader, fragShader, geomShader ? geomShader : nullptr)) {
+            LOG("Shader: \"" + key + "\" failed to load. (embedded)");
             return;
+        }
+
+        LOG("Shader: \"" + key + "\" loaded. (embedded)");
     }
 
     System::Application::resources->shaders[key] = shader;
@@ -517,10 +593,10 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
 //--------------------------- generate
 
 
-const bool Shader::Generate(const std::string& key, const char* vertexPath, const char* fragmentPath)
+const bool Shader::Generate(const std::string& key, const char* vertexPath, const char* fragmentPath, const char* geomPath)
 {
 
-    unsigned int vertex, fragment;
+    unsigned int vertex, fragment, geometry;
 
     //vertex
 
@@ -532,27 +608,39 @@ const bool Shader::Generate(const std::string& key, const char* vertexPath, cons
     if (!checkCompileErrors(key, vertex, "vertex"))
         return false;
 
-    //fragment
+    //geometry (optional) 
 
-    if (fragmentPath != nullptr)
+    if (geomPath)
     {
-        fragment = glCreateShader(GL_FRAGMENT_SHADER);
+        geometry = glCreateShader(GL_GEOMETRY_SHADER);
 
-        glShaderSource(fragment, 1, &fragmentPath, NULL);
-        glCompileShader(fragment);
+        glShaderSource(geometry, 1, &geomPath, NULL);
+        glCompileShader(geometry);
 
-        if (!checkCompileErrors(key, fragment, "fragment"))
+        if (!checkCompileErrors(key, geometry, "geometry"))
             return false;
     }
+
+    //fragment
+
+    fragment = glCreateShader(GL_FRAGMENT_SHADER);
+
+    glShaderSource(fragment, 1, &fragmentPath, NULL);
+    glCompileShader(fragment);
+
+    if (!checkCompileErrors(key, fragment, "fragment"))
+        return false;
+
 
     //shader Program
 
     this->ID = glCreateProgram();
 
     glAttachShader(this->ID, vertex);
+    glAttachShader(this->ID, fragment);
 
-    if (fragmentPath != nullptr)
-        glAttachShader(this->ID, fragment);
+    if (geomPath != nullptr)
+        glAttachShader(this->ID, geometry);
 
     glLinkProgram(this->ID);
 
@@ -566,9 +654,10 @@ const bool Shader::Generate(const std::string& key, const char* vertexPath, cons
     //delete the shaders
 
     glDeleteShader(vertex);
+    glDeleteShader(fragment);
 
-    if (fragmentPath != nullptr)
-        glDeleteShader(fragment);
+    if (geomPath != nullptr)
+        glDeleteShader(geometry);
 
     return true;
 }

@@ -269,10 +269,6 @@ void Triangles::Flush()
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b2Color), m_colors);
 
-    //glEnable(GL_BLEND);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     #ifndef __EMSCRIPTEN__
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     #endif
@@ -280,8 +276,6 @@ void Triangles::Flush()
     glLineWidth(0.1f);
 
     glDrawArrays(GL_TRIANGLES, 0, m_count);
-    
-    //glDisable(GL_BLEND);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);

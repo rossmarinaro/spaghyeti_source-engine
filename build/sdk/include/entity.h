@@ -87,14 +87,7 @@ class Geometry : public Entity {
 		float width, height, radius;
         bool isStatic;
 
-		inline void SetDrawStyle(int style) { m_drawStyle = style; } 
-        inline void SetThickness(float thickness) { m_thickness = thickness; } 
-
-		inline void SetSize(float width, float height) { 
-			this->width = width; 
-			this->height = height;
-		} 
-
+        inline void SetThickness(float thickness) { m_thickness = thickness; }
 		inline void SetSize(float radius) { this->radius = radius; } 
 
 		//quad
@@ -106,6 +99,8 @@ class Geometry : public Entity {
 		~Geometry();
 
 		void Render() override;
+        void SetSize(float width, float height);
+        void SetDrawStyle(int style);
 
 	private:
 

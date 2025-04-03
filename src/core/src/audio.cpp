@@ -54,22 +54,22 @@ static void _ProcessAudio(const char* key, bool loop, float volume)
 {
 
     std::string filetype = "none";
-    const std::string& filepath = System::Resources::Manager::GetFilePath(key);      
+    const auto filepath = System::Resources::Manager::GetFilePath(key);      
 
     //file asset or raw char data
 
     ma_result result;
     
-    if (filepath != "not found")  {
+    if (filepath)  {
         filetype = "filepath";
-        result = ma_decoder_init_file(filepath.c_str(), NULL, loop ? &_music_decoder : &_sound_decoder);
+        result = ma_decoder_init_file((*filepath).c_str(), NULL, loop ? &_music_decoder : &_sound_decoder);
     }
 
     else {
         filetype = "binary";
         const auto data = System::Resources::Manager::GetResource(key);
-        if (data.byte_length)
-            result = ma_decoder_init_memory(data.array_buffer, data.byte_length, NULL, loop ? &_music_decoder : &_sound_decoder);
+        if (data)
+            result = ma_decoder_init_memory(data->array_buffer, data->byte_length, NULL, loop ? &_music_decoder : &_sound_decoder);
     }
 
     if (result != MA_SUCCESS) {

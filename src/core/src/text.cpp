@@ -94,20 +94,22 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
             return;
         }
 
-        const std::string& filepath = System::Resources::Manager::GetFilePath(font);
+        const auto filepath = System::Resources::Manager::GetFilePath(font);
 
         FT_Face face;
 
-        if (filepath != "not found") {
-            if (filepath.empty()) {
+        if (filepath) 
+        {
+            if ((*filepath).empty()) {
                 LOG("Text: ERROR::FREETYPE: Failed to load font_name");
                 return;
             }
             
-            if (FT_New_Face(*_freetype, filepath.c_str(), 0, &face)) {
+            if (FT_New_Face(*_freetype, (*filepath).c_str(), 0, &face)) {
                 LOG("Text: ERROR::FREETYPE: Failed to load font");
                 return;
             }
+
             else {
                 LOG("Text: font " + font + " loaded from file. (.ttf)");
             }
@@ -115,13 +117,13 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
 
         //raw data 
 
-        else {
-
+        else 
+        {
             const auto data = System::Resources::Manager::GetResource(font);
 
-            if (data.byte_length)
+            if (data)
             {
-                if (FT_New_Memory_Face(*_freetype, data.array_buffer, data.byte_length, 0, &face)) {
+                if (FT_New_Memory_Face(*_freetype, data->array_buffer, data->byte_length, 0, &face)) {
                     LOG("Text: ERROR::FREETYPE: Failed to load font");
                     return;
                 }
@@ -130,7 +132,7 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
                 }
             }
             else {
-                LOG("Text: failed to load data resource.");
+                LOG("Text: failed to font load data resource. (" + font + ")");
                 return;
             }
         }
@@ -145,8 +147,6 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
                 LOG("Text: ERROR::FREETYTPE: Failed to load Glyph");
                 continue;
             }
-
-            //generate texture
 
             unsigned int texture;
 
@@ -187,13 +187,18 @@ Text::Text(const std::string& content, float x, float y, const std::string& font
 
             m_chars.insert(std::pair<char, Character>(c, character));
         }
-
+        float points[] = {
+            -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 1.0f, 1.0f, 0.0f
+        };
         glBindTexture(GL_TEXTURE_2D, 0);
         glGenVertexArrays(1, &m_VAO);
         glGenBuffers(1, &m_VBO);
         glBindVertexArray(m_VAO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, &points, GL_DYNAMIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -297,20 +302,10 @@ void Text::Render()
             { proj[3][0], proj[3][1], proj[3][2], proj[3][3] }
         };
 
-        glActiveTexture(GL_TEXTURE0);
-
-        //stroke pass
-
-        if (outlineEnabled)
+        const auto bindTexture = [&localX, this] -> void 
         {
+            glActiveTexture(GL_TEXTURE0);
             glBindVertexArray(m_VAO);
-
-            m_shader = Graphics::Shader::Get("outline");  
-
-            m_shader.SetMat4("mvp", mvp);
-            m_shader.SetVec3f("outlineColor", outlineColor);
-            m_shader.SetFloat("alphaVal", alpha); 
-            m_shader.SetFloat("outlineWidth", outlineWidth); 
 
             //render each char
 
@@ -341,9 +336,25 @@ void Text::Render()
 
                 localX += (ch.Advance >> 6) * scale.x;
             }
+        };
+
+        //stroke pass
+
+        if (outlineEnabled)
+        {
+
+            m_shader = Graphics::Shader::Get("outline");  
+
+            m_shader.SetMat4("mvp", mvp);
+            m_shader.SetVec3f("outlineColor", outlineColor);
+            m_shader.SetFloat("alphaVal", alpha); 
+            m_shader.SetFloat("outlineWidth", outlineWidth); 
+            m_shader.SetVec2f("scale", scale);
+            m_shader.SetFloat("time", glfwGetTime()); 
+            bindTexture();
 
         }
-        
+      
         //fill pass
 
         localX = position.x;
@@ -353,38 +364,10 @@ void Text::Render()
         m_shader.SetMat4("mvp", mvp);
         m_shader.SetVec3f("textColor", tint.x, tint.y, tint.z);
         m_shader.SetFloat("alphaVal", alpha); 
+        m_shader.SetVec2f("scale", scale); 
 
-        glBindVertexArray(m_VAO);
-
-        for (std::string::const_iterator c = content.begin(); c != content.end(); c++) 
-        {
-            Character ch = m_chars[*c];
-
-            const float xpos = localX + ch.Bearing.x * scale.x,
-                        ypos = position.y - (ch.Size.y - ch.Bearing.y) * scale.y,
-                        w = ch.Size.x * scale.x,
-                        h = ch.Size.y * scale.y;
-
-            const float vertices[6][4] = {
-                { xpos,     ypos + h,   0.0f, 1.0f },            
-                { xpos,     ypos,       0.0f, 0.0f },
-                { xpos + w, ypos,       1.0f, 0.0f },
-
-                { xpos,     ypos + h,   0.0f, 1.0f },
-                { xpos + w, ypos,       1.0f, 0.0f },
-                { xpos + w, ypos + h,   1.0f, 1.0f }           
-            };
-
-            glLineWidth(0.0f);
-            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-            glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-
-            localX += (ch.Advance >> 6) * scale.x;
-        }
-        
+        bindTexture();
+    
         glBindVertexArray(0);
 
     }

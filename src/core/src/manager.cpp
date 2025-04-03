@@ -176,55 +176,50 @@ void Manager::UnLoadRaw(const int type, const std::string& key) {
 //----------------------------
 
 //get raw data
-const BinaryResource& Manager::GetResource(const std::string& key) {
+const BinaryResource* Manager::GetResource(const std::string& key) {
     const auto resource = System::Application::resources->m_raw_assets.find(key);
-    if (resource != System::Application::resources->m_raw_assets.end())
-        return resource->second;
-
-    return {};
+    return resource != System::Application::resources->m_raw_assets.end() ?
+        &resource->second : nullptr;
 }
 
 
 //-------------------------------- 
 
 //get raw atlas
-const std::vector<std::array<int, 6>> Manager::GetRawSpritesheetData(const std::string& key) {
+const std::vector<std::array<int, 6>>* Manager::GetRawSpritesheetData(const std::string& key) {
     const auto it = System::Application::resources->m_atlases.find(key);
-    if (it != System::Application::resources->m_atlases.end())
-        return it->second; 
-        
-    return {};
+    return it != System::Application::resources->m_atlases.end() ?
+        &it->second : nullptr;
 }
 
 
 //--------------------------------- 
 
 //get anims by sprite key
-const std::map<const std::string, std::pair<int, int>>& Manager::GetAnimations(const std::string& key) {
+const std::map<const std::string, std::pair<int, int>>* Manager::GetAnimations(const std::string& key) {
     const auto it = System::Application::resources->m_anims.find(key);
-    if (it != System::Application::resources->m_anims.end())
-        return it->second;
-
+    return it != System::Application::resources->m_anims.end() ?
+        &it->second : nullptr;
 }
 
 
 //--------------------------------
 
 //get atlas path
-const std::string Manager::GetSpritesheetPath(const std::string& key) {
+const std::string* Manager::GetSpritesheetPath(const std::string& key) {
     const auto it = System::Application::resources->m_atlas_paths.find(key);
     return it != System::Application::resources->m_atlas_paths.end() ? 
-        it->second : "not found";
+        &it->second : nullptr;
 }
 
 
 //--------------------------- 
 
 //get asset path
-const std::string Manager::GetFilePath(const std::string& key) {
+const std::string* Manager::GetFilePath(const std::string& key) {
    const auto it = System::Application::resources->m_file_assets.find(key);
     return it != System::Application::resources->m_file_assets.end() ?
-        it->second.second : "not found";
+        &it->second.second : nullptr;
 }
 
 

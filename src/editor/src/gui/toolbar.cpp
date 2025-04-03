@@ -226,7 +226,7 @@ void editor::GUI::ShowSettings()
                     if (System::Utils::GetFileType(path) == System::Resources::Manager::DATA) 
                         continue;
 
-                    if (ImGui::MenuItem(path.c_str())) 
+                    if (ImGui::MenuItem(path.c_str()))  
                         AssetManager::Register(key);
                 }
 

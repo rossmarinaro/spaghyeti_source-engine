@@ -445,14 +445,14 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                 }
             },
             { "alpha", sn->alpha },
-            { "stroke", tn->isStroked }, 
+            { "stroke", sn->isStroked }, 
             { "stroke color", {
-                    { "x", tn->strokeColor.x },
-                    { "y", tn->strokeColor.y },
-                    { "z", tn->strokeColor.z }
+                    { "x", sn->strokeColor.x },
+                    { "y", sn->strokeColor.y },
+                    { "z", sn->strokeColor.z }
                 }
             },   
-            { "stroke width", tn->strokeWidth,
+            { "stroke width", sn->strokeWidth },
             { "positionX", sn->positionX },
             { "positionY", sn->positionY },
             { "rotation", sn->rotation },
@@ -636,7 +636,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                     { "z", tn->strokeColor.z }
                 }
             },   
-            { "stroke width", tn->strokeWidth,
+            { "stroke width", tn->strokeWidth },
             { "UIFlag", tn->UIFlag }, 
             { "alpha", tn->alpha },    
             { "position x", tn->positionX },      
@@ -1157,7 +1157,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 tn->depth = data["depth"];    
 
             if (data.contains("UIFlag"))
-                tn->UIFlag = data["UIFlag"];
+                tn->UIFlag = data["UIFlag"]; 
 
             if (data.contains("current font")) {
                 tn->currentFont = data["current font"];

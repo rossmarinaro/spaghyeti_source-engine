@@ -210,6 +210,29 @@ void Geometry::Render()
 }
 
 
+//-------------------------------------- 
+
+
+void Geometry::SetSize(float width, float height) { 
+    this->width = width; 
+    this->height = height;
+} 
+
+
+//-------------------------------------- 
+
+
+void Geometry::SetDrawStyle(int style) 
+{ 
+    if (style == 1)
+        m_drawStyle = GL_FILL;
+    else if (style == 0)
+        m_drawStyle = GL_LINE;
+    else
+        m_drawStyle = style; 
+} 
+
+
 /* SPRITE */
 
 
@@ -229,8 +252,10 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     shader = Graphics::Shader::Get("sprite");   
 
     const auto animations = System::Resources::Manager::GetAnimations(key);
-    anims.insert(animations.begin(), animations.end());       
-    
+
+    if (animations) 
+        anims = *animations;      
+
     if (isTile) {
         type = TILE; 
         //shader = Graphics::Shader::Get("batch");
@@ -253,7 +278,9 @@ Sprite::Sprite(const Sprite& sprite):
     velocityY = sprite.velocityY;   
 
     const auto animations = System::Resources::Manager::GetAnimations(key);
-    anims.insert(animations.begin(), animations.end()); 
+
+    if (animations) 
+        anims = *animations;
 
     texture = Graphics::Texture2D::Get(sprite.key);
     shader = Graphics::Shader::Get("sprite");     
@@ -468,17 +495,17 @@ void Sprite::SetTexture(const std::string& key)
 void Sprite::ReadSpritesheetData()
 {    
     
-    const std::string& spritesheet = System::Resources::Manager::GetSpritesheetPath(key);
+    const auto spritesheet = System::Resources::Manager::GetSpritesheetPath(key);
     const auto rawSpritesheetData = System::Resources::Manager::GetRawSpritesheetData(key);
- 
+
     //json file
 
-    if (System::Utils::str_endsWith(spritesheet, ".json")) 
+    if (spritesheet && System::Utils::str_endsWith(*spritesheet, ".json")) 
     {
 
         #if USE_JSON == 1 
 
-            std::ifstream JSON(spritesheet);
+            std::ifstream JSON(*spritesheet);
 
             const json data = json::parse(JSON);
 
@@ -492,6 +519,9 @@ void Sprite::ReadSpritesheetData()
 
                         m_resourceData.push_back({ x, y, w, h });
                     }
+
+            frames = m_resourceData.size();
+
         #else 
 
             LOG("Sprite: an attempt to load JSON failed, because JSON has not been enabled.");
@@ -502,8 +532,10 @@ void Sprite::ReadSpritesheetData()
 
     //int array
 
-    else if (rawSpritesheetData.size())
-        m_resourceData = rawSpritesheetData;  
+    else if (rawSpritesheetData) {
+        frames = rawSpritesheetData->size();
+        m_resourceData = *rawSpritesheetData; 
+    } 
 
     //not a spritesheet
 
@@ -511,7 +543,6 @@ void Sprite::ReadSpritesheetData()
         return;
     
     m_isSpritesheet = true;
-    frames = m_resourceData.size();
 
 }
 
@@ -538,7 +569,6 @@ void Sprite::StopAnimation() {
 
 void Sprite::Render()
 {  
-
     if (!alive)
         return;
 
@@ -603,9 +633,6 @@ void Sprite::Render()
 
     if (active)
     {
-
-        //render texture
-
         if (renderable)
         {
 
@@ -619,18 +646,23 @@ void Sprite::Render()
             };
 
             //stroke pass
-
+/* 
             if (outlineEnabled) 
             {
-                shader = Graphics::Shader::Get("outline"); 
+                shader = Graphics::Shader::Get("outline2"); 
+
                 shader.SetInt("image", 0); 
                 shader.SetMat4("mvp", mvp);  
                 shader.SetVec3f("outlineColor", outlineColor);
                 shader.SetFloat("alphaVal", alpha); 
                 shader.SetFloat("outlineWidth", outlineWidth); 
+            #ifndef __EMSCRIPTEN__
+                shader.SetInt("repeat", texture.Repeat);
+            #endif
 
+            shader.SetVec2f("scale", { scale.x, scale.y });
                 texture.Update(position, flipX, flipY, fill);  
-            }
+            } */
 
             //fill pass
 
@@ -642,6 +674,7 @@ void Sprite::Render()
             #ifndef __EMSCRIPTEN__
                 shader.SetInt("repeat", texture.Repeat);
             #endif
+
             shader.SetVec2f("scale", { scale.x, scale.y });
             shader.SetFloat("alphaVal", alpha); 
             shader.SetVec3f("tint", tint);

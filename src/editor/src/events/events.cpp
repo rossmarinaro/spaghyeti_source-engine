@@ -397,7 +397,7 @@ const bool EventListener::OpenProject() //makes temporary json file to parse dat
 
                         if (entry.is_directory()) {
                             for (const auto& e : std::filesystem::directory_iterator(entry))
-                                if (!std::filesystem::is_empty(e.path()))
+                                if (!std::filesystem::is_empty(e.path()) && !e.is_directory())
                                     loadAsset(e, type);
                         }
                         else
@@ -610,11 +610,68 @@ void EventListener::BuildAndRun()
 
     const auto options = std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive;
 
-    const std::string asset_types[] = { "images", "audio" };
+    const std::string asset_types[] = { "images", "audio", "fonts" };
 
     Editor::Log(Editor::Get()->embed_files ? "embedding assets" : "copying assets to build folder"); 
 
     std::map<std::string, std::array<std::string, 2>> rawFiles;
+
+    //iterate folders
+
+    const auto iterateFolder = [&](const std::filesystem::directory_entry& file, const std::string& projResPath, const std::string& type) -> void 
+    {
+        std::string name = file.path().filename().string();
+        const std::string destPath = assetsFolder + name;
+
+        std::string rsrcPath = file.path().string();
+        std::replace(rsrcPath.begin(), rsrcPath.end(), '\\', '/');
+
+        //encode / embed assets
+
+        if (Editor::Get()->embed_files) 
+        {
+            std::string rawFolder = Editor::projectPath + "resources/assets/raw/" + System::Utils::ReplaceFrom(name, ".", "") + ".hpp",
+                        pathWithoutSpecialChars = rsrcPath;
+
+            std::replace(rawFolder.begin(), rawFolder.end(), ' ', '_');
+            std::replace_if(pathWithoutSpecialChars.begin(), pathWithoutSpecialChars.end(), [](auto ch) { return ch != '_' && ::isblank(ch) || ::ispunct(ch); }, '_');
+            
+            rawFiles.insert({ name, { type, pathWithoutSpecialChars } });
+
+            if (!std::filesystem::exists(rawFolder)) 
+            {       
+                const std::string tmp_file = rawFolder + "_tmp";
+
+                system(("chdir sdk && packResource.sh " + projResPath + " \"" + rsrcPath + "\" " + tmp_file).c_str());
+
+                std::stringstream ss;
+                std::ifstream is(tmp_file);
+                std::ofstream os;
+
+                ss << is.rdbuf();
+
+                const std::string contents = "static constexpr " + ss.str();
+
+                is.close();
+                ss.clear();
+
+                os.open(rawFolder);  
+                os << contents;
+                os.close();
+
+                remove(tmp_file.c_str());
+
+                Editor::Log("encoding asset: " + rawFolder); 
+            }
+        }
+
+        //or copy them
+
+        else if (!std::filesystem::exists(destPath)) 
+            std::filesystem::copy_file(rsrcPath, destPath, options);
+    };
+
+    //loop over folders
 
     for (const std::string& folder : asset_types)
     {
@@ -627,57 +684,17 @@ void EventListener::BuildAndRun()
         else if (type == "audio")
             type = "System::Resources::Manager::AUDIO";
 
-        for (const auto& file : std::filesystem::directory_iterator(projResPath)) 
-        {
-            std::string name = file.path().filename().string();
-            const std::string destPath = assetsFolder + name;
+        else if (type == "fonts")
+            type = "System::Resources::Manager::TEXT";
 
-            std::string rsrcPath = file.path().string();
-            std::replace(rsrcPath.begin(), rsrcPath.end(), '\\', '/');
-
-            //encode / embed assets
-
-            if (Editor::Get()->embed_files) 
-            {
-                std::string rawFolder = Editor::projectPath + "resources/assets/raw/" + System::Utils::ReplaceFrom(name, ".", "") + ".hpp",
-                            pathWithoutSpecialChars = rsrcPath;
-
-                std::replace(rawFolder.begin(), rawFolder.end(), ' ', '_');
-                std::replace_if(pathWithoutSpecialChars.begin(), pathWithoutSpecialChars.end(), [](auto ch) { return ch != '_' && ::isblank(ch) || ::ispunct(ch); }, '_');
-                
-                rawFiles.insert({ name, { type, pathWithoutSpecialChars } });
-
-                if (!std::filesystem::exists(rawFolder)) 
-                {       
-                    const std::string tmp_file = rawFolder + "_tmp";
-
-                    system(("chdir sdk && packResource.sh " + projResPath + " \"" + rsrcPath + "\" " + tmp_file).c_str());
-
-                    std::stringstream ss;
-                    std::ifstream is(tmp_file);
-                    std::ofstream os;
-
-                    ss << is.rdbuf();
-
-                    const std::string contents = "static constexpr " + ss.str();
-
-                    is.close();
-                    ss.clear();
-
-                    os.open(rawFolder);  
-                    os << contents;
-                    os.close();
-
-                    remove(tmp_file.c_str());
-
-                    Editor::Log("encoding asset: " + rawFolder); 
-                }
+        for (const auto& file : std::filesystem::directory_iterator(projResPath)) {
+            if (file.is_directory()) {
+                for (const auto& f : std::filesystem::directory_iterator(file))
+                    if (!std::filesystem::is_empty(f.path()) && !f.is_directory())
+                        iterateFolder(f, projResPath, type);
             }
-
-            //or copy them
-
-            else if (!std::filesystem::exists(destPath)) 
-                std::filesystem::copy_file(rsrcPath, destPath, options);
+            else
+                iterateFolder(file, projResPath, type);
         }
     }
 
@@ -1101,7 +1118,7 @@ void EventListener::BuildAndRun()
 
         else if (file.is_directory() && path == sceneDir)
            for (const auto& f : std::filesystem::directory_iterator(sceneDir)) 
-               if (file.exists() && System::Utils::str_endsWith(f.path().string(), ".spaghyeti"))
+               if (file.exists() && System::Utils::str_endsWith(f.path().string(), ".spaghyeti") && !f.is_directory())
                    parseScene(f);
     }
 
@@ -1308,7 +1325,6 @@ void EventListener::BuildAndRun()
                 if (node->HasComponent(Component::SHADER) && node->shader.first.length())
                     preload_queue << "  Graphics::Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\", nullptr);\n";
 
-
                 //--------------- sprite
 
                 if (node->type == Node::SPRITE)
@@ -1319,7 +1335,7 @@ void EventListener::BuildAndRun()
                     std::ostringstream anim_oss;
                     std::vector<std::string> animsToLoad;
 
-                    auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
+                    const auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
                     //load frames
 
@@ -1365,6 +1381,8 @@ void EventListener::BuildAndRun()
 
                     //sprite configurations
 
+                    const std::string isStroke = sn->isStroked ? "true" : "false";
+
                     command_queue << "   sprite_" + node->ID + "->SetFrame(" + std::to_string(sn->currentFrame) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetRotation(" + std::to_string(sn->rotation) + ");\n";
@@ -1373,7 +1391,8 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetAlpha(" + std::to_string(sn->alpha) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetScrollFactor({" + std::to_string(sn->scrollFactorX) + ", " + std::to_string(sn->scrollFactorY) + "});\n";
- 
+                    command_queue << "  sprite_" + node->ID + "->SetStroke(" + isStroke + ", { " + std::to_string(sn->strokeColor.x) + ", " + std::to_string(sn->strokeColor.y) +  ", " + std::to_string(sn->strokeColor.z) + " }, " + std::to_string(sn->strokeWidth) + ");\n";
+
                     //set default animation if applied
 
                     if (sn->anim_to_play_on_start.key.length()) {
@@ -1420,11 +1439,12 @@ void EventListener::BuildAndRun()
                 if (node->type == Node::TEXT)
                 {          
 
-                    auto tn = std::dynamic_pointer_cast<TextNode>(node);
+                    const auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
                     //text render layer
 
                     tn->isUI = tn->UIFlag ? 2 : 1;
+                    const std::string isStroke = tn->isStroked ? "true" : "false";
 
                     command_queue << "   auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(tn->isUI) + ");\n"; 
 
@@ -1433,6 +1453,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   text_" + node->ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
                     command_queue << "   text_" + node->ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetStroke(" + isStroke + ", { " + std::to_string(tn->strokeColor.x) + ", " + std::to_string(tn->strokeColor.y) +  ", " + std::to_string(tn->strokeColor.z) + " }, " + std::to_string(tn->strokeWidth) + ");\n";
 
                     command_queue << "   text_" + node->ID + "->name = \"" + node->name + "\";\n";
         
@@ -1443,7 +1464,7 @@ void EventListener::BuildAndRun()
                 if (node->type == Node::EMPTY)
                 {
 
-                    auto en = std::dynamic_pointer_cast<EmptyNode>(node);
+                    const auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
                     if (en->m_debugGraphic)
                     {
@@ -1477,7 +1498,7 @@ void EventListener::BuildAndRun()
                 if (node->type == Node::TILEMAP)
                 {
 
-                    auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
+                    const auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
 
                     //load frames
 
@@ -1536,7 +1557,7 @@ void EventListener::BuildAndRun()
 
                 if (node->type == Node::AUDIO) {
 
-                    auto an = std::dynamic_pointer_cast<AudioNode>(node);
+                    const auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
                     std::string loop = an->loop ? "true" : "false";
 
@@ -1551,7 +1572,7 @@ void EventListener::BuildAndRun()
 
                 if (node->type == Node::GROUP) {
 
-                    auto gn = std::dynamic_pointer_cast<GroupNode>(node);
+                    const auto gn = std::dynamic_pointer_cast<GroupNode>(node);
 
                     if (gn->_nodes.size())
                         writeNodes(gn->_nodes);

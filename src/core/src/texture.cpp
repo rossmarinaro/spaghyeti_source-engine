@@ -98,15 +98,15 @@ void Texture2D::Load(const std::string& key)
 
     Texture2D texture;
     unsigned char* image = nullptr;
-    const std::string& filepath = System::Resources::Manager::GetFilePath(key);
+    const auto filepath = System::Resources::Manager::GetFilePath(key);
  
     stbi_set_flip_vertically_on_load(false);
 
     //file asset found in cache
 
-    if (filepath != "not found") {
+    if (filepath) {
         filetype = "filepath";
-        image = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+        image = stbi_load((*filepath).c_str(), &width, &height, &nrChannels, 0);
     }
 
     //byte encoded array buffer
@@ -114,17 +114,25 @@ void Texture2D::Load(const std::string& key)
     else 
     {   
         filetype = "binary";
-        
+  
         const auto data = System::Resources::Manager::GetResource(key);
-        unsigned char* image_buffer = (unsigned char*)data.array_buffer;
 
-        image = stbi_load_from_memory(image_buffer, data.byte_length, &width, &height, &nrChannels, 0);
+        if (data) {
+            unsigned char* image_buffer = (unsigned char*)data->array_buffer;
 
-        //image is compressed pixel data
+            image = stbi_load_from_memory(image_buffer, data->byte_length, &width, &height, &nrChannels, 0);
 
-        if (image == nullptr && data.byte_length) {
-            filetype = "compressed pixel data";
-            image = image_buffer;
+            //image is compressed pixel data
+
+            if (image == nullptr) {
+                filetype = "compressed pixel data";
+                image = image_buffer;
+            }
+        }
+
+        else {
+            LOG("Texture2D: Image of key: \"" + key + "\" failed to load pixel data.");    
+            return;
         }
     }
 
@@ -308,7 +316,6 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
 
     Bind();
 
-    //glStencilMask(0x00);
     glBindVertexArray(m_VAO); 
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);    
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
@@ -324,10 +331,14 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
     glBindBuffer(GL_ARRAY_BUFFER, 0);    
 
     #ifndef __EMSCRIPTEN__
-        glPolygonMode(GL_FRONT_AND_BACK, drawStyle);
+        glPolygonMode(GL_FRONT_AND_BACK, drawStyle); 
     #endif
-    
-    glLineWidth(thickness);
+
+    if (drawStyle == GL_LINE) {
+        glDisable(GL_LINE_SMOOTH);
+        glLineWidth(thickness);
+    }
+
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0); 
 }

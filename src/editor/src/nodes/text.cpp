@@ -59,9 +59,13 @@ void TextNode::Reset(int component_type)
 
 
 void TextNode::ChangeFont(const std::string& font) {
+    
+    AssetManager::Register(font);
     System::Game::DestroyEntity(textHandle);
     textHandle = System::Game::CreateText(textBuf, positionX, positionY, font);
+    currentFont = font;
 }
+
 
 //---------------------------
 

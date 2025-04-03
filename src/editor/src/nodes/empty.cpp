@@ -162,7 +162,7 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
 void EmptyNode::Render()
 {
-    if (m_debugGraphic)
+    if (m_debugGraphic && show_options)
     {
 
         ImGui::Checkbox("debug", &show_debug);

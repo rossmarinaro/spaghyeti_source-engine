@@ -26,7 +26,7 @@ namespace Graphics {
             void Delete();
             
             static void InitBaseShaders(); 
-            static void Load(const std::string& key, const char* vertShader, const char* fragShader);
+            static void Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomPath = nullptr);
             static void UnLoad(const std::string& key);
             static const Shader& Get(const std::string& key);
     
@@ -35,7 +35,7 @@ namespace Graphics {
 
         private:
 
-            const bool Generate(const std::string& key, const char* vertexPath, const char* fragmentPath);
+            const bool Generate(const std::string& key, const char* vertexPath, const char* fragmentPath, const char* geomShader = nullptr);
             const Shader& Use();
 
     };

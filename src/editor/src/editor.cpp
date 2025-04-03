@@ -173,14 +173,17 @@ void Editor::Start()
     //set top-left header and bottom toolbar icon (not binary, this image is stored as pixel data)
 
     const auto image_data = Resources::Manager::GetResource("icon small");
-    unsigned char* image_buffer = (unsigned char*)image_data.array_buffer;
-    GLFWimage image;
 
-    image.width = 66; 
-    image.height = 65;
-    image.pixels = image_buffer;
+    if (image_data) {
+        unsigned char* image_buffer = (unsigned char*)image_data->array_buffer;
+        GLFWimage image;
 
-    glfwSetWindowIcon(Renderer::GLFW_window_instance, 1, &image);
+        image.width = 66; 
+        image.height = 65;
+        image.pixels = image_buffer;
+
+        glfwSetWindowIcon(Renderer::GLFW_window_instance, 1, &image);
+    }
     
     //create entity selector graphic
 

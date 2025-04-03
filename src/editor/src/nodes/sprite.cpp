@@ -181,9 +181,14 @@ void SpriteNode::ApplyAnimation(const std::string& key)
         
         System::Resources::Manager::LoadAnims(key, animsToLoad);
 
-        if (spriteHandle) {
-            spriteHandle->anims = System::Resources::Manager::GetAnimations(key);
-            spriteHandle->ReadSpritesheetData();    
+        if (spriteHandle) 
+        {
+            const auto anims = System::Resources::Manager::GetAnimations(key);
+            
+            if (anims) {
+                spriteHandle->anims = *anims;
+                spriteHandle->ReadSpritesheetData();   
+            } 
         }
     }
 
