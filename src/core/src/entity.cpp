@@ -36,7 +36,7 @@ Entity::Entity(int type, float x, float y)
     scrollFactor = { 1.0f, 1.0f };
     scale = { 1.0f, 1.0f }; 
     tint = { 1.0f, 1.0f, 1.0f };
-    outlineColor = { 0.0f, 0.0f, 0.0f };
+    outlineColor = { 1.0f, 1.0f, 1.0f };
     rotation = 0.0f;  
     alpha = 1.0f;
     outlineWidth = 1.0f;
@@ -78,6 +78,29 @@ const bool Entity::IsSprite() {
 }
 
 
+
+//-----------------------------
+
+
+void Entity::SetStroke(bool isOutlined, const Math::Vector3& color, float width) 
+{
+    outlineEnabled = isOutlined;
+
+    if (outlineEnabled) {
+        outlineWidth = width;
+        outlineColor = color;
+    }
+
+    if (SPRITE) {
+        const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(ID);
+
+        if (sprite) 
+            sprite->SetShader(outlineEnabled ? "outline sprite" : "sprite");
+    }
+
+}
+
+
 //------------------------------------ 
 
 
@@ -114,19 +137,6 @@ void Entity::SetPosition(float x, float y) {
     position.y = y; 
 }
 
-
-//-----------------------------
-
-
-void Entity::SetStroke(bool isOutlined, const Math::Vector3& color, float width) 
-{
-    outlineEnabled = isOutlined;
-
-    if (outlineEnabled) {
-        outlineWidth = width;
-        outlineColor = color;
-    }
-}
 
 
 /* GEOMETRY */
@@ -231,6 +241,19 @@ void Geometry::SetDrawStyle(int style)
     else
         m_drawStyle = style; 
 } 
+
+
+//-------------------------------------- 
+
+
+void Geometry::SetShader(const std::string& key, int fillStyle) {  
+    if (System::Application::resources->shaders.find(key) == System::Application::resources->shaders.end())
+        return;
+
+    SetDrawStyle(fillStyle); 
+
+    shader = Graphics::Shader::Get(key); 
+}
 
 
 /* SPRITE */
@@ -460,11 +483,14 @@ void Sprite::RemoveBodies()
 }
 
 
+
 //----------------------------- set texture
 
 
 void Sprite::SetTexture(const std::string& key)
 {  
+    if (System::Application::resources->textures.find(key) == System::Application::resources->textures.end())
+        return;
 
     const auto& tex = Graphics::Texture2D::Get(key); 
         
@@ -486,6 +512,17 @@ void Sprite::SetTexture(const std::string& key)
     texture.Filter_Max = tex.Filter_Max; 
 
     m_currentAnim = { "", false, 0, 0, 0 }; 
+}
+
+
+//----------------------------- set shader
+
+
+void Sprite::SetShader(const std::string& key) {  
+    if (System::Application::resources->shaders.find(key) == System::Application::resources->shaders.end())
+        return;
+
+    shader = Graphics::Shader::Get(key); 
 }
 
 
@@ -646,41 +683,30 @@ void Sprite::Render()
             };
 
             //stroke pass
-/* 
-            if (outlineEnabled) 
-            {
-                shader = Graphics::Shader::Get("outline2"); 
 
-                shader.SetInt("image", 0); 
-                shader.SetMat4("mvp", mvp);  
+            if (strcmp(shader.key, "outline sprite") == 0) {
                 shader.SetVec3f("outlineColor", outlineColor);
-                shader.SetFloat("alphaVal", alpha); 
-                shader.SetFloat("outlineWidth", outlineWidth); 
-            #ifndef __EMSCRIPTEN__
-                shader.SetInt("repeat", texture.Repeat);
-            #endif
-
-            shader.SetVec2f("scale", { scale.x, scale.y });
-                texture.Update(position, flipX, flipY, fill);  
-            } */
+                shader.SetFloat("outlineWidth", outlineWidth);
+            }
 
             //fill pass
 
-            shader = Graphics::Shader::Get("sprite"); 
+            else {
+                shader.SetVec3f("tint", tint);
+            }
 
+            shader.SetInt("image", 0); 
             shader.SetMat4("mvp", mvp);  
-            shader.SetInt("image", 0);    
+            shader.SetFloat("alphaVal", alpha); 
 
             #ifndef __EMSCRIPTEN__
                 shader.SetInt("repeat", texture.Repeat);
             #endif
 
             shader.SetVec2f("scale", { scale.x, scale.y });
-            shader.SetFloat("alphaVal", alpha); 
-            shader.SetVec3f("tint", tint);
+  
+            texture.Update(position, flipX, flipY, fill); 
 
-            texture.Update(position, flipX, flipY, fill);   
- 
         }
 
         //update physics bodies if exists

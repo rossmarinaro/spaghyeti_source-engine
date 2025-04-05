@@ -40,10 +40,10 @@ namespace System {
             const bool ListenForInteraction(std::shared_ptr<Entity> entity); 
 
             template <typename T>
-            const inline std::shared_ptr<T> GetEntity(const std::string& name) 
-            {
-                auto entity_it = std::find_if(entities.begin(), entities.end(), [&](auto entity) { return entity->name == name; });
-                auto UI_it = std::find_if(UI.begin(), UI.end(), [&](auto UI) { return UI->name == name; });
+            const inline std::shared_ptr<T> GetEntity(const std::string& nameOrID, bool isID = false) 
+            {  
+                auto entity_it = std::find_if(entities.begin(), entities.end(), [&](auto entity) { return isID ? entity->ID == nameOrID : entity->name == nameOrID; });
+                auto UI_it = std::find_if(UI.begin(), UI.end(), [&](auto UI) { return isID ? UI->ID == nameOrID : UI->name == nameOrID; });
 
                 if (entity_it != entities.end())
                     return std::static_pointer_cast<T>(*entity_it);
@@ -53,6 +53,7 @@ namespace System {
 
                 return nullptr;
             }
+            
 
         private:
  

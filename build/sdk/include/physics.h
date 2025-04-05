@@ -32,7 +32,7 @@ class Physics {
             void CreateFixture(void* fixtureDef);
 
             const int GetType();
-            const bool CollidesWith(const std::shared_ptr<Body>& bodyB);
+            const bool CollidesWith(const std::shared_ptr<Body> bodyB);
             const bool Exists();
             const bool IsEnabled();
             const bool IsSensor(); 
@@ -64,7 +64,7 @@ class Physics {
         );
 
         //does not destroy body immediately. body will be destroyed after next timestep
-        static void DestroyBody(const std::shared_ptr<Body>& body);
+        static void DestroyBody(const std::shared_ptr<Body> body);
 
         void Update();
         void ClearBodies();

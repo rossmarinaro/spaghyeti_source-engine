@@ -326,7 +326,7 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
         auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
         if (sn->spriteHandle)
-            sn->spriteHandle->shader = Graphics::Shader::Get(name);
+            sn->spriteHandle->SetShader(name);
     }
 
     if (node->type == EMPTY) 
@@ -334,7 +334,7 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
         if (en->m_debugGraphic)
-            en->m_debugGraphic->shader = Graphics::Shader::Get(name);
+            en->m_debugGraphic->SetShader(name, en->debug_fill ? 1 : 0);
     }
 }
 

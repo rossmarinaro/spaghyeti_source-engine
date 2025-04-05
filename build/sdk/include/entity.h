@@ -101,6 +101,7 @@ class Geometry : public Entity {
 		void Render() override;
         void SetSize(float width, float height);
         void SetDrawStyle(int style);
+        void SetShader(const std::string& key, int fillStyle);
 
 	private:
 
@@ -198,6 +199,7 @@ class Sprite : public Entity {
 		void ReadSpritesheetData();
 		void RemoveBodies(); 
 		void SetTexture(const std::string& key);
+        void SetShader(const std::string& key);
 
 		void SetVelocity(float velX, float velY);
 		void SetVelocityX(float velX);

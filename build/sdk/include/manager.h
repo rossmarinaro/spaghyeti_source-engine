@@ -55,7 +55,7 @@ namespace System {
                 static void UnLoadFrames(const std::string& key);  
                 static void UnLoadAtlas(const std::string& key); 
 
-            private:
+            private: 
 
                 //asset storage
 

@@ -174,7 +174,7 @@ std::shared_ptr<Physics::Body> Physics::CreateDynamicBody(
 //-----------------------------
 
 
-void Physics::DestroyBody(const std::shared_ptr<Body>& body) {
+void Physics::DestroyBody(const std::shared_ptr<Body> body) {
     const auto b2d_body = _GetBox2DBody(body->id);
     if (b2d_body)
         _bodiesToRemove.insert({ body->id, b2d_body });
@@ -267,12 +267,12 @@ const bool Physics::Body::Exists() {
 //----------------------------------
 
 
-const bool Physics::Body::CollidesWith(const std::shared_ptr<Physics::Body>& bodyB)
+const bool Physics::Body::CollidesWith(const std::shared_ptr<Physics::Body> bodyB)
 {
     const auto bA = _GetBox2DBody(id),
                bB = _GetBox2DBody(bodyB->id);
 
-    if (bA == nullptr || bB == nullptr)
+    if (!bA || !bB)
         return false;
 
     return b2TestOverlap(bA->GetFixtureList()->GetAABB(0), bB->GetFixtureList()->GetAABB(0));

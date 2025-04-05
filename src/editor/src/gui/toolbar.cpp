@@ -276,36 +276,38 @@ void editor::GUI::ShowSettings()
         if (ImGui::BeginMenu("preload shaders"))
         {
 
-            const auto searchShaderFolders = [&am](int index, const std::string& type) -> void {
+            const auto iterate = [&] (const std::string& type, std::string& p, int index) -> void 
+            {
 
+                if (System::Utils::str_endsWith(p, type)) 
+                    if (ImGui::MenuItem(p.c_str())) {
+                        if (type == ".vert")
+                            Editor::Get()->shaders[index].second.first = p;
+                        if (type == ".frag")
+                            Editor::Get()->shaders[index].second.second = p;
+                    }
+            };
+
+            const auto searchShaderFolders = [&am, &iterate](int index, const std::string& type) -> void 
+            {
                 for (const auto& shader : std::filesystem::directory_iterator(Editor::projectPath + am->shader_dir)) 
                 {
-
                     std::string path = shader.path().string();
+                    std::replace(path.begin(), path.end(), '\\', '/');
+
                     const std::string name = shader.path().filename().string();
 
-                    if (!System::Utils::str_endsWith(path, type))
-                        continue;
-
-                    const auto iterate = [&] (std::string& p) -> void {
-
-                        if (System::Utils::str_endsWith(p, type)) 
-                            if (ImGui::MenuItem(p.c_str())) {
-                                if (type == ".vert")
-                                    Editor::Get()->shaders[index].second.first = p;
-                                if (type == ".frag")
-                                    Editor::Get()->shaders[index].second.second = p;
-                            }
-                    };
-
-                    if (shader.is_directory()) {
+                    if (shader.is_directory()) { 
                         for (const auto& folder : std::filesystem::directory_iterator(shader)) {
-                            std::string p = folder.path().string();
-                            iterate(p);
+                            if (!folder.is_directory()) {
+                                std::string p = folder.path().string();
+                                std::replace(p.begin(), p.end(), '\\', '/'); 
+                                iterate(type, p, index);
+                            }
                         }
                     }
                     else
-                        iterate(path);
+                        iterate(type, path, index);
                 }
             };
 

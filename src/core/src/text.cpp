@@ -302,7 +302,7 @@ void Text::Render()
             { proj[3][0], proj[3][1], proj[3][2], proj[3][3] }
         };
 
-        const auto bindTexture = [&localX, this] -> void 
+        const auto bindTexture = [&localX, this](float offset) -> void 
         {
             glActiveTexture(GL_TEXTURE0);
             glBindVertexArray(m_VAO);
@@ -315,8 +315,8 @@ void Text::Render()
 
                 const float xpos = localX + ch.Bearing.x * scale.x,
                             ypos = position.y - (ch.Size.y - ch.Bearing.y) * scale.y,
-                            w = ch.Size.x * scale.x,
-                            h = ch.Size.y * scale.y;
+                            w = ch.Size.x * scale.x + offset,
+                            h = ch.Size.y * scale.y + offset;
 
                 const float vertices[6][4] = {
                     { xpos,     ypos + h,   0.0f, 1.0f },            
@@ -340,18 +340,16 @@ void Text::Render()
 
         //stroke pass
 
-        if (outlineEnabled)
-        {
-
-            m_shader = Graphics::Shader::Get("outline");  
-
+        if (outlineEnabled) {
+            m_shader = Graphics::Shader::Get("text");          
+            m_shader.SetVec3f("textColor", 0.0f, 0.0f, 0.0f);
             m_shader.SetMat4("mvp", mvp);
-            m_shader.SetVec3f("outlineColor", outlineColor);
             m_shader.SetFloat("alphaVal", alpha); 
-            m_shader.SetFloat("outlineWidth", outlineWidth); 
             m_shader.SetVec2f("scale", scale);
-            m_shader.SetFloat("time", glfwGetTime()); 
-            bindTexture();
+            //m_shader.SetVec3f("outlineColor", outlineColor);            
+            //m_shader.SetFloat("outlineWidth", outlineWidth); 
+  
+            bindTexture(outlineWidth);
 
         }
       
@@ -366,7 +364,7 @@ void Text::Render()
         m_shader.SetFloat("alphaVal", alpha); 
         m_shader.SetVec2f("scale", scale); 
 
-        bindTexture();
+        bindTexture(0.0f);
     
         glBindVertexArray(0);
 

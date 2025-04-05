@@ -193,41 +193,7 @@ void Shader::InitBaseShaders()
     //--------------------------------------------
 
 
-    static constexpr const char* outlineVertex = \
-
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
-
-        "layout(location = 0) in vec4 vertex;\n"
-
-        "uniform float outlineWidth;\n"
-
-        "uniform mat4 mvp;\n"
-
-        "out vec2 uv;\n"
- 
-        "vec2 addOutlineWidth(vec2 vertex) {\n"
-           
-           "vertex.x += (gl_VertexID % 2 == 0 ? -outlineWidth : outlineWidth);\n"
-           "vertex.y += (gl_VertexID % 4 < 2 ? -outlineWidth : outlineWidth);\n"
-
-            "return vertex;\n"
-        "}\n"
-
-        "void main(){\n"
-            "uv = vertex.zw;\n"
-            "gl_Position = mvp * vec4(addOutlineWidth(vertex.xy), 0.0, 1.0);\n"
-
-        "}";
-
-    //--------------------------------------------
-
-
-    static constexpr const char* outlineFragment = \
+    static constexpr const char* textOutlineFragment = \
 
          #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
@@ -237,35 +203,93 @@ void Shader::InitBaseShaders()
         #endif
 
         "uniform sampler2D image;\n"  
-
         "uniform float outlineWidth;\n" 
+        "uniform vec3 outlineColor;\n" 
+        "uniform float alphaVal;\n" 
 
         "out vec4 color;\n"
-        
         "in vec2 uv;\n"
 
         "void main() {\n"
-            "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(image, vec2(uv.x * outlineWidth, uv.y * outlineWidth)).r);\n"
-            "float alpha = sampled.a;\n"
-            "vec3 outlineColor = vec3(0.0, 1.0, 0.0);"
-            "vec2 tex_size = textureSize(image, 0);\n"
-            //"vec2 texelSize = 1.0 / tex_size;\n"
-            "vec2 offsetX;\n"
-            "offsetX.x = tex_size.x * 10.1;\n"
-            "vec2 offsetY;\n"
-            "offsetY.y = tex_size.y * 10.1;\n"
-            //"float alpha = texture(image, uv).a;\n"
-            // "alpha += ceil(texture(image, uv.x + offsetX).a);\n"
-            // "alpha += ceil(texture(image, uv.x - offsetX).a);\n"
-            // "alpha += ceil(texture(image, uv.y + offsetY).a);\n"
-            // "alpha += ceil(texture(image, uv.y - offsetY).a);\n"
-            "alpha += ceil(texture(image, uv.x + offsetX).a) * sampled.a;\n"
-            "alpha += ceil(texture(image, uv.x - offsetX).a) * sampled.a;\n"
-            "alpha += ceil(texture(image, uv.y + offsetY).a) * sampled.a;\n"
-            "alpha += ceil(texture(image, uv.y - offsetY).a) * sampled.a;\n"
-            "color =  sampled * vec4(outlineColor, alpha);\n"
+
+            "vec4 c = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
+
+            "if (c.a == 0.0) {\n"
+
+                "ivec2 texSize2d = textureSize(image, 0);\n"
+                "float texSize = float(texSize2d.x);\n"
+                "float texelSize = 1.0 / texSize;\n"
+                "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
+                "float outline = vec4(1.0, 1.0, 1.0, texture(image, + vec2(-size.x, 0.0))).a;\n"
+ 
+                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(0.0, size.y))).a;\n"
+                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, 0.0))).a;\n"
+                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(0.0, -size.y))).a;\n"
+                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, size.y))).a;\n"
+                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, size.y))).a;\n"
+                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, size.y))).a;\n"
+                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, -size.y))).a;\n"
+                "outline = min(outline, 1.0);\n"
+
+                "vec4 c = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
+                "color = mix(c, vec4(outlineColor, alphaVal), outline - c.a);\n"
+
+            "}\n"
+            "else\n"
+               "color = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
         "}";
 
+
+    //--------------------------------------------
+
+    static constexpr const char* spriteOutlineFragment = \
+
+         #ifdef __EMSCRIPTEN__
+            "#version 300 es\n"
+            "precision mediump float;\n"
+        #else
+            "#version 330 core\n"
+        #endif
+
+        "uniform sampler2D image;\n"  
+        "uniform float outlineWidth;\n" 
+        "uniform vec3 outlineColor;\n" 
+        "uniform float alphaVal;\n" 
+
+        "out vec4 color;\n"
+        "in vec2 uv;\n"
+
+        "void main() {\n"
+
+            "vec4 c = texture(image, uv);\n"
+
+            "if (c.a == 0.0) {\n"
+
+                "ivec2 texSize2d = textureSize(image, 0);\n"
+                "float texSize = float(texSize2d.x);\n"
+                "float texelSize = 1.0 / texSize;\n"
+                "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
+                "float outline = texture(image, uv + vec2(-size.x, 0.0)).a;\n"
+
+                "outline += texture(image, uv + vec2(0.0, size.y)).a;\n"
+                "outline += texture(image, uv + vec2(size.x, 0.0)).a;\n"
+                "outline += texture(image, uv + vec2(0.0, -size.y)).a;\n"
+                "outline += texture(image, uv + vec2(-size.x, size.y)).a;\n"
+                "outline += texture(image, uv + vec2(size.x, size.y)).a;\n"
+                "outline += texture(image, uv + vec2(-size.x, size.y)).a;\n"
+                "outline += texture(image, uv + vec2(size.x, -size.y)).a;\n"
+                "outline = min(outline, 1.0);\n"
+
+                "vec4 c = texture(image, uv);\n"
+                "color = mix(c, vec4(outlineColor, alphaVal), outline - c.a);\n"
+
+            "}\n"
+            "else\n"
+               "color = texture(image, uv);\n"
+        "}";
+
+
+    
     //--------------------------------------------
 
     static constexpr const char* outlineGeometry = \
@@ -444,8 +468,9 @@ void Shader::InitBaseShaders()
     Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment);
     Load("graphics", debugGraphicShader_vertex, debugGraphicShader_fragment);
     Load("text", textVertex, textFragment);
-    Load("outline", textVertex, outlineFragment);    
-    //Load("outline", outlineVertex, outlineFragment, outlineGeometry);    
+    Load("outline text", textVertex, textOutlineFragment);    
+    Load("outline sprite", spriteQuadShader_vertex, spriteOutlineFragment); 
+
     //Load("batch", spriteBatchShader_vertex, spriteBatchShader_fragment);
 
     #if DEVELOPMENT == 1
@@ -668,7 +693,6 @@ const bool Shader::Generate(const std::string& key, const char* vertexPath, cons
 
 void Shader::UnLoad(const std::string& key)
 {
-
     const auto it = System::Application::resources->shaders.find(key);
 
     if (it != System::Application::resources->shaders.end()) {
@@ -677,7 +701,6 @@ void Shader::UnLoad(const std::string& key)
     }
 
     LOG("Shader: \"" + key + "\" deleted.");
-
 }
 
 

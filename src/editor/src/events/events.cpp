@@ -687,6 +687,8 @@ void EventListener::BuildAndRun()
         else if (type == "fonts")
             type = "System::Resources::Manager::TEXT";
 
+        else continue;
+
         for (const auto& file : std::filesystem::directory_iterator(projResPath)) {
             if (file.is_directory()) {
                 for (const auto& f : std::filesystem::directory_iterator(file))
@@ -1430,7 +1432,7 @@ void EventListener::BuildAndRun()
                     //shader
 
                     if (sn->HasComponent(Component::SHADER) && sn->shader.first.length()) 
-                        command_queue << "   sprite_" + node->ID + "->shader = Graphics::Shader::Get(\"" + sn->shader.first + "\");\n";
+                        command_queue << "   sprite_" + node->ID + "->SetShader(\"" + sn->shader.first + "\");\n";
 
                 }
 
