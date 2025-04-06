@@ -21,7 +21,7 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
     for (const auto& entity : System::Game::GetScene()->entities)
     {
-        if (entity->type != Entity::SPRITE) 
+        if (entity->GetType() != Entity::SPRITE) 
             continue;       
 
         auto sprite = std::static_pointer_cast<Sprite>(entity); 
@@ -63,7 +63,7 @@ void CollisionManager::EndContact(b2Contact* contact)
     for (const auto& entity : System::Game::GetScene()->entities)
     {
 
-        if (entity->type != Entity::SPRITE)  
+        if (entity->GetType() != Entity::SPRITE)  
             continue; 
 
         auto sprite = std::static_pointer_cast<Sprite>(entity);

@@ -545,11 +545,11 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     {
         LOG("Shader: \"" + key + "\" already exists.");
         return;
-    }
+    } 
 
     Shader shader;
 
-    shader.key = key.c_str();
+    shader.key = key;
 
     if (
         System::Utils::str_includes(vertShader, ".vert") && System::Utils::str_includes(fragShader, ".frag") ||

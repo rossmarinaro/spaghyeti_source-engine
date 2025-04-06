@@ -16,8 +16,9 @@
 
 //---------------------------------- empty entity
 
-Entity::Entity(int type) {
-    this->type = type;
+Entity::Entity(int type): 
+    m_type(type) 
+{
     name = "Untitled_" + std::to_string(s_count);
     ID = UUID::generate_uuid();
     s_count++;
@@ -28,10 +29,9 @@ Entity::Entity(int type) {
 //------------------------------------ active entity 
 
 
-Entity::Entity(int type, float x, float y)
+Entity::Entity(int type, float x, float y):
+    m_type(type)
 { 
-    this->type = type;
-
     position = { x, y };
     scrollFactor = { 1.0f, 1.0f };
     scale = { 1.0f, 1.0f }; 
@@ -74,30 +74,7 @@ void Entity::SetData(const std::string& key, const std::any& value) {
 
 
 const bool Entity::IsSprite() {
-    return type == SPRITE || type == TILE;
-}
-
-
-
-//-----------------------------
-
-
-void Entity::SetStroke(bool isOutlined, const Math::Vector3& color, float width) 
-{
-    outlineEnabled = isOutlined;
-
-    if (outlineEnabled) {
-        outlineWidth = width;
-        outlineColor = color;
-    }
-
-    if (SPRITE) {
-        const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(ID);
-
-        if (sprite) 
-            sprite->SetShader(outlineEnabled ? "outline sprite" : "sprite");
-    }
-
+    return m_type == SPRITE || m_type == TILE;
 }
 
 
@@ -271,16 +248,16 @@ Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile)
     velocityX = 0.0f;
     velocityY = 0.0f; 
 
-    texture = Graphics::Texture2D::Get(key);
-    shader = Graphics::Shader::Get("sprite");   
+    SetTexture(key);
+    SetShader("sprite");   
 
     const auto animations = System::Resources::Manager::GetAnimations(key);
 
     if (animations) 
-        anims = *animations;      
+        anims.insert(animations->begin(), animations->end());      
 
     if (isTile) {
-        type = TILE; 
+        m_type = TILE; 
         //shader = Graphics::Shader::Get("batch");
         return;
     }
@@ -303,10 +280,10 @@ Sprite::Sprite(const Sprite& sprite):
     const auto animations = System::Resources::Manager::GetAnimations(key);
 
     if (animations) 
-        anims = *animations;
+        anims.insert(animations->begin(), animations->end()); 
 
-    texture = Graphics::Texture2D::Get(sprite.key);
-    shader = Graphics::Shader::Get("sprite");     
+    SetTexture(sprite.key);
+    SetShader("sprite");     
 
     LOG("Sprite: \"" + key + "\" cloned."); 
 
@@ -320,8 +297,9 @@ Sprite::Sprite(const std::string& key, const Math::Vector2& position):
     Entity(UI, position.x, position.y)
 {
     this->key = key; 
-    texture = Graphics::Texture2D::Get(key);
-    shader = Graphics::Shader::Get("sprite");  
+    
+    SetTexture(key);
+    SetShader("sprite");  
     
     LOG("Sprite: \"" + key + "\" created. (UI)"); 
 }
@@ -332,7 +310,7 @@ Sprite::Sprite(const std::string& key, const Math::Vector2& position):
 
 
 Sprite::~Sprite() {
-    if (type != TILE) 
+    if (m_type != TILE) 
         LOG("Sprite: \"" + key + "\" destroyed."); 
 }
 
@@ -519,10 +497,26 @@ void Sprite::SetTexture(const std::string& key)
 
 
 void Sprite::SetShader(const std::string& key) {  
-    if (System::Application::resources->shaders.find(key) == System::Application::resources->shaders.end())
-        return;
+    if (System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end())
+        shader = Graphics::Shader::Get(key); 
+}
 
-    shader = Graphics::Shader::Get(key); 
+
+
+//-----------------------------
+
+
+void Sprite::SetStroke(bool isOutlined, const Math::Vector3& color, float width) 
+{
+    outlineEnabled = isOutlined;
+
+    if (outlineEnabled) {
+        outlineWidth = width;
+        outlineColor = color;
+    }
+
+    SetShader(outlineEnabled ? "outline sprite" : "sprite");
+    
 }
 
 
@@ -626,7 +620,7 @@ void Sprite::Render()
 
         //tilemap
 
-        if (type == TILE) {
+        if (m_type == TILE) {
             texture.U1 = (currentFrameX * currentFrameWidth) / texture.Width;      
             texture.U2 = ((currentFrameX + 1) * currentFrameWidth) / texture.Width;
 
@@ -684,16 +678,15 @@ void Sprite::Render()
 
             //stroke pass
 
-            if (strcmp(shader.key, "outline sprite") == 0) {
+            if (shader.key == "outline sprite") {
                 shader.SetVec3f("outlineColor", outlineColor);
                 shader.SetFloat("outlineWidth", outlineWidth);
             }
 
             //fill pass
 
-            else {
+            else 
                 shader.SetVec3f("tint", tint);
-            }
 
             shader.SetInt("image", 0); 
             shader.SetMat4("mvp", mvp);  

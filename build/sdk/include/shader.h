@@ -11,7 +11,7 @@ namespace Graphics {
         public:
 
             unsigned int ID;
-            const char* key;
+            std::string key;
 
             void SetFloat(const char* name, float value, bool useShader = true);
             void SetInt(const char* name, int value, bool useShader = true);

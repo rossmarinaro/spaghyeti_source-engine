@@ -19,7 +19,7 @@ class Entity {
 
         enum { GENERIC, UI, SPRITE, GEOMETRY, TEXT, TILE };
 
-		int depth, type;
+		int depth;
 
 		float rotation, alpha, outlineWidth;  
 		
@@ -42,6 +42,7 @@ class Entity {
             return T();
         }
 
+        inline const int GetType() { return m_type; }
 		inline void SetDepth(int depth) { this->depth = depth; }
 		inline void SetAlpha(float alpha) { this->alpha = alpha; }
 		inline void SetRotation(float rotation) { this->rotation = rotation; }
@@ -50,6 +51,8 @@ class Entity {
 		inline void SetTint(const Math::Vector3& tint) { this->tint = tint; }
 		inline void SetFlipX(bool flipX) { this->flipX = flipX; }
 		inline void SetFlipY(bool flipY) { this->flipY = flipY; }
+        inline void SetName(const std::string& name) { this->name = name; }
+        inline void SetCull(bool cull) { this->cull = cull; }
         inline void SetScrollFactor(const Math::Vector2& scrollFactor) { this->scrollFactor = scrollFactor; }
 		 
 		virtual void Render() {}
@@ -64,12 +67,15 @@ class Entity {
 		void SetScale(float scaleX, float scaleY = 1.0f);
 		void SetEnabled(bool isEnabled);
         void SetPosition(float x, float y);
-        void SetStroke(bool isOutlined, const Math::Vector3& color = { 0.0f, 0.0f, 0.0f }, float width = 1.0f);
 
         static inline int s_depth = 0, s_count = 0;
         static inline Math::Vector2* s_cullPosition;
 
         static inline void SetCullPosition(Math::Vector2* position) { s_cullPosition = position; }
+
+    protected:
+
+        int m_type;
 
 };
 
@@ -132,6 +138,7 @@ class Text : public Entity {
        
         void Render() override;
 		void SetText(const std::string& content);
+        void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);
 
         const Math::Vector2 GetTextDimensions();
  
@@ -188,6 +195,7 @@ class Sprite : public Entity {
 
 		inline void SetFrame(int frame) { currentFrame = frame; }
 		inline void SetContact(bool isContact) { m_contacting = isContact; }
+        inline void SetAsUI(bool isUI) { m_type = isUI ? UI : SPRITE; }
         
 		inline const bool IsContacting() { return m_contacting; }
 		inline const bool IsSpritesheet() { return m_isSpritesheet; } 
@@ -200,6 +208,7 @@ class Sprite : public Entity {
 		void RemoveBodies(); 
 		void SetTexture(const std::string& key);
         void SetShader(const std::string& key);
+        void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);
 
 		void SetVelocity(float velX, float velY);
 		void SetVelocityX(float velX);

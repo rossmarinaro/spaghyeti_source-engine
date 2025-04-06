@@ -126,20 +126,19 @@ const bool MapManager::CreateLayer (
 
 void MapManager::RemoveLayer(const std::string& key) 
 {
-
     for (auto it = System::Application::game->maps->layers.begin(); it != System::Application::game->maps->layers.end(); ++it) {
 
         auto layer = *it;
 
         layer.erase(
             std::remove_if(layer.begin(), layer.end(), [&](auto t) { 
-                return t->type == Entity::TILE && t->name == key; 
+                return t->GetType() == Entity::TILE && t->name == key; 
             }), layer.end());
     }
 
     System::Game::GetScene()->entities.erase(
         std::remove_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [&](auto t) { 
-            return t->type == Entity::TILE && t->name == key; }), 
+            return t->GetType() == Entity::TILE && t->name == key; }), 
                 System::Game::GetScene()->entities.end());
 
     LOG("Tilemap: layer " + key + " cleared.");
@@ -152,12 +151,11 @@ void MapManager::RemoveLayer(const std::string& key)
 
 void MapManager::ClearMap() 
 {
-
     System::Application::game->maps->layers.clear();
 
     System::Game::GetScene()->entities.erase(
         std::remove_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [](auto t) { 
-            return t->type == Entity::TILE; }), 
+            return t->GetType() == Entity::TILE; }), 
                 System::Game::GetScene()->entities.end());
 
     LOG("Tilemap: layers cleared.");

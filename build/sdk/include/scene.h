@@ -39,6 +39,7 @@ namespace System {
             //check if cursor is hovering entity
             const bool ListenForInteraction(std::shared_ptr<Entity> entity); 
 
+            //get scene entity by name or key (passing true as an argument treats input string as "ID")
             template <typename T>
             const inline std::shared_ptr<T> GetEntity(const std::string& nameOrID, bool isID = false) 
             {  

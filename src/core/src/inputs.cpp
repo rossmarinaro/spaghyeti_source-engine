@@ -168,12 +168,12 @@ void Inputs::ProcessInput()
             if (!button.second->active)
                 continue; 
 
-            if (button.second->type == Entity::UI || button.second->type == Entity::SPRITE) {
+            if (button.second->GetType() == Entity::UI || button.second->GetType() == Entity::SPRITE) {
                 const auto sprite = std::static_pointer_cast<Sprite>(button.second); 
                 isOverlapping = do_check(sprite->position.x, sprite->position.y, sprite->texture.FrameWidth, sprite->texture.FrameHeight);  
             }
 
-            if (button.second->type == Entity::TEXT) {
+            if (button.second->GetType() == Entity::TEXT) {
                 const auto text = std::static_pointer_cast<Text>(button.second);
                 isOverlapping = do_check(text->position.x + text->GetTextDimensions().x, text->position.y + text->GetTextDimensions().y, text->GetTextDimensions().x, text->GetTextDimensions().y);
             }

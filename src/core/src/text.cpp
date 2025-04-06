@@ -397,3 +397,15 @@ const Math::Vector2 Text::GetTextDimensions()
 }
 
 
+//-----------------------------
+
+
+void Text::SetStroke(bool isOutlined, const Math::Vector3& color, float width) 
+{
+    outlineEnabled = isOutlined;
+
+    if (outlineEnabled) {
+        outlineWidth = width;
+        outlineColor = color;
+    }
+}

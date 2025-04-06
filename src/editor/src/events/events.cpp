@@ -820,9 +820,11 @@ void EventListener::BuildAndRun()
             main_makeFile << "all: compile\n\n";
             icon_path = Editor::rootPath + "\\sdk\\spaghyeti-icon.o";
         }
+
+        const unsigned int devMode = Editor::releaseType == "debug" ? 1 : 0;
         
         main_makeFile << "compile : $(OBJS)\n";
-        main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
+        main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
 
         main_makeFile.close();
 
@@ -1159,7 +1161,6 @@ void EventListener::BuildAndRun()
 
         for (const auto& shader : target.second->shaders) 
         { 
-            
             std::string vertex, fragment;
             std::filesystem::path vertPath { shader.second.first },
                                   fragPath { shader.second.second };
@@ -1373,10 +1374,10 @@ void EventListener::BuildAndRun()
                     }
 
                     if (sn->make_UI) 
-                        command_queue << "   auto sprite_" + node->ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
                     
                     else  
-                        command_queue << "   auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
 
                     if (sn->name == target.second->cullTarget.first)
                         cullTarget = "sprite_" + node->ID;
@@ -1393,7 +1394,8 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetAlpha(" + std::to_string(sn->alpha) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetScrollFactor({" + std::to_string(sn->scrollFactorX) + ", " + std::to_string(sn->scrollFactorY) + "});\n";
-                    command_queue << "  sprite_" + node->ID + "->SetStroke(" + isStroke + ", { " + std::to_string(sn->strokeColor.x) + ", " + std::to_string(sn->strokeColor.y) +  ", " + std::to_string(sn->strokeColor.z) + " }, " + std::to_string(sn->strokeWidth) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetStroke(" + isStroke + ", { " + std::to_string(sn->strokeColor.x) + ", " + std::to_string(sn->strokeColor.y) +  ", " + std::to_string(sn->strokeColor.z) + " }, " + std::to_string(sn->strokeWidth) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetName(\"" + node->name + "\");\n";   
 
                     //set default animation if applied
 
@@ -1411,12 +1413,11 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->texture.SetFiltering(" + filtering + ", " + filtering + ");\n";
 
                     if (sn->lock_in_place) {
-                        command_queue << "   sprite_" + node->ID + "->type = Entity::UI;\n";
+                        command_queue << "   sprite_" + node->ID + "->SetAsUI(true);\n";
                         command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
                     }
 
-                    command_queue << "   sprite_" + node->ID + "->cull = " + std::to_string(sn->cull) + ";\n";
-                    command_queue << "   sprite_" + node->ID + "->name = \"" + node->name + "\";\n";   
+                    command_queue << "   sprite_" + node->ID + "->SetCull(" + std::to_string(sn->cull) + ");\n";
 
                     //physics bodies
 
@@ -1448,7 +1449,7 @@ void EventListener::BuildAndRun()
                     tn->isUI = tn->UIFlag ? 2 : 1;
                     const std::string isStroke = tn->isStroked ? "true" : "false";
 
-                    command_queue << "   auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(tn->isUI) + ");\n"; 
+                    command_queue << "   const auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(tn->isUI) + ");\n"; 
 
                     command_queue << "   text_" + node->ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";
@@ -1456,8 +1457,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   text_" + node->ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetStroke(" + isStroke + ", { " + std::to_string(tn->strokeColor.x) + ", " + std::to_string(tn->strokeColor.y) +  ", " + std::to_string(tn->strokeColor.z) + " }, " + std::to_string(tn->strokeWidth) + ");\n";
-
-                    command_queue << "   text_" + node->ID + "->name = \"" + node->name + "\";\n";
+                    command_queue << "   text_" + node->ID + "->SetName(\"" + node->name + "\");\n";
         
                 }
 
@@ -1473,7 +1473,7 @@ void EventListener::BuildAndRun()
                         //TODO: set shape
 
                         if (en->currentShape == "rectangle") {
-                            command_queue << "   auto empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->rectWidth) + ", " + std::to_string(en->rectHeight) + ");\n";
+                            command_queue << "   const auto empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->rectWidth) + ", " + std::to_string(en->rectHeight) + ");\n";
                             command_queue << "   empty_" + node->ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
                         }
 
@@ -1485,14 +1485,14 @@ void EventListener::BuildAndRun()
                             //shader
 
                             if (en->HasComponent(Component::SHADER) && en->shader.first.length()) 
-                                command_queue << "   empty_" + node->ID + "->shader = Graphics::Shader::Get(\"" + en->shader.first + "\");\n";
+                                command_queue << "   empty_" + node->ID + "->SetShader(\"" + en->shader.first + "\");\n";
                         }
                     }
 
                     else 
-                        command_queue << "   auto empty_" + node->ID + " = System::Game::CreateEntity();\n\t";
+                        command_queue << "   const auto empty_" + node->ID + " = System::Game::CreateEntity();\n\t";
 
-                    command_queue << "   empty_" + node->ID + "->name = \"" + node->name + "\";\n";
+                    command_queue << "   empty_" + node->ID + "->SetName(\"" + node->name + "\");\n";
                 }
 
                 //--------------- tilemap
@@ -1539,8 +1539,8 @@ void EventListener::BuildAndRun()
                         //create map if layers are defined
 
                         if (tmn->layers[0][0].length()) {
-                            command_queue << "   auto map_" + node->ID + " = System::Game::CreateEntity(Entity::TILE);\n\t";
-                            command_queue << "   map_" + node->ID + "->name = \"" + tmn->name + "\";\n";
+                            command_queue << "   const auto map_" + node->ID + " = System::Game::CreateEntity(Entity::TILE);\n\t";
+                            command_queue << "   map_" + node->ID + "->SetName(\"" + tmn->name + "\");\n";
                         }
 
                     }
@@ -1566,7 +1566,7 @@ void EventListener::BuildAndRun()
                     command_queue << "   System::Audio::play(\"" + an->audio_source_name + "\", " + loop + ", " + std::to_string(an->volume) + ");\n";
 
                     command_queue << "   std::shared_ptr<Entity> audio_" + node->ID + " = System::Game::CreateEntity(\"" + "audio" + "\");\n\t";
-                    command_queue << "   audio_" + node->ID + "->name = \"" + an->name + "\";\n";
+                    command_queue << "   audio_" + node->ID + "->SetName(\"" + an->name + "\");\n";
                     
                 }
 
@@ -1624,7 +1624,7 @@ void EventListener::BuildAndRun()
 
         transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
 
-        //project source template
+        //scene source class template
 
         game_src << "\n\nclass " + name_upper + " : public System::Scene {\n\n"; 
         game_src << "    public:\n";
