@@ -45,7 +45,7 @@ void EmptyNode::Reset(int component_type) {
 
     if (component_type == Component::SHADER || passAll)
         if (m_debugGraphic.get())
-                m_debugGraphic->shader = Graphics::Shader::Get("graphics");
+                m_debugGraphic->SetShader("graphics");
 
     if (component_type == Component::SCRIPT || passAll)
         behaviors.clear();

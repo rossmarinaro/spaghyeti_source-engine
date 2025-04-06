@@ -341,13 +341,13 @@ void Text::Render()
         //stroke pass
 
         if (outlineEnabled) {
-            m_shader = Graphics::Shader::Get("text");          
-            m_shader.SetVec3f("textColor", 0.0f, 0.0f, 0.0f);
-            m_shader.SetMat4("mvp", mvp);
-            m_shader.SetFloat("alphaVal", alpha); 
-            m_shader.SetVec2f("scale", scale);
-            //m_shader.SetVec3f("outlineColor", outlineColor);            
-            //m_shader.SetFloat("outlineWidth", outlineWidth); 
+            shader = Graphics::Shader::Get("text");          
+            shader.SetVec3f("textColor", 0.0f, 0.0f, 0.0f);
+            shader.SetMat4("mvp", mvp);
+            shader.SetFloat("alphaVal", alpha); 
+            shader.SetVec2f("scale", scale);
+            //shader.SetVec3f("outlineColor", outlineColor);            
+            //shader.SetFloat("outlineWidth", outlineWidth); 
   
             bindTexture(outlineWidth);
 
@@ -357,12 +357,12 @@ void Text::Render()
 
         localX = position.x;
 
-        m_shader = Graphics::Shader::Get("text");  
+        shader = Graphics::Shader::Get("text");  
 
-        m_shader.SetMat4("mvp", mvp);
-        m_shader.SetVec3f("textColor", tint.x, tint.y, tint.z);
-        m_shader.SetFloat("alphaVal", alpha); 
-        m_shader.SetVec2f("scale", scale); 
+        shader.SetMat4("mvp", mvp);
+        shader.SetVec3f("textColor", tint.x, tint.y, tint.z);
+        shader.SetFloat("alphaVal", alpha); 
+        shader.SetVec2f("scale", scale); 
 
         bindTexture(0.0f);
     

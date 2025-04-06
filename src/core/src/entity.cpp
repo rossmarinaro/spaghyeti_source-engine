@@ -70,6 +70,15 @@ void Entity::SetData(const std::string& key, const std::any& value) {
 }
 
 
+//----------------------------- set shader
+
+
+void Entity::SetShader(const std::string& key) {  
+    if (System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end())
+        shader = Graphics::Shader::Get(key); 
+}
+
+
 //------------------------------------ 
 
 
@@ -218,19 +227,6 @@ void Geometry::SetDrawStyle(int style)
     else
         m_drawStyle = style; 
 } 
-
-
-//-------------------------------------- 
-
-
-void Geometry::SetShader(const std::string& key, int fillStyle) {  
-    if (System::Application::resources->shaders.find(key) == System::Application::resources->shaders.end())
-        return;
-
-    SetDrawStyle(fillStyle); 
-
-    shader = Graphics::Shader::Get(key); 
-}
 
 
 /* SPRITE */
@@ -491,16 +487,6 @@ void Sprite::SetTexture(const std::string& key)
 
     m_currentAnim = { "", false, 0, 0, 0 }; 
 }
-
-
-//----------------------------- set shader
-
-
-void Sprite::SetShader(const std::string& key) {  
-    if (System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end())
-        shader = Graphics::Shader::Get(key); 
-}
-
 
 
 //-----------------------------

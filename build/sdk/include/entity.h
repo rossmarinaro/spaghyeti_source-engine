@@ -17,6 +17,8 @@ class Entity {
 
 	public: 
 
+        Graphics::Shader shader;
+
         enum { GENERIC, UI, SPRITE, GEOMETRY, TEXT, TILE };
 
 		int depth;
@@ -62,6 +64,7 @@ class Entity {
 		Entity(int type, float x, float y);
         
         const bool IsSprite();
+        void SetShader(const std::string& key);
         void SetData(const std::string& key, const std::any& value);
 		void SetFlip(bool flipX, bool flipY);
 		void SetScale(float scaleX, float scaleY = 1.0f);
@@ -87,7 +90,6 @@ class Geometry : public Entity {
 
     public:
 
-        Graphics::Shader shader;
         Graphics::Texture2D texture;
 
 		float width, height, radius;
@@ -107,7 +109,6 @@ class Geometry : public Entity {
 		void Render() override;
         void SetSize(float width, float height);
         void SetDrawStyle(int style);
-        void SetShader(const std::string& key, int fillStyle);
 
 	private:
 
@@ -157,8 +158,6 @@ class Text : public Entity {
         unsigned int m_VAO, m_VBO; 
         std::map<char, Character> m_chars;
 
-        Graphics::Shader m_shader;
-
         void* GetGLTPointer();
 
 };
@@ -171,7 +170,6 @@ class Sprite : public Entity {
 
 	public:  
 
-        Graphics::Shader shader;
         Graphics::Texture2D texture;
 
 		int frames, 
@@ -206,8 +204,8 @@ class Sprite : public Entity {
 		
 		void ReadSpritesheetData();
 		void RemoveBodies(); 
+        
 		void SetTexture(const std::string& key);
-        void SetShader(const std::string& key);
         void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);
 
 		void SetVelocity(float velX, float velY);

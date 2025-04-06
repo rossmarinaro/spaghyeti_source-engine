@@ -99,7 +99,7 @@ GUI::GUI()
     Graphics::Shader::Load("grid", checker_vertex, checker_fragment); 
 
     s_self->grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    s_self->grid->shader = Graphics::Shader::Get("grid"); 
+    s_self->grid->SetShader("grid"); 
     s_self->grid_quantity = 20.0f;
 
     //load embedded assets

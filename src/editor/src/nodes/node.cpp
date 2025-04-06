@@ -334,7 +334,7 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
         if (en->m_debugGraphic)
-            en->m_debugGraphic->SetShader(name, en->debug_fill ? 1 : 0);
+            en->m_debugGraphic->SetShader(name);
     }
 }
 

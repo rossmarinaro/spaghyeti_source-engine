@@ -600,11 +600,9 @@ void EventListener::BuildAndRun()
     //remove and make new assets folder
 
     else
-        
         for (const auto& entry : std::filesystem::directory_iterator(assetsFolder))
             if (std::filesystem::exists(entry))
                 remove(entry.path().string().c_str());
-
 
     //copy / embed assets from development to build folder
 
