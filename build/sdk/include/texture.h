@@ -21,6 +21,7 @@ namespace Graphics {
             unsigned int ID,
                          Channels,
                          Repeat,
+                         Whiteout,
                          Wrap_S, // wrapping mode on S axis
                          Wrap_T, // wrapping mode on T axis
                          Filter_Min, // filtering mode if texture pixels < screen pixels

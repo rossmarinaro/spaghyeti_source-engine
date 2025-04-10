@@ -87,7 +87,7 @@ void Renderer::Update(void* camera)
     auto bg = ((Camera*)camera)->GetBackgroundColor();
 
     glfwSwapInterval(s_vsync); // Enable vsync
-
+ 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 

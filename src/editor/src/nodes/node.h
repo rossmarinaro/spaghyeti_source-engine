@@ -25,6 +25,7 @@ namespace editor {
             bool created, 
                  active, 
                  show_options, 
+                 isShadow,
                  isStroked;
 
             float scaleX, 
@@ -32,16 +33,17 @@ namespace editor {
                   positionX, 
                   positionY,
                   rotation,
-                  strokeWidth;
+                  strokeWidth,
+                  shadowDistance;
 
             std::string ID, name;
 
             std::vector<float> body_width, 
-                               body_height,  
+                               body_height,   
                                bodyX, 
                                bodyY;
 
-            Math::Vector3 strokeColor;
+            Math::Vector3 strokeColor, shadowColor;
 
             struct StringContainer { std::string s = ""; };
             struct BoolContainer { bool b = false; };
@@ -247,7 +249,7 @@ namespace editor {
         public:
 
             int depth, isUI;
-            float size, alpha;
+            float size, alpha, charOffsetX, charOffsetY;
             bool UIFlag; 
 
             Math::Vector3 tint;

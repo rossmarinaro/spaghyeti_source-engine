@@ -22,7 +22,8 @@ Texture2D::Texture2D():
     Filter_Min(GL_NEAREST),   
     Filter_Max(GL_NEAREST),
     Channels(3),
-    Repeat(1)
+    Repeat(1),
+    Whiteout(0)
 { 
     glGenTextures(1, &ID); 
 

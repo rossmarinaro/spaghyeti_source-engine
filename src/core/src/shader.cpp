@@ -79,6 +79,7 @@ void Shader::InitBaseShaders()
         "uniform sampler2D image;\n"
         "uniform vec3 tint;\n"
         "uniform float alphaVal;\n"
+        "uniform int whiteout;\n"
 
         #ifndef __EMSCRIPTEN__
             "uniform int repeat;\n"
@@ -91,6 +92,11 @@ void Shader::InitBaseShaders()
                 "color = vec4(tint, alphaVal) * texture(image, uv); \n"
             #else
                 "color = vec4(tint, alphaVal) * texture(image, uv * repeat); \n"
+                "if (whiteout == 1) {\n"
+                "   color.r += 10.0;\n"
+                "   color.g += 10.0;\n"
+                "   color.b += 10.0;\n"
+                "}\n"
             #endif
             //"if (color.r == 1.0 && color.b == 1.0) discard;" magenta background only
         "}";
@@ -206,6 +212,7 @@ void Shader::InitBaseShaders()
         "uniform float outlineWidth;\n" 
         "uniform vec3 outlineColor;\n" 
         "uniform float alphaVal;\n" 
+        "uniform float characterWidth;\n" 
 
         "out vec4 color;\n"
         "in vec2 uv;\n"
@@ -217,10 +224,10 @@ void Shader::InitBaseShaders()
             "if (c.a == 0.0) {\n"
 
                 "ivec2 texSize2d = textureSize(image, 0);\n"
-                "float texSize = float(texSize2d.x);\n"
+                "float texSize = characterWidth;\n" 
                 "float texelSize = 1.0 / texSize;\n"
                 "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
-                "float outline = vec4(1.0, 1.0, 1.0, texture(image, + vec2(-size.x, 0.0))).a;\n"
+                "float outline = vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, 0.0))).a;\n"
  
                 "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(0.0, size.y))).a;\n"
                 "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, 0.0))).a;\n"
@@ -255,6 +262,7 @@ void Shader::InitBaseShaders()
         "uniform float outlineWidth;\n" 
         "uniform vec3 outlineColor;\n" 
         "uniform float alphaVal;\n" 
+        "uniform int whiteout;\n"
 
         "out vec4 color;\n"
         "in vec2 uv;\n"
@@ -282,10 +290,21 @@ void Shader::InitBaseShaders()
 
                 "vec4 c = texture(image, uv);\n"
                 "color = mix(c, vec4(outlineColor, alphaVal), outline - c.a);\n"
+                "if (whiteout == 1) {\n"
+                "   color.r += 10.0;\n"
+                "   color.g += 10.0;\n"
+                "   color.b += 10.0;\n"
+                "}\n"
 
             "}\n"
-            "else\n"
+            "else {\n"
                "color = texture(image, uv);\n"
+                "if (whiteout == 1) {\n"
+                "   color.r += 10.0;\n"
+                "   color.g += 10.0;\n"
+                "   color.b += 10.0;\n"
+                "}\n"
+            "}\n"
         "}";
 
 

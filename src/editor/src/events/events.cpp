@@ -1445,7 +1445,9 @@ void EventListener::BuildAndRun()
                     //text render layer
 
                     tn->isUI = tn->UIFlag ? 2 : 1;
-                    const std::string isStroke = tn->isStroked ? "true" : "false";
+                    
+                    const std::string isStroke = tn->isStroked ? "true" : "false",
+                                      isShadow = tn->isShadow ? "true" : "false";
 
                     command_queue << "   const auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(tn->isUI) + ");\n"; 
 
@@ -1454,7 +1456,9 @@ void EventListener::BuildAndRun()
                     command_queue << "   text_" + node->ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
                     command_queue << "   text_" + node->ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetShadow(" + isShadow + ", { " + std::to_string(tn->shadowColor.x) + ", " + std::to_string(tn->shadowColor.y) +  ", " + std::to_string(tn->shadowColor.z) + " }, " + std::to_string(tn->shadowDistance) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetStroke(" + isStroke + ", { " + std::to_string(tn->strokeColor.x) + ", " + std::to_string(tn->strokeColor.y) +  ", " + std::to_string(tn->strokeColor.z) + " }, " + std::to_string(tn->strokeWidth) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetSlant(" + std::to_string(tn->charOffsetX) + ", " + std::to_string(tn->charOffsetY) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetName(\"" + node->name + "\");\n";
         
                 }

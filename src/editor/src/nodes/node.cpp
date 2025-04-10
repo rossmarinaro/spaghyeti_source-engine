@@ -17,20 +17,23 @@ Node::Node(bool init, int type, const std::string& name):
     active = true;
     show_options = false;
     isStroked = false;
+    isShadow = false;
     positionX = 0.0f;
     positionY = 0.0f; 
     scaleX = 1.0f;
     scaleY = 1.0f;
     rotation = 0.0f;
+    shadowDistance = 0.0f;
     strokeWidth = 1.0f;
-    strokeColor = { 0.0f, 0.0f, 0.0f };
+    strokeColor = { 1.0f, 1.0f, 1.0f };
+    shadowColor = { 0.0f, 0.0f, 0.0f };
 
     this->type = type;
     this->name = CheckName(name, nodes, nodes.size());
 }
 
 
-//--------------------------- get node type
+//--------------------------- get node type 
 
 
 const std::string Node::GetType(int type) {
@@ -629,6 +632,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                     { "z", tn->tint.z }
                 }
             },
+            { "shadow", tn->isShadow }, 
             { "stroke", tn->isStroked }, 
             { "stroke color", {
                     { "x", tn->strokeColor.x },
@@ -636,6 +640,13 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                     { "z", tn->strokeColor.z }
                 }
             },   
+            { "shadow color", {
+                    { "x", tn->shadowColor.x },
+                    { "y", tn->shadowColor.y },
+                    { "z", tn->shadowColor.z }
+                }
+            }, 
+            { "shadow distance", tn->shadowDistance },
             { "stroke width", tn->strokeWidth },
             { "UIFlag", tn->UIFlag }, 
             { "alpha", tn->alpha },    
@@ -645,6 +656,8 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "scale x", tn->scaleX },     
             { "scale y", tn->scaleY },
             { "depth", tn->depth },
+            { "character offset x", tn->charOffsetX },
+            { "character offset y", tn->charOffsetY },
             { "current font", tn->currentFont },
             { "components", {
                     { "script", {
@@ -1128,15 +1141,30 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("alpha"))
                 tn->alpha = data["alpha"];  
+
+            if (data.contains("shadow"))
+                tn->isShadow = data["shadow"];
                 
             if (data.contains("stroke"))
                 tn->isStroked = data["stroke"];
 
+            if (data.contains("character offset x"))
+                tn->charOffsetX = data["character offset x"];
+
+            if (data.contains("character offset y"))
+                tn->charOffsetY = data["character offset y"];
+
             if (data.contains("stroke color"))
                 tn->strokeColor = { data["stroke color"]["x"], data["stroke color"]["y"], data["stroke color"]["z"] };
 
+            if (data.contains("shadow color"))
+                tn->strokeColor = { data["shadow color"]["x"], data["shadow color"]["y"], data["shadow color"]["z"] };
+
             if (data.contains("stroke width"))
                 tn->strokeWidth = data["stroke width"]; 
+
+            if (data.contains("shadow distance"))
+                tn->strokeWidth = data["shadow distance"]; 
 
             if (data.contains("position x"))
                 tn->positionX = data["position x"];   

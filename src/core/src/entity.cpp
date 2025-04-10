@@ -662,18 +662,19 @@ void Sprite::Render()
                 { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
             };
 
-            //stroke pass
+            //stroke shader
 
             if (shader.key == "outline sprite") {
                 shader.SetVec3f("outlineColor", outlineColor);
                 shader.SetFloat("outlineWidth", outlineWidth);
             }
 
-            //fill pass
+            //standard shader
 
             else 
                 shader.SetVec3f("tint", tint);
 
+            shader.SetInt("whiteout", texture.Whiteout);
             shader.SetInt("image", 0); 
             shader.SetMat4("mvp", mvp);  
             shader.SetFloat("alphaVal", alpha); 

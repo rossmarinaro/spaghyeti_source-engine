@@ -16,6 +16,8 @@ TextNode::TextNode(bool init):
     UIFlag = true;
     tint = { 1.0f, 1.0f, 1.0f };
     depth = 1;
+    charOffsetX = 0.0f;
+    charOffsetY = 0.0f;
     textBuf = "";
     currentFont = "";
     textHandle = System::Game::CreateText(textBuf, positionX, positionY);
@@ -62,6 +64,7 @@ void TextNode::ChangeFont(const std::string& font) {
     
     AssetManager::Register(font);
     System::Game::DestroyEntity(textHandle);
+
     textHandle = System::Game::CreateText(textBuf, positionX, positionY, font);
     currentFont = font;
 }
@@ -163,8 +166,10 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
                 ImGui::InputText("content", &textBuf);
                 ImGui::Checkbox("UI", &UIFlag);
                 ImGui::Checkbox("stroke", &isStroked);
+                ImGui::Checkbox("shadow", &isShadow);
                 ImGui::ColorEdit3("tint", (float*)&tint); 
                 ImGui::ColorEdit3("stroke color", (float*)&strokeColor); 
+                ImGui::ColorEdit3("shadow color", (float*)&shadowColor); 
                 ImGui::SliderInt("depth", &depth, 0, 1000);
                 ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
                 ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_scaleWidth); 
@@ -173,8 +178,10 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
                 ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
                 ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
                 ImGui::SliderFloat("stroke width", &strokeWidth, 0.0f, 100.0f);
-
-            }
+                ImGui::SliderFloat("shadow distance", &shadowDistance, 0.0f, 100.0f);
+                ImGui::SliderFloat("offset x", &charOffsetX, 0.0f, 100.0f);
+                ImGui::SliderFloat("offset y", &charOffsetY, 0.0f, 100.0f);
+            } 
 
             ImGui::TreePop();
         }
@@ -202,6 +209,8 @@ void TextNode::Render()
         textHandle->SetAlpha(alpha);
         textHandle->SetDepth(depth);
         textHandle->SetStroke(isStroked, strokeColor, strokeWidth);
+        textHandle->SetShadow(isShadow, shadowColor, shadowDistance);
+        textHandle->SetSlant(charOffsetX, charOffsetY);
 
         if (System::Game::GetScene()->ListenForInteraction(textHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             Editor::selectedEntity = textHandle;

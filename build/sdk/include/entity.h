@@ -8,7 +8,6 @@
 #include "./physics.h"
 
 //base gameobject entity class
-
 class Entity {
 
     //key val data to be assigned to entity object
@@ -31,9 +30,10 @@ class Entity {
              renderable, 
              cull,
              alive,
-             outlineEnabled;
+             outlineEnabled,
+             shadowEnabled;
 
-		Math::Vector3 tint, outlineColor; 
+		Math::Vector3 tint, outlineColor, shadowColor; 
 		Math::Vector2 position, scale, scrollFactor;
 		std::string ID, name;
 
@@ -83,9 +83,7 @@ class Entity {
 };
 
 
-//----------------------------- container for shapes 
-
-
+//container for shapes 
 class Geometry : public Entity {
 
     public:
@@ -121,9 +119,7 @@ class Geometry : public Entity {
 
 
 
-//----------------------------- text
-
-
+//text (fonts, embedded fallback)
 class Text : public Entity {
 
     public:	
@@ -134,16 +130,27 @@ class Text : public Entity {
         static void ShutDown();
 
         int textType;
+        float shadowOffset, charoffsetX, charoffsetY;
 
         std::string content, font; 
        
         void Render() override;
 		void SetText(const std::string& content);
         void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);
+        void SetShadow(bool isShadow, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float offset = 0.0f);
+        void SetSlant(float offsetX, float offsetY);
 
         const Math::Vector2 GetTextDimensions();
  
-       Text(const std::string& content, float x, float y, const std::string& font = "", float scale = 1.0f, const Math::Vector3& tint = { 1.0f, 1.0f, 1.0f });
+       Text(
+            const std::string& content, 
+            float x, 
+            float y, 
+            const std::string& font = "", 
+            float scale = 1.0f, 
+            const Math::Vector3& tint = { 1.0f, 1.0f, 1.0f }
+        );
+
        ~Text();
 
     private:
@@ -155,7 +162,7 @@ class Text : public Entity {
             unsigned int Advance;   // Horizontal offset to advance to next glyph
         };
 
-        unsigned int m_VAO, m_VBO; 
+        unsigned int m_VAO, m_VBO, m_pixel_height; 
         std::map<char, Character> m_chars;
 
         void* GetGLTPointer();
@@ -163,9 +170,7 @@ class Text : public Entity {
 };
 
 
-//----------------------------- base sprite class
-
-
+//base sprite class
 class Sprite : public Entity {
 
 	public:  
