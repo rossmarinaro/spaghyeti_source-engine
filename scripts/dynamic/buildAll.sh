@@ -1,0 +1,1 @@
+./debug.sh && ./release.sh && ./editor.sh
