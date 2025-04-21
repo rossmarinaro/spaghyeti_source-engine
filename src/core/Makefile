@@ -17,7 +17,6 @@ INCLUDE_PATHS = \
 	-IC:/libs/ft29/freetype-2.9/build/include/freetype/config
 
 LIBRARY_PATHS = \
-	-LC:\libs\glad \
 	-LC:/libs/ft29/freetype-2.9 \
 	-LC:/libs/ft29/freetype-2.9/build #-LC:\libs\openAL\Win32
 
@@ -32,7 +31,7 @@ COMPILER_FLAGS = \
 
 COMPILER_FLAGS_WEB = \
 	-DSPAGHYETI_CORE \
-	-DTHREAD_COUNT=5 \
+	-DTHREAD_COUNT=$(THREAD_COUNT) \
 	-DDEVELOPMENT=0 \
 	-DUSE_JSON=0 \
 	-DSTANDALONE=1

@@ -624,6 +624,9 @@ void EventListener::BuildAndRun()
         std::string rsrcPath = file.path().string();
         std::replace(rsrcPath.begin(), rsrcPath.end(), '\\', '/');
 
+        if (System::Utils::GetFileType(rsrcPath) == System::Resources::Manager::NOT_SUPPORTED)
+            return;
+
         //encode / embed assets
 
         if (Editor::Get()->embed_files) 
@@ -707,13 +710,15 @@ void EventListener::BuildAndRun()
 
                       copy_lib = Editor::projectPath + "build/" + lib;
 
-    if (Editor::buildType == "dynamic") {
-        remove((Editor::projectPath + "build/spaghyeti-debug.dll").c_str());
-        remove((Editor::projectPath + "build/spaghyeti.dll").c_str());
+    //remove old libraries if they exist 
 
+    remove((Editor::projectPath + "build/spaghyeti-debug.dll").c_str());
+    remove((Editor::projectPath + "build/spaghyeti.dll").c_str());
+
+    if (Editor::buildType == "dynamic") 
         if (!std::filesystem::exists(copy_lib))
             std::filesystem::copy_file(Editor::rootPath + "\\sdk\\" + lib, copy_lib, options);
-    }
+    
 
     //cull target
 
@@ -818,13 +823,15 @@ void EventListener::BuildAndRun()
             main_makeFile << "all: compile\n\n";
             icon_path = Editor::rootPath + "\\sdk\\spaghyeti-icon.o";
         }
-
+        
         const unsigned int devMode = Editor::releaseType == "debug" ? 1 : 0;
         
-        main_makeFile << "compile : $(OBJS)\n";
-        main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
+        main_makeFile << "compile : $(OBJS)\n"; 
+        main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
 
         main_makeFile.close();
+
+        game_src << "/* ---------- GENERATED CODE ----------- */\n";
 
         //include core funtions
 

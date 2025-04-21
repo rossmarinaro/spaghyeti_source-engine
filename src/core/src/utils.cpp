@@ -151,5 +151,4 @@ const int System::Utils::GetFileType(const std::string& path)
     return System::Resources::Manager::NOT_SUPPORTED;
 } 
 
-    
 

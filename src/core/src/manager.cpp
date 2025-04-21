@@ -88,7 +88,7 @@ void Manager::LoadFile(const std::string& key, const std::string& path) {
 //load raw char array / size in bytes
 void Manager::LoadRaw(const int type, const std::string& key, const unsigned char* arr, const unsigned int bytes) {
 
-    if (type != IMAGE && type != AUDIO) {
+    if (type != IMAGE && type != AUDIO && type != TEXT) {
         LOG("Resources: file not available for loading.");
         return;
     }

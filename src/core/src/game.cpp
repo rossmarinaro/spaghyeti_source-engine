@@ -45,7 +45,7 @@ void Game::Flush(bool removeBehaviors)
     currentScene->entities.clear();
     time->timed_events.clear();
 }
-
+ 
 
 //------------------------------
 

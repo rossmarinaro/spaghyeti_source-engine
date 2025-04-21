@@ -367,8 +367,8 @@ void Sprite::SetVelocity(float velX, float velY)
         bodies[0].first->SetLinearVelocity(velocityX, velocityY);
 
     else {
-        position.x += velocityX /* * System::Application::game->time->GetSeconds() */; 
-        position.y += velocityY /* * System::Application::game->time->GetSeconds() */; 
+        (position.x += velocityX) * System::Application::game->time->GetSeconds(); 
+        (position.y += velocityY) * System::Application::game->time->GetSeconds(); 
     }
 
 }
@@ -389,7 +389,7 @@ void Sprite::SetVelocityX(float velX)
         bodies[0].first->SetLinearVelocity(velocityX, bodies[0].first->GetLinearVelocity().y);
 
     else
-        position.x += velocityX; // System::Application::game->time->GetSeconds();     
+        (position.x += velocityX) * System::Application::game->time->GetSeconds();     
 }
 
 
@@ -400,14 +400,14 @@ void Sprite::SetVelocityY(float velY) {
 
     if (!active)
         return;
-
+ 
     velocityY = velY;
 
     if (bodies.size()) 
         bodies[0].first->SetLinearVelocity(bodies[0].first->GetLinearVelocity().x, velocityY);
     
     else
-        position.y += velocityY; // System::Application::game->time->GetSeconds(); 
+        (position.y += velocityY) * System::Application::game->time->GetSeconds(); 
 }
 
 
@@ -449,8 +449,8 @@ void Sprite::RemoveBodies()
 
     //reset texture position to normal coords
 
-    const float x = bodies[0].first->GetPosition().x + bodies[0].second.x,
-                y = bodies[0].first->GetPosition().y + bodies[0].second.y;
+    const float x = (bodies[0].first->GetPosition().x / scale.x) - bodies[0].second.x,
+                y = (bodies[0].first->GetPosition().y / scale.y) - bodies[0].second.y;
 
     for (auto it = bodies.begin(); it != bodies.end(); ++it) 
         Physics::DestroyBody((*it).first);
@@ -694,13 +694,12 @@ void Sprite::Render()
         if (bodies.size())
             for (int i = 0; i < bodies.size(); i++)
                 if (bodies[i].first->IsEnabled()) {
-                    if (i == 0 && bodies[i].first->GetType() == b2_dynamicBody) { 
+                    if (bodies[i].first->GetType() == b2_dynamicBody) { 
                         Math::Vector2 pos = bodies[0].first->GetPosition(); 
-                        pos.y += bodies[0].second.w; //apply y offset
-                        SetPosition(pos.x - (bodies[0].second.x * scale.x), (pos.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w);
+                        SetPosition((pos.x / scale.x) - bodies[0].second.x, (pos.y / scale.y) - bodies[0].second.y);
                     }
                     else
-                        bodies[i].first->SetTransform((position.x - (bodies[0].second.x * scale.x)), ((position.y - (bodies[0].second.y * scale.y)) - bodies[0].second.w));
+                        bodies[i].first->SetTransform(((position.x / scale.x) - bodies[0].second.x), ((position.y / scale.y) - bodies[0].second.y));
                 }
 
         //play current animation

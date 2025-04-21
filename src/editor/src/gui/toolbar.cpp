@@ -576,8 +576,10 @@ void editor::GUI::ShowMenu()
 
                 else 
                 {
-                    if (ImGui::MenuItem("static"))
+                    if (ImGui::MenuItem("static")) {
                         Editor::buildType = "static";
+                        Editor::releaseType = "release";
+                    }
 
                     if (ImGui::MenuItem("dynamic"))
                         Editor::buildType = "dynamic";
@@ -592,15 +594,16 @@ void editor::GUI::ShowMenu()
                 if (Editor::platform == "WebGL")
                     ImGui::Text("WebGL builds are release by default.");
 
-                else
-                {
+                else if (Editor::buildType == "static")
+                    ImGui::Text("static builds are release by default.");
+
+                else {
                     if (ImGui::MenuItem("debug"))
                         Editor::releaseType = "debug";
 
                     if (ImGui::MenuItem("release"))
                         Editor::releaseType = "release";
                 }
-
 
                 ImGui::EndMenu();
             }

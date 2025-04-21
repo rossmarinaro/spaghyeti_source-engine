@@ -56,9 +56,10 @@ namespace System {
             static Scene* GetScene(const std::string& key = "");
             
             template <typename T>
-            static inline void CreateBehavior(const std::shared_ptr<Entity> entity, Scene* scene) {
+            static inline std::shared_ptr<T> CreateBehavior(const std::shared_ptr<Entity> entity, Scene* scene) {
                 const auto behavior = std::make_shared<T>(entity);
                 scene->behaviors.push_back(behavior); 
+                return behavior;
             }
 
             template <typename T>

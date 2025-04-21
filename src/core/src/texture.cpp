@@ -119,7 +119,8 @@ void Texture2D::Load(const std::string& key)
   
         const auto data = System::Resources::Manager::GetResource(key);
 
-        if (data) {
+        if (data) 
+        {
             unsigned char* image_buffer = (unsigned char*)data->array_buffer;
 
             image = stbi_load_from_memory(image_buffer, data->byte_length, &width, &height, &nrChannels, 0);
