@@ -221,12 +221,12 @@ void Geometry::SetSize(float width, float height) {
 void Geometry::SetDrawStyle(int style) 
 { 
     #ifndef __EMSCRIPTEN__
-    if (style == 1)
-        m_drawStyle = GL_FILL;
-    else if (style == 0)
-        m_drawStyle = GL_LINE;
-    else
-        m_drawStyle = style; 
+        if (style == 1)
+            m_drawStyle = GL_FILL;
+        else if (style == 0)
+            m_drawStyle = GL_LINE;
+        else
+            m_drawStyle = style; 
     #else
         m_drawStyle = style;
     #endif
@@ -467,29 +467,16 @@ void Sprite::RemoveBodies()
 
 void Sprite::SetTexture(const std::string& key)
 {  
-    if (System::Application::resources->textures.find(key) == System::Application::resources->textures.end())
+    if (System::Application::resources->textures.find(key) == System::Application::resources->textures.end()) 
         return;
 
-    const auto& tex = Graphics::Texture2D::Get(key); 
-        
     this->key = key; 
-
-    texture.ID = tex.ID;
-    texture.Width = tex.Width; 
-    texture.Height = tex.Height;
-    texture.FrameWidth = tex.FrameWidth; 
-    texture.FrameHeight = tex.FrameHeight;
-    texture.U1 = tex.U1;
-    texture.U2 = tex.U2;
-    texture.V1 = tex.V1;
-    texture.V2 = tex.V2;
-    texture.Repeat = tex.Repeat;
-    texture.Wrap_S = tex.Wrap_S;
-    texture.Wrap_T = tex.Wrap_T;
-    texture.Filter_Min = tex.Filter_Min;
-    texture.Filter_Max = tex.Filter_Max; 
-
-    m_currentAnim = { "", false, 0, 0, 0 }; 
+    texture = Graphics::Texture2D::Get(key); 
+    m_isSpritesheet = false;
+    m_resourceData.clear();
+    m_currentAnim = { "", false, 0, 0, 0 };
+    frames = 0;
+    currentFrame = 0;
 }
 
 

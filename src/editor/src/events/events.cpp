@@ -871,8 +871,6 @@ void EventListener::BuildAndRun()
         web_makeFile << "   $(wildcard ../resources/scripts/**/**/*.cpp) \\\n";
         web_makeFile << "   ../game.cpp \\\n";
         web_makeFile << "   " << Editor::rootPath << "\\sdk\\spaghyeti-web.a \n\n";
-        
-        web_makeFile << "COMPILER_FLAGS = -O3 -o dist/index.html\n\n";
 
         web_makeFile << "LINKER_FLAGS = \\\n";
         web_makeFile << "   -sEXPORT_ALL=" << export_all << " \\\n";
@@ -910,7 +908,7 @@ void EventListener::BuildAndRun()
         web_makeFile << "   --shell-file template.html\n\n";
 
         web_makeFile << "all: $(OBJS)\n";
-        web_makeFile << "\tem++ -std=c++20 $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS)\n";
+        web_makeFile << "\tem++ -std=c++20 $(OBJS) -O3 -o dist/index.html $(LINKER_FLAGS)\n";
 
         web_preJS << "Module['window']\n";
         web_preJS << "Module['document']\n";

@@ -189,7 +189,7 @@ void Editor::Start()
 
     s_self->s_selector = System::Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
     s_self->s_selector->SetTint({ 0.0f, 1.0f, 0.0f });  
-    s_self->s_selector->SetDrawStyle(GL_LINE);
+    s_self->s_selector->SetDrawStyle(0);
     s_self->s_selector->SetThickness(2.0f);
     s_self->s_selector->SetAlpha(0.0f);
 

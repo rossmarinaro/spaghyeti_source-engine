@@ -31,10 +31,10 @@ void System::Scene::SetWorldDimensions(float width, float height) {
 
 void System::Scene::SetInteractive(std::shared_ptr<Entity> entity, bool interactive) {
 
-    auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity; });
+    auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity->ID; });
 
     if (interactive && it == virtual_buttons.end()) {
-        virtual_buttons.push_back({ 0, entity });
+        virtual_buttons.push_back({ false, entity->ID });
         return;
     }
 
@@ -47,7 +47,7 @@ void System::Scene::SetInteractive(std::shared_ptr<Entity> entity, bool interact
 
 const bool System::Scene::ListenForInteraction(std::shared_ptr<Entity> entity) {
     
-    auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity; });
+    auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity->ID; });
 
     if (it != virtual_buttons.end()) {
         auto element = *it;

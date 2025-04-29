@@ -17,7 +17,7 @@ namespace System {
             std::vector<std::shared_ptr<Entity>> entities;
             std::vector<std::shared_ptr<Entity>> UI;
             std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
-            std::vector<std::pair<int, std::shared_ptr<Entity>>> virtual_buttons; 
+            std::vector<std::pair<bool, std::string>> virtual_buttons; 
 
             Scene(const Process::Context& context);
             Scene(const Process::Context& context, const std::string& key);

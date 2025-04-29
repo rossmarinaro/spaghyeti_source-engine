@@ -483,11 +483,29 @@ void Text::SetText(const std::string& content) {
 
 const Math::Vector2 Text::GetTextDimensions()
 {
-    const GLTtext* handle = static_cast<GLTtext*>(GetGLTPointer());
-    const GLfloat width = gltGetTextWidth(handle, scale.x),
-                  height = gltGetTextHeight(handle, scale.y);
+    if (textType == DEFAULT) 
+    {
+        const GLTtext* handle = static_cast<GLTtext*>(GetGLTPointer());
+        const GLfloat width = gltGetTextWidth(handle, scale.x),
+                      height = gltGetTextHeight(handle, scale.y);
 
-    return { width, height };
+        return { width, height };
+    }
+    
+    else if (textType == FONT) 
+    {
+        float w = 0.0f, 
+              h = 0.0f;
+
+        for (const auto& ch : m_chars) {
+            w += ch.second.Size.x * scale.x;
+            h += ch.second.Size.y * scale.y;
+        }
+
+        return { w, h };
+    }
+
+    return { 0.0f, 0.0f };
 }
 
 

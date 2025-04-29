@@ -618,7 +618,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                             ImGui::SameLine();
 
-                            if (ImGui::Button("remove frame") && frame >= 0) 
+                            if (ImGui::Button("remove frame") && frame > 0) 
                             {
                                 frames.pop_back();
 
@@ -630,6 +630,20 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                                 frame_fY.pop_back();
                                 
                                 frame--;
+                            }
+
+                            if (ImGui::Button("reset")) 
+                            {
+                                frames.clear();
+
+                                frame_x.clear();
+                                frame_y.clear();
+                                frame_width.clear();
+                                frame_height.clear();
+                                frame_fX.clear();
+                                frame_fY.clear();
+                                
+                                frame = 0;
                             }
 
                             //load frame data from file

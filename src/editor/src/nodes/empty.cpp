@@ -193,7 +193,7 @@ void EmptyNode::Render()
         m_debugGraphic->renderable = show_debug;
 
         m_debugGraphic->SetPosition(positionX, positionY);
-        m_debugGraphic->SetDrawStyle(debug_fill ? GL_FILL : GL_LINE); 
+        m_debugGraphic->SetDrawStyle(debug_fill ? 1 : 0); 
         m_debugGraphic->SetThickness(line_weight);
     
     }

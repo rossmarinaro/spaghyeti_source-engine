@@ -243,8 +243,8 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                             ImGui::SliderFloat("width", &body_width[i], 0.0f, map_width * tile_width, NULL, ImGuiSliderFlags_AlwaysClamp); 
                             ImGui::SliderFloat("height", &body_height[i], 0.0f, map_height * tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
 
-                            ImGui::SliderFloat("x", &bodyX[i], 0.0f, map_width * tile_width, NULL, ImGuiSliderFlags_AlwaysClamp);  
-                            ImGui::SliderFloat("y", &bodyY[i], 0.0f, map_height * tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
+                            ImGui::SliderFloat("x", &bodyX[i], 0.0f, Editor::Get()->worldWidth, NULL, ImGuiSliderFlags_AlwaysClamp);  
+                            ImGui::SliderFloat("y", &bodyY[i], 0.0f, Editor::Get()->worldHeight, NULL, ImGuiSliderFlags_AlwaysClamp); 
 
                             ImGui::Separator();             
                             

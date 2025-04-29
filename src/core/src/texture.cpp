@@ -149,6 +149,8 @@ void Texture2D::Load(const std::string& key)
     if (filetype != "compressed pixel data")
         stbi_image_free(image);
 
+    texture.key = key;
+
     System::Application::resources->textures[key] = texture; 
 
     LOG("Texture2D: \"" + key + "\" loaded. (" + filetype + ")");
@@ -344,10 +346,14 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
             glDisable(GL_LINE_SMOOTH);
             glLineWidth(thickness);
         }
+
+        glDrawArrays(drawStyle == GL_LINE ?  GL_LINES : GL_TRIANGLES, 0, 6);
+
+    #else
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         
     #endif
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0); 
 }
 

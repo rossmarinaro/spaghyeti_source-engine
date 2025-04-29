@@ -17,17 +17,9 @@ using namespace System;
 
     EM_BOOL web_mouse_callback(int eventType, const EmscriptenMouseEvent* event, void* pUserData)
     {
-
         if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE && (event->movementX != 0 || event->movementY != 0)) 
-        {
-            auto position = Window::GetNDCToPixel(event->targetX, event->targetY);
-
-            Application::game->inputs->mouseX = position.x;
-            Application::game->inputs->mouseY = position.y;
-
             Renderer::cursor_callback(Renderer::GLFW_window_instance, event->targetX, event->targetY);
-        }
-
+        
         if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
             Application::game->inputs->numInputs++; 
             Renderer::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
@@ -49,38 +41,27 @@ using namespace System;
 
 //touch
 
-
     EM_BOOL web_touch_callback(int eventType, const EmscriptenTouchEvent* event, void* pUserData)
     {
-
-        if (eventType == EMSCRIPTEN_EVENT_TOUCHSTART)
+        if (eventType == EMSCRIPTEN_EVENT_TOUCHSTART || EMSCRIPTEN_EVENT_TOUCHMOVE)
         {
-
             Application::game->inputs->LEFT_CLICK = true;
-
             Application::game->inputs->cursorReset = false; 
 
-            for (int i = 0; i < event->numTouches; ++i)
-            {
+            for (int i = 0; i < event->numTouches; ++i) {
                 const EmscriptenTouchPoint* touch = &event->touches[i];
 
-                auto position = Window::GetNDCToPixel(touch->targetX, touch->targetY);
-            
-                Application::game->inputs->mouseX = position.x;
-                Application::game->inputs->mouseY = position.y;
-
-                Renderer::cursor_callback(Renderer::GLFW_window_instance, touch->targetX, touch->targetY);
+                Renderer::cursor_callback(Renderer::GLFW_window_instance, touch->targetX, touch->targetY); //canvasX, clientX
                 Renderer::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
 
                 Application::game->inputs->numInputs++;
             }
         }
 
-        else
-        {
+        else {
             Application::game->inputs->cursorReset = true;
             Renderer::input_callback(Renderer::GLFW_window_instance, 0, 0, 0);
-
+            Renderer::cursor_callback(Renderer::GLFW_window_instance, 0, 0); 
             Application::game->inputs->numInputs--;
         }
 
@@ -108,17 +89,14 @@ Inputs::Inputs():
 
     #ifdef __EMSCRIPTEN__
 
-       if (Application::events->isMobile) {
-            emscripten_set_touchstart_callback("canvas", 0, 1, web_touch_callback);
-            emscripten_set_touchend_callback("canvas", 0, 1, web_touch_callback);
-            emscripten_set_touchmove_callback("canvas", 0, 1, web_touch_callback);
-        }
-        else {
-            emscripten_set_click_callback("canvas", 0, 1, web_mouse_callback);
-            emscripten_set_mouseup_callback("canvas", 0, 1, web_mouse_callback);
-            emscripten_set_mousedown_callback("canvas", 0, 1, web_mouse_callback);
-            emscripten_set_mousemove_callback("canvas", 0, 1, web_mouse_callback);
-        }
+        emscripten_set_touchstart_callback("canvas", 0, 1, web_touch_callback);
+        emscripten_set_touchend_callback("canvas", 0, 1, web_touch_callback);
+        emscripten_set_touchmove_callback("canvas", 0, 1, web_touch_callback);
+
+        emscripten_set_click_callback("canvas", 0, 1, web_mouse_callback);
+        emscripten_set_mouseup_callback("canvas", 0, 1, web_mouse_callback);
+        emscripten_set_mousedown_callback("canvas", 0, 1, web_mouse_callback);
+        emscripten_set_mousemove_callback("canvas", 0, 1, web_mouse_callback);
 
     #endif
 
@@ -132,7 +110,6 @@ Inputs::Inputs():
 
 void Inputs::ProcessInput()
 {
-
     //input state
 
     isDown = numInputs > 0;
@@ -148,11 +125,6 @@ void Inputs::ProcessInput()
     if (1 == present)
         SetGamepadInputs(GLFW_JOYSTICK_1);
 
-    if (Application::events->isMobile)
-        Renderer::cursor_callback(Renderer::GLFW_window_instance, 0.0f, 0.0f);
-
-    bool isOverlapping = false;
-
     auto do_check = [&](float x, float y, float width, float height) -> bool {
 
         bool overlapX = (x + width / 2) >= mouseX && mouseX + width >= x,
@@ -161,29 +133,29 @@ void Inputs::ProcessInput()
         return overlapX && overlapY;
     };
 
-    if (Game::GetScene()->virtual_buttons.size())
-        for (int i = 0; i < Game::GetScene()->virtual_buttons.size(); i++)
-        {
-            auto button = Game::GetScene()->virtual_buttons[i];
+    //set mouse / cursor overlap with object
 
-            if (!button.second->active)
-                continue; 
+    auto& virtualButtons = Game::GetScene()->virtual_buttons;
 
-            if (button.second->GetType() == Entity::UI || button.second->GetType() == Entity::SPRITE) {
-                const auto sprite = std::static_pointer_cast<Sprite>(button.second); 
-                isOverlapping = do_check(sprite->position.x, sprite->position.y, sprite->texture.FrameWidth, sprite->texture.FrameHeight);  
-            }
+    if (virtualButtons.size())
+        for (int i = 0; i < virtualButtons.size(); i++)
+        {  
+            for (auto& UI : Game::GetScene()->UI) 
+            {
+                if (UI->ID != virtualButtons[i].second) 
+                    continue;
 
-            if (button.second->GetType() == Entity::TEXT) {
-                const auto text = std::static_pointer_cast<Text>(button.second);
-                isOverlapping = do_check(text->position.x + text->GetTextDimensions().x, text->position.y + text->GetTextDimensions().y, text->GetTextDimensions().x, text->GetTextDimensions().y);
-            }
+                if (UI->GetType() == Entity::UI || UI->GetType() == Entity::SPRITE) {
+                    const auto sprite = std::static_pointer_cast<Sprite>(UI); 
+                    virtualButtons[i].first = do_check(sprite->position.x * sprite->scale.x, sprite->position.y * sprite->scale.y, sprite->texture.FrameWidth * sprite->scale.x, sprite->texture.FrameHeight * sprite->scale.y);
+                }
 
-            //set mouse / cursor overlap with object
-            
-            Game::GetScene()->virtual_buttons[i].first = isOverlapping;
-
-        }
+                if (UI->GetType() == Entity::TEXT) {
+                    const auto text = std::static_pointer_cast<Text>(UI);
+                    virtualButtons[i].first = do_check((text->position.x + text->GetTextDimensions().x), (text->position.y + text->GetTextDimensions().y), text->GetTextDimensions().x, text->GetTextDimensions().y);
+                }   
+            } 
+        } 
 }
 
 
@@ -192,7 +164,6 @@ void Inputs::ProcessInput()
 
 void Inputs::SetKeyInputs(bool boolean, int key, void* window_ptr)
 {            
-
     switch (key)
     {
         case GLFW_KEY_ESCAPE: {

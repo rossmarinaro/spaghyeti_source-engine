@@ -21,10 +21,9 @@
 
 #ifndef _GLFW_WIN32
     #define _GLFW_WIN32
-    #include <GLFW/glfw3.h> 
-    #include <GLFW/glfw3native.h> 
+    #include "../vendors/GLFW/glfw3.h"
+    #include "../vendors/GLFW/glfw3native.h" 
 #endif
-
     
 
 //-----------------------------

@@ -16,6 +16,8 @@ namespace Graphics {
 
         public:
 
+            std::string key;
+
             float FrameWidth, FrameHeight, U1, V1, U2, V2, Width, Height; // width and height of loaded image in pixels 
             
             unsigned int ID,
