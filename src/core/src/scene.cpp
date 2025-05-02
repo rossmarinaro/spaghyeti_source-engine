@@ -84,8 +84,17 @@ void System::Scene::SetPause(bool isPaused) {
     m_paused = isPaused;
 }
 
+//---------------------------------
 
+void System::Scene::SetGlobal(const std::string& key, const std::any& value) { 
 
+    auto it = m_globals.find(key);
+
+    if (it != m_globals.end())
+        m_globals.erase(it);
+
+    m_globals.insert({ key, value }); 
+}
 
 
 

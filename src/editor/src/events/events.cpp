@@ -1137,7 +1137,7 @@ void EventListener::BuildAndRun()
 
         //temp files: asset and command lists
 
-        std::ostringstream asset_queue, preload_queue, global_queue, command_queue, constructor_queue;
+        std::ostringstream asset_queue, preload_queue, global_queue, command_queue;
 
         //preload file assets
 
@@ -1285,23 +1285,46 @@ void EventListener::BuildAndRun()
                     break;
                 }
 
-                std::string type = global.second;
+                std::string type, value;
 
-                if (global.second == "string")
+                if (global.second == "string") {
                     type = "std::string";
+                    value = "";
+                }
 
-                else if (global.second == "int[]")
+                else if (global.second == "int") {
+                    type = "int";
+                    value = "0";
+                }
+
+                else if (global.second == "float") {
+                    type = "float";
+                    value = "0.0f";
+                }
+
+                else if (global.second == "bool") {
+                    type = "bool";
+                    value = "false";
+                }
+
+                else if (global.second == "int[]") {
                     type = "std::vector<int>";
+                    value = "{}";
+                }
 
-                else if (global.second == "float[]")
+                else if (global.second == "float[]") {
                     type = "std::vector<float>";
+                    value = "{}";
+                }
 
-                else if (global.second == "string[]")
+                else if (global.second == "string[]") {
                     type = "std::vector<std::string>";
+                    value = "{}";
+                }
 
                 else break;
 
-                global_queue << "   " + type + " " + "GLOBALVAR_" + global.first + ";\n";
+                command_queue << "   this->SetGlobal(\"" + global.first + "\", " + value + ");\n";
             }
 
         command_queue << "   this->SetWorldDimensions(" + std::to_string(target.second->worldWidth) + ", " + std::to_string(target.second->worldHeight) + ");\n";
@@ -1358,7 +1381,6 @@ void EventListener::BuildAndRun()
                             loadedFrames.emplace_back(sn->key);
                             preload_queue << "  System::Resources::Manager::LoadFrames(\"" + sn->key + "\", {" + frame_oss.str() + "});\n";
                         }
-                            
                     }
 
                     //load animations
@@ -1606,7 +1628,7 @@ void EventListener::BuildAndRun()
 
         //register scene textures
 
-        preload_queue << "   System::Resources::Manager::RegisterTextures();\n"; 
+        preload_queue << "  System::Resources::Manager::RegisterTextures();\n"; 
 
         //write nodes
 
@@ -1619,10 +1641,8 @@ void EventListener::BuildAndRun()
 
         //convert data string stream to string
 
-        const std::string globalData = global_queue.str(),
-                          assetData = asset_queue.str(),
+        const std::string assetData = asset_queue.str(),
                           preloadData = preload_queue.str(),
-                          constructorData = constructor_queue.str(),
                           commandData = command_queue.str();
 
         std::string name_upper = target.first;
@@ -1636,17 +1656,13 @@ void EventListener::BuildAndRun()
 
         game_src << "\n\nclass " + name_upper + " : public System::Scene {\n\n"; 
         game_src << "    public:\n";
-        game_src << "       " + name_upper + "(const Process::Context& context):\n\t\tScene(context, \"" + name_upper + "\") {\n\t" + constructorData + "\n}\n";
-        game_src << "           void Preload() override;\n";
-        game_src << "           void Run(bool loadMap) override;\n";
-        game_src << "    private:\n";
-        game_src << "    " + globalData + "\n";
+        game_src << "        " + name_upper + "(const Process::Context& context):\n\t\tScene(context, \"" + name_upper + "\") {}\n";
+        game_src << "        void Preload() override;\n";
+        game_src << "        void Run(bool loadMap) override;\n";
         game_src <<"};\n\n\n"; 
 
         game_src << "void " + name_upper + "::Preload() {\n" + assetData + "\n" + preloadData + "\n}\n\n";
-        game_src << "void " + name_upper + "::Run(bool loadMap) {\n" + commandData + "}\n\n";
-        
-
+        game_src << "void " + name_upper + "::Run(bool loadMap) {\n" +  commandData + "}\n\n";
     }
 
     //clear scene queue

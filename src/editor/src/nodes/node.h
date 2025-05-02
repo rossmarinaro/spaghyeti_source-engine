@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <vector>
 #include <string>
 
@@ -64,6 +65,7 @@ namespace editor {
 
             template <typename T>
             static inline std::shared_ptr<T> Make(bool init = true, std::vector<std::shared_ptr<Node>>& arr = nodes) {
+                static_assert(std::is_base_of<Node, T>::value, "T must be a value of type Node!");
                 auto node = std::make_shared<T>(init);
                 arr != nodes ? arr.push_back(node) : nodes.push_back(node);
                 return node;

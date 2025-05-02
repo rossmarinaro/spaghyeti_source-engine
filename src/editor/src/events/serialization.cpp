@@ -447,7 +447,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
         scene->globals_applied = true;
     }
 
-    //scene ready for compilation
+    //scene ready for compilation 
 
     compileQueue.push_back({ sceneKey, scene });
 

@@ -8,6 +8,8 @@ namespace System {
     //container for gameplay instance
     class Scene {
 
+	        std::map<std::string, std::any> m_globals;
+
         public: 
 
             std::string key;
@@ -35,6 +37,7 @@ namespace System {
             //assign entity to react to input
             void SetInteractive(std::shared_ptr<Entity> entity, bool interactive = true);
             void SetWorldDimensions(float width, float height);
+            void SetGlobal(const std::string& key, const std::any& value);
 
             //check if cursor is hovering entity
             const bool ListenForInteraction(std::shared_ptr<Entity> entity); 
@@ -43,6 +46,7 @@ namespace System {
             template <typename T>
             const inline std::shared_ptr<T> GetEntity(const std::string& nameOrID, bool isID = false) 
             {  
+                static_assert(std::is_base_of<Entity, T>::value, "T must be a value of type Entity!");
                 auto entity_it = std::find_if(entities.begin(), entities.end(), [&](auto entity) { return isID ? entity->ID == nameOrID : entity->name == nameOrID; });
                 auto UI_it = std::find_if(UI.begin(), UI.end(), [&](auto UI) { return isID ? UI->ID == nameOrID : UI->name == nameOrID; });
 
@@ -54,8 +58,15 @@ namespace System {
 
                 return nullptr;
             }
-            
 
+            //get custom variables from extended scene
+            template<typename T>
+            inline const T GetGlobal(const std::string& key) { 
+                if (m_globals.find(key) != m_globals.end())
+                    return std::any_cast<T>(m_globals.at(key)); 
+                return T();
+            }
+                
         private:
  
             static inline int s_ID = 0;

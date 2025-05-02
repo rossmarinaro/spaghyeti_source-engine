@@ -2,6 +2,9 @@
 #include "../assets/assets.h"
 #include "../editor.h"
 
+static int _thumbnail_begin = 0, 
+           _thumbnail_end = 20;
+
 //-------------- apply currently opened folder
 
 
@@ -19,8 +22,41 @@ void SetFolder(bool isOpen, const std::string& type = "") {
 
 void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsigned int>>& vec) 
 {
-    if (vec.size())
-        for (int i = 0; i < vec.size(); i++) 
+    if (vec.size()) 
+    {
+        if (_thumbnail_begin < vec.size()) 
+        {
+            if (ImGui::Button("next")) 
+            {
+                if (_thumbnail_end < vec.size() - 5) {
+                    _thumbnail_begin += 5; 
+                    _thumbnail_end += 5;
+                }
+                else if (_thumbnail_end < vec.size()) {
+                    _thumbnail_begin++;
+                    _thumbnail_end++;
+                }
+            }
+        }
+
+        if (_thumbnail_begin > 0) 
+        {
+            ImGui::SameLine();
+            
+            if (ImGui::Button("back")) 
+            {
+                if (_thumbnail_begin > 5) {
+                    _thumbnail_begin -= 5; 
+                    _thumbnail_end -= 5;
+                }
+                else {
+                    _thumbnail_begin--;
+                    _thumbnail_end--;
+                }
+            }
+        }
+
+        for (int i = _thumbnail_begin; i < _thumbnail_end; i++) 
         {
             if (vec[i].second == NULL)
                 continue;
@@ -32,7 +68,7 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 
             if (folder == AssetManager::Get()->currentFolder)
             {
-                ImGui::PushID(i);
+                ImGui::PushID(i);  
 
                 if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec[i].second, ImVec2(70, 70))) { 
                     AssetManager::Get()->selectedAsset = vec[i].first;
@@ -44,18 +80,15 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
                 if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                     ImGui::SetTooltip(vec[i].first.c_str());
 
-                if (i != 0 && i % 10 == 0) {
-                    ImGui::PopID();
-                    continue;
-                }
-                
-                else
-                    ImGui::SameLine(); 
-
                 ImGui::PopID();
-            }
 
+                //determine if image btn is on new line
+
+                if (i < 9 || (i >= 10 && (i + 1) % 10 != 0)) 
+                    ImGui::SameLine(); 
+            }
         }
+    }
 }
 
 

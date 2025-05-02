@@ -32,7 +32,7 @@ void Game::Flush(bool removeBehaviors)
 
     inputs->ResetControls();
 
-    if (Application::events->isMultiThreaded && Application::events->pool)  {
+    if (Application::events->isMultiThreaded && Application::events->pool) {
         delete Application::events->pool;
         Application::events->pool = nullptr;
     }
@@ -57,7 +57,7 @@ Scene* Game::GetScene(const std::string& key)
 
     const auto it = std::find_if(Application::game->scenes.begin(), Application::game->scenes.end(), [&](auto scene) { return scene->key == key; });
 
-    if (it == Application::game->scenes.end())
+    if (it != Application::game->scenes.end())
         return *it;
 
     return nullptr;
@@ -466,19 +466,20 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, float y, int frame, float scale, int layer)
 {
 
-    const auto sprite = std::make_shared<Sprite>(key, x, y, frame);
-
-    #if STANDALONE == 1
-        sprite->ReadSpritesheetData();
-    #endif
-
-    sprite->SetScale(scale);
+    const auto sprite = std::make_shared<Sprite>(key, x, y);
 
     if (layer == 1)
         Application::game->currentScene->entities.emplace_back(sprite);
 
     if (layer == 2)
         Application::game->currentScene->UI.emplace_back(sprite);
+
+    #if STANDALONE == 1
+        sprite->ReadSpritesheetData();
+        sprite->SetFrame(frame);
+    #endif
+
+    sprite->SetScale(scale);
 
     return sprite;
 }
@@ -493,13 +494,13 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
 
     const auto element = std::make_shared<Sprite>(key, pos);
 
+    Application::game->currentScene->UI.emplace_back(element);
+
     #if STANDALONE == 1
         element->ReadSpritesheetData();
     #endif
 
     element->SetFrame(frame);
-
-    Application::game->currentScene->UI.emplace_back(element);
 
     return element;
 }
@@ -513,9 +514,9 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, 
 
     const auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
 
-    ts->ReadSpritesheetData();
-
     Application::game->currentScene->entities.emplace_back(ts);
+
+    ts->ReadSpritesheetData();
 
     return ts;
 }

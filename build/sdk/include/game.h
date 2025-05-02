@@ -57,6 +57,7 @@ namespace System {
             
             template <typename T>
             static inline std::shared_ptr<T> CreateBehavior(const std::shared_ptr<Entity> entity, Scene* scene) {
+                static_assert(std::is_base_of<entity_behaviors::Behavior, T>::value, "T must be a value of type Behavior!");
                 const auto behavior = std::make_shared<T>(entity);
                 scene->behaviors.push_back(behavior); 
                 return behavior;

@@ -356,7 +356,6 @@ std::shared_ptr<Sprite> Sprite::Clone()
 
 void Sprite::SetVelocity(float velX, float velY) 
 { 
-
     if (!active)
         return;
 
@@ -370,7 +369,6 @@ void Sprite::SetVelocity(float velX, float velY)
         (position.x += velocityX) * System::Application::game->time->GetSeconds(); 
         (position.y += velocityY) * System::Application::game->time->GetSeconds(); 
     }
-
 }
 
 
