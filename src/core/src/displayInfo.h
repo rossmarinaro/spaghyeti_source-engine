@@ -16,9 +16,10 @@ class DisplayInfo {
         double m_prev;
         int m_frames;
         
-        std::unique_ptr<Text> fps_text;
-        std::unique_ptr<Text> cam_text;
-        std::unique_ptr<Text> entity_text;
+        std::unique_ptr<Text> m_fps_text;
+        std::unique_ptr<Text> m_cam_text;
+        std::unique_ptr<Text> m_entity_text;
+        std::unique_ptr<Text> m_rendered_text;
 };
 
 #endif

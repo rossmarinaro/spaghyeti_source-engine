@@ -265,9 +265,19 @@ void Game::Exit()
 }
 
 
-
 //----------------------------
 
+
+void Game::SetCullPosition(Math::Vector2* position) 
+{ 
+    const auto scene = GetScene();
+
+    if (scene)
+        scene->cullPosition = position; 
+}
+
+
+//----------------------------
 
 
 void Game::UpdateFrame()
@@ -277,31 +287,38 @@ void Game::UpdateFrame()
 
     if (inputs)
         inputs->ProcessInput();
+
+    Entity::s_rendered = 0;
  
     //entity render queue
 
     for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity))
         {
-            if (entity->cull && Entity::s_cullPosition)
+            if (entity->cull && currentScene->cullPosition)
             {
                 float width = Window::s_scaleWidth;
 
-                if (!camera->InBounds() && Entity::s_cullPosition->x > Window::s_scaleWidth)
+                if (!camera->InBounds() && currentScene->cullPosition->x > Window::s_scaleWidth)
                     width = width + (width / 2);
+                
+                const float sfX = entity->scrollFactor.x == 1.0f ? 1.0f : (1.0f - entity->scrollFactor.x) * 10.0f,
+                            sfY = entity->scrollFactor.y == 1.0f ? 1.0f : (1.0f - entity->scrollFactor.y) * 10.0f;
 
-                entity->renderable = (entity->position.x > Entity::s_cullPosition->x && (entity->position.x < Entity::s_cullPosition->x + width) * entity->scrollFactor.x) ||
-                                     (entity->position.x < Entity::s_cullPosition->x && (entity->position.x > Entity::s_cullPosition->x - width) * entity->scrollFactor.x);
+                entity->renderable = (entity->position.x > currentScene->cullPosition->x && (entity->position.x < (currentScene->cullPosition->x + width * sfX))) ||
+                                     (entity->position.x < currentScene->cullPosition->x && (entity->position.x > (currentScene->cullPosition->x - width * sfX)));
             }
 
-            if (entity->renderable)
+            if (entity->renderable) {
                 entity->Render();
+                Entity::s_rendered++;
+            } 
         }
 
     //UI render queue
 
     for (const auto& UI : currentScene->UI)
-        if ((UI.get() && UI) && UI.get()->renderable)
+        if ((UI.get() && UI) && UI.get()->renderable) 
             UI->Render();
 
     //vignette overlay

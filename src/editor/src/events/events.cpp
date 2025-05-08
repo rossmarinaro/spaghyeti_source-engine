@@ -1432,7 +1432,8 @@ void EventListener::BuildAndRun()
                         command_queue << "   sprite_" + node->ID + "->SetAnimation(\"" + sn->anim_to_play_on_start.key + "\", " + is_yoyo + ", " + std::to_string(sn->anim_to_play_on_start.rate) + ", " + repeat + ");\n";
                     }
 
-                    const std::string filtering = sn->filter_nearest ? "true" : "false";
+                    const std::string filtering = sn->filter_nearest ? "true" : "false",
+                                      cull = sn->cull ? "true" : "false";
 
                     //maybe add texture wrapping too?
 
@@ -1443,7 +1444,7 @@ void EventListener::BuildAndRun()
                         command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
                     }
 
-                    command_queue << "   sprite_" + node->ID + "->SetCull(" + std::to_string(sn->cull) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetCull(" + cull + ");\n";
 
                     //physics bodies
 
@@ -1639,7 +1640,7 @@ void EventListener::BuildAndRun()
         writeNodes(target.second->nodes);
 
         if (cullTarget.length())
-            command_queue << "   Entity::SetCullPosition(&" + cullTarget + "->position);\n";
+            command_queue << "   System::Game::SetCullPosition(&" + cullTarget + "->position);\n";
 
         cullTarget = "";
 

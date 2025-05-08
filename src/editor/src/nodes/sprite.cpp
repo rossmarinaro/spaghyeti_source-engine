@@ -803,6 +803,7 @@ void SpriteNode::Render()
         spriteHandle->SetAlpha(alpha);
         spriteHandle->SetTint(tint);
         spriteHandle->SetStroke(isStroked, strokeColor, strokeWidth);
+        spriteHandle->SetCull(cull);
 
         if (m_currentAnim.key.length())   
             spriteHandle->SetAnimation(m_currentAnim.key.c_str(), m_currentAnim.yoyo, m_currentAnim.rate, m_currentAnim.repeat);

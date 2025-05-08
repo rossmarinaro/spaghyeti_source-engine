@@ -14,6 +14,8 @@ namespace System {
 
             std::string key;
 
+            Math::Vector2* cullPosition;
+
             std::unique_ptr<Geometry> vignette;
             
             std::vector<std::shared_ptr<Entity>> entities;

@@ -42,6 +42,10 @@ namespace System {
             void Flush(bool removeBehaviors = true);
             void Exit();
 
+            //map manager
+ 
+            static inline MapManager* maps;
+
             //create objects 
 
             static std::shared_ptr<Entity> CreateEntity(int type = Entity::GENERIC, int layer = 1);
@@ -51,7 +55,7 @@ namespace System {
             static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y, const std::string& font = "", int layer = 2);
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height, int layer = 1, bool isStatic = false);
             static void DestroyEntity(std::shared_ptr<Entity> entity);
-            
+            static void SetCullPosition(Math::Vector2* position);
             static void StartScene(const std::string& key, bool loadMap);
             static Scene* GetScene(const std::string& key = "");
             
@@ -73,10 +77,6 @@ namespace System {
                     
                 return nullptr;
             }
-
-            //map manager
- 
-            static inline MapManager* maps;
             
         private:
 

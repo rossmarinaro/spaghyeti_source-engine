@@ -33,8 +33,8 @@ void CollisionManager::BeginContact(b2Contact* contact)
                 const auto pointer = body.first->pointer;
 
                 if (
-                    body.first->IsEnabled() && !
-                    bodyFixtureA->IsSensor() && !bodyFixtureB->IsSensor() && 
+                    body.first->IsEnabled() && 
+                    !bodyFixtureA->IsSensor() && !bodyFixtureB->IsSensor() && 
                     (pointer == bodyUserDataA.pointer || pointer == bodyUserDataB.pointer))
                 {
                     sprite->num_contacts++; 

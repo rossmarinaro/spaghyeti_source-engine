@@ -71,10 +71,9 @@ class Entity {
 		void SetEnabled(bool isEnabled);
         void SetPosition(float x, float y);
 
-        static inline int s_depth = 0, s_count = 0;
-        static inline Math::Vector2* s_cullPosition;
-
-        static inline void SetCullPosition(Math::Vector2* position) { s_cullPosition = position; }
+        static inline int s_depth = 0, 
+                          s_count = 0, 
+                          s_rendered = 0;
 
     protected:
 
