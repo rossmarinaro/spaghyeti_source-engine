@@ -12,7 +12,7 @@ class Physics {
         struct Body 
         {
             bool isSensor, isEnabled;
-            int pointer;
+            uintptr_t pointer;
             float density, friction, restitution;
 
             std::string id;
@@ -23,7 +23,7 @@ class Physics {
             const Math::Vector2 GetLinearVelocity();
             
             void SetTransform(float x, float y, float angle = 0.0f);
-            void SetLinearVelocity(float velocityX, float velocityY);
+            void SetLinearVelocity(float velocityX, float velocityY); 
             void ApplyLinearImpulse(float velocityX, float velocityY);
             void SetEnabled(bool enabled);
             void SetSensor(bool sensor);
@@ -48,7 +48,7 @@ class Physics {
              subStep,
              clearForces;
 
-        static std::shared_ptr<Body> CreateStaticBody(float x, float y, float width, float height, bool isSensor = false, int pointer = 0);
+        static std::shared_ptr<Body> CreateStaticBody(float x, float y, float width, float height, bool isSensor = false, int pointer = -1);
 
         static std::shared_ptr<Body> CreateDynamicBody(
             int type,
@@ -57,7 +57,7 @@ class Physics {
             float width,
             float height,
             bool isSensor = true,
-            int pointer = 0, 
+            int pointer = -1, 
             float density = 0.0f,  
             float friction = 0.0f, 
             float restitution = 0.0f
@@ -79,6 +79,8 @@ class Physics {
 
         static inline const signed int s_velocityIterations = 3,
                                        s_positionIterations = 2;
+
+        void Cleanup();
 
 };
 

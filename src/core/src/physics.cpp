@@ -17,6 +17,7 @@ typedef struct Box2D_Body {
 static std::set<std::pair<const std::string, b2Body*>> _bodiesToRemove;
 static std::map<const std::string, std::pair<const std::shared_ptr<Physics::Body>, b2Body*>> _active_bodies;
 static b2World* _world;
+static int _bodyCount = 0;
 
 
 //---------------------------------- return underlying box2d body pointer to be used internally
@@ -55,7 +56,10 @@ Physics::Physics()
 //----------------------------------
 
 
-Physics::~Physics() {
+Physics::~Physics() 
+{
+    ClearBodies();
+
     delete _world;
     _world = nullptr;
 
@@ -94,24 +98,25 @@ std::shared_ptr<Physics::Body> Physics::CreateStaticBody(float x, float y, float
 
     b2d_body.def.type = b2_staticBody;
     b2d_body.def.position.Set(x, y);
+    b2d_body.def.userData.pointer = pointer <= -1 ? pointer : _bodyCount;
 
-    b2d_body.def.userData.pointer = pointer;
-    b2d_body.self = _world->CreateBody(&b2d_body.def);
     b2d_body.fixtureDef.isSensor = isSensor;
+    b2d_body.self = _world->CreateBody(&b2d_body.def);
 
     b2PolygonShape box;
 
     box.SetAsBox(width, height);
-    b2d_body.self->CreateFixture(&box, 0.0f);
+    b2d_body.self->CreateFixture(&box, 0.0f); 
 
-    const auto body = std::make_shared<Body>(pointer, isSensor);
+    const auto body = std::make_shared<Body>(pointer <= -1 ? pointer : _bodyCount, isSensor);
 
     _active_bodies.insert({ body->id, { body, b2d_body.self } });
 
+    if (pointer > -1)
+        _bodyCount++;
+
     return body;
 }
-
-
 
 
 //------------------------------------
@@ -135,7 +140,8 @@ std::shared_ptr<Physics::Body> Physics::CreateDynamicBody(
 
     b2d_body.def.type = b2_dynamicBody;
     b2d_body.def.position.Set(x, y);
-    b2d_body.def.userData.pointer = pointer;
+
+    b2d_body.def.userData.pointer = pointer <= -1 ? pointer : _bodyCount;
     b2d_body.self = _world->CreateBody(&b2d_body.def);
 
     b2CircleShape circle;
@@ -163,9 +169,12 @@ std::shared_ptr<Physics::Body> Physics::CreateDynamicBody(
 
     b2d_body.self->CreateFixture(&b2d_body.fixtureDef);
 
-    const auto body = std::make_shared<Body>(pointer, isSensor, density, friction, restitution);
+    const auto body = std::make_shared<Body>(pointer <= -1 ? pointer : _bodyCount, isSensor, density, friction, restitution);
 
     _active_bodies.insert({ body->id, { body, b2d_body.self } });
+    
+    if (pointer > -1)
+        _bodyCount++;
 
     return body;
 }
@@ -174,10 +183,14 @@ std::shared_ptr<Physics::Body> Physics::CreateDynamicBody(
 //-----------------------------
 
 
-void Physics::DestroyBody(const std::shared_ptr<Body> body) {
+void Physics::DestroyBody(const std::shared_ptr<Body> body) 
+{
     const auto b2d_body = _GetBox2DBody(body->id);
-    if (b2d_body)
-        _bodiesToRemove.insert({ body->id, b2d_body });
+    
+    if (b2d_body) {
+        _bodiesToRemove.insert({ body->id, b2d_body }); 
+        _bodyCount--; 
+    }
 }
 
 
@@ -192,7 +205,34 @@ void Physics::ClearBodies()
 
     _active_bodies.clear();
 
+    Cleanup();
+
     LOG("Physics: bodies cleared.");
+}
+
+
+//-------------------------------
+
+
+void Physics::Cleanup() 
+{
+    for (auto it = _bodiesToRemove.begin(); it != _bodiesToRemove.end(); ++it)
+    {
+        auto body = *it;
+        auto b_it = std::find_if(_active_bodies.begin(), _active_bodies.end(), [body](const auto& b) { return b.first == body.first; });
+
+        if (b_it != _active_bodies.end()) {
+            b_it = _active_bodies.erase(b_it);
+            --b_it;
+        }
+
+        if (body.second != nullptr) {
+            _world->DestroyBody(body.second);
+            body.second = nullptr;
+        }
+    }
+
+    _bodiesToRemove.clear();
 }
 
 
@@ -221,23 +261,8 @@ void Physics::Update()
 
     //cleanup removed bodies
 
-    for (auto it = _bodiesToRemove.begin(); it != _bodiesToRemove.end(); ++it)
-    {
-        auto body = *it;
-        auto b_it = std::find_if(_active_bodies.begin(), _active_bodies.end(), [body](const auto& b) { return b.first == body.first; });
-
-        if (b_it != _active_bodies.end()) {
-            b_it = _active_bodies.erase(b_it);
-            --b_it;
-        }
-
-        if (body.second != nullptr) {
-            _world->DestroyBody(body.second);
-            body.second = nullptr;
-        }
-    }
-
-    _bodiesToRemove.clear();
+    Cleanup();
+    
     _world->SetGravity(b2Vec2(gravityX, gravityY));
 }
 

@@ -383,7 +383,7 @@ void Sprite::SetVelocityX(float velX)
 
     velocityX = velX; 
 
-    if (bodies.size() && IsContacting()) 
+    if (bodies.size()) 
         bodies[0].first->SetLinearVelocity(velocityX, bodies[0].first->GetLinearVelocity().y);
 
     else
@@ -674,18 +674,17 @@ void Sprite::Render()
 
         }
 
-        //update physics bodies if exists
+        //update physics bodies if any
 
-        if (bodies.size())
-            for (int i = 0; i < bodies.size(); i++)
-                if (bodies[i].first->IsEnabled()) {
-                    if (bodies[i].first->GetType() == b2_dynamicBody) { 
-                        Math::Vector2 pos = bodies[0].first->GetPosition(); 
-                        SetPosition((pos.x / scale.x) - bodies[0].second.x, (pos.y / scale.y) - bodies[0].second.y);
-                    }
-                    else
-                        bodies[i].first->SetTransform(((position.x / scale.x) - bodies[0].second.x), ((position.y / scale.y) - bodies[0].second.y));
+        for (const auto& body : bodies)
+            if (body.first->IsEnabled()) {
+                if (body.first->GetType() == b2_dynamicBody) { 
+                    Math::Vector2 pos = body.first->GetPosition(); 
+                    SetPosition((pos.x / scale.x) - body.second.x, (pos.y / scale.y) - body.second.y);
                 }
+                else
+                    body.first->SetTransform(((position.x / scale.x) - body.second.x), ((position.y / scale.y) - body.second.y));
+            }
 
         //play current animation
 

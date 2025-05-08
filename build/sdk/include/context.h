@@ -10,6 +10,7 @@
 namespace Process {
 
     struct Context {
+        bool active;
         Inputs* inputs; 
         Camera* camera;
         Physics* physics;

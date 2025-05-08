@@ -58,15 +58,9 @@ void TilemapNode::Reset(int component_type)
 
     bool passAll = component_type == Component::NONE;
 
-    if (component_type == Component::PHYSICS || passAll) 
-    {
+    if (component_type == Component::PHYSICS || passAll) {
         for (const auto& body : bodies)
-            Physics::DestroyBody(body);
-
-        bodyX.clear();
-        bodyY.clear();
-        body_width.clear(); 
-        body_height.clear();
+            Physics::DestroyBody(body.pb);
 
         bodies.clear();
     }
@@ -151,17 +145,9 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
 //---------------------------
 
 
-void TilemapNode::CreateBody(float x, float y, float width, float height) 
-{
-
-    bodyX.push_back(x);
-    bodyY.push_back(y);
-    body_width.push_back(width);
-    body_height.push_back(height);
-
+void TilemapNode::CreateBody(float x, float y, float width, float height) {
     const auto body = Physics::CreateStaticBody(x, y, width, height);
-
-    bodies.push_back(body);
+    bodies.push_back({ body, x, y, width, height });
 }
 
 
@@ -172,14 +158,17 @@ void TilemapNode::UpdateBody(int index)
 {
 
     b2PolygonShape body;  
-    body.SetAsBox(body_width[index] / 2, body_height[index] / 2);
 
+    body.SetAsBox(bodies[index].width / 2, bodies[index].height / 2);
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &body; 
 
-    bodies[index]->DestroyFixture();
-    bodies[index]->CreateFixture(&fixtureDef);
-    bodies[index]->SetTransform(bodyX[index] + body_width[index] / 2, bodyY[index] + body_height[index] / 2);
+    if (bodies[index].pb) {
+        bodies[index].pb->DestroyFixture();
+        bodies[index].pb->CreateFixture(&fixtureDef);
+        bodies[index].pb->SetTransform(bodies[index].x + bodies[index].width / 2, bodies[index].y + bodies[index].height / 2);
+    }
+
 }
 
 
@@ -221,36 +210,45 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                     if (ImGui::BeginMenu("bodies"))
                     {
                         ImGui::Text("manual input: CTRL + click");
+                        
+                        int i = 0;
 
-                        for (int i = 0; i < bodies.size(); i++)
+                        for (auto& body : bodies)
                         {
 
                             ImGui::PushID(i);
 
                             ImGui::Text("body: %d", i);
 
-                            ImGui::SameLine();
+                            ImGui::SliderFloat("width", &body.width, 0.0f, map_width * tile_width, NULL, ImGuiSliderFlags_AlwaysClamp); 
+                            ImGui::SliderFloat("height", &body.height, 0.0f, map_height * tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
+
+                            ImGui::SliderFloat("x", &body.x, 0.0f, Editor::Get()->worldWidth, NULL, ImGuiSliderFlags_AlwaysClamp);  
+                            ImGui::SliderFloat("y", &body.y, 0.0f, Editor::Get()->worldHeight, NULL, ImGuiSliderFlags_AlwaysClamp); 
+                            
+                            UpdateBody(i);
 
                             if (ImGui::Button("remove") && bodies.size() > 1) 
                             {
-                                auto it = std::find(bodies.begin(), bodies.end(), bodies[i]);
-                                if (it != bodies.end()) {
-                                    Physics::DestroyBody(*it); 
-                                    bodies.erase(it);
+                                auto it = std::find_if(bodies.begin(), bodies.end(), [&](const Body& b) { return b.pb->id == body.pb->id; });
+                            
+                                if (it != bodies.end()) 
+                                {
+                                    auto bod = *it;   
+
+                                    it = bodies.erase(std::move(it));
+                                    --it;
+
+                                    if (bod.pb)
+                                        Physics::DestroyBody(bod.pb); 
                                 }
                             }
 
-                            ImGui::SliderFloat("width", &body_width[i], 0.0f, map_width * tile_width, NULL, ImGuiSliderFlags_AlwaysClamp); 
-                            ImGui::SliderFloat("height", &body_height[i], 0.0f, map_height * tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
-
-                            ImGui::SliderFloat("x", &bodyX[i], 0.0f, Editor::Get()->worldWidth, NULL, ImGuiSliderFlags_AlwaysClamp);  
-                            ImGui::SliderFloat("y", &bodyY[i], 0.0f, Editor::Get()->worldHeight, NULL, ImGuiSliderFlags_AlwaysClamp); 
-
                             ImGui::Separator();             
                             
-                            UpdateBody(i);
-                            
                             ImGui::PopID();
+
+                            i++;
 
                         }
 
@@ -272,17 +270,10 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                             if (System::Utils::str_endsWith(path, ".json")) 
                             {
-
                                 if (ImGui::MenuItem(key.c_str())) 
                                 {
-
                                     for (const auto& body : bodies)
-                                        Physics::DestroyBody(body);
-
-                                    bodyX.clear();
-                                    bodyY.clear();
-                                    body_width.clear();
-                                    body_height.clear();
+                                        Physics::DestroyBody(body.pb);
 
                                     bodies.clear();
 

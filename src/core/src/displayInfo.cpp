@@ -3,8 +3,12 @@
 #include "../../../build/sdk/include/context.h"
 #include "./displayInfo.h"
 
-DisplayInfo::DisplayInfo()
+DisplayInfo::DisplayInfo(void* _context):
+    m_prev(0.0),
+    m_frames(0)
 {
+    m_prev = ((Process::Context*)_context)->time->GetSeconds();
+
     fps_text = std::make_unique<Text>("FPS", 10, 0);
     fps_text->SetScale(2.0f, 1.0f);
 
@@ -21,10 +25,22 @@ void DisplayInfo::Update(void* _context)
 {
     const auto context = ((Process::Context*)_context);
 
+    if (!context->active)
+        return;
+
     //FPS counter
 
-    const float fps = 60.0f - context->time->delta;
-    fps_text->SetText("FPS: " + std::to_string(fps));
+    const float now = context->time->GetSeconds();
+    
+    if (m_frames < 60)
+        m_frames++;
+
+    if (now - m_prev >= 1.0f) {
+        fps_text->SetText("FPS: " + std::to_string(m_frames));
+        m_frames = 0;
+        m_prev = now;
+    }
+
     fps_text->Render();
 
     //camera stats

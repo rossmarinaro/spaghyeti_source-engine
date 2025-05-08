@@ -423,16 +423,21 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
         json bodies = json::array();
 
-        for (int i = 0; i < sn->bodies.size(); ++i)
+        int bodIndex = 0;
+
+        for (const auto& body : sn->bodies)
+        {
             bodies.push_back({
-                { "body_width", sn->body_width.size() ? sn->body_width[i] : 0 },
-                { "body_height", sn->body_height.size() ? sn->body_height[i] : 0 },
-                { "bodyX", sn->bodyX.size() ? sn->bodyX[i] : 0 },
-                { "bodyY", sn->bodyY.size() ? sn->bodyY[i] : 0 },
-                { "pointer", sn->body_pointer.size() ? sn->body_pointer[i] : 0 },
-                { "sensor", sn->is_sensor.size() ? sn->is_sensor[i].b : false }
+                { "body_width", body.width },
+                { "body_height", body.height },
+                { "bodyX", body.x },
+                { "bodyY", body.y },
+                { "pointer", sn->body_pointer.size() ? sn->body_pointer[bodIndex] : 0 },
+                { "sensor", sn->is_sensor.size() ? sn->is_sensor[bodIndex].b : false }
             });
 
+            bodIndex++;
+        }
 
         //settings
 
@@ -536,13 +541,8 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
         json bodies = json::array();
 
-        for (int i = 0; i < tmn->bodies.size(); i++) 
-            bodies.push_back({
-                { "body_width", tmn->body_width.size() ? tmn->body_width[i] : 0 },
-                { "body_height", tmn->body_height.size() ? tmn->body_height[i] : 0 },
-                { "bodyX", tmn->bodyX.size() ? tmn->bodyX[i] : 0 },
-                { "bodyY", tmn->bodyY.size() ? tmn->bodyY[i] : 0 }
-            });
+        for (const auto& body : tmn->bodies) 
+            bodies.push_back({ { "body_width", body.width }, { "body_height", body.height }, { "bodyX", body.x }, { "bodyY", body.y } });
 
         data = {
             { "layer", tmn->layer },
@@ -887,18 +887,13 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                             else 
                             {
-                                sn->bodyX.push_back(body["bodyX"]);
-                                sn->bodyY.push_back(body["bodyY"]);
-                                sn->body_width.push_back(body["body_width"]);
-                                sn->body_height.push_back(body["body_height"]);
-
                                 SpriteNode::BoolContainer bc;
                                 bc.b = body["sensor"];
 
                                 sn->is_sensor.push_back(bc);
                                 sn->body_pointer.push_back(body["pointer"]);
 
-                                sn->bodies.push_back(nullptr);
+                                sn->bodies.push_back({ nullptr, body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]});
                             }
                 }
 
@@ -985,22 +980,15 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 if (data["components"]["physics"]["bodies"].size())
                     for (const auto& body : data["components"]["physics"]["bodies"]) 
                     {
-                        if (makeNode) 
-                        {
+                        if (makeNode) {
                             tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
 
                             for (int i = 0; i < tmn->bodies.size(); i++)
                                 tmn->UpdateBody(i);
                         }
 
-                        else {
-                            tmn->bodyX.push_back(body["bodyX"]);
-                            tmn->bodyY.push_back(body["bodyY"]);
-                            tmn->body_width.push_back(body["body_width"]);
-                            tmn->body_height.push_back(body["body_height"]);
-                            tmn->bodies.push_back(nullptr);
-                        }
-
+                        else 
+                            tmn->bodies.push_back({ nullptr, body["bodyX"], body["bodyY"], body["body_width"], body["body_height"] });
                     }
             }
             

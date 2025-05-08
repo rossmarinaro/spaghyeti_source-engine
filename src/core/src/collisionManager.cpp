@@ -28,19 +28,19 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
         if (sprite->bodies.size())  
         {
-
-            sprite->num_contacts++; 
-
-            for (const auto& body : sprite->bodies)
+            for (const auto& body : sprite->bodies) 
             {
-                const int pointer = body.first->pointer;
+                const auto pointer = body.first->pointer;
 
                 if (
-                    body.first->IsEnabled() &&
-                    (pointer == bodyUserDataA.pointer || pointer == bodyUserDataB.pointer) && 
-                    (!bodyFixtureA->IsSensor() || !bodyFixtureB->IsSensor()) 
-                )
-                    sprite->SetContact(true);
+                    body.first->IsEnabled() && !
+                    bodyFixtureA->IsSensor() && !bodyFixtureB->IsSensor() && 
+                    (pointer == bodyUserDataA.pointer || pointer == bodyUserDataB.pointer))
+                {
+                    sprite->num_contacts++; 
+                    sprite->SetContact(true); 
+                    /* test */ //sprite->SetTint({1.0f, 0.0f,0.0f}); 
+                }       
             }
         }
     }
@@ -62,7 +62,6 @@ void CollisionManager::EndContact(b2Contact* contact)
 
     for (const auto& entity : System::Game::GetScene()->entities)
     {
-
         if (entity->GetType() != Entity::SPRITE)  
             continue; 
 
@@ -70,23 +69,20 @@ void CollisionManager::EndContact(b2Contact* contact)
 
         if (sprite->bodies.size()) 
         {        
-
-            sprite->num_contacts--;
-
-            if (sprite->num_contacts > 0) 
-                break;
-
-            for (const auto& body : sprite->bodies)
+            for (const auto& body : sprite->bodies) 
             {
-                const int pointer = body.first->pointer;
+                const auto pointer = body.first->pointer;
 
-                if (
-                    body.first->IsEnabled() &&
-                    (pointer == bodyUserDataA.pointer || pointer == bodyUserDataB.pointer) && 
-                    (!bodyFixtureA->IsSensor() || !bodyFixtureB->IsSensor()) 
-                )
-                    sprite->SetContact(false);
+                if (body.first->IsEnabled() && 
+                    !bodyFixtureA->IsSensor() && !bodyFixtureB->IsSensor() && 
+                    (pointer == bodyUserDataA.pointer || pointer == bodyUserDataB.pointer))
+                        sprite->num_contacts--;
             }
+
+            if (sprite->num_contacts <= 0) {
+                sprite->SetContact(false); 
+                /* test */ //sprite->ClearTint(); 
+            } 
         }        
     }
 }

@@ -40,11 +40,6 @@ namespace editor {
 
             std::string ID, name;
 
-            std::vector<float> body_width, 
-                               body_height,   
-                               bodyX, 
-                               bodyY;
-
             Math::Vector3 strokeColor, shadowColor;
 
             struct StringContainer { std::string s = ""; };
@@ -87,6 +82,11 @@ namespace editor {
             const bool HasComponent(int type);
 
         protected:
+
+            struct Body {
+                std::shared_ptr<Physics::Body> pb;
+                float x, y, width, height;
+            };
 
             bool m_init;
             
@@ -175,7 +175,7 @@ namespace editor {
                                frame_fX,
                                frame_fY;
 
-            std::vector<std::shared_ptr<Physics::Body>> bodies;  
+            std::vector<Body> bodies;  
 
             SpriteNode(bool init = true);
             ~SpriteNode();      
@@ -194,7 +194,7 @@ namespace editor {
                 float width = 0.0f, 
                 float height = 0.0f,
                 bool isSensor = false,
-                int pointerType = 0
+                int pointerType = -1
             );
 
         private:
@@ -224,7 +224,7 @@ namespace editor {
 
             std::vector<std::array<std::string, 3>> layers;
             std::vector<std::array<int, 6>> offset;
-            std::vector<std::shared_ptr<Physics::Body>> bodies;
+            std::vector<Body> bodies;
 
             TilemapNode(bool init = true);
             ~TilemapNode();

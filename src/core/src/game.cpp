@@ -27,7 +27,6 @@ static CollisionManager _collisions;
 
 void Game::Flush(bool removeBehaviors)
 {
-
     LOG("Scene: " + currentScene->key + " stopped.");
 
     inputs->ResetControls();
@@ -43,7 +42,19 @@ void Game::Flush(bool removeBehaviors)
     maps->layers.clear();
     currentScene->UI.clear();
     currentScene->entities.clear();
-    time->timed_events.clear();
+    time->timed_events.clear();                  
+    
+    physics->ClearBodies(); 
+    camera->Reset(); 
+
+    //clear behaviors from other scenes
+
+    for (const auto& scene : scenes) {
+        for (auto& behavior : scene->behaviors)
+            behavior.reset(); 
+        
+        scene->behaviors.clear();
+    }          
 }
  
 
@@ -82,7 +93,7 @@ Game::Game()
 
     //scene context handles
 
-    m_context = { inputs, camera, physics, time };
+    m_context = { true, inputs, camera, physics, time };
 }
 
 
@@ -110,6 +121,11 @@ void Game::Boot()
 
     inputs->ResetControls();
 
+    const auto& world = static_cast<b2World*>(physics->GetWorld());
+
+    if (world)
+        world->SetContactListener(&_collisions);
+
     StartScene(scenes[0]->key, true);
 
     //physics listener and debug
@@ -122,10 +138,12 @@ void Game::Boot()
         _debug_flags += b2Draw::e_centerOfMassBit;
 
         _debug = new DebugDraw;
-        static_cast<b2World*>(physics->GetWorld())->SetDebugDraw(_debug);
+
+        if (world)
+            world->SetDebugDraw(_debug);
 
         #if STANDALONE == 1
-            _displayInfo = new DisplayInfo;
+            _displayInfo = new DisplayInfo(&m_context);
             physics->enableDebug = false;
         #else
             physics->enableDebug = true;
@@ -141,10 +159,10 @@ void Game::Boot()
 
 void Game::StartScene(const std::string& key, bool loadMap)
 {
-
     Game* game = Application::game;
 
     game->m_gameState = false;
+    game->m_context.active = false;
 
     //find loaded scene
 
@@ -152,39 +170,20 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
     if (it != game->scenes.end())
     {
-        #if STANDALONE == 1
-
-            //refresh physics
-
-            if (game->physics) 
-            {
-                if (game->currentScene)
-                    game->physics->ClearBodies();
-
-                const auto& world = static_cast<b2World*>(game->physics->GetWorld());
-
-                if (world)
-                    world->SetContactListener(&_collisions);
-            }
-
-        #endif
-
         //clear entities if applicable (after first initialization)
 
         if (game->currentScene)
-        {
+        {     
             if (game->currentScene->key == game->scenes[0]->key) {
                 Resources::Manager::Clear(false);
                 cachedScenes.clear();
             }
 
-            game->Flush(game->currentScene->key == key);
+            game->Flush(game->currentScene->key == key);     
         }
 
-        //assign / load current scene
-
-        game->currentScene = *it;
-
+        game->currentScene = *it; 
+ 
         if (Application::events->isMultiThreaded)
             Application::events->pool = new Events::EventPool(THREAD_COUNT);
 
@@ -205,14 +204,8 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
         game->currentScene->Run(loadMap);
 
+        game->m_context.active = true;       
         game->m_gameState = true;
-
-        //clear behaviors from other scenes
-
-        if (loadMap)
-            for (const auto& scene : game->scenes)
-                if (scene != game->currentScene) 
-                    scene->behaviors.clear();
 
         return;
     }
@@ -228,7 +221,6 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
 void Game::Exit()
 {
-
     m_gameState = false;
 
     Flush();
@@ -280,7 +272,7 @@ void Game::Exit()
 
 void Game::UpdateFrame()
 {
-    if (!m_gameState)
+    if (!m_gameState) 
         return;
 
     if (inputs)
@@ -322,7 +314,6 @@ void Game::UpdateFrame()
     //depth sort
 
     std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
-
     std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });      
 
     #if DEVELOPMENT == 1

@@ -1449,8 +1449,12 @@ void EventListener::BuildAndRun()
 
                     if (sn->HasComponent(Component::PHYSICS)) 
                     {
-                        for (int i = 0; i < sn->bodies.size(); i++) 
-                            command_queue << "   sprite_" + node->ID + "->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, " + std::to_string(sn->positionX + sn->bodyX[i]) + ", " + std::to_string(sn->positionY + sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(sn->bodyX[i]) + ", " + std::to_string(sn->bodyY[i]) + ", " + std::to_string(sn->body_width[i]) + ", " + std::to_string(sn->body_height[i]) + " } });\n"; 
+                        int i = 0; 
+
+                        for (const auto& body : sn->bodies) {
+                            command_queue << "   sprite_" + node->ID + "->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, " + std::to_string(sn->positionX + body.x) + ", " + std::to_string(sn->positionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " } });\n"; 
+                            i++;
+                        }
 
                         command_queue << "   for (const auto& body : sprite_" + node->ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
 
@@ -1579,9 +1583,9 @@ void EventListener::BuildAndRun()
 
                     //static physics bodies
 
-                    if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies.size())
-                        for (int i = 0; i < tmn->bodies.size(); i++)    
-                            command_queue << "   Physics::CreateStaticBody(" + std::to_string(tmn->bodyX[i] + tmn->body_width[i] / 2) + ", " + std::to_string(tmn->bodyY[i] + tmn->body_height[i] / 2) + ", " + std::to_string(tmn->body_width[i] / 2) + ", " + std::to_string(tmn->body_height[i] / 2) + ");\n";
+                    if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies.size()) 
+                        for (const auto& body : tmn->bodies) 
+                            command_queue << "   Physics::CreateStaticBody(" + std::to_string(body.x + body.width / 2) + ", " + std::to_string(body.y + body.height / 2) + ", " + std::to_string(body.width / 2) + ", " + std::to_string(body.height / 2) + ");\n";
 
                 } 
 

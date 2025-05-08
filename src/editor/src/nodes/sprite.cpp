@@ -85,14 +85,9 @@ void SpriteNode::Reset(int component_type)
 
     if (component_type == Component::PHYSICS || passAll)
     {
-
         for (const auto& body : bodies)
-            Physics::DestroyBody(body);
+            Physics::DestroyBody(body.pb);
         
-        bodyX.clear();
-        bodyY.clear(); 
-        body_width.clear();
-        body_height.clear();
         body_pointer.clear();
         bodies.clear();
         is_sensor.clear();
@@ -100,7 +95,6 @@ void SpriteNode::Reset(int component_type)
         restitution = 0.0f;
         density = 0.0f;
         friction = 0.0f;
-
     }
     
 }
@@ -111,22 +105,16 @@ void SpriteNode::Reset(int component_type)
 
 void SpriteNode::CreateBody(float x, float y, float width, float height, bool isSensor, int pointerType) 
 {
-
     BoolContainer bc;
 
     bc.b = isSensor;
 
-    bodyX.push_back(x);
-    bodyY.push_back(y);
-    body_width.push_back(width);
-    body_height.push_back(height);
     is_sensor.push_back(bc);
     body_pointer.push_back(pointerType);
 
     const auto body = Physics::CreateDynamicBody(Physics::BOX, x, y, width, height); 
 
-    bodies.push_back(body);
-    
+    bodies.push_back({ body, x, y, width, height });
 }
 
 
@@ -263,66 +251,86 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                 if (anim_component)
                 {
-                    if (animations.size() <= 0) 
-                        ImGui::Text("no animations defined"); 
+                    ImGui::Text(("animations: " + std::to_string(animations.size())).c_str()); 
+                    
+                    if (ImGui::Button("add animation")) 
+                        animations.push_back({ "", 0, 0, -1, false });
+            
+                    ImGui::SameLine();
+
+                    if (ImGui::BeginMenu("remove animator?")) {
+                        
+                        if (ImGui::MenuItem("yes")) 
+                            RemoveComponent(anim_component); 
+
+                        ImGui::EndMenu();
+                    }
+
+                    if (ImGui::BeginMenu("animations"))
+                    {
+                        if (animations.size() <= 0) 
+                            ImGui::Text("no animations defined"); 
                                    
-                    else 
-                        for (int i = 0; i < animations.size(); i++)
-                        {
+                        else 
+                            for (int i = 0; i < animations.size(); i++)
+                            {
 
-                            ImGui::Text("animation: %d", i);
+                                ImGui::Text("animation: %d", i);
 
-                            ImGui::PushID(i); 
+                                ImGui::PushID(i); 
 
-                            if (spriteHandle && spriteHandle->IsSpritesheet()) {
+                                if (spriteHandle && spriteHandle->IsSpritesheet()) {
 
-                                if (ImGui::Button("play")) 
-                                    m_currentAnim = { animations[i].key, animations[i].start, animations[i].end, animations[i].rate, animations[i].repeat, animations[i].yoyo };
-                                    
-                                ImGui::SameLine(); 
+                                    if (ImGui::Button("play")) 
+                                        m_currentAnim = { animations[i].key, animations[i].start, animations[i].end, animations[i].rate, animations[i].repeat, animations[i].yoyo };
+                                        
+                                    ImGui::SameLine(); 
 
-                                if (ImGui::Button("stop")) 
-                                    m_currentAnim = { "", 0, 0, 2, -1, false };
+                                    if (ImGui::Button("stop")) 
+                                        m_currentAnim = { "", 0, 0, 2, -1, false };
 
-                            }
-
-                            if (animations[i].key.size() && animations[i].key.length()) {
-
-                                ImGui::SameLine();
-
-                                if (ImGui::Button("apply")) 
-                                    ApplyAnimation(animations[i].key);
-                            }
-
-                            if (i != 0 && animations.size() > 1) {
-                                ImGui::SameLine(); 
-
-                                if (ImGui::Button("remove")) {
-
-                                    auto it = std::find_if(animations.begin(), animations.end(), [&](const Anims& anim) { return anim.key == animations[i].key; });
-
-                                    if (it != animations.end())
-                                        animations.erase(it);
                                 }
 
+                                if (animations[i].key.size() && animations[i].key.length()) {
+
+                                    ImGui::SameLine();
+
+                                    if (ImGui::Button("apply")) 
+                                        ApplyAnimation(animations[i].key);
+                                }
+
+                                if (i != 0 && animations.size() > 1) {
+                                    ImGui::SameLine(); 
+
+                                    if (ImGui::Button("remove")) {
+
+                                        auto it = std::find_if(animations.begin(), animations.end(), [&](const Anims& anim) { return anim.key == animations[i].key; });
+
+                                        if (it != animations.end())
+                                            animations.erase(it);
+                                    }
+
+                                }
+
+                                ImGui::InputText("key", &animations[i].key);
+                                ImGui::InputInt("start", &animations[i].start); 
+                                ImGui::InputInt("end", &animations[i].end);
+                                ImGui::InputInt("rate", &animations[i].rate);
+                                ImGui::InputInt("repeat", &animations[i].repeat);
+
+                                if (animations[i].repeat < -1)
+                                    animations[i].repeat = -1;
+                                
+                                ImGui::Checkbox("yoyo", &animations[i].yoyo);
+
+                                ImGui::Separator();
+
+                                ImGui::PopID();
+                                
                             }
 
-                            ImGui::InputText("key", &animations[i].key);
-                            ImGui::InputInt("start", &animations[i].start); 
-                            ImGui::InputInt("end", &animations[i].end);
-                            ImGui::InputInt("rate", &animations[i].rate);
-                            ImGui::InputInt("repeat", &animations[i].repeat);
-
-                            if (animations[i].repeat < -1)
-                                animations[i].repeat = -1;
-                            
-                            ImGui::Checkbox("yoyo", &animations[i].yoyo);
-
-                            ImGui::Separator();
-
-                            ImGui::PopID();
-                            
-                        }
+                        ImGui::EndMenu();
+                    }
 
                     if (ImGui::BeginCombo("set default animation", anim_to_play_on_start.key.c_str())) {
                         for (const auto& anim : animations) 
@@ -341,23 +349,10 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                         ImGui::EndCombo();
                     }
 
-                    if (ImGui::BeginMenu("remove default animation")) {
+                    if (anim_to_play_on_start.key.length() && ImGui::BeginMenu("remove default animation")) {
                         
                         if (ImGui::MenuItem("yes")) 
                             anim_to_play_on_start = { "", 2, -1, false };
-
-                        ImGui::EndMenu();
-                    }
-
-                    if (ImGui::Button("add animation")) 
-                        animations.push_back({ "", 0, 0, -1, false });
-            
-                    ImGui::SameLine();
-
-                    if (ImGui::BeginMenu("remove animator?")) {
-                        
-                        if (ImGui::MenuItem("yes")) 
-                            RemoveComponent(anim_component); 
 
                         ImGui::EndMenu();
                     }
@@ -394,42 +389,44 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
             if (HasComponent(Component::PHYSICS) && ImGui::BeginMenu("Physics"))
             {
-
                 auto physics_component = GetComponent(Component::PHYSICS, ID);
 
                 if (physics_component)
                 {
-                    for (int i = 0; i < bodies.size(); i++)
+                    int i = 0;
+
+                    for (auto& body : bodies)
                     {
 
                         ImGui::PushID(i);
 
                         ImGui::Text((i == 0) ? "anchor: %d" : "body: %d", i);
 
-                        ImGui::SliderFloat("offset x", &bodyX[i], 0.0f, System::Window::s_width); 
-                        ImGui::SliderFloat("offset y", &bodyY[i], 0.0f, System::Window::s_height);
-                        ImGui::SliderFloat("width", &body_width[i], 0.0f, System::Window::s_width); 
-                        ImGui::SliderFloat("height", &body_height[i], 0.0f, System::Window::s_height);   
+                        ImGui::SliderFloat("offset x", &body.x, 0.0f, System::Window::s_width); 
+                        ImGui::SliderFloat("offset y", &body.y, 0.0f, System::Window::s_height);
+                        ImGui::SliderFloat("width", &body.width, 0.0f, System::Window::s_width); 
+                        ImGui::SliderFloat("height", &body.height, 0.0f, System::Window::s_height);
+ 
                         ImGui::InputInt("type", &body_pointer[i]); 
+
+                        if (body_pointer[i] <= -1)
+                            body_pointer[i] = -1;
 
                         ImGui::Checkbox("sensor", &is_sensor[i].b);
 
                         ImGui::Separator();     
 
-                        if (bodies[i] != nullptr)
-                        {
-                            b2PolygonShape body;
-                            body.SetAsBox(body_width[i], body_height[i]);
-                            b2FixtureDef fixtureDef;
-                            fixtureDef.shape = &body;
+                        b2PolygonShape bod;
+                        bod.SetAsBox(body.width, body.height);
+                        b2FixtureDef fixtureDef;
+                        fixtureDef.shape = &bod;
 
-                            bodies[i]->DestroyFixture();
-                            bodies[i]->CreateFixture(&fixtureDef);    
+                        bodies[i].pb->DestroyFixture();
+                        bodies[i].pb->CreateFixture(&fixtureDef);    
  
-                        }
-
                         ImGui::PopID();
 
+                        i++;
                     }
 
                     ImGui::Text("settings");
@@ -446,7 +443,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                     ImGui::SameLine();
 
                     if (ImGui::Button("remove") && bodies.size() > 1) {
-                        Physics::DestroyBody(bodies.back());
+                        Physics::DestroyBody(bodies.back().pb);
                         bodies.pop_back();
                     }
 
@@ -816,8 +813,8 @@ void SpriteNode::Render()
         //entity physics body transform
         
         if (bodies.size())
-            for (int i = 0; i < bodies.size(); i++)   
-                bodies[i]->SetTransform(spriteHandle->position.x + bodyX[i], spriteHandle->position.y + bodyY[i]);
+            for (const auto& body : bodies)   
+                body.pb->SetTransform(spriteHandle->position.x + body.x, spriteHandle->position.y + body.y);
 
         //if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && (ImGui::IsMouseDown(ImGuiKey_RightShift) || ImGui::IsMouseDown(ImGuiKey_LeftShift)))
             //Editor::selectedEntity = spriteHandle;
