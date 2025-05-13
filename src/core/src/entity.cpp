@@ -185,7 +185,7 @@ void Geometry::Render()
         const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
         
         const glm::mat4 proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f), 
-                        view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition().x * scrollFactor.x, System::Application::game->camera->GetPosition().y * scrollFactor.y, 0.0f)),
+                        view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition()->x * scrollFactor.x, System::Application::game->camera->GetPosition()->y * scrollFactor.y, 0.0f)),
                         mvp = proj * view * model;
                                 
         shader.SetVec3f("tint", tint);
@@ -618,7 +618,7 @@ void Sprite::Render()
     //sprite model transformations
  
     const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition().x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition().y * scrollFactor.y * scale.y));
+    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y * scale.y));
     
     const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
                     proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f);

@@ -123,15 +123,15 @@ void EventListener::Serialize(json& data, bool newScene)
     //camera
 
     data["camera"]["vignetteVisibility"] = newScene ? 0.0f : session->vignetteVisibility;
-    data["camera"]["x"] = newScene ? 0.0f : session->game->camera->GetPosition().x;
-    data["camera"]["y"] = newScene ? 0.0f : session->game->camera->GetPosition().y;
+    data["camera"]["x"] = newScene ? 0.0f : session->game->camera->GetPosition()->x;
+    data["camera"]["y"] = newScene ? 0.0f : session->game->camera->GetPosition()->y;
     data["camera"]["width"] = newScene ? 2000.0f : session->worldWidth;
     data["camera"]["height"] = newScene ? 2000.0f : session->worldHeight;
-    data["camera"]["zoom"] = newScene ? 1.0f : session->game->camera->GetZoom(); 
-    data["camera"]["color"]["x"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor().x;
-    data["camera"]["color"]["y"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor().y;
-    data["camera"]["color"]["z"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor().z;
-    data["camera"]["color"]["w"] = newScene ? 1.0f : session->game->camera->GetBackgroundColor().w;
+    data["camera"]["zoom"] = newScene ? 1.0f : *session->game->camera->GetZoom(); 
+    data["camera"]["color"]["x"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor()->x;
+    data["camera"]["color"]["y"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor()->y;
+    data["camera"]["color"]["z"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor()->z;
+    data["camera"]["color"]["w"] = newScene ? 1.0f : session->game->camera->GetBackgroundColor()->w;
     data["camera"]["alpha"] = newScene ? 1.0f : GUI::Get()->grid->alpha;
     data["camera"]["pitch"] = newScene ? 20.0f : GUI::Get()->grid_quantity;
     data["camera"]["bounds"]["width"]["begin"] = newScene ? 0.0f : session->game->camera->currentBoundsWidthBegin;

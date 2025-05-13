@@ -12,30 +12,13 @@ class Camera {
               currentBoundsHeightBegin,
               currentBoundsHeightEnd;
 
-        inline bool const IsFollow() { 
-            return m_canFollow; 
-        }
+        inline const bool IsFollow() { return m_canFollow; }
 
-        inline float const GetZoom() { 
-            return m_zoom; 
-        }
-
-        inline float* GetZoomPtr() { 
-            return &m_zoom; 
-        }
-
-        inline float const GetRotation() { 
-            return m_rotation; 
-        }
-
-        inline const Math::Vector2& GetPosition() { 
-            return m_position; 
-        }
-
-        inline const Math::Vector4& GetBackgroundColor() { 
-            return m_backgroundColor; 
-        }
-
+        inline float* GetZoom() { return &m_zoom; }
+        inline float* GetRotation() { return &m_rotation; }
+        inline Math::Vector2* GetPosition() { return &m_position; }
+        inline Math::Vector4* GetBackgroundColor() { return &m_backgroundColor; }
+        
         inline void SetPosition(const Math::Vector2& position) { m_position = position; }
         inline void SetBackgroundColor(const Math::Vector4& color) { m_backgroundColor = color; }
         inline void SetZoom(float zoom) { m_zoom = zoom; }

@@ -51,15 +51,15 @@ void Editor::Update()
     glfwGetCursorPos(Renderer::GLFW_window_instance, &xPos, &yPos);
     
     const Math::Vector4 pm = s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight);
-    const Math::Matrix4 vm = s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition().x, s_self->game->camera->GetPosition().y);
+    const Math::Matrix4 vm = s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition()->x, s_self->game->camera->GetPosition()->y);
 
     const glm::mat4 localCoords = glm::inverse(glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }));
     const glm::vec2 ndc = { Window::GetPixelToNDC(xPos, yPos).x, Window::GetPixelToNDC(xPos, yPos).y };
     const glm::vec4 worldCoords(ndc.x, ndc.y, 0.0f, 1.0f),
                     resultPosition = localCoords * worldCoords;
 
-    s_self->game->inputs->mouseX = resultPosition.x - s_self->game->camera->GetPosition().x - 50;        
-    s_self->game->inputs->mouseY = resultPosition.y - s_self->game->camera->GetPosition().y;
+    s_self->game->inputs->mouseX = resultPosition.x - s_self->game->camera->GetPosition()->x - 50;        
+    s_self->game->inputs->mouseY = resultPosition.y - s_self->game->camera->GetPosition()->y;
 
     //current selected entity
        
@@ -166,6 +166,7 @@ void Editor::Start()
 
     Window::Init();
     Application::Init(s_self->game); 
+    Game::SetCullPosition(g.camera->GetPosition());
 
     AssetManager am;
     GUI gui; 

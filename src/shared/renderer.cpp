@@ -84,7 +84,7 @@ void Renderer::window_size_callback(GLFWwindow* window, int width, int height) {
 
 void Renderer::Update(void* camera)
 {
-    auto bg = ((Camera*)camera)->GetBackgroundColor();
+    const auto bg = ((Camera*)camera)->GetBackgroundColor();
 
     glfwSwapInterval(s_vsync); // Enable vsync
 
@@ -94,10 +94,10 @@ void Renderer::Update(void* camera)
     glClear(GL_COLOR_BUFFER_BIT);
 
     glClearColor(
-        bg.x * bg.w,
-        bg.y * bg.w,
-        bg.z * bg.w,
-        bg.w
+        bg->x * bg->w,
+        bg->y * bg->w,
+        bg->z * bg->w,
+        bg->w
     );
 
     glViewport(0, 0, Window::s_width, Window::s_height);

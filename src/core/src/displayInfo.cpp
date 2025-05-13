@@ -48,7 +48,7 @@ void DisplayInfo::Update(void* _context)
 
     //camera stats
     
-    const std::string camInfo = "CAMERA: x: " + std::to_string(-context->camera->GetPosition().x) + " y: " + std::to_string(-context->camera->GetPosition().y);
+    const std::string camInfo = "CAMERA: x: " + std::to_string(-context->camera->GetPosition()->x) + " y: " + std::to_string(-context->camera->GetPosition()->y);
     m_cam_text->SetText(camInfo);
     m_cam_text->Render();
 

@@ -754,7 +754,6 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                 ImGui::SliderInt("depth", &depth, 0, 1000);
                 ImGui::Checkbox("cull", &cull);
-                ImGui::Checkbox("filter nearest", &filter_nearest);
                 ImGui::InputFloat("scroll factor x", &scrollFactorX);
                 ImGui::InputFloat("scroll factor y", &scrollFactorY);
                 ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width); 

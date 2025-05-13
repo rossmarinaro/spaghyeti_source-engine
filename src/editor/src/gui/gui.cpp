@@ -337,21 +337,21 @@ void GUI::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
 
         //zoom camera
  
-        float zoom = session->game->camera->GetZoom();
+        const float zoom = *session->game->camera->GetZoom();
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
-            session->game->camera->SetZoom(yOffset > -1 ? zoom += 0.1 : zoom -= 0.1);
+            session->game->camera->SetZoom(yOffset > -1 ? zoom + 0.1 : zoom - 0.1);
         
         //position camera
 
         if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            session->game->camera->SetPosition({ session->game->camera->GetPosition().x + yOffset * 10, session->game->camera->GetPosition().y });
+            session->game->camera->SetPosition({ session->game->camera->GetPosition()->x + yOffset * 10, session->game->camera->GetPosition()->y });
         
         else 
-            session->game->camera->SetPosition({ session->game->camera->GetPosition().x, session->game->camera->GetPosition().y + yOffset * 10 });
+            session->game->camera->SetPosition({ session->game->camera->GetPosition()->x, session->game->camera->GetPosition()->y + yOffset * 10 });
 
         if (xOffset != 0)
-            session->game->camera->SetPosition({ session->game->camera->GetPosition().x + xOffset * 10, session->game->camera->GetPosition().y });
+            session->game->camera->SetPosition({ session->game->camera->GetPosition()->x + xOffset * 10, session->game->camera->GetPosition()->y });
     }
 }
 

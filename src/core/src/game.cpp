@@ -20,7 +20,7 @@
 
 #include "../../vendors/glm/glm.hpp"
 #include "../../vendors/box2d/include/box2d/box2d.h"
-
+#include "../../vendors/glm/gtc/matrix_transform.hpp"
 using namespace System;
 
 static CollisionManager _collisions;
@@ -121,11 +121,6 @@ void Game::Boot()
 
     inputs->ResetControls();
 
-    const auto& world = static_cast<b2World*>(physics->GetWorld());
-
-    if (world)
-        world->SetContactListener(&_collisions);
-
     StartScene(scenes[0]->key, true);
 
     //physics listener and debug
@@ -139,8 +134,7 @@ void Game::Boot()
 
         _debug = new DebugDraw;
 
-        if (world)
-            world->SetDebugDraw(_debug);
+        static_cast<b2World*>(physics->GetWorld())->SetDebugDraw(_debug);
 
         #if STANDALONE == 1
             _displayInfo = new DisplayInfo(&m_context);
@@ -183,7 +177,12 @@ void Game::StartScene(const std::string& key, bool loadMap)
         }
 
         game->currentScene = *it; 
- 
+        
+        const auto& world = static_cast<b2World*>(game->physics->GetWorld());
+
+        if (world)
+            world->SetContactListener(&_collisions);
+            
         if (Application::events->isMultiThreaded)
             Application::events->pool = new Events::EventPool(THREAD_COUNT);
 
@@ -297,16 +296,25 @@ void Game::UpdateFrame()
         {
             if (entity->cull && currentScene->cullPosition)
             {
-                float width = Window::s_scaleWidth;
+                float width = Window::s_scaleWidth,
+                      sfX = 1.0f;
 
-                if (!camera->InBounds() && currentScene->cullPosition->x > Window::s_scaleWidth)
-                    width = width + (width / 2);
-                
-                const float sfX = entity->scrollFactor.x == 1.0f ? 1.0f : (1.0f - entity->scrollFactor.x) * 10.0f,
-                            sfY = entity->scrollFactor.y == 1.0f ? 1.0f : (1.0f - entity->scrollFactor.y) * 10.0f;
+                if (entity->scrollFactor.x < 1.0f) {
+                    sfX = (1.0f - entity->scrollFactor.x) * 10.0f;
 
-                entity->renderable = (entity->position.x > currentScene->cullPosition->x && (entity->position.x < (currentScene->cullPosition->x + width * sfX))) ||
-                                     (entity->position.x < currentScene->cullPosition->x && (entity->position.x > (currentScene->cullPosition->x - width * sfX)));
+                    if (!camera->InBounds() && currentScene->cullPosition->x < Window::s_scaleWidth) 
+                        sfX = (1.0f - entity->scrollFactor.x) * 2.0f;
+                }
+
+                if (entity->GetType() == Entity::SPRITE) {
+                    auto sprite = std::static_pointer_cast<Sprite>(entity); 
+                    sprite->renderable = ((sprite->position.x + sprite->texture.FrameWidth) * sfX > currentScene->cullPosition->x && (sprite->position.x + sprite->texture.FrameWidth) * sfX < (currentScene->cullPosition->x + sprite->texture.FrameWidth)*sfX + width) || 
+                                         ((sprite->position.x - sprite->texture.FrameWidth) * sfX < currentScene->cullPosition->x && (sprite->position.x - sprite->texture.FrameWidth) * sfX > (currentScene->cullPosition->x - sprite->texture.FrameWidth)*sfX - width);
+                }
+
+                else
+                    entity->renderable = (entity->position.x > currentScene->cullPosition->x && entity->position.x < currentScene->cullPosition->x + width) ||
+                                         (entity->position.x < currentScene->cullPosition->x && entity->position.x > currentScene->cullPosition->x - width);
             }
 
             if (entity->renderable) {
@@ -372,8 +380,7 @@ void Game::UpdateFrame()
     //cleanup events
 
     for (auto it = time->timed_events.begin(); it != time->timed_events.end(); ++it)
-        if (it != time->timed_events.end())
-        {
+        if (it != time->timed_events.end()) {
             auto event = *it;
 
             if (!event->active) {

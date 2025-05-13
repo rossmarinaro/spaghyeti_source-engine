@@ -115,7 +115,7 @@ const Math::Vector4 Camera::GetProjectionMatrix(float width, float height)
 
 const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 {    
-    const glm::vec2 midOffset = { GetPosition().x, GetPosition().y };
+    const glm::vec2 midOffset = { GetPosition()->x, GetPosition()->y };
 
     glm::mat4 view = glm::mat4(1.0f);
 
