@@ -4,6 +4,7 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../vendors/glm/gtc/type_ptr.hpp"
 #include "../../shared/renderer.h"
+#include "debug.h"
 
 using namespace Graphics;
 
@@ -128,13 +129,13 @@ void Shader::InitBaseShaders()
             "#version 330 core\n"
         #endif
 
-        "out vec4 FragColor;\n"
+        "out vec4 color;\n"
         "uniform vec3 tint;\n"
         "uniform float alphaVal;\n"
 
         "void main()\n"
         "{\n"
-            "FragColor = vec4(tint, alphaVal);\n"
+            "color = vec4(tint, alphaVal);\n"
         "}";
 
 

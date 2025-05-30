@@ -3,8 +3,8 @@
 #include <stdlib.h>
 
 #include "../../build/sdk/include/app.h"
-#include "../../build/sdk/include/utils.h"
 #include "../../build/sdk/include/window.h"
+#include "../core/src/debug.h"
 #include "./renderer.h"
 
 using namespace System;
@@ -35,7 +35,7 @@ const Math::Vector2 Window::GetNDCToPixel(float x, float y)
 
 
 //------------------------------------ Initialize Window
-
+ 
 
 void Window::Init()
 {

@@ -18,9 +18,6 @@
 
 #endif
 
-#include "../../vendors/glm/glm.hpp"
-#include "../../vendors/box2d/include/box2d/box2d.h"
-#include "../../vendors/glm/gtc/matrix_transform.hpp"
 using namespace System;
 
 static CollisionManager _collisions;
@@ -121,6 +118,8 @@ void Game::Boot()
 
     inputs->ResetControls();
 
+    const auto& world = static_cast<b2World*>(physics->GetWorld());
+
     StartScene(scenes[0]->key, true);
 
     //physics listener and debug
@@ -134,7 +133,8 @@ void Game::Boot()
 
         _debug = new DebugDraw;
 
-        static_cast<b2World*>(physics->GetWorld())->SetDebugDraw(_debug);
+        if (world)
+            world->SetDebugDraw(_debug);
 
         #if STANDALONE == 1
             _displayInfo = new DisplayInfo(&m_context);
@@ -175,13 +175,13 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
             game->Flush(game->currentScene->key == key);     
         }
-
-        game->currentScene = *it; 
         
         const auto& world = static_cast<b2World*>(game->physics->GetWorld());
 
         if (world)
             world->SetContactListener(&_collisions);
+
+        game->currentScene = *it; 
             
         if (Application::events->isMultiThreaded)
             Application::events->pool = new Events::EventPool(THREAD_COUNT);
@@ -308,8 +308,8 @@ void Game::UpdateFrame()
 
                 if (entity->GetType() == Entity::SPRITE) {
                     auto sprite = std::static_pointer_cast<Sprite>(entity); 
-                    sprite->renderable = ((sprite->position.x + sprite->texture.FrameWidth) * sfX > currentScene->cullPosition->x && (sprite->position.x + sprite->texture.FrameWidth) * sfX < (currentScene->cullPosition->x + sprite->texture.FrameWidth)*sfX + width) || 
-                                         ((sprite->position.x - sprite->texture.FrameWidth) * sfX < currentScene->cullPosition->x && (sprite->position.x - sprite->texture.FrameWidth) * sfX > (currentScene->cullPosition->x - sprite->texture.FrameWidth)*sfX - width);
+                    sprite->renderable = ((sprite->position.x + sprite->texture.FrameWidth) * sfX > currentScene->cullPosition->x && (sprite->position.x + sprite->texture.FrameWidth) * sfX < (currentScene->cullPosition->x + sprite->texture.FrameWidth) * sfX + width) || 
+                                         ((sprite->position.x - sprite->texture.FrameWidth) * sfX < currentScene->cullPosition->x && (sprite->position.x - sprite->texture.FrameWidth) * sfX > (currentScene->cullPosition->x - sprite->texture.FrameWidth) * sfX - width);LOG(13);
                 }
 
                 else

@@ -310,7 +310,7 @@ void Node::LoadShader(
     const std::string& fragPath
 )
 {
-
+       
     node->shader = { name, { vertPath, fragPath } };  
 
     Graphics::Shader::Load(name, vertPath.c_str(), fragPath.c_str());

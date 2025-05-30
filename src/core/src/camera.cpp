@@ -1,6 +1,7 @@
 #include "../../../build/sdk/include/game.h"
 #include "../../vendors/glm/glm.hpp"
 #include "../../vendors/glm/gtc/matrix_transform.hpp"
+#include "debug.h"
 
 Camera::Camera():
     m_zoom(1.0f),

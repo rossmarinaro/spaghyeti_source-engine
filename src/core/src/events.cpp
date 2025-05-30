@@ -81,10 +81,8 @@ Events::EventPool::~EventPool()
         
     m_threads.clear();     
 
-    #if DEVELOPMENT == 1 && STANDALONE == 1
-        LOG("Events: thread pool stopped.");
-    #endif     
-        
+    LOG("Events: thread pool stopped.");
+
 }
 
 

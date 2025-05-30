@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../../../build/sdk/include/shader.h"
+#include "../../vendors/box2d/include/box2d/box2d.h" 
 
 class DebugGraphic {
 

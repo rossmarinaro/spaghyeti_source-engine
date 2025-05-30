@@ -9,16 +9,16 @@
 #include <thread>
 
 #include "../../../build/sdk/include/audio.h"
-#include "../../../build/sdk/include/manager.h"
+#include "../../../build/sdk/include/manager.h" 
+#include "../../../build/sdk/include/utils.h" 
 
-#if DEVELOPMENT == 1 && STANDALONE == 1
-    #include "../../../build/sdk/include/utils.h"
-#endif
 
 #define DEVICE_FORMAT       ma_format_f32
 #define DEVICE_CHANNELS     2
 #define DEVICE_SAMPLE_RATE  48000
-
+#define MA_NO_ENCODING
+#define MA_NO_NODE_GRAPH
+#define MA_NO_GENERATION
 
 static ma_device _sound_device;
 static ma_device _music_device;
@@ -34,9 +34,7 @@ static void _ReadFrames(ma_device* pDevice, void* pOutput, const void* pInput, m
 
     if (pDecoder == NULL) 
     {
-        #if DEVELOPMENT == 1 && STANDALONE == 1
-            LOG("Audio: there was a problem decoding audio.");
-        #endif
+        LOG("Audio: there was a problem decoding audio.");
 
         return;
     }
@@ -73,9 +71,7 @@ static void _ProcessAudio(const char* key, bool loop, float volume)
     }
 
     if (result != MA_SUCCESS) {
-        #if DEVELOPMENT == 1 && STANDALONE == 1
-            LOG("Audio: failed to init audio: " + filetype);
-        #endif
+        LOG("Audio: failed to init audio: " + filetype);
         return;
     }
 
@@ -103,17 +99,13 @@ static void _ProcessAudio(const char* key, bool loop, float volume)
 
     if (ma_device_init(NULL, &deviceConfig, loop ? &_music_device : &_sound_device) != MA_SUCCESS) {
 
-        #if DEVELOPMENT == 1 && STANDALONE == 1
-            LOG("Audio: failed to open playback device.");
-        #endif
+        LOG("Audio: failed to open playback device.");
         ma_decoder_uninit(loop ? &_music_decoder : &_sound_decoder);
         return;
     }
 
     if (ma_device_start(loop ? &_music_device : &_sound_device) != MA_SUCCESS) {
-        #if DEVELOPMENT == 1 && STANDALONE == 1
-            LOG("Audio: failed to start playback device.");
-        #endif
+        LOG("Audio: failed to start playback device.");
         ma_device_uninit(loop ? &_music_device : &_sound_device);
         ma_decoder_uninit(loop ? &_music_decoder : &_sound_decoder);
         return;
@@ -154,9 +146,7 @@ void System::Audio::stop() {
     if (ma_device_get_state(&_sound_device) == ma_device_state_started) 
         ma_data_source_set_looping(&_sound_decoder, MA_FALSE);
 
-    #if DEVELOPMENT == 1 && STANDALONE == 1
-        LOG("Audio: audio stopped.");
-    #endif
+    LOG("Audio: audio stopped.");
 
     musicPlaying = false;
 }

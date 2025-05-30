@@ -135,7 +135,5 @@ void System::Application::ShutDown()
     delete events;
     events = nullptr;
 
-    #if DEVELOPMENT == 1
-        LOG("Application terminated successfully. 👌");
-    #endif
+    LOG("Application terminated successfully. 👌");
 };

@@ -1,31 +1,24 @@
 #pragma once
 
-#include <functional>
 #include <string>
 
-#if DEVELOPMENT == 1
-    #include <iostream>
-    #include <fstream>
+//debug only logging 
+
+#ifndef LOG
+
+    #if DEVELOPMENT == 1 && STANDALONE == 1
+        #include <iostream>
+        #include <fstream>
+        #define LOG(msg) \
+            std::cout << msg << std::endl; \
+            std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; 
+   #else
+       #define LOG(msg) 0;
+   #endif
+
 #endif
 
-
 namespace System {
-
-    #define	RAND_LIMIT 32767
-
-    //debug only logging 
-
-    #ifndef LOG
-
-        #if DEVELOPMENT == 1 && STANDALONE == 1
-            #define LOG(msg) \
-                std::cout << msg << std::endl; \
-                std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; 
-        #else
-            #define LOG(msg)
-        #endif
- 
-    #endif
 
     //common utilities
  

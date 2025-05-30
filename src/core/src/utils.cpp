@@ -1,5 +1,10 @@
+#include <functional>
+
 #include "../../../build/sdk/include/utils.h"
 #include "../../../build/sdk/include/manager.h"
+
+#define	RAND_LIMIT 32767
+
 
 const int System::Utils::randInt(int n) { 
     return (rand() % n);

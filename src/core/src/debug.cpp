@@ -9,7 +9,6 @@
 #include "../../shared/renderer.h"
 #include "./debug.h"
 
-
 using namespace System;
 using namespace Graphics;
 

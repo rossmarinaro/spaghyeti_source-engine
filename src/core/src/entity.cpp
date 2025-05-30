@@ -11,7 +11,7 @@
 
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/window.h"
-
+#include "debug.h"
 
 
 //---------------------------------- empty entity
@@ -157,8 +157,9 @@ Geometry::Geometry(float x, float y, float width, float height):
 
 
 Geometry::~Geometry() { 
-    if (m_type == QUAD)
+    if (m_type == QUAD) {
         LOG("Geometry: quad destroyed."); 
+    }
 
     //...more shapes?
 }
@@ -172,37 +173,34 @@ void Geometry::Render()
 
     glm::mat4 model = glm::mat4(1.0f); 
 
-    if (m_type == QUAD)
-    {
- 
+    if (m_type == QUAD) {
         texture.FrameWidth = width;
         texture.FrameHeight = height;
-  
-        model = glm::translate(model, { 0.5f * width + position.x, 0.5f * height + position.y, 0.0f }); 
-        model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-        model = glm::translate(model, { -0.5f * width - position.x, -0.5f * height - position.y, 0.0f });
-
-        const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-        
-        const glm::mat4 proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f), 
-                        view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition()->x * scrollFactor.x, System::Application::game->camera->GetPosition()->y * scrollFactor.y, 0.0f)),
-                        mvp = proj * view * model;
-                                
-        shader.SetVec3f("tint", tint);
-        shader.SetFloat("alphaVal", alpha);
-
-        shader.SetMat4("mvp", { 
-            { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
-            { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
-            { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
-            { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
-        });  
-
-        texture.Update(position, false, false, m_drawStyle, m_thickness); 
-
     }
 
     //render other shapes...
+
+    model = glm::translate(model, { 0.5f * width + position.x, 0.5f * height + position.y, 0.0f }); 
+    model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
+    model = glm::translate(model, { -0.5f * width - position.x, -0.5f * height - position.y, 0.0f });
+
+    const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    
+    const glm::mat4 proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f), 
+                    view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition()->x * scrollFactor.x, System::Application::game->camera->GetPosition()->y * scrollFactor.y, 0.0f)),
+                    mvp = proj * view * model;
+                            
+    shader.SetVec3f("tint", tint);
+    shader.SetFloat("alphaVal", alpha);
+
+    shader.SetMat4("mvp", { 
+        { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
+        { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
+        { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
+        { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
+    });  
+
+    texture.Update(position, false, false, m_drawStyle, m_thickness); 
 }
 
 
@@ -310,8 +308,9 @@ Sprite::Sprite(const std::string& key, const Math::Vector2& position):
 
 
 Sprite::~Sprite() {
-    if (m_type != TILE) 
+    if (m_type != TILE) {
         LOG("Sprite: \"" + key + "\" destroyed."); 
+    }
 }
 
 

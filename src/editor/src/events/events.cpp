@@ -831,7 +831,7 @@ void EventListener::BuildAndRun()
 
         main_makeFile.close();
 
-        game_src << "/* ---------- GENERATED CODE ----------- */\n";
+        game_src << "/* ---------- GENERATED CODE ----------- */\n\n\n";
 
         //include core funtions
 
@@ -1699,8 +1699,10 @@ void EventListener::BuildAndRun()
     game_src <<	"int main(int argc, char* args[])\n";
     game_src <<	"{\n";
     game_src <<	"   #ifdef _WIN32\n";
-    game_src <<	"       ShowWindow(GetConsoleWindow(), SW_HIDE);\n";
-    game_src <<	"       SetUnhandledExceptionFilter(UnhandledExceptionFilter);\n";
+
+    if (Editor::releaseType == "release")
+        game_src <<	"       ShowWindow(GetConsoleWindow(), SW_HIDE);\n";
+
     game_src <<	"   #endif\n";
     game_src <<	"       bool isMobile = false;\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
@@ -1751,6 +1753,7 @@ void EventListener::BuildAndRun()
         std::filesystem::remove_all((web + "/assets").c_str());
 
     Editor::Log("Project " + s_currentProject + " built successfully.");
+    ShowWindow(GetConsoleWindow(), SW_HIDE);
 
 }
 

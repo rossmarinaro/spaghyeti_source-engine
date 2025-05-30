@@ -93,12 +93,11 @@ void GUI::RenderShaderOptions(const std::string& nodeId)
                                         fragPath = filename;       
                                 }
 
-                                if (vertPath.length() && fragPath.length()) 
-                                    Node::LoadShader(node, name, vertPath, fragPath);
-                                    
-                                else    
-                                    Editor::Log("Loading custom shader failed. file not found."); 
-                                
+                                std::replace(vertPath.begin(), vertPath.end(), '\\', '/');
+                                std::replace(fragPath.begin(), fragPath.end(), '\\', '/');
+
+                                Node::LoadShader(node, name, vertPath, fragPath);
+                                     
                             }
 
                         }
