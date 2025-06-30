@@ -309,7 +309,7 @@ void Game::UpdateFrame()
                 if (entity->GetType() == Entity::SPRITE) {
                     auto sprite = std::static_pointer_cast<Sprite>(entity); 
                     sprite->renderable = ((sprite->position.x + sprite->texture.FrameWidth) * sfX > currentScene->cullPosition->x && (sprite->position.x + sprite->texture.FrameWidth) * sfX < (currentScene->cullPosition->x + sprite->texture.FrameWidth) * sfX + width) || 
-                                         ((sprite->position.x - sprite->texture.FrameWidth) * sfX < currentScene->cullPosition->x && (sprite->position.x - sprite->texture.FrameWidth) * sfX > (currentScene->cullPosition->x - sprite->texture.FrameWidth) * sfX - width);LOG(13);
+                                         ((sprite->position.x - sprite->texture.FrameWidth) * sfX < currentScene->cullPosition->x && (sprite->position.x - sprite->texture.FrameWidth) * sfX > (currentScene->cullPosition->x - sprite->texture.FrameWidth) * sfX - width);
                 }
 
                 else
