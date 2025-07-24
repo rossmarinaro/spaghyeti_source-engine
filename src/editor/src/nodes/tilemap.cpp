@@ -220,10 +220,10 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                             ImGui::Text("body: %d", i);
 
-                            ImGui::SliderFloat("width", &body.width, 0.0f, map_width * tile_width, NULL, ImGuiSliderFlags_AlwaysClamp); 
+                            ImGui::SliderFloat("width", &body.width, 0.0f, Editor::Get()->game->camera->currentBoundsWidthEnd * 2, NULL, ImGuiSliderFlags_AlwaysClamp); 
                             ImGui::SliderFloat("height", &body.height, 0.0f, map_height * tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
 
-                            ImGui::SliderFloat("x", &body.x, 0.0f, Editor::Get()->worldWidth, NULL, ImGuiSliderFlags_AlwaysClamp);  
+                            ImGui::SliderFloat("x", &body.x, 0.0f, Editor::Get()->game->camera->currentBoundsWidthEnd * 2, NULL, ImGuiSliderFlags_AlwaysClamp);  
                             ImGui::SliderFloat("y", &body.y, 0.0f, Editor::Get()->worldHeight, NULL, ImGuiSliderFlags_AlwaysClamp); 
                             
                             UpdateBody(i);

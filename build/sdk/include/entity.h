@@ -175,6 +175,12 @@ class Text : public Entity {
 //base sprite class
 class Sprite : public Entity {
 
+    struct Anim { 
+        std::string key; 
+        int rate, repeat; 
+        bool yoyo, can_decrement, can_complete; 
+    } m_currentAnim;
+
 	public:  
 
         Graphics::Texture2D texture;
@@ -197,6 +203,8 @@ class Sprite : public Entity {
 				return body.first->pointer; 
 			return 0;
 		}
+
+        inline const Anim& GetCurrentAnimation() { return m_currentAnim; }
 
 		inline void SetFrame(int frame) { currentFrame = frame; }
 		inline void SetContact(bool isContact) { m_contacting = isContact; }
@@ -242,12 +250,6 @@ class Sprite : public Entity {
 			 m_anim_yoyo = false;
 
 		Math::Vector2 m_velocity;
-
-        struct Anim { 
-            std::string key; 
-            int rate, repeat; 
-            bool yoyo, can_decrement, can_complete; 
-        } m_currentAnim;
 		
 		//internal spritesheet data 
 

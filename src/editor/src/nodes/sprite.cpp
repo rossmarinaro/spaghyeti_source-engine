@@ -20,7 +20,7 @@ SpriteNode::SpriteNode(bool init):
     flippedX = false;
     flippedY = false;
     lock_in_place = false;
-    cull = true;
+    cull = false;
     make_UI = false;
     frame = 0;
     currentFrame = 0;

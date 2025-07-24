@@ -710,7 +710,7 @@ void Sprite::Render()
                         endFrame = anims.find(m_currentAnim.key.c_str())->second.second,
                         frame = yoyo ? startFrame : endFrame;
 
-                    m_animComplete = frame == currentFrame && m_currentAnim.can_complete;
+                    m_animComplete = currentFrame == frame && m_currentAnim.can_complete;
                     m_currentAnim.can_complete = false;
 
                     if (yoyo)
