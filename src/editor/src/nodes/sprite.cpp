@@ -254,7 +254,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                     ImGui::Text(("animations: " + std::to_string(animations.size())).c_str()); 
                     
                     if (ImGui::Button("add animation")) 
-                        animations.push_back({ "", 0, 0, -1, false });
+                        animations.push_back({ "", 0, 0, 2, -1, false }); 
             
                     ImGui::SameLine();
 
@@ -306,8 +306,11 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                                         auto it = std::find_if(animations.begin(), animations.end(), [&](const Anims& anim) { return anim.key == animations[i].key; });
 
-                                        if (it != animations.end())
-                                            animations.erase(it);
+                                        if (it != animations.end()) {
+                                            it = animations.erase(it);
+                                            --it;
+                                        }
+                                            
                                     }
 
                                 }
