@@ -89,13 +89,8 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
         if (ImGui::TreeNode(("(Empty) " + name).c_str()))
         {
         
-            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
+            Node::Update(node, arr);
 
-            //save prefab
-
-            if (ImGui::Button("Save prefab")) 
-                SavePrefab();
-            
             if (ImGui::BeginMenu("Add Component"))
             {
                 if (ImGui::MenuItem("Scripts")) 
@@ -126,13 +121,6 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
                 GUI::Get()->RenderShaderOptions(ID);
                 ImGui::EndMenu();
             }
-
-            if (ImGui::BeginMenu("Options")) {
-                ShowOptions(node, arr);
-                ImGui::EndMenu();
-            }
-
-            ImGui::Checkbox("Edit", &show_options);
 
             if (show_options)
             {

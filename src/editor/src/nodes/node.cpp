@@ -34,6 +34,33 @@ Node::Node(bool init, int type, const std::string& name):
 }
 
 
+//--------------------------- virtual update method for all subclasses
+
+
+void Node::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) 
+{
+    static char name_buf[32] = ""; 
+
+    ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
+    
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        ImGui::SetTooltip("press tab to confirm name.");
+
+    if (ImGui::BeginMenu("Options")) { 
+        ShowOptions(node, arr);
+        ImGui::EndMenu();
+    }
+
+    if (type != GROUP)
+        ImGui::Checkbox("Edit", &show_options);
+
+    //save prefab
+
+    if (type != AUDIO && type != TILEMAP && ImGui::Button("Save prefab")) 
+        SavePrefab(); 
+}
+
+
 //--------------------------- get node type 
 
 

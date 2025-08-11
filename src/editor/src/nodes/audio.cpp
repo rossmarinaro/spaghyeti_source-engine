@@ -64,14 +64,7 @@ void AudioNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
         if (ImGui::TreeNode(("(Audio) " + name).c_str()))
         {
         
-            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
-
-            if (ImGui::BeginMenu("Options")) { 
-                ShowOptions(node, arr);
-                ImGui::EndMenu();
-            }
-
-            ImGui::Checkbox("Edit", &show_options);
+            Node::Update(node, arr);
 
             if (show_options)
             {

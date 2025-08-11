@@ -87,12 +87,7 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
         if (ImGui::TreeNode((selText + "(Text) " + name).c_str()))
         {
         
-            static char buf1[32] = ""; ImGui::InputText("name", buf1, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
-
-            //save prefab
-
-            if (ImGui::Button("Save prefab")) 
-                SavePrefab();
+            Node::Update(node, arr);
             
             if (ImGui::BeginMenu("Add Component"))
             {
@@ -126,13 +121,6 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
                 
                 ImGui::EndMenu();
             }
-
-            if (ImGui::BeginMenu("Options")) {
-                ShowOptions(node, arr);
-                ImGui::EndMenu();
-            }
- 
-            ImGui::Checkbox("Edit", &show_options);
 
             if (show_options)
             {

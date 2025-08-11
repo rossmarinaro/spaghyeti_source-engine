@@ -42,7 +42,6 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
     ImGui::Separator(); 
 
     {
-
         assert(active);
 
         ImGui::PushID(("(Group) " + name).c_str());
@@ -50,10 +49,7 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
         if (ImGui::TreeNode(("(Group) " + name).c_str()))
         {
                     
-            static char name_buf[32] = ""; ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
-
-            if (ImGui::Button("Save prefab")) 
-                SavePrefab(); 
+            Node::Update(node, arr);
             
             if (ImGui::BeginMenu("Add Node"))
             {
@@ -87,11 +83,6 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
                     Node::Make<TilemapNode>(true, _nodes); 
 
                 ImGui::EndMenu(); 
-            }
-
-            if (ImGui::BeginMenu("Options")) {
-                ShowOptions(node, arr);
-                ImGui::EndMenu();
             }
 
             //update active nodes

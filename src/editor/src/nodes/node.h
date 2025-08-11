@@ -52,7 +52,7 @@ namespace editor {
 
             virtual ~Node() {}
             
-            virtual void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) = 0;
+            virtual void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
             virtual void Render() {}
             virtual void Reset(const int component = Component::NONE) = 0;
 

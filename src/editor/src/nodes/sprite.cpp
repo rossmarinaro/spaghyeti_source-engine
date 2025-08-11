@@ -191,11 +191,10 @@ void SpriteNode::ApplyAnimation(const std::string& key)
 
 void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
 {
-	
+
     ImGui::Separator(); 
 
     {
-
         assert(active);
 
         ImGui::PushID(("(Sprite) " + name).c_str());
@@ -204,17 +203,10 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
         if (ImGui::TreeNode((selText + "(Sprite) " + name).c_str()))
         {
-        
-            static char name_buf[32] = ""; ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
+            Node::Update(node, arr);
 
-            
             if (ImGui::Button("Select") && spriteHandle)
                 Editor::selectedEntity = spriteHandle;
-
-            //save prefab
-
-            if (ImGui::Button("Save prefab")) 
-                SavePrefab(); 
             
             if (ImGui::BeginMenu("Add Component"))
             {
@@ -463,13 +455,6 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                 ImGui::EndMenu();
             }
-
-            if (ImGui::BeginMenu("Options")) {
-                ShowOptions(node, arr);
-                ImGui::EndMenu();
-            }
-
-            ImGui::Checkbox("Edit", &show_options);
 
             if (show_options)
             {
