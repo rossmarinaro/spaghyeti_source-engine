@@ -1,5 +1,6 @@
 #include "./player.h"
 #include "./enemy.h"
+#include "../Gameplay.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/audio.h"
 
@@ -19,7 +20,6 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
 { 
     s_time = 0.0f;
 
-    score = 0;
     health = 4; 
     magic = 10;
     cigar = 10;
@@ -50,7 +50,7 @@ PlayerController::~PlayerController() {
 void PlayerController::Update() 
 {
 
-    if (!active)
+    if (!active || !System::Game::GetBehavior<Gameplay>()->gameState)
         return;
 
     s_time += 0.1f;
@@ -242,15 +242,14 @@ void PlayerController::Update()
 
 
 bool PlayerController::DoDamage(int amount, const std::string& key)
-{return false;
-
+{
     if (!m_canDamage || m_invincible) 
         return false;
 
     m_canDamage = false;
     health -= amount;
 
-    auto player = System::Game::GetScene()->GetEntity<Sprite>(key.length() ? key : "player");
+    const auto player = System::Game::GetScene()->GetEntity<Sprite>(key.length() ? key : "player");
 
     if (!player)
         return false;
@@ -262,9 +261,9 @@ bool PlayerController::DoDamage(int amount, const std::string& key)
     if (health <= 0) 
         player->SetAlpha(1.0f);
 
-    Time::DelayedCall(500, [this, key] { 
-
-        auto player = System::Game::GetScene()->GetEntity<Sprite>(key.length() ? key : "player");
+    Time::DelayedCall(500, [this, key] 
+    { 
+        const auto player = System::Game::GetScene()->GetEntity<Sprite>(key.length() ? key : "player");
 
         if (!player)
             return false;
@@ -274,6 +273,9 @@ bool PlayerController::DoDamage(int amount, const std::string& key)
         
         if (health > 0)
             m_canDamage = true;
+
+        else
+            System::Game::GetBehavior<Gameplay>()->StopScene();
 
         return true;
     });

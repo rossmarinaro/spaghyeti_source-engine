@@ -10,7 +10,7 @@ namespace entity_behaviors {
 
             enum State { NONE, IDLE, JUMP, WALK, ATTACK };
 
-            int magic, cigar, score;
+            int magic, cigar;
             bool magicEnabled, cigarEnabled;
 
             std::shared_ptr<Physics::Body> attackBox;

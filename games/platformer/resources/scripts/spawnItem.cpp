@@ -1,4 +1,5 @@
 #include "./spawnItem.h"
+#include "./gameplay.h"
 #include "./entities/player.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
 
@@ -44,6 +45,7 @@ SPAWNITEM::SPAWNITEM(std::shared_ptr<Entity> entity):
 
 void SPAWNITEM::Update()
 { 
+    auto gamePlay = System::Game::GetBehavior<Gameplay>();
     auto playerBehavior = System::Game::GetBehavior<PlayerController>();
     auto sprite = System::Game::GetScene()->GetEntity<Sprite>(m_name);
     
@@ -69,7 +71,7 @@ void SPAWNITEM::Update()
         if ((std::string)sprite->GetData<const char*>("type") == "jackpot")
             value = 10;
 
-        playerBehavior->score += value;
+        gamePlay->score += value;
 
         System::Game::DestroyEntity(sprite);
         sprite = nullptr;
@@ -107,10 +109,10 @@ void SPAWNITEM::Update()
         }
 
         if ((std::string)item->GetData<const char*>("type") == "goldbar")
-            playerBehavior->score += 5;
+            gamePlay->score += 5;
 
         if ((std::string)item->GetData<const char*>("type") == "jackpot")
-            playerBehavior->score += 10;
+            gamePlay->score += 10;
 
         if ((std::string)item->GetData<const char*>("type") == "martini") {
             System::Game::GetScene()->GetEntity<Sprite>("player")->SetShader("trippy2");

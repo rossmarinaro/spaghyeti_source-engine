@@ -1,12 +1,13 @@
-#include "./ui.h"
+#include "./hud.h"
+#include "./Gameplay.h"
 #include "./entities/player.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/window.h"
 
 using namespace entity_behaviors;
 
-UI::UI(std::shared_ptr<Entity> entity):
-    Behavior(entity->ID, typeid(UI).name()),
+HUD::HUD(std::shared_ptr<Entity> entity):
+    Behavior(entity->ID, typeid(HUD).name()),
         m_isOpen(false),
         m_canToggle(true)
 { 
@@ -77,7 +78,7 @@ UI::UI(std::shared_ptr<Entity> entity):
 //-------------------------------------
 
 
-void UI::Update() 
+void HUD::Update() 
 {
     auto playerController = System::Game::GetBehavior<PlayerController>();
 
@@ -184,7 +185,7 @@ void UI::Update()
 
     //HUD
     
-    System::Game::GetScene()->GetEntity<Text>("score")->SetText("score: " + std::to_string(playerController->score));
+    System::Game::GetScene()->GetEntity<Text>("score")->SetText("score: " + std::to_string(System::Game::GetBehavior<Gameplay>()->score));
 
     if(System::Game::GetScene()->ListenForInteraction(returnText)) {
         returnText->SetTint({ 1.0f, 0.0f, 0.0f });

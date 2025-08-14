@@ -1335,8 +1335,8 @@ void EventListener::BuildAndRun()
         command_queue << "   this->GetContext().camera->SetZoom(" + std::to_string(target.second->cameraZoom) + ");\n";
         command_queue << "   this->GetContext().camera->SetPosition({ " + std::to_string(target.second->cameraPosition.x) + ", " + std::to_string(target.second->cameraPosition.y) + " });\n";
     
-        std::string phys_isCont = target.second->gravity_continuous ? "true" : "false",
-                    phys_isSleeping = target.second->gravity_sleeping ? "true" : "false";
+        const std::string phys_isCont = target.second->gravity_continuous ? "true" : "false",
+                          phys_isSleeping = target.second->gravity_sleeping ? "true" : "false";
 
         command_queue << "   this->GetContext().physics->continuous = " + phys_isCont + ";\n";
         command_queue << "   this->GetContext().physics->sleeping = " + phys_isSleeping + ";\n";

@@ -9,12 +9,17 @@ namespace entity_behaviors {
 
         public:
 
+            int score;
+
+            bool gameState;
+
            //constructor, called on start
 
            Gameplay(std::shared_ptr<Entity> entity);
            ~Gameplay() = default;
 
             void Update() override;
+            void StopScene();
 
         private:
 
@@ -26,8 +31,10 @@ namespace entity_behaviors {
                  m_startFade,
                  m_startSequence;
 
+            std::shared_ptr<Geometry> m_gameOver_overlay;
             std::shared_ptr<Sprite> m_dialog_box;
             std::shared_ptr<Text> m_dialog_text;
+            std::shared_ptr<Text> m_gameOver_text;
 
             std::string m_textContent, 
                         m_subject, 

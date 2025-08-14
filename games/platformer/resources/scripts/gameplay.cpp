@@ -1,5 +1,6 @@
 #include "./gameplay.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
+#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/window.h"
 
 using namespace entity_behaviors;
 
@@ -13,8 +14,18 @@ Gameplay::Gameplay(std::shared_ptr<Entity> entity):
         m_textContent(""),
         m_text(""),
         m_dialog_box(System::Game::CreateUI("dialogue window.png", 70.0f, 5.0f)),
-        m_dialog_text(System::Game::CreateText("", 600.0f, 50.0f, "slkscr.ttf")) 
+        m_dialog_text(System::Game::CreateText("", 600.0f, 50.0f, "slkscr.ttf")),
+        m_gameOver_overlay(System::Game::CreateGeom(0, 0, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 2, true)),
+        m_gameOver_text(System::Game::CreateText("GAME OVER", 600.0f, 400.0f))
     {
+        score = 0;
+        gameState = true;
+
+        m_gameOver_text->SetAlpha(0.0f);
+        m_gameOver_text->SetScale(3.0f);
+        m_gameOver_text->SetTint({ 1.0f, 1.0f, 0.0f });
+        m_gameOver_text->SetStroke(true, { 1.0f, 0.0f, 0.0f });
+        m_gameOver_overlay->SetAlpha(0.0f);
 
         m_dialog_box->SetAlpha(0.0f);
         m_dialog_box->SetScale(5.2f, 3.0f);
@@ -73,6 +84,20 @@ void Gameplay::Update()
     m_dialog_text->SetText(m_subject + m_text);
     m_dialog_text->SetAlpha(m_startFade ? m_alpha : 1.0f);
 }
+
+
+//----------------------------
+
+void Gameplay::StopScene() 
+{
+    gameState = false;
+    m_gameOver_text->SetAlpha(1.0f);
+    m_gameOver_text->SetDepth(900);
+    m_gameOver_overlay->SetAlpha(1.0f);
+    m_gameOver_overlay->SetTint({ 0.0f, 0.0f, 0.0f });
+    m_gameOver_overlay->SetDepth(899);
+}
+
 
 //----------------------------
 

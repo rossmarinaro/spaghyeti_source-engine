@@ -5,13 +5,11 @@
 
 namespace entity_behaviors {
 
-    class UI : public Behavior {
+    class HUD : public Behavior {
 
         public: 
 
-            int score;
-
-            UI (std::shared_ptr<Entity> entity);
+            HUD (std::shared_ptr<Entity> entity);
 
             void Update() override;
 

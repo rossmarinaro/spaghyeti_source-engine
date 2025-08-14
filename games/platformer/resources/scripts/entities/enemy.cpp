@@ -1,8 +1,7 @@
 #include "./enemy.h"
 #include "./player.h"
-#include "../ui.h"
+#include "../gameplay.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
-
 
 entity_behaviors::Enemy::Enemy(std::shared_ptr<Entity> entity):
     Actor(entity, typeid(Enemy).name()),
@@ -64,7 +63,7 @@ void entity_behaviors::Enemy::Initialize(std::shared_ptr<Entity> entity)
 
 void entity_behaviors::Enemy::Update()
 {
-    if (!active)
+    if (!active || !System::Game::GetBehavior<Gameplay>()->gameState)
         return;
 
     const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(m_key);
