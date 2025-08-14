@@ -318,6 +318,18 @@ void editor::GUI::ShowSettings()
 
                 ImGui::InputText("key", &session->shaders[i].first);
 
+                ImGui::SameLine();
+
+                if (ImGui::Button("remove"))
+                {
+                    auto it = std::find_if(session->shaders.begin(), session->shaders.end(), [&session, &i](const auto& sh) { return sh.first == session->shaders[i].first; });
+
+                    if (it != session->shaders.end()) {
+                        it = session->shaders.erase(it);
+                        --it;
+                    }
+                }
+
                 ImGui::Text(("vertex: " + session->shaders[i].second.first).c_str());
 
                 ImGui::SameLine();
@@ -412,6 +424,18 @@ void editor::GUI::ShowSettings()
                     ImGui::EndCombo();
                 }
 
+                ImGui::SameLine();
+
+                if (ImGui::Button("remove"))
+                {
+                    auto it = std::find_if(session->spritesheets.begin(), session->spritesheets.end(), [&spritesheet](const auto& sh) { return sh.first == spritesheet.first; });
+
+                    if (it != session->spritesheets.end()) {
+                        it = session->spritesheets.erase(it);
+                        --it;
+                    }
+                }
+
                 ImGui::Separator();
 
                 ImGui::PopID();
@@ -465,13 +489,23 @@ void editor::GUI::ShowSettings()
                     ImGui::EndMenu();
                 }
 
-                if (ImGui::Button("add")) 
+                if (ImGui::Button("add key")) 
                     session->animations[i].second.push_back({ "", { 0, 0 }});
 
                 ImGui::SameLine();
 
-                if (ImGui::Button("delete"))
+                if (ImGui::Button("delete key"))
                     session->animations[i].second.pop_back();
+
+                if (ImGui::Button("remove"))
+                {
+                    auto it = std::find_if(session->animations.begin(), session->animations.end(), [&session, &i](const auto& anim) { return anim.first == session->animations[i].first; });
+
+                    if (it != session->animations.end()) {
+                        it = session->animations.erase(it);
+                        --it;
+                    }
+                }
 
                 ImGui::Separator();
 

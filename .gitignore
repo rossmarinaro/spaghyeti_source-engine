@@ -9,5 +9,4 @@
 /build/imgui.ini
 /build/appLog.txt
 
-/games/TestGame/build
-/games/fighter/build
+/games/platformer/build

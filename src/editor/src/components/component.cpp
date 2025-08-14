@@ -122,6 +122,15 @@ void Component::Make()
 
         const std::string path = Editor::projectPath + AssetManager::Get()->script_dir + "/" + filename + ".h";
 
+        std::string className(filename);
+        className[0] = toupper(className[0]);
+
+        if (std::filesystem::exists(Editor::projectPath + AssetManager::Get()->script_dir + "/" + className + ".h")) {
+            Editor::Log("Script name already exists!");
+            remove(path.c_str());
+            return;
+        }
+
         if (std::filesystem::exists(path)) {
             Editor::Log("Script path already exists!");
             return;
@@ -131,9 +140,6 @@ void Component::Make()
 
         std::string root_path = Editor::rootPath;
         std::replace(root_path.begin(), root_path.end(), '\\', '/');
-
-        std::string className(filename);
-        className[0] = toupper(className[0]);
         
         for (int i = 0; i < className.length(); i++) 
         {
@@ -144,12 +150,6 @@ void Component::Make()
                 className[i + 1] = toupper(className[i + 1]);
         }
 
-        if (std::filesystem::exists(Editor::projectPath + AssetManager::Get()->script_dir + "/" + className + ".h")) {
-            Editor::Log("Script name already exists!");
-            remove(path.c_str());
-            return;
-        }
-
         src << "#pragma once\n\n";
         src << "#include \"" << root_path << "/sdk/include/behaviors.h\"\n\n\n";
         src << "namespace entity_behaviors {\n\n";
@@ -157,7 +157,7 @@ void Component::Make()
         src <<  "       public:\n\n";
         src <<  "           //constructor, called on start\n\n";
         src <<  "           " << className << "(std::shared_ptr<Entity> entity):\n";
-        src <<  "            Behavior(entity->ID, typeid(" << filename << ").name())\n";
+        src <<  "            Behavior(entity->ID, typeid(" << className << ").name())\n";
         src <<  "            {\n\n";
         src <<  "            }\n\n";
         src <<  "           ~" << className << "() = default;\n";
