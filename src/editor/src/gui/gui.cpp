@@ -118,7 +118,7 @@ GUI::GUI()
     s_self->cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
     s_self->cursor->SetTint({ 1.0f, 0.0f, 0.0f }); 
     s_self->cursor->SetAlpha(0.0f);
-    s_self->cursor->isStatic = true; 
+    s_self->cursor->SetStatic(true); 
 
     Editor::Log("GUI launched.");
 

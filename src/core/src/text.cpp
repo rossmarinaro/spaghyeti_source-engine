@@ -89,13 +89,14 @@ Text::Text(const std::string& content,
     shadowOffsetY = 0.0f;
     charoffsetX = 0.0f;
     charoffsetY = 0.0f;
+    shadowEnabled = false;
 
     this->scale = { scale, scale };
     this->content = content;
     this->font = font;
     this->tint = tint;
 
-    this->SetText(content);
+    SetText(content);
 
     //font
 
@@ -288,8 +289,23 @@ void* Text::GetGLTPointer()
 void Text::Render()
 {
     const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y * scale.y));
 
     glm::mat4 model = glm::mat4(1.0f);
+
+    const auto get_mvp = [&vm, &pm, this] (glm::mat4& model) -> const Math::Matrix4 
+    {
+        const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
+                        proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f),
+                        mvp = proj * view * model;
+
+        return { 
+            { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
+            { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
+            { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
+            { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
+        };
+    };
 
     //render default gltext
 
@@ -310,27 +326,26 @@ void Text::Render()
             _model = glm::translate(_model, { position.x + shadowOffsetX, position.y + shadowOffsetY, 0.0f });
             _model = glm::scale(_model, { scale.x, scale.y, 1.0f });
 
-            const glm::highp_mat4& smp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * _model;
+            const Math::Matrix4 mvp = get_mvp(_model);
 
             gltBeginDraw();
             gltColor(shadowColor.x, shadowColor.y, shadowColor.z, alpha);
             gltOutlineColor(shadowColor.x, shadowColor.y, shadowColor.z, outlineEnabled ? alpha : 0.0f); 
-            gltDrawText(handle, (GLfloat*)&smp);
+            gltDrawText(handle, (GLfloat*)&mvp);
             gltEndDraw();
         }
 
         //fill pass
 
         model = glm::translate(model, { position.x, position.y, 0.0f });
-        model = glm::scale(model, { scale.x, scale.y, 1.0f });
+        model = glm::scale(model, { scale.x, scale.y, 1.0f }); 
 
-        const glm::highp_mat4& mp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
+        const Math::Matrix4 mvp = get_mvp(model);
 
         gltBeginDraw();
         gltColor(tint.x, tint.y, tint.z, alpha);
         gltOutlineColor(outlineColor.x, outlineColor.y, outlineColor.z, outlineEnabled ? alpha : 0.0f);
-
-        gltDrawText(handle, (GLfloat*)&mp);
+        gltDrawText(handle, (GLfloat*)&mvp);
 
         gltEndDraw();
     }

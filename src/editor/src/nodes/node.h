@@ -19,7 +19,7 @@ namespace editor {
 
         public:
 
-            enum { SPRITE, TILEMAP, TEXT, AUDIO, EMPTY, GROUP };
+            enum { SPRITE, TILEMAP, TEXT, AUDIO, EMPTY, GROUP, SPAWNER };
 
             int type;
 
@@ -111,7 +111,7 @@ namespace editor {
             }
     };
 
-    //---------------------------------
+    //--------------------------------- sprite
 
 
     class SpriteNode : public Node {
@@ -205,7 +205,7 @@ namespace editor {
 
     };
 
-    //---------------------------------
+    //--------------------------------- tilemap
 
 
     class TilemapNode : public Node {
@@ -244,14 +244,14 @@ namespace editor {
 
     };
 
-    //---------------------------------
+    //--------------------------------- text, font
 
 
     class TextNode : public Node {
 
         public:
 
-            int depth, isUI;
+            int depth;
             float size, alpha, charOffsetX, charOffsetY;
             bool UIFlag; 
 
@@ -269,7 +269,7 @@ namespace editor {
     };
 
 
-    //---------------------------------
+    //--------------------------------- audio, sfx
 
 
     class AudioNode : public Node {
@@ -295,7 +295,7 @@ namespace editor {
 
 
 
-    //---------------------------------
+    //--------------------------------- empty, geometry
 
 
     class EmptyNode : public Node {
@@ -326,7 +326,7 @@ namespace editor {
     };
 
 
-    //---------------------------------------------
+    //--------------------------------------------- group of nodes
 
 
     class GroupNode : public Node {
@@ -342,6 +342,39 @@ namespace editor {
             void Reset(const int component_type = Component::NONE) override;
             void Render() override;
 
+    };
+
+
+    //--------------------------------------------- spawn point
+
+
+    class SpawnerNode : public Node {
+
+        public:
+
+            int typeOf;
+            float width, height, alpha;
+            bool loop;
+
+            std::string animationKey, textureKey, behaviorKey;
+            std::pair<std::string, std::string> spriteSheetKey;
+            Math::Vector3 tint;
+
+            SpawnerNode(bool init = true);
+            ~SpawnerNode();      
+
+            void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
+            void Reset(const int component_type = Component::NONE) override;
+            void Render() override;
+            void ApplyTexture(const std::string& asset);
+            void CreateMarker();
+
+        private:
+        
+            unsigned int m_currentTexture = NULL;
+            std::string m_spawnType;
+            std::shared_ptr<Geometry> m_rectHandle;
+            std::shared_ptr<Text> m_textHandle;
     };
 }
 

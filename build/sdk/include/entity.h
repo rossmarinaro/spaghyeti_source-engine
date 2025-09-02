@@ -56,6 +56,7 @@ class Entity {
         inline void SetName(const std::string& name) { this->name = name; }
         inline void SetCull(bool cull) { this->cull = cull; }
         inline void SetScrollFactor(const Math::Vector2& scrollFactor) { this->scrollFactor = scrollFactor; }
+        inline void SetStatic(bool is_static) { m_isStatic = is_static; }
 		 
 		virtual void Render() {}
         virtual ~Entity() { s_count--; }
@@ -78,7 +79,7 @@ class Entity {
     protected:
 
         int m_type;
-
+        bool m_isStatic;
 };
 
 
@@ -90,7 +91,6 @@ class Geometry : public Entity {
         Graphics::Texture2D texture;
 
 		float width, height, radius;
-        bool isStatic;
 
         inline void SetThickness(float thickness) { m_thickness = thickness; }
 		inline void SetSize(float radius) { this->radius = radius; } 
@@ -129,6 +129,7 @@ class Text : public Entity {
         static void ShutDown();
 
         int textType;
+
         float shadowOffsetX, 
               shadowOffsetY, 
               charoffsetX, 

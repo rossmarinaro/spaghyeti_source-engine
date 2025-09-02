@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cmath>
-
+ 
 namespace Math {
 
     struct Vector2 { float x, y; };

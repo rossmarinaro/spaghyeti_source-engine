@@ -10,7 +10,6 @@ using namespace editor;
 TextNode::TextNode(bool init): 
     Node(init, TEXT)
 {
-    isUI = 2;
     size = 1;
     alpha = 1;
     UIFlag = true;
@@ -208,7 +207,5 @@ void TextNode::Render()
         if (System::Game::GetScene()->ListenForInteraction(textHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             Editor::selectedEntity = textHandle;
     }
-
-    isUI = UIFlag ? 2 : 1;
 }
 

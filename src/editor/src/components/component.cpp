@@ -157,7 +157,7 @@ void Component::Make()
         src <<  "       public:\n\n";
         src <<  "           //constructor, called on start\n\n";
         src <<  "           " << className << "(std::shared_ptr<Entity> entity):\n";
-        src <<  "            Behavior(entity->ID, typeid(" << className << ").name())\n";
+        src <<  "            Behavior(entity->ID, typeid(" << className << ").name(), \"" + className + "\")\n";
         src <<  "            {\n\n";
         src <<  "            }\n\n";
         src <<  "           ~" << className << "() = default;\n";

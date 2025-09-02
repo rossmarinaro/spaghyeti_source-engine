@@ -26,7 +26,11 @@ entity_behaviors::Enemy::Enemy(std::shared_ptr<Entity> entity, const std::string
 
 void entity_behaviors::Enemy::Initialize(std::shared_ptr<Entity> entity)
 {
-    auto sprite = System::Game::GetScene()->GetEntity<Sprite>(m_key);
+    const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(m_key);
+
+    if (!sprite)
+        return;
+
     sprite->SetData("alive", true);
 
     if (System::Utils::str_includes(entity->name, "hooligan")) {

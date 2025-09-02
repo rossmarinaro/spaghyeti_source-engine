@@ -33,8 +33,8 @@ Gameplay::Gameplay(std::shared_ptr<Entity> entity):
         m_dialog_text->SetScale(0.7f);
         m_dialog_text->SetStroke(true, { 0.0f, 0.0f, 0.0f });
         
-        Time::DelayedCall(60, [this] {   
-
+        Time::DelayedCall(60, [this] 
+        {   
             if (!m_startSequence)
                 return;
 

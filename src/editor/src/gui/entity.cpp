@@ -197,43 +197,37 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
                 if (std::filesystem::is_empty(Editor::projectPath + am->script_dir))
                     ImGui::Text("no behaviors in directory.");
 
-                else
+                else 
                 {
-
-                    //load the script from dir
-
-                    auto loadScript = [&](auto& script) -> void {
-
-                        std::string filename = script.path().filename().string();
-
-                        if (System::Utils::str_endsWith(filename, ".h"))
-                            if (ImGui::MenuItem(System::Utils::ReplaceFrom(filename, ".", "").c_str())) 
-                            {
-                                std::string assetDir = am->script_dir;
-                                
-                                std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
-                                std::replace(assetDir.begin(), assetDir.end(), '\\', '/');
-
-                                std::string line,
-                                            path = Editor::projectPath + assetDir + '/';
-                                        
-                                std::ifstream src(script.path().string());
-
-                                while (src >> line)
-                                    if (line == "class")  
-                                        if (src >> line)
-                                            node->behaviors.insert({ line, filename });  
-
-                            }
-                    }; 
+                    std::string assetDir = am->script_dir;
 
                     //iterate over script dirs
 
                     for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + am->script_dir)) 
                         if (!script.is_directory())
-                            loadScript(script);
+                        {
 
-                }                    
+                            std::string filename = script.path().filename().string();
+
+                            if (System::Utils::str_endsWith(filename, ".h"))
+                                if (ImGui::MenuItem(System::Utils::ReplaceFrom(filename, ".", "").c_str())) 
+                                {
+                                    std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
+                                    std::replace(assetDir.begin(), assetDir.end(), '\\', '/');
+
+                                    std::string line,
+                                                path = Editor::projectPath + assetDir + '/';
+                                            
+                                    std::ifstream src(script.path().string());
+
+                                    while (src >> line)
+                                        if (line == "class")  
+                                            if (src >> line)
+                                                node->behaviors.insert({ line, filename });  
+
+                                }
+                        }
+                }
 
                 ImGui::EndMenu();
             }
@@ -291,6 +285,9 @@ void GUI::RenderNodes()
 
         if (ImGui::MenuItem("Tilemap"))
             Node::Make<TilemapNode>(); 
+
+        if (ImGui::MenuItem("Spawner"))
+            Node::Make<SpawnerNode>(); 
 
         ImGui::EndMenu();
     }

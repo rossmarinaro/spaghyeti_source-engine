@@ -82,6 +82,9 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
                 if (ImGui::MenuItem("Tilemap"))
                     Node::Make<TilemapNode>(true, _nodes); 
 
+                if (ImGui::MenuItem("Spawner"))
+                    Node::Make<SpawnerNode>(true, _nodes); 
+
                 ImGui::EndMenu(); 
             }
 

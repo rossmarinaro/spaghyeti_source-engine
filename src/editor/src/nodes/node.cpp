@@ -56,7 +56,7 @@ void Node::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>
 
     //save prefab
 
-    if (type != AUDIO && type != TILEMAP && ImGui::Button("Save prefab")) 
+    if (type != AUDIO && type != TILEMAP && type != SPAWNER && ImGui::Button("Save prefab")) 
         SavePrefab(); 
 }
 
@@ -73,6 +73,7 @@ const std::string Node::GetType(int type) {
         case AUDIO: return "Audio";
         case GROUP: return "Group";
         case TEXT: return "Text";
+        case SPAWNER: return "Spawner";
     }
 }
 
@@ -265,7 +266,6 @@ void Node::ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
 void Node::AddComponent(int type, bool init)
 {
-
     //return if component exists 
     
     if (std::find_if(components.begin(), components.end(), 
@@ -290,15 +290,12 @@ void Node::AddComponent(int type, bool init)
 
 void Node::RemoveComponent(std::shared_ptr<Component>& component)
 {
-
     std::vector<std::shared_ptr<Component>>::iterator it = std::find(components.begin(), components.end(), component);
 
     if (it != components.end()) {
-
         Reset((*it)->type);
         components.erase(it);
     }
-
 }
 
 
@@ -723,6 +720,39 @@ json Node::WriteData(std::shared_ptr<Node>& node)
         data = { { "nodes", nodeData } };
     }
 
+    //--------------- spawner
+
+
+    if (node->type == SPAWNER)
+    {
+        auto sn = std::dynamic_pointer_cast<SpawnerNode>(node);
+
+        data = {
+   
+            { "position x", sn->positionX },      
+            { "position y", sn->positionY }, 
+            { "width", sn->width },      
+            { "height", sn->height },
+            { "alpha", sn->alpha },      
+            { "loop", sn->loop },
+            { "type of", sn->typeOf }, 
+            { "animation key", sn->animationKey }, 
+            { "texture key", sn->textureKey }, 
+            { "behavior key", sn->behaviorKey },
+            { "sprite sheet key", {
+                    { "first", sn->spriteSheetKey.first },
+                    { "second", sn->spriteSheetKey.second}
+                }
+            },
+            { "tint", {
+                    { "x", sn->tint.x },
+                    { "y", sn->tint.y },
+                    { "z", sn->tint.z }
+                }
+            }
+        };
+
+    }
 
     data["type"] = GetType(node->type); 
     data["name"] = node->name;
@@ -1251,6 +1281,67 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             return gn;
 
+        }
+
+        //spawner
+
+        if (data["type"] == "Spawner")
+        {
+            std::shared_ptr<SpawnerNode> sn;
+
+            if (makeNode) {
+                sn = Make<SpawnerNode>(false, arr); 
+                sn->CreateMarker();
+            }
+            
+            else 
+                sn = Scene::CreateObject<SpawnerNode>(_scene);
+
+            if (data.contains("name"))
+                sn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+
+            if (data.contains("type of"))
+                sn->typeOf = data["type of"]; 
+
+            if (data.contains("loop"))
+                sn->loop = data["loop"];
+
+            if (data.contains("alpha"))
+                sn->alpha = data["alpha"];
+
+            if (data.contains("tint"))
+                sn->tint = { data["tint"]["x"], data["tint"]["y"], data["tint"]["z"] };
+
+            if (data.contains("behavior key"))
+                sn->behaviorKey = data["behavior key"]; 
+
+            if (data.contains("animation key"))
+                sn->animationKey = data["animation key"]; 
+
+            if (data.contains("texture key")) 
+            {
+                sn->textureKey = data["texture key"];
+                
+                if (makeNode)
+                    sn->ApplyTexture(data["texture key"]);
+            }
+
+            if (data.contains("sprite sheet key"))
+                sn->spriteSheetKey = { data["sprite sheet key"]["first"], data["sprite sheet key"]["second"] };
+        
+            if (data.contains("position x"))
+                sn->positionX = data["position x"];   
+
+            if (data.contains("position y"))
+                sn->positionY = data["position y"];  
+
+            if (data.contains("width"))
+                sn->width = data["width"];   
+
+            if (data.contains("height"))
+                sn->height = data["height"];  
+
+            return sn;
         }
     }
 

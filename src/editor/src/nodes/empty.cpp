@@ -124,6 +124,34 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
             if (show_options)
             {
+                if (currentShape != "") 
+                {
+                    ImGui::SliderInt("depth", &depth, 0, 1000);
+                    ImGui::SliderFloat("line weight", &line_weight, 0.1f, 3.0f); 
+                    ImGui::ColorEdit3("tint", (float*)&m_debugGraphic->tint); 
+                    ImGui::SliderFloat("alpha", &m_debugGraphic->alpha, 0.0f, 1.0f);
+                    ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);  
+                    ImGui::SliderFloat("position y", &positionY, -System::Window::s_width, System::Window::s_width); 
+                }
+
+                if (m_debugGraphic)
+                {
+                    
+                    ImGui::Checkbox("debug", &show_debug);
+                    ImGui::Checkbox("fill", &debug_fill);
+
+                    if (currentShape == "rectangle") {
+                        ImGui::SliderFloat("width", &rectWidth, 10.0f, 1000.0f); 
+                        ImGui::SliderFloat("height", &rectHeight, 10.0f, 1000.0f); 
+
+                        m_debugGraphic->SetSize(rectWidth, rectHeight);
+                    }
+
+                    if (currentShape == "ellipse") {
+                        ImGui::SliderFloat("radius", &radius, 10.0f, 1000.0f);  
+                        m_debugGraphic->SetSize(radius);
+                    }
+                }
 
                 if (ImGui::BeginMenu("Create Graphic")) {
 
@@ -152,37 +180,10 @@ void EmptyNode::Render()
 {
     if (m_debugGraphic && show_options)
     {
-
-        ImGui::Checkbox("debug", &show_debug);
-        ImGui::Checkbox("fill", &debug_fill);
-
-        if (currentShape != "") 
-        {
-            ImGui::SliderInt("depth", &depth, 0, 1000);
-            ImGui::SliderFloat("line weight", &line_weight, 0.1f, 3.0f); 
-            ImGui::ColorEdit3("tint", (float*)&m_debugGraphic->tint); 
-            ImGui::SliderFloat("alpha", &m_debugGraphic->alpha, 0.0f, 1.0f);
-            ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);  
-            ImGui::SliderFloat("position y", &positionY, -System::Window::s_width, System::Window::s_width); 
-        }
-
-        if (currentShape == "rectangle") {
-            ImGui::SliderFloat("width", &rectWidth, 10.0f, 1000.0f); 
-            ImGui::SliderFloat("height", &rectHeight, 10.0f, 1000.0f); 
-
-            m_debugGraphic->SetSize(rectWidth, rectHeight);
-        }
-
-        if (currentShape == "ellipse") {
-            ImGui::SliderFloat("radius", &radius, 10.0f, 1000.0f);  
-            m_debugGraphic->SetSize(radius);
-        }
-
         m_debugGraphic->renderable = show_debug;
 
         m_debugGraphic->SetPosition(positionX, positionY);
         m_debugGraphic->SetDrawStyle(debug_fill ? 1 : 0); 
         m_debugGraphic->SetThickness(line_weight);
-    
     }
 }

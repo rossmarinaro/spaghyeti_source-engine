@@ -114,7 +114,8 @@ void EventListener::Serialize(json& data, bool newScene)
          audio,
          text,
          empty,
-         groups;
+         groups,
+         spawns;
     
     data["icon"] = newScene ? "" : AssetManager::Get()->projectIcon;
 
@@ -217,6 +218,9 @@ void EventListener::Serialize(json& data, bool newScene)
                 
             if (node->type == Node::GROUP)
                 groups.push_back(Node::WriteData(node));
+
+            if (node->type == Node::SPAWNER)
+                spawns.push_back(Node::WriteData(node));
         
         }
     }
@@ -232,6 +236,7 @@ void EventListener::Serialize(json& data, bool newScene)
     data["nodes"]["empty"] = empty;
     data["nodes"]["text"] = text;
     data["nodes"]["groups"] = groups;
+    data["nodes"]["spawns"] = spawns;
 
 }
 
@@ -308,6 +313,9 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     for (auto& group : data["nodes"]["groups"])
         Node::ReadData(group, true, nullptr);
+
+    for (auto& spawn : data["nodes"]["spawns"])
+        Node::ReadData(spawn, true, nullptr);
 
     //loaded data
 
@@ -406,6 +414,9 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     for (auto& group : data["nodes"]["groups"])
         Node::ReadData(group, false, scene);
+
+    for (auto& spawn : data["nodes"]["spawns"])
+        Node::ReadData(spawn, false, scene);
 
     //loaded data
 

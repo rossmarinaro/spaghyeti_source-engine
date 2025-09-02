@@ -12,12 +12,25 @@ namespace System {
 
         public: 
 
-            std::string key;
+            struct Spawn 
+            {
+                int type;
+                bool loop;
+                std::string filename;
+                float posX, posY, width, height, alpha;
+                std::vector<std::string> behaviorKeys;
+                Math::Vector3 tint;
+                //check if spawn has behavior, attach and return false to verify next frame
+                bool hasBehavior(std::vector<Spawn>& spawns, std::vector<std::shared_ptr<entity_behaviors::Behavior>>& behaviors, const std::string& behaviorName);
+            };
 
+            std::string key;
+ 
             Math::Vector2* cullPosition;
 
             std::unique_ptr<Geometry> vignette;
             
+            std::vector<Spawn> spawns; 
             std::vector<std::shared_ptr<Entity>> entities;
             std::vector<std::shared_ptr<Entity>> UI;
             std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
@@ -28,6 +41,7 @@ namespace System {
 
             virtual ~Scene() { s_ID--; };
             virtual void Preload() {}
+            virtual void Update() {}
             virtual void Run(bool onSceneLoad) {}
 
             const bool IsPaused();

@@ -17,7 +17,8 @@
 //---------------------------------- empty entity
 
 Entity::Entity(int type): 
-    m_type(type) 
+    m_type(type),
+    m_isStatic(false)
 {
     name = "Untitled_" + std::to_string(s_count);
     ID = UUID::generate_uuid();
@@ -30,7 +31,8 @@ Entity::Entity(int type):
 
 
 Entity::Entity(int type, float x, float y):
-    m_type(type)
+    m_type(type),
+    m_isStatic(false)
 { 
     position = { x, y };
     scrollFactor = { 1.0f, 1.0f };
@@ -146,7 +148,6 @@ Geometry::Geometry(float x, float y, float width, float height):
     texture = Graphics::Texture2D::Get("base");
     shader = Graphics::Shader::Get("graphics");
     renderable = true;
-    isStatic = false;
 
     LOG("Geometry: quad created."); 
 
@@ -184,21 +185,24 @@ void Geometry::Render()
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
     model = glm::translate(model, { -0.5f * width - position.x, -0.5f * height - position.y, 0.0f });
 
-    const Math::Vector4 pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+        const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y * scale.y));
     
-    const glm::mat4 proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f), 
-                    view = isStatic ? glm::mat4(1.0f) : glm::translate(model, glm::vec3(System::Application::game->camera->GetPosition()->x * scrollFactor.x, System::Application::game->camera->GetPosition()->y * scrollFactor.y, 0.0f)),
-                    mvp = proj * view * model;
+    const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
+                    proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f),
+                    _mvp = proj * view * model;
+
+    const Math::Matrix4 mvp = { 
+        { _mvp[0][0], _mvp[0][1], _mvp[0][2], _mvp[0][3] }, 
+        { _mvp[1][0], _mvp[1][1], _mvp[1][2], _mvp[1][3] },   
+        { _mvp[2][0], _mvp[2][1], _mvp[2][2], _mvp[2][3] },  
+        { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
+    };
                             
     shader.SetVec3f("tint", tint);
     shader.SetFloat("alphaVal", alpha);
 
-    shader.SetMat4("mvp", { 
-        { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
-        { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
-        { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
-        { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
-    });  
+    shader.SetMat4("mvp", mvp);  
 
     texture.Update(position, false, false, m_drawStyle, m_thickness); 
 }

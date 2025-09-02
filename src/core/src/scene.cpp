@@ -1,18 +1,20 @@
 #include "../../../build/sdk/include/scene.h"
 
-System::Scene::Scene(const Process::Context& context): 
+using namespace System;
+
+Scene::Scene(const Process::Context& context): 
     m_context(context)
         { Init("Untitled" + std::to_string(s_ID)); }
 
 //---------------------------------
 
-System::Scene::Scene(const Process::Context& context, const std::string& key): 
+Scene::Scene(const Process::Context& context, const std::string& key): 
     m_context(context)
         { Init(key); }
 
 //---------------------------------
 
-void System::Scene::Init(const std::string& key) 
+void Scene::Init(const std::string& key) 
 {
     this->key = key;
     s_ID++;
@@ -24,14 +26,14 @@ void System::Scene::Init(const std::string& key)
 
 //---------------------------------
 
-void System::Scene::SetWorldDimensions(float width, float height) { 
+void Scene::SetWorldDimensions(float width, float height) { 
     m_worldWidth = width;
     m_worldHeight = height;
 }
 
 //--------------------------------- assign entity to react to input
 
-void System::Scene::SetInteractive(std::shared_ptr<Entity> entity, bool interactive) {
+void Scene::SetInteractive(std::shared_ptr<Entity> entity, bool interactive) {
 
     auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity->ID; });
 
@@ -47,7 +49,7 @@ void System::Scene::SetInteractive(std::shared_ptr<Entity> entity, bool interact
 
 //--------------------------------- check if cursor is hovering entity
 
-const bool System::Scene::ListenForInteraction(std::shared_ptr<Entity> entity) {
+const bool Scene::ListenForInteraction(std::shared_ptr<Entity> entity) {
     
     auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity->ID; });
 
@@ -61,19 +63,19 @@ const bool System::Scene::ListenForInteraction(std::shared_ptr<Entity> entity) {
 
 //---------------------------------
 
-const Process::Context& System::Scene::GetContext() { 
+const Process::Context& Scene::GetContext() { 
     return m_context; 
 }
 
 //---------------------------------
 
-const bool System::Scene::IsPaused() {
+const bool Scene::IsPaused() {
     return m_paused;
 }
 
 //---------------------------------
 
-const Math::Vector2 System::Scene::GetWorldDimensions() { 
+const Math::Vector2 Scene::GetWorldDimensions() { 
     return { 
         static_cast<float>(m_worldWidth), 
         static_cast<float>(m_worldHeight) 
@@ -82,13 +84,13 @@ const Math::Vector2 System::Scene::GetWorldDimensions() {
 
 //---------------------------------
 
-void System::Scene::SetPause(bool isPaused) {
+void Scene::SetPause(bool isPaused) {
     m_paused = isPaused;
 }
 
 //---------------------------------
 
-void System::Scene::SetGlobal(const std::string& key, const std::any& value) { 
+void Scene::SetGlobal(const std::string& key, const std::any& value) { 
 
     auto it = m_globals.find(key);
 
@@ -99,5 +101,26 @@ void System::Scene::SetGlobal(const std::string& key, const std::any& value) {
 }
 
 
+//---------------------------------
+
+bool Scene::Spawn::hasBehavior(std::vector<Scene::Spawn>& spawns, std::vector<std::shared_ptr<entity_behaviors::Behavior>>& behaviors, const std::string& behaviorName) 
+{ 
+    const auto it = std::find_if(behaviors.begin(), behaviors.end(), [&behaviorName](const auto b) { return b->name == behaviorName; });
+
+    if (it == behaviors.end())
+        return true;
+
+    const auto behavior = *it;
+
+    for (auto& spawn : spawns)
+        for (const auto& ID : spawn.behaviorKeys)
+            if (std::find_if(spawn.behaviorKeys.begin(), spawn.behaviorKeys.end(), [behavior](const std::string& key) { return key == behavior->key; }) != spawn.behaviorKeys.end()) 
+            {
+                spawn.behaviorKeys.push_back(behavior->key);
+                return false;
+            }
+    
+    return true;
+}
 
 

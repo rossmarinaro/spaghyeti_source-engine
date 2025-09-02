@@ -735,6 +735,8 @@ void EventListener::BuildAndRun()
     std::string root_path = Editor::rootPath;
     std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
+    game_src << "/* ---------- GENERATED CODE ----------- */\n";
+
     //Windows
 
     if (Editor::platform == "Windows")
@@ -830,8 +832,6 @@ void EventListener::BuildAndRun()
         main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
 
         main_makeFile.close();
-
-        game_src << "/* ---------- GENERATED CODE ----------- */\n\n\n";
 
         //include core funtions
 
@@ -1137,7 +1137,7 @@ void EventListener::BuildAndRun()
 
         //temp files: asset and command lists
 
-        std::ostringstream asset_queue, preload_queue, global_queue, command_queue;
+        std::ostringstream asset_queue, preload_queue, global_queue, command_queue, update_queue;
 
         //preload file assets
 
@@ -1477,13 +1477,14 @@ void EventListener::BuildAndRun()
 
                     //text render layer
 
-                    tn->isUI = tn->UIFlag ? 2 : 1;
+                    const int isUI = tn->UIFlag ? 2 : 1;
                     
                     const std::string isStroke = tn->isStroked ? "true" : "false",
                                       isShadow = tn->isShadow ? "true" : "false";
 
-                    command_queue << "   const auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(tn->isUI) + ");\n"; 
+                    command_queue << "   const auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(isUI) + ");\n"; 
 
+                    command_queue << "   text_" + node->ID + "->SetStatic(" + (isUI == 2 ? "true" : "false") + ");\n";
                     command_queue << "   text_" + node->ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetRotation(" + std::to_string(tn->rotation) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
@@ -1600,7 +1601,7 @@ void EventListener::BuildAndRun()
 
                     command_queue << "   System::Audio::play(\"" + an->audio_source_name + "\", " + loop + ", " + std::to_string(an->volume) + ");\n";
 
-                    command_queue << "   std::shared_ptr<Entity> audio_" + node->ID + " = System::Game::CreateEntity(\"" + "audio" + "\");\n\t";
+                    command_queue << "   const auto audio_" + node->ID + " = System::Game::CreateEntity(\"" + "audio" + "\");\n\t";
                     command_queue << "   audio_" + node->ID + "->SetName(\"" + an->name + "\");\n";
                     
                 }
@@ -1615,14 +1616,22 @@ void EventListener::BuildAndRun()
                         writeNodes(gn->_nodes);
                 }
 
+                std::string entity = Node::GetType(node->type) + "_" + node->ID;
+
+                if (node->type == Node::SPAWNER) 
+                {
+                    const auto spawn_node = std::dynamic_pointer_cast<SpawnerNode>(node);
+
+                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->positionX) + ", " + std::to_string(spawn_node->positionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + std::to_string(spawn_node->loop) + ", \"" + spawn_node->behaviorKey + "\");\n";
+
+                }
+
                 //define behaviors
 
                 for (const auto& behavior : node->behaviors) {
-
-                    std::string entity = Node::GetType(node->type) + "_" + node->ID;
                     transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
-                    command_queue << "   System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
 
+                    command_queue << "   System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
                 }
 
             }
@@ -1634,6 +1643,24 @@ void EventListener::BuildAndRun()
         //register scene textures
 
         preload_queue << "  System::Resources::Manager::RegisterTextures();\n"; 
+
+        update_queue << "   for (auto& spawn : spawns) \n";
+        update_queue << "       for (const auto& behavior : behaviors)\n";
+        update_queue << "       {\n\t\t\tstd::shared_ptr<Entity> entity;\n\n";
+        update_queue << "           if (spawn.type == Entity::SPRITE)\n";
+        update_queue << "               entity = GetEntity<Sprite>(spawn.filename);\n"; 
+        update_queue << "           else if (spawn.type == Entity::GEOMETRY) \n";
+        update_queue << "               entity = GetEntity<Geometry>(spawn.filename);\n\t\t\n"; 
+        update_queue << "           if (entity) {\n";
+
+        for (const auto& node : target.second->nodes) 
+            for (const auto& behavior : node->behaviors) 
+            {
+                update_queue << "           if (behavior->key == typeid(entity_behaviors::" + behavior.first + ").name() && !spawn.hasBehavior(spawns, behaviors, behavior->name))\n";  
+                update_queue << "              System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(entity, this);\n\t\t\n";
+            }
+
+        update_queue << "           }\n}\n\n";
 
         //write nodes
 
@@ -1648,7 +1675,8 @@ void EventListener::BuildAndRun()
 
         const std::string assetData = asset_queue.str(),
                           preloadData = preload_queue.str(),
-                          commandData = command_queue.str();
+                          commandData = command_queue.str(),
+                          updateData = update_queue.str();
 
         std::string name_upper = target.first;
 
@@ -1662,12 +1690,15 @@ void EventListener::BuildAndRun()
         game_src << "\n\nclass " + name_upper + " : public System::Scene {\n\n"; 
         game_src << "    public:\n";
         game_src << "        " + name_upper + "(const Process::Context& context):\n\t\tScene(context, \"" + name_upper + "\") {}\n";
-        game_src << "        void Preload() override;\n";
+        game_src << "        void Preload() override;\n";        
+        game_src << "        void Update() override;\n";
         game_src << "        void Run(bool loadMap) override;\n";
         game_src <<"};\n\n\n"; 
 
         game_src << "void " + name_upper + "::Preload() {\n" + assetData + "\n" + preloadData + "\n}\n\n";
         game_src << "void " + name_upper + "::Run(bool loadMap) {\n" +  commandData + "}\n\n";
+        game_src << "void " + name_upper + "::Update() {\n" +  updateData + "}\n\n";
+
     }
 
     //clear scene queue
@@ -1753,7 +1784,7 @@ void EventListener::BuildAndRun()
         std::filesystem::remove_all((web + "/assets").c_str());
 
     Editor::Log("Project " + s_currentProject + " built successfully.");
-    ShowWindow(GetConsoleWindow(), SW_HIDE);
+  //  ShowWindow(GetConsoleWindow(), SW_HIDE);
 
 }
 

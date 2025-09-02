@@ -147,7 +147,7 @@ void SpriteNode::ApplyTexture(const std::string& asset)
     else 
        spriteHandle->SetTexture(asset); 
 
-    m_currentTexture = spriteHandle->texture.Get(asset).ID;  
+    m_currentTexture = Graphics::Texture2D::Get(asset).ID;  
     key = asset;
 
     AssetManager::Register(key);

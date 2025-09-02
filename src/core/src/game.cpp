@@ -33,13 +33,16 @@ void Game::Flush(bool removeBehaviors)
         Application::events->pool = nullptr;
     }
 
+    s_spawn_count = 0;
+
     if (removeBehaviors)
         currentScene->behaviors.clear();
 
     maps->layers.clear();
     currentScene->UI.clear();
     currentScene->entities.clear();
-    time->timed_events.clear();                  
+    currentScene->spawns.clear();
+    time->timed_events.clear();   
     
     physics->ClearBodies(); 
     camera->Reset(); 
@@ -77,6 +80,8 @@ Scene* Game::GetScene(const std::string& key)
 
 Game::Game()
 {
+    s_spawn_count = 0;
+
     LOG("Game: initializing context...");
 
     //game components
@@ -287,9 +292,59 @@ void Game::UpdateFrame()
     if (inputs)
         inputs->ProcessInput();
 
-    Entity::s_rendered = 0;
+    //spawn update
+
+    for (const auto& spawn : currentScene->spawns)
+    {
+        std::string key = spawn.filename;
+        const std::string index = System::Utils::ReplaceFrom(key, ".", "") + std::to_string(s_spawn_count);
+        std::shared_ptr<Entity> entity;
+
+        //create / runtime instantiation of game objects
+
+        if (!entity && 
+            currentScene->cullPosition->x >= spawn.posX - (Window::s_scaleWidth / 2) && currentScene->cullPosition->x <= spawn.posX + (Window::s_scaleWidth / 2) &&
+            currentScene->cullPosition->y >= spawn.posY - (Window::s_scaleHeight / 2) && currentScene->cullPosition->y <= spawn.posY + (Window::s_scaleHeight / 2)
+        ) 
+        {
+            if (std::find_if(GetScene()->entities.begin(), GetScene()->entities.end(), [index](std::shared_ptr<Entity> e) { return e->GetData<std::string>("spawn index") == index; }) != System::Game::GetScene()->entities.end()) 
+                continue;
+
+            switch (spawn.type) {
+                case Entity::SPRITE: entity = CreateSprite(spawn.filename, spawn.posX, spawn.posY); break;
+                case Entity::GEOMETRY: entity = CreateGeom(spawn.posX, spawn.posY, spawn.width, spawn.height); break;
+                default: LOG("Spawner: failed to spawn, invalid enum type."); break;
+            }
+            
+            entity->SetAlpha(spawn.alpha);
+            entity->SetTint(spawn.tint);
+            entity->SetName(index);
+            entity->SetData("spawn index", index);
+        }
+    
+        //remove
+
+        if (
+            currentScene->cullPosition->x < spawn.posX - (Window::s_scaleWidth * 2) ||
+            currentScene->cullPosition->x > spawn.posX + (Window::s_scaleWidth * 2) || 
+            currentScene->cullPosition->y > spawn.posY + (Window::s_scaleHeight * 2) ||
+            currentScene->cullPosition->y > spawn.posY + (Window::s_scaleHeight * 2) 
+        )
+        {            
+            if (spawn.type == Entity::SPRITE)
+                entity = GetScene()->GetEntity<Sprite>(index);
+
+            else if (spawn.type == Entity::GEOMETRY)
+                entity = GetScene()->GetEntity<Geometry>(index);
+
+            if (entity)
+                DestroyEntity(entity);
+        }
+    }
  
     //entity render queue
+
+    Entity::s_rendered = 0;
 
     for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity))
@@ -320,7 +375,7 @@ void Game::UpdateFrame()
             if (entity->renderable) {
                 entity->Render();
                 Entity::s_rendered++;
-            } 
+            }  
         }
 
     //UI render queue
@@ -411,6 +466,10 @@ void Game::UpdateFrame()
 
             event->callback();
         } 
+
+    //run any additional updates on the current scene
+
+    currentScene->Update();
 }
 
 
@@ -562,7 +621,7 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
     const auto geom = std::make_shared<Geometry>(x, y, width, height);
 
     if (isStatic)
-        geom->isStatic = true;
+        geom->SetStatic(true);
 
     if (layer == 1)
         Application::game->currentScene->entities.emplace_back(geom);
@@ -589,3 +648,38 @@ std::shared_ptr<Entity> Game::CreateEntity(int type, int layer)
 
     return entity;
 }
+
+
+//---------------------------- spawn
+
+
+void Game::CreateSpawn(
+    int type, 
+    const std::string& filename, 
+    float x, 
+    float y, 
+    float width, 
+    float height, 
+    const Math::Vector3& tint, 
+    float alpha, 
+    bool loop, 
+    const std::string& behavior_key) 
+{
+    Scene::Spawn spawn;
+
+    spawn.type = type;
+    spawn.filename = filename;
+    spawn.posX = x;
+    spawn.posY = y; 
+    spawn.width = width;
+    spawn.height = height;
+    spawn.tint = tint;
+    spawn.alpha = alpha;
+    spawn.loop = loop;
+    spawn.behaviorKeys.emplace_back(behavior_key);
+
+    Application::game->currentScene->spawns.emplace_back(spawn);
+
+    s_spawn_count++;
+}
+
