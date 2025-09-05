@@ -21,7 +21,7 @@ namespace entity_behaviors {
                 this->key = key; 
                 this->ID = ID;
                 this->name = name;
-                layer = 0;
+                layer = 0; 
                 active = true;
             }
 

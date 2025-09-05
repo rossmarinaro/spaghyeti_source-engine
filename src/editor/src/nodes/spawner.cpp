@@ -20,6 +20,7 @@ SpawnerNode::SpawnerNode(bool init):
     loop = false;
     alpha = 1.0f;
     tint = { 1.0f, 1.0f, 1.0f }; 
+    body = { false, 0.0f, 0.0f };
 
     m_rectHandle = nullptr;
     m_textHandle = nullptr;
@@ -47,33 +48,11 @@ SpawnerNode::~SpawnerNode() {
 
 void SpawnerNode::Reset(int component_type)
 {
+    if (m_rectHandle)
+        System::Game::DestroyEntity(m_rectHandle);
 
-    // bool passAll = component_type == Component::NONE;
-
-    // if (component_type == Component::SHADER || passAll)
-    //     if (m_rectHandle.get())
-    //         m_rectHandle->SetShader("sprite");
-
-    // if (component_type == Component::SCRIPT || passAll)
-    //     behaviors.clear();
-
-    // if (component_type == Component::ANIMATOR || passAll) 
-    //     animations.clear();
-
-    // if (component_type == Component::PHYSICS || passAll)
-    // {
-    //     for (const auto& body : bodies)
-    //         Physics::DestroyBody(body.pb);
-        
-    //     body_pointer.clear();
-    //     bodies.clear();
-    //     is_sensor.clear();
-
-    //     restitution = 0.0f;
-    //     density = 0.0f;
-    //     friction = 0.0f;
-    // }
-    
+    if (m_textHandle)
+        System::Game::DestroyEntity(m_textHandle);
 }
 
 //---------------------------
@@ -231,6 +210,19 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                         ImGui::EndMenu();
                     }
+
+                    if (ImGui::BeginMenu("define physics body")) 
+                    {
+                        const std::string exists = body.exist ? "true" : "false";
+
+                        if (ImGui::Button(("exists: " + exists).c_str()))
+                            body.exist = !body.exist;
+
+                        ImGui::SliderFloat("width", &body.w, 0.0f, System::Window::s_width); 
+                        ImGui::SliderFloat("height", &body.h, 0.0f, System::Window::s_height);
+
+                        ImGui::EndMenu();
+                    }
                 }
 
                 //geometry
@@ -245,6 +237,7 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                 ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_height); 
                 ImGui::ColorEdit3("tint", (float*)&tint); 
                 ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
+                ImGui::Checkbox("loop", &loop);
             }
 
             ImGui::TreePop();

@@ -294,53 +294,74 @@ void Game::UpdateFrame()
 
     //spawn update
 
-    for (const auto& spawn : currentScene->spawns)
-    {
-        std::string key = spawn.filename;
-        const std::string index = System::Utils::ReplaceFrom(key, ".", "") + std::to_string(s_spawn_count);
-        std::shared_ptr<Entity> entity;
+    #if STANDALONE == 1
 
-        //create / runtime instantiation of game objects
-
-        if (!entity && 
-            currentScene->cullPosition->x >= spawn.posX - (Window::s_scaleWidth / 2) && currentScene->cullPosition->x <= spawn.posX + (Window::s_scaleWidth / 2) &&
-            currentScene->cullPosition->y >= spawn.posY - (Window::s_scaleHeight / 2) && currentScene->cullPosition->y <= spawn.posY + (Window::s_scaleHeight / 2)
-        ) 
+        for (auto& spawn : currentScene->spawns)
         {
-            if (std::find_if(GetScene()->entities.begin(), GetScene()->entities.end(), [index](std::shared_ptr<Entity> e) { return e->GetData<std::string>("spawn index") == index; }) != System::Game::GetScene()->entities.end()) 
-                continue;
+            if (Math::distanceBetween(currentScene->cullPosition->x - spawn.posX) >= Window::s_scaleWidth * 1.5f && spawn.loop)  
+                spawn.can_create = true;
 
-            switch (spawn.type) {
-                case Entity::SPRITE: entity = CreateSprite(spawn.filename, spawn.posX, spawn.posY); break;
-                case Entity::GEOMETRY: entity = CreateGeom(spawn.posX, spawn.posY, spawn.width, spawn.height); break;
-                default: LOG("Spawner: failed to spawn, invalid enum type."); break;
+            //create / runtime instantiation of game objects
+
+            if (spawn.can_create &&
+                currentScene->cullPosition->x >= spawn.posX - (Window::s_scaleWidth / 2) && currentScene->cullPosition->x <= spawn.posX + (Window::s_scaleWidth / 2) &&
+                currentScene->cullPosition->y >= spawn.posY - (Window::s_scaleHeight / 2) && currentScene->cullPosition->y <= spawn.posY + (Window::s_scaleHeight / 2)
+            ) 
+            {
+                if (std::find_if(GetScene()->entities.begin(), GetScene()->entities.end(), [&spawn](std::shared_ptr<Entity> e) { return e->GetData<std::string>("spawn index") == spawn.index; }) != System::Game::GetScene()->entities.end()) 
+                    continue;
+
+                std::shared_ptr<Entity> entity;
+
+                switch (spawn.type) 
+                {
+                    case Entity::SPRITE: 
+                        entity = CreateSprite(spawn.filename, spawn.posX, spawn.posY); 
+                        if (spawn.body.exist) //apply bodies
+                            std::dynamic_pointer_cast<Sprite>(entity)->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, spawn.posX ,spawn.posY, spawn.body.w, spawn.body.h, false, 1), { 0.0f, 0.0f, spawn.body.w, spawn.body.h } });
+                    break;
+                    case Entity::GEOMETRY: 
+                        entity = CreateGeom(spawn.posX, spawn.posY, spawn.width, spawn.height); 
+                    break;
+                    default: LOG("Spawner: failed to spawn, invalid enum type."); break;
+                }
+                
+                entity->SetAlpha(spawn.alpha);
+                entity->SetTint(spawn.tint);
+                entity->SetName(spawn.index);
+                entity->SetData("spawn index", spawn.index);
+
+                spawn.can_create = false;
             }
-            
-            entity->SetAlpha(spawn.alpha);
-            entity->SetTint(spawn.tint);
-            entity->SetName(index);
-            entity->SetData("spawn index", index);
+        
+            //remove
+
+            if (
+                currentScene->cullPosition->x < spawn.posX - (Window::s_scaleWidth * 2) ||
+                currentScene->cullPosition->x > spawn.posX + (Window::s_scaleWidth * 2) || 
+                currentScene->cullPosition->y > spawn.posY + (Window::s_scaleHeight * 2) ||
+                currentScene->cullPosition->y > spawn.posY + (Window::s_scaleHeight * 2) 
+            )
+            {   
+                std::shared_ptr<Entity> entity;  
+
+                if (spawn.type == Entity::SPRITE)
+                    entity = GetScene()->GetEntity<Sprite>(spawn.index);
+
+                else if (spawn.type == Entity::GEOMETRY)
+                    entity = GetScene()->GetEntity<Geometry>(spawn.index);
+
+                if (entity) 
+                {
+                    if (spawn.loop)
+                        spawn.can_create = true;
+                        
+                    DestroyEntity(entity);
+                }
+            }
         }
-    
-        //remove
 
-        if (
-            currentScene->cullPosition->x < spawn.posX - (Window::s_scaleWidth * 2) ||
-            currentScene->cullPosition->x > spawn.posX + (Window::s_scaleWidth * 2) || 
-            currentScene->cullPosition->y > spawn.posY + (Window::s_scaleHeight * 2) ||
-            currentScene->cullPosition->y > spawn.posY + (Window::s_scaleHeight * 2) 
-        )
-        {            
-            if (spawn.type == Entity::SPRITE)
-                entity = GetScene()->GetEntity<Sprite>(index);
-
-            else if (spawn.type == Entity::GEOMETRY)
-                entity = GetScene()->GetEntity<Geometry>(index);
-
-            if (entity)
-                DestroyEntity(entity);
-        }
-    }
+    #endif
  
     //entity render queue
 
@@ -451,8 +472,7 @@ void Game::UpdateFrame()
         {
             //refresh timed event token
 
-            if (event->repeat > 0 || event->repeat == -1)
-            {
+            if (event->repeat > 0 || event->repeat == -1) {
                 if (event->repeat != -1)
                     event->repeat--;
 
@@ -517,12 +537,16 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         }
     }
 
-    // remove from vector and disappear into the void
+    // for (const auto& spawn : Application::game->currentScene->spawns)
+    //     if (spawn.index == entity->name)
+    //         spawn.can_create = true;
 
+    //remove from vector and disappear into the void
+ 
     if (entity.unique())
         entity.reset();
 
-    // reset associated behavior if applicable
+    //reset associated behavior if applicable
 
     auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b)
                                     { return b->ID == ID; });
@@ -663,10 +687,13 @@ void Game::CreateSpawn(
     const Math::Vector3& tint, 
     float alpha, 
     bool loop, 
-    const std::string& behavior_key) 
+    const std::string& behaviorName,
+    Scene::Spawn::Body body
+) 
 {
     Scene::Spawn spawn;
 
+    spawn.can_create = true;
     spawn.type = type;
     spawn.filename = filename;
     spawn.posX = x;
@@ -676,7 +703,15 @@ void Game::CreateSpawn(
     spawn.tint = tint;
     spawn.alpha = alpha;
     spawn.loop = loop;
-    spawn.behaviorKeys.emplace_back(behavior_key);
+    spawn.index = System::Utils::ReplaceFrom(spawn.filename, ".", "") + std::to_string(s_spawn_count);
+    
+    if (body.exist)
+        spawn.body = { true, body.w, body.h };
+
+    //append behaviors if name matches valid loaded behavior name
+
+    if (behaviorName.length())
+        spawn.behaviors_attached.emplace_back(behaviorName, false);
 
     Application::game->currentScene->spawns.emplace_back(spawn);
 

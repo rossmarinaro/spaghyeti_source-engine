@@ -15,13 +15,14 @@ namespace System {
             struct Spawn 
             {
                 int type;
-                bool loop;
-                std::string filename;
                 float posX, posY, width, height, alpha;
-                std::vector<std::string> behaviorKeys;
+                bool loop, can_create;
+                std::string filename, index;
+                std::vector<std::pair<std::string, bool>> behaviors_attached;
                 Math::Vector3 tint;
+                struct Body { bool exist; float w, h; } body;
                 //check if spawn has behavior, attach and return false to verify next frame
-                bool hasBehavior(std::vector<Spawn>& spawns, std::vector<std::shared_ptr<entity_behaviors::Behavior>>& behaviors, const std::string& behaviorName);
+                bool hasBehavior(const std::string& behaviorName);
             };
 
             std::string key;

@@ -13,7 +13,6 @@ using namespace editor;
 
 std::string EventListener::GetScriptName(const std::string& path)
 {
-
     std::ifstream src(path);
     std::string line, scriptName;
 

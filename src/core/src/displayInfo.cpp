@@ -11,15 +11,19 @@ DisplayInfo::DisplayInfo(void* _context):
 
     m_fps_text = std::make_unique<Text>("FPS", 10, 0);
     m_fps_text->SetScale(2.0f, 1.0f);
+    m_fps_text->SetStatic(true);
 
     m_cam_text = std::make_unique<Text>("CAMERA", 10, 50);
     m_cam_text->SetScale(2.0f, 1.0f);
+    m_cam_text->SetStatic(true);
 
     m_entity_text = std::make_unique<Text>("ENTITIES", 10, 100);
     m_entity_text->SetScale(2.0f, 1.0f);
+    m_entity_text->SetStatic(true);
 
     m_rendered_text = std::make_unique<Text>("RENDERED", 10, 150);
     m_rendered_text->SetScale(2.0f, 1.0f);
+    m_rendered_text->SetStatic(true);
 }
 
 //update every frame

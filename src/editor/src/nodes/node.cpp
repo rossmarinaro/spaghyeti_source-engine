@@ -749,6 +749,12 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                     { "y", sn->tint.y },
                     { "z", sn->tint.z }
                 }
+            },
+            { "body", {
+                    { "exist", sn->body.exist },
+                    { "w", sn->body.w },
+                    { "h", sn->body.h }
+                } 
             }
         };
 
@@ -1340,6 +1346,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("height"))
                 sn->height = data["height"];  
+
+            if (data.contains("body")) {
+                sn->body.exist = data["body"]["exist"]; 
+                sn->body.w = data["body"]["w"]; 
+                sn->body.h = data["body"]["h"]; 
+            }
 
             return sn;
         }

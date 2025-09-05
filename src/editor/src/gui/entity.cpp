@@ -215,15 +215,15 @@ void GUI::RenderScriptOptions(const std::string& nodeId)
                                     std::replace(Editor::projectPath.begin(), Editor::projectPath.end(), '\\', '/');
                                     std::replace(assetDir.begin(), assetDir.end(), '\\', '/');
 
-                                    std::string line,
-                                                path = Editor::projectPath + assetDir + '/';
-                                            
+                                    std::string line; 
                                     std::ifstream src(script.path().string());
 
                                     while (src >> line)
                                         if (line == "class")  
                                             if (src >> line)
                                                 node->behaviors.insert({ line, filename });  
+
+                                    src.close();
 
                                 }
                         }

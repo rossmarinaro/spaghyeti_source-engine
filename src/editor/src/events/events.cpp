@@ -1622,7 +1622,7 @@ void EventListener::BuildAndRun()
                 {
                     const auto spawn_node = std::dynamic_pointer_cast<SpawnerNode>(node);
 
-                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->positionX) + ", " + std::to_string(spawn_node->positionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + std::to_string(spawn_node->loop) + ", \"" + spawn_node->behaviorKey + "\");\n";
+                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->positionX) + ", " + std::to_string(spawn_node->positionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + std::to_string(spawn_node->loop) + ", \"" + spawn_node->behaviorKey + "\", { " + std::to_string(spawn_node->body.exist) + ", " + std::to_string(spawn_node->body.w) +  ", " + std::to_string(spawn_node->body.h) + " });\n";
 
                 }
 
@@ -1644,23 +1644,46 @@ void EventListener::BuildAndRun()
 
         preload_queue << "  System::Resources::Manager::RegisterTextures();\n"; 
 
+        //scene update
+
         update_queue << "   for (auto& spawn : spawns) \n";
-        update_queue << "       for (const auto& behavior : behaviors)\n";
-        update_queue << "       {\n\t\t\tstd::shared_ptr<Entity> entity;\n\n";
-        update_queue << "           if (spawn.type == Entity::SPRITE)\n";
-        update_queue << "               entity = GetEntity<Sprite>(spawn.filename);\n"; 
-        update_queue << "           else if (spawn.type == Entity::GEOMETRY) \n";
-        update_queue << "               entity = GetEntity<Geometry>(spawn.filename);\n\t\t\n"; 
+        update_queue << "   {\n\t\t std::shared_ptr<Entity> entity;\n\n";
+        update_queue << "        if (spawn.type == Entity::SPRITE)\n";
+        update_queue << "           entity = GetEntity<Sprite>(spawn.index);\n"; 
+        update_queue << "        else if (spawn.type == Entity::GEOMETRY) \n";
+        update_queue << "           entity = GetEntity<Geometry>(spawn.index);\n\n"; 
+        update_queue << "        for (const auto& behavior : spawn.behaviors_attached)\n";
         update_queue << "           if (entity) {\n";
 
-        for (const auto& node : target.second->nodes) 
-            for (const auto& behavior : node->behaviors) 
-            {
-                update_queue << "           if (behavior->key == typeid(entity_behaviors::" + behavior.first + ").name() && !spawn.hasBehavior(spawns, behaviors, behavior->name))\n";  
-                update_queue << "              System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(entity, this);\n\t\t\n";
-            }
+        if (!std::filesystem::is_empty(Editor::projectPath + AssetManager::Get()->script_dir))
+            for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->script_dir)) 
+                if (!script.is_directory()) 
+                {
+                    std::string filename = script.path().filename().string();
 
-        update_queue << "           }\n}\n\n";
+                    if (System::Utils::str_endsWith(filename, ".h")) {
+
+                        std::string file_name = System::Utils::ReplaceFrom(filename, ".", "");
+                        std::string line, className, classKey(file_name);
+                        std::ifstream src(script.path().string());
+
+                        classKey[0] = toupper(classKey[0]);
+
+                        while (src >> line)
+                            if (line == "class")   
+                                if (getline(src, line)) {
+                                    className = System::Utils::ReplaceFrom(line, " :", "");
+                                    className.erase(0, 1);
+                                }
+                                
+                        src.close();
+
+                        update_queue << "                if (behavior.first == \"" + classKey + "\" && spawn.hasBehavior(behavior.first))\n";  
+                        update_queue << "                    System::Game::CreateBehavior<entity_behaviors::" + className + ">(entity, this);\n\t\t\n";
+                    }
+                }
+
+        update_queue << "           }\n\t\t}\n\n";
 
         //write nodes
 

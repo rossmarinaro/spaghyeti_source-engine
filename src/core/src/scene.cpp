@@ -1,5 +1,5 @@
 #include "../../../build/sdk/include/scene.h"
-
+#include "../../../build/sdk/include/utils.h"
 using namespace System;
 
 Scene::Scene(const Process::Context& context): 
@@ -103,24 +103,17 @@ void Scene::SetGlobal(const std::string& key, const std::any& value) {
 
 //---------------------------------
 
-bool Scene::Spawn::hasBehavior(std::vector<Scene::Spawn>& spawns, std::vector<std::shared_ptr<entity_behaviors::Behavior>>& behaviors, const std::string& behaviorName) 
+bool Scene::Spawn::hasBehavior(const std::string& behaviorName) 
 { 
-    const auto it = std::find_if(behaviors.begin(), behaviors.end(), [&behaviorName](const auto b) { return b->name == behaviorName; });
+    //match behavior name with spawn behavior name
 
-    if (it == behaviors.end())
-        return true;
+    for (auto& b : behaviors_attached)
+        if (b.first == behaviorName && !b.second) {
+            b.second = true;
+            return true;
+        }
 
-    const auto behavior = *it;
-
-    for (auto& spawn : spawns)
-        for (const auto& ID : spawn.behaviorKeys)
-            if (std::find_if(spawn.behaviorKeys.begin(), spawn.behaviorKeys.end(), [behavior](const std::string& key) { return key == behavior->key; }) != spawn.behaviorKeys.end()) 
-            {
-                spawn.behaviorKeys.push_back(behavior->key);
-                return false;
-            }
-    
-    return true;
+    return false;
 }
 
 

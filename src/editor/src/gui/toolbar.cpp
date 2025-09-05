@@ -400,7 +400,7 @@ void editor::GUI::ShowSettings()
 
                 std::string alias_key = spritesheet.first;
 
-                ImGui::InputText("key", &alias_key);
+                ImGui::InputText("texture key", &alias_key);
 
                 spritesheet.first = alias_key;
 
@@ -461,7 +461,7 @@ void editor::GUI::ShowSettings()
             {
                 ImGui::PushID(i);
 
-                ImGui::InputText("sprite name", &session->animations[i].first);
+                ImGui::InputText("texture key", &session->animations[i].first);
 
                 if (ImGui::BeginMenu("animations")) 
                 {

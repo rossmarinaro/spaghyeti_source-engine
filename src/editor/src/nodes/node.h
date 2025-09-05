@@ -8,7 +8,7 @@
 #include "../components/component.h"
 #include "../../../vendors/nlohmann/json.hpp"
 #include "../../../../build/sdk/include/math.h"
-
+#include "../../../../build/sdk/include/app.h"
 
 using json = nlohmann::json;
 
@@ -355,6 +355,7 @@ namespace editor {
             int typeOf;
             float width, height, alpha;
             bool loop;
+            System::Scene::Spawn::Body body;
 
             std::string animationKey, textureKey, behaviorKey;
             std::pair<std::string, std::string> spriteSheetKey;
