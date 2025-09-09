@@ -146,7 +146,7 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
 
 
 void TilemapNode::CreateBody(float x, float y, float width, float height) {
-    const auto body = Physics::CreateStaticBody(x, y, width, height);
+    const auto body = Physics::CreateBody(Physics::Body::STATIC, x, y, width, height);
     bodies.push_back({ body, x, y, width, height });
 }
 

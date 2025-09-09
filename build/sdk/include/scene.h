@@ -20,7 +20,7 @@ namespace System {
                 std::string filename, index;
                 std::vector<std::pair<std::string, bool>> behaviors_attached;
                 Math::Vector3 tint;
-                struct Body { bool exist; float w, h; } body;
+                struct Body { int type; bool exist, is_sensor; float xOff, yOff, w, h; } body;
                 //check if spawn has behavior, attach and return false to verify next frame
                 bool hasBehavior(const std::string& behaviorName);
             };
@@ -52,12 +52,12 @@ namespace System {
             void SetPause(bool isPaused);
 
             //assign entity to react to input
-            void SetInteractive(std::shared_ptr<Entity> entity, bool interactive = true);
+            void SetInteractive(const std::shared_ptr<Entity>& entity, bool interactive = true);
             void SetWorldDimensions(float width, float height);
             void SetGlobal(const std::string& key, const std::any& value);
 
             //check if cursor is hovering entity
-            const bool ListenForInteraction(std::shared_ptr<Entity> entity); 
+            const bool ListenForInteraction(const std::shared_ptr<Entity>& entity); 
 
             //get scene entity by name or key (passing true as an argument treats input string as "ID")
             template <typename T>

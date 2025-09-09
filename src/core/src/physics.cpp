@@ -72,9 +72,7 @@ Physics::~Physics()
 
 
 void* Physics::GetWorld() {
-    if (_world)
-        return _world;
-    return nullptr;
+    return _world ? _world : nullptr;
 }
 
 
@@ -91,12 +89,25 @@ void Physics::SetGravity(float x, float y) {
 //----------------------------------
 
 
-std::shared_ptr<Physics::Body> Physics::CreateStaticBody(float x, float y, float width, float height, bool isSensor, int pointer)
+std::shared_ptr<Physics::Body> Physics::CreateBody(int type, float x, float y, float width, float height, bool isSensor, int pointer)
 {
 
     Box2D_Body b2d_body;
 
-    b2d_body.def.type = b2_staticBody;
+    b2BodyType bodyType;
+
+    if (type == Body::STATIC)
+        bodyType = b2_staticBody;
+
+    else if (type == Body::KINEMATIC)
+        bodyType = b2_kinematicBody;
+
+    else {
+        LOG("Physics: invalid body type argument, defaulting to static.");
+        bodyType = b2_staticBody;
+    }
+
+    b2d_body.def.type = bodyType;
     b2d_body.def.position.Set(x, y);
     b2d_body.def.userData.pointer = pointer <= -1 ? pointer : _bodyCount;
 
@@ -292,7 +303,7 @@ const bool Physics::Body::Exists() {
 //----------------------------------
 
 
-const bool Physics::Body::CollidesWith(const std::shared_ptr<Physics::Body> bodyB)
+const bool Physics::Body::CollidesWith(const std::shared_ptr<Physics::Body>& bodyB)
 {
     const auto bA = _GetBox2DBody(id),
                bB = _GetBox2DBody(bodyB->id);
@@ -300,7 +311,13 @@ const bool Physics::Body::CollidesWith(const std::shared_ptr<Physics::Body> body
     if (!bA || !bB)
         return false;
 
-    return b2TestOverlap(bA->GetFixtureList()->GetAABB(0), bB->GetFixtureList()->GetAABB(0));
+    const auto aFix = bA->GetFixtureList(),
+               bFix = bB->GetFixtureList();
+
+    if (!aFix || !bFix)
+        return false;
+
+    return b2TestOverlap(aFix->GetAABB(0), bFix->GetAABB(0));
 }
 
 

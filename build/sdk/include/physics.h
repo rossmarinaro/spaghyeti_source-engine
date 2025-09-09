@@ -11,6 +11,7 @@ class Physics {
 
         struct Body 
         {
+            enum { STATIC, KINEMATIC };
             bool isSensor, isEnabled;
             uintptr_t pointer;
             float density, friction, restitution;
@@ -32,7 +33,7 @@ class Physics {
             void CreateFixture(void* fixtureDef);
 
             const int GetType();
-            const bool CollidesWith(const std::shared_ptr<Body> bodyB);
+            const bool CollidesWith(const std::shared_ptr<Body>& bodyB);
             const bool Exists();
             const bool IsEnabled();
             const bool IsSensor(); 
@@ -48,8 +49,7 @@ class Physics {
              subStep,
              clearForces;
 
-        static std::shared_ptr<Body> CreateStaticBody(float x, float y, float width, float height, bool isSensor = false, int pointer = -1);
-
+        static std::shared_ptr<Body> CreateBody(int type, float x, float y, float width, float height, bool isSensor = false, int pointer = -1);
         static std::shared_ptr<Body> CreateDynamicBody(
             int type,
             float x,

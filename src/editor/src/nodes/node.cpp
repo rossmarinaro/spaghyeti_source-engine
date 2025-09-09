@@ -752,6 +752,10 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             },
             { "body", {
                     { "exist", sn->body.exist },
+                    { "is sensor", sn->body.is_sensor },
+                    { "type", sn->body.type },
+                    { "xOff", sn->body.xOff },
+                    { "yOff", sn->body.yOff },
                     { "w", sn->body.w },
                     { "h", sn->body.h }
                 } 
@@ -1351,11 +1355,15 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn->body.exist = data["body"]["exist"]; 
                 sn->body.w = data["body"]["w"]; 
                 sn->body.h = data["body"]["h"]; 
+                sn->body.xOff = data["body"]["xOff"]; 
+                sn->body.yOff = data["body"]["yOff"];
+                //sn->body.is_sensor = data["body"]["is sensor"]; 
+                //sn->body.type = data["body"]["type"];
             }
 
             return sn;
         }
-    }
+    } 
 
     catch (std::runtime_error& err) {
         Editor::Log("error reading data: " + (std::string)err.what());

@@ -1453,7 +1453,7 @@ void EventListener::BuildAndRun()
                         int i = 0; 
 
                         for (const auto& body : sn->bodies) {
-                            command_queue << "   sprite_" + node->ID + "->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, " + std::to_string(sn->positionX + body.x) + ", " + std::to_string(sn->positionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " } });\n"; 
+                            command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateDynamicBody(Physics::BOX, " + std::to_string(sn->positionX + body.x) + ", " + std::to_string(sn->positionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " });\n"; 
                             i++;
                         }
 
@@ -1587,7 +1587,7 @@ void EventListener::BuildAndRun()
 
                     if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies.size()) 
                         for (const auto& body : tmn->bodies) 
-                            command_queue << "   Physics::CreateStaticBody(" + std::to_string(body.x + body.width / 2) + ", " + std::to_string(body.y + body.height / 2) + ", " + std::to_string(body.width / 2) + ", " + std::to_string(body.height / 2) + ");\n";
+                            command_queue << "   Physics::CreateBody(Physics::Body::STATIC, " + std::to_string(body.x + body.width / 2) + ", " + std::to_string(body.y + body.height / 2) + ", " + std::to_string(body.width / 2) + ", " + std::to_string(body.height / 2) + ");\n";
 
                 } 
 
@@ -1622,7 +1622,10 @@ void EventListener::BuildAndRun()
                 {
                     const auto spawn_node = std::dynamic_pointer_cast<SpawnerNode>(node);
 
-                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->positionX) + ", " + std::to_string(spawn_node->positionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + std::to_string(spawn_node->loop) + ", \"" + spawn_node->behaviorKey + "\", { " + std::to_string(spawn_node->body.exist) + ", " + std::to_string(spawn_node->body.w) +  ", " + std::to_string(spawn_node->body.h) + " });\n";
+                    const std::string body_exists = spawn_node->body.exist ? "true" : "false",
+                                      is_loop = spawn_node->loop ? "true" : "false";
+
+                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->positionX) + ", " + std::to_string(spawn_node->positionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " + body_exists + ", " + std::to_string(spawn_node->body.xOff) +  ", " + std::to_string(spawn_node->body.yOff) + ", " + std::to_string(spawn_node->body.w) +  ", " + std::to_string(spawn_node->body.h) + " });\n";
 
                 }
 
@@ -1652,8 +1655,9 @@ void EventListener::BuildAndRun()
         update_queue << "           entity = GetEntity<Sprite>(spawn.index);\n"; 
         update_queue << "        else if (spawn.type == Entity::GEOMETRY) \n";
         update_queue << "           entity = GetEntity<Geometry>(spawn.index);\n\n"; 
-        update_queue << "        for (const auto& behavior : spawn.behaviors_attached)\n";
-        update_queue << "           if (entity) {\n";
+        update_queue << "        if (entity)\n";
+        update_queue << "           for (const auto& behavior : spawn.behaviors_attached)\n";
+        update_queue << "           {\n";
 
         if (!std::filesystem::is_empty(Editor::projectPath + AssetManager::Get()->script_dir))
             for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->script_dir)) 
@@ -1683,7 +1687,7 @@ void EventListener::BuildAndRun()
                     }
                 }
 
-        update_queue << "           }\n\t\t}\n\n";
+        update_queue << "         }\n\t\t}\n\n";
 
         //write nodes
 

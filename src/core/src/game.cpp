@@ -291,7 +291,7 @@ void Game::UpdateFrame()
 
     if (inputs)
         inputs->ProcessInput();
-
+        
     //spawn update
 
     #if STANDALONE == 1
@@ -303,22 +303,29 @@ void Game::UpdateFrame()
 
             //create / runtime instantiation of game objects
 
-            if (spawn.can_create &&
+            if (spawn.can_create && 
                 currentScene->cullPosition->x >= spawn.posX - (Window::s_scaleWidth / 2) && currentScene->cullPosition->x <= spawn.posX + (Window::s_scaleWidth / 2) &&
                 currentScene->cullPosition->y >= spawn.posY - (Window::s_scaleHeight / 2) && currentScene->cullPosition->y <= spawn.posY + (Window::s_scaleHeight / 2)
             ) 
             {
-                if (std::find_if(GetScene()->entities.begin(), GetScene()->entities.end(), [&spawn](std::shared_ptr<Entity> e) { return e->GetData<std::string>("spawn index") == spawn.index; }) != System::Game::GetScene()->entities.end()) 
+                if (std::find_if(GetScene()->entities.begin(), GetScene()->entities.end(), [&spawn](std::shared_ptr<Entity> e) { return e->name == spawn.index; }) != System::Game::GetScene()->entities.end()) 
                     continue;
+
+                spawn.can_create = false; 
 
                 std::shared_ptr<Entity> entity;
 
                 switch (spawn.type) 
                 {
                     case Entity::SPRITE: 
+
                         entity = CreateSprite(spawn.filename, spawn.posX, spawn.posY); 
-                        if (spawn.body.exist) //apply bodies
-                            std::dynamic_pointer_cast<Sprite>(entity)->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, spawn.posX ,spawn.posY, spawn.body.w, spawn.body.h, false, 1), { 0.0f, 0.0f, spawn.body.w, spawn.body.h } });
+
+                        if (spawn.body.exist) {
+                            const auto sprite = std::static_pointer_cast<Sprite>(entity);
+                            sprite->AddBody(Physics::CreateBody(spawn.body.type, spawn.posX, spawn.posY, spawn.body.w, spawn.body.h, spawn.body.is_sensor, 1), { spawn.body.xOff, spawn.body.yOff, spawn.body.w, spawn.body.h }); 
+                        }
+                        
                     break;
                     case Entity::GEOMETRY: 
                         entity = CreateGeom(spawn.posX, spawn.posY, spawn.width, spawn.height); 
@@ -329,9 +336,6 @@ void Game::UpdateFrame()
                 entity->SetAlpha(spawn.alpha);
                 entity->SetTint(spawn.tint);
                 entity->SetName(spawn.index);
-                entity->SetData("spawn index", spawn.index);
-
-                spawn.can_create = false;
             }
         
             //remove
@@ -355,6 +359,9 @@ void Game::UpdateFrame()
                 {
                     if (spawn.loop)
                         spawn.can_create = true;
+
+                    for (auto& b : spawn.behaviors_attached)
+                        b.second = false;
                         
                     DestroyEntity(entity);
                 }
@@ -537,10 +544,6 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         }
     }
 
-    // for (const auto& spawn : Application::game->currentScene->spawns)
-    //     if (spawn.index == entity->name)
-    //         spawn.can_create = true;
-
     //remove from vector and disappear into the void
  
     if (entity.unique())
@@ -688,12 +691,12 @@ void Game::CreateSpawn(
     float alpha, 
     bool loop, 
     const std::string& behaviorName,
-    Scene::Spawn::Body body
+    const Scene::Spawn::Body& body
 ) 
 {
     Scene::Spawn spawn;
 
-    spawn.can_create = true;
+    spawn.can_create = true; 
     spawn.type = type;
     spawn.filename = filename;
     spawn.posX = x;
@@ -704,9 +707,7 @@ void Game::CreateSpawn(
     spawn.alpha = alpha;
     spawn.loop = loop;
     spawn.index = System::Utils::ReplaceFrom(spawn.filename, ".", "") + std::to_string(s_spawn_count);
-    
-    if (body.exist)
-        spawn.body = { true, body.w, body.h };
+    spawn.body = { body.type, body.exist, body.is_sensor, body.xOff, body.yOff, body.w, body.h };
 
     //append behaviors if name matches valid loaded behavior name
 

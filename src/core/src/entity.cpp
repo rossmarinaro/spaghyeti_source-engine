@@ -365,8 +365,15 @@ void Sprite::SetVelocity(float velX, float velY)
     velocityX = velX;
     velocityY = velY;
 
-    if (bodies.size()) 
-        bodies[0].first->SetLinearVelocity(velocityX, velocityY);
+    float posX = bodies[0].first->GetPosition().x,
+          posY = bodies[0].first->GetPosition().y;
+
+    if (bodies.size()) {
+        if (bodies[0].first->GetType() == b2_dynamicBody)
+            bodies[0].first->SetLinearVelocity(velocityX, velocityY);
+        else if (bodies[0].first->GetType() == b2_kinematicBody)
+            bodies[0].first->SetTransform((posX += (velocityX / 100.0f)), (posY += (velocityY / 100.0f)));
+    }
 
     else {
         (position.x += velocityX) * System::Application::game->time->GetSeconds(); 
@@ -380,14 +387,19 @@ void Sprite::SetVelocity(float velX, float velY)
 
 void Sprite::SetVelocityX(float velX) 
 { 
-
     if (!active)
         return;
 
     velocityX = velX; 
 
-    if (bodies.size()) 
-        bodies[0].first->SetLinearVelocity(velocityX, bodies[0].first->GetLinearVelocity().y);
+    float posX = bodies[0].first->GetPosition().x;
+
+    if (bodies.size()) {
+        if (bodies[0].first->GetType() == b2_dynamicBody)
+            bodies[0].first->SetLinearVelocity(velocityX, bodies[0].first->GetLinearVelocity().y);
+        else if (bodies[0].first->GetType() == b2_kinematicBody)
+            bodies[0].first->SetTransform((posX += (velocityX / 100.0f)), bodies[0].first->GetPosition().y);
+    }
 
     else
         (position.x += velocityX) * System::Application::game->time->GetSeconds();     
@@ -397,16 +409,21 @@ void Sprite::SetVelocityX(float velX)
 //---------------------------------
 
 
-void Sprite::SetVelocityY(float velY) { 
-
+void Sprite::SetVelocityY(float velY) 
+{ 
     if (!active)
         return;
  
     velocityY = velY;
 
-    if (bodies.size()) 
-        bodies[0].first->SetLinearVelocity(bodies[0].first->GetLinearVelocity().x, velocityY);
-    
+    float posY = bodies[0].first->GetPosition().y;
+        
+    if (bodies.size()) {
+        if (bodies[0].first->GetType() == b2_dynamicBody)
+            bodies[0].first->SetLinearVelocity(bodies[0].first->GetLinearVelocity().x, velocityY);
+        else if (bodies[0].first->GetType() == b2_kinematicBody)
+            bodies[0].first->SetTransform(bodies[0].first->GetLinearVelocity().x, (posY += (velocityY / 100.0f)));
+    }
     else
         (position.y += velocityY) * System::Application::game->time->GetSeconds(); 
 }
@@ -416,8 +433,7 @@ void Sprite::SetVelocityY(float velY) {
 
 
 void Sprite::SetImpulse(float x, float y) {
-
-    if (active && bodies.size())
+    if (active && bodies.size() && bodies[0].first->GetType() == b2_dynamicBody)
         bodies[0].first->ApplyLinearImpulse(x * 10000, y * 10000);
 }
 
@@ -426,8 +442,7 @@ void Sprite::SetImpulse(float x, float y) {
 
 
 void Sprite::SetImpulseX(float x) {
-
-    if (active && bodies.size())
+    if (active && bodies.size() && bodies[0].first->GetType() == b2_dynamicBody)
         bodies[0].first->ApplyLinearImpulse(x * 10000, bodies[0].first->GetLinearVelocity().y);
 }
 
@@ -436,18 +451,16 @@ void Sprite::SetImpulseX(float x) {
 
 
 void Sprite::SetImpulseY(float y) {
-
-    if (active && bodies.size())
+    if (active && bodies.size() && bodies[0].first->GetType() == b2_dynamicBody)
         bodies[0].first->ApplyLinearImpulse(bodies[0].first->GetLinearVelocity().x, y * 10000);
 }
 
 
-//----------------------------- remove bodies
+//----------------------------- physics bodies
 
 
 void Sprite::RemoveBodies() 
 {
-
     //reset texture position to normal coords
 
     const float x = (bodies[0].first->GetPosition().x / scale.x) - bodies[0].second.x,
@@ -462,6 +475,22 @@ void Sprite::RemoveBodies()
 }
 
 
+//----------------------------- 
+
+void Sprite::AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vector4& offsets) {
+    std::pair<std::shared_ptr<Physics::Body>, Math::Vector4> b = { body, offsets };
+    bodies.emplace_back(b);
+}
+
+
+//----------------------------- 
+
+
+
+std::shared_ptr<Physics::Body> Sprite::GetBody(int index) { 
+    const auto body = bodies.at(index).first;
+    return body ? body : nullptr; 
+}
 
 //----------------------------- set texture
 
@@ -680,13 +709,11 @@ void Sprite::Render()
         //update physics bodies if any
 
         for (const auto& body : bodies)
-            if (body.first->IsEnabled()) {
-                if (body.first->GetType() == b2_dynamicBody) { 
-                    Math::Vector2 pos = body.first->GetPosition(); 
-                    SetPosition((pos.x / scale.x) - body.second.x, (pos.y / scale.y) - body.second.y);
-                }
-                else
-                    body.first->SetTransform(((position.x / scale.x) - body.second.x), ((position.y / scale.y) - body.second.y));
+            if (body.first->IsEnabled() && 
+                body.first->GetType() == b2_dynamicBody || body.first->GetType() == b2_kinematicBody
+            ) { 
+                Math::Vector2 pos = body.first->GetPosition(); 
+                SetPosition((pos.x / scale.x) - body.second.x, (pos.y / scale.y) - body.second.y);
             }
 
         //play current animation

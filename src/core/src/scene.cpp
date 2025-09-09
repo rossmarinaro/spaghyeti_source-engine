@@ -21,7 +21,7 @@ void Scene::Init(const std::string& key)
     m_paused = false;
     m_worldWidth = 0; 
     m_worldHeight = 0;
-    cullPosition = nullptr;
+    cullPosition = GetContext().camera->GetPosition(); 
 }
 
 //---------------------------------
@@ -33,9 +33,9 @@ void Scene::SetWorldDimensions(float width, float height) {
 
 //--------------------------------- assign entity to react to input
 
-void Scene::SetInteractive(std::shared_ptr<Entity> entity, bool interactive) {
+void Scene::SetInteractive(const std::shared_ptr<Entity>& entity, bool interactive) {
 
-    auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity->ID; });
+    const auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity->ID; });
 
     if (interactive && it == virtual_buttons.end()) {
         virtual_buttons.push_back({ false, entity->ID });
@@ -49,12 +49,12 @@ void Scene::SetInteractive(std::shared_ptr<Entity> entity, bool interactive) {
 
 //--------------------------------- check if cursor is hovering entity
 
-const bool Scene::ListenForInteraction(std::shared_ptr<Entity> entity) {
+const bool Scene::ListenForInteraction(const std::shared_ptr<Entity>& entity) {
     
     auto it = std::find_if(virtual_buttons.begin(), virtual_buttons.end(), [&](auto e) { return e.second == entity->ID; });
 
     if (it != virtual_buttons.end()) {
-        auto element = *it;
+        const auto element = *it;
         return element.first;
     }
 

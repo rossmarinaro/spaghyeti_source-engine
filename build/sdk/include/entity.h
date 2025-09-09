@@ -173,7 +173,7 @@ class Text : public Entity {
 };
 
 
-//base sprite class
+//sprite container
 class Sprite : public Entity {
 
     struct Anim { 
@@ -194,8 +194,6 @@ class Sprite : public Entity {
 
 		std::string key;
 		std::map<const std::string, std::pair<int, int>> anims;
- 
-        //physics bodies
 
 		std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> bodies;  
 
@@ -219,7 +217,9 @@ class Sprite : public Entity {
 		void SetAnimation(const std::string& key, bool yoyo = false, int rate = 2, int repeat = -1);
 		
 		void ReadSpritesheetData();
-		void RemoveBodies(); 
+        void RemoveBodies(); 
+        void AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vector4& offsets);
+        std::shared_ptr<Physics::Body> GetBody(int index);
         
 		void SetTexture(const std::string& key);
         void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);

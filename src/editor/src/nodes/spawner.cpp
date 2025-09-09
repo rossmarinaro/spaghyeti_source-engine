@@ -12,6 +12,7 @@ SpawnerNode::SpawnerNode(bool init):
 {  
     typeOf = Entity::SPRITE;
     m_spawnType = "sprite";
+    m_bodyType = "kinematic";
     textureKey = "";
     behaviorKey = "";
     animationKey = "";
@@ -20,7 +21,7 @@ SpawnerNode::SpawnerNode(bool init):
     loop = false;
     alpha = 1.0f;
     tint = { 1.0f, 1.0f, 1.0f }; 
-    body = { false, 0.0f, 0.0f };
+    body = { Physics::Body::KINEMATIC, false, false, 0.0f, 0.0f };
 
     m_rectHandle = nullptr;
     m_textHandle = nullptr;
@@ -73,7 +74,7 @@ void SpawnerNode::CreateMarker() {
     m_rectHandle->SetTint({ 1.0f, 0.0f, 0.0f });
     m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
 
-    System::Game::GetScene()->SetInteractive(m_rectHandle);
+    System::Game::GetScene()->SetInteractive(m_rectHandle); 
 }
 
 
@@ -220,6 +221,31 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                         ImGui::SliderFloat("width", &body.w, 0.0f, System::Window::s_width); 
                         ImGui::SliderFloat("height", &body.h, 0.0f, System::Window::s_height);
+                        ImGui::SliderFloat("offset x", &body.xOff, -System::Window::s_width, System::Window::s_width);  
+                        ImGui::SliderFloat("offset y", &body.yOff, -System::Window::s_height, System::Window::s_height);
+                        ImGui::Checkbox("is sensor", &body.is_sensor); 
+                        
+                        static const char* items[] = { "kinematic", "static" };
+
+                        if (ImGui::BeginCombo("type", m_bodyType.c_str()))
+                        {
+                            for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+                            {
+                                bool is_sel = (m_bodyType == items[n]);
+
+                                if (ImGui::Selectable(items[n], is_sel)) 
+                                    switch (n) {
+                                        case 0: body.type = Physics::Body::KINEMATIC; break;
+                                        case 1: body.type = Physics::Body::STATIC; break;
+                                        default: break;
+                                    }
+
+                                if (is_sel)
+                                    ImGui::SetItemDefaultFocus();
+                            }
+
+                            ImGui::EndCombo();
+                        }
 
                         ImGui::EndMenu();
                     }
@@ -263,6 +289,12 @@ void SpawnerNode::Render()
     switch (typeOf) {
         case Entity::SPRITE: m_spawnType = "sprite"; break;
         case Entity::GEOMETRY: m_spawnType = "geometry"; break;
+        default: break;
+    }
+
+    switch (body.type) {
+        case Physics::Body::KINEMATIC: m_bodyType = "kinematic"; break;
+        case Physics::Body::STATIC: m_bodyType = "static"; break;
         default: break;
     }
 }
