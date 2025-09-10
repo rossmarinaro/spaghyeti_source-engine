@@ -21,7 +21,7 @@ SpawnerNode::SpawnerNode(bool init):
     loop = false;
     alpha = 1.0f;
     tint = { 1.0f, 1.0f, 1.0f }; 
-    body = { Physics::Body::KINEMATIC, false, false, 0.0f, 0.0f };
+    body = { Physics::Body::KINEMATIC, Physics::Body::Shape::BOX, false, false, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
     m_rectHandle = nullptr;
     m_textHandle = nullptr;
@@ -225,7 +225,7 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                         ImGui::SliderFloat("offset y", &body.yOff, -System::Window::s_height, System::Window::s_height);
                         ImGui::Checkbox("is sensor", &body.is_sensor); 
                         
-                        static const char* items[] = { "kinematic", "static" };
+                        static const char* items[] = { "kinematic", "static", "dynamic" };
 
                         if (ImGui::BeginCombo("type", m_bodyType.c_str()))
                         {
@@ -235,9 +235,9 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
                                 if (ImGui::Selectable(items[n], is_sel)) 
                                     switch (n) {
-                                        case 0: body.type = Physics::Body::KINEMATIC; break;
-                                        case 1: body.type = Physics::Body::STATIC; break;
-                                        default: break;
+                                        case 0: body.type = Physics::Body::Type::KINEMATIC; break;
+                                        case 1: body.type = Physics::Body::Type::STATIC; break;
+                                        case 2: default: body.type = Physics::Body::Type::DYNAMIC; break;
                                     }
 
                                 if (is_sel)
@@ -245,6 +245,12 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                             }
 
                             ImGui::EndCombo();
+                        }
+
+                        if (body.type == Physics::Body::Type::DYNAMIC) {
+                            ImGui::SliderFloat("density", &body.density, 0.0f, 1000.0f);
+                            ImGui::SliderFloat("friction", &body.friction, 0.0f, 1.0f);
+                            ImGui::SliderFloat("restitution", &body.restitution, 0.0f, 1.0f);
                         }
 
                         ImGui::EndMenu();
@@ -293,9 +299,10 @@ void SpawnerNode::Render()
     }
 
     switch (body.type) {
-        case Physics::Body::KINEMATIC: m_bodyType = "kinematic"; break;
-        case Physics::Body::STATIC: m_bodyType = "static"; break;
-        default: break;
+        case Physics::Body::Type::DYNAMIC: m_bodyType = "dynamic"; break;
+        case Physics::Body::Type::KINEMATIC: m_bodyType = "kinematic"; break;
+        case Physics::Body::Type::STATIC: 
+        default: m_bodyType = "static"; break;
     }
 }
 

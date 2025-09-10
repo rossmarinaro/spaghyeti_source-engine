@@ -87,7 +87,6 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
 
     for (int i = 0; i < layer; i++) 
     { 
-
         int w = 0,  
             h = renderReversed ? spr_sheet_height[i] - 1 : 0; 
 
@@ -105,8 +104,8 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
                 }   
 
                 if (w < map_width) {
-
-                    offset.push_back({ w, h, tile_width, tile_height, 1, 1 }); 
+                    std::array<int, 6> off = { w, h, tile_width, tile_height, 1, 1 };
+                    offset.emplace_back(off); 
                     w++;
                 }
             }
@@ -145,9 +144,12 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
 //---------------------------
 
 
-void TilemapNode::CreateBody(float x, float y, float width, float height) {
-    const auto body = Physics::CreateBody(Physics::Body::STATIC, x, y, width, height);
-    bodies.push_back({ body, x, y, width, height });
+void TilemapNode::CreateBody(float x, float y, float width, float height) 
+{
+    const auto body = Physics::CreateBody(Physics::Body::Type::STATIC, Physics::Body::Shape::BOX, x, y, width, height);
+    const Body b = { body, x, y, width, height };
+
+    bodies.emplace_back(b);
 }
 
 
@@ -156,7 +158,6 @@ void TilemapNode::CreateBody(float x, float y, float width, float height) {
 
 void TilemapNode::UpdateBody(int index) 
 {
-
     b2PolygonShape body;  
 
     body.SetAsBox(bodies[index].width / 2, bodies[index].height / 2);
@@ -168,7 +169,6 @@ void TilemapNode::UpdateBody(int index)
         bodies[index].pb->CreateFixture(&fixtureDef);
         bodies[index].pb->SetTransform(bodies[index].x + bodies[index].width / 2, bodies[index].y + bodies[index].height / 2);
     }
-
 }
 
 
@@ -177,7 +177,6 @@ void TilemapNode::UpdateBody(int index)
 
 void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
 {
-
     ImGui::Separator(); 
 
     {

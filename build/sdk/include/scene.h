@@ -20,7 +20,13 @@ namespace System {
                 std::string filename, index;
                 std::vector<std::pair<std::string, bool>> behaviors_attached;
                 Math::Vector3 tint;
-                struct Body { int type; bool exist, is_sensor; float xOff, yOff, w, h; } body;
+                
+                struct Body { 
+                    int type, shape; 
+                    bool exist, is_sensor; 
+                    float xOff, yOff, w, h, density, friction, restitution; 
+                } body;
+
                 //check if spawn has behavior, attach and return false to verify next frame
                 bool hasBehavior(const std::string& behaviorName);
             };

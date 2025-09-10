@@ -1453,11 +1453,12 @@ void EventListener::BuildAndRun()
                         int i = 0; 
 
                         for (const auto& body : sn->bodies) {
-                            command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateDynamicBody(Physics::BOX, " + std::to_string(sn->positionX + body.x) + ", " + std::to_string(sn->positionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + std::to_string(sn->is_sensor[i].b) + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " });\n"; 
+                            const std::string is_sensor = sn->is_sensor[i].b ? "true" : "false";
+                            command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, " + std::to_string(sn->positionX + body.x) + ", " + std::to_string(sn->positionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + is_sensor + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " });\n"; 
                             i++;
                         }
 
-                        command_queue << "   for (const auto& body : sprite_" + node->ID + "->bodies)\n       body.first->SetFixedRotation(true);\n";
+                        command_queue << "   for (const auto& body : sprite_" + node->ID + "->GetBodies())\n       body.first->SetFixedRotation(true);\n";
 
                     }
         
@@ -1587,7 +1588,7 @@ void EventListener::BuildAndRun()
 
                     if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies.size()) 
                         for (const auto& body : tmn->bodies) 
-                            command_queue << "   Physics::CreateBody(Physics::Body::STATIC, " + std::to_string(body.x + body.width / 2) + ", " + std::to_string(body.y + body.height / 2) + ", " + std::to_string(body.width / 2) + ", " + std::to_string(body.height / 2) + ");\n";
+                            command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, Physics::Body::Shape::BOX, " + std::to_string(body.x + body.width / 2) + ", " + std::to_string(body.y + body.height / 2) + ", " + std::to_string(body.width / 2) + ", " + std::to_string(body.height / 2) + ");\n";
 
                 } 
 
@@ -1623,9 +1624,10 @@ void EventListener::BuildAndRun()
                     const auto spawn_node = std::dynamic_pointer_cast<SpawnerNode>(node);
 
                     const std::string body_exists = spawn_node->body.exist ? "true" : "false",
-                                      is_loop = spawn_node->loop ? "true" : "false";
+                                      is_loop = spawn_node->loop ? "true" : "false",
+                                      is_sensor = spawn_node->body.is_sensor ? "true" : "false";
 
-                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->positionX) + ", " + std::to_string(spawn_node->positionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " + body_exists + ", " + std::to_string(spawn_node->body.xOff) +  ", " + std::to_string(spawn_node->body.yOff) + ", " + std::to_string(spawn_node->body.w) +  ", " + std::to_string(spawn_node->body.h) + " });\n";
+                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->positionX) + ", " + std::to_string(spawn_node->positionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " + std::to_string(spawn_node->body.type) + ", Physics::Body::Shape::BOX, " + body_exists + ", " + is_sensor + ", " + std::to_string(spawn_node->body.xOff) +  ", " + std::to_string(spawn_node->body.yOff) + ", " + std::to_string(spawn_node->body.w) +  ", " + std::to_string(spawn_node->body.h) + ", " + std::to_string(spawn_node->body.density) + ", " + std::to_string(spawn_node->body.friction) +  ", " + std::to_string(spawn_node->body.restitution) + " });\n";
 
                 }
 

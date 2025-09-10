@@ -182,6 +182,8 @@ class Sprite : public Entity {
         bool yoyo, can_decrement, can_complete; 
     } m_currentAnim;
 
+    std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> m_bodies;  
+
 	public:  
 
         Graphics::Texture2D texture;
@@ -195,10 +197,8 @@ class Sprite : public Entity {
 		std::string key;
 		std::map<const std::string, std::pair<int, int>> anims;
 
-		std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> bodies;  
-
 		inline const int GetBodyDataType() { 
-			for (const auto& body : bodies)
+			for (const auto& body : m_bodies)
 				return body.first->pointer; 
 			return 0;
 		}
@@ -219,7 +219,8 @@ class Sprite : public Entity {
 		void ReadSpritesheetData();
         void RemoveBodies(); 
         void AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vector4& offsets);
-        std::shared_ptr<Physics::Body> GetBody(int index);
+        std::shared_ptr<Physics::Body> GetBody(int index = 0);
+        std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>>& GetBodies();  
         
 		void SetTexture(const std::string& key);
         void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);

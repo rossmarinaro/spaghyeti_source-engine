@@ -27,7 +27,7 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
     magicEnabled = false;
     cigarEnabled = false;
   
-    attackBox = Physics::CreateDynamicBody(Physics::BOX, 0, 0, 30, 40, true, 1);   
+    attackBox = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 30, 40, true, 1);   
     attackBox->SetEnabled(false);
 
     const auto player = std::static_pointer_cast<Sprite>(entity);
@@ -61,7 +61,7 @@ void PlayerController::Update()
     if (!player)
         return;
         
-    const Math::Vector2& vel = player->bodies[0].first->GetLinearVelocity();
+    const Math::Vector2& vel = player->GetBody()->GetLinearVelocity();
 
     //player shadow
 
@@ -216,8 +216,8 @@ void PlayerController::Update()
             if (System::Utils::str_includes(entity->name, "star") && projectile->rotation < 360)
                 player->flipX ? projectile->rotation -= 30 : projectile->rotation += 30;
 
-            if (projectile->bodies.size())
-                projectile->bodies[0].first->SetTransform(dir ? projectile->position.x -= 15 : projectile->position.x += 15, projectile->position.y);
+            if (projectile->GetBodies().size())
+                projectile->GetBody()->SetTransform(dir ? projectile->position.x -= 15 : projectile->position.x += 15, projectile->position.y);
 
             if (System::Utils::str_includes(entity->name, "star") && (projectile->position.x >= posX + 200) || (projectile->position.x <= posX - 200)) {
                 projectile->SetAnimation("glow", true, 20);
@@ -374,7 +374,7 @@ void PlayerController::SetState(const State& state, int option)
                     if (type == "cigar")
                         player->SetAnimation(m_flipX ? "cigar-left" : "cigar-right", true, 7);
 
-                    auto projectile = System::Game::CreateSprite(texture + ".png", m_flipX ? player->position.x - 40 : player->position.x + 50, player->position.y + 30);
+                    const auto projectile = System::Game::CreateSprite(texture + ".png", m_flipX ? player->position.x - 40 : player->position.x + 50, player->position.y + 30);
 
                     projectile->SetName(texture);
                     projectile->SetFlipX(m_flipX);
@@ -384,7 +384,7 @@ void PlayerController::SetState(const State& state, int option)
                     if (type == "ring")
                         projectile->SetShader("trippy2");
 
-                    projectile->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, 0, 0, 10, 10, true, 1), { 0, 0, 10, 10 } });
+                    projectile->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 10, 10, true, 1), { 0, 0, 10, 10 });
                 }
 
                 if (type == "cigar" && cigar <= 0) 

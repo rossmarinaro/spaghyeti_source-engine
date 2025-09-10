@@ -7,11 +7,11 @@ class Physics {
 
     public:
 
-        enum { BOX, CIRCLE };
-
         struct Body 
         {
-            enum { STATIC, KINEMATIC };
+            enum Type { STATIC, KINEMATIC, DYNAMIC };
+            enum Shape { BOX, CIRCLE };
+
             bool isSensor, isEnabled;
             uintptr_t pointer;
             float density, friction, restitution;
@@ -49,19 +49,8 @@ class Physics {
              subStep,
              clearForces;
 
-        static std::shared_ptr<Body> CreateBody(int type, float x, float y, float width, float height, bool isSensor = false, int pointer = -1);
-        static std::shared_ptr<Body> CreateDynamicBody(
-            int type,
-            float x,
-            float y,
-            float width,
-            float height,
-            bool isSensor = true,
-            int pointer = -1, 
-            float density = 0.0f,  
-            float friction = 0.0f, 
-            float restitution = 0.0f
-        );
+        //factory for dynamic, static, and kinematic bodies
+        static std::shared_ptr<Body> CreateBody(int type, int shape, float x, float y, float width, float height, bool isSensor = false, int pointer = -1, float density = 0.0f, float friction = 0.0f, float restitution = 0.0f);
 
         //does not destroy body immediately. body will be destroyed after next timestep
         static void DestroyBody(const std::shared_ptr<Body> body);

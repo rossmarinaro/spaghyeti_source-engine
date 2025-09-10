@@ -12,7 +12,6 @@
 
 void CollisionManager::BeginContact(b2Contact* contact)
 {
-
     b2BodyUserData bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData(),
                    bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
 
@@ -26,9 +25,9 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
         auto sprite = std::static_pointer_cast<Sprite>(entity); 
 
-        if (sprite->bodies.size())  
+        if (sprite->GetBodies().size())  
         {
-            for (const auto& body : sprite->bodies) 
+            for (const auto& body : sprite->GetBodies()) 
             {
                 const auto pointer = body.first->pointer;
 
@@ -53,7 +52,6 @@ void CollisionManager::BeginContact(b2Contact* contact)
 
 void CollisionManager::EndContact(b2Contact* contact)
 {
-
     b2BodyUserData bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData(),
                    bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
 
@@ -67,9 +65,9 @@ void CollisionManager::EndContact(b2Contact* contact)
 
         auto sprite = std::static_pointer_cast<Sprite>(entity);
 
-        if (sprite->bodies.size()) 
+        if (sprite->GetBodies().size()) 
         {        
-            for (const auto& body : sprite->bodies) 
+            for (const auto& body : sprite->GetBodies()) 
             {
                 const auto pointer = body.first->pointer;
 

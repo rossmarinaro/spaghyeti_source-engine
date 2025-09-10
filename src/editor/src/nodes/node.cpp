@@ -757,7 +757,10 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                     { "xOff", sn->body.xOff },
                     { "yOff", sn->body.yOff },
                     { "w", sn->body.w },
-                    { "h", sn->body.h }
+                    { "h", sn->body.h },
+                    { "density", sn->body.density },
+                    { "friction", sn->body.friction },
+                    { "restitution", sn->body.restitution }
                 } 
             }
         };
@@ -1357,8 +1360,11 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn->body.h = data["body"]["h"]; 
                 sn->body.xOff = data["body"]["xOff"]; 
                 sn->body.yOff = data["body"]["yOff"];
-                //sn->body.is_sensor = data["body"]["is sensor"]; 
-                //sn->body.type = data["body"]["type"];
+                sn->body.is_sensor = data["body"]["is sensor"]; 
+                sn->body.type = data["body"]["type"];
+                sn->body.density = data["body"]["density"];
+                sn->body.friction = data["body"]["friction"]; 
+                sn->body.restitution = data["body"]["restitution"];
             }
 
             return sn;

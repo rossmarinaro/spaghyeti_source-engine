@@ -142,7 +142,6 @@ void MapManager::RemoveLayer(const std::string& key)
                 System::Game::GetScene()->entities.end());
 
     LOG("Tilemap: layer " + key + " cleared.");
-
 }
 
 

@@ -32,11 +32,11 @@ SPAWNITEM::SPAWNITEM(std::shared_ptr<Entity> entity):
 
         item->SetName("item_box" + this->ID);
         item->SetAlpha(0);
-        item->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, sprite->position.x + 40, sprite->position.y + 40, 20, 20, true, 1), { 20, 20, 0, 0 } });
+        item->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, sprite->position.x + 40, sprite->position.y + 40, 20, 20, true, 1), { 20, 20, 0, 0 });
     }
 
     else
-        sprite->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, sprite->position.x, sprite->position.y, 20, 20, true, 1), { 20, 20, 0, 0 } });
+        sprite->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, sprite->position.x, sprite->position.y, 20, 20, true, 1), { 20, 20, 0, 0 });
 }
 
 
@@ -57,7 +57,7 @@ void SPAWNITEM::Update()
 
     //if item not in box / player collects item
 
-    if ((sprite && player) && !System::Utils::str_includes(sprite->name, "box") && sprite->bodies.size() && sprite->bodies[0].first->CollidesWith(player->bodies[0].first))
+    if ((sprite && player) && !System::Utils::str_includes(sprite->name, "box") && sprite->GetBodies().size() && sprite->GetBody()->CollidesWith(player->GetBody()))
     {
 
         int value = 0;
@@ -81,7 +81,7 @@ void SPAWNITEM::Update()
 
     //item was in box / player collects item
 
-    if (sprite && !sprite->bodies[0].first->IsEnabled() && item && item->bodies.size() && item->bodies[0].first->CollidesWith(player->bodies[0].first))
+    if (sprite && !sprite->GetBody()->IsEnabled() && item && item->GetBodies().size() && item->GetBody()->CollidesWith(player->GetBody()))
     {
 
         if ((std::string)item->GetData<const char*>("type") == "pasta")
@@ -129,7 +129,7 @@ void SPAWNITEM::Update()
 
     //break box
 
-    if (m_canDestroyBox && sprite && System::Utils::str_includes(sprite->name, "box") && (sprite->bodies.size() && playerBehavior->attackBox->IsEnabled()) && sprite->bodies[0].first->CollidesWith(playerBehavior->attackBox))
+    if (m_canDestroyBox && sprite && System::Utils::str_includes(sprite->name, "box") && (sprite->GetBodies().size() && playerBehavior->attackBox->IsEnabled()) && sprite->GetBody()->CollidesWith(playerBehavior->attackBox))
     {
         m_canDestroyBox = false;
         sprite->SetAnimation("break", false, 8);
@@ -137,7 +137,7 @@ void SPAWNITEM::Update()
         Time::DelayedCall(500, [this] { m_boxDestroyed = true; });
     }
 
-    if (m_boxDestroyed && m_canSpawn && sprite && sprite->bodies.size())
+    if (m_boxDestroyed && m_canSpawn && sprite && sprite->GetBodies().size())
     {
         m_canSpawn = false;
 
@@ -223,7 +223,7 @@ void SPAWNITEM::Update()
         }
 
         sprite->SetAlpha(0);
-        sprite->bodies[0].first->SetEnabled(false);
+        sprite->GetBody()->SetEnabled(false);
 
         Time::DelayedCall(5000, [this] { m_canTimeout = true; });
 

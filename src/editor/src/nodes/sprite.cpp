@@ -112,17 +112,18 @@ void SpriteNode::CreateBody(float x, float y, float width, float height, bool is
     is_sensor.push_back(bc);
     body_pointer.push_back(pointerType);
 
-    const auto body = Physics::CreateDynamicBody(Physics::BOX, x, y, width, height); 
+    const auto body = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, x, y, width, height);
+    const Body b = { body, x, y, width, height };
 
-    bodies.push_back({ body, x, y, width, height });
+    bodies.emplace_back(b);
 }
 
 
 //--------------------------------- load frames, overwrite previously cached key
 
 
-void SpriteNode::RegisterFrames() {
-
+void SpriteNode::RegisterFrames() 
+{
     std::vector<std::array<int, 6>> framesToPush;
 
     for (const auto& frame : frames)
@@ -659,7 +660,6 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
                                             else 
                                             {
-
                                                 json data = json::parse(JSON);
 
                                                 //clear previous frames

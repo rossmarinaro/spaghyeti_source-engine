@@ -36,7 +36,7 @@ void entity_behaviors::Enemy::Initialize(std::shared_ptr<Entity> entity)
     if (System::Utils::str_includes(entity->name, "hooligan")) {
         health = 4;
         m_damage = 1;
-        hb = Physics::CreateDynamicBody(Physics::BOX, 0, 0, 50, 60, true, 1);
+        hb = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 50, 60, true, 1);
     }
 
     if (System::Utils::str_includes(sprite->name, "pidgeon")) {
@@ -44,7 +44,7 @@ void entity_behaviors::Enemy::Initialize(std::shared_ptr<Entity> entity)
         m_damage = 1;
         m_canMoveRight = true;
         sprite->SetAnimation("flap", false, 14);
-        hb = Physics::CreateDynamicBody(Physics::BOX, 0, 0, 60, 20, true, 1);
+        hb = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 60, 20, true, 1);
     }
 
     if (System::Utils::str_includes(entity->name, "pitbull")) {
@@ -52,7 +52,7 @@ void entity_behaviors::Enemy::Initialize(std::shared_ptr<Entity> entity)
         m_damage = 2;
         m_canMoveLeft = true;
         m_reverse = true;
-        hb = Physics::CreateDynamicBody(Physics::BOX, 0, 0, 100, 70, true, 1);
+        hb = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 100, 70, true, 1);
     }
 
     m_startPos = sprite->position.x;
@@ -79,7 +79,7 @@ void entity_behaviors::Enemy::Update()
 
     //bounce off of enemy
 
-    if (hb && (sprite->bodies[0].first->IsEnabled() && hb->IsEnabled()) && hb->CollidesWith(player->bodies[0].first))
+    if (hb && (sprite->GetBody()->IsEnabled() && hb->IsEnabled()) && hb->CollidesWith(player->GetBody()))
         player->SetImpulse(System::Utils::randInt(10) > 5 ? -300.0f : 300.0f, -20.0f);
 
     //hooligan
@@ -183,8 +183,8 @@ void entity_behaviors::Enemy::Update()
         }
 
         else {
-            const Math::Vector2& pos = sprite->bodies[0].first->GetPosition();
-            sprite->bodies[0].first->SetTransform(pos.x, pos.y, 1.5);
+            const Math::Vector2& pos = sprite->GetBody()->GetPosition();
+            sprite->GetBody()->SetTransform(pos.x, pos.y, 1.5);
             sprite->StopAnimation();
             sprite->SetFrame(17);
             sprite->SetVelocityX(0);
@@ -239,10 +239,10 @@ void entity_behaviors::Enemy::Update()
             {
                 m_canAttack = false;
 
-                auto poo = System::Game::CreateSprite("pidgeon_poo.png", sprite->position.x + 100, sprite->position.y + 90);
+                const auto poo = System::Game::CreateSprite("pidgeon_poo.png", sprite->position.x + 100, sprite->position.y + 90);
                 poo->SetName("pidgeon_poo");
                 poo->SetData("dead", false);
-                poo->bodies.push_back({ Physics::CreateDynamicBody(Physics::BOX, sprite->position.x + 100, sprite->position.y + 90, 10, 10, false, 0, 0.5f), { 0, 0, 10, 10 } });
+                poo->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, sprite->position.x + 100, sprite->position.y + 90, 10, 10, false, 0, 0.5f), { 0, 0, 10, 10 });
 
                 Time::DelayedCall(500, [this] { m_canAttack = true; });
 
@@ -274,7 +274,7 @@ void entity_behaviors::Enemy::Update()
                     poo->SetAnimation("splat");
                 }
 
-                if (poo && !poo->GetData<bool>("dead") && poo->bodies[0].first->CollidesWith(player->bodies[0].first)) {
+                if (poo && !poo->GetData<bool>("dead") && poo->GetBody()->CollidesWith(player->GetBody())) {
                     poo->SetData("dead", true);
                     playerBehavior->DoDamage(1);
                 }
@@ -295,7 +295,7 @@ void entity_behaviors::Enemy::Update()
 
     //damage player
 
-    if (hb && hb->CollidesWith(player->bodies[0].first))
+    if (hb && hb->CollidesWith(player->GetBody()))
         playerBehavior->DoDamage(m_damage);
 
     //start destroy
@@ -304,7 +304,7 @@ void entity_behaviors::Enemy::Update()
     {
         sprite->SetData("beginDestroy", true);
         sprite->SetVelocityX(0.0f);
-        sprite->bodies[0].first->SetSensor(true);
+        sprite->GetBody()->SetSensor(true);
 
         Time::DelayedCall(700, [this] {
             m_canDestroy = true;
@@ -351,9 +351,9 @@ bool entity_behaviors::Enemy::ListenForDamage(const std::string& key)
                 {
                     auto projectile = std::static_pointer_cast<Sprite>(entity);
 
-                    if ((projectile && projectile->bodies.size()) && hb && hb->CollidesWith(projectile->bodies[0].first)) 
+                    if ((projectile && projectile->GetBodies().size()) && hb && hb->CollidesWith(projectile->GetBody())) 
                     {
-                        if (System::Utils::str_includes(entity->name, "smoke") && projectile->bodies[0].first) {
+                        if (System::Utils::str_includes(entity->name, "smoke") && projectile->GetBody()) {
                             
                             if (System::Utils::str_includes(entity->name, "smoke"))
                                 std::static_pointer_cast<Sprite>(entity)->SetAnimation("destroy", true, 8);

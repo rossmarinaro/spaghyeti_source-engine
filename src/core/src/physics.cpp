@@ -86,21 +86,22 @@ void Physics::SetGravity(float x, float y) {
 }
 
 
-//----------------------------------
+//------------------------------------
 
 
-std::shared_ptr<Physics::Body> Physics::CreateBody(int type, float x, float y, float width, float height, bool isSensor, int pointer)
+std::shared_ptr<Physics::Body> Physics::CreateBody(int type, int shape, float x, float y, float width, float height, bool isSensor, int pointer, float density, float friction, float restitution)
 {
-
     Box2D_Body b2d_body;
-
     b2BodyType bodyType;
 
-    if (type == Body::STATIC)
+    if (type == Body::Type::STATIC)
         bodyType = b2_staticBody;
 
-    else if (type == Body::KINEMATIC)
+    else if (type == Body::Type::KINEMATIC)
         bodyType = b2_kinematicBody;
+
+    else if (type == Body::Type::DYNAMIC)
+        bodyType = b2_dynamicBody;
 
     else {
         LOG("Physics: invalid body type argument, defaulting to static.");
@@ -109,48 +110,6 @@ std::shared_ptr<Physics::Body> Physics::CreateBody(int type, float x, float y, f
 
     b2d_body.def.type = bodyType;
     b2d_body.def.position.Set(x, y);
-    b2d_body.def.userData.pointer = pointer <= -1 ? pointer : _bodyCount;
-
-    b2d_body.fixtureDef.isSensor = isSensor;
-    b2d_body.self = _world->CreateBody(&b2d_body.def);
-
-    b2PolygonShape box;
-
-    box.SetAsBox(width, height);
-    b2d_body.self->CreateFixture(&box, 0.0f); 
-
-    const auto body = std::make_shared<Body>(pointer <= -1 ? pointer : _bodyCount, isSensor);
-
-    _active_bodies.insert({ body->id, { body, b2d_body.self } });
-
-    if (pointer > -1)
-        _bodyCount++;
-
-    return body;
-}
-
-
-//------------------------------------
-
-
-std::shared_ptr<Physics::Body> Physics::CreateDynamicBody(
-    int type,
-    float x,
-    float y,
-    float width,
-    float height,
-    bool isSensor,
-    int pointer,
-    float density,
-    float friction,
-    float restitution
-)
-{
-
-    Box2D_Body b2d_body;
-
-    b2d_body.def.type = b2_dynamicBody;
-    b2d_body.def.position.Set(x, y);
 
     b2d_body.def.userData.pointer = pointer <= -1 ? pointer : _bodyCount;
     b2d_body.self = _world->CreateBody(&b2d_body.def);
@@ -158,12 +117,12 @@ std::shared_ptr<Physics::Body> Physics::CreateDynamicBody(
     b2CircleShape circle;
     b2PolygonShape box;
 
-    if (type == CIRCLE) {
+    if (shape == Body::Shape::CIRCLE) {
 	    circle.m_radius = 0.3f;
         b2d_body.fixtureDef.shape = &circle;
     }
 
-    if (type == BOX) {
+    if (shape == Body::Shape::BOX) {
         box.SetAsBox(width, height);
         b2d_body.fixtureDef.shape = &box;
     }

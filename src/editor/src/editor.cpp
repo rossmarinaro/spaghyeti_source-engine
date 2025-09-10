@@ -67,18 +67,23 @@ void Editor::Update()
     {
         if (selectedEntity)
         {
-           s_self->s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
+            s_self->s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
             s_self->s_selector->SetAlpha(1.0f);
         
-            if (selectedEntity->GetType() == Entity::SPRITE)  {
+            if (selectedEntity->GetType() == Entity::SPRITE) {
                 const auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
                 s_self->s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
-            } 
-
-            if (selectedEntity->GetType() == Entity::TEXT)  {
+            }
+         
+            if (selectedEntity->GetType() == Entity::GEOMETRY) {
+                const auto geom = std::static_pointer_cast<Geometry>(selectedEntity);
+                s_self->s_selector->SetSize(geom->width, geom->height);
+            }
+       
+            if (selectedEntity->GetType() == Entity::TEXT) {
                 const auto text = std::static_pointer_cast<Text>(selectedEntity);
                 s_self->s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
-            }
+            } 
         }
 
         else

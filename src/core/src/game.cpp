@@ -321,9 +321,28 @@ void Game::UpdateFrame()
 
                         entity = CreateSprite(spawn.filename, spawn.posX, spawn.posY); 
 
+                        //apply physics body to spawned entity
+
                         if (spawn.body.exist) {
                             const auto sprite = std::static_pointer_cast<Sprite>(entity);
-                            sprite->AddBody(Physics::CreateBody(spawn.body.type, spawn.posX, spawn.posY, spawn.body.w, spawn.body.h, spawn.body.is_sensor, 1), { spawn.body.xOff, spawn.body.yOff, spawn.body.w, spawn.body.h }); 
+                            sprite->AddBody(Physics::CreateBody(
+                                spawn.body.type, 
+                                spawn.body.shape, 
+                                spawn.posX, 
+                                spawn.posY, 
+                                spawn.body.w, 
+                                spawn.body.h, 
+                                spawn.body.is_sensor,                   
+                                spawn.body.density, 
+                                spawn.body.friction, 
+                                spawn.body.restitution,
+                                1
+                            ), { 
+                                    spawn.body.xOff, 
+                                    spawn.body.yOff, 
+                                    spawn.body.w, 
+                                    spawn.body.h, 
+                                }); 
                         }
                         
                     break;
@@ -535,12 +554,12 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     {
         const auto sprite = std::static_pointer_cast<Sprite>(entity);
 
-        if (sprite->bodies.size())
+        if (sprite->GetBodies().size())
         {
-            for (const auto &body : sprite->bodies)
+            for (const auto &body : sprite->GetBodies())
                 Physics::DestroyBody(body.first);
 
-            sprite->bodies.clear();
+            sprite->GetBodies().clear();
         }
     }
 
@@ -707,7 +726,19 @@ void Game::CreateSpawn(
     spawn.alpha = alpha;
     spawn.loop = loop;
     spawn.index = System::Utils::ReplaceFrom(spawn.filename, ".", "") + std::to_string(s_spawn_count);
-    spawn.body = { body.type, body.exist, body.is_sensor, body.xOff, body.yOff, body.w, body.h };
+    spawn.body = { 
+        body.type, 
+        body.shape, 
+        body.exist, 
+        body.is_sensor, 
+        body.xOff, 
+        body.yOff, 
+        body.w, 
+        body.h,
+        body.density, 
+        body.friction, 
+        body.restitution
+    };
 
     //append behaviors if name matches valid loaded behavior name
 
