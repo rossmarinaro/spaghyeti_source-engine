@@ -43,6 +43,8 @@ SpriteNode::SpriteNode(bool init):
     frame_fY.push_back(1);
     spriteHandle = nullptr;
     anim_to_play_on_start = { "", 2, -1, false };
+    body_type = Physics::Body::Type::DYNAMIC;
+    body_shape = Physics::Body::Shape::BOX;
 
     if (m_init)
         Editor::Log("Sprite node " + name + " created.");   
@@ -112,7 +114,7 @@ void SpriteNode::CreateBody(float x, float y, float width, float height, bool is
     is_sensor.push_back(bc);
     body_pointer.push_back(pointerType);
 
-    const auto body = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, x, y, width, height);
+    const auto body = Physics::CreateBody(body_type, body_shape, x, y, width, height);
     const Body b = { body, x, y, width, height };
 
     bodies.emplace_back(b);
@@ -423,13 +425,37 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
                         ImGui::PopID();
 
                         i++;
-                    }
+                    } 
 
                     ImGui::Text("settings");
 
-                    ImGui::SliderFloat("density", &density, 0.0f, 1000.0f);
-                    ImGui::SliderFloat("friction", &friction, 0.0f, 1.0f);
-                    ImGui::SliderFloat("restitution", &restitution, 0.0f, 1.0f);
+                    static const char* items[] = { "kinematic", "static", "dynamic" };
+
+                    if (ImGui::BeginCombo("type", m_bodyType.c_str()))
+                    {
+                        for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+                        {
+                            bool is_sel = (m_bodyType == items[n]);
+
+                            if (ImGui::Selectable(items[n], is_sel)) 
+                                switch (n) {
+                                    case 0: body_type = Physics::Body::Type::KINEMATIC; break;
+                                    case 1: body_type = Physics::Body::Type::STATIC; break;
+                                    case 2: default: body_type = Physics::Body::Type::DYNAMIC; break;
+                                }
+
+                            if (is_sel)
+                                ImGui::SetItemDefaultFocus();
+                        }
+
+                        ImGui::EndCombo();
+                    }
+
+                    if (body_type == Physics::Body::Type::DYNAMIC) {
+                        ImGui::SliderFloat("density", &density, 0.0f, 1000.0f);
+                        ImGui::SliderFloat("friction", &friction, 0.0f, 1.0f);
+                        ImGui::SliderFloat("restitution", &restitution, 0.0f, 1.0f);
+                    }
 
                     ImGui::Separator();     
 
@@ -803,6 +829,13 @@ void SpriteNode::Render()
         if (bodies.size())
             for (const auto& body : bodies)   
                 body.pb->SetTransform(spriteHandle->position.x + body.x, spriteHandle->position.y + body.y);
+
+        switch (body_type) {
+            case Physics::Body::Type::DYNAMIC: m_bodyType = "dynamic"; break;
+            case Physics::Body::Type::KINEMATIC: m_bodyType = "kinematic"; break;
+            case Physics::Body::Type::STATIC: 
+            default: m_bodyType = "static"; break;
+        }
 
         //if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && (ImGui::IsMouseDown(ImGuiKey_RightShift) || ImGui::IsMouseDown(ImGuiKey_LeftShift)))
             //Editor::selectedEntity = spriteHandle;

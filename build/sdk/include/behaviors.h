@@ -11,9 +11,7 @@ namespace entity_behaviors {
         public:
 
             int layer;
-
             std::string ID, key, name; 
-
             std::atomic_char active;
             
             inline Behavior(const std::string& ID, const std::string& key, const std::string& name) 
@@ -27,7 +25,7 @@ namespace entity_behaviors {
 
             virtual ~Behavior() {}
             virtual void Update() {}           
-
+            virtual void Cleanup() {}   
     };
 
 }

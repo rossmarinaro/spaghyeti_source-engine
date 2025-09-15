@@ -12,9 +12,11 @@ Supports loading image (png), shaders (glsl text), json, csv, and raw byte encod
 
 Build assets can be either embedded or referenced.
 
-Scene heirarchy supports sprites, CSV tilemaps (supports flipped tiles), audio, text, and empty nodes.
+Scene heirarchy supports sprites, CSV tilemaps (supports flipped tiles), audio, text, spawner, and empty nodes.
 
 Supports native C++ scripting for nodes.
+
+Dynamic entity spawning to mitigate large memory usage.
 
 Standalone runtime embedded into application builds, use as core only, or as DLL runtime with editor front end.
 

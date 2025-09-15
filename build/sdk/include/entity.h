@@ -205,25 +205,28 @@ class Sprite : public Entity {
 
         inline const Anim& GetCurrentAnimation() { return m_currentAnim; }
 
-		inline void SetFrame(int frame) { currentFrame = frame; }
 		inline void SetContact(bool isContact) { m_contacting = isContact; }
         inline void SetAsUI(bool isUI) { m_type = isUI ? UI : SPRITE; }
         
 		inline const bool IsContacting() { return m_contacting; }
 		inline const bool IsSpritesheet() { return m_isSpritesheet; } 
 		inline const bool IsAnimComplete() { return m_animComplete; }
+        inline void SetFrame(int frame) { currentFrame = frame; }
 
-        void StopAnimation();
-		void SetAnimation(const std::string& key, bool yoyo = false, int rate = 2, int repeat = -1);
+        const bool CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB);
 		
 		void ReadSpritesheetData();
         void RemoveBodies(); 
         void AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vector4& offsets);
+
         std::shared_ptr<Physics::Body> GetBody(int index = 0);
         std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>>& GetBodies();  
         
 		void SetTexture(const std::string& key);
         void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);
+        
+        void StopAnimation();
+		void SetAnimation(const std::string& key, bool yoyo = false, int rate = 2, int repeat = -1);
 
 		void SetVelocity(float velX, float velY);
 		void SetVelocityX(float velX);
@@ -232,16 +235,16 @@ class Sprite : public Entity {
 		void SetImpulse(float x, float y);
 		void SetImpulseX(float x);
 		void SetImpulseY(float y);
-		void Render() override;
 
         std::shared_ptr<Sprite> Clone();
-        const bool CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB);
-
+        
         Sprite(const std::string& key, float x = 0.0f, float y = 0.0f, int frame = 0, bool isTile = false);
 		Sprite(const std::string& key, const Math::Vector2& position);
         Sprite(const Sprite& sprite);
 	   
-	   ~Sprite();
+	    ~Sprite();
+
+       	void Render() override;
 
 	private:
 

@@ -1454,7 +1454,7 @@ void EventListener::BuildAndRun()
 
                         for (const auto& body : sn->bodies) {
                             const std::string is_sensor = sn->is_sensor[i].b ? "true" : "false";
-                            command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, " + std::to_string(sn->positionX + body.x) + ", " + std::to_string(sn->positionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + is_sensor + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " });\n"; 
+                            command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(sn->body_type) + ", " + std::to_string(sn->body_shape) + ", " + std::to_string(sn->positionX + body.x) + ", " + std::to_string(sn->positionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + is_sensor + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " });\n"; 
                             i++;
                         }
 

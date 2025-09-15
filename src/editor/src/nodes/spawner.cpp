@@ -124,6 +124,7 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                     ImGui::EndCombo();
                 }
 
+
                 if (ImGui::BeginMenu("select behavior script")) 
                 {
                     if (behaviorKey.size())

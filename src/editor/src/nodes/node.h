@@ -21,7 +21,7 @@ namespace editor {
 
             enum { SPRITE, TILEMAP, TEXT, AUDIO, EMPTY, GROUP, SPAWNER };
 
-            int type;
+            int type, body_type, body_shape;
 
             bool created, 
                  active, 
@@ -106,7 +106,6 @@ namespace editor {
             static inline std::string CheckName(const std::string& key, const std::vector<std::shared_ptr<Node>>& arr, int count) {
                 if (std::find_if(arr.begin(), arr.end(), [&](auto node) { return node->name == key; }) != arr.end())
                     return key + "_" + std::to_string(count + 1); 
-                    
                 return key;
             }
     };
@@ -200,6 +199,7 @@ namespace editor {
         private:
 
             bool m_show_sprite_texture;
+            std::string m_bodyType;
             Anims m_currentAnim;
             unsigned int m_currentTexture = NULL;
 

@@ -157,12 +157,14 @@ void Component::Make()
         src <<  "       public:\n\n";
         src <<  "           //constructor, called on start\n\n";
         src <<  "           " << className << "(std::shared_ptr<Entity> entity):\n";
-        src <<  "            Behavior(entity->ID, typeid(" << className << ").name(), \"" + className + "\")\n";
-        src <<  "            {\n\n";
-        src <<  "            }\n\n";
+        src <<  "           Behavior(entity->ID, typeid(" << className << ").name(), \"" + className + "\")\n";
+        src <<  "           {\n\n";
+        src <<  "           }\n\n";
         src <<  "           ~" << className << "() = default;\n";
         src <<  "           //update every frame\n\n";
-        src <<  "            void Update() override {\n\n";
+        src <<  "           void Update() override {\n\n";
+        src <<  "           }\n";
+        src <<  "           void Cleanup() override {\n\n";
         src <<  "           }\n\n";
         src <<  "   };\n";
         src <<  "};";

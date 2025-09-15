@@ -507,7 +507,9 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                             { "bodies", bodies },
                             { "friction", sn->friction },
                             { "restitution", sn->restitution },
-                            { "density", sn->density }
+                            { "density", sn->density },
+                            { "type", sn->body_type },
+                            { "shape", sn->body_shape }
                         }
                     },
                     { "animator", {
@@ -958,11 +960,16 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                             else 
                             {
                                 SpriteNode::BoolContainer bc;
-                                bc.b = body["sensor"];
 
+                                if (body.contains("type"))
+                                    sn->body_type = body["type"];
+
+                                if (body.contains("shape"))
+                                    sn->body_shape = body["shape"];
+
+                                bc.b = body["sensor"];
                                 sn->is_sensor.push_back(bc);
                                 sn->body_pointer.push_back(body["pointer"]);
-
                                 sn->bodies.push_back({ nullptr, body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]});
                             }
                 }

@@ -304,8 +304,8 @@ void Game::UpdateFrame()
             //create / runtime instantiation of game objects
 
             if (spawn.can_create && 
-                currentScene->cullPosition->x >= spawn.posX - (Window::s_scaleWidth / 2) && currentScene->cullPosition->x <= spawn.posX + (Window::s_scaleWidth / 2) &&
-                currentScene->cullPosition->y >= spawn.posY - (Window::s_scaleHeight / 2) && currentScene->cullPosition->y <= spawn.posY + (Window::s_scaleHeight / 2)
+                currentScene->cullPosition->x >= spawn.posX - (Window::s_scaleWidth) && currentScene->cullPosition->x <= spawn.posX + (Window::s_scaleWidth) &&
+                currentScene->cullPosition->y >= spawn.posY - (Window::s_scaleHeight) && currentScene->cullPosition->y <= spawn.posY + (Window::s_scaleHeight)
             ) 
             {
                 if (std::find_if(GetScene()->entities.begin(), GetScene()->entities.end(), [&spawn](std::shared_ptr<Entity> e) { return e->name == spawn.index; }) != System::Game::GetScene()->entities.end()) 
@@ -323,8 +323,10 @@ void Game::UpdateFrame()
 
                         //apply physics body to spawned entity
 
-                        if (spawn.body.exist) {
+                        if (spawn.body.exist) 
+                        {
                             const auto sprite = std::static_pointer_cast<Sprite>(entity);
+
                             sprite->AddBody(Physics::CreateBody(
                                 spawn.body.type, 
                                 spawn.body.shape, 
@@ -338,11 +340,11 @@ void Game::UpdateFrame()
                                 spawn.body.restitution,
                                 1
                             ), { 
-                                    spawn.body.xOff, 
-                                    spawn.body.yOff, 
-                                    spawn.body.w, 
-                                    spawn.body.h, 
-                                }); 
+                                spawn.body.xOff, 
+                                spawn.body.yOff, 
+                                spawn.body.w, 
+                                spawn.body.h, 
+                            }); 
                         }
                         
                     break;
@@ -362,7 +364,7 @@ void Game::UpdateFrame()
             if (
                 currentScene->cullPosition->x < spawn.posX - (Window::s_scaleWidth * 2) ||
                 currentScene->cullPosition->x > spawn.posX + (Window::s_scaleWidth * 2) || 
-                currentScene->cullPosition->y > spawn.posY + (Window::s_scaleHeight * 2) ||
+                currentScene->cullPosition->y < spawn.posY - (Window::s_scaleHeight * 2) ||
                 currentScene->cullPosition->y > spawn.posY + (Window::s_scaleHeight * 2) 
             )
             {   
@@ -381,8 +383,24 @@ void Game::UpdateFrame()
 
                     for (auto& b : spawn.behaviors_attached)
                         b.second = false;
-                        
+                    
+                    const std::string id = entity->ID;
+
                     DestroyEntity(entity);
+
+                    //remove associated behaviors
+
+                    const auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&id](auto b)
+                        { return b->ID == id; });
+
+                    if (behavior_it != Application::game->currentScene->behaviors.end())
+                    {
+                        auto behavior = *behavior_it;
+                        
+                        behavior->active = false; 
+                        behavior->Cleanup();
+                        behavior.reset();
+                    }
                 }
             }
         }
