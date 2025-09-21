@@ -7,7 +7,7 @@
 using namespace entity_behaviors;
 
 HUD::HUD(std::shared_ptr<Entity> entity):
-    Behavior(entity->ID, typeid(HUD).name()),
+    Behavior(entity->ID, typeid(HUD).name(), "HUD"),
         m_isOpen(false),
         m_canToggle(true)
 { 
@@ -40,6 +40,10 @@ HUD::HUD(std::shared_ptr<Entity> entity):
 
     livesText->SetScale(2.0f);
     livesText->SetTint({ 0.0f, 1.0f, 0.0f });
+
+    livesText->SetStatic(true);
+    quitText->SetStatic(true);
+    returnText->SetStatic(true);
 
     System::Game::CreateUI("sv_icon.png", 270, 30);
 

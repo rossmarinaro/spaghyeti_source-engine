@@ -56,7 +56,7 @@ void Node::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>
 
     //save prefab
 
-    if (type != AUDIO && type != TILEMAP && type != SPAWNER && ImGui::Button("Save prefab")) 
+    if (type != AUDIO && type != TILEMAP && ImGui::Button("Save prefab")) 
         SavePrefab(); 
 }
 
@@ -738,6 +738,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "alpha", sn->alpha },      
             { "loop", sn->loop },
             { "type of", sn->typeOf }, 
+            { "category", sn->category }, 
             { "animation key", sn->animationKey }, 
             { "texture key", sn->textureKey }, 
             { "behavior key", sn->behaviorKey },
@@ -1322,6 +1323,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("type of"))
                 sn->typeOf = data["type of"]; 
+
+            if (data.contains("category"))
+                sn->category = data["category"];
 
             if (data.contains("loop"))
                 sn->loop = data["loop"];

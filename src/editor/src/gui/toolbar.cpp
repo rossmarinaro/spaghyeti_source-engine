@@ -601,7 +601,14 @@ void editor::GUI::ShowMenu()
         //build 
 
         if (ImGui::BeginMenu("Build"))
-        { 
+        {  
+            //std::ostringstream oss;
+            //oss << std::fixed << std::setprecision(1) << session->maxVersion << std::fixed << std::setprecision(1) << session->minVersion;
+            //ImGui::Text(("version: " + oss.str()).c_str());
+            ImGui::Text(("version: " + std::to_string(session->maxVersion) + "." + std::to_string(session->midVersion) + "." + std::to_string(session->minVersion)/* oss.str() */).c_str());
+            ImGui::InputInt("maxVersion", &session->maxVersion);
+            ImGui::InputInt("midVersion", &session->midVersion);
+            ImGui::InputInt("minVersion", &session->minVersion);
 
             if (ImGui::BeginMenu("type")) 
             {
@@ -714,7 +721,7 @@ void editor::GUI::ShowMenu()
 
             if (ImGui::MenuItem("light"))
                 ImGui::StyleColorsLight();
-
+ 
             if (ImGui::MenuItem("dark"))
                 ImGui::StyleColorsDark();
 

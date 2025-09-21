@@ -94,7 +94,7 @@ const bool AssetManager::SavePrefab(const std::string& nodeId)
 
         auto saveFile = [&](const std::string& filename) -> bool
         {
-            
+             
             std::ofstream src(filename);
 
             json data;

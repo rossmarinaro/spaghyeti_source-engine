@@ -38,7 +38,7 @@ namespace editor {
 
 		public:
 
-			int worldWidth, worldHeight;
+			int worldWidth, worldHeight, minVersion, midVersion, maxVersion;
 
 			float gravityX, gravityY, vignetteVisibility;
 

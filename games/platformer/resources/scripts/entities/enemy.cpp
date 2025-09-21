@@ -4,7 +4,14 @@
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
 
 entity_behaviors::Enemy::Enemy(std::shared_ptr<Entity> entity):
-    Actor(entity, typeid(Enemy).name()),
+    Actor(entity, typeid(Enemy).name(), "Enemy"),
+        m_key(entity->name)
+{
+    Initialize(entity);
+}
+
+entity_behaviors::Enemy::Enemy(std::shared_ptr<Entity> entity, const std::string& key, const std::string& name):
+    Actor(entity, key, name),
         m_key(entity->name)
 {
     Initialize(entity);
@@ -13,8 +20,8 @@ entity_behaviors::Enemy::Enemy(std::shared_ptr<Entity> entity):
 //-----------------------------------
 
 
-entity_behaviors::Enemy::Enemy(std::shared_ptr<Entity> entity, const std::string& name):
-    Actor(entity, name),
+entity_behaviors::Enemy::Enemy(std::shared_ptr<Entity> entity, const std::string& key):
+    Actor(entity, key, "Enemy"),
         m_key(entity->name)
 {
     Initialize(entity);

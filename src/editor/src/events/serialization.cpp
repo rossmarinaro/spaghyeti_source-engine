@@ -120,6 +120,10 @@ void EventListener::Serialize(json& data, bool newScene)
 
     auto session = Editor::Get();
 
+    data["minVersion"] = newScene ? 0 : session->minVersion;
+    data["midVersion"] = newScene ? 0 : session->midVersion;
+    data["maxVersion"] = newScene ? 1 : session->maxVersion;
+
     //camera
 
     data["camera"]["vignetteVisibility"] = newScene ? 0.0f : session->vignetteVisibility;
@@ -255,6 +259,17 @@ void EventListener::Deserialize(std::ifstream& JSON)
     json data = json::parse(JSON);
 
     auto session = Editor::Get();
+
+    //version
+
+    if (data.contains("minVersion"))
+        session->minVersion = data["minVersion"];
+
+    if (data.contains("midVersion"))
+        session->midVersion = data["midVersion"];
+
+    if (data.contains("maxVersion"))
+        session->maxVersion = data["maxVersion"];
 
     //scenes 
 

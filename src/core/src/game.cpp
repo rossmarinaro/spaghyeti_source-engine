@@ -417,9 +417,10 @@ void Game::UpdateFrame()
             if (entity->cull && currentScene->cullPosition)
             {
                 float width = Window::s_scaleWidth,
-                      sfX = 1.0f;
+                      sfX =  0.6f; //1.0f;
 
-                if (entity->scrollFactor.x < 1.0f) {
+                if (entity->scrollFactor.x < 1.0f) 
+                {
                     sfX = (1.0f - entity->scrollFactor.x) * 10.0f;
 
                     if (!camera->InBounds() && currentScene->cullPosition->x < Window::s_scaleWidth) 

@@ -7,7 +7,7 @@
 using namespace entity_behaviors;
 
 PlayerController::PlayerController(std::shared_ptr<Entity> entity):
-    Actor(entity, typeid(PlayerController).name()), 
+    Actor(entity, typeid(PlayerController).name(), "Player"), 
         m_canIdle(true),
         m_canJump(true),
         m_jumpGate(true),
@@ -18,7 +18,6 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
         m_state(NONE),
         m_shadow(System::Game::CreateSprite("player.png", 0.0f, 0.0f, 55))
 { 
-    s_time = 0.0f;
 
     health = 4; 
     magic = 10;
@@ -32,7 +31,7 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
 
     const auto player = std::static_pointer_cast<Sprite>(entity);
     System::Game::GetScene()->GetContext().camera->StartFollow(&player->position, 500);
- 
+
 }
 
 

@@ -712,14 +712,22 @@ void EventListener::BuildAndRun()
 
     //remove old libraries if they exist 
 
-    remove((Editor::projectPath + "build/spaghyeti-debug.dll").c_str());
-    remove((Editor::projectPath + "build/spaghyeti.dll").c_str());
+    if (std::filesystem::exists(Editor::projectPath + "build/spaghyeti-debug.dll"))
+        remove((Editor::projectPath + "build/spaghyeti-debug.dll").c_str());
+
+    if (std::filesystem::exists(Editor::projectPath + "build/spaghyeti.dll"))
+        remove((Editor::projectPath + "build/spaghyeti.dll").c_str());
 
     if (Editor::buildType == "dynamic") 
+    {
+        if (!std::filesystem::exists(Editor::rootPath + "\\sdk\\" + lib)) {
+            Editor::Log("Dynamic library not found! Aborting build.");
+            return;
+        }
         if (!std::filesystem::exists(copy_lib))
             std::filesystem::copy_file(Editor::rootPath + "\\sdk\\" + lib, copy_lib, options);
+    }
     
-
     //cull target
 
     std::string cullTarget = "";
@@ -768,12 +776,12 @@ void EventListener::BuildAndRun()
             icon_rc << "            VALUE \"""Comments""\"," "\"""Produced with SpaghYeti Engine\""" \n";
             icon_rc << "            VALUE \"""CompanyName\""", \"""Pastaboss Enterprise\""" \n";
             icon_rc << "            VALUE \"""FileDescription\""", \"""entertainment software\"""\n";
-            icon_rc << "            VALUE \"""FileVersion\""", \"""1.0.0.0\"""\n";
+            icon_rc << "            VALUE \"""FileVersion\""", \"""" << std::to_string(Editor::Get()->maxVersion) << "." << std::to_string(Editor::Get()->midVersion) << "." << std::to_string(Editor::Get()->minVersion) << ".0\"""\n";
             icon_rc << "            VALUE \"""InternalName\""", \"""SpaghYeti Engine\"""\n";
             icon_rc << "            VALUE \"""LegalCopyright\""", \"""Copyright Pastaboss Enterprise\"""\n";
             icon_rc << "            VALUE \"""OriginalName\""", \"""SpaghYeti Engine\"""\n";
             icon_rc << "            VALUE \"""ProductName\""", \"""" << s_currentProject << "\"""\n";
-            icon_rc << "            VALUE \"""ProductVersion\""", \"""1.0.0.0\"""\n";
+            icon_rc << "            VALUE \"""ProductVersion\""", \"""" << std::to_string(Editor::Get()->maxVersion) << "." << std::to_string(Editor::Get()->midVersion) << "." << std::to_string(Editor::Get()->minVersion) << ".0\"""\n";
             icon_rc << "        END\n";
             icon_rc << "    END\n";
             icon_rc << "    BLOCK \"""VarFileInfo\"""\n";

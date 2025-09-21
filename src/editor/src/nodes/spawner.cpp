@@ -11,8 +11,10 @@ SpawnerNode::SpawnerNode(bool init):
     Node(init, SPAWNER)
 {  
     typeOf = Entity::SPRITE;
+    category = 0;
     m_spawnType = "sprite";
     m_bodyType = "kinematic";
+    m_category = "red";
     textureKey = "";
     behaviorKey = "";
     animationKey = "";
@@ -33,7 +35,6 @@ SpawnerNode::SpawnerNode(bool init):
 }
 
 
-         
 //---------------------------
 
 
@@ -124,6 +125,23 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                     ImGui::EndCombo();
                 }
 
+                static const char* colors[] = { "red", "orange", "yellow", "green", "blue", "indigo", "violet", "black", "white" };
+
+                if (ImGui::BeginCombo("category", m_category.c_str()))
+                {
+                    for (int n = 0; n < IM_ARRAYSIZE(colors); n++)
+                    {
+                        bool is_sel = (m_category == colors[n]);
+
+                        if (ImGui::Selectable(colors[n], is_sel)) 
+                            category = n;
+
+                        if (is_sel)
+                            ImGui::SetItemDefaultFocus();
+                    }
+
+                    ImGui::EndCombo();
+                }
 
                 if (ImGui::BeginMenu("select behavior script")) 
                 {
@@ -288,9 +306,60 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
 void SpawnerNode::Render()
 {
-    if (m_rectHandle && m_textHandle) {
+    if (m_rectHandle && m_textHandle) 
+    {
         m_rectHandle->SetPosition(positionX, positionY);
         m_textHandle->SetPosition(positionX + 8.0f, positionY + 30.0f);
+
+        //color coded types
+
+        switch (category) {
+            case 0: default:
+                m_category = "red";
+                m_rectHandle->SetTint({ 1.0f, 0.0f, 0.0f }); 
+                m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
+            break;
+            case 1: 
+                m_category = "orange";
+                m_rectHandle->SetTint({ 1.0f, 0.5f, 0.0f }); 
+                m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
+            break;
+            case 2: 
+                m_category = "yellow";
+                m_rectHandle->SetTint({ 1.0f, 1.0f, 0.0f }); 
+                m_textHandle->SetTint({ 0.0f, 1.0f, 0.0f });
+            break; 
+            case 3: 
+                m_category = "green";
+                m_rectHandle->SetTint({ 0.0f, 1.0f, 0.0f }); 
+                m_textHandle->SetTint({ 1.0f, 0.0f, 0.0f });
+            break; 
+            case 4: 
+                m_category = "blue";
+                m_rectHandle->SetTint({ 0.0f, 0.0f, 1.0f }); 
+                m_textHandle->SetTint({ 1.0f, 0.0f, 0.0f });
+            break; 
+            case 5: 
+                m_category = "indigo";
+                m_rectHandle->SetTint({ 0.5f, 0.0f, 0.5f });
+                m_textHandle->SetTint({ 1.0f, 1.0f, 1.0f });
+            break; 
+            case 6: 
+                m_category = "violet";
+                m_rectHandle->SetTint({ 0.25f, 0.0f, 0.4f }); 
+                m_textHandle->SetTint({ 1.0f, 1.0f, 1.0f });
+            break; 
+            case 7: 
+                m_category = "black";
+                m_rectHandle->SetTint({ 0.0f, 0.0f, 0.0f }); 
+                m_textHandle->SetTint({ 1.0f, 1.0f, 1.0f });
+            break; 
+            case 8: 
+                m_category = "white";
+                m_rectHandle->SetTint({ 1.0f, 1.0f, 1.0f }); 
+                m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
+            break; 
+        }
     }
 
     switch (typeOf) {
@@ -305,6 +374,7 @@ void SpawnerNode::Render()
         case Physics::Body::Type::STATIC: 
         default: m_bodyType = "static"; break;
     }
+
 }
 
 

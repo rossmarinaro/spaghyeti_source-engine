@@ -6,7 +6,7 @@
 using namespace entity_behaviors;
 
 SPAWNITEM::SPAWNITEM(std::shared_ptr<Entity> entity):
-    Behavior(entity->ID, typeid(SPAWNITEM).name()),
+    Behavior(entity->ID, typeid(SPAWNITEM).name(), "SPAWNITEM"),
         m_name(entity->name),
         m_canSpawn(true),
         m_canDestroyBox(true),

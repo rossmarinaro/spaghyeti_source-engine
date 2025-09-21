@@ -11,18 +11,18 @@ namespace entity_behaviors {
 
             int health;
 
-            Actor(std::shared_ptr<Entity> entity, const std::string& key):
-                Behavior(entity->ID, key),
-                    m_canAttack(true),        
-                    m_canDamage(true),
-                    m_flipX(false), 
-                    m_isHit(false),
-                    m_canAttackAlt(true),
-                    m_attacking(false),
-                    m_active(false) {}
+            Actor(std::shared_ptr<Entity> entity):
+                Behavior(entity->ID, typeid(Actor).name(), "Actor") {
+                    m_Init();
+                }
+
+            Actor(std::shared_ptr<Entity> entity, const std::string& key, const std::string& name):
+                Behavior(entity->ID, key, name) {
+                    m_Init();
+                }
 
             virtual ~Actor() = default;
-            void Update() override = 0;
+            void Update() override {};
 
             inline void SetActive(bool m_active = true) { 
                 this->m_active = m_active; 
@@ -48,7 +48,17 @@ namespace entity_behaviors {
             int m_state;
             std::atomic_bool m_active;
 
-            virtual bool DoDamage(int amount, const std::string& key = "") = 0;
+            inline void m_Init() {
+                m_canAttack = true;        
+                m_canDamage = true;
+                m_flipX = false;
+                m_isHit = false;
+                m_canAttackAlt = true;
+                m_attacking = false;
+                m_active = false;
+            }
+
+            virtual bool DoDamage(int amount, const std::string& key = "") {};
 
     };
 }

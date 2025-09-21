@@ -5,7 +5,7 @@
 using namespace entity_behaviors;
 
 Gameplay::Gameplay(std::shared_ptr<Entity> entity):
-    Behavior(entity->ID, typeid(Gameplay).name()),
+    Behavior(entity->ID, typeid(Gameplay).name(), "GAMEPLAY"),
         m_charIterator(0),
         m_alpha(1.0f),
         m_startFade(false),
@@ -67,6 +67,11 @@ Gameplay::Gameplay(std::shared_ptr<Entity> entity):
 
 void Gameplay::Update() 
 {
+    const auto dead_ent_it = std::find_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [](std::shared_ptr<Entity> ent){ return ent->GetData<bool>("dead"); });
+        
+    if (dead_ent_it != System::Game::GetScene()->entities.end())
+        System::Game::DestroyEntity(*dead_ent_it);
+        
     const auto clouds = System::Game::GetScene()->GetEntity<Sprite>("clouds");
     
     if (clouds) {

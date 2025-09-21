@@ -117,6 +117,9 @@ void Editor::Start()
     Editor session;
     s_self = &session;
 
+    s_self->minVersion = 0;
+    s_self->midVersion = 0;
+    s_self->maxVersion = 1;
     s_self->worldWidth = 2000;
     s_self->worldHeight = 2000;
     s_self->gravityX = 0.0f;

@@ -352,7 +352,7 @@ namespace editor {
 
         public:
 
-            int typeOf;
+            int typeOf, category;
             float width, height, alpha;
             bool loop;
             System::Scene::Spawn::Body body;
@@ -373,7 +373,7 @@ namespace editor {
         private:
          
             unsigned int m_currentTexture = NULL;
-            std::string m_spawnType, m_bodyType;
+            std::string m_spawnType, m_bodyType, m_category;
             std::shared_ptr<Geometry> m_rectHandle;
             std::shared_ptr<Text> m_textHandle;
     };
