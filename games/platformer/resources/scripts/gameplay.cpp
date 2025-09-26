@@ -88,6 +88,12 @@ void Gameplay::Update()
 
     m_dialog_text->SetText(m_subject + m_text);
     m_dialog_text->SetAlpha(m_startFade ? m_alpha : 1.0f);
+
+    const auto player = System::Game::GetScene()->GetEntity<Sprite>("player");
+
+    if (player && player->position.y >= 900 || player->position.x >= 12700)
+        StopScene();
+
 }
 
 
@@ -96,11 +102,6 @@ void Gameplay::Update()
 void Gameplay::StopScene() 
 {
     gameState = false;
-    m_gameOver_text->SetAlpha(1.0f);
-    m_gameOver_text->SetDepth(900);
-    m_gameOver_overlay->SetAlpha(1.0f);
-    m_gameOver_overlay->SetTint({ 0.0f, 0.0f, 0.0f });
-    m_gameOver_overlay->SetDepth(899);
 }
 
 

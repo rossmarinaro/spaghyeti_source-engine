@@ -53,11 +53,6 @@ void Node::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>
 
     if (type != GROUP)
         ImGui::Checkbox("Edit", &show_options);
-
-    //save prefab
-
-    if (type != AUDIO && type != TILEMAP && ImGui::Button("Save prefab")) 
-        SavePrefab(); 
 }
 
 
@@ -250,6 +245,9 @@ void Node::ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
         ReadData(data, true, nullptr, arr, arr != nodes);
         Editor::Log(node->name  + " node " + name + " duplicated.");  
     }
+
+    if (type != AUDIO && type != TILEMAP && ImGui::MenuItem("Save prefab")) 
+        SavePrefab(); 
 
     if (ImGui::BeginMenu("Delete"))
     {
@@ -792,17 +790,20 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             return nullptr;
         }
         
-        Scene* _scene = static_cast<Scene*>(scene); 
+        Scene* _scene; 
+        
+        if (!makeNode)
+            _scene = static_cast<Scene*>(scene); 
 
         //sprite
 
-        if (data["type"] == "Sprite")
+        if (data["type"] == "Sprite") 
         {
 
             std::shared_ptr<SpriteNode> sn;
 
             if (makeNode)
-                sn = Make<SpriteNode>(false, arr);  
+                sn = Make<SpriteNode>(false, arr);   
             
             else 
                 sn = Scene::CreateObject<SpriteNode>(_scene); 
