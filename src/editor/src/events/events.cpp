@@ -417,7 +417,8 @@ const bool EventListener::OpenProject() //makes temporary json file to parse dat
                                   asset = loaded[1],
                                   texture = loaded[2];
                                   
-                AssetManager::LoadAsset(asset);
+                if (!AssetManager::LoadAsset(asset))
+                    continue;
 
                 const unsigned int id = Graphics::Texture2D::Get(texture).ID;
 
@@ -527,8 +528,12 @@ void EventListener::OpenFile()
 
             std::map<std::string, std::string>::iterator iterator = AssetManager::Get()->loadedAssets.find(asset);
 
-            if (iterator == AssetManager::Get()->loadedAssets.end() || AssetManager::Get()->selectedAsset.length() < 0) 
-                AssetManager::LoadAsset(asset);
+            if (iterator == AssetManager::Get()->loadedAssets.end() || AssetManager::Get()->selectedAsset.length() < 0) {
+                if (!AssetManager::LoadAsset(asset)) {
+                    Editor::Log("cannot open file: there was a problem with the provided folder.");
+                    return;
+                }
+            }
 
             //apply image to assets menu if not there already
 

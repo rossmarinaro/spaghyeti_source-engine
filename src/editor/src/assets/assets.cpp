@@ -40,15 +40,21 @@ void AssetManager::Register(const std::string& asset) {
 //---------------------------
 
 
-void AssetManager::LoadAsset(const std::string& asset) {
+bool AssetManager::LoadAsset(const std::string& asset) {
  
     const std::string folder = GetFolder(asset), 
-                      texture = GetThumbnail(asset),
-                      key = "\"" + asset + "\"",
-                      developmentPath = "resources/assets" + folder + asset;
+                      key = "\"" + asset + "\"";
+
+    if (!folder.length()) {
+        Editor::Log("cannot load asset. invalid folder, folders must be named one of the following: [images, audio, data, fonts].");
+        return false;
+    }           
+    
+    const std::string developmentPath = "resources/assets" + folder + asset;
 
     s_self->loadedAssets.insert({ key, developmentPath });
 
+    return true;
 }
 
 //-----------------------------

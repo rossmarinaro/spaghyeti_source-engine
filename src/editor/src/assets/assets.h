@@ -30,7 +30,7 @@ namespace editor {
 
             static void Reset();
             static void Register(const std::string& key);
-            static void LoadAsset(const std::string& asset);
+            static bool LoadAsset(const std::string& asset);
             
             static const bool SavePrefab(const std::string& nodeId);
             static const bool LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes = Node::nodes);

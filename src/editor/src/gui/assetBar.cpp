@@ -58,10 +58,13 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 
         for (int i = _thumbnail_begin; i < _thumbnail_end; i++) 
         {
-            if (vec[i].second == NULL)
+            if (i >= vec.size())
                 continue;
 
-            const std::string folder = AssetManager::GetFolder(vec[i].first);
+            if (vec.at(i).second == NULL)
+                continue;
+
+            const std::string folder = AssetManager::GetFolder(vec.at(i).first);
 
             if (!folder.length())
                 continue;
@@ -70,15 +73,15 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
             {
                 ImGui::PushID(i);  
 
-                if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec[i].second, ImVec2(70, 70))) { 
-                    AssetManager::Get()->selectedAsset = vec[i].first;
+                if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec.at(i).second, ImVec2(70, 70))) { 
+                    AssetManager::Get()->selectedAsset = vec.at(i).first;
                     Editor::Log("Current asset selected: " + AssetManager::Get()->selectedAsset);
                 }
 
                 //asset tool tip
 
                 if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-                    ImGui::SetTooltip(vec[i].first.c_str());
+                    ImGui::SetTooltip(vec.at(i).first.c_str());
 
                 ImGui::PopID();
 
