@@ -1,0 +1,28 @@
+{"frames": [
+
+{
+	"filename": "brothel_building_legs1.png",
+	"frame": {"x":0,"y":0,"w":120,"h":99},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":99},
+	"sourceSize": {"w":120,"h":99}
+},
+{
+	"filename": "brothel_building_legs2.png",
+	"frame": {"x":120,"y":0,"w":120,"h":99},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":120,"h":99},
+	"sourceSize": {"w":120,"h":99}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "brothel_building_legs.png",
+	"format": "RGBA8888",
+	"size": {"w":240,"h":99},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:c6280100b33b9df24801d387485e2305:e9119618a4d47c648afb305c767d92ec:1919ff484d993103ceabb4743c1a8d2e$"
+}
+}

@@ -1,0 +1,36 @@
+{"frames": [
+
+{
+	"filename": "0.png",
+	"frame": {"x":0,"y":0,"w":23,"h":22},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":22},
+	"sourceSize": {"w":23,"h":22}
+},
+{
+	"filename": "1.png",
+	"frame": {"x":23,"y":0,"w":23,"h":22},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":22},
+	"sourceSize": {"w":23,"h":22}
+},
+{
+	"filename": "2.png",
+	"frame": {"x":46,"y":0,"w":23,"h":22},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":23,"h":22},
+	"sourceSize": {"w":23,"h":22}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "pidgeon_poo.png",
+	"format": "RGBA8888",
+	"size": {"w":69,"h":22},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:66af82473b74013a714686687abc9bb8:94d6904a90ea925f5f6b25733d139a46:757a3f57aca5f267c2cd43c2db3e051f$"
+}
+}

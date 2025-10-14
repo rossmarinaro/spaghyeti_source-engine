@@ -1,0 +1,92 @@
+{"frames": [
+
+{
+	"filename": "1.png",
+	"frame": {"x":0,"y":0,"w":246,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":246,"h":62},
+	"sourceSize": {"w":246,"h":62}
+},
+{
+	"filename": "2.png",
+	"frame": {"x":246,"y":0,"w":246,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":246,"h":62},
+	"sourceSize": {"w":246,"h":62}
+},
+{
+	"filename": "3.png",
+	"frame": {"x":492,"y":0,"w":246,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":246,"h":62},
+	"sourceSize": {"w":246,"h":62}
+},
+{
+	"filename": "4.png",
+	"frame": {"x":738,"y":0,"w":223,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":223,"h":62},
+	"sourceSize": {"w":223,"h":62}
+},
+{
+	"filename": "5.png",
+	"frame": {"x":961,"y":0,"w":202,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":202,"h":62},
+	"sourceSize": {"w":202,"h":62}
+},
+{
+	"filename": "6.png",
+	"frame": {"x":1163,"y":0,"w":185,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":62},
+	"sourceSize": {"w":185,"h":62}
+},
+{
+	"filename": "7.png",
+	"frame": {"x":1348,"y":0,"w":179,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":179,"h":62},
+	"sourceSize": {"w":179,"h":62}
+},
+{
+	"filename": "8.png",
+	"frame": {"x":1527,"y":0,"w":162,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":162,"h":62},
+	"sourceSize": {"w":162,"h":62}
+},
+{
+	"filename": "9.png",
+	"frame": {"x":1689,"y":0,"w":144,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":144,"h":62},
+	"sourceSize": {"w":144,"h":62}
+},
+{
+	"filename": "10.png",
+	"frame": {"x":1833,"y":0,"w":127,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":127,"h":62},
+	"sourceSize": {"w":127,"h":62}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "cigar UI.png",
+	"format": "RGBA8888",
+	"size": {"w":1960,"h":62},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:aa612355f93878ec52dca09066d0bf14:e977eaad0663279dacaa9d47f6f135de:a706efeb75699133fbf1225ce5e0b584$"
+}
+}
