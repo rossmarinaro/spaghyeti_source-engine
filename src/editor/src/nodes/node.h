@@ -53,7 +53,7 @@ namespace editor {
             virtual ~Node() {}
             
             virtual void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
-            virtual void Render() {}
+            virtual void Render(float _positionX = 0.0f, float _positionY = 0.0f, float _rotation = 0.0f, float _scaleX = 1.0f, float _scaleY = 1.0f) {}
             virtual void Reset(const int component = Component::NONE) = 0;
 
             static inline std::vector<std::shared_ptr<Node>> nodes;
@@ -70,7 +70,7 @@ namespace editor {
             static void DeleteNode (std::shared_ptr<Node>& node);
             static void ApplyShader(std::shared_ptr<Node> node, const std::string& name);
             static void LoadShader(std::shared_ptr<Node> node, const std::string& name, const std::string& vertPath, const std::string& fragPath);
-            static std::shared_ptr<Node> ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr = nodes, bool isChild = false);
+            static std::shared_ptr<Node> ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr = nodes);
             static json WriteData(std::shared_ptr<Node>& node);
             static std::shared_ptr<Node> Get(const std::string& id);
             static const std::string GetType(int type);
@@ -100,14 +100,8 @@ namespace editor {
             std::vector<std::shared_ptr<Component>> components; 
 
             static inline int s_MAX_NODES = 100; 
-
             static const std::string s_Assign();
-            
-            static inline std::string CheckName(const std::string& key, const std::vector<std::shared_ptr<Node>>& arr, int count) {
-                if (std::find_if(arr.begin(), arr.end(), [&](auto node) { return node->name == key; }) != arr.end())
-                    return key + "_" + std::to_string(count + 1); 
-                return key;
-            }
+            static std::string CheckName(const std::string& name);
     };
 
     //--------------------------------- sprite
@@ -181,7 +175,7 @@ namespace editor {
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
-            void Render() override;
+            void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
 
             void RegisterFrames();
             void ApplyTexture(const std::string& key);
@@ -231,6 +225,7 @@ namespace editor {
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override; 
+            void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
 
             void ApplyTilemap(bool clearPrevious = true, bool renderReversed = false, bool isJSON = false);
             void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
@@ -240,6 +235,7 @@ namespace editor {
 
             bool m_layersApplied, m_mapApplied;
             void AddLayer();
+            void ParseJSONData(const std::string& key, const std::string& path);
 
 
     };
@@ -265,7 +261,7 @@ namespace editor {
             void ChangeFont(const std::string& font = "");
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
-            void Render() override;
+            void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
     };
 
 
@@ -312,7 +308,7 @@ namespace editor {
                   line_weight;
 
             std::string currentShape;
-            std::shared_ptr<Geometry> m_debugGraphic;
+            std::shared_ptr<Geometry> debugGraphic;
 
             EmptyNode(bool init = true);
             ~EmptyNode();      
@@ -321,7 +317,7 @@ namespace editor {
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
-            void Render() override;
+            void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
 
     };
 
@@ -340,7 +336,7 @@ namespace editor {
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
-            void Render() override;
+            void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
 
     };
 
@@ -361,12 +357,14 @@ namespace editor {
             std::pair<std::string, std::string> spriteSheetKey;
             Math::Vector3 tint;
 
+            std::shared_ptr<Geometry> rectHandle;
+
             SpawnerNode(bool init = true);
             ~SpawnerNode();      
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
-            void Render() override;
+            void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
             void ApplyTexture(const std::string& asset);
             void CreateMarker();
 
@@ -374,7 +372,6 @@ namespace editor {
          
             unsigned int m_currentTexture = NULL;
             std::string m_spawnType, m_bodyType, m_category;
-            std::shared_ptr<Geometry> m_rectHandle;
             std::shared_ptr<Text> m_textHandle;
     };
 }

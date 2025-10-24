@@ -28,8 +28,8 @@ EmptyNode::EmptyNode(bool init):
 
 EmptyNode::~EmptyNode() {
 
-    if (m_debugGraphic)
-        System::Game::DestroyEntity(m_debugGraphic);
+    if (debugGraphic)
+        System::Game::DestroyEntity(debugGraphic);
 
     if (m_init)
         Editor::Log("Empty node " + name + " deleted.");
@@ -44,8 +44,8 @@ void EmptyNode::Reset(int component_type) {
     bool passAll = component_type == Component::NONE;
 
     if (component_type == Component::SHADER || passAll)
-        if (m_debugGraphic.get())
-                m_debugGraphic->SetShader("graphics");
+        if (debugGraphic.get())
+                debugGraphic->SetShader("graphics");
 
     if (component_type == Component::SCRIPT || passAll)
         behaviors.clear();
@@ -58,10 +58,10 @@ void EmptyNode::Reset(int component_type) {
 void EmptyNode::CreateShape(const std::string &shape)
 {
 
-    if (!m_debugGraphic) {
+    if (!debugGraphic) {
 
         if (shape == "rectangle")
-            m_debugGraphic = System::Game::CreateGeom(20.0f, 20.0f, 10.0f, 10.0f); 
+            debugGraphic = System::Game::CreateGeom(20.0f, 20.0f, 10.0f, 10.0f); 
 
         else if (shape == "ellipse") {}
 
@@ -128,13 +128,13 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
                 {
                     ImGui::SliderInt("depth", &depth, 0, 1000);
                     ImGui::SliderFloat("line weight", &line_weight, 0.1f, 3.0f); 
-                    ImGui::ColorEdit3("tint", (float*)&m_debugGraphic->tint); 
-                    ImGui::SliderFloat("alpha", &m_debugGraphic->alpha, 0.0f, 1.0f);
+                    ImGui::ColorEdit3("tint", (float*)&debugGraphic->tint); 
+                    ImGui::SliderFloat("alpha", &debugGraphic->alpha, 0.0f, 1.0f);
                     ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);  
                     ImGui::SliderFloat("position y", &positionY, -System::Window::s_width, System::Window::s_width); 
                 }
 
-                if (m_debugGraphic)
+                if (debugGraphic)
                 {
                     
                     ImGui::Checkbox("debug", &show_debug);
@@ -144,12 +144,12 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
                         ImGui::SliderFloat("width", &rectWidth, 10.0f, 1000.0f); 
                         ImGui::SliderFloat("height", &rectHeight, 10.0f, 1000.0f); 
 
-                        m_debugGraphic->SetSize(rectWidth, rectHeight);
+                        debugGraphic->SetSize(rectWidth, rectHeight);
                     }
 
                     if (currentShape == "ellipse") {
                         ImGui::SliderFloat("radius", &radius, 10.0f, 1000.0f);  
-                        m_debugGraphic->SetSize(radius);
+                        debugGraphic->SetSize(radius);
                     }
                 }
 
@@ -176,14 +176,15 @@ void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 //------------------------------------
 
 
-void EmptyNode::Render()
+void EmptyNode::Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY)
 {
-    if (m_debugGraphic && show_options)
+    if (debugGraphic && show_options)
     {
-        m_debugGraphic->renderable = show_debug;
+        debugGraphic->renderable = show_debug;
 
-        m_debugGraphic->SetPosition(positionX, positionY);
-        m_debugGraphic->SetDrawStyle(debug_fill ? 1 : 0); 
-        m_debugGraphic->SetThickness(line_weight);
+        debugGraphic->SetPosition(positionX + _positionX, positionY + _positionY);
+        debugGraphic->SetScale(debugGraphic->scale.x + _scaleX, debugGraphic->scale.y + _scaleY);
+        debugGraphic->SetDrawStyle(debug_fill ? 1 : 0); 
+        debugGraphic->SetThickness(line_weight);
     }
 }

@@ -798,7 +798,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 //------------------------------------
 
 
-void SpriteNode::Render()
+void SpriteNode::Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY)
 {
     //entity handle update
         
@@ -811,9 +811,9 @@ void SpriteNode::Render()
         spriteHandle->texture.V2 = V2;
 
         spriteHandle->SetFrame(currentFrame);
-        spriteHandle->SetScale(scaleX, scaleY);
-        spriteHandle->SetPosition(positionX, positionY);
-        spriteHandle->SetRotation(rotation); 
+        spriteHandle->SetScale(scaleX * _scaleX, scaleY * _scaleY);  
+        spriteHandle->SetPosition(positionX + _positionX, positionY + _positionY);   
+        spriteHandle->SetRotation(rotation + _rotation); 
         spriteHandle->SetDepth(depth);
         spriteHandle->SetFlip(flippedX, flippedY);
         spriteHandle->SetAlpha(alpha);

@@ -225,8 +225,7 @@ const std::string* Manager::GetFilePath(const std::string& key) {
 
 //--------------------------- 
 
-//parse CSV
-const std::vector<std::string> Manager::ParseCSV(const std::string& key, int index)
+const std::vector<std::string> Manager::ParseMapData(const std::string& key, int index)
 {
     std::vector<std::string> result;
     std::string line;
@@ -235,41 +234,64 @@ const std::vector<std::string> Manager::ParseCSV(const std::string& key, int ind
 
     const auto it = System::Application::resources->m_file_assets.find(key);
  
-    if (it->second.first == DATA && it != System::Application::resources->m_file_assets.end()) 
+    if (it->second.first == DATA && it != System::Application::resources->m_file_assets.end())  
     { 
-        std::ifstream in(it->second.second);
+        std::ifstream in;
 
-        if (System::Utils::str_endsWith(it->second.second, ".json")) //json array
+        //json array
+
+        if (System::Utils::str_endsWith(it->second.second, ".json")) 
         {
             #if USE_JSON == 1 
 
-                json data = json::parse(in);
-                std::stringstream ss;
+                in.open(it->second.second);
 
-                if (data.contains("layers")) 
-                    for (int i = 0; i < data["layers"].size(); i++) 
-                        if (index == i && data["layers"][i].contains("data")) 
+                if (in.is_open()) 
+                {
+                    json data = json::parse(in);
+                    std::stringstream ss;
+
+                    if (data.contains("layers")) 
+                        if (data["layers"][index].contains("data")) 
                         {
-                            for (auto& d : data["layers"][i]["data"]) { 
-                                if (d == 0)
-                                    d = -1;
+                            for (auto& d : data["layers"][index]["data"]) 
+                            { 
+                                int gid = static_cast<int>(d);
 
-                                ss << d << ",";
+                                //tiled uses 0 indexed gids
+
+                                if (gid == 0)
+                                   gid = -1;
+
+                               else 
+                                   gid = gid - 1; 
+
+                                ss << gid << ","; 
                             }
 
                             while(getline(ss, line))
                                 result.emplace_back(line);
                         }
-            
-            #endif
-                        
+                }
+
+            #else 
+                LOG("cannot parse map data. USE_JSON flag not enabled.");
+            #endif       
         }
 
-        else if (System::Utils::str_endsWith(it->second.second, ".csv")) //plain csv file
-            while(getline(in, line))
-                result.emplace_back(line + ",");
+        //plain csv file 
+
+        else if (System::Utils::str_endsWith(it->second.second, ".csv")) 
+        {
+            in.open(it->second.second);
+            
+            if (in.is_open()) 
+                while(getline(in, line))
+                    result.emplace_back(line + ",");
+        }
      
-        in.close();      
+        if (in.is_open())
+            in.close();      
     }
         
     return result; 

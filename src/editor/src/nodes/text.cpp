@@ -187,16 +187,16 @@ void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<No
 //-----------------------------
 
 
-void TextNode::Render()
+void TextNode::Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY)
 {
     //text transform
 
     if (textHandle)
     {
         textHandle->SetText(textBuf);
-        textHandle->SetScale(scaleX, scaleY);
-        textHandle->SetPosition(positionX, positionY);
-        textHandle->SetRotation(rotation);
+        textHandle->SetScale(scaleX * _scaleX, scaleY * _scaleY);
+        textHandle->SetPosition(positionX + _positionX, positionY + _positionY);
+        textHandle->SetRotation(rotation + _rotation);
         textHandle->SetTint(tint);
         textHandle->SetAlpha(alpha);
         textHandle->SetDepth(depth);

@@ -25,7 +25,7 @@ SpawnerNode::SpawnerNode(bool init):
     tint = { 1.0f, 1.0f, 1.0f }; 
     body = { Physics::Body::KINEMATIC, Physics::Body::Shape::BOX, false, false, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
-    m_rectHandle = nullptr;
+    rectHandle = nullptr;
     m_textHandle = nullptr;
 
     if (m_init) {
@@ -50,8 +50,8 @@ SpawnerNode::~SpawnerNode() {
 
 void SpawnerNode::Reset(int component_type)
 {
-    if (m_rectHandle)
-        System::Game::DestroyEntity(m_rectHandle);
+    if (rectHandle)
+        System::Game::DestroyEntity(rectHandle);
 
     if (m_textHandle)
         System::Game::DestroyEntity(m_textHandle);
@@ -69,13 +69,13 @@ void SpawnerNode::ApplyTexture(const std::string& asset) {
 
 
 void SpawnerNode::CreateMarker() {
-    m_rectHandle = System::Game::CreateGeom(0.0f, 0.0f, 80.0f, 80.0f);
+    rectHandle = System::Game::CreateGeom(0.0f, 0.0f, 80.0f, 80.0f);
     m_textHandle = System::Game::CreateText("spawner", 0.0f, 0.0f, "", 1);
 
-    m_rectHandle->SetTint({ 1.0f, 0.0f, 0.0f });
+    rectHandle->SetTint({ 1.0f, 0.0f, 0.0f });
     m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
 
-    System::Game::GetScene()->SetInteractive(m_rectHandle); 
+    System::Game::GetScene()->SetInteractive(rectHandle); 
 }
 
 
@@ -92,14 +92,14 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
         ImGui::PushID(("(Spawner) " + name).c_str());
 
-        std::string selText = (Editor::selectedEntity && m_rectHandle) && Editor::selectedEntity->ID == m_rectHandle->ID ? "<SELECTED> " : "";
+        std::string selText = (Editor::selectedEntity && rectHandle) && Editor::selectedEntity->ID == rectHandle->ID ? "<SELECTED> " : "";
 
         if (ImGui::TreeNode((selText + "(Spawner) " + name).c_str()))
         {
             Node::Update(node, arr);
 
-            if (ImGui::Button("Select") && m_rectHandle)
-                Editor::selectedEntity = m_rectHandle;
+            if (ImGui::Button("Select") && rectHandle)
+                Editor::selectedEntity = rectHandle;
 
             if (show_options)
             {
@@ -307,59 +307,59 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 //------------------------------------
 
 
-void SpawnerNode::Render()
+void SpawnerNode::Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY)
 {
-    if (m_rectHandle && m_textHandle) 
+    if (rectHandle && m_textHandle) 
     {
-        m_rectHandle->SetPosition(positionX, positionY);
-        m_textHandle->SetPosition(positionX + 8.0f, positionY + 30.0f);
+        rectHandle->SetPosition(positionX + _positionX, positionY + _positionY);
+        m_textHandle->SetPosition((positionX + _positionX) + 8.0f, (positionY + _positionY) + 30.0f);
 
         //color coded types
 
         switch (category) {
             case 0: default:
                 m_category = "red";
-                m_rectHandle->SetTint({ 1.0f, 0.0f, 0.0f }); 
+                rectHandle->SetTint({ 1.0f, 0.0f, 0.0f }); 
                 m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
             break;
             case 1: 
                 m_category = "orange";
-                m_rectHandle->SetTint({ 1.0f, 0.5f, 0.0f }); 
+                rectHandle->SetTint({ 1.0f, 0.5f, 0.0f }); 
                 m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
             break;
             case 2: 
                 m_category = "yellow";
-                m_rectHandle->SetTint({ 1.0f, 1.0f, 0.0f }); 
+                rectHandle->SetTint({ 1.0f, 1.0f, 0.0f }); 
                 m_textHandle->SetTint({ 0.0f, 1.0f, 0.0f });
             break; 
             case 3: 
                 m_category = "green";
-                m_rectHandle->SetTint({ 0.0f, 1.0f, 0.0f }); 
+                rectHandle->SetTint({ 0.0f, 1.0f, 0.0f }); 
                 m_textHandle->SetTint({ 1.0f, 0.0f, 0.0f });
             break; 
             case 4: 
                 m_category = "blue";
-                m_rectHandle->SetTint({ 0.0f, 0.0f, 1.0f }); 
+                rectHandle->SetTint({ 0.0f, 0.0f, 1.0f }); 
                 m_textHandle->SetTint({ 1.0f, 0.0f, 0.0f });
             break; 
             case 5: 
                 m_category = "indigo";
-                m_rectHandle->SetTint({ 0.5f, 0.0f, 0.5f });
+                rectHandle->SetTint({ 0.5f, 0.0f, 0.5f });
                 m_textHandle->SetTint({ 1.0f, 1.0f, 1.0f });
             break; 
             case 6: 
                 m_category = "violet";
-                m_rectHandle->SetTint({ 0.25f, 0.0f, 0.4f }); 
+                rectHandle->SetTint({ 0.25f, 0.0f, 0.4f }); 
                 m_textHandle->SetTint({ 1.0f, 1.0f, 1.0f });
             break; 
             case 7: 
                 m_category = "black";
-                m_rectHandle->SetTint({ 0.0f, 0.0f, 0.0f }); 
+                rectHandle->SetTint({ 0.0f, 0.0f, 0.0f }); 
                 m_textHandle->SetTint({ 1.0f, 1.0f, 1.0f });
             break; 
             case 8: 
                 m_category = "white";
-                m_rectHandle->SetTint({ 1.0f, 1.0f, 1.0f }); 
+                rectHandle->SetTint({ 1.0f, 1.0f, 1.0f }); 
                 m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
             break; 
         }

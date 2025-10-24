@@ -243,7 +243,7 @@ class Sprite : public Entity {
 
         std::shared_ptr<Sprite> Clone();
         
-        Sprite(const std::string& key, float x = 0.0f, float y = 0.0f, int frame = 0, bool isTile = false);
+        Sprite(const std::string& key, float x = 0.0f, float y = 0.0f, bool isTile = false);
 		Sprite(const std::string& key, const Math::Vector2& position);
         Sprite(const Sprite& sprite);
 	   

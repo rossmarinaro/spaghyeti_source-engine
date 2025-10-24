@@ -1217,38 +1217,40 @@ void EventListener::BuildAndRun()
 
         if (target.second->spritesheets.size())
         {
-
             for (const auto& spritesheet : target.second->spritesheets)
             {
-                
                 const std::string filepath = Editor::projectPath + spritesheet.second;
 
                 std::ifstream JSON(filepath);
-                json data = json::parse(JSON);
 
-                std::ostringstream frame_oss;
-                std::vector<std::string> framesToLoad;
-
-                if (data["frames"].size())
-                    for (const auto& frame : data["frames"])    
-                        if (frame.contains("frame")) 
-                        {
-                            int x = frame["frame"]["x"],
-                                y = frame["frame"]["y"],
-                                width = frame["frame"]["w"],
-                                height = frame["frame"]["h"];
-
-                            framesToLoad.emplace_back("{" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", 1, 1}");
-                        }
-                        
-                if (!framesToLoad.empty()) 
+                if (JSON.good())
                 {
-                    std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
-                    frame_oss << framesToLoad.back();
+                    json data = json::parse(JSON);
 
-                    if (std::find(loadedFrames.begin(), loadedFrames.end(), spritesheet.first) == loadedFrames.end()) {
-                        preload_queue << "  System::Resources::Manager::LoadFrames(\"" + spritesheet.first + "\", {" + frame_oss.str() + "});\n";
-                        loadedFrames.emplace_back(spritesheet.first);
+                    std::ostringstream frame_oss;
+                    std::vector<std::string> framesToLoad;
+
+                    if (data["frames"].size())
+                        for (const auto& frame : data["frames"])    
+                            if (frame.contains("frame")) 
+                            {
+                                int x = frame["frame"]["x"],
+                                    y = frame["frame"]["y"],
+                                    width = frame["frame"]["w"],
+                                    height = frame["frame"]["h"];
+
+                                framesToLoad.emplace_back("{" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", 1, 1}");
+                            }
+                            
+                    if (!framesToLoad.empty()) 
+                    {
+                        std::copy(framesToLoad.begin(), framesToLoad.end() - 1, std::ostream_iterator<std::string>(frame_oss, ", "));
+                        frame_oss << framesToLoad.back();
+
+                        if (std::find(loadedFrames.begin(), loadedFrames.end(), spritesheet.first) == loadedFrames.end()) {
+                            preload_queue << "  System::Resources::Manager::LoadFrames(\"" + spritesheet.first + "\", {" + frame_oss.str() + "});\n";
+                            loadedFrames.emplace_back(spritesheet.first);
+                        }
                     }
                 }
                 
@@ -1355,19 +1357,22 @@ void EventListener::BuildAndRun()
         command_queue << "   this->GetContext().physics->sleeping = " + phys_isSleeping + ";\n";
         command_queue << "   this->GetContext().physics->SetGravity(" + std::to_string(target.second->gravityX) + ", " + std::to_string(target.second->gravityY) + ");\n";
     
-                
         //command data, iterate over nodes and create objects
 
-        const std::function<void(std::vector<std::shared_ptr<Node>>&)> writeNodes = [&](std::vector<std::shared_ptr<Node>>& arr) -> void { 
-
+        const std::function<void(const std::vector<std::shared_ptr<Node>>&)> writeNodes = [&] (const std::vector<std::shared_ptr<Node>>& arr) -> void 
+        {
             for (const auto& node : arr)
             {
-
                 //load shaders
 
                 if (node->HasComponent(Component::SHADER) && node->shader.first.length())
                     preload_queue << "  Graphics::Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\", nullptr);\n";
+                
+                //--------------- group
 
+                if (node->type == Node::GROUP) 
+                    continue;
+                    
                 //--------------- sprite
 
                 if (node->type == Node::SPRITE)
@@ -1423,7 +1428,13 @@ void EventListener::BuildAndRun()
 
                     //sprite configurations
 
-                    const std::string isStroke = sn->isStroked ? "true" : "false";
+                    const std::string isStroke = sn->isStroked ? "true" : "false",
+                                      filtering = sn->filter_nearest ? "true" : "false",
+                                      cull = sn->cull ? "true" : "false";
+
+                    //maybe add texture wrapping too?
+
+                    command_queue << "   sprite_" + node->ID + "->texture.SetFiltering(" + filtering + ", " + filtering + ");\n";
 
                     command_queue << "   sprite_" + node->ID + "->SetFrame(" + std::to_string(sn->currentFrame) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
@@ -1445,13 +1456,6 @@ void EventListener::BuildAndRun()
                         command_queue << "   sprite_" + node->ID + "->SetAnimation(\"" + sn->anim_to_play_on_start.key + "\", " + is_yoyo + ", " + std::to_string(sn->anim_to_play_on_start.rate) + ", " + repeat + ");\n";
                     }
 
-                    const std::string filtering = sn->filter_nearest ? "true" : "false",
-                                      cull = sn->cull ? "true" : "false";
-
-                    //maybe add texture wrapping too?
-
-                    command_queue << "   sprite_" + node->ID + "->texture.SetFiltering(" + filtering + ", " + filtering + ");\n";
-
                     if (sn->lock_in_place) {
                         command_queue << "   sprite_" + node->ID + "->SetAsUI(true);\n";
                         command_queue << "   sprite_" + node->ID + "->SetScrollFactor({ 0.0f, 1.0f });\n";
@@ -1472,7 +1476,6 @@ void EventListener::BuildAndRun()
                         }
 
                         command_queue << "   for (const auto& body : sprite_" + node->ID + "->GetBodies())\n       body.first->SetFixedRotation(true);\n";
-
                     }
         
                     //shader
@@ -1518,7 +1521,7 @@ void EventListener::BuildAndRun()
 
                     const auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
-                    if (en->m_debugGraphic)
+                    if (en->debugGraphic)
                     {
                         //TODO: set shape
 
@@ -1529,8 +1532,8 @@ void EventListener::BuildAndRun()
 
                         if (en->currentShape.length()) {
                             command_queue << "   empty_" + node->ID + "->SetThickness(" + std::to_string(en->line_weight) + ");\n";
-                            command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->m_debugGraphic->tint.x) + ", " + std::to_string(en->m_debugGraphic->tint.y) + ", " + std::to_string(en->m_debugGraphic->tint.z) + "});\n";
-                            command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->m_debugGraphic->alpha) + ");\n";
+                            command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->debugGraphic->tint.x) + ", " + std::to_string(en->debugGraphic->tint.y) + ", " + std::to_string(en->debugGraphic->tint.z) + "});\n";
+                            command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->debugGraphic->alpha) + ");\n";
 
                             //shader
 
@@ -1576,14 +1579,13 @@ void EventListener::BuildAndRun()
                     {
                         for (int i = 0; i < tmn->layer; i++)
                         {
-
                             if (tmn->layers[i][2].length() && std::find(loadedFrames.begin(), loadedFrames.end(), tmn->layers[i][2]) == loadedFrames.end()) {
                                 preload_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
                                 loadedFrames.emplace_back(tmn->layers[i][2]);
                             }
                             
                             if (tmn->layers[i][0].length()) 
-                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][2] + "\", ""\"" + tmn->layers[i][0] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ");\n";
+                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][2] + "\", ""\"" + tmn->layers[i][0] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ", " + std::to_string(tmn->positionX) + ", " + std::to_string(tmn->positionY) + ", " + std::to_string(tmn->rotation) + ", " + std::to_string(tmn->scaleX) + ", " + std::to_string(tmn->scaleY) + ");\n";
                         }
 
                         //create map if layers are defined
@@ -1620,18 +1622,6 @@ void EventListener::BuildAndRun()
                     
                 }
 
-                //--------------- group
-
-                if (node->type == Node::GROUP) {
-
-                    const auto gn = std::dynamic_pointer_cast<GroupNode>(node);
-
-                    if (gn->_nodes.size())
-                        writeNodes(gn->_nodes);
-                }
-
-                std::string entity = Node::GetType(node->type) + "_" + node->ID;
-
                 if (node->type == Node::SPAWNER) 
                 {
                     const auto spawn_node = std::dynamic_pointer_cast<SpawnerNode>(node);
@@ -1645,6 +1635,8 @@ void EventListener::BuildAndRun()
                 }
 
                 //define behaviors
+
+                std::string entity = Node::GetType(node->type) + "_" + node->ID;
 
                 for (const auto& behavior : node->behaviors) {
                     transform(entity.begin(), entity.end(), entity.begin(), ::tolower);

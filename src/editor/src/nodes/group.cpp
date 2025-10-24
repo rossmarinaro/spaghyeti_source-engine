@@ -6,8 +6,7 @@ using namespace editor;
 
 
 GroupNode::GroupNode(bool init):  
-    Node(init, GROUP)
-{
+    Node(init, GROUP) {
     if (m_init)
         Editor::Log("Group node " + name + " created.");   
 }
@@ -88,21 +87,25 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
                 ImGui::EndMenu(); 
             }
 
+            if (show_options) { 
+                ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);
+                ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_height);
+                ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f);
+                ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f);
+                ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
+            }
+
             //update active nodes
         
             if (_nodes.size()) 
             {
                 int i = 0;
 
-                for (const auto &node : _nodes)
-                    if (node && node->active) 
-                    {
+                for (const auto& node : _nodes)
+                    if (node && node->active) {
                         ImGui::PushID(i);
-
                         i++;
-
                         node->Update(node, _nodes);
-
                         ImGui::PopID();
                     }
             }          
@@ -111,7 +114,6 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
         }
 
         ImGui::PopID();
-
     }
 
 }
@@ -120,12 +122,12 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 //------------------------------------ render active nodes
 
 
-void GroupNode::Render() {
-
+void GroupNode::Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY)
+{
     if (_nodes.size())
-        for (const auto &node : _nodes)
-            if (node && node->active)
-                node->Render();
+        for (const auto& node : _nodes)
+            if (node && node->active) 
+                node->Render(positionX, positionY, rotation, scaleX, scaleY);
 }
 
 

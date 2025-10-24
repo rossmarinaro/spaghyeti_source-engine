@@ -241,12 +241,11 @@ void Geometry::SetDrawStyle(int style)
 //-------------------------------------- standard sprite / tile
 
 
-Sprite::Sprite(const std::string& key, float x, float y, int frame, bool isTile): 
+Sprite::Sprite(const std::string& key, float x, float y, bool isTile): 
     Entity(SPRITE, x, y)
 {   
     this->key = key;
 
-    currentFrame = frame;   
     velocityX = 0.0f;
     velocityY = 0.0f; 
 
@@ -597,9 +596,7 @@ void Sprite::ReadSpritesheetData()
             frames = m_resourceData.size();
 
         #else 
-
             LOG("Sprite: an attempt to load JSON failed, because JSON has not been enabled.");
-            
         #endif
 
     }

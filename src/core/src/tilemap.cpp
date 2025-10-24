@@ -9,20 +9,23 @@
 #include "../../../build/sdk/include/app.h"
 
 
-//create layer from csv
 const bool MapManager::CreateLayer (
-
     const char* texture_key,
     const char* data_key,
     uint32_t mapWidth,
     uint32_t mapHeight,
     uint32_t tileWidth,
     uint32_t tileHeight,
-    uint32_t depth
+    uint32_t depth,
+    int index,
+    float posX,
+    float posY,
+    float rotation,
+    float scaleX,
+    float scaleY
 )
 {
-
-    auto data = System::Resources::Manager::ParseCSV(data_key);
+    auto data = System::Resources::Manager::ParseMapData(data_key, index);
 
     if (!data.size()) {                                       
         LOG("Tilemap: layer data not found.");
@@ -49,11 +52,8 @@ const bool MapManager::CreateLayer (
     for (int y = 0; y < mapHeight; ++y)
         for (int x = 0; x < mapWidth; ++x) 
         {
-
             if ((data.begin() + (x + y * mapWidth)) == data.end()) {
-      
                 LOG("Tilemap: index overflow, truncating map.");
-
                 return false;
             }
 
@@ -65,7 +65,6 @@ const bool MapManager::CreateLayer (
 
             if (tileType != -1) 
             {
-
                 bool flipX = false, 
                      flipY = false,
                      diag = false;
@@ -91,20 +90,20 @@ const bool MapManager::CreateLayer (
                     flipX = static_cast<std::string>(flags).substr(0, 1) == "1";
                     flipY = static_cast<std::string>(flags).substr(1, 1) == "1";
                     diag = static_cast<std::string>(flags).substr(2, 1) == "1";
-
                 }
 
                 //create tilesprite entity
 
-                auto tile = System::Game::CreateTileSprite(texture_key, x * tileWidth, y * tileHeight, tileType); 
+                const auto tile = System::Game::CreateTileSprite(texture_key, (x * tileWidth) + posX, (y * tileHeight) + posY, tileType); 
             
-                tile->name = (std::string)data_key;
-                
+                tile->SetName((std::string)data_key);
                 tile->SetDepth(depth); 
                 tile->SetFlip(flipX, flipY);  
+                tile->SetRotation(rotation); 
+                tile->SetScale(scaleX, scaleY); 
 
                 if (diag)
-                    tile->SetRotation(90);  
+                    tile->SetRotation(rotation + 90);  
 
                 //add layer to stack
 

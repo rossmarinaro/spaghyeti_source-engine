@@ -30,7 +30,21 @@ Node::Node(bool init, int type, const std::string& name):
     shadowColor = { 0.0f, 0.0f, 0.0f };
 
     this->type = type;
-    this->name = CheckName(name, nodes, nodes.size());
+    this->name = CheckName(name);
+}
+
+
+//---------------------------- check if name exists in node array / existing entities
+
+
+std::string Node::CheckName(const std::string& name) 
+{
+    const bool node_exists = std::find_if(nodes.begin(), nodes.end(), [&](const auto& node) { return node->name == name; }) != nodes.end();
+
+    if (node_exists)
+        return name + "_" + UUID::generate_uuid() + std::to_string(nodes.size()); 
+
+    return name;
 }
 
 
@@ -51,8 +65,7 @@ void Node::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>
         ImGui::EndMenu();
     }
 
-    if (type != GROUP)
-        ImGui::Checkbox("Edit", &show_options);
+    ImGui::Checkbox("Edit", &show_options);
 }
 
 
@@ -130,20 +143,17 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
         auto it = std::find_if(nodes.begin(), nodes.end(), [&](auto node) { return node->ID == *id; });
 
         if (it != nodes.end())
-            (*it)->name = CheckName(input_text, nodes, nodes.size());
+            (*it)->name = CheckName(input_text);
 
         else 
         {
             for (const auto& node : nodes)
-            {
                 if (node->type == GROUP) {
                     auto group = std::dynamic_pointer_cast<GroupNode>(node);
-                    for (auto it = group->_nodes.begin(); it != group->_nodes.end(); ++it)
-                        if ((*it)->ID == *id)
-                            (*it)->name = CheckName(input_text, group->_nodes, group->_nodes.size());
+                    for (auto g_it = group->_nodes.begin(); g_it != group->_nodes.end(); ++g_it)
+                        if ((*g_it)->ID == *id) 
+                            (*g_it)->name = CheckName(input_text);
                 }
-            }
-
         }
         
         Editor::Log("Node name changed to " + input_text);
@@ -242,7 +252,7 @@ void Node::ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
     if (ImGui::MenuItem("Duplicate")) {
         json data = WriteData(node);
-        ReadData(data, true, nullptr, arr, arr != nodes);
+        ReadData(data, true, nullptr, arr);
         Editor::Log("node " + name + " duplicated.");  
     }
 
@@ -359,8 +369,8 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
     {
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
-        if (en->m_debugGraphic)
-            en->m_debugGraphic->SetShader(name);
+        if (en->debugGraphic)
+            en->debugGraphic->SetShader(name);
     }
 }
 
@@ -484,11 +494,11 @@ json Node::WriteData(std::shared_ptr<Node>& node)
                 }
             },   
             { "stroke width", sn->strokeWidth },
-            { "positionX", sn->positionX },
-            { "positionY", sn->positionY },
-            { "rotation", sn->rotation },
-            { "scaleX", sn->scaleX },
-            { "scaleY", sn->scaleY },
+            { "positionX", sn->spriteHandle ? sn->spriteHandle->position.x : sn->positionX },
+            { "positionY", sn->spriteHandle ? sn->spriteHandle->position.y : sn->positionY },
+            { "rotation", sn->spriteHandle ? sn->spriteHandle->rotation : sn->rotation },
+            { "scaleX", sn->spriteHandle ? sn->spriteHandle->scale.x : sn->scaleX },
+            { "scaleY", sn->spriteHandle ? sn->spriteHandle->scale.y : sn->scaleY },
             { "flipX", sn->flippedX },
             { "flipY", sn->flippedY },
             { "depth", sn->depth },
@@ -569,6 +579,11 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             bodies.push_back({ { "body_width", body.width }, { "body_height", body.height }, { "bodyX", body.x }, { "bodyY", body.y } });
 
         data = {
+            { "position x", tmn->positionX },
+            { "position y", tmn->positionY },
+            { "rotation", tmn->rotation },
+            { "scale x", tmn->scaleX },
+            { "scale y", tmn->scaleY },
             { "layer", tmn->layer },
             { "layers", layers },
             { "map_width", tmn->map_width },
@@ -609,21 +624,23 @@ json Node::WriteData(std::shared_ptr<Node>& node)
         data = {
             { "debug graphics", en->show_debug },
             { "fill", en->debug_fill },
-            { "width", en->rectWidth },
-            { "height", en->rectHeight },
+            { "width", en->debugGraphic ? en->debugGraphic->width : en->rectWidth },
+            { "height", en->debugGraphic ? en->debugGraphic->height : en->rectHeight },
             { "radius", en->radius },
             { "shape", en->currentShape },
-            { "position x", en->positionX },
-            { "position y", en->positionY },
+            { "position x", en->debugGraphic ? en->debugGraphic->position.x : en->positionX },
+            { "position y", en->debugGraphic ? en->debugGraphic->position.y : en->positionY },
+            { "scale x", en->debugGraphic ? en->debugGraphic->scale.x : en->scaleX },
+            { "scale y", en->debugGraphic ? en->debugGraphic->scale.y : en->scaleY },
             { "line weight", en->line_weight },
             { "depth", en->depth },
             { "tint", {
-                    { "x", en->m_debugGraphic ? en->m_debugGraphic->tint.x : 0 },
-                    { "y", en->m_debugGraphic ? en->m_debugGraphic->tint.y : 0 },
-                    { "z", en->m_debugGraphic ? en->m_debugGraphic->tint.z : 0 }
+                    { "x", en->debugGraphic ? en->debugGraphic->tint.x : 0 },
+                    { "y", en->debugGraphic ? en->debugGraphic->tint.y : 0 },
+                    { "z", en->debugGraphic ? en->debugGraphic->tint.z : 0 }
                 }
             },
-            { "alpha", en->m_debugGraphic ? en->m_debugGraphic->alpha : 0 },
+            { "alpha", en->debugGraphic ? en->debugGraphic->alpha : 0 },
             { "components", {
                     { "script", {
                             { "exists", en->HasComponent(Component::SCRIPT) },
@@ -676,11 +693,11 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "stroke width", tn->strokeWidth },
             { "UIFlag", tn->UIFlag }, 
             { "alpha", tn->alpha },    
-            { "position x", tn->positionX },      
-            { "position y", tn->positionY }, 
-            { "rotation", tn->rotation },
-            { "scale x", tn->scaleX },     
-            { "scale y", tn->scaleY },
+            { "position x", tn->textHandle ? tn->textHandle->position.x : tn->positionX },      
+            { "position y", tn->textHandle ? tn->textHandle->position.y : tn->positionY }, 
+            { "rotation", tn->textHandle ? tn->textHandle->rotation : tn->rotation },
+            { "scale x", tn->textHandle ? tn->textHandle->scale.x : tn->scaleX },     
+            { "scale y", tn->textHandle ? tn->textHandle->scale.y : tn->scaleY },
             { "depth", tn->depth },
             { "character offset x", tn->charOffsetX },
             { "character offset y", tn->charOffsetY },
@@ -717,7 +734,14 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             });
         }
         
-        data = { { "nodes", nodeData } };
+        data = { 
+            { "position x", gn->positionX },      
+            { "position y", gn->positionY }, 
+            { "rotation", gn->rotation },
+            { "scale x", gn->scaleX },     
+            { "scale y", gn->scaleY },
+            { "nodes", nodeData } 
+        };
     }
 
     //--------------- spawner
@@ -729,8 +753,8 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
         data = {
    
-            { "position x", sn->positionX },      
-            { "position y", sn->positionY }, 
+            { "position x", sn->rectHandle ? sn->rectHandle->position.x : sn->positionX },      
+            { "position y", sn->rectHandle ? sn->rectHandle->position.y : sn->positionY }, 
             { "width", sn->width },      
             { "height", sn->height },
             { "alpha", sn->alpha },      
@@ -780,7 +804,7 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
 
 
-std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr, bool isChild)
+std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr)
 {
 
     try { 
@@ -809,7 +833,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn = Scene::CreateObject<SpriteNode>(_scene); 
 
            if (data.contains("name"))
-                sn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+                sn->name = data["name"];
 
             if (data.contains("positionX"))
                 sn->positionX = data["positionX"];
@@ -1024,7 +1048,22 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 tmn = Scene::CreateObject<TilemapNode>(_scene);  
 
             if (data.contains("name"))
-                tmn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+                tmn->name = data["name"];
+
+            if (data.contains("positionX"))
+                tmn->positionX = data["positionX"];
+
+            if (data.contains("positionY"))
+                tmn->positionY = data["positionY"];
+
+            if (data.contains("rotation"))
+                tmn->rotation = data["rotation"];
+
+            if (data.contains("scaleX"))
+                tmn->scaleX = data["scaleX"];
+
+            if (data.contains("scaleY"))
+                tmn->scaleY = data["scaleY"];    
 
             if (data.contains("map_width"))
                 tmn->map_width = data["map_width"];
@@ -1087,7 +1126,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 an = Make<AudioNode>(false, arr);  
 
             if (data.contains("name"))
-                an->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+                an->name = data["name"];
 
             if (data.contains("source name"))
                 an->audio_source_name = data["source name"];
@@ -1113,7 +1152,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 en = Scene::CreateObject<EmptyNode>(_scene);   
 
             if (data.contains("name"))
-                en->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+                en->name = data["name"];
 
             if (data.contains("debug graphics"))
                 en->show_debug = data["debug graphics"]; 
@@ -1146,11 +1185,11 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 en->CreateShape(data["shape"]);
 
-                if (en->m_debugGraphic) {
-                    en->m_debugGraphic->tint.x = data["tint"]["x"];
-                    en->m_debugGraphic->tint.y = data["tint"]["y"];
-                    en->m_debugGraphic->tint.z = data["tint"]["z"];
-                    en->m_debugGraphic->alpha = data["alpha"];
+                if (en->debugGraphic) {
+                    en->debugGraphic->tint.x = data["tint"]["x"];
+                    en->debugGraphic->tint.y = data["tint"]["y"];
+                    en->debugGraphic->tint.z = data["tint"]["z"];
+                    en->debugGraphic->alpha = data["alpha"];
                 }
             }
 
@@ -1200,7 +1239,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 tn = Scene::CreateObject<TextNode>(_scene);
 
             if (data.contains("name"))
-                tn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+                tn->name = data["name"];
 
             if (data.contains("content"))
                 tn->textBuf = data["content"];
@@ -1295,14 +1334,24 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 gn = Scene::CreateObject<GroupNode>(_scene);
             
             if (data.contains("name"))
-                gn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+                gn->name = data["name"];
 
-            if (data.contains("nodes") && data["nodes"].size())
+            if (data.contains("position x"))
+                gn->positionX = data["position x"];
+            if (data.contains("position y"))
+                gn->positionY = data["position y"];
+            if (data.contains("rotation"))
+                gn->rotation = data["rotation"];
+            if (data.contains("scale x"))
+                gn->scaleX = data["scale x"];
+            if (data.contains("scale y"))
+                gn->scaleY = data["scale y"];
+
+            if (data.contains("nodes") && data["nodes"].size()) 
                 for (auto& node : data["nodes"]) 
-                    ReadData(node["data"], makeNode, makeNode ? nullptr : _scene, gn->_nodes, true);
-
+                    ReadData(node["data"], makeNode, makeNode ? nullptr : _scene, gn->_nodes);
+            
             return gn;
-
         }
 
         //spawner
@@ -1320,7 +1369,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn = Scene::CreateObject<SpawnerNode>(_scene);
 
             if (data.contains("name"))
-                sn->name = CheckName(data["name"], isChild ? arr : makeNode ? nodes : _scene->nodes, isChild ? arr.size() : nodes.size());
+                sn->name = data["name"];
 
             if (data.contains("type of"))
                 sn->typeOf = data["type of"]; 
@@ -1343,8 +1392,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("animation key"))
                 sn->animationKey = data["animation key"]; 
 
-            if (data.contains("texture key")) 
-            {
+            if (data.contains("texture key")) {
                 sn->textureKey = data["texture key"];
                 
                 if (makeNode)

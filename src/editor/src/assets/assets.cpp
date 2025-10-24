@@ -204,7 +204,7 @@ const bool AssetManager::LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes)
 
             if (JSON.good()) {
                 json data = json::parse(JSON);
-                Node::ReadData(data, true, nullptr, nodes, nodes != Node::nodes);
+                Node::ReadData(data, true, nullptr, nodes);
             }
 
             JSON.close();

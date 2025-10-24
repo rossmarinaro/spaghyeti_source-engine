@@ -651,9 +651,8 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
 
     #if STANDALONE == 1
         element->ReadSpritesheetData();
+        element->SetFrame(frame);
     #endif
-
-    element->SetFrame(frame);
 
     return element;
 }
@@ -664,12 +663,12 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
 
 std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, float y, int frame)
 {
-
-    const auto ts = std::make_shared<Sprite>(key, x, y, frame, true);
+    const auto ts = std::make_shared<Sprite>(key, x, y, true);
 
     Application::game->currentScene->entities.emplace_back(ts);
 
     ts->ReadSpritesheetData();
+    ts->SetFrame(frame);
 
     return ts;
 }

@@ -39,7 +39,8 @@ namespace System {
                 static const BinaryResource* GetResource(const std::string& key);   
                 static const std::map<const std::string, std::pair<int, int>>* GetAnimations(const std::string& key);
                 static const std::vector<std::array<int, 6>>* GetRawSpritesheetData(const std::string& key);
-                static const std::vector<std::string> ParseCSV(const std::string& key, int index = 0);
+                //parse CSV or JSON map data array
+                static const std::vector<std::string> ParseMapData(const std::string& key, int index = 0);
 
                 static void RegisterTextures();
                 static void Clear(bool all = true);
