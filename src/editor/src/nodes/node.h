@@ -102,7 +102,7 @@ namespace editor {
             static inline int s_MAX_NODES = 100; 
             static inline std::vector<std::string> s_names;
             static const std::string Assign();
-            static std::string CheckName(const std::string& name);
+            static std::string CheckName(const std::string& name, std::vector<std::string> arr = s_names);
 
     };
 

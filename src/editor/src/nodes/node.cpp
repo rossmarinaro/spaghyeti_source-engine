@@ -37,15 +37,15 @@ Node::Node(bool init, int type, const std::string& name):
 //---------------------------- check if name exists in node array / existing entities
 
 
-std::string Node::CheckName(const std::string& name) 
+std::string Node::CheckName(const std::string& name, std::vector<std::string> arr) 
 {
-    const bool name_exists = std::find_if(s_names.begin(), s_names.end(), [&](const std::string& n) { return n == name; }) != s_names.end();
+    const bool name_exists = std::find_if(arr.begin(), arr.end(), [&](const std::string& n) { return n == name; }) != arr.end();
 
     if (name_exists) 
-        return name + "_" + UUID::generate_uuid() + std::to_string(nodes.size()); 
+        return name + "_" + UUID::generate_uuid() + std::to_string(arr.size()); 
     
     else        
-        s_names.emplace_back(name);
+        arr.emplace_back(name);
 
     return name;
 }
@@ -772,7 +772,6 @@ json Node::WriteData(std::shared_ptr<Node>& node)
 
 std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr)
 {
-
     try { 
 
         if (!data.contains("type")) {
@@ -780,10 +779,11 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             return nullptr;
         }
         
-        Scene* _scene; 
+        Scene* _scene;
+        std::vector<std::string> names; 
         
-        if (!makeNode)
-            _scene = static_cast<Scene*>(scene); 
+        if (!makeNode) 
+           _scene = static_cast<Scene*>(scene); 
 
         //sprite
 
@@ -799,7 +799,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn = Scene::CreateObject<SpriteNode>(_scene); 
 
             if (data.contains("name"))
-                sn->name = CheckName(data["name"]);
+                sn->name = CheckName(data["name"], makeNode ? s_names : names);
 
             if (data.contains("positionX"))
                 sn->positionX = data["positionX"];
@@ -1014,7 +1014,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 tmn = Scene::CreateObject<TilemapNode>(_scene);  
 
             if (data.contains("name"))
-                tmn->name = data["name"];
+                tmn->name = CheckName(data["name"], makeNode ? s_names : names);
 
             if (data.contains("positionX"))
                 tmn->positionX = data["positionX"];
@@ -1092,7 +1092,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 an = Make<AudioNode>(false, arr);  
 
             if (data.contains("name"))
-                an->name = data["name"];
+                an->name = CheckName(data["name"], makeNode ? s_names : names);
 
             if (data.contains("source name"))
                 an->audio_source_name = data["source name"];
@@ -1118,7 +1118,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 en = Scene::CreateObject<EmptyNode>(_scene);   
 
             if (data.contains("name"))
-                en->name = data["name"];
+                en->name = CheckName(data["name"], makeNode ? s_names : names);
 
             if (data.contains("debug graphics"))
                 en->show_debug = data["debug graphics"]; 
@@ -1205,7 +1205,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 tn = Scene::CreateObject<TextNode>(_scene);
 
             if (data.contains("name"))
-                tn->name = data["name"];
+                tn->name = CheckName(data["name"], makeNode ? s_names : names);
 
             if (data.contains("content"))
                 tn->textBuf = data["content"];
@@ -1300,7 +1300,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 gn = Scene::CreateObject<GroupNode>(_scene);
             
             if (data.contains("name"))
-                gn->name = CheckName(data["name"]);
+                gn->name = CheckName(data["name"], makeNode ? s_names : names);
 
             if (data.contains("position x"))
                 gn->positionX = data["position x"];
@@ -1335,7 +1335,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn = Scene::CreateObject<SpawnerNode>(_scene);
 
             if (data.contains("name"))
-                sn->name = data["name"];
+                sn->name = CheckName(data["name"], makeNode ? s_names : names);
 
             if (data.contains("type of"))
                 sn->typeOf = data["type of"]; 
