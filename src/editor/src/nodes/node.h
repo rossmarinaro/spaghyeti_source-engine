@@ -67,12 +67,12 @@ namespace editor {
             }
 
             static void ClearAll();
-            static void DeleteNode (std::shared_ptr<Node>& node);
+            static void DeleteNode (const std::string& id, std::vector<std::shared_ptr<Node>>& arr = nodes);
             static void ApplyShader(std::shared_ptr<Node> node, const std::string& name);
             static void LoadShader(std::shared_ptr<Node> node, const std::string& name, const std::string& vertPath, const std::string& fragPath);
             static std::shared_ptr<Node> ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr = nodes);
             static json WriteData(std::shared_ptr<Node>& node);
-            static std::shared_ptr<Node> Get(const std::string& id);
+            static std::shared_ptr<Node> Get(const std::string& id, std::vector<std::shared_ptr<Node>>& arr = nodes);
             static const std::string GetType(int type);
             
             void AddComponent(int type, bool init = true); 
@@ -89,19 +89,21 @@ namespace editor {
             };
 
             bool m_init;
-            
-            static int ChangeName(ImGuiInputTextCallbackData* data);
-            
+                        
             void SavePrefab();
             void ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
 
+            static int ChangeName(ImGuiInputTextCallbackData* data);
+
         private:
-        
+
             std::vector<std::shared_ptr<Component>> components; 
 
             static inline int s_MAX_NODES = 100; 
-            static const std::string s_Assign();
+            static inline std::vector<std::string> s_names;
+            static const std::string Assign();
             static std::string CheckName(const std::string& name);
+
     };
 
     //--------------------------------- sprite
@@ -337,7 +339,6 @@ namespace editor {
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
-
     };
 
 

@@ -7,9 +7,9 @@ using namespace editor;
 
 GroupNode::GroupNode(bool init):  
     Node(init, GROUP) {
-    if (m_init)
-        Editor::Log("Group node " + name + " created.");   
-}
+        if (m_init)
+            Editor::Log("Group node " + name + " created.");   
+    }
 
          
 //---------------------------
@@ -63,7 +63,7 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
                 ImGui::Separator();
                
-                if (ImGui::MenuItem("Group"))
+                if (ImGui::MenuItem("Group")) 
                     Node::Make<GroupNode>(true, _nodes);
 
                 if (ImGui::MenuItem("Empty"))
@@ -115,19 +115,20 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
         ImGui::PopID();
     }
-
 }
 
 
-//------------------------------------ render active nodes
+//------------------------------------ 
 
 
 void GroupNode::Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY)
-{
+{ 
+    //render any active child nodes
+
     if (_nodes.size())
         for (const auto& node : _nodes)
             if (node && node->active) 
-                node->Render(positionX, positionY, rotation, scaleX, scaleY);
+                node->Render(positionX + _positionX, positionY + _positionY, rotation + _rotation, scaleX * _scaleX, scaleY * _scaleY);
 }
 
 

@@ -12,7 +12,7 @@ using namespace editor;
 Node::Node(bool init, int type, const std::string& name):
     m_init(init)
 {
-    ID = s_Assign();
+    ID = Assign();
     created = false;
     active = true;
     show_options = false;
@@ -39,10 +39,13 @@ Node::Node(bool init, int type, const std::string& name):
 
 std::string Node::CheckName(const std::string& name) 
 {
-    const bool node_exists = std::find_if(nodes.begin(), nodes.end(), [&](const auto& node) { return node->name == name; }) != nodes.end();
+    const bool name_exists = std::find_if(s_names.begin(), s_names.end(), [&](const std::string& n) { return n == name; }) != s_names.end();
 
-    if (node_exists)
+    if (name_exists) 
         return name + "_" + UUID::generate_uuid() + std::to_string(nodes.size()); 
+    
+    else        
+        s_names.emplace_back(name);
 
     return name;
 }
@@ -87,44 +90,32 @@ const std::string Node::GetType(int type) {
 
 
 //--------------------------- get node
+    
 
-
-std::shared_ptr<Node> Node::Get(const std::string& id)    
+std::shared_ptr<Node> Node::Get(const std::string& id, std::vector<std::shared_ptr<Node>>& arr)    
 {
+    const auto it = std::find_if(arr.begin(), arr.end(), [&id](const auto& node){ return node->ID == id; });
 
-    auto it = std::find_if(nodes.begin(), nodes.end(), [&](std::shared_ptr<Node> n) { return n->ID == id; });
-
-    if (it != nodes.end()) 
-        return *it;
-
-    //else is child
-
-    for (const auto& node : nodes)
+    if (it != arr.end())
     {
-        if (node->type == GROUP) 
-        {        
-            auto group = std::dynamic_pointer_cast<GroupNode>(node);
+        auto node = *it;
 
-            for (auto it = group->_nodes.begin(); it != group->_nodes.end(); ++it)
-                if ((*it)->ID == id)
-                    return *it;
+        //get at root
+    
+        if (node->ID == id)
+            return node;
 
-            for (const auto& n : group->_nodes) 
-            {
-                if (n->type == GROUP)
-                {
-                    auto _group = std::dynamic_pointer_cast<GroupNode>(n);
+        //get subgroup
 
-                    for (auto it = _group->_nodes.begin(); it != _group->_nodes.end(); ++it)
-                        if ((*it)->ID == id)
-                            return *it;
-                }
-            };        
+        if (node->type == GROUP) {
+            const auto group = std::dynamic_pointer_cast<GroupNode>(node);
+            return Get(id, group->_nodes);
         }
     }
 
+    //else return null
+
     return nullptr;
-        
 }
 
 
@@ -133,30 +124,19 @@ std::shared_ptr<Node> Node::Get(const std::string& id)
 
 int Node::ChangeName(ImGuiInputTextCallbackData* data)
 {
-
     if (data->EventFlag == ImGuiInputTextFlags_CallbackCompletion)
     {
-
         std::string input_text = static_cast<std::string>(data->Buf); 
         const std::string* id = static_cast<std::string*>(data->UserData); 
 
-        auto it = std::find_if(nodes.begin(), nodes.end(), [&](auto node) { return node->ID == *id; });
+        const auto node = Get(*id);
 
-        if (it != nodes.end())
-            (*it)->name = CheckName(input_text);
-
-        else 
-        {
-            for (const auto& node : nodes)
-                if (node->type == GROUP) {
-                    auto group = std::dynamic_pointer_cast<GroupNode>(node);
-                    for (auto g_it = group->_nodes.begin(); g_it != group->_nodes.end(); ++g_it)
-                        if ((*g_it)->ID == *id) 
-                            (*g_it)->name = CheckName(input_text);
-                }
+        if (node) {
+            node->name = CheckName(input_text);
+            Editor::Log("Node name changed to " + input_text);
         }
-        
-        Editor::Log("Node name changed to " + input_text);
+        else
+            Editor::Log("Cannot change node name, node not found.");
 
         data->DeleteChars(0, data->BufTextLen);
     }
@@ -169,7 +149,7 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
 //--------------------------- assign UUID to node and increment global counter
 
 
-const std::string Node::s_Assign()
+const std::string Node::Assign()
 {
 
     if (nodes.size() > s_MAX_NODES) {
@@ -192,39 +172,34 @@ const std::string Node::s_Assign()
 //------------------------- delete
 
 
-void Node::DeleteNode (std::shared_ptr<Node>& node)
+void Node::DeleteNode (const std::string& id, std::vector<std::shared_ptr<Node>>& arr)
 {
+    auto node = Get(id);
 
-    node->active = false;
-
-    //delete all attached components
-
-    node->Reset();
-    node->components.clear();
-
-    //delete node instance 
- 
-    auto it = std::find(nodes.begin(), nodes.end(), node);
-
-    if (it != nodes.end())
-        nodes.erase(it);
-
-    else
+    if (node)
     {
-        for (const auto& n : nodes)
-        {
-            if (n->type == GROUP) 
-            {
-                auto group = std::dynamic_pointer_cast<GroupNode>(n);
+        node->active = false;
 
-                auto _it = std::find(group->_nodes.begin(), group->_nodes.end(), node);
+        const auto n_it = std::find(s_names.begin(), s_names.end(), node->name);
 
-                if (_it != group->_nodes.end()) 
-                    group->_nodes.erase(_it);
-            }
+        if (n_it != s_names.end()) 
+            s_names.erase(std::move(n_it));
+
+        //delete all attached components
+
+        node->Reset();
+        node->components.clear();
+
+        //delete node instance 
+
+        auto it = std::find(arr.begin(), arr.end(), node);
+
+        if (it != arr.end()) {
+            it = nodes.erase(std::move(it)); 
+            --it;
         }
-    }   
-
+           
+    }
 }
 
 
@@ -240,7 +215,7 @@ void Node::ClearAll() {
         node->Reset();
     
     nodes.clear();
-    
+    s_names.clear();
 }
 
 
@@ -262,7 +237,7 @@ void Node::ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
     if (ImGui::BeginMenu("Delete"))
     {
         if (ImGui::MenuItem("Are You Sure?")) 
-            DeleteNode(node);
+            DeleteNode(node->ID, arr);
 
         ImGui::EndMenu();
     }
@@ -335,14 +310,8 @@ const bool Node::HasComponent(int type) {
 //----------------------------- load custom shader
 
 
-void Node::LoadShader(
-    std::shared_ptr<Node> node, 
-    const std::string& name, 
-    const std::string& vertPath, 
-    const std::string& fragPath
-)
+void Node::LoadShader(std::shared_ptr<Node> node, const std::string& name, const std::string& vertPath, const std::string& fragPath)
 {
-       
     node->shader = { name, { vertPath, fragPath } };  
 
     Graphics::Shader::Load(name, vertPath.c_str(), fragPath.c_str());
@@ -356,17 +325,14 @@ void Node::LoadShader(
 
 void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name) 
 {
-
-    if (node->type == SPRITE) 
-    {
+    if (node->type == SPRITE) {
         auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
 
         if (sn->spriteHandle)
             sn->spriteHandle->SetShader(name);
     }
 
-    if (node->type == EMPTY) 
-    {
+    if (node->type == EMPTY) {
         auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
         if (en->debugGraphic)
@@ -826,14 +792,14 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             std::shared_ptr<SpriteNode> sn;
 
-            if (makeNode)
-                sn = Make<SpriteNode>(false, arr);   
+            if (makeNode) 
+                sn = Make<SpriteNode>(false, arr); 
             
             else 
                 sn = Scene::CreateObject<SpriteNode>(_scene); 
 
-           if (data.contains("name"))
-                sn->name = data["name"];
+            if (data.contains("name"))
+                sn->name = CheckName(data["name"]);
 
             if (data.contains("positionX"))
                 sn->positionX = data["positionX"];
@@ -1334,7 +1300,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 gn = Scene::CreateObject<GroupNode>(_scene);
             
             if (data.contains("name"))
-                gn->name = data["name"];
+                gn->name = CheckName(data["name"]);
 
             if (data.contains("position x"))
                 gn->positionX = data["position x"];
