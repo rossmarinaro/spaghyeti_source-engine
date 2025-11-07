@@ -268,26 +268,26 @@ void GUI::RenderNodes()
 
         ImGui::Separator();
 
-        if (ImGui::MenuItem("Group"))
-            Node::Make<GroupNode>();
+        if (ImGui::MenuItem("Group")) 
+            Node::Make<GroupNode>(true);
 
         if (ImGui::MenuItem("Empty"))
-            Node::Make<EmptyNode>(); 
+            Node::Make<EmptyNode>(true); 
 
         if (ImGui::MenuItem("Audio"))
-            Node::Make<AudioNode>(); 
+            Node::Make<AudioNode>(true); 
 
         if (ImGui::MenuItem("Text"))
-            Node::Make<TextNode>(); 
+            Node::Make<TextNode>(true); 
 
         if (ImGui::MenuItem("Sprite"))
-            Node::Make<SpriteNode>(); 
+            Node::Make<SpriteNode>(true); 
 
         if (ImGui::MenuItem("Tilemap"))
-            Node::Make<TilemapNode>(); 
+            Node::Make<TilemapNode>(true); 
 
         if (ImGui::MenuItem("Spawner"))
-            Node::Make<SpawnerNode>(); 
+            Node::Make<SpawnerNode>(true); 
 
         ImGui::EndMenu();
     }

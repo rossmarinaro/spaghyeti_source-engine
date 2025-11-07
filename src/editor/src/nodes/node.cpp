@@ -12,7 +12,13 @@ using namespace editor;
 Node::Node(bool init, int type, const std::string& name):
     m_init(init)
 {
-    ID = Assign();
+    std::string uuid = UUID::generate_uuid();
+
+    for (int i = 0; i < uuid.length(); i++)
+        if (uuid[i] == '-')
+            uuid[i] = '_'; 
+
+    ID = uuid;
     created = false;
     active = true;
     show_options = false;
@@ -30,24 +36,27 @@ Node::Node(bool init, int type, const std::string& name):
     shadowColor = { 0.0f, 0.0f, 0.0f };
 
     this->type = type;
-    this->name = CheckName(name);
+
+    if (init)
+        this->name = CheckName(name);
 }
 
 
 //---------------------------- check if name exists in node array / existing entities
 
 
-std::string Node::CheckName(const std::string& name, std::vector<std::string> arr) 
+std::string Node::CheckName(const std::string& name, std::vector<std::string>& arr) 
 {
-    const bool name_exists = std::find_if(arr.begin(), arr.end(), [&](const std::string& n) { return n == name; }) != arr.end();
+    std::string n = name;
 
-    if (name_exists) 
-        return name + "_" + UUID::generate_uuid() + std::to_string(arr.size()); 
-    
-    else        
-        arr.emplace_back(name);
+    const auto it = std::find_if(arr.begin(), arr.end(), [&](const std::string& n) { return n == name; });
 
-    return name;
+    if (it != arr.end()) 
+        n = System::Utils::ReplaceFrom(n, "-", "") + "_" + UUID::generate_uuid() + std::to_string(arr.size()); 
+
+    arr.emplace_back(n);
+
+    return n;
 }
 
 
@@ -58,7 +67,9 @@ void Node::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>
 {
     static char name_buf[32] = ""; 
 
-    ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &ID);
+    NodeInfo data = { ID, arr };
+
+    ImGui::InputText("name", name_buf, 32, ImGuiInputTextFlags_CallbackCompletion, ChangeName, &data);
     
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
         ImGui::SetTooltip("press tab to confirm name.");
@@ -86,6 +97,18 @@ const std::string Node::GetType(int type) {
         case TEXT: return "Text";
         case SPAWNER: return "Spawner";
     }
+}
+
+
+//---------------------------
+
+
+bool Node::CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr) {
+    if (init && arr.size() > s_MAX_NODES) {
+        Editor::Log("Max nodes reached.");
+        return false; 
+    }
+    return true;
 }
 
 
@@ -127,9 +150,9 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
     if (data->EventFlag == ImGuiInputTextFlags_CallbackCompletion)
     {
         std::string input_text = static_cast<std::string>(data->Buf); 
-        const std::string* id = static_cast<std::string*>(data->UserData); 
+        NodeInfo* info = static_cast<NodeInfo*>(data->UserData); 
 
-        const auto node = Get(*id);
+        const auto node = Get(info->ID, info->arr);
 
         if (node) {
             node->name = CheckName(input_text);
@@ -144,37 +167,12 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
     return 0;
 }
 
-
-
-//--------------------------- assign UUID to node and increment global counter
-
-
-const std::string Node::Assign()
-{
-
-    if (nodes.size() > s_MAX_NODES) {
-        Editor::Log("Max nodes reached.");
-        return nullptr; 
-    }
-
-    //generate UUID and replace hyphens with underscores
-
-    std::string uuid = UUID::generate_uuid();
-
-    for (int i = 0; i < uuid.length(); i++)
-        if (uuid[i] == '-')
-            uuid[i] = '_'; 
-            
-    return uuid;
-}
-
-
 //------------------------- delete
 
 
 void Node::DeleteNode (const std::string& id, std::vector<std::shared_ptr<Node>>& arr)
 {
-    auto node = Get(id);
+    auto node = Get(id, arr);
 
     if (node)
     {
@@ -195,10 +193,9 @@ void Node::DeleteNode (const std::string& id, std::vector<std::shared_ptr<Node>>
         auto it = std::find(arr.begin(), arr.end(), node);
 
         if (it != arr.end()) {
-            it = nodes.erase(std::move(it)); 
+            it = arr.erase(std::move(it)); 
             --it;
         }
-           
     }
 }
 
@@ -224,14 +221,17 @@ void Node::ClearAll() {
 
 void Node::ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
 {
-
-    if (ImGui::MenuItem("Duplicate")) {
+    if (ImGui::MenuItem("Duplicate")) 
+    {
         json data = WriteData(node);
-        ReadData(data, true, nullptr, arr);
-        Editor::Log("node " + name + " duplicated.");  
+        
+        if (ReadData(data, true, nullptr, arr)) 
+            Editor::Log("node " + node->name + " duplicated.");  
+        else
+            Editor::Log("node could not be duplicated.");
     }
 
-    if (type != AUDIO && type != TILEMAP && ImGui::MenuItem("Save prefab")) 
+    if (node->type != AUDIO && node->type != TILEMAP && ImGui::MenuItem("Save prefab")) 
         SavePrefab(); 
 
     if (ImGui::BeginMenu("Delete"))
@@ -798,6 +798,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             else 
                 sn = Scene::CreateObject<SpriteNode>(_scene); 
 
+            if (!sn)
+                return nullptr;
+
             if (data.contains("name"))
                 sn->name = CheckName(data["name"], makeNode ? s_names : names);
 
@@ -1013,6 +1016,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             else 
                 tmn = Scene::CreateObject<TilemapNode>(_scene);  
 
+            if (!tmn)
+                return nullptr;
+
             if (data.contains("name"))
                 tmn->name = CheckName(data["name"], makeNode ? s_names : names);
 
@@ -1089,7 +1095,10 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             std::shared_ptr<AudioNode> an;
 
             if (makeNode)
-                an = Make<AudioNode>(false, arr);  
+                an = Make<AudioNode>(false, arr); 
+                
+            if (!an)
+                return nullptr;
 
             if (data.contains("name"))
                 an->name = CheckName(data["name"], makeNode ? s_names : names);
@@ -1116,6 +1125,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             
             else 
                 en = Scene::CreateObject<EmptyNode>(_scene);   
+
+            if (!en)
+                return nullptr;
 
             if (data.contains("name"))
                 en->name = CheckName(data["name"], makeNode ? s_names : names);
@@ -1203,6 +1215,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             
             else 
                 tn = Scene::CreateObject<TextNode>(_scene);
+
+            if (!tn)
+                return nullptr;
 
             if (data.contains("name"))
                 tn->name = CheckName(data["name"], makeNode ? s_names : names);
@@ -1298,6 +1313,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             
             else 
                 gn = Scene::CreateObject<GroupNode>(_scene);
+
+            if (!gn)
+                return nullptr;
             
             if (data.contains("name"))
                 gn->name = CheckName(data["name"], makeNode ? s_names : names);
@@ -1333,6 +1351,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             
             else 
                 sn = Scene::CreateObject<SpawnerNode>(_scene);
+
+            if (!sn)
+                return nullptr;
 
             if (data.contains("name"))
                 sn->name = CheckName(data["name"], makeNode ? s_names : names);

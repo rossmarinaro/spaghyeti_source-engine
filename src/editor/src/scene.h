@@ -62,8 +62,8 @@ namespace editor {
 
             template <typename T>
             static inline std::shared_ptr<T> CreateObject(Scene* scene) {
-                auto node = std::make_shared<T>(false);
-                scene->nodes.push_back(node);
+                const auto node = std::make_shared<T>(false);
+                scene->nodes.emplace_back(node);
                 return node;
             }
 

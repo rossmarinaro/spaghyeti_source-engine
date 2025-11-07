@@ -17,6 +17,20 @@ namespace editor {
     //base node 
     class Node {
 
+        private:
+
+            struct NodeInfo {
+                std::string ID;
+                std::vector<std::shared_ptr<Node>> arr = nodes;
+            };
+
+            std::vector<std::shared_ptr<Component>> components; 
+
+            static inline int s_MAX_NODES = 256; 
+            static inline std::vector<std::string> s_names;
+            static std::string CheckName(const std::string& name, std::vector<std::string>& arr = s_names);
+            static bool CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr);
+
         public:
 
             enum { SPRITE, TILEMAP, TEXT, AUDIO, EMPTY, GROUP, SPAWNER };
@@ -59,12 +73,17 @@ namespace editor {
             static inline std::vector<std::shared_ptr<Node>> nodes;
 
             template <typename T>
-            static inline std::shared_ptr<T> Make(bool init = true, std::vector<std::shared_ptr<Node>>& arr = nodes) {
-                static_assert(std::is_base_of<Node, T>::value, "T must be a value of type Node!");
-                auto node = std::make_shared<T>(init);
-                arr != nodes ? arr.push_back(node) : nodes.push_back(node);
-                return node;
-            }
+                static inline std::shared_ptr<T> Make(bool init = true, std::vector<std::shared_ptr<Node>>& arr = nodes) 
+                {
+                    static_assert(std::is_base_of<Node, T>::value, "T must be a value of type Node!");
+
+                    if (!CheckCanAddNode(init, arr))
+                        return nullptr;                            
+                    
+                    const auto node = std::make_shared<T>(init);
+                    arr.emplace_back(node);
+                    return node;
+                }
 
             static void ClearAll();
             static void DeleteNode (const std::string& id, std::vector<std::shared_ptr<Node>>& arr = nodes);
@@ -94,16 +113,6 @@ namespace editor {
             void ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
 
             static int ChangeName(ImGuiInputTextCallbackData* data);
-
-        private:
-
-            std::vector<std::shared_ptr<Component>> components; 
-
-            static inline int s_MAX_NODES = 100; 
-            static inline std::vector<std::string> s_names;
-            static const std::string Assign();
-            static std::string CheckName(const std::string& name, std::vector<std::string> arr = s_names);
-
     };
 
     //--------------------------------- sprite
@@ -172,7 +181,7 @@ namespace editor {
 
             std::vector<Body> bodies;  
 
-            SpriteNode(bool init = true);
+            SpriteNode(bool init);
             ~SpriteNode();      
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
@@ -222,7 +231,7 @@ namespace editor {
             std::vector<std::array<int, 6>> offset;
             std::vector<Body> bodies;
 
-            TilemapNode(bool init = true);
+            TilemapNode(bool init);
             ~TilemapNode();
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
@@ -257,7 +266,7 @@ namespace editor {
             std::shared_ptr<Text> textHandle;
             std::string textBuf, currentFont;
 
-            TextNode(bool init = true);
+            TextNode(bool init);
             ~TextNode();     
 
             void ChangeFont(const std::string& font = "");
@@ -279,7 +288,7 @@ namespace editor {
             
             std::string audio_source_name;
           
-            AudioNode(bool init = true);
+            AudioNode(bool init);
             ~AudioNode();
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
@@ -312,7 +321,7 @@ namespace editor {
             std::string currentShape;
             std::shared_ptr<Geometry> debugGraphic;
 
-            EmptyNode(bool init = true);
+            EmptyNode(bool init);
             ~EmptyNode();      
 
             void CreateShape(const std::string& shape);
@@ -333,7 +342,7 @@ namespace editor {
 
             std::vector<std::shared_ptr<Node>> _nodes;
 
-            GroupNode(bool init = true);
+            GroupNode(bool init);
             ~GroupNode();      
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
@@ -360,7 +369,7 @@ namespace editor {
 
             std::shared_ptr<Geometry> rectHandle;
 
-            SpawnerNode(bool init = true);
+            SpawnerNode(bool init);
             ~SpawnerNode();      
 
             void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
