@@ -3,7 +3,6 @@
 #include "./node.h"
 #include "../editor.h"
 #include "../assets/assets.h"
-
 #include "../../../vendors/UUID.hpp"
 
 using namespace editor;
@@ -12,13 +11,7 @@ using namespace editor;
 Node::Node(bool init, int type, const std::string& name):
     m_init(init)
 {
-    std::string uuid = UUID::generate_uuid();
-
-    for (int i = 0; i < uuid.length(); i++)
-        if (uuid[i] == '-')
-            uuid[i] = '_'; 
-
-    ID = uuid;
+    ID = Entity::GenerateID();
     created = false;
     active = true;
     show_options = false;

@@ -72,6 +72,8 @@ class Entity {
 		void SetEnabled(bool isEnabled);
         void SetPosition(float x, float y);
 
+        static const std::string GenerateID();
+
         static inline int s_depth = 0, 
                           s_count = 0, 
                           s_rendered = 0;

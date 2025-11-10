@@ -70,8 +70,19 @@ namespace System {
             const inline std::shared_ptr<T> GetEntity(const std::string& nameOrID, bool isID = false) 
             {  
                 static_assert(std::is_base_of<Entity, T>::value, "T must be a value of type Entity!");
-                auto entity_it = std::find_if(entities.begin(), entities.end(), [&](auto entity) { return isID ? entity->ID == nameOrID : entity->name == nameOrID; });
-                auto UI_it = std::find_if(UI.begin(), UI.end(), [&](auto UI) { return isID ? UI->ID == nameOrID : UI->name == nameOrID; });
+
+                if (!isID) //duplicate names return nullptr
+                {
+                    int i = 0;
+                    for (const auto entity : entities)
+                        if (entity->name == nameOrID)
+                            i++;
+                    if (i >= 2)
+                        return nullptr;
+                }
+                
+                const auto entity_it = std::find_if(entities.begin(), entities.end(), [&](const auto entity) { return isID ? entity->ID == nameOrID : entity->name == nameOrID; });
+                const auto UI_it = std::find_if(UI.begin(), UI.end(), [&](const auto UI) { return isID ? UI->ID == nameOrID : UI->name == nameOrID; });
 
                 if (entity_it != entities.end())
                     return std::static_pointer_cast<T>(*entity_it);

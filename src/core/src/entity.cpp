@@ -21,7 +21,7 @@ Entity::Entity(int type):
     m_isStatic(false)
 {
     name = "Untitled_" + std::to_string(s_count);
-    ID = UUID::generate_uuid();
+    ID = GenerateID();
     s_count++;
     s_depth++;
 }
@@ -125,6 +125,20 @@ void Entity::SetPosition(float x, float y) {
     position.y = y; 
 }
 
+
+//------------------------------------ 
+
+
+const std::string Entity::GenerateID() 
+{
+  std::string uuid = UUID::generate_uuid();
+
+    for (int i = 0; i < uuid.length(); i++)
+        if (uuid[i] == '-')
+            uuid[i] = '_'; 
+    
+    return uuid;
+}
 
 
 /* GEOMETRY */
