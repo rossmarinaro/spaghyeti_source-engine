@@ -215,7 +215,6 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
             {
                 if (spriteHandle) 
                 {
-
                     if (ImGui::MenuItem("Animator"))
                         AddComponent(Component::ANIMATOR);
 

@@ -89,9 +89,9 @@ const std::string AssetManager::GetThumbnail(const std::string& asset) {
 //---------------------------------
 
 
-const bool AssetManager::SavePrefab(const std::string& nodeId)
+const bool AssetManager::SavePrefab(const std::string& nodeId, std::vector<std::shared_ptr<Node>>& arr)
 {
-    auto node = Node::Get(nodeId);
+    const auto node = Node::Get(nodeId, arr);
     
     if (!node)
         return false;
@@ -148,10 +148,8 @@ const bool AssetManager::SavePrefab(const std::string& nodeId)
         ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
         ofn.lpstrDefExt = NULL;
 
-        if (GetSaveFileName(&ofn) == TRUE) 
-        {
+        if (GetSaveFileName(&ofn) == TRUE) {
             std::filesystem::path result((const char*)ofn.lpstrFile);
-            
             if (saveFile(result.string() + ".prefab"))
                 return true;
         }
@@ -160,7 +158,7 @@ const bool AssetManager::SavePrefab(const std::string& nodeId)
     }
 
     catch (std::runtime_error& err) {
-        Editor::Log("error saving prefab: " + (std::string)err.what());
+        Editor::Log("Runtime error saving prefab: " + (std::string)err.what());
         return false;
     }
 }

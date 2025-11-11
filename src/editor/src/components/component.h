@@ -24,6 +24,7 @@ namespace editor {
             void Make();
 
             static const std::string Get(int type);
+            static void ApplyAnimations(bool init = false);
         
 
         private:

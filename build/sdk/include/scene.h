@@ -15,7 +15,7 @@ namespace System {
             struct Spawn 
             {
                 int type;
-                float posX, posY, width, height, alpha;
+                float posX, posY, width, height, spawn_width, spawn_height, alpha;
                 bool loop, can_create;
                 std::string filename, index;
                 std::vector<std::pair<std::string, bool>> behaviors_attached;

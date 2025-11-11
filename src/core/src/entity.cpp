@@ -16,8 +16,9 @@
 
 //---------------------------------- empty entity
 
-Entity::Entity(int type): 
+Entity::Entity(int type, bool isSpawn): 
     m_type(type),
+    m_is_spawn(isSpawn),
     m_isStatic(false)
 {
     name = "Untitled_" + std::to_string(s_count);
@@ -30,8 +31,9 @@ Entity::Entity(int type):
 //------------------------------------ active entity 
 
 
-Entity::Entity(int type, float x, float y):
+Entity::Entity(int type, float x, float y, bool isSpawn):
     m_type(type),
+    m_is_spawn(isSpawn),
     m_isStatic(false)
 { 
     position = { x, y };
@@ -145,8 +147,8 @@ const std::string Entity::GenerateID()
 
 
 //quad
-Geometry::Geometry(float x, float y, float width, float height): 
-    Entity(GEOMETRY, x, y),
+Geometry::Geometry(float x, float y, float width, float height, bool isSpawn): 
+    Entity(GEOMETRY, x, y, isSpawn),
         m_type(QUAD)
 { 
     this->width = width;
@@ -255,8 +257,8 @@ void Geometry::SetDrawStyle(int style)
 //-------------------------------------- standard sprite / tile
 
 
-Sprite::Sprite(const std::string& key, float x, float y, bool isTile): 
-    Entity(SPRITE, x, y)
+Sprite::Sprite(const std::string& key, float x, float y, bool isSpawn, bool isTile): 
+    Entity(SPRITE, x, y, isSpawn)
 {   
     this->key = key;
 

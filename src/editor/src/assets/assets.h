@@ -32,7 +32,7 @@ namespace editor {
             static void Register(const std::string& key);
             static bool LoadAsset(const std::string& asset);
             
-            static const bool SavePrefab(const std::string& nodeId);
+            static const bool SavePrefab(const std::string& nodeId, std::vector<std::shared_ptr<Node>>& arr);
             static const bool LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes = Node::nodes);
 
             static const std::string GetThumbnail(const std::string& asset);

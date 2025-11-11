@@ -33,7 +33,7 @@ entity_behaviors::Enemy::Enemy(std::shared_ptr<Entity> entity, const std::string
 
 void entity_behaviors::Enemy::Initialize(std::shared_ptr<Entity> entity)
 {
-    const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(m_key);
+    const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(ID, true);
 
     if (!sprite)
         return;
@@ -77,7 +77,7 @@ void entity_behaviors::Enemy::Update()
     if (!active || !System::Game::GetBehavior<Gameplay>()->gameState)
         return;
 
-    const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(m_key);
+    const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(ID, true);
     const auto playerBehavior = System::Game::GetBehavior<PlayerController>();
     const auto player = System::Game::GetScene()->GetEntity<Sprite>("player");
 

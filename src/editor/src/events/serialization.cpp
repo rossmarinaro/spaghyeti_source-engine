@@ -201,9 +201,8 @@ void EventListener::Serialize(json& data, bool newScene)
             data["scenes"] = scenes;
         }
 
-        for (auto& node : Node::nodes)
+        for (const auto& node : Node::nodes)
         {
-
             if (node->type == Node::SPRITE)
                 sprites.push_back(Node::WriteData(node));
 

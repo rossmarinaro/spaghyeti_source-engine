@@ -207,7 +207,6 @@ void editor::GUI::ShowSettings()
         
     if (ImGui::BeginMenu("Load Data"))
     {
-
         //preload assets
 
         if (ImGui::BeginMenu("preload assets"))
@@ -275,7 +274,6 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("preload shaders"))
         {
-
             const auto iterate = [&] (const std::string& type, std::string& p, int index) -> void 
             {
 
@@ -391,7 +389,6 @@ void editor::GUI::ShowSettings()
 
             for (auto& spritesheet : session->spritesheets)
             {
-
                 ImGui::PushID(i);
 
                 i++;
@@ -526,18 +523,7 @@ void editor::GUI::ShowSettings()
             }
 
             if (ImGui::Button("apply"))
-            {
-                for (const auto& animation : session->animations) {
-
-                    if ((!animation.first.length()) || 
-                        std::adjacent_find(session->animations.begin(), session->animations.end()) != session->animations.end())
-                        break;
-
-                    session->animations_applied = true;
-
-                    Editor::Log("animation: " + animation.first + " added.");
-                }
-            }
+                Component::ApplyAnimations();
 
             ImGui::EndMenu();
         }

@@ -225,7 +225,7 @@ void Node::ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
     }
 
     if (node->type != AUDIO && node->type != TILEMAP && ImGui::MenuItem("Save prefab")) 
-        SavePrefab(); 
+        SavePrefab(arr); 
 
     if (ImGui::BeginMenu("Delete"))
     {
@@ -316,18 +316,16 @@ void Node::LoadShader(std::shared_ptr<Node> node, const std::string& name, const
 //------------------------------- apply shaders
 
 
-void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name) 
+void Node::ApplyShader(std::shared_ptr<Node>& node, const std::string& name) 
 {
     if (node->type == SPRITE) {
-        auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
-
+        const auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
         if (sn->spriteHandle)
             sn->spriteHandle->SetShader(name);
     }
 
     if (node->type == EMPTY) {
-        auto en = std::dynamic_pointer_cast<EmptyNode>(node);
-
+        const auto en = std::dynamic_pointer_cast<EmptyNode>(node);
         if (en->debugGraphic)
             en->debugGraphic->SetShader(name);
     }
@@ -337,9 +335,9 @@ void Node::ApplyShader(std::shared_ptr<Node> node, const std::string& name)
 //---------------------------------- save prefab
 
 
-void Node::SavePrefab() {
+void Node::SavePrefab(std::vector<std::shared_ptr<Node>>& arr) {
 
-    if (AssetManager::SavePrefab(ID))
+    if (AssetManager::SavePrefab(ID, arr))
         Editor::Log("Prefab " + name + " saved.");
     else    
         Editor::Log("There was a problem saving prefab.");
@@ -349,9 +347,8 @@ void Node::SavePrefab() {
 //--------------------------------- record current captured editor settings per node
 
 
-json Node::WriteData(std::shared_ptr<Node>& node)
+json Node::WriteData(const std::shared_ptr<Node>& node)
 {
-
     json data;
 
     //scripts
@@ -679,11 +676,11 @@ json Node::WriteData(std::shared_ptr<Node>& node)
     if (node->type == GROUP)
     {
 
-        auto gn = std::dynamic_pointer_cast<GroupNode>(node);
+        const auto gn = std::dynamic_pointer_cast<GroupNode>(node);
 
         json nodeData = json::array();
 
-        for (auto& _node : gn->_nodes) 
+        for (const auto& _node : gn->_nodes) 
         {
             json _data = WriteData(_node);
 
@@ -716,6 +713,8 @@ json Node::WriteData(std::shared_ptr<Node>& node)
             { "position y", sn->rectHandle ? sn->rectHandle->position.y : sn->positionY }, 
             { "width", sn->width },      
             { "height", sn->height },
+            { "spawn width", sn->spawnWidth },      
+            { "spawn height", sn->spawnHeight },
             { "alpha", sn->alpha },      
             { "loop", sn->loop },
             { "type of", sn->typeOf }, 
@@ -917,16 +916,32 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 if (data["components"]["animator"]["exists"]) 
                 {
                     sn->AddComponent(Component::ANIMATOR, false);
+                    const auto key_it = std::find_if(Editor::Get()->animations.begin(), Editor::Get()->animations.end(), [&](const auto& anim){ return anim.first == sn->key; });  
+                    std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>> animation_group = { sn->key, {}};
+                    if (key_it == Editor::Get()->animations.end())
+                        Editor::Get()->animations.emplace_back(animation_group);
 
-                    for (const auto& anim : data["components"]["animator"]["animations"]) {  
+                    for (const auto& anim : data["components"]["animator"]["animations"]) 
+                    {  
+                        if (key_it != Editor::Get()->animations.end()) 
+                        {
+                            const std::pair<std::string, std::pair<int, int>> animation = { anim["key"], { anim["start"], anim["end"] } };
+         
+                            animation_group.second.emplace_back(animation);
+                            std::sort(animation_group.second.begin(), animation_group.second.end());
+                            animation_group.second.erase(std::unique(animation_group.second.begin(), animation_group.second.end()), animation_group.second.end());
+                        }
+                            
                         sn->animations.push_back({ anim["key"], anim["start"], anim["end"], anim["rate"], anim["repeat"], anim["yoyo"] });
                         sn->ApplyAnimation(anim["key"]);
                     }
-                 
+          
                     sn->anim_to_play_on_start.key = data["components"]["animator"]["on start"]["key"];
                     sn->anim_to_play_on_start.rate = data["components"]["animator"]["on start"]["rate"];
                     sn->anim_to_play_on_start.repeat = data["components"]["animator"]["on start"]["repeat"];
                     sn->anim_to_play_on_start.yoyo = data["components"]["animator"]["on start"]["yoyo"];
+
+                    //Component::ApplyAnimations(true);
 
                 }
 
@@ -1393,6 +1408,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("height"))
                 sn->height = data["height"];  
+
+            if (data.contains("spawn width"))
+                sn->spawnWidth = data["spawn width"];   
+
+            if (data.contains("spawn height"))
+                sn->spawnHeight = data["spawn height"];  
 
             if (data.contains("body")) {
                 sn->body.exist = data["body"]["exist"]; 

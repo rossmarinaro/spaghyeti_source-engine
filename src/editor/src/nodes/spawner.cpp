@@ -17,9 +17,11 @@ SpawnerNode::SpawnerNode(bool init):
     m_category = "red";
     textureKey = "";
     behaviorKey = "";
-    animationKey = "";
+    animationKey = ""; 
     width = 0.0f;
     height = 0.0f;
+    spawnWidth = System::Window::s_scaleWidth;
+    spawnHeight = System::Window::s_scaleHeight;
     loop = false;
     alpha = 1.0f;
     tint = { 1.0f, 1.0f, 1.0f }; 
@@ -287,8 +289,10 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
                     ImGui::SliderFloat("height", &height, -System::Window::s_height, System::Window::s_height); 
                 }
 
-                ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);  
-                ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_height); 
+                ImGui::SliderFloat("position x", &positionX, 0.0f, System::Window::s_width);  
+                ImGui::SliderFloat("position y", &positionY, 0.0f, System::Window::s_height); 
+                ImGui::SliderFloat("spawn width", &spawnWidth, 0.0f, System::Window::s_width);  
+                ImGui::SliderFloat("spawn height", &spawnHeight, 0.0f, System::Window::s_height); 
                 ImGui::ColorEdit3("tint", (float*)&tint); 
                 ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
                 ImGui::Checkbox("loop", &loop);

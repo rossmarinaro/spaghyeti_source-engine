@@ -299,14 +299,14 @@ void Game::UpdateFrame()
         if (currentScene->cullPosition)
             for (auto& spawn : currentScene->spawns)
             {
-                if (Math::distanceBetween(currentScene->cullPosition->x - spawn.posX) >= Window::s_scaleWidth * 1.5f && spawn.loop)  
+                if (Math::distanceBetween(currentScene->cullPosition->x - spawn.posX) >= spawn.spawn_width * 1.5f && spawn.loop)  
                     spawn.can_create = true;
 
                 //create / runtime instantiation of game objects
 
                 if (spawn.can_create && 
-                    currentScene->cullPosition->x >= spawn.posX - (Window::s_scaleWidth) && currentScene->cullPosition->x <= spawn.posX + (Window::s_scaleWidth) &&
-                    currentScene->cullPosition->y >= spawn.posY - (Window::s_scaleHeight) && currentScene->cullPosition->y <= spawn.posY + (Window::s_scaleHeight)
+                    currentScene->cullPosition->x >= spawn.posX - spawn.spawn_width && currentScene->cullPosition->x <= spawn.posX + spawn.spawn_width &&
+                    currentScene->cullPosition->y >= spawn.posY - spawn.spawn_height && currentScene->cullPosition->y <= spawn.posY + spawn.spawn_height
                 ) 
                 {
                     if (std::find_if(GetScene()->entities.begin(), GetScene()->entities.end(), [&spawn](std::shared_ptr<Entity> e) { return e->name == spawn.index; }) != System::Game::GetScene()->entities.end()) 
@@ -320,7 +320,7 @@ void Game::UpdateFrame()
                     {
                         case Entity::SPRITE: 
 
-                            entity = CreateSprite(spawn.filename, spawn.posX, spawn.posY); 
+                            entity = CreateSprite(spawn.filename, spawn.posX, spawn.posY, 0, 1.0f, 1, true); 
 
                             //apply physics body to spawned entity
 
@@ -335,11 +335,11 @@ void Game::UpdateFrame()
                                     spawn.posY, 
                                     spawn.body.w, 
                                     spawn.body.h, 
-                                    spawn.body.is_sensor,                   
+                                    spawn.body.is_sensor, 
+                                    1,                  
                                     spawn.body.density, 
                                     spawn.body.friction, 
-                                    spawn.body.restitution,
-                                    1
+                                    spawn.body.restitution
                                 ), { 
                                     spawn.body.xOff, 
                                     spawn.body.yOff, 
@@ -350,7 +350,7 @@ void Game::UpdateFrame()
                             
                         break;
                         case Entity::GEOMETRY: 
-                            entity = CreateGeom(spawn.posX, spawn.posY, spawn.width, spawn.height); 
+                            entity = CreateGeom(spawn.posX, spawn.posY, spawn.width, spawn.height, 1, false, true); 
                         break;
                         default: LOG("Spawner: failed to spawn, invalid enum type."); break;
                     }
@@ -616,10 +616,10 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
 //----------------------------- sprite
 
-std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, float y, int frame, float scale, int layer)
+std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, float y, int frame, float scale, int layer, bool isSpawn)
 {
 
-    const auto sprite = std::make_shared<Sprite>(key, x, y);
+    const auto sprite = std::make_shared<Sprite>(key, x, y, isSpawn);
 
     if (layer == 1)
         Application::game->currentScene->entities.emplace_back(sprite);
@@ -663,7 +663,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
 
 std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, float y, int frame)
 {
-    const auto ts = std::make_shared<Sprite>(key, x, y, true);
+    const auto ts = std::make_shared<Sprite>(key, x, y, false, true);
 
     Application::game->currentScene->entities.emplace_back(ts);
 
@@ -694,9 +694,9 @@ std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, floa
 //----------------------------- quad
 
 
-std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height, int layer, bool isStatic)
+std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height, int layer, bool isStatic, bool isSpawn)
 {
-    const auto geom = std::make_shared<Geometry>(x, y, width, height);
+    const auto geom = std::make_shared<Geometry>(x, y, width, height, isSpawn);
 
     if (isStatic)
         geom->SetStatic(true);
@@ -738,6 +738,8 @@ void Game::CreateSpawn(
     float y, 
     float width, 
     float height, 
+    float spawn_width, 
+    float spawn_height, 
     const Math::Vector3& tint, 
     float alpha, 
     bool loop, 
@@ -754,6 +756,8 @@ void Game::CreateSpawn(
     spawn.posY = y; 
     spawn.width = width;
     spawn.height = height;
+    spawn.spawn_width = spawn_width;
+    spawn.spawn_height = spawn_height;
     spawn.tint = tint;
     spawn.alpha = alpha;
     spawn.loop = loop;

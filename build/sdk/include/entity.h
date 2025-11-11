@@ -10,6 +10,8 @@
 //base gameobject entity class
 class Entity {
 
+    bool m_is_spawn;
+
     //key val data to be assigned to entity object
 
 	std::map<std::string, std::any> m_data;
@@ -45,6 +47,7 @@ class Entity {
         }
 
         inline const int GetType() { return m_type; }
+        inline const bool IsSpawn() { return m_is_spawn; }
 		inline void SetDepth(int depth) { this->depth = depth; }
 		inline void SetAlpha(float alpha) { this->alpha = alpha; }
 		inline void SetRotation(float rotation) { this->rotation = rotation; }
@@ -60,9 +63,9 @@ class Entity {
 		 
 		virtual void Render() {}
         virtual ~Entity() { s_count--; }
-  
-		Entity(int type);
-		Entity(int type, float x, float y);
+
+		Entity(int type, bool isSpawn = false);
+		Entity(int type, float x, float y, bool isSpawn = false);
         
         const bool IsSprite();
         void SetShader(const std::string& key);
@@ -99,7 +102,7 @@ class Geometry : public Entity {
 
 		//quad
 
-		Geometry(float x, float y, float width, float height);
+		Geometry(float x, float y, float width, float height, bool isSpawn = false);
 
         //TODO: circle
 
@@ -245,7 +248,7 @@ class Sprite : public Entity {
 
         std::shared_ptr<Sprite> Clone();
         
-        Sprite(const std::string& key, float x = 0.0f, float y = 0.0f, bool isTile = false);
+        Sprite(const std::string& key, float x = 0.0f, float y = 0.0f, bool isSpawn = false, bool isTile = false);
 		Sprite(const std::string& key, const Math::Vector2& position);
         Sprite(const Sprite& sprite);
 	   

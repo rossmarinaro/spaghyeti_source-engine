@@ -87,10 +87,10 @@ namespace editor {
 
             static void ClearAll();
             static void DeleteNode (const std::string& id, std::vector<std::shared_ptr<Node>>& arr = nodes);
-            static void ApplyShader(std::shared_ptr<Node> node, const std::string& name);
+            static void ApplyShader(std::shared_ptr<Node>& node, const std::string& name);
             static void LoadShader(std::shared_ptr<Node> node, const std::string& name, const std::string& vertPath, const std::string& fragPath);
             static std::shared_ptr<Node> ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr = nodes);
-            static json WriteData(std::shared_ptr<Node>& node);
+            static json WriteData(const std::shared_ptr<Node>& node);
             static std::shared_ptr<Node> Get(const std::string& id, std::vector<std::shared_ptr<Node>>& arr = nodes);
             static const std::string GetType(int type);
             
@@ -109,7 +109,7 @@ namespace editor {
 
             bool m_init;
                         
-            void SavePrefab();
+            void SavePrefab(std::vector<std::shared_ptr<Node>>& arr);
             void ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
 
             static int ChangeName(ImGuiInputTextCallbackData* data);
@@ -359,7 +359,7 @@ namespace editor {
         public:
 
             int typeOf, category;
-            float width, height, alpha;
+            float width, height, spawnWidth, spawnHeight, alpha; 
             bool loop;
             System::Scene::Spawn::Body body;
 

@@ -211,3 +211,24 @@ void Component::Make()
 }
 
 
+//-------------------------------
+
+
+void Component::ApplyAnimations(bool init) 
+{
+    const auto session = Editor::Get();
+
+    for (const auto& animation : session->animations) {
+
+        if ((!animation.first.length()) || 
+            std::adjacent_find(session->animations.begin(), session->animations.end()) != session->animations.end()) {
+                Editor::Log("error applying animations, remove duplicates.");
+                break;
+            }
+
+        session->animations_applied = true;
+
+        if (!init)
+            Editor::Log("animation: " + animation.first + " added.");
+    }
+}
