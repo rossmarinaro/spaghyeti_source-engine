@@ -274,6 +274,36 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("preload shaders"))
         {
+            if (ImGui::Button("add"))
+                session->shaders.push_back({ "", { "none selected", "none selected" }});
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("delete")) {
+                std::string key = session->shaders.back().first;
+                session->shaders.pop_back();
+                session->shaders_applied = false;
+                Editor::Log("shader: " + key + " removed.");
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("apply"))
+            {
+                for (const auto& shader : session->shaders) {
+
+                    if ((!shader.first.length() || shader.second.first == "none selected" || shader.second.second == "none selected") || 
+                        std::adjacent_find(session->shaders.begin(), session->shaders.end()) != session->shaders.end())
+                        break;
+
+                    session->shaders_applied = true;
+
+                    Editor::Log("shader: " + shader.first + " added.");
+                }
+            }
+
+            ImGui::Separator();
+
             const auto iterate = [&] (const std::string& type, std::string& p, int index) -> void 
             {
 
@@ -352,32 +382,6 @@ void editor::GUI::ShowSettings()
 
             }
 
-            if (ImGui::Button("add"))
-                session->shaders.push_back({ "", { "none selected", "none selected" }});
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("delete")) {
-                std::string key = session->shaders.back().first;
-                session->shaders.pop_back();
-                session->shaders_applied = false;
-                Editor::Log("shader: " + key + " removed.");
-            }
-
-            if (ImGui::Button("apply"))
-            {
-                for (const auto& shader : session->shaders) {
-
-                    if ((!shader.first.length() || shader.second.first == "none selected" || shader.second.second == "none selected") || 
-                        std::adjacent_find(session->shaders.begin(), session->shaders.end()) != session->shaders.end())
-                        break;
-
-                    session->shaders_applied = true;
-
-                    Editor::Log("shader: " + shader.first + " added.");
-                }
-            }
-
             ImGui::EndMenu();
         }
 
@@ -385,6 +389,16 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("preload spritesheets"))
         {
+            if (ImGui::Button("add"))
+                session->spritesheets.push_back({ "", "" });
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("delete"))
+                session->spritesheets.pop_back();
+
+            ImGui::Separator();
+
             int i = 0;
 
             for (auto& spritesheet : session->spritesheets)
@@ -437,14 +451,6 @@ void editor::GUI::ShowSettings()
 
                 ImGui::PopID();
             }
-
-            if (ImGui::Button("add"))
-                session->spritesheets.push_back({ "", "" });
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("delete"))
-                session->spritesheets.pop_back();
     
             ImGui::EndMenu();
             
@@ -454,6 +460,25 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("preload animations"))
         {
+            if (ImGui::Button("add")) 
+                session->animations.push_back({ "", {}});
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("delete")) {
+                std::string key = session->animations.back().first;
+                session->animations.pop_back();
+                session->animations_applied = false;
+                Editor::Log("animation: " + key + " removed.");
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("apply"))
+                Component::ApplyAnimations();
+
+            ImGui::Separator();
+
             for (int i = 0; i < session->animations.size(); i++)
             {
                 ImGui::PushID(i);
@@ -509,21 +534,6 @@ void editor::GUI::ShowSettings()
                 ImGui::PopID();
 
             }
-
-            if (ImGui::Button("add")) 
-                session->animations.push_back({ "", {}});
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("delete")) {
-                std::string key = session->animations.back().first;
-                session->animations.pop_back();
-                session->animations_applied = false;
-                Editor::Log("animation: " + key + " removed.");
-            }
-
-            if (ImGui::Button("apply"))
-                Component::ApplyAnimations();
 
             ImGui::EndMenu();
         }
@@ -721,7 +731,7 @@ void editor::GUI::ShowMenu()
 
 }
 
-//-----------------------------------------
+//----------------------------------------- right panel viewport
 
 
 void editor::GUI::ShowViewport()
@@ -731,36 +741,32 @@ void editor::GUI::ShowViewport()
     ImGui::Text("viewport");
     ImGui::Separator();
 
+    //display inverted camera coords
+
+    char bufX[32];
+    ImFormatString(bufX, IM_ARRAYSIZE(bufX), "%.2f", -session->game->camera->GetPosition()->x);
+    char bufY[32];
+    ImFormatString(bufY, IM_ARRAYSIZE(bufY), "%.2f", -session->game->camera->GetPosition()->y);
+
     ImGui::InputInt("width", &session->worldWidth);
     ImGui::InputInt("height", &session->worldHeight); 
-    ImGui::SliderFloat("x", (float*)&session->game->camera->GetPosition()->x, session->worldWidth, -session->worldWidth);
-    ImGui::SliderFloat("y", (float*)&session->game->camera->GetPosition()->y, session->worldHeight, -session->worldHeight); 
+    ImGui::SliderFloat("x", (float*)&session->game->camera->GetPosition()->x, session->worldWidth, -session->worldWidth, bufX);
+    ImGui::SliderFloat("y", (float*)&session->game->camera->GetPosition()->y, session->worldHeight, -session->worldHeight, bufY); 
     ImGui::SliderFloat("zoom", session->game->camera->GetZoom(), -10.0f, 10.0f);
     ImGui::SliderFloat("rotation", session->game->camera->GetRotation(), 0.0f, 360.0f);
     ImGui::SliderFloat("vignette", &session->vignetteVisibility, 0.0f, 1.0f);
     ImGui::ColorEdit4("color", (float*)session->game->camera->GetBackgroundColor()); 
 
-    //cull target
+    //cull target (only top level sprites allowed)
 
     if (ImGui::BeginCombo("cull target", session->cullTarget.first.c_str()))
     {
-        auto iterateSprites = [](auto node) -> void {
-            auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(node->ID));
-            if (ImGui::Selectable(sn->name.c_str())) 
-                Editor::Get()->cullTarget = { sn->name, { sn->positionX, sn->positionY } };
-        };
-
-        for (const auto& node : Node::nodes) {
-            if (node->type == Node::SPRITE)
-                iterateSprites(node);
-
-            if (node->type == Node::GROUP) {
-                auto gn = std::dynamic_pointer_cast<GroupNode>(Node::Get(node->ID));
-                for (const auto& n : gn->_nodes)
-                    if (n->type == Node::SPRITE)
-                        iterateSprites(n);
+        for (const auto& node : Node::nodes) 
+            if (node->type == Node::SPRITE) {
+                const auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
+                if (ImGui::Selectable(sn->name.c_str())) 
+                    Editor::Get()->cullTarget = { sn->name, { sn->positionX, sn->positionY } };
             }
-        }
 
         ImGui::EndCombo();
     }

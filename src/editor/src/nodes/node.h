@@ -29,7 +29,7 @@ namespace editor {
             static inline int s_MAX_NODES = 256; 
             static inline std::vector<std::string> s_names;
             static std::string CheckName(const std::string& name, std::vector<std::string>& arr = s_names);
-            static bool CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr);
+            static const bool CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr);
 
         public:
 

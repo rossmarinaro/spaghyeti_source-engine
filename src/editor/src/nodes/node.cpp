@@ -96,7 +96,7 @@ const std::string Node::GetType(int type) {
 //---------------------------
 
 
-bool Node::CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr) {
+const bool Node::CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr) {
     if (init && arr.size() > s_MAX_NODES) {
         Editor::Log("Max nodes reached.");
         return false; 
@@ -105,7 +105,7 @@ bool Node::CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& 
 }
 
 
-//--------------------------- get node
+//--------------------------- get node recursively
     
 
 std::shared_ptr<Node> Node::Get(const std::string& id, std::vector<std::shared_ptr<Node>>& arr)    
@@ -114,7 +114,7 @@ std::shared_ptr<Node> Node::Get(const std::string& id, std::vector<std::shared_p
 
     if (it != arr.end())
     {
-        auto node = *it;
+        const auto node = *it;
 
         //get at root
     
@@ -918,19 +918,15 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     sn->AddComponent(Component::ANIMATOR, false);
                     const auto key_it = std::find_if(Editor::Get()->animations.begin(), Editor::Get()->animations.end(), [&](const auto& anim){ return anim.first == sn->key; });  
                     std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>> animation_group = { sn->key, {}};
-                    if (key_it == Editor::Get()->animations.end())
-                        Editor::Get()->animations.emplace_back(animation_group);
+              
 
                     for (const auto& anim : data["components"]["animator"]["animations"]) 
                     {  
-                        if (key_it != Editor::Get()->animations.end()) 
-                        {
-                            const std::pair<std::string, std::pair<int, int>> animation = { anim["key"], { anim["start"], anim["end"] } };
-         
-                            animation_group.second.emplace_back(animation);
-                            std::sort(animation_group.second.begin(), animation_group.second.end());
-                            animation_group.second.erase(std::unique(animation_group.second.begin(), animation_group.second.end()), animation_group.second.end());
-                        }
+                        const std::pair<std::string, std::pair<int, int>> animation = { anim["key"], { anim["start"], anim["end"] } };
+
+                        animation_group.second.emplace_back(animation);
+                        std::sort(animation_group.second.begin(), animation_group.second.end());
+                        animation_group.second.erase(std::unique(animation_group.second.begin(), animation_group.second.end()), animation_group.second.end());
                             
                         sn->animations.push_back({ anim["key"], anim["start"], anim["end"], anim["rate"], anim["repeat"], anim["yoyo"] });
                         sn->ApplyAnimation(anim["key"]);
@@ -941,8 +937,10 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     sn->anim_to_play_on_start.repeat = data["components"]["animator"]["on start"]["repeat"];
                     sn->anim_to_play_on_start.yoyo = data["components"]["animator"]["on start"]["yoyo"];
 
-                    //Component::ApplyAnimations(true);
-
+                    if (key_it == Editor::Get()->animations.end()) {
+                        Editor::Get()->animations.emplace_back(animation_group);
+                        Component::ApplyAnimations(true);
+                    }
                 }
 
                 //physics 
