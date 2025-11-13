@@ -84,9 +84,8 @@ void SpawnerNode::CreateMarker() {
 //---------------------------  
 
 
-void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
+void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 {
-
     ImGui::Separator(); 
 
     {
@@ -98,7 +97,7 @@ void SpawnerNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
         if (ImGui::TreeNode((selText + "(Spawner) " + name).c_str()))
         {
-            Node::Update(node, arr);
+            Node::Update(arr);
 
             if (ImGui::Button("Select") && rectHandle)
                 Editor::selectedEntity = rectHandle;

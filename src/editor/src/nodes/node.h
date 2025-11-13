@@ -17,20 +17,6 @@ namespace editor {
     //base node 
     class Node {
 
-        private:
-
-            struct NodeInfo {
-                std::string ID;
-                std::vector<std::shared_ptr<Node>> arr = nodes;
-            };
-
-            std::vector<std::shared_ptr<Component>> components; 
-
-            static inline int s_MAX_NODES = 256; 
-            static inline std::vector<std::string> s_names;
-            static std::string CheckName(const std::string& name, std::vector<std::string>& arr = s_names);
-            static const bool CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr);
-
         public:
 
             enum { SPRITE, TILEMAP, TEXT, AUDIO, EMPTY, GROUP, SPAWNER };
@@ -64,12 +50,6 @@ namespace editor {
             
             Node(bool init, int type, const std::string& name = "Untitled");
 
-            virtual ~Node() {}
-            
-            virtual void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
-            virtual void Render(float _positionX = 0.0f, float _positionY = 0.0f, float _rotation = 0.0f, float _scaleX = 1.0f, float _scaleY = 1.0f) {}
-            virtual void Reset(const int component = Component::NONE) = 0;
-
             static inline std::vector<std::shared_ptr<Node>> nodes;
 
             template <typename T>
@@ -86,7 +66,7 @@ namespace editor {
                 }
 
             static void ClearAll();
-            static void DeleteNode (const std::string& id, std::vector<std::shared_ptr<Node>>& arr = nodes);
+
             static void ApplyShader(std::shared_ptr<Node>& node, const std::string& name);
             static void LoadShader(std::shared_ptr<Node> node, const std::string& name, const std::string& vertPath, const std::string& fragPath);
             static std::shared_ptr<Node> ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr = nodes);
@@ -100,6 +80,12 @@ namespace editor {
             const std::shared_ptr<Component> GetComponent(int type, const std::string& id);
             const bool HasComponent(int type);
 
+            virtual ~Node() {}
+            
+            virtual void Update(std::vector<std::shared_ptr<Node>>& arr = nodes);
+            virtual void Render(float _positionX = 0.0f, float _positionY = 0.0f, float _rotation = 0.0f, float _scaleX = 1.0f, float _scaleY = 1.0f) {}
+            virtual void Reset(const int component = Component::NONE) = 0;
+
         protected:
 
             struct Body {
@@ -110,9 +96,25 @@ namespace editor {
             bool m_init;
                         
             void SavePrefab(std::vector<std::shared_ptr<Node>>& arr);
-            void ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr);
 
             static int ChangeName(ImGuiInputTextCallbackData* data);
+
+        private:
+
+            struct NodeInfo {
+                std::string ID;
+                std::vector<std::shared_ptr<Node>> arr = nodes;
+            };
+
+            std::vector<std::shared_ptr<Component>> components; 
+            
+            void ShowOptions(std::vector<std::shared_ptr<Node>>& arr);
+            void DeleteNode(std::vector<std::shared_ptr<Node>>& arr);
+
+            static inline int s_MAX_NODES = 256; 
+            static inline std::vector<std::string> s_names;
+            static std::string CheckName(const std::string& name, std::vector<std::string>& arr = s_names);
+            static const bool CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr);
     };
 
     //--------------------------------- sprite
@@ -184,7 +186,7 @@ namespace editor {
             SpriteNode(bool init);
             ~SpriteNode();      
 
-            void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
+            void Update(std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
 
@@ -234,7 +236,7 @@ namespace editor {
             TilemapNode(bool init);
             ~TilemapNode();
 
-            void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
+            void Update(std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override; 
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
 
@@ -270,7 +272,7 @@ namespace editor {
             ~TextNode();     
 
             void ChangeFont(const std::string& font = "");
-            void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
+            void Update(std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
     };
@@ -291,7 +293,7 @@ namespace editor {
             AudioNode(bool init);
             ~AudioNode();
 
-            void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
+            void Update(std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
             void Load();
 
@@ -326,7 +328,7 @@ namespace editor {
 
             void CreateShape(const std::string& shape);
 
-            void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
+            void Update(std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
 
@@ -345,7 +347,7 @@ namespace editor {
             GroupNode(bool init);
             ~GroupNode();      
 
-            void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
+            void Update(std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
     };
@@ -372,7 +374,7 @@ namespace editor {
             SpawnerNode(bool init);
             ~SpawnerNode();      
 
-            void Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) override;
+            void Update(std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
             void ApplyTexture(const std::string& asset);

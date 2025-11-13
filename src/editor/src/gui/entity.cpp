@@ -297,7 +297,7 @@ void GUI::RenderNodes()
     if (Node::nodes.size())
         for (const auto& node : Node::nodes)
             if (node && node->active) { 
-                node->Update(node, Node::nodes); 
+                node->Update();  
                 node->Render();  
             }
 }

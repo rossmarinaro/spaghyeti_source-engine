@@ -77,19 +77,17 @@ void EmptyNode::CreateShape(const std::string &shape)
 //---------------------------
 
 
-void EmptyNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
+void EmptyNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 {
-
     ImGui::Separator(); 
 
     {
-
         ImGui::PushID(("(Empty) " + name).c_str());
  
         if (ImGui::TreeNode(("(Empty) " + name).c_str()))
         {
         
-            Node::Update(node, arr);
+            Node::Update(arr);
 
             if (ImGui::BeginMenu("Add Component"))
             {

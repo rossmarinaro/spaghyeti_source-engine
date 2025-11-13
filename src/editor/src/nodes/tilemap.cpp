@@ -161,8 +161,12 @@ void TilemapNode::ParseJSONData(const std::string& key, const std::string& path)
 
     const json data = json::parse(JSON);
 
-    if (!data.contains("width") || !data.contains("height") || !data.contains("tilewidth") || !data.contains("tileheight") || !data.contains("layers"))
-        Editor::Log("Tilemap: cannot construct from json missing params: [width, height, tilewidth, tileheight, layers].");
+    if (!data.contains("width") || 
+        !data.contains("height") || 
+        !data.contains("tilewidth") || 
+        !data.contains("tileheight") || 
+        !data.contains("layers"))
+            Editor::Log("Tilemap: cannot construct from json missing params: [width, height, tilewidth, tileheight, layers].");
 
     else 
     {            
@@ -260,7 +264,7 @@ void TilemapNode::UpdateBody(int index)
 //---------------------------
 
 
-void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
+void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 {
     ImGui::Separator(); 
 
@@ -269,7 +273,7 @@ void TilemapNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr
 
         if (ImGui::TreeNode(("(Tilemap) " + name).c_str()))
         {
-            Node::Update(node, arr);
+            Node::Update(arr);
 
             if (ImGui::BeginMenu("Add Component"))
             {

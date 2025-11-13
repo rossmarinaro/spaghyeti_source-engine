@@ -20,7 +20,7 @@ SpriteNode::SpriteNode(bool init):
     flippedX = false;
     flippedY = false;
     lock_in_place = false;
-    cull = false;
+    cull = false; 
     make_UI = false;
     frame = 0;
     currentFrame = 0;
@@ -192,7 +192,7 @@ void SpriteNode::ApplyAnimation(const std::string& key)
 //---------------------------  
 
 
-void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
+void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 {
 
     ImGui::Separator(); 
@@ -206,7 +206,7 @@ void SpriteNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<
 
         if (ImGui::TreeNode((selText + "(Sprite) " + name).c_str()))
         {
-            Node::Update(node, arr);
+            Node::Update(arr);
 
             if (ImGui::Button("Select") && spriteHandle)
                 Editor::selectedEntity = spriteHandle;

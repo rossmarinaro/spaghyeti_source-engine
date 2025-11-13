@@ -133,33 +133,33 @@ void editor::GUI::ShowSettings()
         ImGui::SameLine();
 
         if (ImGui::Button("delete"))
-        {
+            if (session->globals.size())
+            {
+                std::string type = session->globals.back().second,
+                            var = session->globals.back().first;
 
-            std::string type = session->globals.back().second,
-                        var = session->globals.back().first;
+                session->globals.pop_back();
 
-            session->globals.pop_back();
+                session->globals_applied = false;
 
-            session->globals_applied = false;
-
-            Editor::Log("global variable: " + type + " " + var + " removed.");
-        }
+                Editor::Log("global variable: " + type + " " + var + " removed.");
+            }
 
         ImGui::SameLine();
 
         if (ImGui::Button("apply"))
-        {
-            for (const auto &var : session->globals) {
-
-                if ((!var.first.length() || !var.second.length()) || std::adjacent_find(session->globals.begin(), session->globals.end()) != session->globals.end())
-                    break;
+            for (const auto &var : session->globals) 
+            {
+                if ((!var.first.length() || 
+                    !var.second.length()) || 
+                    std::adjacent_find(session->globals.begin(), session->globals.end()) != session->globals.end())
+                        break;
 
                 Editor::Log("global variable: " + var.second + " " + var.first + " added.");
 
                 session->globals_applied = true;
             }
-        }
-
+    
         ImGui::SameLine();
 
         if (session->globals_applied)
@@ -280,10 +280,12 @@ void editor::GUI::ShowSettings()
             ImGui::SameLine();
 
             if (ImGui::Button("delete")) {
-                std::string key = session->shaders.back().first;
-                session->shaders.pop_back();
-                session->shaders_applied = false;
-                Editor::Log("shader: " + key + " removed.");
+                if (session->shaders.size()) {
+                    std::string key = session->shaders.back().first;
+                    session->shaders.pop_back();
+                    session->shaders_applied = false;
+                    Editor::Log("shader: " + key + " removed.");
+                }
             }
 
             ImGui::SameLine();
@@ -395,7 +397,8 @@ void editor::GUI::ShowSettings()
             ImGui::SameLine();
 
             if (ImGui::Button("delete"))
-                session->spritesheets.pop_back();
+                if (session->spritesheets.size())
+                    session->spritesheets.pop_back();
 
             ImGui::Separator();
 
@@ -466,10 +469,13 @@ void editor::GUI::ShowSettings()
             ImGui::SameLine();
 
             if (ImGui::Button("delete")) {
-                std::string key = session->animations.back().first;
-                session->animations.pop_back();
-                session->animations_applied = false;
-                Editor::Log("animation: " + key + " removed.");
+                if (session->animations.size())
+                {
+                    std::string key = session->animations.back().first;
+                    session->animations.pop_back();
+                    session->animations_applied = false;
+                    Editor::Log("animation: " + key + " removed.");
+                }
             }
 
             ImGui::SameLine();
@@ -487,6 +493,15 @@ void editor::GUI::ShowSettings()
 
                 if (ImGui::BeginMenu("animations")) 
                 {
+                    if (ImGui::Button("add key")) 
+                        session->animations[i].second.push_back({ "", { 0, 0 }});
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("delete key"))
+                        if (session->animations[i].second.size())
+                            session->animations[i].second.pop_back();
+
                     int j = 0;
 
                     if (session->animations[i].second.size())
@@ -511,18 +526,8 @@ void editor::GUI::ShowSettings()
                     ImGui::EndMenu();
                 }
 
-                if (ImGui::Button("add key")) 
-                    session->animations[i].second.push_back({ "", { 0, 0 }});
-
-                ImGui::SameLine();
-
-                if (ImGui::Button("delete key"))
-                    session->animations[i].second.pop_back();
-
-                if (ImGui::Button("remove"))
-                {
+                if (ImGui::Button("remove")) {
                     auto it = std::find_if(session->animations.begin(), session->animations.end(), [&session, &i](const auto& anim) { return anim.first == session->animations[i].first; });
-
                     if (it != session->animations.end()) {
                         it = session->animations.erase(it);
                         --it;

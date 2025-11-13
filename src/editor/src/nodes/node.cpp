@@ -56,7 +56,7 @@ std::string Node::CheckName(const std::string& name, std::vector<std::string>& a
 //--------------------------- virtual update method for all subclasses
 
 
-void Node::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr) 
+void Node::Update(std::vector<std::shared_ptr<Node>>& arr) 
 {
     static char name_buf[32] = ""; 
 
@@ -68,7 +68,7 @@ void Node::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>
         ImGui::SetTooltip("press tab to confirm name.");
 
     if (ImGui::BeginMenu("Options")) { 
-        ShowOptions(node, arr);
+        ShowOptions(arr);
         ImGui::EndMenu();
     }
 
@@ -96,11 +96,13 @@ const std::string Node::GetType(int type) {
 //---------------------------
 
 
-const bool Node::CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr) {
+const bool Node::CheckCanAddNode(bool init, const std::vector<std::shared_ptr<Node>>& arr) 
+{
     if (init && arr.size() > s_MAX_NODES) {
         Editor::Log("Max nodes reached.");
         return false; 
     }
+
     return true;
 }
 
@@ -163,28 +165,26 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
 //------------------------- delete
 
 
-void Node::DeleteNode (const std::string& id, std::vector<std::shared_ptr<Node>>& arr)
+void Node::DeleteNode(std::vector<std::shared_ptr<Node>>& arr)
 {
-    auto node = Get(id, arr);
+    active = false;
 
-    if (node)
-    {
-        node->active = false;
+    const auto n_it = std::find(s_names.begin(), s_names.end(), name);
 
-        const auto n_it = std::find(s_names.begin(), s_names.end(), node->name);
+    if (n_it != s_names.end()) 
+        s_names.erase(std::move(n_it));
 
-        if (n_it != s_names.end()) 
-            s_names.erase(std::move(n_it));
+    //delete all attached components
 
-        //delete all attached components
+    Reset();
+    components.clear();
 
-        node->Reset();
-        node->components.clear();
+    //delete node instance 
 
-        //delete node instance 
+    const auto node = Get(ID, arr);
 
+    if (node) {
         auto it = std::find(arr.begin(), arr.end(), node);
-
         if (it != arr.end()) {
             it = arr.erase(std::move(it)); 
             --it;
@@ -212,25 +212,30 @@ void Node::ClearAll() {
 //---------------------------- options
 
 
-void Node::ShowOptions(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
+void Node::ShowOptions(std::vector<std::shared_ptr<Node>>& arr)
 {
     if (ImGui::MenuItem("Duplicate")) 
     {
-        json data = WriteData(node);
-        
-        if (ReadData(data, true, nullptr, arr)) 
-            Editor::Log("node " + node->name + " duplicated.");  
-        else
-            Editor::Log("node could not be duplicated.");
+        const auto node = Get(ID, arr);
+
+        if (node)
+        {
+            json data = WriteData(node);
+            
+            if (ReadData(data, true, nullptr, arr)) 
+                Editor::Log("node " + name + " duplicated.");  
+            else
+                Editor::Log("node could not be duplicated.");
+        }
     }
 
-    if (node->type != AUDIO && node->type != TILEMAP && ImGui::MenuItem("Save prefab")) 
+    if (type != AUDIO && type != TILEMAP && ImGui::MenuItem("Save prefab")) 
         SavePrefab(arr); 
 
     if (ImGui::BeginMenu("Delete"))
     {
         if (ImGui::MenuItem("Are You Sure?")) 
-            DeleteNode(node->ID, arr);
+            DeleteNode(arr);
 
         ImGui::EndMenu();
     }
@@ -376,7 +381,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
     if (node->type == SPRITE)
     {
-        auto sn = std::dynamic_pointer_cast<SpriteNode>(node); 
+        const auto sn = std::dynamic_pointer_cast<SpriteNode>(node); 
 
         //frames
 
@@ -450,8 +455,8 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
                 }
             },   
             { "stroke width", sn->strokeWidth },
-            { "positionX", sn->spriteHandle ? sn->spriteHandle->position.x : sn->positionX },
-            { "positionY", sn->spriteHandle ? sn->spriteHandle->position.y : sn->positionY },
+            { "positionX", sn->positionX },
+            { "positionY", sn->positionY },
             { "rotation", sn->spriteHandle ? sn->spriteHandle->rotation : sn->rotation },
             { "scaleX", sn->spriteHandle ? sn->spriteHandle->scale.x : sn->scaleX },
             { "scaleY", sn->spriteHandle ? sn->spriteHandle->scale.y : sn->scaleY },
@@ -508,7 +513,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
     if (node->type == TILEMAP)
     {
 
-        auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
+        const auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
 
         //layers
 
@@ -561,7 +566,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
     if (node->type == AUDIO)
     {
-        auto an = std::dynamic_pointer_cast<AudioNode>(node);
+        const auto an = std::dynamic_pointer_cast<AudioNode>(node);
 
         data = {
             { "source name", an->audio_source_name },
@@ -574,8 +579,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
     if (node->type == EMPTY)
     {
-
-        auto en = std::dynamic_pointer_cast<EmptyNode>(node);
+        const auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
         data = {
             { "debug graphics", en->show_debug },
@@ -619,8 +623,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
     if (node->type == TEXT)
     {
-
-        auto tn = std::dynamic_pointer_cast<TextNode>(node);
+        const auto tn = std::dynamic_pointer_cast<TextNode>(node);
 
         data = {
             { "content", tn->textBuf },
@@ -675,7 +678,6 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
     if (node->type == GROUP)
     {
-
         const auto gn = std::dynamic_pointer_cast<GroupNode>(node);
 
         json nodeData = json::array();
@@ -705,7 +707,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
     if (node->type == SPAWNER)
     {
-        auto sn = std::dynamic_pointer_cast<SpawnerNode>(node);
+        const auto sn = std::dynamic_pointer_cast<SpawnerNode>(node);
 
         data = {
    
@@ -747,7 +749,6 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
                 } 
             }
         };
-
     }
 
     data["type"] = GetType(node->type); 

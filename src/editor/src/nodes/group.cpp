@@ -35,9 +35,8 @@ void GroupNode::Reset(int component_type) {
 //---------------------------
 
 
-void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
+void GroupNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 {
-	
     ImGui::Separator(); 
 
     {
@@ -47,8 +46,7 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
 
         if (ImGui::TreeNode(("(Group) " + name).c_str()))
         {
-                    
-            Node::Update(node, arr);
+            Node::Update(arr);
             
             if (ImGui::BeginMenu("Add Node"))
             {
@@ -105,7 +103,7 @@ void GroupNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<N
                     if (node && node->active) {
                         ImGui::PushID(i);
                         i++;
-                        node->Update(node, _nodes);
+                        node->Update(_nodes); 
                         ImGui::PopID();
                     }
             }          

@@ -72,21 +72,18 @@ void TextNode::ChangeFont(const std::string& font) {
 //---------------------------
 
 
-void TextNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
+void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 {
-
     ImGui::Separator(); 
 
     {
-
         ImGui::PushID(("(Text) " + name).c_str());
 
         std::string selText = (Editor::selectedEntity && textHandle) && Editor::selectedEntity->ID == textHandle->ID ? "<SELECTED> " : "";
 
         if (ImGui::TreeNode((selText + "(Text) " + name).c_str()))
         {
-        
-            Node::Update(node, arr);
+            Node::Update(arr);
             
             if (ImGui::BeginMenu("Add Component"))
             {

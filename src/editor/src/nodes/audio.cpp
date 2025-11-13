@@ -52,19 +52,16 @@ void AudioNode::Reset(int component_type)
 //---------------------------
 
 
-void AudioNode::Update(std::shared_ptr<Node> node, std::vector<std::shared_ptr<Node>>& arr)
+void AudioNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 {
-
     ImGui::Separator(); 
 
     {
-
         ImGui::PushID(("(Audio) " + name).c_str());
 
         if (ImGui::TreeNode(("(Audio) " + name).c_str()))
         {
-        
-            Node::Update(node, arr);
+            Node::Update(arr);
 
             if (show_options)
             {
