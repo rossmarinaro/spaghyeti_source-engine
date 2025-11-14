@@ -139,7 +139,6 @@ void editor::GUI::ShowSettings()
                             var = session->globals.back().first;
 
                 session->globals.pop_back();
-
                 session->globals_applied = false;
 
                 Editor::Log("global variable: " + type + " " + var + " removed.");

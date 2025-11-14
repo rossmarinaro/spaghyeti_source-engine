@@ -348,16 +348,19 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     if (data.contains("animations"))
         for (const auto& animation : data["animations"]) 
-        {
+        { 
+            const auto key_it = std::find_if(session->animations.begin(), session->animations.end(), [&](const auto& anim){ return anim.first == animation["sprite name"]; });  
             std::vector<std::pair<std::string, std::pair<int, int>>> anims;
-
-            for (const auto& collection : animation["anims"])
-               anims.push_back({ collection["key"], { collection["start"], collection["end"] }});
+           
+            for (const auto& collection : animation["anims"]) 
+                anims.push_back({ collection["key"], { collection["start"], collection["end"] }});
             
-            session->animations.push_back({ animation["sprite name"], anims });
-            session->animations_applied = true;
+            if (key_it == session->animations.end()) {
+                session->animations.push_back({ animation["sprite name"], anims });
+                Component::ApplyAnimations(true);
+            } 
         }
-        
+
     //global variables
     
     if (data.contains("globals")) {

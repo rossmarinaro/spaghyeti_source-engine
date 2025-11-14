@@ -866,12 +866,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("stroke width"))
                 sn->strokeWidth = data["stroke width"];
 
-            if (data.contains("currentTexture"))
-            {
-                if (makeNode) {
-                    sn->ApplyTexture(data["currentTexture"]);  
-                    sn->spriteHandle->SetTexture(data["currentTexture"]);
-                }
+            if (data.contains("currentTexture") && makeNode) {
+                sn->ApplyTexture(data["currentTexture"]);  
+                sn->spriteHandle->SetTexture(data["currentTexture"]);
             }
 
             if (data.contains("frames") && data["frames"].size() > 1)
@@ -885,12 +882,20 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 for (int i = 0; i < data["frames"].size(); i++) 
                 {   
-                    sn->frame_x.push_back(data["frames"][i]["offset x"]);
-                    sn->frame_y.push_back(data["frames"][i]["offset y"]);
-                    sn->frame_width.push_back(data["frames"][i]["width"]);
-                    sn->frame_height.push_back(data["frames"][i]["height"]);
-                    sn->frame_fX.push_back(data["frames"][i]["factor x"]);
-                    sn->frame_fY.push_back(data["frames"][i]["factor y"]);
+                    int xOff = data["frames"][i]["offset x"],
+                        yOff = data["frames"][i]["offset y"];
+
+                    float frWidth = data["frames"][i]["width"],
+                          frHeight = data["frames"][i]["height"],
+                          fX = data["frames"][i]["factor x"],
+                          fY = data["frames"][i]["factor y"];
+
+                    sn->frame_x.emplace_back(xOff);
+                    sn->frame_y.emplace_back(yOff);
+                    sn->frame_width.emplace_back(frWidth);
+                    sn->frame_height.emplace_back(frHeight);
+                    sn->frame_fX.emplace_back(fX);
+                    sn->frame_fY.emplace_back(fY);
                 }
 
                 sn->frame = data["frames"].size();
@@ -898,8 +903,10 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 if (data.contains("current frame"))
                     sn->currentFrame = data["current frame"];
       
-                for (int i = 0; i < sn->frame; i++) 
-                    sn->frames.push_back({ sn->frame_x[i], sn->frame_y[i], sn->frame_width[i], sn->frame_height[i], sn->frame_fX[i], sn->frame_fY[i]}); 
+                for (int i = 0; i < sn->frame; i++) {
+                    const SpriteNode::Frames fr = { sn->frame_x[i], sn->frame_y[i], sn->frame_width[i], sn->frame_height[i], sn->frame_fX[i], sn->frame_fY[i]};
+                    sn->frames.emplace_back(fr); 
+                }
 
                 sn->RegisterFrames();
 
@@ -913,23 +920,15 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("components"))
             {
+                //animator 
 
                 if (data["components"]["animator"]["exists"]) 
                 {
                     sn->AddComponent(Component::ANIMATOR, false);
-                    const auto key_it = std::find_if(Editor::Get()->animations.begin(), Editor::Get()->animations.end(), [&](const auto& anim){ return anim.first == sn->key; });  
-                    std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>> animation_group = { sn->key, {}};
-              
 
-                    for (const auto& anim : data["components"]["animator"]["animations"]) 
-                    {  
-                        const std::pair<std::string, std::pair<int, int>> animation = { anim["key"], { anim["start"], anim["end"] } };
-
-                        animation_group.second.emplace_back(animation);
-                        std::sort(animation_group.second.begin(), animation_group.second.end());
-                        animation_group.second.erase(std::unique(animation_group.second.begin(), animation_group.second.end()), animation_group.second.end());
-                            
-                        sn->animations.push_back({ anim["key"], anim["start"], anim["end"], anim["rate"], anim["repeat"], anim["yoyo"] });
+                    for (const auto& anim : data["components"]["animator"]["animations"]) {    
+                        const SpriteNode::Anims a = { anim["key"], anim["start"], anim["end"], anim["rate"], anim["repeat"], anim["yoyo"] };
+                        sn->animations.emplace_back(a);
                         sn->ApplyAnimation(anim["key"]);
                     }
           
@@ -937,11 +936,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     sn->anim_to_play_on_start.rate = data["components"]["animator"]["on start"]["rate"];
                     sn->anim_to_play_on_start.repeat = data["components"]["animator"]["on start"]["repeat"];
                     sn->anim_to_play_on_start.yoyo = data["components"]["animator"]["on start"]["yoyo"];
-
-                    if (key_it == Editor::Get()->animations.end()) {
-                        Editor::Get()->animations.emplace_back(animation_group);
-                        Component::ApplyAnimations(true);
-                    }
                 }
 
                 //physics 
@@ -1079,13 +1073,14 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     {
                         if (makeNode) {
                             tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
-
                             for (int i = 0; i < tmn->bodies.size(); i++)
                                 tmn->UpdateBody(i);
                         }
 
-                        else 
-                            tmn->bodies.push_back({ nullptr, body["bodyX"], body["bodyY"], body["body_width"], body["body_height"] });
+                        else {
+                            const Body b  { nullptr, body["bodyX"], body["bodyY"], body["body_width"], body["body_height"] };
+                            tmn->bodies.emplace_back(b);
+                        }
                     }
             }
             
@@ -1303,7 +1298,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                         for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->script_dir))
                             if (file.exists() && static_cast<std::string>(scripts["key"]) == Editor::Get()->events->GetScriptName(file.path().string()))
                                 tn->behaviors.insert({ static_cast<std::string>(scripts["key"]).c_str(), static_cast<std::string>(scripts["value"]).c_str() });
-
             }
 
             return tn;

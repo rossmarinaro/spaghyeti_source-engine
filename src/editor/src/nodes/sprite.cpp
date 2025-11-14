@@ -282,31 +282,23 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                     if (ImGui::Button("stop")) 
                                         m_currentAnim = { "", 0, 0, 2, -1, false };
-
                                 }
 
                                 if (animations[i].key.size() && animations[i].key.length()) {
-
                                     ImGui::SameLine();
-
                                     if (ImGui::Button("apply")) 
                                         ApplyAnimation(animations[i].key);
                                 }
 
                                 if (i != 0 && animations.size() > 1) {
                                     ImGui::SameLine(); 
-
                                     if (ImGui::Button("remove")) {
-
                                         auto it = std::find_if(animations.begin(), animations.end(), [&](const Anims& anim) { return anim.key == animations[i].key; });
-
                                         if (it != animations.end()) {
                                             it = animations.erase(it);
                                             --it;
                                         }
-                                            
                                     }
-
                                 }
 
                                 ImGui::InputText("key", &animations[i].key);

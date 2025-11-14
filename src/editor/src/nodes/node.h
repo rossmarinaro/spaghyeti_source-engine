@@ -122,21 +122,21 @@ namespace editor {
 
     class SpriteNode : public Node {
 
-        struct Frames { int x, y, width, height, factorX, factorY; };
-
-        struct Anims { 
-            
-            std::string key = ""; 
-
-            int start = 0, 
-                end = 0, 
-                rate = 2, 
-                repeat = -1; 
-
-            bool yoyo = false; 
-        };
-
         public:
+
+            struct Frames { int x, y, width, height, factorX, factorY; };
+
+            struct Anims { 
+                
+                std::string key = ""; 
+
+                int start = 0, 
+                    end = 0, 
+                    rate = 2, 
+                    repeat = -1; 
+
+                bool yoyo = false; 
+            };
 
             int frame, 
                 depth,
