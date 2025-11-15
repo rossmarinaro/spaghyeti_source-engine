@@ -550,7 +550,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 void TilemapNode::Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY)
 {
     positionX = _positionX;
-    positionY = _positionY;
+    positionY = _positionY; 
     rotation = _rotation;
     scaleX = _scaleX;
     scaleY = _scaleY;

@@ -19,6 +19,8 @@ Node::Node(bool init, int type, const std::string& name):
     isShadow = false;
     positionX = 0.0f;
     positionY = 0.0f; 
+    actualPositionX = 0.0f;
+    actualPositionY = 0.0f; 
     scaleX = 1.0f;
     scaleY = 1.0f;
     rotation = 0.0f;
@@ -457,6 +459,8 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             { "stroke width", sn->strokeWidth },
             { "positionX", sn->positionX },
             { "positionY", sn->positionY },
+            { "actual positionX",  sn->spriteHandle ? sn->spriteHandle->position.x : sn->positionX },
+            { "actual positionY",  sn->spriteHandle ? sn->spriteHandle->position.y : sn->positionY },
             { "rotation", sn->spriteHandle ? sn->spriteHandle->rotation : sn->rotation },
             { "scaleX", sn->spriteHandle ? sn->spriteHandle->scale.x : sn->scaleX },
             { "scaleY", sn->spriteHandle ? sn->spriteHandle->scale.y : sn->scaleY },
@@ -588,8 +592,10 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             { "height", en->debugGraphic ? en->debugGraphic->height : en->rectHeight },
             { "radius", en->radius },
             { "shape", en->currentShape },
-            { "position x", en->debugGraphic ? en->debugGraphic->position.x : en->positionX },
-            { "position y", en->debugGraphic ? en->debugGraphic->position.y : en->positionY },
+            { "position x", en->positionX },
+            { "position y", en->positionY },
+            { "actual position x", en->debugGraphic ? en->debugGraphic->position.x : en->positionX },
+            { "actual position y", en->debugGraphic ? en->debugGraphic->position.y : en->positionY },
             { "scale x", en->debugGraphic ? en->debugGraphic->scale.x : en->scaleX },
             { "scale y", en->debugGraphic ? en->debugGraphic->scale.y : en->scaleY },
             { "line weight", en->line_weight },
@@ -652,8 +658,10 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             { "stroke width", tn->strokeWidth },
             { "UIFlag", tn->UIFlag }, 
             { "alpha", tn->alpha },    
-            { "position x", tn->textHandle ? tn->textHandle->position.x : tn->positionX },      
-            { "position y", tn->textHandle ? tn->textHandle->position.y : tn->positionY }, 
+            { "position x", tn->positionX },      
+            { "position y", tn->positionY }, 
+            { "actual position x", tn->textHandle ? tn->textHandle->position.x : tn->positionX },      
+            { "actual position y", tn->textHandle ? tn->textHandle->position.y : tn->positionY }, 
             { "rotation", tn->textHandle ? tn->textHandle->rotation : tn->rotation },
             { "scale x", tn->textHandle ? tn->textHandle->scale.x : tn->scaleX },     
             { "scale y", tn->textHandle ? tn->textHandle->scale.y : tn->scaleY },
@@ -711,8 +719,10 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
         data = {
    
-            { "position x", sn->rectHandle ? sn->rectHandle->position.x : sn->positionX },      
-            { "position y", sn->rectHandle ? sn->rectHandle->position.y : sn->positionY }, 
+            { "position x", sn->positionX },      
+            { "position y", sn->positionY }, 
+            { "actual position x", sn->rectHandle ? sn->rectHandle->position.x : sn->positionX },      
+            { "actual position y", sn->rectHandle ? sn->rectHandle->position.y : sn->positionY }, 
             { "width", sn->width },      
             { "height", sn->height },
             { "spawn width", sn->spawnWidth },      
@@ -789,7 +799,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn = Make<SpriteNode>(false, arr); 
             
             else 
-                sn = Scene::CreateObject<SpriteNode>(_scene); 
+                sn = Scene::CreateObject<SpriteNode>(_scene);  
 
             if (!sn)
                 return nullptr;
@@ -802,6 +812,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("positionY"))
                 sn->positionY = data["positionY"];
+
+            if (data.contains("actual positionX"))
+                sn->actualPositionX = data["actual positionX"];
+
+            if (data.contains("actual positionY"))
+                sn->actualPositionY = data["actual positionY" ];
 
             if (data.contains("rotation"))
                 sn->rotation = data["rotation"];
@@ -1158,6 +1174,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("position y"))
                 en->positionY = data["position y"];
 
+            if (data.contains("actual position x"))
+                en->actualPositionX = data["actual position x"];
+
+            if (data.contains("actual position y"))
+                en->actualPositionY = data["actual position y" ];
+
             if (data.contains("depth"))
                 en->depth = data["depth"];
 
@@ -1265,6 +1287,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("position y"))
                 tn->positionY = data["position y"];   
+
+            if (data.contains("actual position x"))
+                tn->actualPositionX = data["actual position x"];
+
+            if (data.contains("actual position y"))
+                tn->actualPositionY = data["actual position y" ];
 
             if (data.contains("rotation"))
                 tn->rotation = data["rotation"];   
@@ -1395,6 +1423,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("position y"))
                 sn->positionY = data["position y"];  
+
+            if (data.contains("actual position x"))
+                sn->actualPositionX = data["actual position x"];   
+
+            if (data.contains("actual position y"))
+                sn->actualPositionY = data["actual position y"];  
 
             if (data.contains("width"))
                 sn->width = data["width"];   

@@ -1409,7 +1409,7 @@ void EventListener::BuildAndRun()
                     if (!animsToLoad.empty()) 
                     {
                         std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
-                        anim_oss << animsToLoad.back();
+                        anim_oss << animsToLoad.back(); 
 
                         if (std::find(loadedAnims.begin(), loadedAnims.end(), sn->key) == loadedAnims.end()) {
                             loadedAnims.emplace_back(sn->key);
@@ -1418,10 +1418,10 @@ void EventListener::BuildAndRun()
                     }
 
                     if (sn->make_UI) 
-                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
                     
                     else  
-                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->positionX) + ", " + std::to_string(sn->positionY) + ");\n";
+                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
 
                     if (sn->name == target.second->cullTarget.first)
                         cullTarget = "sprite_" + node->ID;
@@ -1471,7 +1471,7 @@ void EventListener::BuildAndRun()
 
                         for (const auto& body : sn->bodies) {
                             const std::string is_sensor = sn->is_sensor[i].b ? "true" : "false";
-                            command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(sn->body_type) + ", " + std::to_string(sn->body_shape) + ", " + std::to_string(sn->positionX + body.x) + ", " + std::to_string(sn->positionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + is_sensor + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " });\n"; 
+                            command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(sn->body_type) + ", " + std::to_string(sn->body_shape) + ", " + std::to_string(sn->actualPositionX + body.x) + ", " + std::to_string(sn->actualPositionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + is_sensor + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " });\n"; 
                             i++;
                         }
 
@@ -1499,7 +1499,7 @@ void EventListener::BuildAndRun()
                     const std::string isStroke = tn->isStroked ? "true" : "false",
                                       isShadow = tn->isShadow ? "true" : "false";
 
-                    command_queue << "   const auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->positionX) + ", " + std::to_string(tn->positionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(isUI) + ");\n"; 
+                    command_queue << "   const auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->actualPositionX) + ", " + std::to_string(tn->actualPositionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(isUI) + ");\n"; 
 
                     command_queue << "   text_" + node->ID + "->SetStatic(" + (isUI == 2 ? "true" : "false") + ");\n";
                     command_queue << "   text_" + node->ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
@@ -1526,7 +1526,7 @@ void EventListener::BuildAndRun()
                         //TODO: set shape
 
                         if (en->currentShape == "rectangle") {
-                            command_queue << "   const auto empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->positionX) + ", " + std::to_string(en->positionY) + ", " + std::to_string(en->rectWidth) + ", " + std::to_string(en->rectHeight) + ");\n";
+                            command_queue << "   const auto empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->actualPositionX) + ", " + std::to_string(en->actualPositionY) + ", " + std::to_string(en->rectWidth) + ", " + std::to_string(en->rectHeight) + ");\n";
                             command_queue << "   empty_" + node->ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
                         }
 
@@ -1585,7 +1585,7 @@ void EventListener::BuildAndRun()
                             }
                             
                             if (tmn->layers[i][0].length()) 
-                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][2] + "\", ""\"" + tmn->layers[i][0] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ", " + std::to_string(tmn->positionX) + ", " + std::to_string(tmn->positionY) + ", " + std::to_string(tmn->rotation) + ", " + std::to_string(tmn->scaleX) + ", " + std::to_string(tmn->scaleY) + ");\n";
+                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][2] + "\", ""\"" + tmn->layers[i][0] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ", " + std::to_string(tmn->actualPositionX) + ", " + std::to_string(tmn->actualPositionY) + ", " + std::to_string(tmn->rotation) + ", " + std::to_string(tmn->scaleX) + ", " + std::to_string(tmn->scaleY) + ");\n";
                         }
 
                         //create map if layers are defined
@@ -1630,7 +1630,7 @@ void EventListener::BuildAndRun()
                                       is_loop = spawn_node->loop ? "true" : "false",
                                       is_sensor = spawn_node->body.is_sensor ? "true" : "false";
 
-                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->positionX) + ", " + std::to_string(spawn_node->positionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", " + std::to_string(spawn_node->spawnWidth) + ", " + std::to_string(spawn_node->spawnHeight) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " + std::to_string(spawn_node->body.type) + ", Physics::Body::Shape::BOX, " + body_exists + ", " + is_sensor + ", " + std::to_string(spawn_node->body.xOff) +  ", " + std::to_string(spawn_node->body.yOff) + ", " + std::to_string(spawn_node->body.w) +  ", " + std::to_string(spawn_node->body.h) + ", " + std::to_string(spawn_node->body.density) + ", " + std::to_string(spawn_node->body.friction) +  ", " + std::to_string(spawn_node->body.restitution) + " });\n";
+                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->actualPositionX) + ", " + std::to_string(spawn_node->actualPositionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", " + std::to_string(spawn_node->spawnWidth) + ", " + std::to_string(spawn_node->spawnHeight) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " + std::to_string(spawn_node->body.type) + ", Physics::Body::Shape::BOX, " + body_exists + ", " + is_sensor + ", " + std::to_string(spawn_node->body.xOff) +  ", " + std::to_string(spawn_node->body.yOff) + ", " + std::to_string(spawn_node->body.w) +  ", " + std::to_string(spawn_node->body.h) + ", " + std::to_string(spawn_node->body.density) + ", " + std::to_string(spawn_node->body.friction) +  ", " + std::to_string(spawn_node->body.restitution) + " });\n";
 
                 }
 

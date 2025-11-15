@@ -33,6 +33,8 @@ namespace editor {
                   scaleY,
                   positionX, 
                   positionY,
+                  actualPositionX,
+                  actualPositionY,
                   rotation,
                   strokeWidth,
                   shadowDistanceX,
