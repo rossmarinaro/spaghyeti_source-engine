@@ -51,6 +51,7 @@ namespace editor {
             std::map<std::string, std::string> behaviors;
             
             Node(bool init, int type, const std::string& name = "Untitled");
+            const bool HasComponent(int type);
 
             static inline std::vector<std::shared_ptr<Node>> nodes;
 
@@ -73,14 +74,8 @@ namespace editor {
             static void LoadShader(std::shared_ptr<Node> node, const std::string& name, const std::string& vertPath, const std::string& fragPath);
             static std::shared_ptr<Node> ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr = nodes);
             static json WriteData(const std::shared_ptr<Node>& node);
-            static std::shared_ptr<Node> Get(const std::string& id, std::vector<std::shared_ptr<Node>>& arr = nodes);
+            static std::shared_ptr<Node> Get(const std::string& id, const std::vector<std::shared_ptr<Node>>& arr = nodes);
             static const std::string GetType(int type);
-            
-            void AddComponent(int type, bool init = true); 
-            void RemoveComponent(std::shared_ptr<Component>& component);
-            
-            const std::shared_ptr<Component> GetComponent(int type, const std::string& id);
-            const bool HasComponent(int type);
 
             virtual ~Node() {}
             
@@ -98,7 +93,12 @@ namespace editor {
             bool m_init;
                         
             void SavePrefab(std::vector<std::shared_ptr<Node>>& arr);
-
+            void AddComponent(int type, bool init = true); 
+            void RemoveComponent(const std::shared_ptr<Component>& component);
+            const std::shared_ptr<Component> GetComponent(int type, const std::string& id);
+            
+            static void RenderShaderOptions(const std::string& nodeId, const std::vector<std::shared_ptr<Node>>& arr);
+            static void RenderScriptOptions(const std::string& nodeId, const std::vector<std::shared_ptr<Node>>& arr);
             static int ChangeName(ImGuiInputTextCallbackData* data);
 
         private:

@@ -31,8 +31,6 @@ namespace editor {
            ~GUI();
 
             void Render();
-            void RenderShaderOptions(const std::string& nodeId);
-            void RenderScriptOptions(const std::string& nodeId);
             
             static inline GUI* Get() {
                 return s_self;

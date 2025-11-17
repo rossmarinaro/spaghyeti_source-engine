@@ -1,6 +1,7 @@
 #include "../../../../build/sdk/include/app.h"
 #include "./gui.h"
 #include "../editor.h"
+#include "../assets/assets.h"
 
 #include "../assets/embedded/images/data.hpp"
 #include "../assets/embedded/images/audio.hpp"
@@ -353,5 +354,59 @@ void GUI::scroll_callback(GLFWwindow* window, double xOffset, double yOffset)
         if (xOffset != 0)
             session->game->camera->SetPosition({ session->game->camera->GetPosition()->x + xOffset * 10, session->game->camera->GetPosition()->y });
     }
+}
+
+//----------------------- render node types in gui
+
+
+void GUI::RenderNodes()
+{
+    if (!running)
+        return;
+
+    if (ImGui::BeginMenu("New Node"))
+    {
+        if (ImGui::MenuItem("Load Prefab")) 
+        {
+            if (AssetManager::LoadPrefab())
+                Editor::Log("Prefab loaded.");
+            else 
+                Editor::Log("There was a problem loading prefab.");
+        } 
+
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("Group")) 
+            Node::Make<GroupNode>(true);
+
+        if (ImGui::MenuItem("Empty"))
+            Node::Make<EmptyNode>(true); 
+
+        if (ImGui::MenuItem("Audio"))
+            Node::Make<AudioNode>(true); 
+
+        if (ImGui::MenuItem("Text"))
+            Node::Make<TextNode>(true); 
+
+        if (ImGui::MenuItem("Sprite"))
+            Node::Make<SpriteNode>(true); 
+
+        if (ImGui::MenuItem("Tilemap"))
+            Node::Make<TilemapNode>(true); 
+
+        if (ImGui::MenuItem("Spawner"))
+            Node::Make<SpawnerNode>(true); 
+
+        ImGui::EndMenu();
+    }
+
+    //render active nodes
+        
+    if (Node::nodes.size())
+        for (const auto& node : Node::nodes)
+            if (node && node->active) { 
+                node->Update();  
+                node->Render();  
+            }
 }
 

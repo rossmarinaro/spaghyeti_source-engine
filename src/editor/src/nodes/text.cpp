@@ -102,9 +102,7 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
 
             if (HasComponent(Component::SCRIPT) && ImGui::BeginMenu("Script")) {
-
-                GUI::Get()->RenderScriptOptions(ID);
-                
+                RenderScriptOptions(ID, arr);
                 ImGui::EndMenu();
             }
 
@@ -112,9 +110,7 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
 
             if (HasComponent(Component::SHADER) && ImGui::BeginMenu("Shader")) {
-
-                GUI::Get()->RenderShaderOptions(ID);
-                
+                RenderShaderOptions(ID, arr);
                 ImGui::EndMenu();
             }
 

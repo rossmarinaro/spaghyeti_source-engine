@@ -287,12 +287,10 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             if (HasComponent(Component::PHYSICS) && ImGui::BeginMenu("Physics"))
             { 
-
-                auto physics_component = GetComponent(Component::PHYSICS, ID);
+                const auto physics_component = GetComponent(Component::PHYSICS, ID);
 
                 if (physics_component)
                 {
-
                     if (ImGui::BeginMenu("bodies"))
                     {
                         ImGui::Text("manual input: CTRL + click");

@@ -1363,11 +1363,6 @@ void EventListener::BuildAndRun()
         {
             for (const auto& node : arr)
             {
-                //load shaders
-
-                if (node->HasComponent(Component::SHADER) && node->shader.first.length())
-                    preload_queue << "  Graphics::Shader::Load(\"" + node->shader.first + "\", \"" + node->shader.second.first + "\", \"" + node->shader.second.second + "\", nullptr);\n";
-                
                 //--------------- group
 
                 if (node->type == Node::GROUP) 

@@ -41,7 +41,7 @@ EmptyNode::~EmptyNode() {
 
 void EmptyNode::Reset(int component_type) {
 
-    bool passAll = component_type == Component::NONE;
+    const bool passAll = component_type == Component::NONE;
 
     if (component_type == Component::SHADER || passAll)
         if (debugGraphic.get())
@@ -57,7 +57,6 @@ void EmptyNode::Reset(int component_type) {
 
 void EmptyNode::CreateShape(const std::string &shape)
 {
-
     if (!debugGraphic) {
 
         if (shape == "rectangle")
@@ -69,7 +68,6 @@ void EmptyNode::CreateShape(const std::string &shape)
             return;
             
         currentShape = shape;   
-
     }
 }
 
@@ -106,8 +104,7 @@ void EmptyNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
 
             if (HasComponent(Component::SCRIPT) && ImGui::BeginMenu("Script")) {
-
-                GUI::Get()->RenderScriptOptions(ID);
+                RenderScriptOptions(ID, arr);
                 ImGui::EndMenu();
             }
 
@@ -115,8 +112,7 @@ void EmptyNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
 
             if (HasComponent(Component::SHADER) && ImGui::BeginMenu("Shader")) {
-
-                GUI::Get()->RenderShaderOptions(ID);
+                RenderShaderOptions(ID, arr);
                 ImGui::EndMenu();
             }
 

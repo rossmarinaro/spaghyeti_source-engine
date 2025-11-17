@@ -355,9 +355,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
 
             if (HasComponent(Component::SHADER) && ImGui::BeginMenu("Shader")) {
-
-                GUI::Get()->RenderShaderOptions(ID);
-                
+                RenderShaderOptions(ID, arr);
                 ImGui::EndMenu();
             }
 
@@ -366,9 +364,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
 
             if (HasComponent(Component::SCRIPT) && ImGui::BeginMenu("Script")) {
-
-                GUI::Get()->RenderScriptOptions(ID);
-                
+                RenderScriptOptions(ID, arr);  
                 ImGui::EndMenu();
             }
 
@@ -378,7 +374,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             if (HasComponent(Component::PHYSICS) && ImGui::BeginMenu("Physics"))
             {
-                auto physics_component = GetComponent(Component::PHYSICS, ID);
+                const auto physics_component = GetComponent(Component::PHYSICS, ID);
 
                 if (physics_component)
                 {
@@ -795,7 +791,6 @@ void SpriteNode::Render(float _positionX, float _positionY, float _rotation, flo
         
     if (spriteHandle)
     {
-
         spriteHandle->texture.U1 = U1;
         spriteHandle->texture.V1 = V1;
         spriteHandle->texture.U2 = U2;
