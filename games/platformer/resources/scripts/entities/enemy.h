@@ -28,8 +28,8 @@ namespace entity_behaviors {
 
             float m_startPos;
 
-            bool ListenForDamage(const std::string& key);
-            bool DoDamage(int amount, const std::string& key = "") override;
+            bool ListenForDamage();
+            bool DoDamage(int amount) override;
 
         private:
 
@@ -37,5 +37,5 @@ namespace entity_behaviors {
 
             void Initialize(std::shared_ptr<Entity> entity);
             
-    };
+    }; 
 }     

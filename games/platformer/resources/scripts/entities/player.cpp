@@ -240,7 +240,7 @@ void PlayerController::Update()
 //-------------------------------------
 
 
-bool PlayerController::DoDamage(int amount, const std::string& key)
+bool PlayerController::DoDamage(int amount)
 {
     if (!m_canDamage || m_invincible) 
         return false;
@@ -248,7 +248,7 @@ bool PlayerController::DoDamage(int amount, const std::string& key)
     m_canDamage = false;
     health -= amount;
 
-    const auto player = System::Game::GetScene()->GetEntity<Sprite>(key.length() ? key : "player");
+    const auto player = System::Game::GetScene()->GetEntity<Sprite>(ID, true);
 
     if (!player)
         return false;
@@ -260,10 +260,8 @@ bool PlayerController::DoDamage(int amount, const std::string& key)
     if (health <= 0) 
         player->SetAlpha(1.0f);
 
-    Time::DelayedCall(500, [this, key] 
+    Time::DelayedCall(500, [this, player] 
     { 
-        const auto player = System::Game::GetScene()->GetEntity<Sprite>(key.length() ? key : "player");
-
         if (!player)
             return false;
 
@@ -286,7 +284,7 @@ bool PlayerController::DoDamage(int amount, const std::string& key)
 
 void PlayerController::SetState(const State& state, int option) 
 {
-    const auto player = System::Game::GetScene()->GetEntity<Sprite>("player");
+    const auto player = System::Game::GetScene()->GetEntity<Sprite>(ID, true);
     const auto inputs = System::Game::GetScene()->GetContext().inputs;
 
     m_state = state; 

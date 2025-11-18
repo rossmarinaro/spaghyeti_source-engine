@@ -19,7 +19,7 @@ namespace entity_behaviors {
             ~PlayerController();
 
             void Update() override; 
-            bool DoDamage(int amount, const std::string& key = "") override;
+            bool DoDamage(int amount) override;
             void SetState(const State& state, int option = 0);
 
             inline void SetInvincible(bool invincible = true) { m_invincible = invincible; }
@@ -40,7 +40,7 @@ namespace entity_behaviors {
                  m_shootFireball;
 
             std::shared_ptr<Sprite> m_shadow;
-
+ 
     };
 }
 

@@ -430,6 +430,7 @@ void Game::UpdateFrame()
                     if (!camera->InBounds() && cullPosition->x < Window::s_scaleWidth) 
                         factor = remainder * 2.0f;
                 }
+
                 return (((entity->position.x + Window::s_scaleWidth) * factor > abs(cullPosition->x) && (entity->position.x + Window::s_scaleWidth) * factor < (abs(cullPosition->x) + Window::s_scaleWidth) * factor + Window::s_scaleWidth) || 
                        ((entity->position.x - Window::s_scaleWidth) * factor < abs(cullPosition->x) && (entity->position.x - Window::s_scaleWidth) * factor > (abs(cullPosition->x) - Window::s_scaleWidth) * factor - Window::s_scaleWidth)) &&
                        (((entity->position.y + Window::s_scaleHeight) * factor > abs(cullPosition->y) && (entity->position.y + Window::s_scaleHeight) * factor < (abs(cullPosition->y) + Window::s_scaleHeight) * factor + Window::s_scaleHeight) || 

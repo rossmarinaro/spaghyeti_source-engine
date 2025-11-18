@@ -58,7 +58,7 @@ namespace entity_behaviors {
                 m_active = false;
             }
 
-            virtual bool DoDamage(int amount, const std::string& key = "") {};
-
+            virtual bool DoDamage(int amount) {};
+ 
     };
 }

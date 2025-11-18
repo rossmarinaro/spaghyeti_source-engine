@@ -19,7 +19,7 @@ SPAWNITEM::SPAWNITEM(std::shared_ptr<Entity> entity):
         m_rev(false)
 {
 
-    const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(m_name);
+    const auto sprite = System::Game::GetScene()->GetEntity<Sprite>(ID, true);
 
     if (System::Utils::str_includes(sprite->name, "coin")) {
         sprite->SetAnimation("spin", false, 8);
@@ -30,7 +30,7 @@ SPAWNITEM::SPAWNITEM(std::shared_ptr<Entity> entity):
     {
         const auto item = System::Game::CreateSprite("items.png", 0, 0);
 
-        item->SetName("item_box" + this->ID);
+        item->SetName("item_box" + ID);
         item->SetAlpha(0);
         item->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, sprite->position.x + 40, sprite->position.y + 40, 20, 20, true, 1), { 20, 20, 0, 0 });
     }
@@ -47,10 +47,10 @@ void SPAWNITEM::Update()
 { 
     auto gamePlay = System::Game::GetBehavior<Gameplay>();
     auto playerBehavior = System::Game::GetBehavior<PlayerController>();
-    auto sprite = System::Game::GetScene()->GetEntity<Sprite>(m_name);
+    auto sprite = System::Game::GetScene()->GetEntity<Sprite>(ID, true);
     
     const auto player = System::Game::GetScene()->GetEntity<Sprite>("player");
-    const auto item = System::Game::GetScene()->GetEntity<Sprite>(("item_box" + this->ID));
+    const auto item = System::Game::GetScene()->GetEntity<Sprite>(("item_box" + ID));
     
     if (!player)
         return;
@@ -59,7 +59,6 @@ void SPAWNITEM::Update()
 
     if ((sprite && player) && !System::Utils::str_includes(sprite->name, "box") && sprite->GetBodies().size() && sprite->GetBody()->CollidesWith(player->GetBody()))
     {
-
         int value = 0;
 
         if ((std::string)sprite->GetData<const char*>("type") == "coin")

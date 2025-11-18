@@ -298,7 +298,7 @@ void entity_behaviors::Enemy::Update()
 
     //damage actor
 
-    ListenForDamage(sprite->name);
+    ListenForDamage();
 
     //damage player
 
@@ -337,7 +337,7 @@ void entity_behaviors::Enemy::Update()
 //-----------------------------------
 
 
-bool entity_behaviors::Enemy::ListenForDamage(const std::string& key) 
+bool entity_behaviors::Enemy::ListenForDamage() 
 {
     if (health > 0)
     {
@@ -347,7 +347,7 @@ bool entity_behaviors::Enemy::ListenForDamage(const std::string& key)
         //cane
 
         if ((hb && System::Game::GetBehavior<PlayerController>()->attackBox->IsEnabled()) && hb->CollidesWith(System::Game::GetBehavior<PlayerController>()->attackBox))
-            return DoDamage(1, key);
+            return DoDamage(1);
 
         //projectiles
         
@@ -372,7 +372,7 @@ bool entity_behaviors::Enemy::ListenForDamage(const std::string& key)
                         else 
                             projectile->SetData("dead", true);
 
-                        return DoDamage(System::Utils::str_includes(entity->name, "smoke") ? 2 : 3, key);
+                        return DoDamage(System::Utils::str_includes(entity->name, "smoke") ? 2 : 3);
                     }
                 }   
             }
@@ -393,9 +393,9 @@ bool entity_behaviors::Enemy::ListenForDamage(const std::string& key)
 //-----------------------------------
 
 
-bool entity_behaviors::Enemy::DoDamage(int amount, const std::string& key)
+bool entity_behaviors::Enemy::DoDamage(int amount)
 {  
-    auto sprite = System::Game::GetScene()->GetEntity<Sprite>(key.length() ? key : m_key);
+    auto sprite = System::Game::GetScene()->GetEntity<Sprite>(ID, true);
     
     if (!sprite)
         return false;

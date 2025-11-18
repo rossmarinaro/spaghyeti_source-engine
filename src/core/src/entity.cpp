@@ -870,12 +870,12 @@ const bool Sprite::CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const st
     //x axis
 
     const bool collisionX = spriteA->position.x + spriteA->texture.FrameWidth / 2 >= spriteB->position.x &&
-                    spriteB->position.x + spriteB->texture.FrameWidth / 2 >= spriteA->position.x,
+                            spriteB->position.x + spriteB->texture.FrameWidth / 2 >= spriteA->position.x,
 
     //y axis
 
-        collisionY = spriteA->position.y + spriteA->texture.FrameHeight / 2 >= spriteB->position.y &&
-                    spriteB->position.y + spriteB->texture.FrameHeight / 2 >= spriteA->position.y;
+               collisionY = spriteA->position.y + spriteA->texture.FrameHeight / 2 >= spriteB->position.y &&
+                            spriteB->position.y + spriteB->texture.FrameHeight / 2 >= spriteA->position.y;
 
     return collisionX && collisionY;
 
