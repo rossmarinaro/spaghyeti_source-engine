@@ -32,7 +32,6 @@ void Camera::StartFollow(Math::Vector2* position, float offsetX, float offsetY) 
 
 void Camera::Reset() 
 {
-    
     SetPosition({ 0.0f, 0.0f });
     SetZoom(1.0f);
     SetBackgroundColor({ 0.5f, 0.5f, 0.5f, 1.0f });
@@ -60,7 +59,6 @@ void Camera::SetVignette(float alpha) {
 
 void Camera::Fade(float rate, const std::string& direction) 
 { 
-
     if (!System::Game::GetScene()->vignette)
         return;
 
@@ -139,7 +137,6 @@ const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 
 
 void Camera::Update() {
-
     if (m_canFollow && InBounds()) {
         m_position.x = (-m_target.first->x + m_target.second.first); 
         m_position.y = m_target.second.second != 0.0f ? (-m_target.first->y + m_target.second.second) / 2 : 0.0f;  

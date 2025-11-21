@@ -187,7 +187,6 @@ Geometry::~Geometry() {
 
 void Geometry::Render()
 {
-
     glm::mat4 model = glm::mat4(1.0f); 
 
     if (m_type == QUAD) {
@@ -201,8 +200,10 @@ void Geometry::Render()
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
     model = glm::translate(model, { -0.5f * width - position.x, -0.5f * height - position.y, 0.0f });
 
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-        const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y * scale.y));
+    const auto camera = System::Application::game->camera;
+
+    const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
     
     const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
                     proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f),
@@ -652,7 +653,7 @@ void Sprite::StopAnimation() {
 
 
 //------------------------------------------ render sprite / update transformations
-
+float prevX=0.0f;
 
 void Sprite::Render()
 {  
@@ -697,18 +698,20 @@ void Sprite::Render()
     }
 
     //sprite model transformations
- 
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y * scale.y));
+
+    const auto camera = System::Application::game->camera;
+
+    const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
     
     const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
                     proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f);
 
     glm::mat4 model = glm::mat4(1.0f); 
-
-    model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
+float posX = /* name == "player"? */ position.x /* :  (position.x - camera->GetPosition()->x) */ /* * scrollFactor.x */;
+    model = glm::translate(model, { 0.5f * texture.FrameWidth + posX/* position.x */ * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
+    model = glm::translate(model, { -0.5f * texture.FrameWidth - posX/* position.x */ * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
 
     unsigned int fill = 1;
 
@@ -718,144 +721,139 @@ void Sprite::Render()
 
     //update shaders and textures 
 
-    if (active)
+    if (active && renderable)
     {
-        if (renderable)
-        {
+        const glm::mat4 _mvp = proj * view * model;
 
-            const glm::mat4 _mvp = proj * view * model;
+        const Math::Matrix4 mvp = { 
+            { _mvp[0][0], _mvp[0][1], _mvp[0][2], _mvp[0][3] }, 
+            { _mvp[1][0], _mvp[1][1], _mvp[1][2], _mvp[1][3] },   
+            { _mvp[2][0], _mvp[2][1], _mvp[2][2], _mvp[2][3] },  
+            { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
+        };
 
-            const Math::Matrix4 mvp = { 
-                { _mvp[0][0], _mvp[0][1], _mvp[0][2], _mvp[0][3] }, 
-                { _mvp[1][0], _mvp[1][1], _mvp[1][2], _mvp[1][3] },   
-                { _mvp[2][0], _mvp[2][1], _mvp[2][2], _mvp[2][3] },  
-                { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
-            };
+        //stroke shader
 
-            //stroke shader
-
-            if (shader.key == "outline sprite") {
-                shader.SetVec3f("outlineColor", outlineColor);
-                shader.SetFloat("outlineWidth", outlineWidth);
-            }
-
-            //standard shader
-
-            else 
-                shader.SetVec3f("tint", tint);
-
-            shader.SetInt("whiteout", texture.Whiteout);
-            shader.SetInt("image", 0); 
-            shader.SetMat4("mvp", mvp);  
-            shader.SetFloat("alphaVal", alpha); 
-            shader.SetInt("repeat", texture.Repeat);
-            shader.SetVec2f("scale", { scale.x, scale.y });
-  
-            texture.Update(position, flipX, flipY, fill); 
-
+        if (shader.key == "outline sprite") {
+            shader.SetVec3f("outlineColor", outlineColor);
+            shader.SetFloat("outlineWidth", outlineWidth);
         }
 
-        //update physics bodies if any
+        //standard shader
 
-        for (const auto& body : m_bodies)
-            if (body.first->IsEnabled() && 
-                body.first->GetType() == b2_dynamicBody || body.first->GetType() == b2_kinematicBody
-            ) {
-                Math::Vector2 pos = body.first->GetPosition(); 
-                SetPosition((pos.x / scale.x) - body.second.x, (pos.y / scale.y) - body.second.y);
-            }
+        else 
+            shader.SetVec3f("tint", tint);
 
-        //play current animation
+        shader.SetInt("whiteout", texture.Whiteout);
+        shader.SetInt("image", 0); 
+        shader.SetMat4("mvp", mvp);  
+        shader.SetFloat("alphaVal", alpha); 
+        shader.SetInt("repeat", texture.Repeat);
+        shader.SetVec2f("scale", { scale.x, scale.y });
+//posX = fmod(posX, texture.Width);
+        texture.Update({posX, position.y}/* position */, flipX, flipY, fill); 
 
-        if (m_isSpritesheet && m_currentAnim.key.length())
-        {
-            const std::string& animKey = m_currentAnim.key;
-            const bool yoyo = m_currentAnim.yoyo;
-            const int rate = m_currentAnim.rate;
+    }
 
-            const uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
-           
-            try {
+    //update physics bodies if any
 
-                if (m_isSpritesheet && active)
+    for (const auto& body : m_bodies)
+        if (body.first->IsEnabled() && 
+            body.first->GetType() == b2_dynamicBody || body.first->GetType() == b2_kinematicBody
+        ) {
+            Math::Vector2 pos = body.first->GetPosition(); 
+            SetPosition((pos.x / scale.x) - body.second.x, (pos.y / scale.y) - body.second.y);
+        }
+
+    //play current animation
+
+    if (m_isSpritesheet && m_currentAnim.key.length())
+    {
+        const std::string& animKey = m_currentAnim.key;
+        const bool yoyo = m_currentAnim.yoyo;
+        const int rate = m_currentAnim.rate;
+
+        const uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
+        
+        try {
+
+            if (m_isSpritesheet && active)
+            {
+                const auto anim = anims.find(animKey.c_str());
+
+                if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1))) 
+                    return;
+
+                std::vector<int> frames; //frames to populate  
+                
+                int startFrame = anims.find(m_currentAnim.key.c_str())->second.first,
+                    endFrame = anims.find(m_currentAnim.key.c_str())->second.second,
+                    frame = yoyo ? startFrame : endFrame;
+
+                m_animComplete = currentFrame == frame && m_currentAnim.can_complete;
+                m_currentAnim.can_complete = false;
+
+                if (yoyo)
                 {
-                    const auto anim = anims.find(animKey.c_str());
 
-                    if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1))) 
-                        return;
-
-                    std::vector<int> frames; //frames to populate  
+                    for (int i = anim->second.first; i < anim->second.second + 1; i++) 
+                        frames.emplace_back(i);
                     
-                    int startFrame = anims.find(m_currentAnim.key.c_str())->second.first,
-                        endFrame = anims.find(m_currentAnim.key.c_str())->second.second,
-                        frame = yoyo ? startFrame : endFrame;
+                    const uint32_t elapsed = seconds % frames.size();
 
-                    m_animComplete = currentFrame == frame && m_currentAnim.can_complete;
-                    m_currentAnim.can_complete = false;
+                    std::vector<int> frames_reversed;
 
-                    if (yoyo)
-                    {
+                    for (int i = anim->second.second; i > anim->second.first - 1; i--) 
+                        frames_reversed.emplace_back(i);
 
-                        for (int i = anim->second.first; i < anim->second.second + 1; i++) 
-                            frames.emplace_back(i);
-                        
-                        const uint32_t elapsed = seconds % frames.size();
+                    const uint32_t elapsed_reversed = seconds % frames_reversed.size();
 
-                        std::vector<int> frames_reversed;
+                    if (!m_anim_yoyo && currentFrame == anim->second.second && frames[elapsed] != anim->second.second) 
+                        m_anim_yoyo = true;
 
-                        for (int i = anim->second.second; i > anim->second.first - 1; i--) 
-                            frames_reversed.emplace_back(i);
+                    if (m_anim_yoyo && currentFrame == anim->second.first && frames_reversed[elapsed_reversed] != anim->second.first)    
+                        m_anim_yoyo = false;
 
-                        const uint32_t elapsed_reversed = seconds % frames_reversed.size();
+                    if (m_anim_yoyo) 
+                        SetFrame(frames_reversed[elapsed_reversed]);
 
-                        if (!m_anim_yoyo && currentFrame == anim->second.second && frames[elapsed] != anim->second.second) 
-                            m_anim_yoyo = true;
-
-                        if (m_anim_yoyo && currentFrame == anim->second.first && frames_reversed[elapsed_reversed] != anim->second.first)    
-                            m_anim_yoyo = false;
-
-                        if (m_anim_yoyo) 
-                            SetFrame(frames_reversed[elapsed_reversed]);
-
-                        else  
-                            SetFrame(frames[elapsed]);
-                    }
-
-                    else {
-
-                        for (int i = anim->second.first; i < anim->second.second + 1; i++) 
-                            frames.emplace_back(i);
-                        
-                        const uint32_t elapsed = seconds % frames.size();
-                   
+                    else  
                         SetFrame(frames[elapsed]);
+                }
 
-                    }
+                else {
 
-                    //animation complete
-
-                    m_currentAnim.can_complete = true;
-
-                    if (currentFrame == anim->second.second) {
-                        if (m_currentAnim.can_decrement) {
-                            m_currentAnim.can_decrement = false;
-
-                            if (m_currentAnim.repeat > -1) 
-                                m_currentAnim.repeat--; 
-                        }
-                    }
-
-                    else 
-                        m_currentAnim.can_decrement = true;
+                    for (int i = anim->second.first; i < anim->second.second + 1; i++) 
+                        frames.emplace_back(i);
+                    
+                    const uint32_t elapsed = seconds % frames.size();
+                
+                    SetFrame(frames[elapsed]);
 
                 }
-            }
 
-            catch (std::runtime_error& err) { 
-                LOG("Sprite: error playing animation: " << err.what()); 
+                //animation complete
+
+                m_currentAnim.can_complete = true;
+
+                if (currentFrame == anim->second.second) {
+                    if (m_currentAnim.can_decrement) {
+                        m_currentAnim.can_decrement = false;
+
+                        if (m_currentAnim.repeat > -1) 
+                            m_currentAnim.repeat--; 
+                    }
+                }
+
+                else 
+                    m_currentAnim.can_decrement = true;
+
             }
         }
-         
+
+        catch (std::runtime_error& err) { 
+            LOG("Sprite: error playing animation: " << err.what()); 
+        }
     }
 
 }

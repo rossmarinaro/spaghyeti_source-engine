@@ -200,7 +200,7 @@ void Game::StartScene(const std::string& key, bool loadMap)
         game->currentScene->vignette = std::make_unique<Geometry>(0.0f, -50.0f, 0.0f, 0.0f);
         game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
         game->currentScene->vignette->SetAlpha(0.0f);
-        game->currentScene->vignette->SetScrollFactor({ 0.0f, 1.0f });
+        game->currentScene->vignette->SetScrollFactor({ 0.0f, 0.0f });
 
         const std::string state = loadMap ? " started" : " restarted.";
 
@@ -417,40 +417,40 @@ void Game::UpdateFrame()
     for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity))
         {
-            const auto check_renderable = [&](const Math::Vector2* cullPosition) -> bool 
+            const auto check_renderable = [&]() -> bool 
             {
-                float factor = 0.55f; //base factor
+                float width = 0.0f, 
+                      height = 0.0f;
 
-                if (entity->scrollFactor.x < 1.0f) 
-                {
-                    const float remainder = (1.0f - entity->scrollFactor.x);
-                    
-                    factor = remainder * 10.0f;
-
-                    if (!camera->InBounds() && cullPosition->x < Window::s_scaleWidth) 
-                        factor = remainder * 2.0f;
+                if (entity->GetType() == Entity::SPRITE) {
+                    const auto sprite = std::dynamic_pointer_cast<Sprite>(entity);
+                    width = sprite->texture.Width,
+                    height = sprite->texture.Height;
                 }
 
-                return (((entity->position.x + Window::s_scaleWidth) * factor > abs(cullPosition->x) && (entity->position.x + Window::s_scaleWidth) * factor < (abs(cullPosition->x) + Window::s_scaleWidth) * factor + Window::s_scaleWidth) || 
-                       ((entity->position.x - Window::s_scaleWidth) * factor < abs(cullPosition->x) && (entity->position.x - Window::s_scaleWidth) * factor > (abs(cullPosition->x) - Window::s_scaleWidth) * factor - Window::s_scaleWidth)) &&
-                       (((entity->position.y + Window::s_scaleHeight) * factor > abs(cullPosition->y) && (entity->position.y + Window::s_scaleHeight) * factor < (abs(cullPosition->y) + Window::s_scaleHeight) * factor + Window::s_scaleHeight) || 
-                       ((entity->position.y - Window::s_scaleHeight) * factor < abs(cullPosition->y) && (entity->position.y - Window::s_scaleHeight) * factor > (abs(cullPosition->y) - Window::s_scaleHeight) * factor - Window::s_scaleHeight));  
+                const float camPosX = -camera->GetPosition()->x, 
+                            camPosY = -camera->GetPosition()->y,
+                            fx = (1.0f - entity->scrollFactor.x) + 1.0,
+                            fy = (1.0f - entity->scrollFactor.y) + 1.0,
+                            posX = entity->position.x * fx,
+                            posY = entity->position.y * fy,
+                            left = (camPosX - System::Window::s_scaleWidth / 2) * entity->scrollFactor.x, 
+                            right = (camPosX + System::Window::s_scaleWidth) * fx, 
+                            bottom = (camPosY - System::Window::s_scaleHeight / 2) * entity->scrollFactor.y, 
+                            top = (camPosY + System::Window::s_scaleHeight) * entity->scrollFactor.y; 
+            
+                return (posX + width > left && 
+                        posX < right && 
+                        posY + height > bottom && 
+                        posY < top);
             };
 
             #if STANDALONE == 0
-                //use camera position for editor builds
-                entity->renderable = check_renderable(camera->GetPosition());
+                entity->renderable = check_renderable();
             #else
-
-                //use cull target position to cease rendering of cullable entities if applicable
-
-                if (entity->cull) {
-                    if (currentScene->cullPosition) 
-                        entity->renderable = check_renderable(currentScene->cullPosition);
-
-                    else //if no cull target provided, use camera position by default
-                        entity->renderable = check_renderable(camera->GetPosition());
-                }
+                if (entity->cull) 
+                    entity->renderable = check_renderable();
+                
             #endif
 
             if (entity->renderable) {
@@ -478,7 +478,6 @@ void Game::UpdateFrame()
     std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });      
 
     #if DEVELOPMENT == 1
-
         if (physics && physics->enableDebug)
         {
             static_cast<b2World*>(physics->GetWorld())->DebugDraw();
@@ -489,7 +488,6 @@ void Game::UpdateFrame()
                 _displayInfo->Update(&m_context);
             #endif
         }
-
     #endif
 
     //update behaviors, pass game process context to subclasses
@@ -517,8 +515,7 @@ void Game::UpdateFrame()
 
     for (auto it = time->timed_events.begin(); it != time->timed_events.end(); ++it)
         if (it != time->timed_events.end()) {
-            auto event = *it;
-
+            const auto event = *it;
             if (!event->active) {
                 it = time->timed_events.erase(std::move(it));
                 --it;
@@ -560,7 +557,6 @@ void Game::UpdateFrame()
 
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
-
     const std::string ID = entity->ID;
 
     auto it = std::find(Application::game->currentScene->entities.begin(), Application::game->currentScene->entities.end(), entity);
@@ -619,7 +615,6 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
 std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, float y, int frame, float scale, int layer, bool isSpawn)
 {
-
     const auto sprite = std::make_shared<Sprite>(key, x, y, isSpawn);
 
     if (layer == 1)
