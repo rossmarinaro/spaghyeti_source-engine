@@ -139,7 +139,7 @@ const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 void Camera::Update() {
     if (m_canFollow && InBounds()) {
         m_position.x = (-m_target.first->x + m_target.second.first); 
-        m_position.y = (-m_target.first->y + m_target.second.second) /* / 2 */;  
+        m_position.y = (-m_target.first->y + m_target.second.second);  
     }
 }
 

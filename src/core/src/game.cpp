@@ -422,6 +422,8 @@ void Game::UpdateFrame()
                 float width = 0.0f, 
                       height = 0.0f;
 
+                //cull sprite and tile type entities out of view space
+
                 if (entity->GetType() == Entity::SPRITE || entity->GetType() == Entity::TILE) 
                 {
                     const auto sprite = std::dynamic_pointer_cast<Sprite>(entity); 
@@ -434,8 +436,8 @@ void Game::UpdateFrame()
 
                 const float camPosX = -camera->GetPosition()->x, 
                             camPosY = -camera->GetPosition()->y,
-                            fx = (1.0f - entity->scrollFactor.x) + 1.0,
-                            fy = (1.0f - entity->scrollFactor.y) + 1.0,
+                            fx = (1.0f - entity->scrollFactor.x) + 1.0f,
+                            fy = (1.0f - entity->scrollFactor.y) + 1.0f,
                             posX = entity->position.x * fx,
                             posY = entity->position.y * fy,
                             left = (camPosX - (System::Window::s_scaleWidth) / 2) * entity->scrollFactor.x, 
