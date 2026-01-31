@@ -33,7 +33,7 @@ namespace System {
 
             std::string key;
  
-            Math::Vector2* cullPosition;
+            Math::Vector2* cameraTarget;
 
             std::unique_ptr<Geometry> vignette;
             

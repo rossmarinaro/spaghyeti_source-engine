@@ -219,6 +219,12 @@ namespace editor {
 
     class TilemapNode : public Node {
 
+        struct Layer {
+            std::string dataKey, path, textureKey, shader;
+            int depth;
+            float scrollFactorX, scrollFactorY;
+        };
+
         public:
 
             int layer, 
@@ -228,10 +234,14 @@ namespace editor {
                 tile_height;
 
             std::vector<int> spr_sheet_width,
-                             spr_sheet_height,
-                             depth;
+                             spr_sheet_height;
 
-            std::vector<std::array<std::string, 3>> layers;
+            std::vector<float> scrollFactorX,
+                               scrollFactorY;
+
+            std::vector<std::string> shaders;
+
+            std::vector<Layer> layers;
             std::vector<std::array<int, 6>> offset;
             std::vector<Body> bodies;
 
@@ -245,7 +255,7 @@ namespace editor {
             void ApplyTilemap(bool clearPrevious = true, bool renderReversed = false, bool isJSON = false);
             void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
             void UpdateBody(int index);
-
+ 
         private: 
 
             bool m_layersApplied, m_mapApplied;

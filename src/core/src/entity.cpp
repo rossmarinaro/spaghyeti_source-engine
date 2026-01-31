@@ -708,10 +708,10 @@ void Sprite::Render()
                     proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f);
 
     glm::mat4 model = glm::mat4(1.0f); 
-float posX = /* name == "player"? */ position.x /* :  (position.x - camera->GetPosition()->x) */ /* * scrollFactor.x */;
-    model = glm::translate(model, { 0.5f * texture.FrameWidth + posX/* position.x */ * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
+
+    model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    model = glm::translate(model, { -0.5f * texture.FrameWidth - posX/* position.x */ * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
+    model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
 
     unsigned int fill = 1;
 
@@ -750,8 +750,8 @@ float posX = /* name == "player"? */ position.x /* :  (position.x - camera->GetP
         shader.SetFloat("alphaVal", alpha); 
         shader.SetInt("repeat", texture.Repeat);
         shader.SetVec2f("scale", { scale.x, scale.y });
-//posX = fmod(posX, texture.Width);
-        texture.Update({posX, position.y}/* position */, flipX, flipY, fill); 
+
+        texture.Update(position, flipX, flipY, fill); 
 
     }
 

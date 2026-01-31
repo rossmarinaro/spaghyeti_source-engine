@@ -47,6 +47,7 @@ namespace System {
                 static void LoadFile(const std::string& key, const std::string& path);
                 static void LoadRaw(const int type, const std::string& key, const unsigned char* arr, const unsigned int bytes);
                 static void LoadAnims(const std::string& key, const std::map<const std::string, std::pair<int, int>>& anims);
+                //can be used to load frames from a texture during preload, or at runtime to overwrite previous frames
                 static void LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames); 
                 static void LoadAtlas(const std::string& key, const std::string& path); 
 

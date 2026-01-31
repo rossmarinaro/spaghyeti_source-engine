@@ -24,7 +24,10 @@ class MapManager {
             float posY = 0.0f,
             float rotation = 0.0f,
             float scaleX = 1.0f,
-            float scaleY = 1.0f
+            float scaleY = 1.0f,
+            float scrollFactorX = 1.0f,
+            float scrollFactorY = 1.0f,
+            const std::string& shaderKey = ""
         );
         
         static void RemoveLayer(const std::string& key);

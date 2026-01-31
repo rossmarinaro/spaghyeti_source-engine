@@ -29,7 +29,7 @@ GUI::GUI()
     //- When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
     //Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 
-    Editor::Log("IMGui Version: " + std::to_string((int)IMGUI_CHECKVERSION()));
+    Editor::Log("IMGui Version: " + (std::string)ImGui::GetVersion());
 
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;

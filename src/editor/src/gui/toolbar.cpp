@@ -186,15 +186,15 @@ void editor::GUI::ShowSettings()
     if (ImGui::BeginMenu("World Bounds"))
     {
         if (ImGui::BeginMenu("width")) {
-            ImGui::InputFloat("begin", &session->game->camera->currentBoundsWidthBegin);
-            ImGui::InputFloat("end", &session->game->camera->currentBoundsWidthEnd);
+            ImGui::InputFloat("begin width", &session->game->camera->currentBoundsWidthBegin); 
+            ImGui::InputFloat("end width", &session->game->camera->currentBoundsWidthEnd);
 
             ImGui::EndMenu();
         }
 
         if (ImGui::BeginMenu("height")) {
-            ImGui::InputFloat("begin", &session->game->camera->currentBoundsHeightBegin);
-            ImGui::InputFloat("end", &session->game->camera->currentBoundsHeightEnd);
+            ImGui::InputFloat("begin height", &session->game->camera->currentBoundsHeightBegin);
+            ImGui::InputFloat("end height", &session->game->camera->currentBoundsHeightEnd);
 
             ImGui::EndMenu();
         }
@@ -210,7 +210,6 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("preload assets"))
         {
-
             if (ImGui::BeginMenu("add"))
             {
                 for (auto& asset : am->loadedAssets) 
@@ -220,9 +219,6 @@ void editor::GUI::ShowSettings()
 
                     key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
                     path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
-                    
-                    if (System::Utils::GetFileType(path) == System::Resources::Manager::DATA) 
-                        continue;
 
                     if (ImGui::MenuItem(path.c_str()))  
                         AssetManager::Register(key);
@@ -231,7 +227,7 @@ void editor::GUI::ShowSettings()
                 ImGui::EndMenu();
             }
 
-            ImGui::Separator();
+            ImGui::Separator(); 
             
             int i = 0;
 
@@ -760,20 +756,6 @@ void editor::GUI::ShowViewport()
     ImGui::SliderFloat("rotation", session->game->camera->GetRotation(), 0.0f, 360.0f);
     ImGui::SliderFloat("vignette", &session->vignetteVisibility, 0.0f, 1.0f);
     ImGui::ColorEdit4("color", (float*)session->game->camera->GetBackgroundColor()); 
-
-    //cull target (only top level sprites allowed)
-
-    if (ImGui::BeginCombo("cull target", session->cullTarget.first.c_str()))
-    {
-        for (const auto& node : Node::nodes) 
-            if (node->type == Node::SPRITE) {
-                const auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
-                if (ImGui::Selectable(sn->name.c_str())) 
-                    Editor::Get()->cullTarget = { sn->name, { sn->positionX, sn->positionY } };
-            }
-
-        ImGui::EndCombo();
-    }
 
     //vignette visibility
 

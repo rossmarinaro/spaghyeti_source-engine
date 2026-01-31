@@ -677,20 +677,20 @@ void EventListener::BuildAndRun()
             std::filesystem::copy_file(rsrcPath, destPath, options);
     };
 
-    //loop over folders
+    //loop over asset folders
 
     for (const std::string& folder : asset_types)
     {
         const std::string projResPath = Editor::projectPath + "resources/assets/" + folder;
-        std::string type = folder;
+        std::string type;
 
-        if (type == "images")
+        if (folder == "images")
             type = "System::Resources::Manager::IMAGE";
 
-        else if (type == "audio")
+        else if (folder == "audio")
             type = "System::Resources::Manager::AUDIO";
 
-        else if (type == "fonts")
+        else if (folder == "fonts")
             type = "System::Resources::Manager::TEXT";
 
         else continue;
@@ -732,10 +732,6 @@ void EventListener::BuildAndRun()
         if (!std::filesystem::exists(copy_lib))
             std::filesystem::copy_file(Editor::rootPath + "\\sdk\\" + lib, copy_lib, options);
     }
-    
-    //cull target
-
-    std::string cullTarget = "";
 
     //set game source input file stream
 
@@ -1216,7 +1212,6 @@ void EventListener::BuildAndRun()
         //load spritesheets (loaded data)
 
         if (target.second->spritesheets.size())
-        {
             for (const auto& spritesheet : target.second->spritesheets)
             {
                 const std::string filepath = Editor::projectPath + spritesheet.second;
@@ -1255,13 +1250,10 @@ void EventListener::BuildAndRun()
                 }
                 
             }
-        }
 
         //load animations (loaded data)
 
         if (target.second->animations.size())
-        {
-
             for (const auto& animation : target.second->animations)
             {
                 
@@ -1282,8 +1274,6 @@ void EventListener::BuildAndRun()
                     }
                 }
             }
-
-        }
 
         //set global vars
 
@@ -1418,9 +1408,6 @@ void EventListener::BuildAndRun()
                     else  
                         command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
 
-                    if (sn->name == target.second->cullTarget.first)
-                        cullTarget = "sprite_" + node->ID;
-
                     //sprite configurations
 
                     const std::string isStroke = sn->isStroked ? "true" : "false",
@@ -1547,7 +1534,6 @@ void EventListener::BuildAndRun()
 
                 if (node->type == Node::TILEMAP)
                 {
-
                     const auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
 
                     //load frames
@@ -1558,7 +1544,12 @@ void EventListener::BuildAndRun()
                     if (tmn->offset.size()) 
                     {
                         for (const auto& offset : tmn->offset)
-                            offsetsToLoad.emplace_back("{" + std::to_string(offset[0])  + ", " + std::to_string(offset[1]) + ", " + std::to_string(offset[2]) + ", " + std::to_string(offset[3]) + ", " + std::to_string(offset[4]) + ", " + std::to_string(offset[5]) + "}");
+                            offsetsToLoad.emplace_back("{" + std::to_string(offset[0]) + ", " + 
+                                                        std::to_string(offset[1]) + ", " + 
+                                                        std::to_string(offset[2]) + ", " + 
+                                                        std::to_string(offset[3]) + ", " + 
+                                                        std::to_string(offset[4]) + ", " + 
+                                                        std::to_string(offset[5]) + "}");
                     
                         if (!offsetsToLoad.empty()) {
                             std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
@@ -1572,21 +1563,62 @@ void EventListener::BuildAndRun()
 
                     if (tmn->layers.size())
                     {
+                        //load frames / layers
+
                         for (int i = 0; i < tmn->layer; i++)
                         {
-                            if (tmn->layers[i][2].length() && std::find(loadedFrames.begin(), loadedFrames.end(), tmn->layers[i][2]) == loadedFrames.end()) {
-                                preload_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i][2] + "\", { " + offset_oss.str() + " });\n";
-                                loadedFrames.emplace_back(tmn->layers[i][2]);
+                            //copy or embed relevant map data if json
+
+                            if (System::Utils::str_includes(tmn->layers[i].path, ".json")) 
+                            {
+                                const std::string projResPath = Editor::projectPath + "resources/assets/data",
+                                                  enumType = "System::Resources::Manager::DATA";
+
+                                const auto check_is_file = [](const std::filesystem::directory_entry& file) -> bool {
+                                    const auto it = std::find(AssetManager::Get()->assets.begin(), AssetManager::Get()->assets.end(), file.path().filename().string());
+                                    return  it != AssetManager::Get()->assets.end();
+                                };
+
+                                for (const auto& file : std::filesystem::directory_iterator(projResPath)) 
+                                    if (file.is_directory()) {
+                                        for (const auto& f : std::filesystem::directory_iterator(file))
+                                            if (!std::filesystem::is_empty(f.path()) && !f.is_directory() && check_is_file(f))
+                                                iterateFolder(f, projResPath, enumType);
+                                    }
+                                    else if (check_is_file(file))
+                                        iterateFolder(file, projResPath, enumType);
+                            }
+
+                            if (tmn->layers[i].textureKey.length()) {
+                                command_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i].textureKey + "\", { " + offset_oss.str() + " });\n";
+                                loadedFrames.emplace_back(tmn->layers[i].textureKey);
                             }
                             
-                            if (tmn->layers[i][0].length()) 
-                                command_queue << "   MapManager::CreateLayer(\"" + tmn->layers[i][2] + "\", ""\"" + tmn->layers[i][0] + "\", " + std::to_string(tmn->map_width) + ", " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ", " + std::to_string(tmn->depth[i]) + ", " + std::to_string(tmn->actualPositionX) + ", " + std::to_string(tmn->actualPositionY) + ", " + std::to_string(tmn->rotation) + ", " + std::to_string(tmn->scaleX) + ", " + std::to_string(tmn->scaleY) + ");\n";
+                            if (tmn->layers[i].dataKey.length()) {
+                                const std::string shader = tmn->layers[i].shader.length() ? tmn->layers[i].shader : "\"\"";
+                                command_queue << "      MapManager::CreateLayer(\"" + tmn->layers[i].textureKey + "\", ""\"" + tmn->layers[i].dataKey + "\", " + 
+                                std::to_string(tmn->map_width) + ", " + 
+                                std::to_string(tmn->map_height) + ", " + 
+                                std::to_string(tmn->tile_width) + ", " + 
+                                std::to_string(tmn->tile_height) + ", " + 
+                                std::to_string(tmn->layers[i].depth) + ", " + 
+                                std::to_string(i) + ", " + 
+                                std::to_string(tmn->actualPositionX) + ", " + 
+                                std::to_string(tmn->actualPositionY) + ", " + 
+                                std::to_string(tmn->rotation) + ", " + 
+                                std::to_string(tmn->scaleX) + ", " + 
+                                std::to_string(tmn->scaleY) + ", " +
+                                std::to_string(tmn->layers[i].scrollFactorX) + ", " +
+                                std::to_string(tmn->layers[i].scrollFactorY) + ", " +
+                                shader +
+                                ");\n";
+                            } 
                         }
 
-                        //create map if layers are defined
+                        //create map entity handle
 
-                        if (tmn->layers[0][0].length()) {
-                            command_queue << "   const auto map_" + node->ID + " = System::Game::CreateEntity(Entity::TILE);\n\t";
+                        if (tmn->layers[0].dataKey.length()) {
+                            command_queue << "      const auto map_" + node->ID + " = System::Game::CreateEntity(Entity::TILE);\n\t";
                             command_queue << "   map_" + node->ID + "->SetName(\"" + tmn->name + "\");\n";
                         }
 
@@ -1694,11 +1726,6 @@ void EventListener::BuildAndRun()
         //write nodes
 
         writeNodes(target.second->nodes);
-
-        if (cullTarget.length())
-            command_queue << "   System::Game::SetCullPosition(&" + cullTarget + "->position);\n";
-
-        cullTarget = "";
 
         //convert data string stream to string
 

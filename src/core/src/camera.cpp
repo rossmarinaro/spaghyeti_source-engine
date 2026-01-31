@@ -9,7 +9,7 @@ Camera::Camera():
     m_position({ 0.0f, 0.0f }),
     m_backgroundColor({ 0.5f, 0.5f, 0.5f, 1.0f }),
     m_target({ nullptr, { 0.0f, 0.0f } }),
-    m_canFollow(true)
+    m_canFollow(false)
 {
     currentBoundsWidthBegin = 0.0f;
     currentBoundsWidthEnd = 0.0f;
@@ -23,8 +23,8 @@ Camera::Camera():
 
 
 void Camera::StartFollow(Math::Vector2* position, float offsetX, float offsetY) {
-    m_canFollow = true;
     m_target = { position, { offsetX, offsetY } };
+    m_canFollow = true;
 }
 
 //-------------------------------
@@ -139,7 +139,7 @@ const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 void Camera::Update() {
     if (m_canFollow && InBounds()) {
         m_position.x = (-m_target.first->x + m_target.second.first); 
-        m_position.y = m_target.second.second != 0.0f ? (-m_target.first->y + m_target.second.second) / 2 : 0.0f;  
+        m_position.y = (-m_target.first->y + m_target.second.second) /* / 2 */;  
     }
 }
 

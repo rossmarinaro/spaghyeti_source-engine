@@ -58,7 +58,7 @@ namespace entity_behaviors {
                 m_active = false;
             }
 
-            virtual bool DoDamage(int amount) {};
+            virtual bool DoDamage(int amount) { return m_canDamage; }
  
     };
 }

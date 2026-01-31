@@ -1,5 +1,6 @@
 #include <sstream>
 #include <fstream>
+#include <type_traits>
 
 #if USE_JSON == 1
 	#include "../../vendors/nlohmann/json.hpp"
@@ -256,6 +257,13 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
                         {
                             for (auto& d : data["layers"][index]["data"]) 
                             { 
+                                //check if data is base64 (not supported)
+
+                                if (std::is_same<std::string, decltype(d)>::value) {
+                                    LOG("cannot parse map data. Only CSV tile format supported.");
+                                    break;
+                                }
+
                                 int gid = static_cast<int>(d);
 
                                 //tiled uses 0 indexed gids

@@ -277,7 +277,7 @@ void Game::SetCullPosition(Math::Vector2* position)
     const auto scene = GetScene();
 
     if (scene)
-        scene->cullPosition = position; 
+        scene->cameraTarget = position; 
 }
 
 
@@ -296,17 +296,17 @@ void Game::UpdateFrame()
 
     #if STANDALONE == 1
 
-        if (currentScene->cullPosition)
+        if (currentScene->cameraTarget)
             for (auto& spawn : currentScene->spawns)
             {
-                if (Math::distanceBetween(currentScene->cullPosition->x - spawn.posX) >= spawn.spawn_width * 1.5f && spawn.loop)  
+                if (Math::distanceBetween(currentScene->cameraTarget->x - spawn.posX) >= spawn.spawn_width * 1.5f && spawn.loop)  
                     spawn.can_create = true;
 
                 //create / runtime instantiation of game objects
 
                 if (spawn.can_create && 
-                    currentScene->cullPosition->x >= spawn.posX - spawn.spawn_width && currentScene->cullPosition->x <= spawn.posX + spawn.spawn_width &&
-                    currentScene->cullPosition->y >= spawn.posY - spawn.spawn_height && currentScene->cullPosition->y <= spawn.posY + spawn.spawn_height
+                    currentScene->cameraTarget->x >= spawn.posX - spawn.spawn_width && currentScene->cameraTarget->x <= spawn.posX + spawn.spawn_width &&
+                    currentScene->cameraTarget->y >= spawn.posY - spawn.spawn_height && currentScene->cameraTarget->y <= spawn.posY + spawn.spawn_height
                 ) 
                 {
                     if (std::find_if(GetScene()->entities.begin(), GetScene()->entities.end(), [&spawn](std::shared_ptr<Entity> e) { return e->name == spawn.index; }) != System::Game::GetScene()->entities.end()) 
@@ -365,10 +365,10 @@ void Game::UpdateFrame()
                 //remove
 
                 if (
-                    currentScene->cullPosition->x < spawn.posX - (Window::s_scaleWidth * 2) ||
-                    currentScene->cullPosition->x > spawn.posX + (Window::s_scaleWidth * 2) || 
-                    currentScene->cullPosition->y < spawn.posY - (Window::s_scaleHeight * 2) ||
-                    currentScene->cullPosition->y > spawn.posY + (Window::s_scaleHeight * 2) 
+                    currentScene->cameraTarget->x < spawn.posX - (Window::s_scaleWidth * 2) ||
+                    currentScene->cameraTarget->x > spawn.posX + (Window::s_scaleWidth * 2) || 
+                    currentScene->cameraTarget->y < spawn.posY - (Window::s_scaleHeight * 2) ||
+                    currentScene->cameraTarget->y > spawn.posY + (Window::s_scaleHeight * 2) 
                 )
                 {   
                     std::shared_ptr<Entity> entity;  
@@ -422,10 +422,14 @@ void Game::UpdateFrame()
                 float width = 0.0f, 
                       height = 0.0f;
 
-                if (entity->GetType() == Entity::SPRITE) {
-                    const auto sprite = std::dynamic_pointer_cast<Sprite>(entity);
-                    width = sprite->texture.Width,
-                    height = sprite->texture.Height;
+                if (entity->GetType() == Entity::SPRITE || entity->GetType() == Entity::TILE) 
+                {
+                    const auto sprite = std::dynamic_pointer_cast<Sprite>(entity); 
+
+                    if (sprite) {
+                        width = sprite->texture.FrameWidth,
+                        height = sprite->texture.FrameHeight;
+                    }
                 }
 
                 const float camPosX = -camera->GetPosition()->x, 
@@ -434,11 +438,11 @@ void Game::UpdateFrame()
                             fy = (1.0f - entity->scrollFactor.y) + 1.0,
                             posX = entity->position.x * fx,
                             posY = entity->position.y * fy,
-                            left = (camPosX - System::Window::s_scaleWidth / 2) * entity->scrollFactor.x, 
-                            right = (camPosX + System::Window::s_scaleWidth) * fx, 
-                            bottom = (camPosY - System::Window::s_scaleHeight / 2) * entity->scrollFactor.y, 
-                            top = (camPosY + System::Window::s_scaleHeight) * entity->scrollFactor.y; 
-            
+                            left = (camPosX - (System::Window::s_scaleWidth) / 2) * entity->scrollFactor.x, 
+                            right = (camPosX + (System::Window::s_scaleWidth)) * fx, 
+                            bottom = (camPosY - (System::Window::s_scaleHeight) / 2) * entity->scrollFactor.y, 
+                            top = (camPosY + System::Window::s_scaleHeight) * fy; 
+     
                 return (posX + width > left && 
                         posX < right && 
                         posY + height > bottom && 
@@ -613,7 +617,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
 //----------------------------- sprite
 
-std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, float y, int frame, float scale, int layer, bool isSpawn)
+std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, float y, int frame, float scale, int layer, bool isSpawn)
 {
     const auto sprite = std::make_shared<Sprite>(key, x, y, isSpawn);
 
@@ -637,7 +641,7 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string &key, float x, floa
 //----------------------------- ui sprite
 
 
-std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y, int frame)
+std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y, int frame)
 {
     const Math::Vector2 pos = { x, y };
 
@@ -657,7 +661,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string &key, float x, float y,
 //----------------------------- tile
 
 
-std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, float y, int frame)
+std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, float y, int frame)
 {
     const auto ts = std::make_shared<Sprite>(key, x, y, false, true);
 
@@ -673,7 +677,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string &key, float x, 
 //----------------------------- text
 
 
-std::shared_ptr<Text> Game::CreateText(const std::string &content, float x, float y, const std::string &font, int layer)
+std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, float y, const std::string& font, int layer)
 {
     const auto text = std::make_shared<Text>(content, x, y, font);
 

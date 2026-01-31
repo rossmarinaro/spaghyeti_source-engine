@@ -22,13 +22,16 @@ const bool MapManager::CreateLayer (
     float posY,
     float rotation,
     float scaleX,
-    float scaleY
+    float scaleY,
+    float scrollFactorX,
+    float scrollFactorY,
+    const std::string& shaderKey
 )
 {
     auto data = System::Resources::Manager::ParseMapData(data_key, index);
 
     if (!data.size()) {                                       
-        LOG("Tilemap: layer data not found.");
+        LOG("Tilemap: layer data not found. Expected " + (std::string)data_key);
         return false;
     }
 
@@ -101,6 +104,11 @@ const bool MapManager::CreateLayer (
                 tile->SetFlip(flipX, flipY);  
                 tile->SetRotation(rotation); 
                 tile->SetScale(scaleX, scaleY); 
+                tile->SetScrollFactor({ scrollFactorX, scrollFactorY });
+                tile->SetCull(true);
+
+                if (shaderKey.length())
+                    tile->SetShader(shaderKey);
 
                 if (diag)
                     tile->SetRotation(rotation + 90);  
@@ -114,7 +122,7 @@ const bool MapManager::CreateLayer (
 
     System::Application::game->maps->layers.emplace_back(layer);
 
-    LOG("Tilemap: Initialized layer with key: " + (std::string)texture_key);
+    LOG("Tilemap: Initialized layer with texture key: " + (std::string)texture_key + " data key: " + (std::string)data_key);
 
     return true;
 }

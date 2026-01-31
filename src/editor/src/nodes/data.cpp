@@ -182,13 +182,13 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             layers.push_back({
                 { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
                 { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
-                { "depth", tmn->depth.size() ? tmn->depth[i] : 0 },
-                { "csv", {
-                        { "key", tmn->layers[i][0] },
-                        { "path", tmn->layers[i][1] },
-                        { "texture", tmn->layers[i][2] }
-                    } 
-                }
+                { "scroll factor x", tmn->layers[i].scrollFactorX },
+                { "scroll factor y", tmn->layers[i].scrollFactorY },
+                { "shader", tmn->layers[i].shader },
+                { "depth", tmn->layers[i].depth },
+                { "key", tmn->layers[i].dataKey },
+                { "path", tmn->layers[i].path },
+                { "texture", tmn->layers[i].textureKey }
             });
 
         //physics bodies
@@ -725,11 +725,20 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 tmn->layer = data["layer"];
 
             if (data.contains("layers") && data["layers"].size()) 
-                for (const auto& layer : data["layers"]) {
-                    tmn->layers.push_back({ layer["csv"]["key"], layer["csv"]["path"], layer["csv"]["texture"] });
+                for (const auto& layer : data["layers"]) 
+                {
+                    tmn->layers.push_back({ 
+                        layer["key"], 
+                        layer["path"], 
+                        layer["texture"],
+                        layer["shader"],
+                        layer["depth"],
+                        layer["scroll factor x"],
+                        layer["scroll factor y"]
+                    });
+
                     tmn->spr_sheet_width.push_back(layer["frames x"]);
                     tmn->spr_sheet_height.push_back(layer["frames y"]);
-                    tmn->depth.push_back(layer["depth"]);
                 }
 
             if (data.contains("components"))

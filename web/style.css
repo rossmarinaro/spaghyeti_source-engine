@@ -2,7 +2,7 @@ body {
     font-family: arial;
     margin: 0;
     padding: none;
-    background-color: #564826;
+    background-color: #5e5e5e;
     overflow: hidden;
 }
 
@@ -26,7 +26,6 @@ canvas {
 
 @media (orientation: portrait) 
 {
-
     canvas {
         margin-top: 50%;
     }

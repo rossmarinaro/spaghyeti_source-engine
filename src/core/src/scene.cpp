@@ -21,7 +21,7 @@ void Scene::Init(const std::string& key)
     m_paused = false;
     m_worldWidth = 0; 
     m_worldHeight = 0;
-    cullPosition = GetContext().camera->GetPosition(); 
+    cameraTarget = GetContext().camera->GetPosition(); 
 }
 
 //---------------------------------
