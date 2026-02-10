@@ -15,6 +15,7 @@ namespace Graphics {
 
             void SetFloat(const char* name, float value, bool useShader = true);
             void SetInt(const char* name, int value, bool useShader = true);
+            void SetIntV(const char* name, int length, int* value, bool useShader = true);
             void SetVec2f(const char* name, float x, float y, bool useShader = true);
             void SetVec2f(const char* name, const Math::Vector2& value, bool useShader = true);
             void SetVec3f(const char* name, float x, float y, float z, bool useShader = true);

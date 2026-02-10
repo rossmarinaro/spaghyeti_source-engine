@@ -135,5 +135,7 @@ void System::Application::ShutDown()
     delete events;
     events = nullptr;
 
+    Renderer::ShutDown();
+
     LOG("Application terminated successfully. 👌");
 };

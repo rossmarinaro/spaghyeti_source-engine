@@ -240,7 +240,6 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             if (HasComponent(Component::ANIMATOR) && ImGui::BeginMenu("Animator"))
             {
-
                 auto anim_component = GetComponent(Component::ANIMATOR, ID);
 
                 if (anim_component)
@@ -268,7 +267,6 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         else 
                             for (int i = 0; i < animations.size(); i++)
                             {
-
                                 ImGui::Text("animation: %d", i);
 
                                 ImGui::PushID(i); 
@@ -382,7 +380,6 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                     for (auto& body : bodies)
                     {
-
                         ImGui::PushID(i);
 
                         ImGui::Text((i == 0) ? "anchor: %d" : "body: %d", i);
@@ -472,12 +469,10 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             if (show_options)
             {
-
                 ImGui::Checkbox("texture", &m_show_sprite_texture); 
 
                 if (m_show_sprite_texture)
                 {
-
                     //texture
         
                     if (ImGui::ImageButton("texture button", (void*)(intptr_t)m_currentTexture, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE)
@@ -493,14 +488,13 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         
                     if (m_currentTexture)
                     {
-
                         //spritesheet / atlas
 
                         if (ImGui::BeginMenu("frames")) 
                         {
                             //apply frames
  
-                            if (ImGui::Button("apply") && !framesApplied) {
+                            if (ImGui::Button("apply") && !framesApplied && frames.size()) {
                           
                                 frames.clear();
 

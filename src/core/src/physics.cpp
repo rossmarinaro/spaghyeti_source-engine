@@ -408,11 +408,20 @@ void Physics::Body::SetTransform(float x, float y, float angle) {
 }
 
 
+//----------------------------------
+
+
+void Physics::Body::SetGravityScale(float gs) {
+    const auto body = _GetBox2DBody(id);
+    if (body)
+        body->SetGravityScale(gs);
+}
+
 
 //----------------------------------
 
 
-void Physics::Body::DestroyFixture() {
+void Physics::Body::DestroyFixture() { 
     const auto body = _GetBox2DBody(id);
     if (body)
         body->DestroyFixture(body->GetFixtureList());

@@ -70,7 +70,7 @@ When targeting specific entity from script use `System::Game::GetScene()->GetEnt
 
 To Do:
 
-state management: undo/redo functionality
+state management: undo/redo functionality (state snapshot memento pattern saving entire app state as json after each action)
 
 improve editor entity selection/mouse picking/raycasting
 

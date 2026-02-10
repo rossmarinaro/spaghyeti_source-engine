@@ -2,12 +2,12 @@
 
 #include <string>
 #include "./math.h"
- /// Holds all state information relevant to a character as loaded using FreeType
 
 namespace Graphics {  
 
     struct Format { float width, height; float u1, v1, u2, v2; };
-    struct Renderable { float x, y; Format format; };
+    struct Renderable { float x, y; Format format; int textureID; };
+    struct Vertex { float x, y, u, v, texID; }; 
 
 //--------------------------------------
 
@@ -38,17 +38,12 @@ namespace Graphics {
             
             const void Bind();
             void SetFiltering(bool filterMin = true, bool filterMax = true, bool wrapS = true, bool wrapT = true);
-            void Generate(unsigned int width, unsigned int height, unsigned int channels, const void* data);  
             void Update(const Math::Vector2& position, bool flipX, bool flipY, int drawStyle, float thickness = 1.0f);
             void Delete();
 
         private: 
 
-            unsigned int m_VBO, m_UVBO;
-
-            float m_UVs[12];
-
-            unsigned int m_VAO,
+            unsigned int m_textureUnit,
                          m_internal_format, // format of texture object RGB, RGBA
                          m_image_format; // format of loaded image
     }; 

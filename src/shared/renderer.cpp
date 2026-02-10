@@ -4,7 +4,7 @@
 #include "../core/src/debug.h"
 #include "./renderer.h"
 
-
+#include "../vendors/glm/gtc/matrix_transform.hpp" 
 using namespace System;
 
 void Renderer::cursor_callback(GLFWwindow* window, double xPos, double yPos)
@@ -40,7 +40,6 @@ void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int actio
 
 void Renderer::input_callback(GLFWwindow* window, int input, int action, int mods)
 {
-
     if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         Application::game->inputs->RIGHT_CLICK = true;
 
@@ -77,30 +76,6 @@ void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int heig
 void Renderer::window_size_callback(GLFWwindow* window, int width, int height) {
     Window::s_width = width;
     Window::s_height = height;
-    glViewport(0, 0, Window::s_width, Window::s_height);
-}
-
-
-//-----------------------------------
-
-void Renderer::Update(void* camera)
-{
-    const auto bg = ((Camera*)camera)->GetBackgroundColor();
-
-    glfwSwapInterval(s_vsync); // Enable vsync
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendEquation(GL_FUNC_ADD);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glClearColor(
-        bg->x * bg->w,
-        bg->y * bg->w,
-        bg->z * bg->w,
-        bg->w
-    );
-
     glViewport(0, 0, Window::s_width, Window::s_height);
 }
 
@@ -156,7 +131,6 @@ void Renderer::CreateFrameBuffer()
 
 }
 
-
 //---------------------------------
 
 
@@ -174,204 +148,201 @@ void Renderer::RescaleFrameBuffer(float width, float height)
 }
 
 
+//---------------------------------- batch rendering
 
-//--------------------------------------
+ 
+Graphics::Shader shader;
+
+const int MAX_TEXTURES = 2;
+int samplers[MAX_TEXTURES] = { 0,1 };
+int MaxIndexCount = 18, textureSlotIndex = 0;
+int textureIndex = 1;
+
+void Renderer::Init() 
+{
+    Graphics::Vertex vertices[18] = {
+        //x      y      u     v     texID
+        -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
+        0.5f, -0.5f,  1.0f, 0.0f, 1.0f,
+        0.5f, 0.5f,  1.0f, 1.0f, 1.0f,
+        -0.5f, 0.5f,  0.0f, 1.0f, 1.0f,
+    }; 
+
+    unsigned int indices[] = { 0, 1, 2, 2, 3, 0 }; //2 triangles = 1 quad
+
+    glGenVertexArrays(1, &VAO); 
+
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &UVBO);    
+    glGenBuffers(1, &EBO);
+
+    //System::Resources::Manager::LoadFile(/* "sewer1 background.png", "assets/sewer1 background.png" */ "sv_icon.png", "assets/sv_icon.png");System::Resources::Manager::RegisterTextures();
+
+    glBindVertexArray(VAO);  
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);    
+    glBufferData(GL_ARRAY_BUFFER, /* s_MAX_SPRITES *  */  sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);    
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Graphics::Vertex), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Graphics::Vertex), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Graphics::Vertex), (void*)(4 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    
+    glDisable(GL_CULL_FACE); 
+    glDisable(GL_DEPTH_TEST);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);       
+    glBindVertexArray(0);  
+}
 
 
+//------------------------------------
 
-// static std::array<uint32_t, BatchRenderer::MaxTextures> TextureSlots;
+
+void Renderer::Update(void* camera) 
+{
+    const auto bg = ((Camera*)camera)->GetBackgroundColor();
+
+    glfwSwapInterval(s_vsync); // Enable vsync
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glClearColor(
+        bg->x * bg->w,
+        bg->y * bg->w,
+        bg->z * bg->w,
+        bg->w
+    );
+
+    glViewport(0, 0, Window::s_width, Window::s_height);
+
+    const auto vertices = System::Game::GetScene()->batchSprites_verts;
+
+    auto shader = Graphics::Shader::Get("sprite");
+    std::vector<std::pair<const std::string, Graphics::Texture2D>> textures(System::Application::resources->textures.begin(), System::Application::resources->textures.end());
+
+    //auto tex =  Graphics::Texture2D::Get("sewer1 background.png");
+    glUseProgram(shader.ID);
+    for (int index = 0; index < MAX_TEXTURES; index++) {
+        glActiveTexture(GL_TEXTURE0 + index);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBindTexture(GL_TEXTURE_2D, textures[index].second.ID);
+        // std::string uniformName = "images[" + std::to_string(i) + "]";
+        //shader.SetInt(uniformName.c_str(), i); 
+        // textureSlotIndex++;
+    }
+    glUniform1iv(glGetUniformLocation(shader.ID, "images"), 2, samplers);
+
+    glBindVertexArray(VAO); 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);    
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Graphics::Vertex), vertices.data()); 
+
+    // glBindVertexArray(VAO); 
+    // glBindBuffer(GL_ARRAY_BUFFER, UVBO);    
+    // glBufferSubData(GL_ARRAY_BUFFER, 0, uvs.size() * sizeof(GLfloat), uvs.data());   
+
+    // GLintptr tOff = (6 * s_MAX_SPRITES) * 8; 
+    // glBindVertexArray(VAO); 
+    // glBindBuffer(GL_ARRAY_BUFFER, IBO);    
+    // glBufferSubData(GL_ARRAY_BUFFER, tOff, 6 * s_MAX_SPRITES * sizeof(int), images.data()  /* samplers */);  
+
+     glBindBuffer(GL_ARRAY_BUFFER, 0); 
+
+   // if (indexCount >= MaxIndexCount /* || textureSlotIndex > MAX_TEXTURES */) // 31 because first slot we have reserved for 1x1 white texture
+	//if (indexCount >= (6 * s_MAX_SPRITES) /* || */ /* currentTexture != texID */)
+    {
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //glDrawArrays(GL_TRIANGLES, 0, 6 * s_MAX_SPRITES); //tell ui about it
+        indexCount = 0; 
+        textureSlotIndex = 0;
+        batchSprites_verts.clear();
+	}
+
+}
+
+//---------------------------------
 
 
-// void BatchRenderer::Init()
+void Renderer::ShutDown() {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &UVBO); 
+    glDeleteBuffers(1, &EBO);
+}
+
+//--------------------------------- instance rendering 
+
+
+//#include "../vendors/glm/gtc/type_ptr.hpp"
+// void Renderer::InitInstances(/* const std::vector<std::shared_ptr<Sprite>>& sprites */) 
 // {
+//     shader = Graphics::Shader::Get("instance");
+//     const auto sprites = System::Game::GetScene()->tileDefs;
 
-//     m_Data.QuadBuffer = new Vertex[MaxVertexCount];
+//     glm::vec2 translations[10];
 
-//     glGenVertexArrays(1, &m_Data.QuadVA);
-//     glBindVertexArray(m_Data.QuadVA);
+//     //float x = 0,xOff=0;//{ 0.0f, 0.0f };
 
-//     glGenBuffers(1, &m_Data.QuadVB);
-//     glBind_Buffer(GL_ARRAY_BUFFER, m_Data.QuadVB);
-//     glBufferData(GL_ARRAY_BUFFER, MaxVertexCount * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
-
-//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, Position));
-//     glEnableVertexAttribArray(0);
-
-//     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, Color));
-//     glEnableVertexAttribArray(1);
-
-//     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, TexCoords));
-//     glEnableVertexAttribArray(2);
-
-//     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, TexIndex));
-//     glEnableVertexAttribArray(3);
-
-//     uint32_t indices[MaxIndexCount];
-//     uint32_t offset = 0;
-
-//     for (int i = 0; i < MaxIndexCount; i += 6)
-//     {
-//         indices[i + 0] = 0 + offset;
-//         indices[i + 1] = 1 + offset;
-//         indices[i + 2] = 2 + offset;
-//         indices[i + 3] = 2 + offset;
-//         indices[i + 4] = 3 + offset;
-//         indices[i + 5] = 0 + offset;
-
-//         offset += 4;
+//     for (int i = 0; i < sprites.size(); i++) {
+//         const auto sprite = sprites[i];
+//         translations[i++] = glm::vec2(sprite.x, sprite.y);
 //     }
 
-//     glGenBuffers(1, &m_Data.QuadIB);//glCreateBuffers(1, &m_Data.QuadIB);
-//     glBind_Buffer(GL_ELEMENT_ARRAY_BUFFER, m_Data.QuadIB);
-//     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+//     glUseProgram(shader.ID);
+//     glUniform2fv(glGetUniformLocation(shader.ID, "offsets"), 10, glm::value_ptr(translations[0]));
 
-//     glGenTextures(1, &m_Data.WhiteTexture);//glCreateTextures(GL_TEXTURE_2D, 1, &m_Data.WhiteTexture);
-//     glBindTexture(GL_TEXTURE_2D, m_Data.WhiteTexture);
-
-
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-//     uint32_t color = 0xffffffff;
-//     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color);
-
-//     TextureSlots[0] = m_Data.WhiteTexture;
-
-//     for (size_t i = 1; i < MaxTextures; i++)
-//         TextureSlots[i] = 0;
 // }
 
-// void BatchRenderer::Render(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color, float textureIndex)
+
+
+// void Renderer::RenderInstances() 
 // {
+//     auto texture = Graphics::Texture2D::Get("sv_icon.png");
+//     auto shader = Graphics::Shader::Get("sprite");
+//     Math::Vector2 scrollFactor = { 1.0f, 1.0f }, scale = { 1.0f, 1.0f },position = { 0.0f, 0.0f };
 
-//     m_Data.QuadBufferPtr->Position = { position.x, position.y, 0.0f };
-//     m_Data.QuadBufferPtr->Color = color;
-//     m_Data.QuadBufferPtr->TexCoords = { 0.0f, 0.0f };
-//     m_Data.QuadBufferPtr->TexIndex = textureIndex;
-//     m_Data.QuadBufferPtr++;
+//     const auto camera = System::Application::game->camera;
 
-//     m_Data.QuadBufferPtr->Position = { position.x + size.x, position.y, 0.0f };
-//     m_Data.QuadBufferPtr->Color = color;
-//     m_Data.QuadBufferPtr->TexCoords = { 1.0f, 0.0f };
-//     m_Data.QuadBufferPtr->TexIndex = textureIndex;
-//     m_Data.QuadBufferPtr++;
+//     const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+//     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
+    
+//     const glm::mat4 view = /* !IsSprite() ? glm::mat4(1.0f) : */ glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
+//                     proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f);
 
-//     m_Data.QuadBufferPtr->Position = { position.x + size.x, position.y + size.y, 0.0f };
-//     m_Data.QuadBufferPtr->Color = color;
-//     m_Data.QuadBufferPtr->TexCoords = { 1.0f, 1.0f };
-//     m_Data.QuadBufferPtr->TexIndex = textureIndex;
-//     m_Data.QuadBufferPtr++;
+//     glm::mat4 model = glm::mat4(1.0f); 
 
-//     m_Data.QuadBufferPtr->Position = { position.x, position.y + size.y, 0.0f };
-//     m_Data.QuadBufferPtr->Color = color;
-//     m_Data.QuadBufferPtr->TexCoords = { 0.0f, 1.0f };
-//     m_Data.QuadBufferPtr->TexIndex = textureIndex;
-//     m_Data.QuadBufferPtr++;
+//     model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
+//     model = glm::rotate(model, glm::radians(0.0f/* rotation */), { 0.0f, 0.0f, 1.0f }); 
+//     model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
 
-//     m_Data.IndexCount += 6;
+//     const glm::mat4 _mvp = proj * view * model;
 
-//     RenderStats.QuadCount++;
+//     const Math::Matrix4 mvp = { 
+//         { _mvp[0][0], _mvp[0][1], _mvp[0][2], _mvp[0][3] }, 
+//         { _mvp[1][0], _mvp[1][1], _mvp[1][2], _mvp[1][3] },   
+//         { _mvp[2][0], _mvp[2][1], _mvp[2][2], _mvp[2][3] },  
+//         { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
+//     };
 
-
-// }
-
-// void BatchRenderer::ShutDown()
-// {
-
-//     glDeleteVertexArrays(1, &m_Data.QuadVA);
-//     glDeleteBuffers(1, &m_Data.QuadVB);
-//     glDeleteBuffers(1, &m_Data.QuadIB);
-
-//     glDeleteTextures(1, &m_Data.WhiteTexture);
-
-//     delete[] m_Data.QuadBuffer;
-// }
-
-// void BatchRenderer::Begin()
-// {
-//     m_Data.QuadBufferPtr = m_Data.QuadBuffer;
-// }
-
-// void BatchRenderer::End()
-// {
-
-//     GLsizeiptr size = (uint8_t*)m_Data.QuadBufferPtr - (uint8_t*)m_Data.QuadBuffer;
-//     glBind_Buffer(GL_ARRAY_BUFFER, m_Data.QuadVB);
-//     glBufferSubData(GL_ARRAY_BUFFER, 0, size, m_Data.QuadBuffer);
-
-//     //flush
-
-//     for (uint32_t i = 0; i < m_Data.TextureSlotIndex; i++)
-//     {
-//         //glBindTextureUnit(0, m_Data.TextureSlots[0]);
-//         glActiveTexture(GL_TEXTURE0 + i);
-//         glBindTexture(i, TextureSlots[i]);
-//     }
-
-//     glBindVertexArray(m_Data.QuadVA);
-//     glDrawElements(GL_TRIANGLES, m_Data.IndexCount, GL_UNSIGNED_INT, nullptr);
-//     /* m_Data. */RenderStats.DrawCount++;
-//     m_Data.IndexCount = 0;
-
+//     shader.SetInt("image", 0);shader.SetMat4("mvp", mvp); 
+//     texture.Update(position, false, false, 1); 
+ 
+//     glUseProgram(shader.ID);
+//     glVertexAttribDivisor( texture.ID, 1); // Update this attribute per instance
+//     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 10); // 100 instances
+//     glBindVertexArray(0); 
 // }
 
 
-// void BatchRenderer::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color)
-// {
-//     if (m_Data.IndexCount >= MaxIndexCount)
-//     {
-//         End();
-//         Begin();
-//     }
-
-//     float textureIndex = 0.0f;
-
-//     BatchRenderer::Render(position, size, color, textureIndex);
-
-// }
-
-// void BatchRenderer::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, uint32_t texID)
-// {
-//     if (m_Data.IndexCount >= MaxIndexCount)
-//     {
-//         End();
-//         Begin();
-//     }
-
-//     constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-//     float textureIndex  = 0.0f;
-
-//     for (uint32_t i = 1; i < m_Data.TextureSlotIndex; i++)
-//     {
-//         if (TextureSlots[i] == texID)
-//         {
-//             textureIndex = (float)i;
-//             break;
-//         }
-//     }
-
-//     if (textureIndex == 0.0f)
-//     {
-//         textureIndex = (float)m_Data.TextureSlotIndex;
-//         TextureSlots[m_Data.TextureSlotIndex] = texID;
-//         m_Data.TextureSlotIndex++;
-//     }
-
-//     BatchRenderer::Render(position, size, color, textureIndex);
-// }
-
-// void BatchRenderer::ResetStats()
-// {
-//     memset(&RenderStats, 0, sizeof(Stats));
-// }
-
-// const Stats& BatchRenderer::GetStats()
-// {
-//     return RenderStats;
-// }
 
 
 

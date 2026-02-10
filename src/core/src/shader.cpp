@@ -16,8 +16,14 @@ void Shader::Delete() {
 //-------------------------------
 
 
-const Shader& Shader::Get(const std::string& key) {
-    return System::Application::resources->shaders[key];
+const Shader& Shader::Get(const std::string& key) 
+{
+    if (System::Application::resources->shaders.find(key) == System::Application::resources->shaders.end()) {
+        LOG("Shader: shader of key: " + key + " not loaded, defaulting to sprite shader.");
+    }
+
+    return System::Application::resources->shaders[
+        System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end() ? key : "sprite"];
 }
 
 
@@ -49,15 +55,17 @@ void Shader::InitBaseShaders()
 
         "layout(location = 0) in vec2 vert;\n"
         "layout(location = 1) in vec2 UV;\n"
-
+"layout(location = 2) in float TextureId;\n" 
+"flat out float texID;\n"//"flat out int textID;\n"
         "out vec2 uv;\n"
 
         "uniform vec2 scale;\n"
         "uniform mat4 mvp;\n"
 
         "void main()\n"
-        "{\n"
+        "{\n" "texID = TextureId;\n"
             "uv = UV;\n"
+           // "gl_Position = vec4((vert.xy * scale), 0.0, 1.0);\n" 
             "gl_Position = mvp * vec4((vert.xy * scale), 0.0, 1.0);\n"
         "}";
 
@@ -73,11 +81,12 @@ void Shader::InitBaseShaders()
         #else
             "#version 330 core\n"
         #endif
-
+"flat in float texID;\n"
         "in vec2 uv;\n"
         "out vec4 color;\n"
 
-        "uniform sampler2D image;\n"
+        //"uniform sampler2D image;\n" 
+        "uniform sampler2D images[3];\n"
         "uniform vec3 tint;\n"
         "uniform float alphaVal;\n"
         "uniform int whiteout;\n"
@@ -85,9 +94,9 @@ void Shader::InitBaseShaders()
 
         "void main()\n"
         "{ \n"
-            "color = vec4(tint, alphaVal) * texture(image, vec2(uv.x * float(repeat), uv.y * float(repeat))); \n"
+            "color = vec4(tint, alphaVal) * texture(images[int(texID)], vec2(uv.x * float(repeat), uv.y * float(repeat))); \n"
             "if (whiteout == 1) {\n"
-            "   color.r += 10.0;\n"
+            "   color.r += 10.0;\n" 
             "   color.g += 10.0;\n"
             "   color.b += 10.0;\n"
             "}\n"
@@ -428,50 +437,69 @@ void Shader::InitBaseShaders()
     //--------------------------------------------
 
 
-    // static constexpr const char* spriteBatchShader_vertex =
+    static constexpr const char* spriteInstanceShader_vertex =
 
-    //     #ifdef __EMSCRIPTEN__
-    //         "#version 300 es\n"
-    //         "precision mediump float;\n"
-    //     #else
-    //         "#version 330 core\n"
-    //     #endif
+        #ifdef __EMSCRIPTEN__
+            "#version 300 es\n"
+            "precision mediump float;\n"
+        #else
+            "#version 330 core\n"
+        #endif
 
-    //     "layout (location = 0) in vec2 vert;\n"
-    //     "layout (location = 1) in vec4 UV;\n"
+        "layout (location = 0) in vec4 vert;\n"
+        "layout (location = 1) in vec2 UV;\n"
 
-    //     "uniform mat4 vp;\n"
+        "uniform mat4 mvp;\n"
+        "uniform vec2 offsets[100];\n"
 
-    //     "out vec4 uv;\n"
+        "out vec2 uv;\n"
 
-    //     "void main()\n"
-    //     "{\n"
-    //         "uv = UV;\n"
-    //         "gl_Position = vp * vec4(vert.xy, 0.0, 1.0);\n"
-    //     "}\n";
+        "void main()\n"
+        "{\n"
+            "uv = UV;\n"
+            "vec2 offset = offsets[gl_InstanceID];\n"
+            "gl_Position = mvp * vec4(vert.xy + offset, 0.0, 1.0);\n"
+        "}\n";
 
 
-    // static constexpr const char* spriteBatchShader_fragment =
+    static constexpr const char* spriteInstanceShader_fragment =
 
-    //     #ifdef __EMSCRIPTEN__
-    //         "#version 300 es\n"
-    //         "precision mediump float;\n"
-    //     #else
-    //         "#version 330 core\n"
-    //     #endif
+        #ifdef __EMSCRIPTEN__
+            "#version 300 es\n"
+            "precision mediump float;\n"
+        #else
+            "#version 330 core\n"
+        #endif
 
-    //     "in vec2 uv;\n"
-    //     "out vec4 color;\n"
+        "in vec2 uv;\n"
+        "out vec4 color;\n"
 
-    //     "uniform sampler2D images[32];\n"
-    //     "uniform vec3 tint;\n"
-    //     "uniform float alphaVal;\n"
+        "uniform sampler2D image;\n" //=0
 
-    //     "void main()\n"
-    //     "{\n"
-    //         "int index = int(uv);\n"
-    //         "color = texture(images[index], uv) * tint * alphaVal;\n"
-    //     "}\n";
+        "void main() {\n"
+            "color = texture(image, uv);\n"
+        "}";
+
+        // #ifdef __EMSCRIPTEN__
+        //     "#version 300 es\n"
+        //     "precision mediump float;\n"
+        // #else
+        //     "#version 330 core\n"
+        // #endif
+
+        // "in vec2 uv;\n"
+        // "out vec4 color;\n"
+
+        // "uniform sampler2D images[32];\n"
+        // "uniform vec3 tint;\n"
+        // "uniform float alphaVal;\n"
+
+        // "void main()\n"
+        // "{\n"
+        //     "int index = int(uv);\n"
+        //     "color = texture(images[index], uv) * tint * alphaVal;\n"
+        // "}\n";
+
 
 
     //shader char arrays
@@ -481,8 +509,7 @@ void Shader::InitBaseShaders()
     Load("text", textVertex, textFragment);
     Load("outline text", textVertex, textOutlineFragment);    
     Load("outline sprite", spriteQuadShader_vertex, spriteOutlineFragment); 
-
-    //Load("batch", spriteBatchShader_vertex, spriteBatchShader_fragment);
+    Load("instance", spriteInstanceShader_vertex, spriteInstanceShader_fragment);
 
     #if DEVELOPMENT == 1
 
@@ -733,12 +760,22 @@ void Shader::SetFloat(const char* name, float value, bool useShader)
 
 void Shader::SetInt(const char* name, int value, bool useShader)
 {
-
     if (useShader)
         this->Use();
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform1i(glGetUniformLocation(ID, name), value);
+}
+
+// -----------------------------------------------------------------------
+
+void Shader::SetIntV(const char* name, int length, int* value, bool useShader)
+{
+    if (useShader)
+        this->Use();
+
+    if (glGetUniformLocation(ID, name) != -1)
+        glUniform1iv(glGetUniformLocation(ID, name), length, value);
 }
 
 // -----------------------------------------------------------------------

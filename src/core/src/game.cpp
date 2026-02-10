@@ -98,9 +98,7 @@ Game::Game()
     m_context = { true, inputs, camera, physics, time };
 }
 
-
 //---------------------------- boot entry scene
-
 
 void Game::Boot()
 {
@@ -125,7 +123,7 @@ void Game::Boot()
 
     const auto& world = static_cast<b2World*>(physics->GetWorld());
 
-    StartScene(scenes[0]->key, true);
+    StartScene(scenes[0]->key, true);	
 
     //physics listener and debug
 
@@ -197,10 +195,10 @@ void Game::StartScene(const std::string& key, bool loadMap)
             cachedScenes.emplace_back(game->currentScene->key);
         }
 
-        game->currentScene->vignette = std::make_unique<Geometry>(0.0f, -50.0f, 0.0f, 0.0f);
-        game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
-        game->currentScene->vignette->SetAlpha(0.0f);
-        game->currentScene->vignette->SetScrollFactor({ 0.0f, 0.0f });
+      //  game->currentScene->vignette = std::make_unique<Geometry>(0.0f, -50.0f, 0.0f, 0.0f);
+       // game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
+      //  game->currentScene->vignette->SetAlpha(0.0f);
+       // game->currentScene->vignette->SetScrollFactor({ 0.0f, 0.0f });
 
         const std::string state = loadMap ? " started" : " restarted.";
 
@@ -393,10 +391,10 @@ void Game::UpdateFrame()
 
                         //remove associated behaviors
 
-                        const auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&id](auto b)
+                        const auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&id](auto b)
                             { return b->ID == id; });
 
-                        if (behavior_it != Application::game->currentScene->behaviors.end())
+                        if (behavior_it != GetScene()->behaviors.end())
                         {
                             auto behavior = *behavior_it;
                             
@@ -409,7 +407,10 @@ void Game::UpdateFrame()
             }
 
     #endif
- 
+    //   System::Game::GetScene()->batchSprites_verts.clear();
+    //  System::Game::GetScene()->batchSprites_uvs.clear();System::Game::GetScene()->batchSprites_textureIndex.clear();
+     
+
     //entity render queue
 
     Entity::s_rendered = 0;
@@ -460,10 +461,11 @@ void Game::UpdateFrame()
             #endif
 
             if (entity->renderable) {
-                entity->Render();
+                entity->Render();//if (entity->GetType() == Entity::SPRITE || entity->GetType() == Entity::TILE) {auto spr = std::dynamic_pointer_cast<Sprite>(entity); Renderer::Update(spr->texture.ID);}
                 Entity::s_rendered++;
             }  
         }
+//Renderer::RenderInstances();
 
     //UI render queue
 
@@ -565,19 +567,19 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
     const std::string ID = entity->ID;
 
-    auto it = std::find(Application::game->currentScene->entities.begin(), Application::game->currentScene->entities.end(), entity);
+    auto it = std::find(GetScene()->entities.begin(), GetScene()->entities.end(), entity);
 
-    if (it != Application::game->currentScene->entities.end()) {
-        it = Application::game->currentScene->entities.erase(std::move(it));
+    if (it != GetScene()->entities.end()) {
+        it = GetScene()->entities.erase(std::move(it));
         --it;
     }
 
     else {
-        auto UI_it = std::find(Application::game->currentScene->UI.begin(), Application::game->currentScene->UI.end(), entity);
+        auto UI_it = std::find(GetScene()->UI.begin(), GetScene()->UI.end(), entity);
 
-        if (UI_it != Application::game->currentScene->UI.end())
+        if (UI_it != GetScene()->UI.end())
         {
-            UI_it = Application::game->currentScene->UI.erase(std::move(UI_it));
+            UI_it = GetScene()->UI.erase(std::move(UI_it));
             --UI_it;
         }
     }
@@ -606,10 +608,10 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
     //reset associated behavior if applicable
 
-    auto behavior_it = std::find_if(Application::game->currentScene->behaviors.begin(), Application::game->currentScene->behaviors.end(), [&](auto b)
+    auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&](auto b)
                                     { return b->ID == ID; });
 
-    if (behavior_it != Application::game->currentScene->behaviors.end())
+    if (behavior_it != GetScene()->behaviors.end())
         (*behavior_it)->active = false;
 }
 
@@ -624,10 +626,10 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
     const auto sprite = std::make_shared<Sprite>(key, x, y, isSpawn);
 
     if (layer == 1)
-        Application::game->currentScene->entities.emplace_back(sprite);
+        GetScene()->entities.emplace_back(sprite);
 
     if (layer == 2)
-        Application::game->currentScene->UI.emplace_back(sprite);
+        GetScene()->UI.emplace_back(sprite);
 
     #if STANDALONE == 1
         sprite->ReadSpritesheetData();
@@ -649,7 +651,7 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y,
 
     const auto element = std::make_shared<Sprite>(key, pos);
 
-    Application::game->currentScene->UI.emplace_back(element);
+    GetScene()->UI.emplace_back(element);
 
     #if STANDALONE == 1
         element->ReadSpritesheetData();
@@ -667,7 +669,8 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
 {
     const auto ts = std::make_shared<Sprite>(key, x, y, false, true);
 
-    Application::game->currentScene->entities.emplace_back(ts);
+    //GetScene()->tileDefs.push_back({x, y, frame});
+    GetScene()->entities.emplace_back(ts);
 
     ts->ReadSpritesheetData();
     ts->SetFrame(frame);
@@ -684,10 +687,10 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
     const auto text = std::make_shared<Text>(content, x, y, font);
 
     if (layer == 1)
-        Application::game->currentScene->entities.emplace_back(text);
+        GetScene()->entities.emplace_back(text);
 
     if (layer == 2)
-        Application::game->currentScene->UI.emplace_back(text);
+        GetScene()->UI.emplace_back(text);
 
     return text;
 }
@@ -704,10 +707,10 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
         geom->SetStatic(true);
 
     if (layer == 1)
-        Application::game->currentScene->entities.emplace_back(geom);
+        GetScene()->entities.emplace_back(geom);
 
     if (layer == 2)
-        Application::game->currentScene->UI.emplace_back(geom);
+        GetScene()->UI.emplace_back(geom);
 
     return geom;
 }
@@ -721,10 +724,10 @@ std::shared_ptr<Entity> Game::CreateEntity(int type, int layer)
     const auto entity = std::make_shared<Entity>(type);
 
     if (layer == 1)
-        Application::game->currentScene->entities.emplace_back(entity);
+        GetScene()->entities.emplace_back(entity);
 
     if (layer == 2)
-        Application::game->currentScene->UI.emplace_back(entity);
+        GetScene()->UI.emplace_back(entity);
 
     return entity;
 }
@@ -783,7 +786,7 @@ void Game::CreateSpawn(
     if (behaviorName.length())
         spawn.behaviors_attached.emplace_back(behaviorName, false);
 
-    Application::game->currentScene->spawns.emplace_back(spawn);
+    GetScene()->spawns.emplace_back(spawn);
 
     s_spawn_count++;
 }

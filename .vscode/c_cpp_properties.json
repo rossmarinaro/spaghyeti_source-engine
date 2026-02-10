@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/*",
-
+                "${workspaceFolder}/**/*",
                 "C:\\Program Files\\MinGW\\x86_64-w64-mingw32\\include",
                 "C:\\libs\\glad\\include",
                 "C:\\libs\\openAL\\include",

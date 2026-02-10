@@ -10,8 +10,7 @@ namespace System {
 
 	        std::map<std::string, std::any> m_globals;
 
-        public: 
-
+        public:  std::vector<Graphics::Vertex> batchSprites_verts; 
             struct Spawn 
             {
                 int type;

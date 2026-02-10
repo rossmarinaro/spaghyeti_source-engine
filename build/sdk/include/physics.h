@@ -29,6 +29,7 @@ class Physics {
             void SetEnabled(bool enabled);
             void SetSensor(bool sensor);
             void SetFixedRotation(bool isFixedRotation);
+            void SetGravityScale(float gs);
             void DestroyFixture();
             void CreateFixture(void* fixtureDef);
 

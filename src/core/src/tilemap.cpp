@@ -101,7 +101,7 @@ const bool MapManager::CreateLayer (
             
                 tile->SetName((std::string)data_key);
                 tile->SetDepth(depth); 
-                tile->SetFlip(flipX, flipY);  
+                tile->SetFlip(flipX, flipY);   
                 tile->SetRotation(rotation); 
                 tile->SetScale(scaleX, scaleY); 
                 tile->SetScrollFactor({ scrollFactorX, scrollFactorY });

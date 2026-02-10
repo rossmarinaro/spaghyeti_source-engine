@@ -151,6 +151,8 @@ void Window::Init()
 
     #endif
 
+    Renderer::Init();
+
     LOG("Window: GL Version - " << glGetString(GL_VERSION));
 
 }

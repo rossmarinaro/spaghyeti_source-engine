@@ -653,7 +653,7 @@ void Sprite::StopAnimation() {
 
 
 //------------------------------------------ render sprite / update transformations
-float prevX=0.0f;
+
 
 void Sprite::Render()
 {  
@@ -745,13 +745,16 @@ void Sprite::Render()
             shader.SetVec3f("tint", tint);
 
         shader.SetInt("whiteout", texture.Whiteout);
-        shader.SetInt("image", 0); 
+ 
+       shader.SetInt("image", 0);  
         shader.SetMat4("mvp", mvp);  
         shader.SetFloat("alphaVal", alpha); 
         shader.SetInt("repeat", texture.Repeat);
         shader.SetVec2f("scale", { scale.x, scale.y });
 
-        texture.Update(position, flipX, flipY, fill); 
+        //update texture
+
+        texture.Update(position, flipX, flipY, fill);  
 
     }
 
