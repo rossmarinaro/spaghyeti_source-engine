@@ -176,8 +176,6 @@ void Renderer::Init()
     glGenBuffers(1, &UVBO);    
     glGenBuffers(1, &EBO);
 
-    //System::Resources::Manager::LoadFile(/* "sewer1 background.png", "assets/sewer1 background.png" */ "sv_icon.png", "assets/sv_icon.png");System::Resources::Manager::RegisterTextures();
-
     glBindVertexArray(VAO);  
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);    
@@ -214,7 +212,7 @@ void Renderer::Update(void* camera)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);   
 
     glClearColor(
         bg->x * bg->w,
