@@ -214,7 +214,7 @@ void Renderer::Update(void* camera)
 
     glClear(GL_COLOR_BUFFER_BIT);   
 
-    glClearColor(
+    glClearColor( 
         bg->x * bg->w,
         bg->y * bg->w,
         bg->z * bg->w,
@@ -228,7 +228,6 @@ void Renderer::Update(void* camera)
     auto shader = Graphics::Shader::Get("sprite");
     std::vector<std::pair<const std::string, Graphics::Texture2D>> textures(System::Application::resources->textures.begin(), System::Application::resources->textures.end());
 
-    //auto tex =  Graphics::Texture2D::Get("sewer1 background.png");
     glUseProgram(shader.ID);
     for (int index = 0; index < MAX_TEXTURES; index++) {
         glActiveTexture(GL_TEXTURE0 + index);
