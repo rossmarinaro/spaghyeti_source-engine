@@ -2,7 +2,7 @@
 
 #include "./context.h"
 #include "./behaviors.h"
-
+#include "./geometry.h"
 namespace System {
     
     //container for gameplay instance

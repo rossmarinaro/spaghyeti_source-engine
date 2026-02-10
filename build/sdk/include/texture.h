@@ -7,7 +7,6 @@ namespace Graphics {
 
     struct Format { float width, height; float u1, v1, u2, v2; };
     struct Renderable { float x, y; Format format; int textureID; };
-    struct Vertex { float x, y, u, v, texID; }; 
 
 //--------------------------------------
 

@@ -407,9 +407,6 @@ void Game::UpdateFrame()
             }
 
     #endif
-    //   System::Game::GetScene()->batchSprites_verts.clear();
-    //  System::Game::GetScene()->batchSprites_uvs.clear();System::Game::GetScene()->batchSprites_textureIndex.clear();
-     
 
     //entity render queue
 
@@ -461,11 +458,10 @@ void Game::UpdateFrame()
             #endif
 
             if (entity->renderable) {
-                entity->Render();//if (entity->GetType() == Entity::SPRITE || entity->GetType() == Entity::TILE) {auto spr = std::dynamic_pointer_cast<Sprite>(entity); Renderer::Update(spr->texture.ID);}
+                entity->Render();
                 Entity::s_rendered++;
             }  
         }
-//Renderer::RenderInstances();
 
     //UI render queue
 
@@ -554,7 +550,7 @@ void Game::UpdateFrame()
 
     //run any additional updates on the current scene
 
-    currentScene->Update();
+    currentScene->Update(); System::Renderer::Flush();
 }
 
 

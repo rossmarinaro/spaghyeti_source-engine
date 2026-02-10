@@ -3,7 +3,7 @@
 #include "../../build/sdk/include/window.h"
 #include "../core/src/debug.h"
 #include "./renderer.h"
-
+#include "../../build/sdk/include/geometry.h"
 #include "../vendors/glm/gtc/matrix_transform.hpp" 
 using namespace System;
 
@@ -150,16 +150,20 @@ void Renderer::RescaleFrameBuffer(float width, float height)
 
 //---------------------------------- batch rendering
 
- 
-Graphics::Shader shader;
+#include <iostream>
+int frames = 0;bool t = true;
 
-const int MAX_TEXTURES = 2;
-int samplers[MAX_TEXTURES] = { 0,1 };
-int MaxIndexCount = 18, textureSlotIndex = 0;
-int textureIndex = 1;
+static inline Graphics::Vertex* QuadBuffer = nullptr; //pointer to the beginning of buffer data on cpu
+static inline Graphics::Vertex* QuadBufferPtr = nullptr; //trackeing pointer as to where we are when copying data into buffer
 
+Graphics::Vertex* Renderer::GetQuadBufferPtr() {
+return QuadBufferPtr;
+}
+int prev=0;
 void Renderer::Init() 
-{
+{QuadBuffer = new Graphics::Vertex[MAX_QUADS * 4];
+    //quad vertices
+
     Graphics::Vertex vertices[18] = {
         //x      y      u     v     texID
         -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
@@ -168,21 +172,31 @@ void Renderer::Init()
         -0.5f, 0.5f,  0.0f, 1.0f, 1.0f,
     }; 
 
-    unsigned int indices[] = { 0, 1, 2, 2, 3, 0 }; //2 triangles = 1 quad
+    //indices 2 triangles = 1 quad { 0, 1, 2, 2, 3, 0 } 
+
+    std::vector<unsigned int> indices;
+
+    for (unsigned int i = 0; i < MAX_QUADS /* * 6 */; ++i) {
+        indices.push_back(i * 4);
+        indices.push_back(i * 4 + 1);
+        indices.push_back(i * 4 + 2);
+        indices.push_back(i * 4 + 2);
+        indices.push_back(i * 4 + 3);
+        indices.push_back(i * 4);
+    }
 
     glGenVertexArrays(1, &VAO); 
 
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &UVBO);    
+    glGenBuffers(1, &VBO);   
     glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);  
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);    
-    glBufferData(GL_ARRAY_BUFFER, /* s_MAX_SPRITES *  */  sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Graphics::Vertex), nullptr, GL_STREAM_DRAW/* GL_DYNAMIC_DRAW */);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);    
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STREAM_DRAW/* GL_DYNAMIC_DRAW */);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Graphics::Vertex), (void*)0);
     glEnableVertexAttribArray(0);
@@ -196,18 +210,20 @@ void Renderer::Init()
     glDisable(GL_CULL_FACE); 
     glDisable(GL_DEPTH_TEST);
     glBindBuffer(GL_ARRAY_BUFFER, 0);       
-    glBindVertexArray(0);  
+    glBindVertexArray(0); 
 }
 
 
-//------------------------------------
+//------------------------------------ update
 
 
 void Renderer::Update(void* camera) 
-{
+{ if (t){t=false;prev= System::Game::GetScene()->GetContext().time->GetSeconds();}
+    //clear background
+
     const auto bg = ((Camera*)camera)->GetBackgroundColor();
 
-    glfwSwapInterval(s_vsync); // Enable vsync
+    glfwSwapInterval(s_vsync); //Enable vsync
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
@@ -222,57 +238,115 @@ void Renderer::Update(void* camera)
     );
 
     glViewport(0, 0, Window::s_width, Window::s_height);
+      //bind textures
 
-    const auto vertices = System::Game::GetScene()->batchSprites_verts;
 
-    auto shader = Graphics::Shader::Get("sprite");
+ const float now = System::Game::GetScene()->GetContext().time->GetSeconds();
+    
+    if (frames < 60)
+        frames++;
+
+    if (now - prev >= 1.0f) {
+        std::cout << "FPS: " << std::to_string(frames) << "\n";
+        frames = 0;
+        prev = now;
+    }
+
+}
+
+int m_textureSlotIndex = 0;
+std::array<uint32_t, 32> m_textureSlots;
+float Renderer::GetTextureIndex(uint32_t textureID) {
+//check if in batch already
+
+    for (uint32_t i = 0; i < m_textureSlotIndex; i++) {
+        if (m_textureSlots[i] == textureID)
+            return (float)i;
+    }
+
+    if (m_textureSlotIndex >= MAX_TEXTURES)
+        Flush();
+
+    //add tex
+    m_textureSlots[m_textureSlotIndex] = textureID;
+    return (float)m_textureSlotIndex++;
+}
+
+
+void Renderer::Flush()
+{
     std::vector<std::pair<const std::string, Graphics::Texture2D>> textures(System::Application::resources->textures.begin(), System::Application::resources->textures.end());
+    auto shader = Graphics::Shader::Get("sprite");
 
     glUseProgram(shader.ID);
-    for (int index = 0; index < MAX_TEXTURES; index++) {
+    
+    for (int index = 0; index < m_textureSlotIndex/* MAX_TEXTURES */; index++) {
         glActiveTexture(GL_TEXTURE0 + index);
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D, textures[index].second.ID);
-        // std::string uniformName = "images[" + std::to_string(i) + "]";
-        //shader.SetInt(uniformName.c_str(), i); 
-        // textureSlotIndex++;
+        //textureSlotIndex++;
+        std::string uniform = "images[" + std::to_string(index) + "]";
+        int loc = glGetUniformLocation(shader.ID, uniform.c_str());
+        if (loc != -1)
+            glUniform1i(loc, index);
     }
-    glUniform1iv(glGetUniformLocation(shader.ID, "images"), 2, samplers);
+
+        //int samplers[MAX_TEXTURES] = { 0, 1 };
+        //glUniform1iv(glGetUniformLocation(shader.ID, "images"), 2, samplers);
+    //flush batch
+
+    int elementCount = 6 * MAX_QUADS;
+
+
+    //bind vertex array and update vertices buffer
 
     glBindVertexArray(VAO); 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);    
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Graphics::Vertex), vertices.data()); 
+    glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Graphics::Vertex), nullptr, GL_STREAM_DRAW);
+    //glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Graphics::Vertex), vertices.data()); 
 
-    // glBindVertexArray(VAO); 
-    // glBindBuffer(GL_ARRAY_BUFFER, UVBO);    
-    // glBufferSubData(GL_ARRAY_BUFFER, 0, uvs.size() * sizeof(GLfloat), uvs.data());   
+    GLsizeiptr size = (uint8_t*)QuadBufferPtr - (uint8_t*)QuadBuffer;
 
-    // GLintptr tOff = (6 * s_MAX_SPRITES) * 8; 
-    // glBindVertexArray(VAO); 
-    // glBindBuffer(GL_ARRAY_BUFFER, IBO);    
-    // glBufferSubData(GL_ARRAY_BUFFER, tOff, 6 * s_MAX_SPRITES * sizeof(int), images.data()  /* samplers */);  
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, QuadBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
-     glBindBuffer(GL_ARRAY_BUFFER, 0); 
+    //draw elements
+    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+    indexCount = 0; 
+    m_textureSlotIndex = 0;
+    QuadBufferPtr = QuadBuffer;
 
-   // if (indexCount >= MaxIndexCount /* || textureSlotIndex > MAX_TEXTURES */) // 31 because first slot we have reserved for 1x1 white texture
-	//if (indexCount >= (6 * s_MAX_SPRITES) /* || */ /* currentTexture != texID */)
-    {
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //glDrawArrays(GL_TRIANGLES, 0, 6 * s_MAX_SPRITES); //tell ui about it
-        indexCount = 0; 
-        textureSlotIndex = 0;
-        batchSprites_verts.clear();
-	}
 
+
+    //     if (indexCount >= elementCount || textureSlotIndex > MAX_TEXTURES) // 31 because first slot we have reserved for 1x1 white texture
+//     {
+
+//         //bind vertex array and update vertices buffer
+
+//         auto vertices = System::Game::GetScene()->batchSprites_verts;
+
+//         glBindVertexArray(VAO); 
+//         glBindBuffer(GL_ARRAY_BUFFER, VBO);    
+//         glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Graphics::Vertex), nullptr, GL_STREAM_DRAW);
+//         glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Graphics::Vertex), vertices.data()); 
+//         glBindBuffer(GL_ARRAY_BUFFER, 0); 
+
+//         //draw elements
+
+//         glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_INT, 0); //tell ui about it
+//         indexCount = 0; 
+//         textureSlotIndex = 0;
+//         vertices.clear();
+// 	}
 }
 
 //---------------------------------
 
 
-void Renderer::ShutDown() {
+void Renderer::ShutDown() { delete[] QuadBuffer;
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &UVBO); 
     glDeleteBuffers(1, &EBO);
 }
 

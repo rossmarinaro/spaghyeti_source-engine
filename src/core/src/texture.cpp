@@ -25,7 +25,7 @@ Texture2D::Texture2D():
     Repeat(1),
     Whiteout(0)
 { 
-    m_textureUnit = System::Application::resources->textures.size() ? System::Application::resources->textures.size() - 1 : 0;
+    m_textureUnit = System::Application::resources->textures.size() ? System::Application::resources->textures.size() /* - 1 */ : 0;
 
     glGenTextures(1, &ID); 
 }
@@ -223,7 +223,7 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
     //flip X
 
     if (flipX && !flipY) 
-        offset = { FrameWidth, FrameHeight, U2, V2, U1, V1 }; 
+        offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 }; // offset = { FrameWidth, FrameHeight, U2, V2, U1, V1 }; 
 
     //flip Y
 
@@ -238,7 +238,7 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
     //no flip
 
     else
-        offset = { FrameWidth, FrameHeight, U1, V2, U2, V1 };
+        offset = { FrameWidth, FrameHeight, U1, V1, U2, V2 };//offset = { FrameWidth, FrameHeight, U1, V2, U2, V1 };
 
     
     const Renderable renderable = { position.x, position.y, offset }; //posX, posY, UV
@@ -246,13 +246,51 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
 
     //----------------- vertices 
  
-    Vertex vertices[4];
+    // Vertex vertices[4] = {
+    //     { renderable.x, renderable.y, renderable.format.u1, renderable.format.v1, m_textureUnit },
+    //     { renderable.x + renderable.format.width, renderable.y, renderable.format.u2, renderable.format.v1, m_textureUnit },
+    //     { renderable.x + renderable.format.width, renderable.y + renderable.format.height, renderable.format.u2, renderable.format.v2, m_textureUnit },
+    //     { renderable.x, renderable.y + renderable.format.height, renderable.format.u1, renderable.format.v2, m_textureUnit }
+    // }; 
+            int elementCount = 6 * System::Renderer::MAX_QUADS;
+if (System::Renderer::indexCount >= elementCount/*  || textureSlotIndex > MAX_TEXTURES */) {
 
-    vertices[0] = { renderable.x, renderable.y, renderable.format.u1, renderable.format.v1, 1 }; 
-    vertices[1] = { renderable.x + renderable.format.width, renderable.y, renderable.format.u2, renderable.format.v1, 1 }; 
-    vertices[2] = { renderable.x + renderable.format.width, renderable.y + renderable.format.height, renderable.format.u2, renderable.format.v2, 1 }; 
-    vertices[3] = { renderable.x, renderable.y + renderable.format.height, renderable.format.u1, renderable.format.v2, 1 }; 
+    //glDrawArrays(drawStyle == GL_LINE ?  GL_LINES : GL_TRIANGLES, 0, 6);
+System::Renderer::Flush();LOG(0);
+}
 
+    auto qp = System::Renderer::GetQuadBufferPtr(); 
+    const float texID = System::Renderer::GetTextureIndex(ID);
+    if (qp)
+    {
+        qp->x = renderable.x;
+    qp->y = renderable.y;
+    qp->u = renderable.format.u1;
+    qp->v = renderable.format.v1;
+    qp->texID = texID/* m_textureUnit */;
+    qp++;
+
+    qp->x = renderable.x + renderable.format.width;
+    qp->y = renderable.y;
+    qp->u = renderable.format.u2;
+    qp->v = renderable.format.v1;
+    qp->texID = texID/* m_textureUnit */;
+    qp++;
+
+    qp->x = renderable.x + renderable.format.width;
+    qp->y = renderable.y + renderable.format.height;
+    qp->u = renderable.format.u2;
+    qp->v = renderable.format.v2;
+    qp->texID = texID/* m_textureUnit */;
+    qp++;
+
+	qp->x = renderable.x;
+    qp->y = renderable.y + renderable.format.height;
+    qp->u = renderable.format.u1;
+    qp->v = renderable.format.v2;
+    qp->texID = texID/* m_textureUnit */;
+    qp++;
+    }
 
     //short vertices[12];
     //float uvs[12];
@@ -320,14 +358,14 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
     //     uvs[10] = renderable.format.u1;
     //     uvs[11] = renderable.format.v2; 
 
-    Bind();
+    //Bind();
 
-    // glBindVertexArray(System::Renderer::VAO); 
-    // glBindBuffer(GL_ARRAY_BUFFER, System::Renderer::VBO);    
+    // glBindVertexArray(VAO); 
+    // glBindBuffer(GL_ARRAY_BUFFER, VBO);    
     // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(short), vertices.data()); 
 
-    // glBindVertexArray(System::Renderer::VAO); 
-    // glBindBuffer(GL_ARRAY_BUFFER, System::Renderer::UVBO);    
+    // glBindVertexArray(VAO); 
+    // glBindBuffer(GL_ARRAY_BUFFER, UVBO);    
     // glBufferSubData(GL_ARRAY_BUFFER, 0, uvs.size() * sizeof(GLfloat), uvs.data());  
 
     #ifndef __EMSCRIPTEN__
@@ -335,14 +373,15 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
         if (drawStyle == GL_LINE) {
             glDisable(GL_LINE_SMOOTH);
             glLineWidth(thickness);
-        }
+        } 
+ 
 
-    std::copy(vertices, vertices + sizeof(vertices) / sizeof(vertices[0]), std::back_inserter(System::Game::GetScene()->batchSprites_verts));
 
-    //glDrawArrays(drawStyle == GL_LINE ?  GL_LINES : GL_TRIANGLES, 0, 6);
 
-   // System::Renderer::indexCount+=6;
-
+   //std::copy(vertices, vertices + sizeof(vertices) / sizeof(vertices[0]), std::back_inserter(System::Game::GetScene()->batchSprites_verts));
+    System::Renderer::indexCount += 6;
+ //static_cast<Vertex>(System::Renderer::GetQuadBufferPtr() += 4;
+System::Renderer::QuadCount++;
     #else
         glDrawArrays(GL_TRIANGLES, 0, 6);
         

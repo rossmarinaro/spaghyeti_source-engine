@@ -25,12 +25,12 @@
     #include "../vendors/GLFW/glfw3native.h" 
 #endif
 #include "../../build/sdk/include/math.h"
-   
+#include "../../build/sdk/include/geometry.h"
 
 //-----------------------------
 
 namespace /* SPAGHYETI_CORE */ System {
-
+            
     class Renderer {
 
         public:
@@ -53,25 +53,26 @@ namespace /* SPAGHYETI_CORE */ System {
             //static void RenderInstances();
             
             static void Init();
-            static void ShutDown();
-
+            static void ShutDown();  static Graphics::Vertex* GetQuadBufferPtr();
+static void Flush(); static float GetTextureIndex(uint32_t textureID);
             static inline GLFWwindow* GLFW_window_instance;
 
-            uint32_t IndexCount = 0; //how many indices to be drawn when we flush
+	        static inline uint32_t textureSlotIndex = 0,
+                                   indexCount = 0;  //how many indices to be drawn when we flush
+        static inline const int MAX_TEXTURES = 2,
+                                    MAX_QUADS = 2;
+static inline int QuadCount = 0;
 
-	        static inline std::array<uint32_t, 32> textureSlots;
-	        static inline uint32_t TextureSlotIndex = 0;
-            static inline int indexCount = 0; 
 
         private:
 
-            static inline unsigned int s_FBO, s_RBO, s_MAX_SPRITES = 1000;
+            static inline unsigned int s_FBO, s_RBO;
         
             static inline int s_vsync = 1;
+    
 
             static inline GLuint VAO,
-                                 VBO, 
-                                 UVBO,
+                                 VBO,
                                  EBO;
     };
 }

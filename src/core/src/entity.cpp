@@ -276,7 +276,6 @@ Sprite::Sprite(const std::string& key, float x, float y, bool isSpawn, bool isTi
 
     if (isTile) {
         m_type = TILE; 
-        //shader = Graphics::Shader::Get("batch");
         return;
     }
 
@@ -746,7 +745,7 @@ void Sprite::Render()
 
         shader.SetInt("whiteout", texture.Whiteout);
  
-       shader.SetInt("image", 0);  
+       //shader.SetInt("image", 0);  
         shader.SetMat4("mvp", mvp);  
         shader.SetFloat("alphaVal", alpha); 
         shader.SetInt("repeat", texture.Repeat);
