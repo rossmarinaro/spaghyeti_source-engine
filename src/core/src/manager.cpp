@@ -46,14 +46,6 @@ void Manager::Clear(bool all)
 //register the textures
 void Manager::RegisterTextures()
 {
-    #ifndef __EMSCRIPTEN__
-
-        //load base texture (white 1 x 1)
-       //static unsigned char data[] = { 0xff, 0xff, 0xff, 0xff };
-       //LoadRaw(IMAGE, "base", data, 4);
-
-    #endif
-
     //load textures
 
     for (const auto& asset : System::Application::resources->m_raw_assets)

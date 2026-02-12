@@ -8,9 +8,10 @@ namespace System {
     //container for gameplay instance
     class Scene {
 
-	        std::map<std::string, std::any> m_globals;
+	    std::map<std::string, std::any> m_globals;
 
-        public:  std::vector<Graphics::Vertex> batchSprites_verts; 
+        public: 
+
             struct Spawn 
             {
                 int type;

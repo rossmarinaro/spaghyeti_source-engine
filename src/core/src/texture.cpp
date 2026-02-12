@@ -9,23 +9,23 @@ using namespace Graphics;
 Texture2D::Texture2D():
     m_internal_format(GL_RGB32F), 
     m_image_format(GL_RGB),
-    Width(0.0f),
-    Height(0.0f),
-    FrameWidth(0.0f),
-    FrameHeight(0.0f),
-    U1(0.0f),
-    V1(0.0f),
-    U2(1.0f),
-    V2(1.0f),
-    Wrap_S(GL_REPEAT),
-    Wrap_T(GL_REPEAT), 
-    Filter_Min(GL_NEAREST),   
-    Filter_Max(GL_NEAREST),
-    Channels(3),
-    Repeat(1),
-    Whiteout(0)
+    m_textureUnit(0.0f)
 { 
-    m_textureUnit = System::Application::resources->textures.size() ? System::Application::resources->textures.size() /* - 1 */ : 0;
+    Width = 0.0f;
+    Height = 0.0f;
+    FrameWidth = 0.0f;
+    FrameHeight = 0.0f;
+    U1 = 0.0f;
+    V1 = 0.0f;
+    U2 = 1.0f;
+    V2 = 1.0f;
+    Wrap_S = GL_REPEAT;
+    Wrap_T = GL_REPEAT;
+    Filter_Min = GL_NEAREST;   
+    Filter_Max = GL_NEAREST;
+    Channels = 3;
+    Repeat = 1;
+    Whiteout = 0;
 
     glGenTextures(1, &ID); 
 }
@@ -40,14 +40,44 @@ void Texture2D::Delete() {
 }
 
 
-//-------------------------------
+//------------------------------- base texture at index 0
 
 
-const void Texture2D::Bind() { 
-    glActiveTexture(GL_TEXTURE0 + m_textureUnit);
-    glBindTexture(GL_TEXTURE_2D, ID);
+void Texture2D::InitBaseTexture() 
+{   
+    const std::string key = "base";
+
+    Texture2D baseTexture;
+
+    baseTexture.Width = 1;
+    baseTexture.Height = 1; 
+    baseTexture.FrameWidth = 1;
+    baseTexture.FrameHeight = 1;
+    baseTexture.Channels = 4;
+    baseTexture.m_image_format = GL_RGBA8;
+    baseTexture.key = key;
+
+    glGenTextures(1, &baseTexture.ID);
+	glBindTexture(GL_TEXTURE_2D, baseTexture.ID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
+    
+	uint32_t color = 0xffffffff; //white
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+    
+    System::Application::resources->textures[key] = baseTexture; 
+    System::Application::renderer->textureSlots[0] = baseTexture.ID; 
+
+	//for (size_t i = 1; i < System::Renderer::MAX_TEXTURES; i++)
+	//	System::Application::renderer->textureSlots[i] = 0;
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
 }; 
 
 
@@ -165,7 +195,7 @@ void Texture2D::Load(const std::string& key)
         texture.m_image_format = GL_RGBA;
     }
 
-    texture.Bind();
+    glBindTexture(GL_TEXTURE_2D, texture.ID);
     
     #ifndef __EMSCRIPTEN__
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -177,8 +207,6 @@ void Texture2D::Load(const std::string& key)
     //set Texture wrap and filter modes
 
     texture.SetFiltering();
-
-    //unbind texture 
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -216,176 +244,61 @@ void Texture2D::UnLoad(const std::string& key)
 
 void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, int drawStyle, float thickness) 
 {   
+    auto renderer = System::Application::renderer;
+    const int elementCount = 6 * System::Renderer::MAX_QUADS;
+
+    if (renderer->indexCount >= elementCount || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) {
+        System::Renderer::EndBatch();  
+        System::Renderer::Flush();
+        LOG("exhausted buffer");
+    }
+
     //format texture
  
     Format offset;
 
-    //flip X
+    if (flipX && !flipY) //flip X
+        offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 };
 
-    if (flipX && !flipY) 
-        offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 }; // offset = { FrameWidth, FrameHeight, U2, V2, U1, V1 }; 
+    else if (!flipX && flipY) //flip Y
+        offset = { FrameWidth, FrameHeight, U1, V2, U2, V1 }; //fix
 
-    //flip Y
+    else if (flipX && flipY) //flip X, Y
+        offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 }; //fix
 
-    else if (!flipX && flipY)
-        offset = { FrameWidth, FrameHeight, U1, V1, U2, V2 }; 
+    else //no flip
+        offset = { FrameWidth, FrameHeight, U1, V1, U2, V2 };
 
-    //flip X, Y
+    //get / set texture unit from texture ID
 
-    else if (flipX && flipY)
-        offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 }; 
+	m_textureUnit = 0.0f;
 
-    //no flip
-
-    else
-        offset = { FrameWidth, FrameHeight, U1, V1, U2, V2 };//offset = { FrameWidth, FrameHeight, U1, V2, U2, V1 };
-
-    
-    const Renderable renderable = { position.x, position.y, offset }; //posX, posY, UV
-
-
-    //----------------- vertices 
- 
-    // Vertex vertices[4] = {
-    //     { renderable.x, renderable.y, renderable.format.u1, renderable.format.v1, m_textureUnit },
-    //     { renderable.x + renderable.format.width, renderable.y, renderable.format.u2, renderable.format.v1, m_textureUnit },
-    //     { renderable.x + renderable.format.width, renderable.y + renderable.format.height, renderable.format.u2, renderable.format.v2, m_textureUnit },
-    //     { renderable.x, renderable.y + renderable.format.height, renderable.format.u1, renderable.format.v2, m_textureUnit }
-    // }; 
-            int elementCount = 6 * System::Renderer::MAX_QUADS;
-if (System::Renderer::indexCount >= elementCount/*  || textureSlotIndex > MAX_TEXTURES */) {
-
-    //glDrawArrays(drawStyle == GL_LINE ?  GL_LINES : GL_TRIANGLES, 0, 6);
-System::Renderer::Flush();LOG(0);
-}
-
-    auto qp = System::Renderer::GetQuadBufferPtr(); 
-    const float texID = System::Renderer::GetTextureIndex(ID);
-    if (qp)
-    {
-        qp->x = renderable.x;
-    qp->y = renderable.y;
-    qp->u = renderable.format.u1;
-    qp->v = renderable.format.v1;
-    qp->texID = texID/* m_textureUnit */;
-    qp++;
-
-    qp->x = renderable.x + renderable.format.width;
-    qp->y = renderable.y;
-    qp->u = renderable.format.u2;
-    qp->v = renderable.format.v1;
-    qp->texID = texID/* m_textureUnit */;
-    qp++;
-
-    qp->x = renderable.x + renderable.format.width;
-    qp->y = renderable.y + renderable.format.height;
-    qp->u = renderable.format.u2;
-    qp->v = renderable.format.v2;
-    qp->texID = texID/* m_textureUnit */;
-    qp++;
-
-	qp->x = renderable.x;
-    qp->y = renderable.y + renderable.format.height;
-    qp->u = renderable.format.u1;
-    qp->v = renderable.format.v2;
-    qp->texID = texID/* m_textureUnit */;
-    qp++;
+	for (uint32_t i = 1; i < renderer->textureSlotIndex + 1; i++)
+		if (renderer->textureSlots[i] == ID) {
+			m_textureUnit = (float)i;
+			break;
+		}
+	
+    if (m_textureUnit == 0.0f) {
+        m_textureUnit = (float)renderer->textureSlotIndex;
+        renderer->textureSlots[renderer->textureSlotIndex] = ID;
+        renderer->textureSlotIndex++;
     }
 
-    //short vertices[12];
-    //float uvs[12];
-
-    // //top right
-
-    //     vertices[0] = renderable.x + renderable.format.width; 
-    //     vertices[1] = renderable.y;
-
-    // //bottom right
-
-    //     vertices[2] = renderable.x + renderable.format.width;
-    //     vertices[3] = renderable.y + renderable.format.height;
-
-    // //top left
-
-    //     vertices[4] = renderable.x;
-    //     vertices[5] = renderable.y;
-
-    // //bottom right
-
-    //     vertices[6] = renderable.x + renderable.format.width;
-    //     vertices[7] = renderable.y + renderable.format.height;
-
-    // //bottom left
-
-    //     vertices[8] = renderable.x;
-    //     vertices[9] = renderable.y + renderable.format.height;
-
-    // //top left
-
-    //     vertices[10] = renderable.x;
-    //     vertices[11] = renderable.y;
-
-       
-    // //----------------- uvs
-        
-    // //top right
-
-    //     uvs[0] = renderable.format.u2;
-    //     uvs[1] = renderable.format.v2;
-
-    // //bottom right
-
-    //     uvs[2] = renderable.format.u2;
-    //     uvs[3] = renderable.format.v1;
-
-    // //top left
-
-    //     uvs[4] = renderable.format.u1;
-    //     uvs[5] = renderable.format.v2;
-
-    // //bottom right 
-
-    //     uvs[6] = renderable.format.u2;
-    //     uvs[7] = renderable.format.v1;
-
-    // //bottom left
-
-    //     uvs[8] = renderable.format.u1;
-    //     uvs[9] = renderable.format.v1;
-
-    // //top left
-
-    //     uvs[10] = renderable.format.u1;
-    //     uvs[11] = renderable.format.v2; 
-
-    //Bind();
-
-    // glBindVertexArray(VAO); 
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO);    
-    // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(short), vertices.data()); 
-
-    // glBindVertexArray(VAO); 
-    // glBindBuffer(GL_ARRAY_BUFFER, UVBO);    
-    // glBufferSubData(GL_ARRAY_BUFFER, 0, uvs.size() * sizeof(GLfloat), uvs.data());  
-
-    #ifndef __EMSCRIPTEN__
-
-        if (drawStyle == GL_LINE) {
-            glDisable(GL_LINE_SMOOTH);
-            glLineWidth(thickness);
-        } 
+    const Renderable renderable = { position.x, position.y, offset }; //posX, posY, UV
  
+    Vertex vertices[4] = {
+        { renderable.x, renderable.y, renderable.format.u1, renderable.format.v1, m_textureUnit },
+        { renderable.x + renderable.format.width, renderable.y, renderable.format.u2, renderable.format.v1, m_textureUnit },
+        { renderable.x + renderable.format.width, renderable.y + renderable.format.height, renderable.format.u2, renderable.format.v2, m_textureUnit },
+        { renderable.x, renderable.y + renderable.format.height, renderable.format.u1, renderable.format.v2, m_textureUnit }
+    };  
 
+    //add the vertices to the renderer's vector
 
+    std::copy(vertices, vertices + sizeof(vertices) / sizeof(vertices[0]), std::back_inserter(renderer->vertices));
 
-   //std::copy(vertices, vertices + sizeof(vertices) / sizeof(vertices[0]), std::back_inserter(System::Game::GetScene()->batchSprites_verts));
-    System::Renderer::indexCount += 6;
- //static_cast<Vertex>(System::Renderer::GetQuadBufferPtr() += 4;
-System::Renderer::QuadCount++;
-    #else
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        
-    #endif
+    renderer->indexCount += 6;
 
 }
 

@@ -26,7 +26,7 @@
 
 #include "./game.h"
 #include "./events.h"
-
+#include "../../../src/shared/renderer.h"
 
 /****** Application *****/
 
@@ -52,8 +52,9 @@ namespace /* SPAGHYETI_CORE */ System {
 
 			static inline Game* game; 
             static inline Events* events;
+            static inline Renderer* renderer;  
 			static inline Resources::Manager* resources;   
-
+            
 		private:
 
 			static void Update(void* layer);

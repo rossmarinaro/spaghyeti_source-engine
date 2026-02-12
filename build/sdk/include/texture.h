@@ -34,16 +34,16 @@ namespace Graphics {
             static const Texture2D& Get(const std::string& key);
             static void Load(const std::string& key);
             static void UnLoad(const std::string& key);
+            static void InitBaseTexture();
             
-            const void Bind();
             void SetFiltering(bool filterMin = true, bool filterMax = true, bool wrapS = true, bool wrapT = true);
             void Update(const Math::Vector2& position, bool flipX, bool flipY, int drawStyle, float thickness = 1.0f);
             void Delete();
 
         private: 
 
-            unsigned int m_textureUnit,
-                         m_internal_format, // format of texture object RGB, RGBA
+            float m_textureUnit;
+            unsigned int m_internal_format, // format of texture object RGB, RGBA
                          m_image_format; // format of loaded image
     }; 
 

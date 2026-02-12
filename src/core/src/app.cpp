@@ -77,6 +77,7 @@ void System::Application::Start(Game* layer, const std::string& key, bool isMult
 
     LOG("PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌");  
 
+    renderer = new Renderer;
     resources = new Resources::Manager;
     events = new Events;
 
@@ -136,6 +137,9 @@ void System::Application::ShutDown()
     events = nullptr;
 
     Renderer::ShutDown();
+
+    delete renderer;
+    renderer = nullptr;
 
     LOG("Application terminated successfully. 👌");
 };

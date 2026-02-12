@@ -745,7 +745,6 @@ void Sprite::Render()
 
         shader.SetInt("whiteout", texture.Whiteout);
  
-       //shader.SetInt("image", 0);  
         shader.SetMat4("mvp", mvp);  
         shader.SetFloat("alphaVal", alpha); 
         shader.SetInt("repeat", texture.Repeat);

@@ -82,7 +82,7 @@ Game::Game()
 {
     s_spawn_count = 0;
 
-    LOG("Game: initializing context...");
+    LOG("Game: initializing context..."); 
 
     //game components
 
@@ -113,6 +113,7 @@ void Game::Boot()
 
     LOG("Game: " + Application::name + " initialized.");
     
+    Graphics::Texture2D::InitBaseTexture();
     Graphics::Shader::InitBaseShaders();
     
     //preload / run game layer
@@ -410,6 +411,8 @@ void Game::UpdateFrame()
 
     //entity render queue
 
+    Application::renderer->vertices.clear();
+
     Entity::s_rendered = 0;
 
     for (const auto& entity : currentScene->entities)
@@ -438,10 +441,10 @@ void Game::UpdateFrame()
                             fy = (1.0f - entity->scrollFactor.y) + 1.0f,
                             posX = entity->position.x * fx,
                             posY = entity->position.y * fy,
-                            left = (camPosX - (System::Window::s_scaleWidth) / 2) * entity->scrollFactor.x, 
-                            right = (camPosX + (System::Window::s_scaleWidth)) * fx, 
-                            bottom = (camPosY - (System::Window::s_scaleHeight) / 2) * entity->scrollFactor.y, 
-                            top = (camPosY + System::Window::s_scaleHeight) * fy; 
+                            left = (camPosX - (Window::s_scaleWidth) / 2) * entity->scrollFactor.x, 
+                            right = (camPosX + (Window::s_scaleWidth)) * fx, 
+                            bottom = (camPosY - (Window::s_scaleHeight) / 2) * entity->scrollFactor.y, 
+                            top = (camPosY + Window::s_scaleHeight) * fy; 
      
                 return (posX + width > left && 
                         posX < right && 
@@ -550,7 +553,10 @@ void Game::UpdateFrame()
 
     //run any additional updates on the current scene
 
-    currentScene->Update(); System::Renderer::Flush();
+    currentScene->Update(); 
+    
+    Renderer::EndBatch();
+    Renderer::Flush();
 }
 
 

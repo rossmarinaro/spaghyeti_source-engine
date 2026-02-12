@@ -24,6 +24,7 @@
     #include "../vendors/GLFW/glfw3.h"
     #include "../vendors/GLFW/glfw3native.h" 
 #endif
+
 #include "../../build/sdk/include/math.h"
 #include "../../build/sdk/include/geometry.h"
 
@@ -34,6 +35,19 @@ namespace /* SPAGHYETI_CORE */ System {
     class Renderer {
 
         public:
+
+            static inline const size_t MAX_TEXTURES = 32,
+                                       MAX_QUADS = 7000;
+
+            uint32_t indexCount, 
+                     textureSlotIndex;
+
+            std::array<uint32_t, MAX_TEXTURES> textureSlots; 
+            std::vector<Graphics::Vertex> vertices;
+            std::vector<GLuint> indices;
+
+            Renderer();
+            ~Renderer() = default;
 
             static inline void SetVSync(int rate) { s_vsync = rate; }
             static inline int GetVSync() { return s_vsync; }
@@ -53,26 +67,17 @@ namespace /* SPAGHYETI_CORE */ System {
             //static void RenderInstances();
             
             static void Init();
-            static void ShutDown();  static Graphics::Vertex* GetQuadBufferPtr();
-static void Flush(); static float GetTextureIndex(uint32_t textureID);
+            static void ShutDown();  
+            static void EndBatch();
+            static void Flush(); 
+
             static inline GLFWwindow* GLFW_window_instance;
-
-	        static inline uint32_t textureSlotIndex = 0,
-                                   indexCount = 0;  //how many indices to be drawn when we flush
-        static inline const int MAX_TEXTURES = 2,
-                                    MAX_QUADS = 2;
-static inline int QuadCount = 0;
-
 
         private:
 
-            static inline unsigned int s_FBO, s_RBO;
-        
+            GLuint m_VAO, m_VBO, m_EBO, m_FBO, m_RBO;
+
             static inline int s_vsync = 1;
     
-
-            static inline GLuint VAO,
-                                 VBO,
-                                 EBO;
     };
 }

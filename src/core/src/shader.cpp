@@ -500,8 +500,6 @@ void Shader::InitBaseShaders()
         //     "color = texture(images[index], uv) * tint * alphaVal;\n"
         // "}\n";
 
-
-
     //shader char arrays
 
     Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment);
@@ -512,11 +510,9 @@ void Shader::InitBaseShaders()
     Load("instance", spriteInstanceShader_vertex, spriteInstanceShader_fragment);
 
     #if DEVELOPMENT == 1
-
         Load("Points", geom_vertex1, geom_fragment);
         Load("Lines", geom_vertex2, geom_fragment);
         Load("Triangles", geom_vertex2, geom_fragment);
-
     #endif
 
     //shader files
@@ -525,6 +521,15 @@ void Shader::InitBaseShaders()
 
     LOG("Shader: Base shaders initialized.");
 
+    //set uniforms
+
+    auto shader = Get("sprite");
+    int samplers[System::Renderer::MAX_TEXTURES];
+
+    for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++) 
+        samplers[i] = i;
+
+    shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
 }
 
 
@@ -533,7 +538,6 @@ void Shader::InitBaseShaders()
 
 const bool checkCompileErrors(const std::string& key, unsigned int shader, const std::string& type)
 {
-
     GLint result;
     GLsizei length = 0;
     GLchar message[1024];
