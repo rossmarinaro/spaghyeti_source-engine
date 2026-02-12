@@ -7,7 +7,7 @@
 
 using namespace System;
 
-Renderer::Renderer() {
+Renderer::Renderer() { textureSlots.reserve(MAX_TEXTURES); 
    textureSlotIndex = 1;
    indexCount = 0;
 }
@@ -195,12 +195,12 @@ void Renderer::Init()
     const auto renderer = System::Application::renderer;
 
     for (unsigned int i = 0; i < MAX_QUADS * 6; ++i) {
-        renderer->indices.push_back(i * 4);
-        renderer->indices.push_back(i * 4 + 1);
-        renderer->indices.push_back(i * 4 + 2);
-        renderer->indices.push_back(i * 4 + 2);
-        renderer->indices.push_back(i * 4 + 3);
-        renderer->indices.push_back(i * 4);
+        renderer->m_indices.push_back(i * 4);
+        renderer->m_indices.push_back(i * 4 + 1);
+        renderer->m_indices.push_back(i * 4 + 2);
+        renderer->m_indices.push_back(i * 4 + 2);
+        renderer->m_indices.push_back(i * 4 + 3);
+        renderer->m_indices.push_back(i * 4);
     }
 
     glGenVertexArrays(1, &renderer->m_VAO); 
@@ -214,7 +214,7 @@ void Renderer::Init()
     glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Graphics::Vertex), nullptr, GL_STREAM_DRAW /* GL_DYNAMIC_DRAW */);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->m_EBO);    
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderer->indices.size() * sizeof(GLint), renderer->indices.data(), GL_STREAM_DRAW /* GL_DYNAMIC_DRAW */);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderer->m_indices.size() * sizeof(GLint), renderer->m_indices.data(), GL_STREAM_DRAW /* GL_DYNAMIC_DRAW */);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Graphics::Vertex), (void*)0);
     glEnableVertexAttribArray(0);
@@ -260,22 +260,6 @@ void Renderer::Update(void* camera)
 
 }
 
-//-----------------------------------------------
-
-
-void Renderer::EndBatch()
-{
-    auto renderer = System::Application::renderer;
-
-    const auto vertices = renderer->vertices;
-
-    if (renderer->vertices.empty()) 
-        return;
-
-    glBindBuffer(GL_ARRAY_BUFFER, renderer->m_VBO);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, renderer->vertices.size() * sizeof(Graphics::Vertex), renderer->vertices.data());
-}
-
 
 //----------------------------------------------- flush batch
 
@@ -283,21 +267,34 @@ void Renderer::EndBatch()
 void Renderer::Flush()
 {
     auto renderer = System::Application::renderer;
-    
-    for (unsigned int index = 0; index < renderer->textureSlotIndex; index++) {
-        glActiveTexture(GL_TEXTURE0 + index);
-        glBindTexture(GL_TEXTURE_2D, renderer->textureSlots[index]);  
+
+    if (!renderer->vertices.empty()) 
+    {
+        //bind textures to defined slot indices
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        
+        for (unsigned int index = 0; index < renderer->textureSlotIndex; index++) { 
+            glActiveTexture(GL_TEXTURE0 + index);
+            glBindTexture(GL_TEXTURE_2D, renderer->textureSlots[index]);  
+        }   
+
+        //bind vertex array and vertex buffer / draw elements
+        
+        glBindBuffer(GL_ARRAY_BUFFER, renderer->m_VBO);        
+        glBufferData(GL_ARRAY_BUFFER, (renderer->vertices.size() * sizeof(Graphics::Vertex)) * MAX_QUADS, nullptr, GL_STREAM_DRAW);
+
+        glBufferSubData(GL_ARRAY_BUFFER, 0, renderer->vertices.size() * sizeof(Graphics::Vertex), renderer->vertices.data());
+
+        glBindVertexArray(renderer->m_VAO); 
+        glDrawElements(GL_TRIANGLES /* drawStyle == GL_LINE ?  GL_LINES : GL_TRIANGLES */, renderer->m_indices.size(), GL_UNSIGNED_INT, 0); //tell ui about it
+
     }
 
-    if (renderer->vertices.empty()) 
-        return;    
-
-    //bind vertex array and vertex buffer / draw elements
-
-    glBindVertexArray(renderer->m_VAO); 
-    glDrawElements(GL_TRIANGLES /* drawStyle == GL_LINE ?  GL_LINES : GL_TRIANGLES */, renderer->indices.size(), GL_UNSIGNED_INT, 0); //tell ui about it
-
+	renderer->textureSlots.clear(); 
+    renderer->textureSlots[0] = Graphics::Texture2D::Get("base").ID;
     renderer->vertices.clear();
+
     renderer->textureSlotIndex = 1;
     renderer->indexCount = 0;
 

@@ -411,7 +411,10 @@ void Game::UpdateFrame()
 
     //entity render queue
 
-    Application::renderer->vertices.clear();
+       //depth sort
+
+    std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
+    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; }); 
 
     Entity::s_rendered = 0;
 
@@ -479,10 +482,10 @@ void Game::UpdateFrame()
         currentScene->vignette->Render();
     }
 
-    //depth sort
+    // //depth sort
 
-    std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
-    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });      
+    // std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
+    // std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });      
 
     #if DEVELOPMENT == 1
         if (physics && physics->enableDebug)
@@ -555,7 +558,6 @@ void Game::UpdateFrame()
 
     currentScene->Update(); 
     
-    Renderer::EndBatch();
     Renderer::Flush();
 }
 

@@ -42,9 +42,8 @@ namespace /* SPAGHYETI_CORE */ System {
             uint32_t indexCount, 
                      textureSlotIndex;
 
-            std::array<uint32_t, MAX_TEXTURES> textureSlots; 
+            /* std::array<uint32_t, MAX_TEXTURES> */std::vector<uint32_t> textureSlots;
             std::vector<Graphics::Vertex> vertices;
-            std::vector<GLuint> indices;
 
             Renderer();
             ~Renderer() = default;
@@ -68,7 +67,6 @@ namespace /* SPAGHYETI_CORE */ System {
             
             static void Init();
             static void ShutDown();  
-            static void EndBatch();
             static void Flush(); 
 
             static inline GLFWwindow* GLFW_window_instance;
@@ -76,6 +74,7 @@ namespace /* SPAGHYETI_CORE */ System {
         private:
 
             GLuint m_VAO, m_VBO, m_EBO, m_FBO, m_RBO;
+            std::vector<GLuint> m_indices;
 
             static inline int s_vsync = 1;
     

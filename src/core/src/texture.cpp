@@ -73,9 +73,6 @@ void Texture2D::InitBaseTexture()
     System::Application::resources->textures[key] = baseTexture; 
     System::Application::renderer->textureSlots[0] = baseTexture.ID; 
 
-	//for (size_t i = 1; i < System::Renderer::MAX_TEXTURES; i++)
-	//	System::Application::renderer->textureSlots[i] = 0;
-
     glBindTexture(GL_TEXTURE_2D, 0);
 
 }; 
@@ -105,10 +102,12 @@ void Texture2D::SetFiltering(bool filterMin, bool filterMax, bool wrapS, bool wr
     Wrap_S = wrapS ? GL_REPEAT : GL_CLAMP_TO_EDGE;
     Wrap_T = wrapT ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 
+    glBindTexture(GL_TEXTURE_2D, ID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Wrap_S);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Wrap_T);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Filter_Min);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Filter_Max); 
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -176,16 +175,14 @@ void Texture2D::Load(const std::string& key)
         return;
     }
 
+    texture.key = key;
     texture.Width = width;
     texture.Height = height; 
-
     texture.FrameWidth = width;
     texture.FrameHeight = height;
-
     texture.Channels = nrChannels;
 
-    if (texture.Channels == 4) 
-    { 
+    if (texture.Channels == 4) { 
         #ifdef __EMSCRIPTEN__
             texture.m_internal_format = GL_RGBA;  
         #else
@@ -204,16 +201,10 @@ void Texture2D::Load(const std::string& key)
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
     glTexImage2D(GL_TEXTURE_2D, 0, texture.m_internal_format, texture.Width, texture.Height, 0, texture.m_image_format, GL_UNSIGNED_BYTE, image);
 
-    //set Texture wrap and filter modes
-
     texture.SetFiltering();
-
-    glBindTexture(GL_TEXTURE_2D, 0);
 
     if (filetype != "compressed pixel data")
         stbi_image_free(image);
-
-    texture.key = key;
 
     System::Application::resources->textures[key] = texture; 
 
@@ -247,23 +238,22 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
     auto renderer = System::Application::renderer;
     const int elementCount = 6 * System::Renderer::MAX_QUADS;
 
-    if (renderer->indexCount >= elementCount || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) {
-        System::Renderer::EndBatch();  
-        System::Renderer::Flush();
-        LOG("exhausted buffer");
-    }
+    //flush if max index count exceeds element count, or textures reached max
 
+    if (renderer->indexCount >= elementCount || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) 
+        System::Renderer::Flush();
+ 
     //format texture
  
     Format offset;
 
-    if (flipX && !flipY) //flip X
+    if (flipX && !flipY) //flip x
         offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 };
 
-    else if (!flipX && flipY) //flip Y
+    else if (!flipX && flipY) //flip y
         offset = { FrameWidth, FrameHeight, U1, V2, U2, V1 }; //fix
 
-    else if (flipX && flipY) //flip X, Y
+    else if (flipX && flipY) //flip x, y
         offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 }; //fix
 
     else //no flip
@@ -273,7 +263,7 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
 
 	m_textureUnit = 0.0f;
 
-	for (uint32_t i = 1; i < renderer->textureSlotIndex + 1; i++)
+	for (uint32_t i = 1; i < renderer->textureSlotIndex; i++)
 		if (renderer->textureSlots[i] == ID) {
 			m_textureUnit = (float)i;
 			break;
@@ -285,16 +275,18 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
         renderer->textureSlotIndex++;
     }
 
-    const Renderable renderable = { position.x, position.y, offset }; //posX, posY, UV
- 
-    Vertex vertices[4] = {
+    //update texture vertices
+
+    const Renderable renderable = { position.x, position.y, offset }; //x, y, uvs
+
+    const Vertex vertices[4] = {
         { renderable.x, renderable.y, renderable.format.u1, renderable.format.v1, m_textureUnit },
         { renderable.x + renderable.format.width, renderable.y, renderable.format.u2, renderable.format.v1, m_textureUnit },
         { renderable.x + renderable.format.width, renderable.y + renderable.format.height, renderable.format.u2, renderable.format.v2, m_textureUnit },
         { renderable.x, renderable.y + renderable.format.height, renderable.format.u1, renderable.format.v2, m_textureUnit }
     };  
 
-    //add the vertices to the renderer's vector
+    //add the vertices to the renderer's vector and increase index count by 6
 
     std::copy(vertices, vertices + sizeof(vertices) / sizeof(vertices[0]), std::back_inserter(renderer->vertices));
 

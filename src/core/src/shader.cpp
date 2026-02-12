@@ -53,20 +53,21 @@ void Shader::InitBaseShaders()
             "#version 330 core\n"
         #endif
 
-        "layout(location = 0) in vec2 vert;\n"
+        "layout(location = 0) in vec2 Pos;\n"
         "layout(location = 1) in vec2 UV;\n"
         "layout(location = 2) in float TextureId;\n" 
-        "flat out float texID;\n"
 
+        "flat out float texID;\n"
         "out vec2 uv;\n"
 
         "uniform vec2 scale;\n"
         "uniform mat4 mvp;\n"
 
         "void main()\n"
-        "{\n" "texID = TextureId;\n"
+        "{\n" 
+            "texID = TextureId;\n"
             "uv = UV;\n"
-            "gl_Position = mvp * vec4((vert.xy * scale), 0.0, 1.0);\n"
+            "gl_Position = mvp * vec4((Pos.xy * scale), 0.0, 1.0);\n"
         "}";
 
 
@@ -86,7 +87,7 @@ void Shader::InitBaseShaders()
         "in vec2 uv;\n"
         "out vec4 color;\n"
 
-        "uniform sampler2D images[3];\n"
+        "uniform sampler2D images[32];\n"
         "uniform vec3 tint;\n"
         "uniform float alphaVal;\n"
         "uniform int whiteout;\n"
