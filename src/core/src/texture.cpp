@@ -233,7 +233,7 @@ void Texture2D::UnLoad(const std::string& key)
 
 //----------------------------------------
 
-void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, int drawStyle, float thickness) 
+void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY) 
 {   
     auto renderer = System::Application::renderer;
     const int elementCount = 6 * System::Renderer::MAX_QUADS;
@@ -242,7 +242,7 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
 
     if (renderer->indexCount >= elementCount || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) 
         System::Renderer::Flush();
- 
+
     //format texture
  
     Format offset;
@@ -287,7 +287,7 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY, in
     };  
 
     //add the vertices to the renderer's vector and increase index count by 6
-
+    
     std::copy(vertices, vertices + sizeof(vertices) / sizeof(vertices[0]), std::back_inserter(renderer->vertices));
 
     renderer->indexCount += 6;

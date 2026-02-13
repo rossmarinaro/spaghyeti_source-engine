@@ -42,7 +42,9 @@ namespace /* SPAGHYETI_CORE */ System {
             uint32_t indexCount, 
                      textureSlotIndex;
 
-            /* std::array<uint32_t, MAX_TEXTURES> */std::vector<uint32_t> textureSlots;
+            unsigned int drawStyle; 
+
+            std::array<uint32_t, MAX_TEXTURES> textureSlots;
             std::vector<Graphics::Vertex> vertices;
 
             Renderer();
@@ -73,10 +75,12 @@ namespace /* SPAGHYETI_CORE */ System {
 
         private:
 
-            GLuint m_VAO, m_VBO, m_EBO, m_FBO, m_RBO;
-            std::vector<GLuint> m_indices;
+            static inline const int BUFFERS = 3;
+            static inline int s_vsync, s_currentBufferIndex;
 
-            static inline int s_vsync = 1;
-    
+            GLsync m_fences[BUFFERS];
+            GLuint m_VBOs[BUFFERS]; //ring buffer
+            GLuint m_VAO, m_EBO, m_FBO, m_RBO;
+            std::vector<GLuint> m_indices;
     };
 }

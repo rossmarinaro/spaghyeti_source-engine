@@ -37,7 +37,6 @@ namespace Graphics {
         private:
 
             const bool Generate(const std::string& key, const char* vertexPath, const char* fragmentPath, const char* geomShader = nullptr);
-            const Shader& Use();
 
     };
 

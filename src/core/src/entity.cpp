@@ -221,7 +221,9 @@ void Geometry::Render()
 
     shader.SetMat4("mvp", mvp);  
 
-    texture.Update(position, false, false, m_drawStyle, m_thickness); 
+    texture.Update(position, false, false); 
+
+    System::Application::renderer->drawStyle = m_drawStyle;
 }
 
 
@@ -712,12 +714,6 @@ void Sprite::Render()
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
     model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
 
-    unsigned int fill = 1;
-
-    #ifndef __EMSCRIPTEN__
-        fill = GL_FILL;
-    #endif
-
     //update shaders and textures 
 
     if (active && renderable)
@@ -752,7 +748,9 @@ void Sprite::Render()
 
         //update texture
 
-        texture.Update(position, flipX, flipY, fill);  
+        texture.Update(position, flipX, flipY);  
+
+        System::Application::renderer->drawStyle = 1;
 
     }
 

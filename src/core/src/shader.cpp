@@ -11,6 +11,7 @@ using namespace Graphics;
 
 void Shader::Delete() {
     glDeleteProgram(ID);
+    LOG("Shader: shader of key: " + key + " deleted.");
 }
 
 //-------------------------------
@@ -26,14 +27,6 @@ const Shader& Shader::Get(const std::string& key)
         System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end() ? key : "sprite"];
 }
 
-
-//-------------------------------
-
-
-const Shader& Shader::Use() {
-    glUseProgram(this->ID);
-    return *this;
-}
 
 
 //--------------------------- init base shaders
@@ -704,22 +697,22 @@ const bool Shader::Generate(const std::string& key, const char* vertexPath, cons
 
     //shader Program
 
-    this->ID = glCreateProgram();
+    ID = glCreateProgram();
 
-    glAttachShader(this->ID, vertex);
-    glAttachShader(this->ID, fragment);
+    glAttachShader(ID, vertex);
+    glAttachShader(ID, fragment);
 
     if (geomPath != nullptr)
-        glAttachShader(this->ID, geometry);
+        glAttachShader(ID, geometry);
 
-    glLinkProgram(this->ID);
+    glLinkProgram(ID);
 
-    if (!checkCompileErrors(key, this->ID, "program"))
+    if (!checkCompileErrors(key, ID, "program"))
         return false;
 
     //use program
 
-    this->Use();
+    glUseProgram(ID);
 
     //delete the shaders
 
@@ -755,7 +748,7 @@ void Shader::UnLoad(const std::string& key)
 void Shader::SetFloat(const char* name, float value, bool useShader)
 {
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform1f(glGetUniformLocation(ID, name), value);
@@ -766,7 +759,7 @@ void Shader::SetFloat(const char* name, float value, bool useShader)
 void Shader::SetInt(const char* name, int value, bool useShader)
 {
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform1i(glGetUniformLocation(ID, name), value);
@@ -777,7 +770,7 @@ void Shader::SetInt(const char* name, int value, bool useShader)
 void Shader::SetIntV(const char* name, int length, int* value, bool useShader)
 {
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform1iv(glGetUniformLocation(ID, name), length, value);
@@ -788,7 +781,7 @@ void Shader::SetIntV(const char* name, int length, int* value, bool useShader)
 void Shader::SetVec2f(const char* name, float x, float y, bool useShader)
 {
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform2f(glGetUniformLocation(ID, name), x, y);
@@ -799,7 +792,7 @@ void Shader::SetVec2f(const char* name, float x, float y, bool useShader)
 void Shader::SetVec2f(const char* name, const Math::Vector2& value, bool useShader)
 {
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform2f(glGetUniformLocation(ID, name), value.x, value.y);
@@ -810,7 +803,7 @@ void Shader::SetVec2f(const char* name, const Math::Vector2& value, bool useShad
 void Shader::SetVec3f(const char* name, float x, float y, float z, bool useShader)
 {
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform3f(glGetUniformLocation(ID, name), x, y, z);
@@ -821,7 +814,7 @@ void Shader::SetVec3f(const char* name, float x, float y, float z, bool useShade
 void Shader::SetVec3f(const char* name, const Math::Vector3& value, bool useShader)
 {
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform3f(glGetUniformLocation(ID, name), value.x, value.y, value.z);
@@ -833,7 +826,7 @@ void Shader::SetVec4f(const char* name, float x, float y, float z, float w, bool
 {
 
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform4f(glGetUniformLocation(ID, name), x, y, z, w);
@@ -844,7 +837,7 @@ void Shader::SetVec4f(const char* name, float x, float y, float z, float w, bool
 void Shader::SetVec4f(const char* name, const Math::Vector4& value, bool useShader)
 {
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
         glUniform4f(glGetUniformLocation(ID, name), value.x, value.y, value.z, value.w);
@@ -855,7 +848,7 @@ void Shader::SetVec4f(const char* name, const Math::Vector4& value, bool useShad
 void Shader::SetMat4(const char* name, const Math::Matrix4& matrix, bool useShader)
 {
     if (useShader)
-        this->Use();
+        glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
     {

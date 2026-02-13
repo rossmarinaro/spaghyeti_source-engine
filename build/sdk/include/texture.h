@@ -37,7 +37,7 @@ namespace Graphics {
             static void InitBaseTexture();
             
             void SetFiltering(bool filterMin = true, bool filterMax = true, bool wrapS = true, bool wrapT = true);
-            void Update(const Math::Vector2& position, bool flipX, bool flipY, int drawStyle, float thickness = 1.0f);
+            void Update(const Math::Vector2& position, bool flipX, bool flipY);
             void Delete();
 
         private: 
