@@ -7,7 +7,7 @@
 
 using namespace System;
 
-//---------------------------------
+//--------------------------------- enable vertex attributes, allowing data to be baked into a vertex
 
 
 void EnableAttributes() 

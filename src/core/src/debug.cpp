@@ -96,7 +96,7 @@ void Points::Flush()
 
     glLineWidth(0.1f);
 
-    glDrawArrays(GL_POINTS, 0, m_count);
+    glDrawArrays(GL_POINTS, 0, m_count); 
     glDisable(GL_PROGRAM_POINT_SIZE);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);

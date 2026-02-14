@@ -467,11 +467,19 @@ void Game::UpdateFrame()
             }  
         }
 
+    //flush entities
+
+    Renderer::Flush();
+
     //UI render queue
 
     for (const auto& UI : currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
             UI->Render();
+
+    //flush UI
+
+    Renderer::Flush();
 
     //vignette overlay
 

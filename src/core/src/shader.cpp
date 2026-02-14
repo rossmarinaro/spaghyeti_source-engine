@@ -34,7 +34,6 @@ const Shader& Shader::Get(const std::string& key)
 
 void Shader::InitBaseShaders()
 {
-
     //quad (sprite)
 
     static constexpr const char* spriteQuadShader_vertex = \
