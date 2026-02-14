@@ -20,7 +20,7 @@ namespace Graphics {
             void SetVec2f(const char* name, const Math::Vector2& value, bool useShader = true);
             void SetVec3f(const char* name, float x, float y, float z, bool useShader = true);
             void SetVec3f(const char* name, const Math::Vector3& value, bool useShader = true);
-            void SetVec4f(const char* name, float x, float y, float z, float w, bool useShader = true);
+            void SetVec4f(const char* name, float r, float g, float b, float a, bool useShader = true);
             void SetVec4f(const char* name, const Math::Vector4& value, bool useShader = true);
             void SetMat4(const char* name, const Math::Matrix4& matrix, bool useShader = true);
 

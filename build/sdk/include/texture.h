@@ -36,13 +36,20 @@ namespace Graphics {
             static void UnLoad(const std::string& key);
             static void InitBaseTexture();
             
-            void SetFiltering(bool filterMin = true, bool filterMax = true, bool wrapS = true, bool wrapT = true);
-            void Update(const Math::Vector2& position, bool flipX, bool flipY);
             void Delete();
+            void SetFiltering(bool filterMin = true, bool filterMax = true, bool wrapS = true, bool wrapT = true);
+            void Update(
+                unsigned int shaderID, 
+                const Math::Vector2& position, 
+                const Math::Vector2& scale,
+                const Math::Vector4& rgba, 
+                float rotation,
+                bool flipX = false, 
+                bool flipY = false
+            );
 
         private: 
 
-            float m_textureUnit;
             unsigned int m_internal_format, // format of texture object RGB, RGBA
                          m_image_format; // format of loaded image
     }; 

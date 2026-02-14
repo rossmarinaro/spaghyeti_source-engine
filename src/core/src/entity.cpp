@@ -79,7 +79,7 @@ void Entity::SetData(const std::string& key, const std::any& value) {
 
 void Entity::SetShader(const std::string& key) {  
     if (System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end())
-        shader = Graphics::Shader::Get(key); 
+        shaderKey = Graphics::Shader::Get(key).key; 
 }
 
 
@@ -154,15 +154,11 @@ Geometry::Geometry(float x, float y, float width, float height, bool isSpawn):
     this->width = width;
     this->height = height;
 
-    #ifndef __EMSCRIPTEN__
-        m_drawStyle = GL_FILL;
-    #else 
-        m_drawStyle = 1;
-    #endif
-    
+    SetDrawStyle(1);
+    SetShader("sprite");
+alpha=0.5f;
     tint = { 0.0f, 0.0f, 1.0f };
     texture = Graphics::Texture2D::Get("base");
-    shader = Graphics::Shader::Get("graphics");
     renderable = true;
 
     LOG("Geometry: quad created."); 
@@ -196,17 +192,17 @@ void Geometry::Render()
 
     //render other shapes...
 
-    model = glm::translate(model, { 0.5f * width + position.x, 0.5f * height + position.y, 0.0f }); 
+    model = glm::translate(model, { 0.5f * width + position.x * scale.x, 0.5f * height + position.y * scale.y, 0.0f }); 
     model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    model = glm::translate(model, { -0.5f * width - position.x, -0.5f * height - position.y, 0.0f });
+    model = glm::translate(model, { -0.5f * width - position.x * scale.x, -0.5f * height - position.y * scale.y, 0.0f });
 
     const auto camera = System::Application::game->camera;
 
     const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
     
-    const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
-                    proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f),
+    const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
+                    proj = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f),
                     _mvp = proj * view * model;
 
     const Math::Matrix4 mvp = { 
@@ -215,13 +211,15 @@ void Geometry::Render()
         { _mvp[2][0], _mvp[2][1], _mvp[2][2], _mvp[2][3] },  
         { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
     };
-                            
-    shader.SetVec3f("tint", tint);
-    shader.SetFloat("alphaVal", alpha);
 
+    auto shader = Graphics::Shader::Get(shaderKey);
+
+    shader.SetInt("whiteout", 0);
     shader.SetMat4("mvp", mvp);  
+    shader.SetInt("repeat", 1);
 
-    texture.Update(position, false, false); 
+    const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha };
+    texture.Update(shader.ID, position, scale, color, rotation); 
 
     System::Application::renderer->drawStyle = m_drawStyle;
 }
@@ -353,7 +351,7 @@ std::shared_ptr<Sprite> Sprite::Clone()
             const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
             const Math::Vector4 offset = m_bodies[0].second;
 
-            clone->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, offset.x, offset.y, offset.z, offset.w, body->isSensor, body->pointer, body->density, body->friction, body->restitution), { offset.z, offset.w, offset.z, offset.w } );
+            clone->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, offset.r, offset.g, offset.b, offset.a, body->isSensor, body->pointer, body->density, body->friction, body->restitution), { offset.r, offset.g, offset.b, offset.a } );
         }
             
     return clone;
@@ -505,8 +503,8 @@ void Sprite::RemoveBodies()
 {
     //reset texture position to normal coords
 
-    const float x = (m_bodies[0].first->GetPosition().x / scale.x) - m_bodies[0].second.x,
-                y = (m_bodies[0].first->GetPosition().y / scale.y) - m_bodies[0].second.y;
+    const float x = (m_bodies[0].first->GetPosition().x / scale.x) - m_bodies[0].second.r,
+                y = (m_bodies[0].first->GetPosition().y / scale.y) - m_bodies[0].second.g;
 
     for (auto it = m_bodies.begin(); it != m_bodies.end(); ++it) 
         Physics::DestroyBody((*it).first);
@@ -705,8 +703,8 @@ void Sprite::Render()
     const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
     
-    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
-                    proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f);
+    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
+                    proj = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
 
     glm::mat4 model = glm::mat4(1.0f); 
 
@@ -727,28 +725,25 @@ void Sprite::Render()
             { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
         };
 
+        auto shader = Graphics::Shader::Get(shaderKey);
+
         //stroke shader
 
-        if (shader.key == "outline sprite") {
+        if (shaderKey == "outline sprite") {
             shader.SetVec3f("outlineColor", outlineColor);
             shader.SetFloat("outlineWidth", outlineWidth);
         }
 
         //standard shader
 
-        else 
-            shader.SetVec3f("tint", tint);
-
         shader.SetInt("whiteout", texture.Whiteout);
- 
         shader.SetMat4("mvp", mvp);  
-        shader.SetFloat("alphaVal", alpha); 
         shader.SetInt("repeat", texture.Repeat);
-        shader.SetVec2f("scale", { scale.x, scale.y });
 
         //update texture
 
-        texture.Update(position, flipX, flipY);  
+        const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha };
+        texture.Update(shader.ID, position, scale, color, rotation, flipX, flipY);  
 
         System::Application::renderer->drawStyle = 1;
 
@@ -761,7 +756,7 @@ void Sprite::Render()
             body.first->GetType() == b2_dynamicBody || body.first->GetType() == b2_kinematicBody
         ) {
             Math::Vector2 pos = body.first->GetPosition(); 
-            SetPosition((pos.x / scale.x) - body.second.x, (pos.y / scale.y) - body.second.y);
+            SetPosition((pos.x / scale.x) - body.second.r, (pos.y / scale.y) - body.second.g);
         }
 
     //play current animation

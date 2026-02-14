@@ -26,12 +26,11 @@
 #endif
 
 #include "../../build/sdk/include/math.h"
-#include "../../build/sdk/include/geometry.h"
 
 //-----------------------------
 
 namespace /* SPAGHYETI_CORE */ System {
-            
+    //triple buffer batch renderer
     class Renderer {
 
         public:
@@ -42,10 +41,10 @@ namespace /* SPAGHYETI_CORE */ System {
             uint32_t indexCount, 
                      textureSlotIndex;
 
-            unsigned int drawStyle; 
+            unsigned int drawStyle, activeShaderID; 
 
             std::array<uint32_t, MAX_TEXTURES> textureSlots;
-            std::vector<Graphics::Vertex> vertices;
+            std::vector<Math::Graphics::Vertex> vertices;
 
             Renderer();
             ~Renderer() = default;

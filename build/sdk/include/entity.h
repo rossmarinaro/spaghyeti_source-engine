@@ -18,8 +18,6 @@ class Entity {
 
 	public: 
 
-        Graphics::Shader shader;
-
         enum { GENERIC, UI, SPRITE, GEOMETRY, TEXT, TILE };
 
 		int depth;
@@ -37,7 +35,7 @@ class Entity {
 
 		Math::Vector3 tint, outlineColor, shadowColor; 
 		Math::Vector2 position, scale, scrollFactor;
-		std::string ID, name;
+		std::string ID, name, shaderKey;
 
 		template<typename T>
 		inline const T GetData(const std::string& key) { 

@@ -8,8 +8,7 @@ using namespace Graphics;
 
 Texture2D::Texture2D():
     m_internal_format(GL_RGB32F), 
-    m_image_format(GL_RGB),
-    m_textureUnit(0.0f)
+    m_image_format(GL_RGB)
 { 
     Width = 0.0f;
     Height = 0.0f;
@@ -59,16 +58,23 @@ void Texture2D::InitBaseTexture()
 
     glGenTextures(1, &baseTexture.ID);
 	glBindTexture(GL_TEXTURE_2D, baseTexture.ID);
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
+
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     
 	uint32_t color = 0xffffffff; //white
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+
+    #ifndef __EMSCRIPTEN__
+        glGenerateMipmap(GL_TEXTURE_2D);
+    #endif
     
     System::Application::resources->textures[key] = baseTexture; 
     System::Application::renderer->textureSlots[0] = baseTexture.ID; 
@@ -231,17 +237,32 @@ void Texture2D::UnLoad(const std::string& key)
 
 }
 
-//----------------------------------------
+//---------------------------------------- updates textures position and texture coordinates, appends to array for rendering
 
-void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY) 
+void Texture2D::Update(
+    unsigned int shaderID, 
+    const Math::Vector2& position, 
+    const Math::Vector2& scale,
+    const Math::Vector4& rgba, 
+    float rotation,
+    bool flipX, 
+    bool flipY
+) 
 {   
     auto renderer = System::Application::renderer;
     const int elementCount = 6 * System::Renderer::MAX_QUADS;
 
-    //flush if max index count exceeds element count, or textures reached max
+    //flush if max index count exceeds element count, or textures reached max OR shader is different than renderer's active shader
 
-    if (renderer->indexCount >= elementCount || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) 
+    if (renderer->indexCount >= elementCount || 
+        renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 ||
+        shaderID != renderer->activeShaderID
+    ) 
         System::Renderer::Flush();
+
+    //set active shader
+
+    renderer->activeShaderID = shaderID;
 
     //format texture
  
@@ -261,16 +282,19 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY)
 
     //get / set texture unit from texture ID
 
-	m_textureUnit = 0.0f;
+    float textureUnit = 0.0f;
 
-	for (uint32_t i = 1; i < renderer->textureSlotIndex; i++)
-		if (renderer->textureSlots[i] == ID) {
-			m_textureUnit = (float)i;
-			break;
-		}
-	
-    if (m_textureUnit == 0.0f) {
-        m_textureUnit = (float)renderer->textureSlotIndex;
+	const auto texture_exists = [&]() -> bool {
+        for (uint32_t i = 0; i < renderer->textureSlotIndex; i++)
+            if (renderer->textureSlots[i] == ID) {
+                textureUnit = (float)i;
+                return true;
+            }
+        return false;
+    };
+
+    if (!texture_exists()) {
+        textureUnit = (float)renderer->textureSlotIndex;
         renderer->textureSlots[renderer->textureSlotIndex] = ID;
         renderer->textureSlotIndex++;
     }
@@ -279,11 +303,11 @@ void Texture2D::Update(const Math::Vector2& position, bool flipX, bool flipY)
 
     const Renderable renderable = { position.x, position.y, offset }; //x, y, uvs
 
-    const Vertex vertices[4] = {
-        { renderable.x, renderable.y, renderable.format.u1, renderable.format.v1, m_textureUnit },
-        { renderable.x + renderable.format.width, renderable.y, renderable.format.u2, renderable.format.v1, m_textureUnit },
-        { renderable.x + renderable.format.width, renderable.y + renderable.format.height, renderable.format.u2, renderable.format.v2, m_textureUnit },
-        { renderable.x, renderable.y + renderable.format.height, renderable.format.u1, renderable.format.v2, m_textureUnit }
+    const Math::Graphics::Vertex vertices[4] = {
+        { renderable.x, renderable.y, scale.x, scale.y, rotation, renderable.format.u1, renderable.format.v1, textureUnit, rgba.r, rgba.g, rgba.b, rgba.a },
+        { renderable.x + renderable.format.width, renderable.y, scale.x, scale.y, rotation, renderable.format.u2, renderable.format.v1, textureUnit, rgba.r, rgba.g, rgba.b, rgba.a },
+        { renderable.x + renderable.format.width, renderable.y + renderable.format.height, scale.x, scale.y, rotation, renderable.format.u2, renderable.format.v2, textureUnit, rgba.r, rgba.g, rgba.b, rgba.a },
+        { renderable.x, renderable.y + renderable.format.height, scale.x, scale.y, rotation, renderable.format.u1, renderable.format.v2, textureUnit, rgba.r, rgba.g, rgba.b, rgba.a }
     };  
 
     //add the vertices to the renderer's vector and increase index count by 6

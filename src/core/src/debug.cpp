@@ -20,40 +20,33 @@ using namespace Graphics;
 
 void Points::Create()
 {
-
 	m_maxVertices = points;
-
-	shader = Graphics::Shader::Get("Points");
-
-	m_vertexAttribute = 0;
-    m_colorAttribute = 1; 
-    m_sizeAttribute = 2;
 
     // Generate
     glGenVertexArrays(1, &m_vaoId);
     glGenBuffers(3, m_vboIds);
 
     glBindVertexArray(m_vaoId);
-    glEnableVertexAttribArray(m_vertexAttribute);
-    glEnableVertexAttribArray(m_colorAttribute);
-    glEnableVertexAttribArray(m_sizeAttribute);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-    glVertexAttribPointer(m_vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-    glVertexAttribPointer(m_colorAttribute, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_colors), m_colors, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[2]);
-    glVertexAttribPointer(m_sizeAttribute, 1, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0)); 
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0)); 
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_sizes), m_sizes, GL_DYNAMIC_DRAW);
 
     // Cleanup
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    glBindVertexArray(0); 
 
     m_count = 0;
 } 
@@ -73,8 +66,10 @@ void Points::Flush()
     const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition()->x, System::Application::game->camera->GetPosition()->y);
     
-    const glm::mat4 vp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w });
+    const glm::mat4 vp = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
  
+    auto shader = Graphics::Shader::Get("Points");
+
     shader.SetMat4("vp", {  
         { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
         { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
@@ -119,28 +114,23 @@ void Points::Flush()
 
 void Lines::Create()
 {
-
 	m_maxVertices = lines;
-    shader = Graphics::Shader::Get("Lines");
-
-    m_vertexAttribute = 0;
-    m_colorAttribute = 1;
 
     // Generate
     glGenVertexArrays(1, &m_vaoId);
     glGenBuffers(2, m_vboIds);
 
     glBindVertexArray(m_vaoId);
-    glEnableVertexAttribArray(m_vertexAttribute);
-    glEnableVertexAttribArray(m_colorAttribute);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-    glVertexAttribPointer(m_vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-    glVertexAttribPointer(m_colorAttribute, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_colors), m_colors, GL_DYNAMIC_DRAW);
 
     // Cleanup
@@ -165,7 +155,9 @@ void Lines::Flush()
     const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition()->x, System::Application::game->camera->GetPosition()->y);
     
-    const glm::mat4 vp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w });
+    const glm::mat4 vp = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
+
+    auto shader = Graphics::Shader::Get("Lines");
 
     shader.SetMat4("vp", {  
         { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
@@ -205,31 +197,23 @@ void Lines::Flush()
 
 void Triangles::Create()
 {
-
 	m_maxVertices = triangles;
-   	shader = Graphics::Shader::Get("Triangles");
 
-    m_vertexAttribute = 0;
-    m_colorAttribute = 1;
-
-    // Generate
     glGenVertexArrays(1, &m_vaoId);
     glGenBuffers(2, m_vboIds);
 
     glBindVertexArray(m_vaoId);
-    glEnableVertexAttribArray(m_vertexAttribute);
-    glEnableVertexAttribArray(m_colorAttribute); 
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1); 
 
-    // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-    glVertexAttribPointer(m_vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-    glVertexAttribPointer(m_colorAttribute, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_colors), m_colors, GL_DYNAMIC_DRAW);
 
-    // Cleanup
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
@@ -242,7 +226,6 @@ void Triangles::Create()
 
 void Triangles::Flush()
 {
-
 	#ifndef __EMSCRIPTEN__
 
     if (m_count == 0)
@@ -251,7 +234,9 @@ void Triangles::Flush()
     const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition()->x, System::Application::game->camera->GetPosition()->y);
     
-    const glm::mat4 vp = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w });
+    const glm::mat4 vp = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
+
+    auto shader = Graphics::Shader::Get("Triangles");
 
     shader.SetMat4("vp", {  
         { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
@@ -292,7 +277,6 @@ void Triangles::Flush()
 
 void DebugGraphic::Vertex(auto *shape, const b2Vec2& v, const b2Color& c, float size)
 { 
-
 	shape->m_X = v.x;
 	shape->m_Y = v.y;
  
@@ -312,7 +296,6 @@ void DebugGraphic::Vertex(auto *shape, const b2Vec2& v, const b2Color& c, float 
 
 void DebugGraphic::Vertex(auto *shape, const b2Vec2& v, const b2Color& c)
 {
-
 	shape->m_X = v.x;
 	shape->m_Y = v.y;	
 
@@ -331,10 +314,7 @@ void DebugGraphic::Vertex(auto *shape, const b2Vec2& v, const b2Color& c)
 
 void DebugGraphic::Destroy(auto *shape)
 {
-
-    if (shape->m_vaoId)
-    {
-        
+    if (shape->m_vaoId) {
 		glDeleteVertexArrays(1, &shape->m_vaoId);
         glDeleteBuffers(2, shape->m_vboIds);
         
@@ -348,7 +328,6 @@ void DebugGraphic::Destroy(auto *shape)
 
 DebugDraw::DebugDraw()
 {
-
 	m_points = new Points;
 	m_points->Create();
 	
@@ -367,7 +346,6 @@ DebugDraw::DebugDraw()
 
 DebugDraw::~DebugDraw()
 {
-
 	DebugGraphic::Destroy(m_points);
 	delete m_points;
 	m_points = nullptr;
@@ -390,7 +368,6 @@ DebugDraw::~DebugDraw()
 
 void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-
 	b2Vec2 p1 = vertices[vertexCount - 1];
 
 	for (int32 i = 0; i < vertexCount; ++i)
@@ -410,7 +387,6 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 
 void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-
 	b2Color fillColor(0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f);
 
 	for (int32 i = 1; i < vertexCount - 1; ++i)
@@ -440,7 +416,6 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
 
 void DebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2Color& color)
 {
-
 	const float k_segments = 16.0f;
 	const float k_increment = 2.0f * b2_pi / k_segments;
 
@@ -476,7 +451,6 @@ void DebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2Color& co
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color)
 {
-
 	const float k_segments = 16.0f;
 	const float k_increment = 2.0f * b2_pi / k_segments;
 
@@ -536,8 +510,7 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2
 //------------------------------------
 
 
-void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
-{
+void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) {
 	DebugGraphic::Vertex(m_lines, p1, color);
 	DebugGraphic::Vertex(m_lines, p2, color);
 }
@@ -571,8 +544,7 @@ void DebugDraw::DrawTransform(const b2Transform& xf)
 //------------------------------------
 
 
-void DebugDraw::DrawPoint(const b2Vec2& p, float size, const b2Color& color)
-{
+void DebugDraw::DrawPoint(const b2Vec2& p, float size, const b2Color& color) {
 	DebugGraphic::Vertex(m_points, p, color, size);
 }
 
@@ -582,7 +554,6 @@ void DebugDraw::DrawPoint(const b2Vec2& p, float size, const b2Color& color)
 
 void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 {
-
 	b2Vec2 p1 = aabb->lowerBound;
 
 	b2Vec2 p2 = b2Vec2(aabb->upperBound.x, aabb->lowerBound.y);

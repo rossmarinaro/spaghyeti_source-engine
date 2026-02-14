@@ -196,10 +196,10 @@ void Game::StartScene(const std::string& key, bool loadMap)
             cachedScenes.emplace_back(game->currentScene->key);
         }
 
-      //  game->currentScene->vignette = std::make_unique<Geometry>(0.0f, -50.0f, 0.0f, 0.0f);
-       // game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
-      //  game->currentScene->vignette->SetAlpha(0.0f);
-       // game->currentScene->vignette->SetScrollFactor({ 0.0f, 0.0f });
+        game->currentScene->vignette = std::make_unique<Geometry>(0.0f, -50.0f, 0.0f, 0.0f);
+        game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
+        game->currentScene->vignette->SetAlpha(0.0f);
+        game->currentScene->vignette->SetScrollFactor({ 0.0f, 0.0f });
 
         const std::string state = loadMap ? " started" : " restarted.";
 
@@ -411,8 +411,6 @@ void Game::UpdateFrame()
 
     //entity render queue
 
-       //depth sort
-
     std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
     std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; }); 
 
@@ -478,27 +476,9 @@ void Game::UpdateFrame()
     //vignette overlay
 
     if (currentScene->vignette) {
-        currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
-        currentScene->vignette->Render();
-    }
-
-    // //depth sort
-
-    // std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
-    // std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });      
-
-    #if DEVELOPMENT == 1
-        if (physics && physics->enableDebug)
-        {
-            static_cast<b2World*>(physics->GetWorld())->DebugDraw();
-            _debug->SetFlags(_debug_flags);
-            _debug->Flush();
-
-            #if STANDALONE == 1
-                _displayInfo->Update(&m_context);
-            #endif
-        }
-    #endif
+        currentScene->vignette->SetSize( Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
+        currentScene->vignette->Render();     
+    }     
 
     //update behaviors, pass game process context to subclasses
 
@@ -549,16 +529,30 @@ void Game::UpdateFrame()
             else
                 event->active = false;
 
-            //fire callback
+            //fire event callback
 
             event->callback();
         } 
 
-    //run any additional updates on the current scene
+    //run any additional updates on the current scene, flush remaining data
 
     currentScene->Update(); 
-    
     Renderer::Flush();
+
+    //debug UI
+
+    #if DEVELOPMENT == 1
+        if (physics && physics->enableDebug)
+        {
+            static_cast<b2World*>(physics->GetWorld())->DebugDraw();
+            _debug->SetFlags(_debug_flags);
+            _debug->Flush();
+
+            #if STANDALONE == 1
+                _displayInfo->Update(&m_context);
+            #endif
+        }
+    #endif
 }
 
 
@@ -673,7 +667,6 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
 {
     const auto ts = std::make_shared<Sprite>(key, x, y, false, true);
 
-    //GetScene()->tileDefs.push_back({x, y, frame});
     GetScene()->entities.emplace_back(ts);
 
     ts->ReadSpritesheetData();

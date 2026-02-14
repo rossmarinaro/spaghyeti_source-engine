@@ -3,22 +3,33 @@
 #include "../../build/sdk/include/window.h"
 #include "../core/src/debug.h"
 #include "./renderer.h"
-#include "../../build/sdk/include/geometry.h"
+
 
 using namespace System;
 
 //---------------------------------
 
 
-void EnableAttributes() {
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Graphics::Vertex), (void*)0);
+void EnableAttributes() 
+{
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)0); //position
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Graphics::Vertex), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, scaleX)); //scale
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Graphics::Vertex), (void*)(4 * sizeof(float)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, rotation)); //rotation
     glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, u)); //uv
+    glEnableVertexAttribArray(3);
+
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, texID)); //texID
+    glEnableVertexAttribArray(4);
+
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, r)); //rgba
+    glEnableVertexAttribArray(5);
+
 }
 
 
@@ -30,6 +41,7 @@ Renderer::Renderer()
    textureSlotIndex = 1;
    indexCount = 0;
    drawStyle = 1;
+   activeShaderID = 0;
 
     #ifndef __EMSCRIPTEN__
         drawStyle = GL_FILL;
@@ -152,7 +164,7 @@ void Renderer::UnbindFrameBuffer() {
 
 //---------------------------------
 
-static GLuint s_texture_id;
+static GLuint s_texture_id; //tmp
 
 void Renderer::CreateFrameBuffer()
 {
@@ -217,15 +229,9 @@ void Renderer::Init()
 
     LOG("Renderer: Initializing buffers.");
 
-    //quad vertices format
-
-    //   x      y      u     v     texID
-    //  -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-    //  0.5f, -0.5f,  1.0f, 0.0f, 1.0f,
-    //  0.5f, 0.5f,  1.0f, 1.0f, 1.0f,
-    //  -0.5f, 0.5f,  0.0f, 1.0f, 1.0f
-
-    //indices format: 2 triangles = 1 quad { 0, 1, 2, 2, 3, 0 } 
+    //2 triangles = 1 quad
+    //quad vertices format x4: x y scaleX scaleY rotation u v texID r g b a
+    //indices format x6: 0 1 2 2 3 0  
 
     for (unsigned int i = 0; i < MAX_QUADS * 6; ++i) {
         renderer->m_indices.push_back(i * 4);
@@ -242,11 +248,11 @@ void Renderer::Init()
     glGenBuffers(BUFFERS, renderer->m_VBOs);   
     glGenBuffers(1, &renderer->m_EBO);
 
-    //bind vbos
+    //bind vbos (ring buffering)
 
     for (unsigned int i = 0; i < BUFFERS; i++) {
         glBindBuffer(GL_ARRAY_BUFFER, renderer->m_VBOs[i]);    
-        glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Graphics::Vertex), nullptr, GL_STREAM_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_STREAM_DRAW);
     }
 
     //bind element buffer
@@ -284,6 +290,8 @@ void Renderer::Flush()
                 return;
             }
 
+            //remove fence
+
             glDeleteSync(renderer->m_fences[s_currentBufferIndex]);
             renderer->m_fences[s_currentBufferIndex] = nullptr;
         }
@@ -292,36 +300,38 @@ void Renderer::Flush()
 
         glBindTexture(GL_TEXTURE_2D, 0);
         
-        for (unsigned int index = 0; index < renderer->textureSlotIndex; index++) { 
-            glActiveTexture(GL_TEXTURE0 + index);
-            glBindTexture(GL_TEXTURE_2D, renderer->textureSlots[index]);  
+        for (unsigned int i = 0; i < renderer->textureSlotIndex; i++) { 
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, renderer->textureSlots[i]);  
         }   
 
-        //bind vertex array and vertex buffer / draw elements
+        //bind vertex array and vbos / draw elements from vertices vector
 
         GLuint activeVBO = renderer->m_VBOs[s_currentBufferIndex];
-        glBindBuffer(GL_ARRAY_BUFFER, activeVBO);        
 
-        glBufferSubData(GL_ARRAY_BUFFER, 0, renderer->vertices.size() * sizeof(Graphics::Vertex), renderer->vertices.data());
+        glBindBuffer(GL_ARRAY_BUFFER, activeVBO);        
+        glBufferSubData(GL_ARRAY_BUFFER, 0, renderer->vertices.size() * sizeof(Math::Graphics::Vertex), renderer->vertices.data());
 
         EnableAttributes();
 
         glBindVertexArray(renderer->m_VAO); 
         glDrawElements(renderer->drawStyle == GL_LINE ? GL_LINES : GL_TRIANGLES, renderer->indexCount, GL_UNSIGNED_INT, 0); //tell ui about it
-   
+
+        //start new gpu async await call fence 
+
+        renderer->m_fences[s_currentBufferIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); 
+
+        //cycle to next buffer in ring
+
+        s_currentBufferIndex = (s_currentBufferIndex + 1) % BUFFERS;
     }
 
     //reset batch
 
     renderer->vertices.clear();
-
     renderer->textureSlotIndex = 1;
     renderer->indexCount = 0;
-    renderer->m_fences[s_currentBufferIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); //start new gpu async await call fence 
 
-    //go to next buffer
-
-    s_currentBufferIndex = (s_currentBufferIndex + 1) % BUFFERS;
 }
 
 
@@ -343,10 +353,10 @@ void Renderer::Update(void* camera)
     glClear(GL_COLOR_BUFFER_BIT);   
 
     glClearColor( 
-        bg->x * bg->w,
-        bg->y * bg->w,
-        bg->z * bg->w,
-        bg->w
+        bg->r * bg->a,
+        bg->g * bg->a,
+        bg->b * bg->a,
+        bg->a
     );
 
     glViewport(0, 0, Window::s_width, Window::s_height);

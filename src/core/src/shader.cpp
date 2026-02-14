@@ -46,21 +46,31 @@ void Shader::InitBaseShaders()
             "#version 330 core\n"
         #endif
 
-        "layout(location = 0) in vec2 Pos;\n"
-        "layout(location = 1) in vec2 UV;\n"
-        "layout(location = 2) in float TextureId;\n" 
+        "layout(location = 0) in vec2 a_Pos;\n"
+        "layout(location = 1) in vec2 a_Scale;\n"
+        "layout(location = 2) in float a_Rotation;\n"
+        "layout(location = 3) in vec2 a_UV;\n"
+        "layout(location = 4) in float a_TextureId;\n" 
+        "layout(location = 5) in vec4 a_RGBA;\n"
 
         "flat out float texID;\n"
         "out vec2 uv;\n"
+        "out vec4 rgba;\n"
 
-        "uniform vec2 scale;\n"
         "uniform mat4 mvp;\n"
 
         "void main()\n"
         "{\n" 
-            "texID = TextureId;\n"
-            "uv = UV;\n"
-            "gl_Position = mvp * vec4((Pos.xy * scale), 0.0, 1.0);\n"
+            "texID = a_TextureId;\n"
+            "rgba = a_RGBA;\n"
+            "uv = a_UV;\n"
+
+            "vec2 scaledPosition = a_Pos * a_Scale;\n"
+            "float c = cos(a_Rotation);\n"
+            "float s = sin(a_Rotation);\n"
+            "vec2 position = vec2(scaledPosition.x * c - scaledPosition.y * s, scaledPosition.x * s + scaledPosition.y * c);\n"
+            
+            "gl_Position = mvp * vec4(position.xy, 0.0, 1.0);\n"
         "}";
 
 
@@ -78,67 +88,22 @@ void Shader::InitBaseShaders()
 
         "flat in float texID;\n"
         "in vec2 uv;\n"
+        "in vec4 rgba;\n"
         "out vec4 color;\n"
 
         "uniform sampler2D images[32];\n"
-        "uniform vec3 tint;\n"
-        "uniform float alphaVal;\n"
         "uniform int whiteout;\n"
         "uniform int repeat;\n"
 
         "void main()\n"
         "{ \n"
-            "color = vec4(tint, alphaVal) * texture(images[int(texID)], vec2(uv.x * float(repeat), uv.y * float(repeat))); \n"
+            "color = rgba * texture(images[int(texID)], vec2(uv.x * float(repeat), uv.y * float(repeat))); \n"
             "if (whiteout == 1) {\n"
             "   color.r += 10.0;\n" 
             "   color.g += 10.0;\n"
             "   color.b += 10.0;\n"
             "}\n"
             //"if (color.r == 1.0 && color.b == 1.0) discard;" magenta background only
-        "}";
-
-
-    //--------------------------------------------
-
-
-    static constexpr const char* debugGraphicShader_vertex = \
-
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
-
-        "layout(location = 0) in vec2 pos;\n"
-
-        "uniform mat4 mvp;\n"
-
-        "void main()\n"
-        "{\n"
-            "gl_Position = mvp * vec4(pos.xy, 0.0, 1.0);\n"
-        "}";
-
-
-    //--------------------------------------------
-
-
-    static constexpr const char* debugGraphicShader_fragment = \
-
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
-
-        "out vec4 color;\n"
-        "uniform vec3 tint;\n"
-        "uniform float alphaVal;\n"
-
-        "void main()\n"
-        "{\n"
-            "color = vec4(tint, alphaVal);\n"
         "}";
 
 
@@ -431,77 +396,40 @@ void Shader::InitBaseShaders()
     //--------------------------------------------
 
 
-    static constexpr const char* spriteInstanceShader_vertex =
+    // static constexpr const char* spriteInstanceShader_vertex =
 
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
+    //     #ifdef __EMSCRIPTEN__
+    //         "#version 300 es\n"
+    //         "precision mediump float;\n"
+    //     #else
+    //         "#version 330 core\n"
+    //     #endif
 
-        "layout (location = 0) in vec4 vert;\n"
-        "layout (location = 1) in vec2 UV;\n"
+    //     "layout (location = 0) in vec4 vert;\n"
+    //     "layout (location = 1) in vec2 UV;\n"
 
-        "uniform mat4 mvp;\n"
-        "uniform vec2 offsets[100];\n"
+    //     "out vec4 rgba;\n"
 
-        "out vec2 uv;\n"
+    //     "uniform mat4 mvp;\n"
+    //     "uniform vec2 offsets[100];\n"
 
-        "void main()\n"
-        "{\n"
-            "uv = UV;\n"
-            "vec2 offset = offsets[gl_InstanceID];\n"
-            "gl_Position = mvp * vec4(vert.xy + offset, 0.0, 1.0);\n"
-        "}\n";
+    //     "out vec2 uv;\n"
 
+    //     "void main()\n"
+    //     "{\n"
+    //         "uv = UV;\n"
+    //         "vec2 offset = offsets[gl_InstanceID];\n"
+    //         "gl_Position = mvp * vec4(vert.xy + offset, 0.0, 1.0);\n"
+    //     "}\n";
 
-    static constexpr const char* spriteInstanceShader_fragment =
-
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
-
-        "in vec2 uv;\n"
-        "out vec4 color;\n"
-
-        "uniform sampler2D image;\n" //=0
-
-        "void main() {\n"
-            "color = texture(image, uv);\n"
-        "}";
-
-        // #ifdef __EMSCRIPTEN__
-        //     "#version 300 es\n"
-        //     "precision mediump float;\n"
-        // #else
-        //     "#version 330 core\n"
-        // #endif
-
-        // "in vec2 uv;\n"
-        // "out vec4 color;\n"
-
-        // "uniform sampler2D images[32];\n"
-        // "uniform vec3 tint;\n"
-        // "uniform float alphaVal;\n"
-
-        // "void main()\n"
-        // "{\n"
-        //     "int index = int(uv);\n"
-        //     "color = texture(images[index], uv) * tint * alphaVal;\n"
-        // "}\n";
 
     //shader char arrays
 
     Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment);
-    Load("graphics", debugGraphicShader_vertex, debugGraphicShader_fragment);
     Load("text", textVertex, textFragment);
     Load("outline text", textVertex, textOutlineFragment);    
     Load("outline sprite", spriteQuadShader_vertex, spriteOutlineFragment); 
-    Load("instance", spriteInstanceShader_vertex, spriteInstanceShader_fragment);
+    //Load("instance", spriteInstanceShader_vertex, spriteQuadShader_fragment);
 
     #if DEVELOPMENT == 1
         Load("Points", geom_vertex1, geom_fragment);
@@ -822,14 +750,14 @@ void Shader::SetVec3f(const char* name, const Math::Vector3& value, bool useShad
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec4f(const char* name, float x, float y, float z, float w, bool useShader)
+void Shader::SetVec4f(const char* name, float r, float g, float b, float a, bool useShader)
 {
 
     if (useShader)
         glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
-        glUniform4f(glGetUniformLocation(ID, name), x, y, z, w);
+        glUniform4f(glGetUniformLocation(ID, name), r, g, b, a);
 }
 
 // -----------------------------------------------------------------------
@@ -840,7 +768,7 @@ void Shader::SetVec4f(const char* name, const Math::Vector4& value, bool useShad
         glUseProgram(ID);
 
     if (glGetUniformLocation(ID, name) != -1)
-        glUniform4f(glGetUniformLocation(ID, name), value.x, value.y, value.z, value.w);
+        glUniform4f(glGetUniformLocation(ID, name), value.r, value.g, value.b, value.a);
 }
 
 // -----------------------------------------------------------------------
@@ -853,10 +781,10 @@ void Shader::SetMat4(const char* name, const Math::Matrix4& matrix, bool useShad
     if (glGetUniformLocation(ID, name) != -1)
     {
         const glm::highp_mat4 mat = {
-            { matrix.a.x, matrix.a.y, matrix.a.z, matrix.a.w },
-            { matrix.b.x, matrix.b.y, matrix.b.z, matrix.b.w },
-            { matrix.c.x, matrix.c.y, matrix.c.z, matrix.c.w },
-            { matrix.d.x, matrix.d.y, matrix.d.z, matrix.d.w }
+            { matrix.a.r, matrix.a.g, matrix.a.b, matrix.a.a },
+            { matrix.b.r, matrix.b.g, matrix.b.b, matrix.b.a },
+            { matrix.c.r, matrix.c.g, matrix.c.b, matrix.c.a },
+            { matrix.d.r, matrix.d.g, matrix.d.b, matrix.d.a }
         };
 
         glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, false, glm::value_ptr(mat));

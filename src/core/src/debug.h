@@ -34,20 +34,12 @@ class DebugGraphic {
 
         unsigned int m_vaoId;
 
-        int m_vertexAttribute,
-            m_colorAttribute,
-            m_sizeAttribute;
-
-        Graphics::Shader shader;
-
 };
 
 //-------------------------------------
 
 
-class Points : public DebugGraphic
-{
-
+class Points : public DebugGraphic {
     public:
 
         b2Vec2 m_vertices[points];
@@ -64,9 +56,7 @@ class Points : public DebugGraphic
 //-------------------------------------
 
 
-class Lines : public DebugGraphic
-{
-
+class Lines : public DebugGraphic {
     public:
 
         b2Vec2 m_vertices[lines];
@@ -88,7 +78,6 @@ class Lines : public DebugGraphic
 
 class Triangles : public DebugGraphic
 {
-
     public:
 
         b2Vec2 m_vertices[triangles];

@@ -295,8 +295,8 @@ void Text::Render()
 
     const auto get_mvp = [&vm, &pm, this] (glm::mat4& model) -> const Math::Matrix4 
     {
-        const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
-                        proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f),
+        const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
+                        proj = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f),
                         mvp = proj * view * model;
 
         return { 
@@ -361,7 +361,7 @@ void Text::Render()
         model = glm::translate(model, { -scale.x, -scale.y, 0.0f });
         model = glm::scale(model, { scale.x, scale.y, 0.0f });
 
-        glm::highp_mat4 proj = glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * model;
+        glm::highp_mat4 proj = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * model;
 
         const Math::Matrix4 mvp = {
             { proj[0][0], proj[0][1], proj[0][2], proj[0][3] },
@@ -393,6 +393,8 @@ void Text::Render()
 
                 const auto setShader = [&ch, &mvp, this](const std::string& type = "") -> void 
                 {
+                    auto shader = Graphics::Shader::Get("text");
+
                     if (type == "outline") 
                         shader.SetVec3f("textColor", outlineColor.x, outlineColor.y, outlineColor.z);
             
