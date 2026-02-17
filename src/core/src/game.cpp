@@ -3,7 +3,8 @@
 
 #include "../../shared/renderer.h"
 #include "./collisionManager.h"
-
+#include "../../vendors/glm/glm.hpp"
+#include "../../vendors/glm/gtc/matrix_transform.hpp"
 #if DEVELOPMENT == 1 
 
     #if STANDALONE == 1
@@ -469,7 +470,7 @@ void Game::UpdateFrame()
 
     //flush entities
 
-   // if (!currentScene->entities.empty())
+    if (!currentScene->entities.empty())
         Renderer::Flush();
 
     //UI render queue
@@ -480,14 +481,15 @@ void Game::UpdateFrame()
 
     //flush UI
 
-  //  if (!currentScene->UI.empty())
-    //    Renderer::Flush();
+    if (!currentScene->UI.empty())
+        Renderer::Flush();
 
     //vignette overlay
 
-    if (currentScene->vignette) {
+    if (currentScene->vignette && currentScene->vignette->alpha >= 0.1f) {
         currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
-        currentScene->vignette->Render();     
+        currentScene->vignette->Render(); 
+        Renderer::Flush();    
     }     
 
     //update behaviors, pass game process context to subclasses
@@ -544,22 +546,20 @@ void Game::UpdateFrame()
             event->callback();
         } 
         
-    //run any additional updates on the current scene, flush remaining data
+    //update camera
 
     currentScene->Update(); 
-    //Renderer::Flush();
 
     //debug UI
 
     #if DEVELOPMENT == 1
-        if (physics && physics->enableDebug)
-        {
+        if (physics && physics->enableDebug) {
             static_cast<b2World*>(physics->GetWorld())->DebugDraw();
             _debug->SetFlags(_debug_flags);
             _debug->Flush();
 
             #if STANDALONE == 1
-                _displayInfo->Update(&m_context);
+                _displayInfo->Update(&m_context);  
             #endif 
         } 
     #endif

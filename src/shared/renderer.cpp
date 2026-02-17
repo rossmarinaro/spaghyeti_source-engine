@@ -59,73 +59,6 @@ Renderer::Renderer()
         textureSlots[i] = 0;
 }
 
-//---------------------------------
-
-
-void Renderer::ShutDown() 
-{ 
-    const auto renderer = System::Application::renderer;
-
-    glDeleteVertexArrays(1, &renderer->m_VAO);
-    glDeleteBuffers(BUFFERS, renderer->m_VBOs);
-    glDeleteBuffers(1, &renderer->m_EBO);
-    
-    renderer->vertices.clear();
-
-    LOG("Renderer: shutting down...");
-}
-
-
-//---------------------------------
-
-
-void Renderer::CreateFrameBuffer()
-{
-    const auto renderer = System::Application::renderer;
-
-    glGenFramebuffers(1, &renderer->m_FBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, renderer->m_FBO);
-    glGenTextures(1, &renderer->m_textureColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, renderer->m_textureColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_frameBufferWidth, m_frameBufferHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    #ifndef __EMSCRIPTEN__
-        glGenerateMipmap(GL_TEXTURE_2D);
-    #endif
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderer->m_textureColorBuffer, 0);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        LOG("Renderer: Error Framebuffer: Incomplete Buffer.");
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-
-//---------------------------------
-
-
-void Renderer::UpdateFrameBuffer(void* camera)
-{
-    const auto renderer = System::Application::renderer;
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDisable(GL_BLEND);
-    glViewport(0, 0, Window::s_scaleWidth, Window::s_scaleHeight); 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
-
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, renderer->m_FBO);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
-
-    int screenWidth, screenHeight;
-    glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
-
-    glBlitFramebuffer(0, 0, m_frameBufferWidth, m_frameBufferHeight, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST); 
-}
-
 
 
 //---------------------------------- batch rendering
@@ -193,6 +126,34 @@ void Renderer::Init()
 }
 
 
+//------------------------------------ update
+
+
+void Renderer::Update(void* camera) 
+{ 
+    const auto bg = ((Camera*)camera)->GetBackgroundColor();
+    const auto renderer = System::Application::renderer;
+
+    glfwSwapInterval(s_vsync); //enable / disable vsync
+
+    glBindFramebuffer(GL_FRAMEBUFFER, renderer->m_FBO);
+    glEnable(GL_BLEND); 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight);
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
+
+    glClearColor( 
+        bg->r * bg->a, //r
+        bg->g * bg->a, //g
+        bg->b * bg->a, //b
+        bg->a //a
+    );
+
+}
+
+
 //----------------------------------------------- flush batch
 
 
@@ -228,18 +189,28 @@ void Renderer::Flush()
             glBindTexture(GL_TEXTURE_2D, renderer->textureSlots[i]);  
         }   
 
-        //bind vertex array and vbos / draw elements from vertices vector
+        //bind vertex array and current vbo
+
+        glBindVertexArray(renderer->m_VAO); 
 
         GLuint activeVBO = renderer->m_VBOs[s_currentBufferIndex];
 
         glBindBuffer(GL_ARRAY_BUFFER, activeVBO);         
         glBufferSubData(GL_ARRAY_BUFFER, 0, renderer->vertices.size() * sizeof(Math::Graphics::Vertex), renderer->vertices.data());
 
+        glUseProgram(renderer->activeShaderID);
+
         EnableAttributes();
 
-        glUseProgram(renderer->activeShaderID);
-        glBindVertexArray(renderer->m_VAO); 
+        //draw elements from vertices vector
+
         glDrawElements(renderer->drawStyle == GL_LINE ? GL_LINES : GL_TRIANGLES, renderer->indexCount, GL_UNSIGNED_INT, 0); //tell ui about it
+        glBindVertexArray(0);
+
+        //disable attributes and unbind
+
+        for (int i = 0; i < 16; i++)
+            glDisableVertexAttribArray(i);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glUseProgram(0);
@@ -258,37 +229,78 @@ void Renderer::Flush()
     renderer->vertices.clear();
     renderer->textureSlotIndex = 1;
     renderer->indexCount = 0;
-
+for (int i = 0; i < 16; i++)glDisableVertexAttribArray(i);
 }
 
 
+//---------------------------------
 
-//------------------------------------ update
 
-
-void Renderer::Update(void* camera) 
-{ 
-    const auto bg = ((Camera*)camera)->GetBackgroundColor();
+void Renderer::CreateFrameBuffer()
+{
     const auto renderer = System::Application::renderer;
 
-    glfwSwapInterval(s_vsync); //enable / disable vsync
-
+    glGenFramebuffers(1, &renderer->m_FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, renderer->m_FBO);
-    glEnable(GL_BLEND); 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glGenTextures(1, &renderer->m_textureColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, renderer->m_textureColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_frameBufferWidth, m_frameBufferHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight);
-    glDisable(GL_DEPTH_TEST);
+    #ifndef __EMSCRIPTEN__
+        glGenerateMipmap(GL_TEXTURE_2D);
+    #endif
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderer->m_textureColorBuffer, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        LOG("Renderer: Error Framebuffer: Incomplete Buffer.");
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+
+//---------------------------------
+
+
+void Renderer::UpdateFrameBuffer(void* camera)
+{
+    const auto renderer = System::Application::renderer;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_BLEND);
+    glViewport(0, 0, Window::s_scaleWidth, Window::s_scaleHeight); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
 
-    glClearColor( 
-        bg->r * bg->a, //r
-        bg->g * bg->a, //g
-        bg->b * bg->a, //b
-        bg->a //a
-    );
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, renderer->m_FBO);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
 
+    int screenWidth, screenHeight;
+    glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
+
+    glBlitFramebuffer(0, 0, m_frameBufferWidth, m_frameBufferHeight, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST); 
 }
+
+
+
+//---------------------------------
+
+
+void Renderer::ShutDown() 
+{ 
+    const auto renderer = System::Application::renderer;
+
+    glDeleteVertexArrays(1, &renderer->m_VAO);
+    glDeleteBuffers(BUFFERS, renderer->m_VBOs);
+    glDeleteBuffers(1, &renderer->m_EBO);
+    
+    renderer->vertices.clear();
+
+    LOG("Renderer: shutting down...");
+}
+
 
 //----------------------------------------
 

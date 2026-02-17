@@ -555,11 +555,8 @@ void DebugDraw::DrawPoint(const b2Vec2& p, float size, const b2Color& color) {
 void DebugDraw::DrawAABB(b2AABB* aabb, const b2Color& c)
 {
 	b2Vec2 p1 = aabb->lowerBound;
-
 	b2Vec2 p2 = b2Vec2(aabb->upperBound.x, aabb->lowerBound.y);
-
 	b2Vec2 p3 = aabb->upperBound;
-
 	b2Vec2 p4 = b2Vec2(aabb->lowerBound.x, aabb->upperBound.y);
 
 	DebugGraphic::Vertex(m_lines, p1, c);

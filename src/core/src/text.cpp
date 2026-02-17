@@ -441,7 +441,7 @@ void Text::Render()
                     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
                     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
                     glBindBuffer(GL_ARRAY_BUFFER, 0);
-                    glDrawArrays(GL_TRIANGLES, 0, 6);  
+                    glDrawArrays(GL_TRIANGLES, 0, 6); 
 
                 };
 
