@@ -204,7 +204,7 @@ void Geometry::Render()
     const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
                     mv = view * transform;
 
-    auto shader = Graphics::Shader::Get(shaderKey);
+    const auto shader = Graphics::Shader::Get(shaderKey);
  
     const Math::Matrix4 modelView = { 
         { mv[0][0], mv[0][1], mv[0][2], mv[0][3] }, 
@@ -214,7 +214,18 @@ void Geometry::Render()
     };
 
     const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha }; 
-    texture.Update(shader.ID, position, scale, color, modelView, rotation, static_cast<float>(depth) / 1000.0f); 
+    
+    texture.Update(
+        shader.ID, 
+        position, 
+        scale, 
+        color, 
+        outlineColor,
+        modelView, 
+        outlineEnabled ? outlineWidth : 0.0f,
+        rotation, 
+        static_cast<float>(depth) / 1000.0f
+    ); 
 
     System::Application::renderer->drawStyle = m_drawStyle;
 }
@@ -705,7 +716,7 @@ void Sprite::Render()
     transform = glm::rotate(transform, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
     transform = glm::translate(transform, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
 
-    //update shaders and textures 
+    //update texture
 
     if (active && renderable)
     {
@@ -722,6 +733,7 @@ void Sprite::Render()
         }
 
         const Math::Vector4 color = { r, g, b, alpha };
+
         const Math::Matrix4 modelView = { 
             { mv[0][0], mv[0][1], mv[0][2], mv[0][3] }, 
             { mv[1][0], mv[1][1], mv[1][2], mv[1][3] },   
@@ -729,18 +741,23 @@ void Sprite::Render()
             { mv[3][0], mv[3][1], mv[3][2], mv[3][3] }
         };
 
-        auto shader = Graphics::Shader::Get(shaderKey);
-
-        //stroke shader
-
-        if (shaderKey == "outline sprite") {
-            shader.SetVec3f("outlineColor", outlineColor);
-            shader.SetFloat("outlineWidth", outlineWidth);
-        }
+        const auto shader = Graphics::Shader::Get(shaderKey);
 
         //update texture
 
-        texture.Update(shader.ID, position, scale, color, modelView, rotation, static_cast<float>(depth) / 1000.0f, flipX, flipY);  
+        texture.Update(
+            shader.ID, 
+            position, 
+            scale, 
+            color, 
+            outlineColor,
+            modelView, 
+            outlineEnabled ? outlineWidth : 0.0f, 
+            rotation, 
+            static_cast<float>(depth) / 1000.0f, 
+            flipX, 
+            flipY
+        );  
 
         System::Application::renderer->drawStyle = 1;
 

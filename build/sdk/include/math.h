@@ -21,9 +21,11 @@ namespace Math {
                   rotation,
                   u, v, 
                   texID, 
-                  r, g, b, a; 
+                  r, g, b, a,
+                  outlineR, outlineG, outlineB,
+                  outlineWidth; 
 
-            float modelView[16];
+            float modelView[16]; //4 x 4 model view matrix as an array
         }; 
     }
 }

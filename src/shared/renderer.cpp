@@ -30,9 +30,15 @@ void EnableAttributes()
     glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, r)); //rgba
     glEnableVertexAttribArray(5);
 
-    for (int i = 0; i < 4; i++) { //model view matrix 
-        glVertexAttribPointer(6 + i, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, modelView) + (sizeof(float) * 4 * i)); 
-        glEnableVertexAttribArray(6 + i);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineR)); //rgba
+    glEnableVertexAttribArray(6);
+
+    glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineWidth)); //rgba
+    glEnableVertexAttribArray(7);
+
+    for (int i = 0; i < 4; i++) { //4 x 4 model view matrix 
+        glVertexAttribPointer(8 + i, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, modelView) + (sizeof(float) * 4 * i)); 
+        glEnableVertexAttribArray(8 + i);
     }
 
 }

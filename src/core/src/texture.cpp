@@ -245,7 +245,9 @@ void Texture2D::Update(
     const Math::Vector2& position, 
     const Math::Vector2& scale,
     const Math::Vector4& rgba, 
+    const Math::Vector3& outline, 
     const Math::Matrix4& modelView, 
+    float outlineWidth,
     float rotation,
     int depth,
     bool flipX, 
@@ -302,11 +304,13 @@ void Texture2D::Update(
         renderer->textureSlotIndex++;
     }
 
-    //update texture vertices
+    //update texture vertices attributes with data to be mapped to vertex shader
 
     const Renderable renderable = { position.x, position.y, offset }; //x, y, uvs
 
     Math::Graphics::Vertex vertices[4];
+
+    //position and uv
     
     vertices[0].x = renderable.x;
     vertices[0].y = renderable.y;
@@ -328,6 +332,8 @@ void Texture2D::Update(
     vertices[3].u = renderable.format.u1;
     vertices[3].v = renderable.format.v2;
 
+    //other attributes
+
     const glm::mat4 modelMat = glm::mat4({ modelView.a.r, modelView.a.g, modelView.a.b, modelView.a.a }, { modelView.b.r, modelView.b.g, modelView.b.b, modelView.b.a }, { modelView.c.r, modelView.c.g, modelView.c.b, modelView.c.a }, { modelView.d.r, modelView.d.g, modelView.d.b, modelView.d.a });
 
     for (int i = 0; i < 4; i++) 
@@ -341,6 +347,10 @@ void Texture2D::Update(
         vertices[i].g = rgba.g;
         vertices[i].b = rgba.b;
         vertices[i].a = rgba.a;
+        vertices[i].outlineR = outline.x;
+        vertices[i].outlineG = outline.y;
+        vertices[i].outlineB = outline.z;
+        vertices[i].outlineWidth = outlineWidth;
         
         std::memcpy(vertices[i].modelView, glm::value_ptr(modelMat), sizeof(vertices[i].modelView));
     }  
