@@ -2,6 +2,8 @@
 #include "../../vendors/stb/stb_image.h" 
 #include "../../../build/sdk/include/app.h"
 #include "../../shared/renderer.h"
+#include "../../vendors/glm/glm.hpp"
+#include "../../vendors/glm/gtc/type_ptr.hpp"
 
 using namespace Graphics;
 
@@ -66,7 +68,6 @@ void Texture2D::InitBaseTexture()
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
 
     glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
     
 	uint32_t color = 0xffffffff; //white
 
@@ -244,7 +245,9 @@ void Texture2D::Update(
     const Math::Vector2& position, 
     const Math::Vector2& scale,
     const Math::Vector4& rgba, 
+    const Math::Matrix4& modelView, 
     float rotation,
+    int depth,
     bool flipX, 
     bool flipY
 ) 
@@ -303,12 +306,44 @@ void Texture2D::Update(
 
     const Renderable renderable = { position.x, position.y, offset }; //x, y, uvs
 
-    const Math::Graphics::Vertex vertices[4] = {
-        { renderable.x, renderable.y, scale.x, scale.y, rotation, renderable.format.u1, renderable.format.v1, textureUnit, rgba.r, rgba.g, rgba.b, rgba.a },
-        { renderable.x + renderable.format.width, renderable.y, scale.x, scale.y, rotation, renderable.format.u2, renderable.format.v1, textureUnit, rgba.r, rgba.g, rgba.b, rgba.a },
-        { renderable.x + renderable.format.width, renderable.y + renderable.format.height, scale.x, scale.y, rotation, renderable.format.u2, renderable.format.v2, textureUnit, rgba.r, rgba.g, rgba.b, rgba.a },
-        { renderable.x, renderable.y + renderable.format.height, scale.x, scale.y, rotation, renderable.format.u1, renderable.format.v2, textureUnit, rgba.r, rgba.g, rgba.b, rgba.a }
-    };  
+    Math::Graphics::Vertex vertices[4];
+    
+    vertices[0].x = renderable.x;
+    vertices[0].y = renderable.y;
+    vertices[0].u = renderable.format.u1;
+    vertices[0].v = renderable.format.v1;
+
+    vertices[1].x = renderable.x + renderable.format.width;
+    vertices[1].y = renderable.y;
+    vertices[1].u = renderable.format.u2;
+    vertices[1].v = renderable.format.v1;
+
+    vertices[2].x = renderable.x + renderable.format.width;
+    vertices[2].y = renderable.y + renderable.format.height;
+    vertices[2].u = renderable.format.u2;
+    vertices[2].v = renderable.format.v2;
+
+    vertices[3].x = renderable.x;
+    vertices[3].y = renderable.y + renderable.format.height;
+    vertices[3].u = renderable.format.u1;
+    vertices[3].v = renderable.format.v2;
+
+    const glm::mat4 modelMat = glm::mat4({ modelView.a.r, modelView.a.g, modelView.a.b, modelView.a.a }, { modelView.b.r, modelView.b.g, modelView.b.b, modelView.b.a }, { modelView.c.r, modelView.c.g, modelView.c.b, modelView.c.a }, { modelView.d.r, modelView.d.g, modelView.d.b, modelView.d.a });
+
+    for (int i = 0; i < 4; i++) 
+    {       
+        vertices[i].texID = textureUnit;
+        vertices[i].z = depth;
+        vertices[i].rotation = rotation;
+        vertices[i].scaleX = scale.x;
+        vertices[i].scaleY = scale.y;
+        vertices[i].r = rgba.r;
+        vertices[i].g = rgba.g;
+        vertices[i].b = rgba.b;
+        vertices[i].a = rgba.a;
+        
+        std::memcpy(vertices[i].modelView, glm::value_ptr(modelMat), sizeof(vertices[i].modelView));
+    }  
 
     //add the vertices to the renderer's vector and increase index count by 6
     

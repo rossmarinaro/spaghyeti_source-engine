@@ -6,6 +6,7 @@
 
 #include "../../shared/renderer.h"
 #include "../../vendors/glm/gtc/matrix_transform.hpp" 
+
 #include "../../vendors/UUID.hpp"
 #include "../../vendors/box2d/include/box2d/box2d.h"
 
@@ -156,7 +157,7 @@ Geometry::Geometry(float x, float y, float width, float height, bool isSpawn):
 
     SetDrawStyle(1);
     SetShader("sprite");
-alpha=0.5f;
+
     tint = { 0.0f, 0.0f, 1.0f };
     texture = Graphics::Texture2D::Get("base");
     renderable = true;
@@ -183,7 +184,7 @@ Geometry::~Geometry() {
 
 void Geometry::Render()
 {
-    glm::mat4 model = glm::mat4(1.0f); 
+    glm::mat4 transform = glm::mat4(1.0f); 
 
     if (m_type == QUAD) {
         texture.FrameWidth = width;
@@ -192,34 +193,28 @@ void Geometry::Render()
 
     //render other shapes...
 
-    model = glm::translate(model, { 0.5f * width + position.x * scale.x, 0.5f * height + position.y * scale.y, 0.0f }); 
-    model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    model = glm::translate(model, { -0.5f * width - position.x * scale.x, -0.5f * height - position.y * scale.y, 0.0f });
+    transform = glm::translate(transform, { 0.5f * width + position.x * scale.x, 0.5f * height + position.y * scale.y, 0.0f }); 
+    transform = glm::rotate(transform, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
+    transform = glm::translate(transform, { -0.5f * width - position.x * scale.x, -0.5f * height - position.y * scale.y, 0.0f });
 
     const auto camera = System::Application::game->camera;
 
-    const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
     
     const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
-                    proj = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f),
-                    _mvp = proj * view * model;
-
-    const Math::Matrix4 mvp = { 
-        { _mvp[0][0], _mvp[0][1], _mvp[0][2], _mvp[0][3] }, 
-        { _mvp[1][0], _mvp[1][1], _mvp[1][2], _mvp[1][3] },   
-        { _mvp[2][0], _mvp[2][1], _mvp[2][2], _mvp[2][3] },  
-        { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
-    };
+                    mv = view * transform;
 
     auto shader = Graphics::Shader::Get(shaderKey);
+ 
+    const Math::Matrix4 modelView = { 
+        { mv[0][0], mv[0][1], mv[0][2], mv[0][3] }, 
+        { mv[1][0], mv[1][1], mv[1][2], mv[1][3] },   
+        { mv[2][0], mv[2][1], mv[2][2], mv[2][3] },  
+        { mv[3][0], mv[3][1], mv[3][2], mv[3][3] }
+    };
 
-    shader.SetInt("whiteout", 0);
-    shader.SetMat4("mvp", mvp);  
-    shader.SetInt("repeat", 1);
-
-    const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha };
-    texture.Update(shader.ID, position, scale, color, rotation); 
+    const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha }; 
+    texture.Update(shader.ID, position, scale, color, modelView, rotation, static_cast<float>(depth) / 1000.0f); 
 
     System::Application::renderer->drawStyle = m_drawStyle;
 }
@@ -700,29 +695,38 @@ void Sprite::Render()
 
     const auto camera = System::Application::game->camera;
 
-    const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
     
-    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
-                    proj = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
+    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
 
-    glm::mat4 model = glm::mat4(1.0f); 
+    glm::mat4 transform = glm::mat4(1.0f); 
 
-    model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
-    model = glm::rotate(model, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
+    transform = glm::translate(transform, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
+    transform = glm::rotate(transform, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
+    transform = glm::translate(transform, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
 
     //update shaders and textures 
 
     if (active && renderable)
     {
-        const glm::mat4 _mvp = proj * view * model;
+        const glm::mat4 mv = view * transform;
 
-        const Math::Matrix4 mvp = { 
-            { _mvp[0][0], _mvp[0][1], _mvp[0][2], _mvp[0][3] }, 
-            { _mvp[1][0], _mvp[1][1], _mvp[1][2], _mvp[1][3] },   
-            { _mvp[2][0], _mvp[2][1], _mvp[2][2], _mvp[2][3] },  
-            { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
+        float r = tint.x, 
+              g = tint.y, 
+              b = tint.z;
+
+        if (texture.Whiteout == 1) { 
+            r += 10.0f; 
+            g += 10.0f; 
+            b += 10.0f;
+        }
+
+        const Math::Vector4 color = { r, g, b, alpha };
+        const Math::Matrix4 modelView = { 
+            { mv[0][0], mv[0][1], mv[0][2], mv[0][3] }, 
+            { mv[1][0], mv[1][1], mv[1][2], mv[1][3] },   
+            { mv[2][0], mv[2][1], mv[2][2], mv[2][3] },  
+            { mv[3][0], mv[3][1], mv[3][2], mv[3][3] }
         };
 
         auto shader = Graphics::Shader::Get(shaderKey);
@@ -734,16 +738,9 @@ void Sprite::Render()
             shader.SetFloat("outlineWidth", outlineWidth);
         }
 
-        //standard shader
-
-        shader.SetInt("whiteout", texture.Whiteout);
-        shader.SetMat4("mvp", mvp);  
-        shader.SetInt("repeat", texture.Repeat);
-
         //update texture
 
-        const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha };
-        texture.Update(shader.ID, position, scale, color, rotation, flipX, flipY);  
+        texture.Update(shader.ID, position, scale, color, modelView, rotation, static_cast<float>(depth) / 1000.0f, flipX, flipY);  
 
         System::Application::renderer->drawStyle = 1;
 

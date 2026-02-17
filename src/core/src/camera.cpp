@@ -116,7 +116,7 @@ const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 {    
     const glm::vec2 midOffset = { GetPosition()->x, GetPosition()->y };
 
-    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 view(1.0f);
 
     view = glm::translate(view, glm::vec3(midOffset, 0.0f)); 
     view = glm::rotate(view, glm::radians(m_rotation), { 0.0f, 0.0f, 1.0f }); 

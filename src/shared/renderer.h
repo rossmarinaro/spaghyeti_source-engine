@@ -56,6 +56,7 @@ namespace /* SPAGHYETI_CORE */ System {
             static void RescaleFrameBuffer(float width, float height);
             static void Update(void* camera);
             static void BindFrameBuffer();
+            static void UpdateFrameBuffer(void* camera);
             static void UnbindFrameBuffer();
             static void cursor_callback(GLFWwindow* window, double xPos, double yPos);
             static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -79,7 +80,7 @@ namespace /* SPAGHYETI_CORE */ System {
 
             GLsync m_fences[BUFFERS];
             GLuint m_VBOs[BUFFERS]; //ring buffer
-            GLuint m_VAO, m_EBO, m_FBO, m_RBO;
+            GLuint m_VAO, m_EBO, m_FBO, m_textureColorBuffer;
             std::vector<GLuint> m_indices;
     };
 }

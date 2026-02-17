@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/window.h"
 #include "../../vendors/glm/gtc/type_ptr.hpp"
 #include "../../shared/renderer.h"
 #include "debug.h"
@@ -17,12 +18,7 @@ void Shader::Delete() {
 //-------------------------------
 
 
-const Shader& Shader::Get(const std::string& key) 
-{
-    if (System::Application::resources->shaders.find(key) == System::Application::resources->shaders.end()) {
-        LOG("Shader: shader of key: " + key + " not loaded, defaulting to sprite shader.");
-    }
-
+const Shader& Shader::Get(const std::string& key) {
     return System::Application::resources->shaders[
         System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end() ? key : "sprite"];
 }
@@ -34,7 +30,7 @@ const Shader& Shader::Get(const std::string& key)
 
 void Shader::InitBaseShaders()
 {
-    //quad (sprite)
+    //default quad (sprite)
 
     static constexpr const char* spriteQuadShader_vertex = \
 
@@ -45,18 +41,19 @@ void Shader::InitBaseShaders()
             "#version 330 core\n"
         #endif
 
-        "layout(location = 0) in vec2 a_Pos;\n"
+        "layout(location = 0) in vec3 a_Pos;\n"
         "layout(location = 1) in vec2 a_Scale;\n"
         "layout(location = 2) in float a_Rotation;\n"
         "layout(location = 3) in vec2 a_UV;\n"
         "layout(location = 4) in float a_TextureId;\n" 
         "layout(location = 5) in vec4 a_RGBA;\n"
+        "layout(location = 6) in mat4 a_ModelView;\n"
 
         "flat out float texID;\n"
         "out vec2 uv;\n"
         "out vec4 rgba;\n"
 
-        "uniform mat4 mvp;\n"
+        "uniform mat4 proj;\n"
 
         "void main()\n"
         "{\n" 
@@ -64,12 +61,12 @@ void Shader::InitBaseShaders()
             "rgba = a_RGBA;\n"
             "uv = a_UV;\n"
 
-            "vec2 scaledPosition = a_Pos * a_Scale;\n"
+            "vec3 scaledPosition = vec3(a_Pos.xy * a_Scale, a_Pos.z);\n"
             "float c = cos(a_Rotation);\n"
             "float s = sin(a_Rotation);\n"
-            "vec2 position = vec2(scaledPosition.x * c - scaledPosition.y * s, scaledPosition.x * s + scaledPosition.y * c);\n"
+            "vec3 position = vec3(scaledPosition.x * c - scaledPosition.y * s, scaledPosition.x * s + scaledPosition.y * c, scaledPosition.z);\n"
             
-            "gl_Position = mvp * vec4(position.xy, 0.0, 1.0);\n"
+            "gl_Position = proj * a_ModelView * vec4(position, 1.0);\n" //must be proj * modelView per OpenGL
         "}";
 
 
@@ -91,17 +88,10 @@ void Shader::InitBaseShaders()
         "out vec4 color;\n"
 
         "uniform sampler2D images[32];\n"
-        "uniform int whiteout;\n"
-        "uniform int repeat;\n"
 
         "void main()\n"
         "{ \n"
-            "color = rgba * texture(images[int(texID)], vec2(uv.x * float(repeat), uv.y * float(repeat))); \n"
-            "if (whiteout == 1) {\n"
-            "   color.r += 10.0;\n" 
-            "   color.g += 10.0;\n"
-            "   color.b += 10.0;\n"
-            "}\n"
+            "color = rgba * texture(images[int(texID)], uv); \n"
             //"if (color.r == 1.0 && color.b == 1.0) discard;" magenta background only
         "}";
 
@@ -266,57 +256,6 @@ void Shader::InitBaseShaders()
             "}\n"
         "}";
 
-
-    
-    //--------------------------------------------
-
-    static constexpr const char* outlineGeometry = \
-
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
-
-        "in VS_OUT {\n"
-            "vec2 uv;\n"
-        "} gs_in[];\n"
-
-        "layout (triangles) in;\n"
-        "layout (triangle_strip, max_vertices = 3) out;\n"
-
-        "out vec2 uv;\n" 
-
-        "uniform float time;\n"
-
-        "vec4 explode(vec4 position, vec3 normal) {\n" 
-            "float magnitude = 2.0;\n"
-            "vec3 direction = normal * ((sin(time) + 1.0) / 2.0) * magnitude;\n" 
-            "return position + vec4(direction, 0.0);\n"
-        "}\n"
-
-        "vec3 GetNormal() {\n" 
-            "vec3 a = vec3(gl_in[0].gl_Position) - vec3(gl_in[1].gl_Position);\n"
-            "vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[1].gl_Position);\n"
-            "return normalize(cross(a, b));\n"
-        "}\n"
-
-        "void main() {\n"    
-            "vec3 normal = GetNormal();\n"
-
-            "gl_Position = explode(gl_in[0].gl_Position, normal);\n"
-            "uv = gs_in[0].uv;\n"
-            "EmitVertex();\n"
-            "gl_Position = explode(gl_in[1].gl_Position, normal);\n"
-            "uv = gs_in[1].uv;\n"
-            "EmitVertex();\n"
-            "gl_Position = explode(gl_in[2].gl_Position, normal);\n"
-            "uv = gs_in[2].uv;\n"
-            "EmitVertex();\n"
-            "EndPrimitive();\n"
-        "}";  
-
     //--------------------------------------------
 
     static constexpr const char* geom_vertex1 = \
@@ -451,6 +390,20 @@ void Shader::InitBaseShaders()
         samplers[i] = i;
 
     shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
+
+    const auto camera = System::Application::game->camera;
+
+    const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const glm::mat4 ortho = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
+
+    const Math::Matrix4 proj = { 
+        { ortho[0][0], ortho[0][1], ortho[0][2], ortho[0][3] }, 
+        { ortho[1][0], ortho[1][1], ortho[1][2], ortho[1][3] },   
+        { ortho[2][0], ortho[2][1], ortho[2][2], ortho[2][3] },  
+        { ortho[3][0], ortho[3][1], ortho[3][2], ortho[3][3] }
+    };
+
+    shader.SetMat4("proj", proj);  
 }
 
 

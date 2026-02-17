@@ -53,7 +53,9 @@ void System::Application::Update(void* layer)
 
     Renderer::Update(game->camera);
  
-    Time::Update(glfwGetTime());  
+   // Time::Update(glfwGetTime());  
+
+    Renderer::UpdateFrameBuffer(game->camera);
 
     glfwPollEvents(); 
 

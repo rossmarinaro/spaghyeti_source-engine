@@ -43,7 +43,9 @@ namespace Graphics {
                 const Math::Vector2& position, 
                 const Math::Vector2& scale,
                 const Math::Vector4& rgba, 
+                const Math::Matrix4& modelView,
                 float rotation,
+                int depth,
                 bool flipX = false, 
                 bool flipY = false
             );

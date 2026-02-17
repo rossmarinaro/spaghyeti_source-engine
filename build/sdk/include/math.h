@@ -14,13 +14,16 @@ namespace Math {
     }
 
     namespace Graphics {
-        struct Vertex { 
-            float x, y, 
+        struct Vertex 
+        { 
+            float x, y, z, 
                   scaleX, scaleY,
                   rotation,
                   u, v, 
                   texID, 
                   r, g, b, a; 
+
+            float modelView[16];
         }; 
     }
 }

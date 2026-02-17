@@ -130,15 +130,15 @@ void Game::Boot()
 
     #if DEVELOPMENT == 1
 
-        _debug_flags += b2Draw::e_shapeBit;
-        _debug_flags += b2Draw::e_jointBit;
-        _debug_flags += b2Draw::e_aabbBit;
-        _debug_flags += b2Draw::e_centerOfMassBit;
+       _debug_flags += b2Draw::e_shapeBit;
+       _debug_flags += b2Draw::e_jointBit;
+       _debug_flags += b2Draw::e_aabbBit;
+       _debug_flags += b2Draw::e_centerOfMassBit;
 
-        _debug = new DebugDraw;
+       _debug = new DebugDraw;
 
         if (world)
-            world->SetDebugDraw(_debug);
+           world->SetDebugDraw(_debug);
 
         #if STANDALONE == 1
             _displayInfo = new DisplayInfo(&m_context);
@@ -409,12 +409,12 @@ void Game::UpdateFrame()
 
     #endif
 
-    //entity render queue
-
-    std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
-    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; }); 
+    //entity render queue 
 
     Entity::s_rendered = 0;
+
+    std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
+    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
 
     for (const auto& entity : currentScene->entities)
         if ((entity.get() && entity))
@@ -432,7 +432,7 @@ void Game::UpdateFrame()
 
                     if (sprite) {
                         width = sprite->texture.FrameWidth,
-                        height = sprite->texture.FrameHeight;
+                        height = sprite->texture.FrameHeight; 
                     }
                 }
 
@@ -469,7 +469,8 @@ void Game::UpdateFrame()
 
     //flush entities
 
-    Renderer::Flush();
+   // if (!currentScene->entities.empty())
+        Renderer::Flush();
 
     //UI render queue
 
@@ -479,12 +480,13 @@ void Game::UpdateFrame()
 
     //flush UI
 
-    Renderer::Flush();
+  //  if (!currentScene->UI.empty())
+    //    Renderer::Flush();
 
     //vignette overlay
 
     if (currentScene->vignette) {
-        currentScene->vignette->SetSize( Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
+        currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
         currentScene->vignette->Render();     
     }     
 
@@ -541,11 +543,11 @@ void Game::UpdateFrame()
 
             event->callback();
         } 
-
+        
     //run any additional updates on the current scene, flush remaining data
 
     currentScene->Update(); 
-    Renderer::Flush();
+    //Renderer::Flush();
 
     //debug UI
 
@@ -558,9 +560,10 @@ void Game::UpdateFrame()
 
             #if STANDALONE == 1
                 _displayInfo->Update(&m_context);
-            #endif
-        }
+            #endif 
+        } 
     #endif
+  
 }
 
 
