@@ -443,54 +443,6 @@ void Text::Render()
                     glBindBuffer(GL_ARRAY_BUFFER, 0);
                     glDrawArrays(GL_TRIANGLES, 0, 6);  
 
-
-
-    //    auto renderer = System::Application::renderer;
-                 
-    // Math::Graphics::Vertex vertices[4];
-    
-    // vertices[0].x = xpos + offsetX;
-    // vertices[0].y = ypos + h + offsetY;
-    // vertices[0].u = 0.0f;
-    // vertices[0].v = 1.0f;
-
-    // vertices[1].x = xpos + offsetX;
-    // vertices[1].y = ypos + offsetY;
-    // vertices[1].u = 0.0f;
-    // vertices[1].v = 0.0f;
-
-    // vertices[2].x = xpos + w + offsetX;
-    // vertices[2].y = ypos + offsetY;
-    // vertices[2].u = 1.0f;
-    // vertices[2].v = 0.0f;
-
-    // vertices[3].x = xpos + offsetX;
-    // vertices[3].y = ypos + h + offsetY;
-    // vertices[3].u = 0.0f;
-    // vertices[3].v = 1.0f;
-
-   
-
-    // for (int i = 0; i < 4; i++) 
-    // {       
-    //     vertices[i].texID = 0.0f;
-    //     vertices[i].z = depth;
-    //     vertices[i].rotation = rotation;
-    //     vertices[i].scaleX = scale.x;
-    //     vertices[i].scaleY = scale.y;
-    //     vertices[i].r = 1.0f;
-    //     vertices[i].g = 1.0f;
-    //     vertices[i].b = 1.0f;
-    //     vertices[i].a = 1.0f;
-        
-    //     std::memcpy(vertices[i].modelView, glm::value_ptr(model), sizeof(vertices[i].modelView));
-    // }  
-
-    //add the vertices to the renderer's vector and increase index count by 6
-    
-    //std::copy(vertices, vertices + sizeof(vertices) / sizeof(vertices[0]), std::back_inserter(renderer->vertices));
-
-    //renderer->indexCount += 6;
                 };
 
                 //shadow pass

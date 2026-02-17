@@ -52,12 +52,6 @@ namespace /* SPAGHYETI_CORE */ System {
             static inline void SetVSync(int rate) { s_vsync = rate; }
             static inline int GetVSync() { return s_vsync; }
                        
-            static void CreateFrameBuffer();
-            static void RescaleFrameBuffer(float width, float height);
-            static void Update(void* camera);
-            static void BindFrameBuffer();
-            static void UpdateFrameBuffer(void* camera);
-            static void UnbindFrameBuffer();
             static void cursor_callback(GLFWwindow* window, double xPos, double yPos);
             static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
             static void input_callback(GLFWwindow* window, int input, int action, int mods);
@@ -68,14 +62,20 @@ namespace /* SPAGHYETI_CORE */ System {
             //static void RenderInstances();
             
             static void Init();
+            static void Update(void* camera);
             static void ShutDown();  
             static void Flush(); 
+            static void CreateFrameBuffer();
+            static void UpdateFrameBuffer(void* camera);
 
             static inline GLFWwindow* GLFW_window_instance;
 
         private:
 
-            static inline const int BUFFERS = 3;
+            static inline const int BUFFERS = 3, 
+                                    m_frameBufferWidth = 800,
+                                    m_frameBufferHeight = 600;
+
             static inline int s_vsync, s_currentBufferIndex;
 
             GLsync m_fences[BUFFERS];

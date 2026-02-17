@@ -79,22 +79,6 @@ void Renderer::ShutDown()
 //---------------------------------
 
 
-void Renderer::BindFrameBuffer() {
-    glBindBuffer(GL_FRAMEBUFFER, System::Application::renderer->m_FBO);
-}
-
-
-//---------------------------------
-
-
-
-void Renderer::UnbindFrameBuffer() {
-    glBindBuffer(GL_FRAMEBUFFER, 0);
-}
-
-//---------------------------------
-
-
 void Renderer::CreateFrameBuffer()
 {
     const auto renderer = System::Application::renderer;
@@ -103,7 +87,7 @@ void Renderer::CreateFrameBuffer()
     glBindFramebuffer(GL_FRAMEBUFFER, renderer->m_FBO);
     glGenTextures(1, &renderer->m_textureColorBuffer);
     glBindTexture(GL_TEXTURE_2D, renderer->m_textureColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800,600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_frameBufferWidth, m_frameBufferHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -118,10 +102,8 @@ void Renderer::CreateFrameBuffer()
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    //glBindTexture(GL_TEXTURE_2D, 0);
-    //glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
 }
+
 
 //---------------------------------
 
@@ -129,32 +111,21 @@ void Renderer::CreateFrameBuffer()
 void Renderer::UpdateFrameBuffer(void* camera)
 {
     const auto renderer = System::Application::renderer;
-    const auto bg = ((Camera*)camera)->GetBackgroundColor();
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, renderer->m_FBO);
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); glViewport(0, 0, Window::s_width, Window::s_height);
-    glDrawBuffer(GL_BACK);
-    //int screenWidth, screenHeight;
-    //glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_BLEND);
-    glBlitFramebuffer(0, 0, 800,600, 0, 0, 800,600, GL_COLOR_BUFFER_BIT, GL_NEAREST); int err = glfwGetError(NULL);
-           if(err==GL_INVALID_OPERATION){LOG("GLFW: Error:: " + std::to_string(err));}
-//glEnable(GL_BLEND);
+    glViewport(0, 0, Window::s_scaleWidth, Window::s_scaleHeight); 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, renderer->m_FBO);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
+
+    int screenWidth, screenHeight;
+    glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
+
+    glBlitFramebuffer(0, 0, m_frameBufferWidth, m_frameBufferHeight, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST); 
 }
 
-//---------------------------------
-
-
-void Renderer::RescaleFrameBuffer(float width, float height)
-{
-    const auto renderer = System::Application::renderer;
-
-    glBindTexture(GL_TEXTURE_2D, renderer->m_textureColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderer->m_textureColorBuffer, 0);
-}
 
 
 //---------------------------------- batch rendering
@@ -192,24 +163,30 @@ void Renderer::Init()
 
     for (unsigned int i = 0; i < BUFFERS; i++) {
         glBindBuffer(GL_ARRAY_BUFFER, renderer->m_VBOs[i]);    
-        glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, /* GL_DYNAMIC_DRAW *//* GL_STREAM_DRAW */GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_DYNAMIC_DRAW /* GL_STREAM_DRAW */);
     }
 
     //bind element buffer
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->m_EBO);    
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderer->m_indices.size() * sizeof(GLint), renderer->m_indices.data(),GL_STATIC_DRAW/* GL_DYNAMIC_DRAW */ /* GL_STREAM_DRAW */);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderer->m_indices.size() * sizeof(GLint), renderer->m_indices.data(), GL_DYNAMIC_DRAW /* GL_STREAM_DRAW */);
 
     EnableAttributes();
     CreateFrameBuffer();
-    
-    glDisable(GL_CULL_FACE); 
+
+    //depth
+
     //glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
     //glDepthFunc(GL_LEQUAL);
     //glDepthMask(GL_TRUE);
+
+    //blending
+    
+    glDisable(GL_CULL_FACE); 
+    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);       
     glBindVertexArray(0); 
 
@@ -291,26 +268,26 @@ void Renderer::Flush()
 
 void Renderer::Update(void* camera) 
 { 
-    //clear background
-
     const auto bg = ((Camera*)camera)->GetBackgroundColor();
-
     const auto renderer = System::Application::renderer;
 
-    glfwSwapInterval(s_vsync); //Enable vsync
+    glfwSwapInterval(s_vsync); //enable / disable vsync
 
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, renderer->m_FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, renderer->m_FBO);
+    glEnable(GL_BLEND); 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight);
+    glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
 
     glClearColor( 
-        bg->r * bg->a,
-        bg->g * bg->a,
-        bg->b * bg->a,
-        bg->a
+        bg->r * bg->a, //r
+        bg->g * bg->a, //g
+        bg->b * bg->a, //b
+        bg->a //a
     );
 
-    glViewport(0, 0, 800,600/* Window::s_width, Window::s_height */);
 }
 
 //----------------------------------------
