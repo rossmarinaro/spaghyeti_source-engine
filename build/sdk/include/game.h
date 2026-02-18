@@ -102,6 +102,9 @@ namespace System {
             std::atomic_bool m_gameState;
             Process::Context m_context;
             Scene* currentScene; 
+
+            bool CheckEntityRenderable(std::shared_ptr<Entity>& entity);
+            void RenderEntities(std::vector<std::shared_ptr<Entity>> entities);
     }; 
 
 }

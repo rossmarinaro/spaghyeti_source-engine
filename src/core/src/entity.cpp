@@ -24,6 +24,9 @@ Entity::Entity(int type, bool isSpawn):
 {
     name = "Untitled_" + std::to_string(s_count);
     ID = GenerateID();
+
+    SetShader("sprite");
+    
     s_count++;
     s_depth++;
 }
@@ -53,7 +56,9 @@ Entity::Entity(int type, float x, float y, bool isSpawn):
     flipX = false;
     flipY = false;
     depth = s_depth + 1;
-    ID = UUID::generate_uuid();
+    ID = GenerateID();
+
+    SetShader("sprite");
 
     name = "Untitled_" + std::to_string(s_count);
     s_count++;
@@ -156,7 +161,6 @@ Geometry::Geometry(float x, float y, float width, float height, bool isSpawn):
     this->height = height;
 
     SetDrawStyle(1);
-    SetShader("sprite");
 
     tint = { 0.0f, 0.0f, 1.0f };
     texture = Graphics::Texture2D::Get("base");
@@ -201,7 +205,10 @@ void Geometry::Render()
 
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
     
-    const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
+    const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
+                                        { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
+                                        { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
+                                        { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
                     mv = view * transform;
 
     const auto shader = Graphics::Shader::Get(shaderKey);
@@ -224,7 +231,7 @@ void Geometry::Render()
         modelView, 
         outlineEnabled ? outlineWidth : 0.0f,
         rotation, 
-        static_cast<float>(depth) / 1000.0f
+        depth
     ); 
 
     System::Application::renderer->drawStyle = m_drawStyle;
@@ -273,7 +280,6 @@ Sprite::Sprite(const std::string& key, float x, float y, bool isSpawn, bool isTi
     velocityY = 0.0f; 
 
     SetTexture(key);
-    SetShader("sprite");   
 
     const auto animations = System::Resources::Manager::GetAnimations(key);
 
@@ -305,8 +311,7 @@ Sprite::Sprite(const Sprite& sprite):
     if (animations) 
         anims.insert(animations->begin(), animations->end()); 
 
-    SetTexture(sprite.key);
-    SetShader("sprite");     
+    SetTexture(sprite.key);    
 
     LOG("Sprite: \"" + key + "\" cloned."); 
 
@@ -708,7 +713,10 @@ void Sprite::Render()
 
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
     
-    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
+    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
+                                                                    { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
+                                                                    { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
+                                                                    { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
 
     glm::mat4 transform = glm::mat4(1.0f); 
 
@@ -754,7 +762,7 @@ void Sprite::Render()
             modelView, 
             outlineEnabled ? outlineWidth : 0.0f, 
             rotation, 
-            static_cast<float>(depth) / 1000.0f, 
+            depth, 
             flipX, 
             flipY
         );  

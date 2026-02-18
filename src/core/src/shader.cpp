@@ -101,7 +101,8 @@ void Shader::InitBaseShaders()
         "{ \n"
             "vec4 c = texture(images[int(texID)], uv);\n"
 
-            "if (c.a == 0.0) {\n" //outline
+            "if (c.a == 0.0 && outlineWidth > 0.0)\n" //outline
+            "{\n" 
 
                 "ivec2 texSize2d = textureSize(images[int(texID)], 0);\n"
                 "float texSize = float(texSize2d.x);\n"
@@ -122,9 +123,9 @@ void Shader::InitBaseShaders()
                 "color = mix(c, vec4(outlineColor, rgba.w), outline - c.a);\n"
 
             "}\n"
-            "else {\n" //sprite
-               "color = rgba * texture(images[int(texID)], uv); \n"
-                //"if (color.r == 1.0 && color.b == 1.0) discard;" magenta background only
+            "else {\n" //fill
+               "color = rgba * texture(images[int(texID)], uv);\n"
+                "if (color.r > 0.9 && color.g < 0.1 && color.b > 0.9) discard;\n" //remove magenta background 
             "}\n"
         "}";
 
@@ -181,52 +182,52 @@ void Shader::InitBaseShaders()
     //--------------------------------------------
 
 
-    static constexpr const char* textOutlineFragment = \
+    // static constexpr const char* textOutlineFragment = \
 
-         #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
+    //      #ifdef __EMSCRIPTEN__
+    //         "#version 300 es\n"
+    //         "precision mediump float;\n"
+    //     #else
+    //         "#version 330 core\n"
+    //     #endif
 
-        "uniform sampler2D image;\n"  
-        "uniform float outlineWidth;\n" 
-        "uniform vec3 outlineColor;\n" 
-        "uniform float alphaVal;\n" 
-        "uniform float characterWidth;\n" 
+    //     "uniform sampler2D image;\n"  
+    //     "uniform float outlineWidth;\n" 
+    //     "uniform vec3 outlineColor;\n" 
+    //     "uniform float alphaVal;\n" 
+    //     "uniform float characterWidth;\n" 
 
-        "out vec4 color;\n"
-        "in vec2 uv;\n"
+    //     "out vec4 color;\n"
+    //     "in vec2 uv;\n"
 
-        "void main() {\n"
+    //     "void main() {\n"
 
-            "vec4 c = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
+    //         "vec4 c = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
 
-            "if (c.a == 0.0) {\n"
+    //         "if (c.a == 0.0) {\n"
 
-                "ivec2 texSize2d = textureSize(image, 0);\n"
-                "float texSize = characterWidth;\n" 
-                "float texelSize = 1.0 / texSize;\n"
-                "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
-                "float outline = vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, 0.0))).a;\n"
+    //             "ivec2 texSize2d = textureSize(image, 0);\n"
+    //             "float texSize = characterWidth;\n" 
+    //             "float texelSize = 1.0 / texSize;\n"
+    //             "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
+    //             "float outline = vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, 0.0))).a;\n"
  
-                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(0.0, size.y))).a;\n"
-                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, 0.0))).a;\n"
-                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(0.0, -size.y))).a;\n"
-                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, size.y))).a;\n"
-                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, size.y))).a;\n"
-                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, size.y))).a;\n"
-                "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, -size.y))).a;\n"
-                "outline = min(outline, 1.0);\n"
+    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(0.0, size.y))).a;\n"
+    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, 0.0))).a;\n"
+    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(0.0, -size.y))).a;\n"
+    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, size.y))).a;\n"
+    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, size.y))).a;\n"
+    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, size.y))).a;\n"
+    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, -size.y))).a;\n"
+    //             "outline = min(outline, 1.0);\n"
 
-                "vec4 c = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
-                "color = mix(c, vec4(outlineColor, alphaVal), outline - c.a);\n"
+    //             "vec4 c = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
+    //             "color = mix(c, vec4(outlineColor, alphaVal), outline - c.a);\n"
 
-            "}\n"
-            "else\n"
-               "color = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
-        "}";
+    //         "}\n"
+    //         "else\n"
+    //            "color = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
+    //     "}";
 
     //--------------------------------------------
 
@@ -336,8 +337,7 @@ void Shader::InitBaseShaders()
     //shader char arrays
 
     Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment);
-    Load("text", textVertex, textFragment);
-    Load("outline text", textVertex, textOutlineFragment);    
+    Load("text", textVertex, textFragment);  
     //Load("instance", spriteInstanceShader_vertex, spriteQuadShader_fragment);
 
     #if DEVELOPMENT == 1

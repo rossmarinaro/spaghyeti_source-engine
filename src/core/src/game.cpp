@@ -414,66 +414,35 @@ void Game::UpdateFrame()
 
     Entity::s_rendered = 0;
 
-    std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; });
-    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
+    //sort opaque / transparent entities
 
-    for (const auto& entity : currentScene->entities)
-        if ((entity.get() && entity))
-        {
-            const auto check_renderable = [&]() -> bool 
-            {
-                float width = 0.0f, 
-                      height = 0.0f;
+    std::vector<std::shared_ptr<Entity>> opaque_entities, transparent_entities;
 
-                //cull sprite and tile type entities out of view space
+    for (const auto& entity : currentScene->entities) {
+        if (entity->texture.IsOpaque())
+            opaque_entities.emplace_back(entity);
+        else 
+            transparent_entities.emplace_back(entity);
+    }
 
-                if (entity->GetType() == Entity::SPRITE || entity->GetType() == Entity::TILE) 
-                {
-                    const auto sprite = std::dynamic_pointer_cast<Sprite>(entity); 
+    std::sort(opaque_entities.begin(), opaque_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //f-b <
+    std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
 
-                    if (sprite) {
-                        width = sprite->texture.FrameWidth,
-                        height = sprite->texture.FrameHeight; 
-                    }
-                }
+    //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
 
-                const float camPosX = -camera->GetPosition()->x, 
-                            camPosY = -camera->GetPosition()->y,
-                            fx = (1.0f - entity->scrollFactor.x) + 1.0f,
-                            fy = (1.0f - entity->scrollFactor.y) + 1.0f,
-                            posX = entity->position.x * fx,
-                            posY = entity->position.y * fy,
-                            left = (camPosX - (Window::s_scaleWidth) / 2) * entity->scrollFactor.x, 
-                            right = (camPosX + (Window::s_scaleWidth)) * fx, 
-                            bottom = (camPosY - (Window::s_scaleHeight) / 2) * entity->scrollFactor.y, 
-                            top = (camPosY + Window::s_scaleHeight) * fy; 
-     
-                return (posX + width > left && 
-                        posX < right && 
-                        posY + height > bottom && 
-                        posY < top);
-            };
+    RenderEntities(opaque_entities);
 
-            #if STANDALONE == 0
-                entity->renderable = check_renderable();
-            #else
-                if (entity->cull) 
-                    entity->renderable = check_renderable();
-                
-            #endif
-
-            if (entity->renderable) {
-                entity->Render();
-                Entity::s_rendered++;
-            }  
-        }
-
-    //flush entities
-
-    if (!currentScene->entities.empty())
+    if (!opaque_entities.empty())
         Renderer::Flush();
 
+    RenderEntities(transparent_entities);
+
+    if (!transparent_entities.empty())
+        Renderer::Flush(false);
+
     //UI render queue
+
+    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
 
     for (const auto& UI : currentScene->UI)
         if ((UI.get() && UI) && UI.get()->renderable) 
@@ -482,7 +451,7 @@ void Game::UpdateFrame()
     //flush UI
 
     if (!currentScene->UI.empty())
-        Renderer::Flush();
+        Renderer::Flush(false);
 
     //vignette overlay
 
@@ -567,9 +536,57 @@ void Game::UpdateFrame()
 }
 
 
+//-----------------------------
+
+
+bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity) 
+{
+    //cull sprite and tile type entities out of view space
+
+    const float width = entity->texture.FrameWidth,
+                height = entity->texture.FrameHeight,
+                camPosX = -camera->GetPosition()->x, 
+                camPosY = -camera->GetPosition()->y,
+                fx = (1.0f - entity->scrollFactor.x) + 1.0f,
+                fy = (1.0f - entity->scrollFactor.y) + 1.0f,
+                posX = entity->position.x * fx,
+                posY = entity->position.y * fy,
+                left = (camPosX - (Window::s_scaleWidth) / 2) * entity->scrollFactor.x, 
+                right = (camPosX + (Window::s_scaleWidth)) * fx, 
+                bottom = (camPosY - (Window::s_scaleHeight) / 2) * entity->scrollFactor.y, 
+                top = (camPosY + Window::s_scaleHeight) * fy; 
+
+    return (posX + width > left && 
+            posX < right && 
+            posY + height > bottom && 
+            posY < top);
+}
+
 
 //-----------------------------
 
+
+void Game::RenderEntities(std::vector<std::shared_ptr<Entity>> entities)
+{
+    for (auto& entity : entities)
+        if ((entity.get() && entity))
+        {
+            #if STANDALONE == 0
+                entity->renderable = CheckEntityRenderable(entity);
+            #else
+                if (entity->cull) 
+                    entity->renderable = CheckEntityRenderable(entity);
+            #endif
+
+            if (entity->renderable) {
+                entity->Render();
+                Entity::s_rendered++;
+            }  
+        }
+}
+
+
+//-----------------------------
 
 
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)

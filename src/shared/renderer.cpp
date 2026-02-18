@@ -102,30 +102,19 @@ void Renderer::Init()
 
     for (unsigned int i = 0; i < BUFFERS; i++) {
         glBindBuffer(GL_ARRAY_BUFFER, renderer->m_VBOs[i]);    
-        glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_DYNAMIC_DRAW /* GL_STREAM_DRAW */);
+        glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_STREAM_DRAW);
     }
 
     //bind element buffer
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->m_EBO);    
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderer->m_indices.size() * sizeof(GLint), renderer->m_indices.data(), GL_DYNAMIC_DRAW /* GL_STREAM_DRAW */);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderer->m_indices.size() * sizeof(GLint), renderer->m_indices.data(), GL_STREAM_DRAW);
 
     EnableAttributes();
     CreateFrameBuffer();
 
-    //depth
-
-    //glEnable(GL_DEPTH_TEST);
-    //glDepthFunc(GL_LEQUAL);
-    //glDepthMask(GL_TRUE);
-
-    //blending
-    
+    glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE); 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendEquation(GL_FUNC_ADD);
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);       
     glBindVertexArray(0); 
 
@@ -137,38 +126,47 @@ void Renderer::Init()
 
 void Renderer::Update(void* camera) 
 { 
-    const auto bg = ((Camera*)camera)->GetBackgroundColor();
+    const auto backgroundColor = ((Camera*)camera)->GetBackgroundColor();
     const auto renderer = System::Application::renderer;
 
     glfwSwapInterval(s_vsync); //enable / disable vsync
 
     glBindFramebuffer(GL_FRAMEBUFFER, renderer->m_FBO);
-    glEnable(GL_BLEND); 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight);
-    glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
 
     glClearColor( 
-        bg->r * bg->a, //r
-        bg->g * bg->a, //g
-        bg->b * bg->a, //b
-        bg->a //a
+        backgroundColor->r * backgroundColor->a, //r
+        backgroundColor->g * backgroundColor->a, //g
+        backgroundColor->b * backgroundColor->a, //b
+        backgroundColor->a //a
     );
-
 }
 
 
 //----------------------------------------------- flush batch
 
 
-void Renderer::Flush()
+void Renderer::Flush(bool renderOpaque)
 {
     auto renderer = System::Application::renderer;
 
     if (!renderer->vertices.empty()) 
     {
+        if (renderOpaque) {
+            glDepthFunc(GL_LEQUAL);
+            glDepthMask(GL_TRUE);
+            glDisable(GL_BLEND);
+        }
+
+        else {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendEquation(GL_FUNC_ADD);
+            glDepthMask(GL_FALSE);
+        }
+
         //wait for gpu to finish rendering current buffer
 
         if (renderer->m_fences[s_currentBufferIndex] != nullptr) 
@@ -235,7 +233,9 @@ void Renderer::Flush()
     renderer->vertices.clear();
     renderer->textureSlotIndex = 1;
     renderer->indexCount = 0;
-for (int i = 0; i < 16; i++)glDisableVertexAttribArray(i);
+
+    for (int i = 0; i < 16; i++)
+        glDisableVertexAttribArray(i);
 }
 
 

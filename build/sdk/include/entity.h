@@ -37,6 +37,8 @@ class Entity {
 		Math::Vector2 position, scale, scrollFactor;
 		std::string ID, name, shaderKey;
 
+        Graphics::Texture2D texture;
+
 		template<typename T>
 		inline const T GetData(const std::string& key) { 
             if (m_data.find(key) != m_data.end())
@@ -90,8 +92,6 @@ class Entity {
 class Geometry : public Entity {
 
     public:
-
-        Graphics::Texture2D texture;
 
 		float width, height, radius;
 
@@ -188,8 +188,6 @@ class Sprite : public Entity {
     std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> m_bodies;  
 
 	public:  
-
-        Graphics::Texture2D texture;
 
 		int frames, 
 			currentFrame, 

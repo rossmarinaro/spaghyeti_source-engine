@@ -64,7 +64,7 @@ namespace /* SPAGHYETI_CORE */ System {
             static void Init();
             static void Update(void* camera);
             static void ShutDown();  
-            static void Flush(); 
+            static void Flush(bool renderOpaque = true); 
             static void CreateFrameBuffer();
             static void UpdateFrameBuffer(void* camera);
 
@@ -73,8 +73,8 @@ namespace /* SPAGHYETI_CORE */ System {
         private:
 
             static inline const int BUFFERS = 3, 
-                                    m_frameBufferWidth = 1280,
-                                    m_frameBufferHeight = 800;
+                                    m_frameBufferWidth = /* 1080 */ 1280,
+                                    m_frameBufferHeight = /* 720 */ 800;
 
             static inline int s_vsync, s_currentBufferIndex;
 

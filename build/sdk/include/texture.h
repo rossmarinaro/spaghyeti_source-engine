@@ -17,16 +17,16 @@ namespace Graphics {
 
             std::string key;
 
-            float FrameWidth, FrameHeight, U1, V1, U2, V2, Width, Height; // width and height of loaded image in pixels 
+            float FrameWidth, FrameHeight, U1, V1, U2, V2, Width, Height; 
             
             unsigned int ID,
                          Channels,
                          Repeat,
                          Whiteout,
-                         Wrap_S, // wrapping mode on S axis
-                         Wrap_T, // wrapping mode on T axis
-                         Filter_Min, // filtering mode if texture pixels < screen pixels
-                         Filter_Max; // filtering mode if texture pixels > screen pixels
+                         Wrap_S, 
+                         Wrap_T, 
+                         Filter_Min, //texture pixels < screen pixels
+                         Filter_Max; //texture pixels > screen pixels
 
             Texture2D();
             ~Texture2D() = default;
@@ -36,6 +36,7 @@ namespace Graphics {
             static void UnLoad(const std::string& key);
             static void InitBaseTexture();
             
+            const bool IsOpaque();
             void Delete();
             void SetFiltering(bool filterMin = true, bool filterMax = true, bool wrapS = true, bool wrapT = true);
             void Update(
@@ -54,8 +55,10 @@ namespace Graphics {
 
         private: 
 
-            unsigned int m_internal_format, // format of texture object RGB, RGBA
-                         m_image_format; // format of loaded image
+            unsigned int m_internal_format, //RGB, RGBA
+                         m_image_format;
+
+            bool m_opaque;
     }; 
 
 }

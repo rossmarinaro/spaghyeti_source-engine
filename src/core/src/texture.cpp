@@ -10,7 +10,8 @@ using namespace Graphics;
 
 Texture2D::Texture2D():
     m_internal_format(GL_RGB32F), 
-    m_image_format(GL_RGB)
+    m_image_format(GL_RGB),
+    m_opaque(true)
 { 
     Width = 0.0f;
     Height = 0.0f;
@@ -29,6 +30,14 @@ Texture2D::Texture2D():
     Whiteout = 0;
 
     glGenTextures(1, &ID); 
+}
+
+
+//-------------------------------
+
+
+const bool Texture2D::IsOpaque() {
+    return m_opaque;
 }
  
 
@@ -137,7 +146,7 @@ void Texture2D::Load(const std::string& key)
     //creates texture objects
 
     Texture2D texture;
-    unsigned char* image = nullptr;
+    unsigned char* image_data = nullptr;
     const auto filepath = System::Resources::Manager::GetFilePath(key);
  
     stbi_set_flip_vertically_on_load(false);
@@ -146,7 +155,7 @@ void Texture2D::Load(const std::string& key)
 
     if (filepath) {
         filetype = "filepath";
-        image = stbi_load((*filepath).c_str(), &width, &height, &nrChannels, 0);
+        image_data = stbi_load((*filepath).c_str(), &width, &height, &nrChannels, 4);
     }
 
     //byte encoded array buffer
@@ -161,13 +170,13 @@ void Texture2D::Load(const std::string& key)
         {
             unsigned char* image_buffer = (unsigned char*)data->array_buffer;
 
-            image = stbi_load_from_memory(image_buffer, data->byte_length, &width, &height, &nrChannels, 0);
+            image_data = stbi_load_from_memory(image_buffer, data->byte_length, &width, &height, &nrChannels, 0);
 
             //image is compressed pixel data
 
-            if (image == nullptr) {
+            if (image_data == nullptr) {
                 filetype = "compressed pixel data";
-                image = image_buffer;
+                image_data = image_buffer;
             }
         }
 
@@ -177,7 +186,7 @@ void Texture2D::Load(const std::string& key)
         }
     }
 
-    if (image == nullptr) {
+    if (image_data == nullptr) {
         LOG("Texture2D: Image of key: \"" + key + "\" failed to load. (" + filetype + ")");    
         return;
     }
@@ -197,6 +206,14 @@ void Texture2D::Load(const std::string& key)
         #endif
 
         texture.m_image_format = GL_RGBA;
+
+        //check texture opacity
+
+        for (int i = 3; i < texture.Width * texture.Height * 4; i += 4) 
+            if (image_data[i] < 255) {
+                texture.m_opaque = false;
+                break;
+            } 
     }
 
     glBindTexture(GL_TEXTURE_2D, texture.ID);
@@ -206,12 +223,12 @@ void Texture2D::Load(const std::string& key)
     #endif
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
-    glTexImage2D(GL_TEXTURE_2D, 0, texture.m_internal_format, texture.Width, texture.Height, 0, texture.m_image_format, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, texture.m_internal_format, texture.Width, texture.Height, 0, texture.m_image_format, GL_UNSIGNED_BYTE, image_data);
 
     texture.SetFiltering();
 
     if (filetype != "compressed pixel data")
-        stbi_image_free(image);
+        stbi_image_free(image_data);
 
     System::Application::resources->textures[key] = texture; 
 
@@ -334,12 +351,15 @@ void Texture2D::Update(
 
     //other attributes
 
-    const glm::mat4 modelMat = glm::mat4({ modelView.a.r, modelView.a.g, modelView.a.b, modelView.a.a }, { modelView.b.r, modelView.b.g, modelView.b.b, modelView.b.a }, { modelView.c.r, modelView.c.g, modelView.c.b, modelView.c.a }, { modelView.d.r, modelView.d.g, modelView.d.b, modelView.d.a });
+    const glm::mat4 modelMat = glm::mat4({ modelView.a.r, modelView.a.g, modelView.a.b, modelView.a.a }, 
+        { modelView.b.r, modelView.b.g, modelView.b.b, modelView.b.a }, 
+        { modelView.c.r, modelView.c.g, modelView.c.b, modelView.c.a }, 
+        { modelView.d.r, modelView.d.g, modelView.d.b, modelView.d.a }); 
 
     for (int i = 0; i < 4; i++) 
     {       
         vertices[i].texID = textureUnit;
-        vertices[i].z = depth;
+        vertices[i].z = static_cast<float>(depth) / 1000.0f;
         vertices[i].rotation = rotation;
         vertices[i].scaleX = scale.x;
         vertices[i].scaleY = scale.y;
@@ -352,7 +372,9 @@ void Texture2D::Update(
         vertices[i].outlineB = outline.z;
         vertices[i].outlineWidth = outlineWidth;
         
-        std::memcpy(vertices[i].modelView, glm::value_ptr(modelMat), sizeof(vertices[i].modelView));
+        //copy float array into a standard glm mat4
+
+        std::memcpy(vertices[i].modelView, glm::value_ptr(modelMat), sizeof(vertices[i].modelView)); 
     }  
 
     //add the vertices to the renderer's vector and increase index count by 6
