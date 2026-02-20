@@ -7,6 +7,15 @@
 
 using namespace System;
 
+//--------------------------------- 
+
+
+void EnableBlending() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
+}
+
 //--------------------------------- enable vertex attributes, allowing data to be baked into a vertex
 
 
@@ -110,14 +119,13 @@ void Renderer::Init()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->m_EBO);    
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderer->m_indices.size() * sizeof(GLint), renderer->m_indices.data(), GL_STREAM_DRAW);
 
+    EnableBlending();
     EnableAttributes();
     CreateFrameBuffer();
 
-    glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE); 
     glBindBuffer(GL_ARRAY_BUFFER, 0);       
     glBindVertexArray(0); 
-
 }
 
 
@@ -132,10 +140,9 @@ void Renderer::Update(void* camera)
     glfwSwapInterval(s_vsync); //enable / disable vsync
 
     glBindFramebuffer(GL_FRAMEBUFFER, renderer->m_FBO);
-
     glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
     glClearColor( 
         backgroundColor->r * backgroundColor->a, //r
         backgroundColor->g * backgroundColor->a, //g
@@ -155,15 +162,14 @@ void Renderer::Flush(bool renderOpaque)
     if (!renderer->vertices.empty()) 
     {
         if (renderOpaque) {
+            glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
             glDepthMask(GL_TRUE);
             glDisable(GL_BLEND);
         }
 
         else {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glBlendEquation(GL_FUNC_ADD);
+            EnableBlending();
             glDepthMask(GL_FALSE);
         }
 
@@ -202,9 +208,8 @@ void Renderer::Flush(bool renderOpaque)
         glBindBuffer(GL_ARRAY_BUFFER, activeVBO);         
         glBufferSubData(GL_ARRAY_BUFFER, 0, renderer->vertices.size() * sizeof(Math::Graphics::Vertex), renderer->vertices.data());
 
-        glUseProgram(renderer->activeShaderID);
-
         EnableAttributes();
+        glUseProgram(renderer->activeShaderID);
 
         //draw elements from vertices vector
 
@@ -233,9 +238,6 @@ void Renderer::Flush(bool renderOpaque)
     renderer->vertices.clear();
     renderer->textureSlotIndex = 1;
     renderer->indexCount = 0;
-
-    for (int i = 0; i < 16; i++)
-        glDisableVertexAttribArray(i);
 }
 
 

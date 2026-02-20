@@ -39,6 +39,7 @@ void Shader::InitBaseShaders()
             "precision mediump float;\n"
         #else
             "#version 330 core\n"
+            "precision lowp float;\n"
         #endif
 
         "layout(location = 0) in vec3 a_Pos;\n"
@@ -86,6 +87,7 @@ void Shader::InitBaseShaders()
             "precision mediump float;\n"
         #else
             "#version 330 core\n"
+            "precision lowp float;\n"
         #endif
 
         "flat in float texID;\n"
@@ -100,7 +102,6 @@ void Shader::InitBaseShaders()
         "void main()\n"
         "{ \n"
             "vec4 c = texture(images[int(texID)], uv);\n"
-
             "if (c.a == 0.0 && outlineWidth > 0.0)\n" //outline
             "{\n" 
 
@@ -119,13 +120,12 @@ void Shader::InitBaseShaders()
                 "outline += texture(images[int(texID)], uv + vec2(size.x, -size.y)).a;\n"
                 "outline = min(outline, 1.0);\n"
 
-                "vec4 c = texture(images[int(texID)], uv);\n"
                 "color = mix(c, vec4(outlineColor, rgba.w), outline - c.a);\n"
 
             "}\n"
             "else {\n" //fill
                "color = rgba * texture(images[int(texID)], uv);\n"
-                "if (color.r > 0.9 && color.g < 0.1 && color.b > 0.9) discard;\n" //remove magenta background 
+                //"if (color.r > 0.9 && color.g < 0.1 && color.b > 0.9) discard;\n" //remove magenta background 
             "}\n"
         "}";
 
@@ -140,6 +140,7 @@ void Shader::InitBaseShaders()
             "precision mediump float;\n"
         #else
             "#version 330 core\n"
+           "precision lowp float;\n"
         #endif
 
         "layout(location = 0) in vec4 vertex;\n"
@@ -156,13 +157,38 @@ void Shader::InitBaseShaders()
     //--------------------------------------------
 
 
-    static constexpr const char* textFragment = \
+    static constexpr const char* textFragment = /* \
+
+        #ifdef __EMSCRIPTEN__
+            "#version 300 es\n"
+        #else
+            "#version 330 core\n"
+        #endif
+        "precision lowp float;\n"
+        "flat in float texID;\n"
+        "in vec2 uv;\n"
+        "in vec4 rgba;\n"
+        "in vec3 outlineColor;\n"
+        "in float outlineWidth;\n" 
+        "out vec4 color;\n"
+
+        "uniform sampler2D image;\n"
+
+        "void main()\n"
+        "{ \n"
+            "vec3 oc = outlineColor;\n"
+            "float ow = outlineWidth;\n" 
+            "float sampled = texture(image, uv).r;\n"
+            "color = vec4(rgba.xyz, sampled * rgba.w); \n"
+        "}"; */
+        \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
             "precision mediump float;\n"
         #else
             "#version 330 core\n"
+            "precision lowp float;\n"
         #endif
 
         "in vec2 uv;\n"
@@ -174,8 +200,8 @@ void Shader::InitBaseShaders()
 
         "void main()\n"
         "{ \n"
-            "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(image, uv).r);\n"
-            "color = vec4(textColor, alphaVal) * sampled; \n"
+            "float sampled = texture(image, uv).r;\n"
+            "color = vec4(textColor, sampled * alphaVal); \n"
         "}";
 
 
@@ -337,7 +363,7 @@ void Shader::InitBaseShaders()
     //shader char arrays
 
     Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment);
-    Load("text", textVertex, textFragment);  
+    Load("text", textVertex/* spriteQuadShader_vertex */, textFragment);  
     //Load("instance", spriteInstanceShader_vertex, spriteQuadShader_fragment);
 
     #if DEVELOPMENT == 1
@@ -375,6 +401,7 @@ void Shader::InitBaseShaders()
     };
 
     shader.SetMat4("proj", proj);  
+
 }
 
 

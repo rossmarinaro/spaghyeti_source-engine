@@ -132,11 +132,6 @@ void Texture2D::SetFiltering(bool filterMin, bool filterMax, bool wrapS, bool wr
 
 void Texture2D::Load(const std::string& key) 
 {
-    if (System::Application::resources->textures.size() > 32) {
-        LOG("Texture2D: cannot load texture. Max textures reached (32).")
-        return;
-    }
-
     std::string filetype = "none";
 
     int width = 1, 

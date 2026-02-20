@@ -73,8 +73,8 @@ namespace /* SPAGHYETI_CORE */ System {
         private:
 
             static inline const int BUFFERS = 3, 
-                                    m_frameBufferWidth = /* 1080 */ 1280,
-                                    m_frameBufferHeight = /* 720 */ 800;
+                                    m_frameBufferWidth = 1500,
+                                    m_frameBufferHeight = 900;
 
             static inline int s_vsync, s_currentBufferIndex;
 

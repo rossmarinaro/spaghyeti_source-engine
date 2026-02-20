@@ -451,14 +451,14 @@ void Game::UpdateFrame()
     //flush UI
 
     if (!currentScene->UI.empty())
-        Renderer::Flush(false);
+        Renderer::Flush(false); //fix
 
     //vignette overlay
 
     if (currentScene->vignette && currentScene->vignette->alpha >= 0.1f) {
         currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
         currentScene->vignette->Render(); 
-        Renderer::Flush();    
+        Renderer::Flush(false);    
     }     
 
     //update behaviors, pass game process context to subclasses

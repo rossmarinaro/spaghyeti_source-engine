@@ -162,13 +162,19 @@ class Text : public Entity {
     private:
 
         struct Character {
-            unsigned int TextureID; // ID handle of the glyph texture
-            Math::Vector2   Size;      // Size of glyph
-            Math::Vector2   Bearing;   // Offset from baseline to left/top of glyph
-            unsigned int Advance;   // Horizontal offset to advance to next glyph
+            unsigned int TextureID; //ID handle of the glyph texture
+            Math::Vector2   Size;      //size of glyph
+            Math::Vector2   Bearing;   //offset from baseline to left/top of glyph
+            unsigned int Advance;   //horizontal offset to advance to next glyph
         };
 
-        unsigned int m_VAO, m_VBO, m_pixel_height; 
+        unsigned int m_pixel_height;
+
+        static inline unsigned int m_VAO, 
+                                   m_VBO;
+
+        static inline const unsigned int MAX_CHARS = 128; 
+
         std::map<char, Character> m_chars;
 
         void* GetGLTPointer();

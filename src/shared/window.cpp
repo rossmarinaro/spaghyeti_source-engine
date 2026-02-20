@@ -109,8 +109,8 @@ void Window::Init()
 
         #else 
 
-            s_width = 1280.0f; //380.0f; 
-            s_height = 800.0f; //300.0f; 
+            s_width = 750.0f; //380.0f; 
+            s_height = 450.0f; //300.0f; 
 
         #endif
  
