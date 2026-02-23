@@ -39,7 +39,7 @@ void Shader::InitBaseShaders()
             "precision mediump float;\n"
         #else
             "#version 330 core\n"
-            "precision lowp float;\n"
+          //  "precision lowp float;\n"
         #endif
 
         "layout(location = 0) in vec3 a_Pos;\n"
@@ -87,7 +87,7 @@ void Shader::InitBaseShaders()
             "precision mediump float;\n"
         #else
             "#version 330 core\n"
-            "precision lowp float;\n"
+          //  "precision lowp float;\n"
         #endif
 
         "flat in float texID;\n"
@@ -101,7 +101,9 @@ void Shader::InitBaseShaders()
 
         "void main()\n"
         "{ \n"
+
             "vec4 c = texture(images[int(texID)], uv);\n"
+
             "if (c.a == 0.0 && outlineWidth > 0.0)\n" //outline
             "{\n" 
 
@@ -129,6 +131,55 @@ void Shader::InitBaseShaders()
             "}\n"
         "}";
 
+    // static constexpr const char* framebufferVertex = \ 
+    //     #ifdef __EMSCRIPTEN__
+    //         "#version 300 es\n"
+    //         "precision mediump float;\n"
+    //     #else
+    //         "#version 330 core\n"
+    //         "precision lowp float;\n"
+    //     #endif
+    //     "layout(location = 0) in vec2 a_Pos;\n"
+    //     "layout(location = 1) in vec2 a_UV;\n"
+
+    //     "out vec2 uv;\n"
+
+    //     "void main()\n"
+    //     "{ \n"
+    //         "uv = a_UV;\n"
+    //         "gl_Position = vec4(aPos, 0.0, 1.0)\n"
+    //     "}";
+    
+    // static constexpr const char* framebufferFragment = \
+    //     #ifdef __EMSCRIPTEN__
+    //         "#version 300 es\n"
+    //         "precision mediump float;\n"
+    //     #else
+    //         "#version 330 core\n"
+    //         "precision lowp float;\n"
+    //     #endif
+    //     "in vec2 uv;\n"
+    //     "uniform sampler2D screenTexture;\n"
+    //     "uniform vec2 screenRes;\n"
+    //     "uniform vec2 internalRes;\n"
+
+    //     "void main()\n"
+    //     "{ \n"
+    //         "float screenAspect = screenRes.x / screenRes.y;\n"
+    //         "float internalAspect = internalRes.x / internalRes.y;\n"
+
+    //         "float scale = (screenAspect > internalAspect) ? screenRes.y / internalRes.y : screenRes.x / internalRes.x;\n"
+    //         "vec2 displaySize = internalRes * scale;\n"
+    //         "vec2 offset = (screenRes - displaySize) / 2.0;\n"
+
+    //         "vec2 pixelCoords = (uv * screenRes) - offset;\n"
+    //         "vec2 finalUV = pixelCoords / displaySize;\n"
+
+
+    //         "if (finalUV.x < 0.0 || finalUV.x > 1.0 || finalUV.y < 0.0 || finalUV.y > 1.0)\n"
+    //             "color = vec4(0.0, 0.0, 0.0, 1.0);\n"
+    //         "else color = texture(screenTexture, finalUV);\n"
+    //     "}";
 
     //--------------------------------------------
 

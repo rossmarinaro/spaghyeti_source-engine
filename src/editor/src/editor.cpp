@@ -20,13 +20,13 @@ using namespace editor;
 
 void Editor::Update()
 {
-
     Renderer::Update(s_self->game->camera); 
 
     if (GUI::Get()->grid)
         GUI::Get()->grid->Render();
-
+glDisable(GL_SCISSOR_TEST);
     Time::Update(glfwGetTime());
+    //Renderer::UpdateFrameBuffer(s_self->game->camera);
 
     //save hotkey
        
@@ -53,7 +53,7 @@ void Editor::Update()
     const Math::Vector4 pm = s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight);
     const Math::Matrix4 vm = s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition()->x, s_self->game->camera->GetPosition()->y);
 
-    const glm::mat4 localCoords = glm::inverse(glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }));
+    const glm::mat4 localCoords = glm::inverse(glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }));
     const glm::vec2 ndc = { Window::GetPixelToNDC(xPos, yPos).x, Window::GetPixelToNDC(xPos, yPos).y };
     const glm::vec4 worldCoords(ndc.x, ndc.y, 0.0f, 1.0f),
                     resultPosition = localCoords * worldCoords;
@@ -144,6 +144,7 @@ void Editor::Start()
     s_self->webgl_embed_files = true;
     s_self->preserveSrc = false;
     s_self->isMultiThreaded = false;
+    s_self->vsync = false;
     s_self->cullTarget = { "", { 0.0f, 0.0f } };
 
     //AllocConsole();
@@ -160,6 +161,12 @@ void Editor::Start()
 
     Log("Editor Root: " + rootPath);
 
+    Application::name = "SPAGHYEDITOR";
+
+    Window::Init();
+
+    Renderer renderer;
+
     EventListener el;
     s_self->events = &el;
 
@@ -170,10 +177,7 @@ void Editor::Start()
 
     s_self->game->LoadScene<System::Scene>();
 
-    Application::name = "SPAGHYEDITOR";
-
-    Window::Init();
-    Application::Init(s_self->game); 
+    Application::Init(&renderer, s_self->game); 
     Game::SetCullPosition(g.camera->GetPosition());
 
     AssetManager am;
@@ -193,7 +197,7 @@ void Editor::Start()
 
         glfwSetWindowIcon(Renderer::GLFW_window_instance, 1, &image);
     }
-    
+
     //create entity selector graphic
 
     s_self->s_selector = System::Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);

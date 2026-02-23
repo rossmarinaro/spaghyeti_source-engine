@@ -132,10 +132,10 @@ void EventListener::Serialize(json& data, bool newScene)
     data["camera"]["width"] = newScene ? 2000.0f : session->worldWidth;
     data["camera"]["height"] = newScene ? 2000.0f : session->worldHeight;
     data["camera"]["zoom"] = newScene ? 1.0f : *session->game->camera->GetZoom(); 
-    data["camera"]["color"]["x"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor()->x;
-    data["camera"]["color"]["y"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor()->y;
-    data["camera"]["color"]["z"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor()->z;
-    data["camera"]["color"]["w"] = newScene ? 1.0f : session->game->camera->GetBackgroundColor()->w;
+    data["camera"]["color"]["x"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor()->r;
+    data["camera"]["color"]["y"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor()->g;
+    data["camera"]["color"]["z"] = newScene ? 0.5f : session->game->camera->GetBackgroundColor()->b;
+    data["camera"]["color"]["w"] = newScene ? 1.0f : session->game->camera->GetBackgroundColor()->a;
     data["camera"]["alpha"] = newScene ? 1.0f : GUI::Get()->grid->alpha;
     data["camera"]["pitch"] = newScene ? 20.0f : GUI::Get()->grid_quantity;
     data["camera"]["bounds"]["width"]["begin"] = newScene ? 0.0f : session->game->camera->currentBoundsWidthBegin;
@@ -383,10 +383,10 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
     scene->cameraPosition.x = data["camera"]["x"];
     scene->cameraPosition.y = data["camera"]["y"];
     scene->cameraZoom = data["camera"]["zoom"];
-    scene->cameraBackgroundColor.x = data["camera"]["color"]["x"];
-    scene->cameraBackgroundColor.y = data["camera"]["color"]["y"];
-    scene->cameraBackgroundColor.z = data["camera"]["color"]["z"];
-    scene->cameraBackgroundColor.w = data["camera"]["color"]["w"]; 
+    scene->cameraBackgroundColor.r = data["camera"]["color"]["x"];
+    scene->cameraBackgroundColor.g = data["camera"]["color"]["y"];
+    scene->cameraBackgroundColor.b = data["camera"]["color"]["z"];
+    scene->cameraBackgroundColor.a = data["camera"]["color"]["w"]; 
 
     scene->currentBoundsWidthBegin = data["camera"]["bounds"]["width"]["begin"];
     scene->currentBoundsWidthEnd = data["camera"]["bounds"]["width"]["end"];

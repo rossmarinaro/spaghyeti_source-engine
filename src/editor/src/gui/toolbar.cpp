@@ -756,6 +756,9 @@ void editor::GUI::ShowViewport()
     ImGui::SliderFloat("rotation", session->game->camera->GetRotation(), 0.0f, 360.0f);
     ImGui::SliderFloat("vignette", &session->vignetteVisibility, 0.0f, 1.0f);
     ImGui::ColorEdit4("color", (float*)session->game->camera->GetBackgroundColor()); 
+    ImGui::Checkbox("vsync", &session->vsync);
+
+    System::Renderer::SetVsync(session->vsync);
 
     //vignette visibility
 

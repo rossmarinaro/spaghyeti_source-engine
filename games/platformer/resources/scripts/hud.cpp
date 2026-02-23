@@ -22,9 +22,9 @@ HUD::HUD(std::shared_ptr<Entity> entity):
     const auto rightBorder = System::Game::CreateGeom(System::Window::s_scaleWidth - 9, 0, 10, System::Window::s_scaleHeight, 2, true);
     const auto topBorder = System::Game::CreateGeom(0, 1, System::Window::s_scaleWidth, 10, 2, true);
     const auto bottomBorder = System::Game::CreateGeom(0, System::Window::s_scaleHeight - 10, System::Window::s_scaleWidth, 10, 2, true);
-    const auto heart1 = System::Game::CreateUI("heart.png", 56.821, 30);
-    const auto heart2 = System::Game::CreateUI("heart.png", 120.538, 30);
-    const auto heart3 = System::Game::CreateUI("heart.png", 184.253, 30);
+    const auto heart1 = System::Game::CreateUISprite("heart.png", 56.821, 30);
+    const auto heart2 = System::Game::CreateUISprite("heart.png", 120.538, 30);
+    const auto heart3 = System::Game::CreateUISprite("heart.png", 184.253, 30);
 
     livesText->SetName("UI_lives"); 
     overlay->SetName("UI_overlay");
@@ -45,12 +45,12 @@ HUD::HUD(std::shared_ptr<Entity> entity):
     quitText->SetStatic(true);
     returnText->SetStatic(true);
 
-    System::Game::CreateUI("sv_icon.png", 270, 30);
+    System::Game::CreateUISprite("sv_icon.png", 270, 30);
 
-    const auto cigarIcon = System::Game::CreateUI("cigar UI.png", 870, 30);
+    const auto cigarIcon = System::Game::CreateUISprite("cigar UI.png", 870, 30);
     cigarIcon->SetName("cigar icon");
 
-    const auto magicBar_base = System::Game::CreateUI("ui_box.png", 1140, 40);
+    const auto magicBar_base = System::Game::CreateUISprite("ui_box.png", 1140, 40);
     const auto magicBar = System::Game::CreateGeom(1150, 50, 110, 20, 2, true);
 
     magicBar_base->SetName("UI_magic_bar_base");

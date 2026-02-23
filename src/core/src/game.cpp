@@ -3,8 +3,7 @@
 
 #include "../../shared/renderer.h"
 #include "./collisionManager.h"
-#include "../../vendors/glm/glm.hpp"
-#include "../../vendors/glm/gtc/matrix_transform.hpp"
+
 #if DEVELOPMENT == 1 
 
     #if STANDALONE == 1
@@ -114,9 +113,6 @@ void Game::Boot()
 
     LOG("Game: " + Application::name + " initialized.");
     
-    Graphics::Texture2D::InitBaseTexture();
-    Graphics::Shader::InitBaseShaders();
-    
     //preload / run game layer
 
     glfwSetWindowTitle(Renderer::GLFW_window_instance, Application::name.c_str());
@@ -216,7 +212,6 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
     LOG("Scene: key not found.");
 }
-
 
 
 //-----------------------------
@@ -414,48 +409,12 @@ void Game::UpdateFrame()
 
     Entity::s_rendered = 0;
 
-    //sort opaque / transparent entities
+    RenderEntities();
+    RenderUI();
 
-    std::vector<std::shared_ptr<Entity>> opaque_entities, transparent_entities;
+    //render vignette overlay if alpha > 0
 
-    for (const auto& entity : currentScene->entities) {
-        if (entity->texture.IsOpaque())
-            opaque_entities.emplace_back(entity);
-        else 
-            transparent_entities.emplace_back(entity);
-    }
-
-    std::sort(opaque_entities.begin(), opaque_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //f-b <
-    std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
-
-    //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
-
-    RenderEntities(opaque_entities);
-
-    if (!opaque_entities.empty())
-        Renderer::Flush();
-
-    RenderEntities(transparent_entities);
-
-    if (!transparent_entities.empty())
-        Renderer::Flush(false);
-
-    //UI render queue
-
-    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
-
-    for (const auto& UI : currentScene->UI)
-        if ((UI.get() && UI) && UI.get()->renderable) 
-            UI->Render();
-
-    //flush UI
-
-    if (!currentScene->UI.empty())
-        Renderer::Flush(false); //fix
-
-    //vignette overlay
-
-    if (currentScene->vignette && currentScene->vignette->alpha >= 0.1f) {
+    if (currentScene->vignette && currentScene->vignette->alpha > 0.0f) {
         currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
         currentScene->vignette->Render(); 
         Renderer::Flush(false);    
@@ -521,17 +480,17 @@ void Game::UpdateFrame()
 
     //debug UI
 
-    #if DEVELOPMENT == 1
-        if (physics && physics->enableDebug) {
-            static_cast<b2World*>(physics->GetWorld())->DebugDraw();
-            _debug->SetFlags(_debug_flags);
-            _debug->Flush();
+    // #if DEVELOPMENT == 1
+    //     if (physics && physics->enableDebug) {
+    //         static_cast<b2World*>(physics->GetWorld())->DebugDraw();
+    //         _debug->SetFlags(_debug_flags);
+    //         _debug->Flush();
 
-            #if STANDALONE == 1
-                _displayInfo->Update(&m_context);  
-            #endif 
-        } 
-    #endif
+    //         #if STANDALONE == 1
+    //             _displayInfo->Update(&m_context);  
+    //         #endif 
+    //     } 
+    // #endif
   
 }
 
@@ -540,7 +499,7 @@ void Game::UpdateFrame()
 
 
 bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity) 
-{
+{return true;
     //cull sprite and tile type entities out of view space
 
     const float width = entity->texture.FrameWidth,
@@ -566,23 +525,92 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
 //-----------------------------
 
 
-void Game::RenderEntities(std::vector<std::shared_ptr<Entity>> entities)
+void Game::RenderEntities()
 {
-    for (auto& entity : entities)
-        if ((entity.get() && entity))
-        {
-            #if STANDALONE == 0
-                entity->renderable = CheckEntityRenderable(entity);
-            #else
-                if (entity->cull) 
+    const auto check_visibility = [this](std::vector<std::shared_ptr<Entity>> entities) -> void {
+        for (auto& entity : entities)
+            if ((entity.get() && entity))
+            {
+                #if STANDALONE == 0
                     entity->renderable = CheckEntityRenderable(entity);
-            #endif
+                #else
+                    if (entity->cull) 
+                        entity->renderable = CheckEntityRenderable(entity);
+                #endif
 
-            if (entity->renderable) {
-                entity->Render();
-                Entity::s_rendered++;
-            }  
+                if (entity->renderable) {
+                    entity->Render();
+                    Entity::s_rendered++;
+                }  
+            }
+    };
+
+    //sort opaque / transparent entities and render in standalone mode
+
+    #if STANDALONE == 1
+
+        std::vector<std::shared_ptr<Entity>> opaque_entities, transparent_entities;
+
+        for (const auto& entity : currentScene->entities) {
+            if (entity->texture.IsOpaque())
+                opaque_entities.emplace_back(entity);
+            else 
+                transparent_entities.emplace_back(entity);
         }
+
+        std::sort(opaque_entities.begin(), opaque_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //f-b <
+        std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
+
+        //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
+
+        check_visibility(opaque_entities);
+
+        if (!opaque_entities.empty())
+            Renderer::Flush();
+
+        check_visibility(transparent_entities);
+
+        if (!transparent_entities.empty())
+            Renderer::Flush(false);
+
+    #else //sort and render entities in editor
+
+        std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
+
+        check_visibility(currentScene->entities);
+
+        if (!currentScene->entities.empty())
+            Renderer::Flush(false);
+    #endif
+}
+
+
+//----------------------------- UI layers
+
+
+void Game::RenderUI()
+{
+    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
+
+    //gather verts from UI sprites, render sprites / text on layer 1
+
+    for (const auto& UI : currentScene->UI)
+        if (UI->renderable && UI->render_layer == 1) 
+            UI->Render();
+
+    //flush UI of sprites
+
+    if (!currentScene->UI.empty())
+        Renderer::Flush(false); 
+
+    //render text layer 2
+
+    for (const auto& UI : currentScene->UI)
+        if (UI->renderable && UI->GetType() == Entity::TEXT && UI->render_layer == 2) 
+            UI->Render();
+
+    if (!currentScene->UI.empty())
+        Renderer::Flush(false); 
 }
 
 
@@ -668,10 +696,10 @@ std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, floa
 }
 
 
-//----------------------------- ui sprite
+//----------------------------- ui sprite default layer 1
 
 
-std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y, int frame)
+std::shared_ptr<Sprite> Game::CreateUISprite(const std::string& key, float x, float y, int frame)
 {
     const Math::Vector2 pos = { x, y };
 
@@ -683,6 +711,8 @@ std::shared_ptr<Sprite> Game::CreateUI(const std::string& key, float x, float y,
         element->ReadSpritesheetData();
         element->SetFrame(frame);
     #endif
+
+    element->render_layer = 1;
 
     return element;
 }
@@ -711,11 +741,13 @@ std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, floa
 {
     const auto text = std::make_shared<Text>(content, x, y, font);
 
-    if (layer == 1)
+    if (layer == 0)
         GetScene()->entities.emplace_back(text);
 
-    if (layer == 2)
+    if (layer == 1 || layer == 2)
         GetScene()->UI.emplace_back(text);
+
+    text->render_layer = layer;
 
     return text;
 }
@@ -731,11 +763,13 @@ std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float 
     if (isStatic)
         geom->SetStatic(true);
 
-    if (layer == 1)
+    if (layer == 0)
         GetScene()->entities.emplace_back(geom);
 
-    if (layer == 2)
+    if (layer == 1 || layer == 2)
         GetScene()->UI.emplace_back(geom);
+
+    geom->render_layer = layer;
 
     return geom;
 }
@@ -748,11 +782,13 @@ std::shared_ptr<Entity> Game::CreateEntity(int type, int layer)
 {
     const auto entity = std::make_shared<Entity>(type);
 
-    if (layer == 1)
+    if (layer == 0)
         GetScene()->entities.emplace_back(entity);
 
-    if (layer == 2)
+    if (layer == 1 || layer == 2)
         GetScene()->UI.emplace_back(entity);
+
+    entity->render_layer = layer;
 
     return entity;
 }

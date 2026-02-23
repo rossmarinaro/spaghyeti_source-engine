@@ -22,7 +22,7 @@ void Time::Update(double _time)
     time->delta = delta; 
 
     System::Application::game->UpdateFrame(); 
-
+    //System::Renderer::UpdateFrameBuffer(System::Application::game->camera);
 }
 
 

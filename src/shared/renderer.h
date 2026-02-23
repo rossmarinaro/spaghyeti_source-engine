@@ -49,19 +49,20 @@ namespace /* SPAGHYETI_CORE */ System {
             Renderer();
             ~Renderer() = default;
 
-            static inline void SetVSync(int rate) { s_vsync = rate; }
-            static inline int GetVSync() { return s_vsync; }
+            static inline void SetVsync(int rate) { s_vsync = rate; }
+            static inline int GetVsync() { return s_vsync; }
+            static inline Renderer* Get() { return s_instance; }
                        
             static void cursor_callback(GLFWwindow* window, double xPos, double yPos);
             static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
             static void input_callback(GLFWwindow* window, int input, int action, int mods);
             static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
             static void window_size_callback(GLFWwindow* window, int width, int height);
-            
+        static void RescaleFrameBuffer(float width, float height);
 	        //static void InitInstances();
             //static void RenderInstances();
             
-            static void Init();
+            static void Init(Renderer* instance);
             static void Update(void* camera);
             static void ShutDown();  
             static void Flush(bool renderOpaque = true); 
@@ -73,14 +74,16 @@ namespace /* SPAGHYETI_CORE */ System {
         private:
 
             static inline const int BUFFERS = 3, 
-                                    m_frameBufferWidth = 1500,
-                                    m_frameBufferHeight = 900;
+                                    m_frameBufferWidth = 1480,
+                                    m_frameBufferHeight = 860;
 
             static inline int s_vsync, s_currentBufferIndex;
 
             GLsync m_fences[BUFFERS];
             GLuint m_VBOs[BUFFERS]; //ring buffer
-            GLuint m_VAO, m_EBO, m_FBO, m_textureColorBuffer;
+            GLuint m_textureColorBuffer, m_VAO, m_EBO, m_FBO ,m_RBO; 
             std::vector<GLuint> m_indices;
+
+            static inline Renderer* s_instance;
     };
 }

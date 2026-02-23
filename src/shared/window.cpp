@@ -109,8 +109,8 @@ void Window::Init()
 
         #else 
 
-            s_width = 750.0f; //380.0f; 
-            s_height = 450.0f; //300.0f; 
+            s_width = 800.0f; //380.0f; 
+            s_height = 500.0f; //300.0f; 
 
         #endif
  
@@ -150,8 +150,6 @@ void Window::Init()
         }
 
     #endif
-
-    Renderer::Init();
 
     LOG("Window: GL Version - " << glGetString(GL_VERSION));
 

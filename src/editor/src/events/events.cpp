@@ -1336,7 +1336,7 @@ void EventListener::BuildAndRun()
         
         command_queue << "   this->GetContext().camera->SetVignette(" + std::to_string(target.second->vignetteVisibility) + ");\n"; 
         command_queue << "   this->GetContext().camera->SetBounds(" + std::to_string(target.second->currentBoundsWidthBegin) + ", " + std::to_string(target.second->currentBoundsWidthEnd) + ", " + std::to_string(target.second->currentBoundsHeightBegin) + ", " + std::to_string(target.second->currentBoundsHeightEnd) + ");\n";
-        command_queue << "   this->GetContext().camera->SetBackgroundColor({ " + std::to_string(target.second->cameraBackgroundColor.x) + ", " + std::to_string(target.second->cameraBackgroundColor.y) + ", " + std::to_string(target.second->cameraBackgroundColor.z) + ", " + std::to_string(target.second->cameraBackgroundColor.w) + " });\n";
+        command_queue << "   this->GetContext().camera->SetBackgroundColor({ " + std::to_string(target.second->cameraBackgroundColor.r) + ", " + std::to_string(target.second->cameraBackgroundColor.g) + ", " + std::to_string(target.second->cameraBackgroundColor.b) + ", " + std::to_string(target.second->cameraBackgroundColor.a) + " });\n";
         command_queue << "   this->GetContext().camera->SetZoom(" + std::to_string(target.second->cameraZoom) + ");\n";
         command_queue << "   this->GetContext().camera->SetPosition({ " + std::to_string(target.second->cameraPosition.x) + ", " + std::to_string(target.second->cameraPosition.y) + " });\n";
     
@@ -1403,7 +1403,7 @@ void EventListener::BuildAndRun()
                     }
 
                     if (sn->make_UI) 
-                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateUI(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
+                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateUISprite(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
                     
                     else  
                         command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
@@ -1812,7 +1812,10 @@ void EventListener::BuildAndRun()
 
         game_src << "       game.LoadScene<" + className + ">();\n";
     }
-    
+
+    int vsync = Editor::Get()->vsync ? 1 : 0;
+
+    game_src << "   System::Renderer::SetVsync(" + std::to_string(vsync) + ");\n";
     game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\", " + isMultiThreaded + ", isMobile);\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       emscripten_exit_with_live_runtime();\n";
@@ -1840,7 +1843,7 @@ void EventListener::BuildAndRun()
         std::filesystem::remove_all((web + "/assets").c_str());
 
     Editor::Log("Project " + s_currentProject + " built successfully.");
-  //  ShowWindow(GetConsoleWindow(), SW_HIDE);
+    //ShowWindow(GetConsoleWindow(), SW_HIDE);
 
 }
 

@@ -39,7 +39,7 @@ namespace /* SPAGHYETI_CORE */ System {
 
             static inline std::string name;
 
-            static void Init(Game* layer);
+            static void Init(Renderer* renderer, Game* layer);
             
             static void Start(
                 Game* layer = nullptr, 
@@ -51,8 +51,7 @@ namespace /* SPAGHYETI_CORE */ System {
             static void ShutDown();
 
 			static inline Game* game; 
-            static inline Events* events;
-            static inline Renderer* renderer;  
+            static inline Events* events;  
 			static inline Resources::Manager* resources;   
             
 		private:

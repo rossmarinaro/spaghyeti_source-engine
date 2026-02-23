@@ -120,7 +120,7 @@ GUI::GUI()
     s_self->cursor->SetTint({ 1.0f, 0.0f, 0.0f }); 
     s_self->cursor->SetAlpha(0.0f);
     s_self->cursor->SetStatic(true); 
-
+System::Renderer::CreateFrameBuffer();
     Editor::Log("GUI launched.");
 
 }
@@ -148,7 +148,6 @@ void GUI::AlignForWidth(float width, float alignment)
 
 void GUI::Render()
 {
-
     if (!running)
         return;
 
@@ -176,16 +175,16 @@ void GUI::Render()
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    if (grid)
-       grid->shader.SetFloat("pitch", grid_quantity, true);
+    if (grid) {
+       auto shader = Graphics::Shader::Get("grid");
+      // shader.SetFloat("pitch", grid_quantity, true);
+    }
 
     if (cursor) {
-        cursor->SetPosition(ImGui::GetMousePos().x, ImGui::GetMousePos().y);   
-        cursor->Render();
+      //  cursor->SetPosition(ImGui::GetMousePos().x, ImGui::GetMousePos().y);   
+      //  cursor->Render();
     }
-     
-    //Renderer::CreateFrameBuffer();
-
+//System::Renderer::CreateFrameBuffer();
 }
 
 
@@ -194,7 +193,6 @@ void GUI::Render()
 
 GUI::~GUI()
 {
-    
     running = false;
 
     ImGui_ImplOpenGL3_Shutdown();
@@ -205,7 +203,6 @@ GUI::~GUI()
     Editor::Log("GUI exited.");
 
     Editor::ShutDown();
-
 }
 
 
@@ -214,7 +211,6 @@ GUI::~GUI()
 
 void GUI::ShowOptionsInit()
 {
-
     #ifdef IMGUI_HAS_VIEWPORT
         ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -229,16 +225,6 @@ void GUI::ShowOptionsInit()
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::Begin("Welcome", &pOpen, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize);
-
-    // ImGuiStyle& style = ImGui::GetStyle();
-    // float width = 0.0f;
-    // width += ImGui::CalcTextSize("New").x;
-    // width += style.ItemSpacing.x;
-    // width += 150.0f;
-    // width += style.ItemSpacing.x;
-    // width += ImGui::CalcTextSize("Open").x;
-
-    // AlignForWidth(width);
 
     if (ImGui::Button("New", ImVec2(System::Window::s_width, 0.0f))) {
  
@@ -256,11 +242,11 @@ void GUI::ShowOptionsInit()
     const float window_width = ImGui::GetContentRegionAvail().x;
     const float window_height = ImGui::GetContentRegionAvail().y;
 
-    System::Renderer::RescaleFrameBuffer(window_width, window_height);
+    //System::Renderer::RescaleFrameBuffer(window_width, window_height);
  
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
-    ImGui::GetWindowDrawList()->AddImage((void*)Graphics::Texture2D::Get("editor logo").ID, ImVec2(pos.x, pos.y), ImVec2(pos.x + window_width, pos.y + window_height)/* , ImVec2(0, 1), ImVec2(1, 0) */);
+    ImGui::GetWindowDrawList()->AddImage((void*)Graphics::Texture2D::Get("editor logo").ID, ImVec2(pos.x, pos.y), ImVec2(pos.x + window_width, pos.y + window_height));
 
     ImGui::SetCursorPos((ImVec2((ImGui::GetWindowSize().x * 0.5f) - 270, (ImGui::GetWindowSize().y * 0.5f) - 230)));
 
@@ -293,7 +279,6 @@ void GUI::ShowOptionsQuit()
 
 void GUI::ShowOptionsSave(bool quit)
 {
-
     auto session = Editor::Get();
 
     ImGui::Text("Do You Want To Save?");
@@ -327,10 +312,8 @@ void GUI::ShowOptionsSave(bool quit)
 
 void GUI::scroll_callback(GLFWwindow* window, double xOffset, double yOffset) 
 {
-
     if (!ImGui::IsAnyItemHovered()) 
     {
-
         auto session = Editor::Get();
 
         //zoom camera

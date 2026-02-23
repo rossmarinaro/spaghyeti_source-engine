@@ -60,7 +60,8 @@ namespace editor {
                  embed_files,
                  webgl_embed_files,
                  preserveSrc,
-                 isMultiThreaded;
+                 isMultiThreaded,
+                 vsync;
 			
 			System::Game* game;
             EventListener* events;

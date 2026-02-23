@@ -2,7 +2,7 @@
 #include "../../../build/sdk/include/window.h"
 #include "../../shared/renderer.h"
 
-void System::Application::Init(Game* layer)
+void System::Application::Init(Renderer* renderer, Game* layer)
 {
 
     //set top-left header and bottom toolbar icon (not binary, this image is stored as pixel data)
@@ -20,9 +20,12 @@ void System::Application::Init(Game* layer)
     #if STANDALONE == 0
         game = layer;
     #endif
- 
-    //run game layer
-     
+
+    Renderer::Init(renderer);
+
+    Graphics::Texture2D::InitBaseTexture();LOG(3);
+    Graphics::Shader::InitBaseShaders();
+    
     game->Boot();
 
     //glfwMaximizeWindow(Renderer::GLFW_window_instance);
@@ -55,8 +58,6 @@ void System::Application::Update(void* layer)
  
     Time::Update(glfwGetTime());  
 
-    Renderer::UpdateFrameBuffer(game->camera);
-
     glfwPollEvents(); 
 
     glfwSetFramebufferSizeCallback(Renderer::GLFW_window_instance, Renderer::framebuffer_size_callback);
@@ -67,7 +68,7 @@ void System::Application::Update(void* layer)
 
  
 
-//-----------------------------
+//----------------------------- 
 
 
 
@@ -79,7 +80,6 @@ void System::Application::Start(Game* layer, const std::string& key, bool isMult
 
     LOG("PASTABOSS ENTERPRISE:: SpagYETI Engine: application started. 👌");  
 
-    renderer = new Renderer;
     resources = new Resources::Manager;
     events = new Events;
 
@@ -95,11 +95,13 @@ void System::Application::Start(Game* layer, const std::string& key, bool isMult
 
         game = layer;
 
-        Window::Init();    
+        Window::Init();  
+        
+        Renderer renderer;
  
         //run main app process
 
-        Init(game);
+        Init(&renderer, game);
 
         #ifdef __EMSCRIPTEN__
             emscripten_set_main_loop_arg(Update, game, 0, 1);
@@ -139,9 +141,6 @@ void System::Application::ShutDown()
     events = nullptr;
 
     Renderer::ShutDown();
-
-    delete renderer;
-    renderer = nullptr;
 
     LOG("Application terminated successfully. 👌");
 };

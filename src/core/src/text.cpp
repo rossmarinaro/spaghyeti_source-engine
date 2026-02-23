@@ -346,7 +346,7 @@ void Text::Render()
 
     if (textType == FONT)
     {
-        //auto renderer = System::Application::renderer;
+        //auto renderer = System::Renderer::Get();
         //const int elementCount = 6 * System::Renderer::MAX_QUADS;
 
         //flush if max index count exceeds element count, or textures reached max OR shader is different than renderer's active shader

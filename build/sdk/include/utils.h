@@ -6,15 +6,15 @@
 
 #ifndef LOG
 
-    #if DEVELOPMENT == 1 && STANDALONE == 1
+   // #if DEVELOPMENT == 1 && STANDALONE == 1
         #include <iostream>
         #include <fstream>
         #define LOG(msg) \
             std::cout << msg << std::endl; \
             std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; 
-   #else
-       #define LOG(msg) 0;
-   #endif
+  // #else
+   //    #define LOG(msg) 0;
+   //#endif
 
 #endif
 

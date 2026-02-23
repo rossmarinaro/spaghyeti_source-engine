@@ -87,7 +87,7 @@ void Texture2D::InitBaseTexture()
     #endif
     
     System::Application::resources->textures[key] = baseTexture; 
-    System::Application::renderer->textureSlots[0] = baseTexture.ID; 
+    System::Renderer::Get()->textureSlots[0] = baseTexture.ID; 
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -266,7 +266,7 @@ void Texture2D::Update(
     bool flipY
 ) 
 {   
-    auto renderer = System::Application::renderer;
+    auto renderer = System::Renderer::Get();
     const int elementCount = 6 * System::Renderer::MAX_QUADS;
 
     //flush if max index count exceeds element count, or textures reached max OR shader is different than renderer's active shader

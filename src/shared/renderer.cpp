@@ -3,8 +3,8 @@
 #include "../../build/sdk/include/window.h"
 #include "../core/src/debug.h"
 #include "./renderer.h"
-
-
+#include "../vendors/glm/glm.hpp"
+#include "../vendors/glm/gtc/type_ptr.hpp"
 using namespace System;
 
 //--------------------------------- 
@@ -79,11 +79,11 @@ Renderer::Renderer()
 //---------------------------------- batch rendering
 
 
-void Renderer::Init() 
+void Renderer::Init(Renderer* instance) 
 {
-    const auto renderer = System::Application::renderer;
+    s_instance = new Renderer;
 
-    s_vsync = 1;
+    s_vsync = 0;
     s_currentBufferIndex = 0;
 
     LOG("Renderer: Initializing buffers.");
@@ -93,35 +93,35 @@ void Renderer::Init()
     //indices format x6: 0 1 2 2 3 0  
 
     for (unsigned int i = 0; i < MAX_QUADS * 6; ++i) {
-        renderer->m_indices.push_back(i * 4);
-        renderer->m_indices.push_back(i * 4 + 1);
-        renderer->m_indices.push_back(i * 4 + 2);
-        renderer->m_indices.push_back(i * 4 + 2);
-        renderer->m_indices.push_back(i * 4 + 3);
-        renderer->m_indices.push_back(i * 4);
+        s_instance->m_indices.push_back(i * 4);
+        s_instance->m_indices.push_back(i * 4 + 1);
+        s_instance->m_indices.push_back(i * 4 + 2);
+        s_instance->m_indices.push_back(i * 4 + 2);
+        s_instance->m_indices.push_back(i * 4 + 3);
+        s_instance->m_indices.push_back(i * 4);
     }
 
-    glGenVertexArrays(1, &renderer->m_VAO); 
-    glBindVertexArray(renderer->m_VAO); 
+    glGenVertexArrays(1, &s_instance->m_VAO); 
+    glBindVertexArray(s_instance->m_VAO); 
 
-    glGenBuffers(BUFFERS, renderer->m_VBOs);   
-    glGenBuffers(1, &renderer->m_EBO);
+    glGenBuffers(BUFFERS, s_instance->m_VBOs);   
+    glGenBuffers(1, &s_instance->m_EBO);
 
     //bind vbos (ring buffering)
 
     for (unsigned int i = 0; i < BUFFERS; i++) {
-        glBindBuffer(GL_ARRAY_BUFFER, renderer->m_VBOs[i]);    
+        glBindBuffer(GL_ARRAY_BUFFER, s_instance->m_VBOs[i]);    
         glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_STREAM_DRAW);
     }
 
     //bind element buffer
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->m_EBO);    
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderer->m_indices.size() * sizeof(GLint), renderer->m_indices.data(), GL_STREAM_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_instance->m_EBO);    
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, s_instance->m_indices.size() * sizeof(GLint), s_instance->m_indices.data(), GL_STREAM_DRAW);
 
     EnableBlending();
     EnableAttributes();
-    CreateFrameBuffer();
+    //CreateFrameBuffer();
 
     glDisable(GL_CULL_FACE); 
     glBindBuffer(GL_ARRAY_BUFFER, 0);       
@@ -134,32 +134,38 @@ void Renderer::Init()
 
 void Renderer::Update(void* camera) 
 { 
-    const auto backgroundColor = ((Camera*)camera)->GetBackgroundColor();
-    const auto renderer = System::Application::renderer;
+    const auto backgroundColor = static_cast<Camera*>(camera)->GetBackgroundColor();
 
     glfwSwapInterval(s_vsync); //enable / disable vsync
+    
+   // if (s_instance)
+       //glBindFramebuffer(GL_FRAMEBUFFER, s_instance->m_FBO);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, renderer->m_FBO);
-    glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight);
-
+    //glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
     glClearColor( 
         backgroundColor->r * backgroundColor->a, //r
         backgroundColor->g * backgroundColor->a, //g
         backgroundColor->b * backgroundColor->a, //b
         backgroundColor->a //a
-    );
+    ); 
+    
+    
+    
+    int screenWidth, screenHeight;
+        glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
+    glViewport(0, 0, screenWidth, screenHeight); 
 }
 
 
-//----------------------------------------------- flush batch
+//----------------------------------------------- flush batch   
 
 
 void Renderer::Flush(bool renderOpaque)
-{
-    auto renderer = System::Application::renderer;
-
-    if (!renderer->vertices.empty()) 
+{glDisable(GL_DEPTH_TEST);
+    //render quads in verts vector
+    
+    if (!s_instance->vertices.empty()) 
     {
         if (renderOpaque) {
             glEnable(GL_DEPTH_TEST);
@@ -175,9 +181,9 @@ void Renderer::Flush(bool renderOpaque)
 
         //wait for gpu to finish rendering current buffer
 
-        if (renderer->m_fences[s_currentBufferIndex] != nullptr) 
+        if (s_instance->m_fences[s_currentBufferIndex] != nullptr) 
         {
-            GLenum result = glClientWaitSync(renderer->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
+            GLenum result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
 
             if (result == GL_WAIT_FAILED) { 
                 LOG("Renderer: skipping render. buffer wait failed.");
@@ -186,34 +192,54 @@ void Renderer::Flush(bool renderOpaque)
 
             //remove fence
 
-            glDeleteSync(renderer->m_fences[s_currentBufferIndex]);
-            renderer->m_fences[s_currentBufferIndex] = nullptr;
+            glDeleteSync(s_instance->m_fences[s_currentBufferIndex]);
+            s_instance->m_fences[s_currentBufferIndex] = nullptr;
         }
 
         //bind textures to defined slot indices
 
         glBindTexture(GL_TEXTURE_2D, 0);
         
-        for (unsigned int i = 0; i < renderer->textureSlotIndex; i++) { 
+        for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
             glActiveTexture(GL_TEXTURE0 + i);
-            glBindTexture(GL_TEXTURE_2D, renderer->textureSlots[i]);  
+            glBindTexture(GL_TEXTURE_2D, s_instance->textureSlots[i]);  
         }   
 
         //bind vertex array and current vbo
 
-        glBindVertexArray(renderer->m_VAO); 
+        glBindVertexArray(s_instance->m_VAO); 
 
-        GLuint activeVBO = renderer->m_VBOs[s_currentBufferIndex];
+        GLuint activeVBO = s_instance->m_VBOs[s_currentBufferIndex];
 
-        glBindBuffer(GL_ARRAY_BUFFER, activeVBO);         
-        glBufferSubData(GL_ARRAY_BUFFER, 0, renderer->vertices.size() * sizeof(Math::Graphics::Vertex), renderer->vertices.data());
+        glBindBuffer(GL_ARRAY_BUFFER, activeVBO);           
+        glBufferSubData(GL_ARRAY_BUFFER, 0, s_instance->vertices.size() * sizeof(Math::Graphics::Vertex), s_instance->vertices.data());
 
         EnableAttributes();
-        glUseProgram(renderer->activeShaderID);
+        glUseProgram(s_instance->activeShaderID);
+//  auto shader = Graphics::Shader::Get("sprite");
+//     int samplers[System::Renderer::MAX_TEXTURES];
 
+//     for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++) 
+//         samplers[i] = i;
+
+//     shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
+
+//     const auto camera = System::Application::game->camera;
+
+//     const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+//     const glm::mat4 ortho = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
+
+//     const Math::Matrix4 proj = { 
+//         { ortho[0][0], ortho[0][1], ortho[0][2], ortho[0][3] }, 
+//         { ortho[1][0], ortho[1][1], ortho[1][2], ortho[1][3] },   
+//         { ortho[2][0], ortho[2][1], ortho[2][2], ortho[2][3] },  
+//         { ortho[3][0], ortho[3][1], ortho[3][2], ortho[3][3] }
+//     };
+
+//     shader.SetMat4("proj", proj);  
         //draw elements from vertices vector
 
-        glDrawElements(renderer->drawStyle == GL_LINE ? GL_LINES : GL_TRIANGLES, renderer->indexCount, GL_UNSIGNED_INT, 0); //tell ui about it
+        glDrawElements(s_instance->drawStyle == GL_LINE ? GL_LINES : GL_TRIANGLES, s_instance->indexCount, GL_UNSIGNED_INT, 0); //tell ui about it
         glBindVertexArray(0);
 
         //disable attributes and unbind
@@ -226,7 +252,7 @@ void Renderer::Flush(bool renderOpaque)
 
         //start new gpu async await call fence 
 
-        renderer->m_fences[s_currentBufferIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); 
+        s_instance->m_fences[s_currentBufferIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); 
 
         //cycle to next buffer in ring
 
@@ -235,9 +261,9 @@ void Renderer::Flush(bool renderOpaque)
 
     //reset batch
 
-    renderer->vertices.clear();
-    renderer->textureSlotIndex = 1;
-    renderer->indexCount = 0;
+    s_instance->vertices.clear();
+    s_instance->textureSlotIndex = 1;
+    s_instance->indexCount = 0;
 }
 
 
@@ -246,27 +272,36 @@ void Renderer::Flush(bool renderOpaque)
 
 void Renderer::CreateFrameBuffer()
 {
-    const auto renderer = System::Application::renderer;
+    if (s_instance)
+    {
+        glGenFramebuffers(1, &s_instance->m_FBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, s_instance->m_FBO);
+        glGenTextures(1, &s_instance->m_textureColorBuffer);
+        glBindTexture(GL_TEXTURE_2D, s_instance->m_textureColorBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_frameBufferWidth, m_frameBufferHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glGenFramebuffers(1, &renderer->m_FBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, renderer->m_FBO);
-    glGenTextures(1, &renderer->m_textureColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, renderer->m_textureColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_frameBufferWidth, m_frameBufferHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        #ifndef __EMSCRIPTEN__
+            glGenerateMipmap(GL_TEXTURE_2D);
+        #endif
 
-    #ifndef __EMSCRIPTEN__
-        glGenerateMipmap(GL_TEXTURE_2D);
-    #endif
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s_instance->m_textureColorBuffer, 0);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderer->m_textureColorBuffer, 0);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            LOG("Renderer: Error Framebuffer: Incomplete Buffer.");
+        }
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        LOG("Renderer: Error Framebuffer: Incomplete Buffer.");
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        //render buffer
+
+        glBindRenderbuffer(GL_RENDERBUFFER, s_instance->m_RBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_instance->m_RBO);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0); 
+
     }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
@@ -275,36 +310,52 @@ void Renderer::CreateFrameBuffer()
 
 void Renderer::UpdateFrameBuffer(void* camera)
 {
-    const auto renderer = System::Application::renderer;
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_BLEND);
+
     glViewport(0, 0, Window::s_scaleWidth, Window::s_scaleHeight); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
 
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, renderer->m_FBO);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
+    if (s_instance) {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, s_instance->m_FBO);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
 
-    int screenWidth, screenHeight;
-    glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
+        int screenWidth, screenHeight;
+        glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
 
-    glBlitFramebuffer(0, 0, m_frameBufferWidth, m_frameBufferHeight, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST); 
+        glBlitFramebuffer(0, 0, m_frameBufferWidth, m_frameBufferHeight, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST); 
+    }
 }
 
+void Renderer::RescaleFrameBuffer(float width, float height)
+{
+    if (!s_instance)
+        return;
 
+    glBindTexture(GL_TEXTURE_2D, s_instance->m_textureColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s_instance->m_textureColorBuffer, 0);
+
+    glBindRenderbuffer(GL_RENDERBUFFER, s_instance->m_RBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_instance->m_RBO);
+}
 
 //---------------------------------
 
 
 void Renderer::ShutDown() 
 { 
-    const auto renderer = System::Application::renderer;
-
-    glDeleteVertexArrays(1, &renderer->m_VAO);
-    glDeleteBuffers(BUFFERS, renderer->m_VBOs);
-    glDeleteBuffers(1, &renderer->m_EBO);
+    glDeleteVertexArrays(1, &s_instance->m_VAO);
+    glDeleteBuffers(BUFFERS, s_instance->m_VBOs);
+    glDeleteBuffers(1, &s_instance->m_EBO);
     
-    renderer->vertices.clear();
+    s_instance->vertices.clear();
+
+    delete s_instance;
+    s_instance = nullptr;
 
     LOG("Renderer: shutting down...");
 }
@@ -373,7 +424,22 @@ void Renderer::input_callback(GLFWwindow* window, int input, int action, int mod
 void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     Window::s_width = width;
     Window::s_height = height;
-    glViewport(0, 0, Window::s_width, Window::s_height);
+    glViewport(0, 0,400, 400); LOG(11);
+    auto shader = Graphics::Shader::Get("sprite");
+// LOG(111);
+//     const auto camera = System::Game::GetScene()->GetContext().camera;LOG(12);
+// if (!camera)return;LOG(13);
+//     const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+//     const glm::mat4 ortho = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
+
+//     const Math::Matrix4 proj = { 
+//         { ortho[0][0], ortho[0][1], ortho[0][2], ortho[0][3] }, 
+//         { ortho[1][0], ortho[1][1], ortho[1][2], ortho[1][3] },   
+//         { ortho[2][0], ortho[2][1], ortho[2][2], ortho[2][3] },  
+//         { ortho[3][0], ortho[3][1], ortho[3][2], ortho[3][3] }
+//     };
+
+//     shader.SetMat4("proj", proj);  
 }
 
 //-----------------------------------

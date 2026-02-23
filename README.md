@@ -6,6 +6,8 @@
 
 Features:
 
+Triple buffer batch rendering (partial support) with additional framebuffer.
+
 Rendering system / content creation tool with audio generation, texturing, and logging. 
 
 Supports loading image (png), shaders (glsl text), json, csv, and raw byte encoded binary and compressed files.
@@ -15,6 +17,8 @@ Build assets can be either embedded or referenced.
 Scene heirarchy supports sprites, CSV tilemaps (supports flipped tiles), audio, text, spawner, and empty nodes.
 
 Supports native C++ scripting for nodes.
+
+3 rendering layers.
 
 Dynamic entity spawning to mitigate large memory usage.
 
@@ -26,13 +30,13 @@ Project configurations are saved as a custom ".SPAGHYETI" file which are decrypt
 
 Editor created in-scene game objects can be saved as prefabs for repeated use.
 
-Manual per-Scene asset and shader loading to reduce unnecessary file loads
+Manual per-Scene asset and shader loading to reduce unnecessary file loads.
 
-Shader platform compatible versions are automatically updated per build type
+Shader platform compatible versions are automatically updated per build type.
 
 For Emscripten WebGL builds, download the latest SDK release, run emsdk install tot, navigate to emscripten install directory, run emcmdprompt.bat and cd to the "web" directory in this tree. compile with that directory's MakeFile.
 
-Requires install of Python 3 to run build scripts
+Requires install of Python 3 to run build scripts.
 
 Editor:
 ![image info](./images/screenshot.png)

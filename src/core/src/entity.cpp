@@ -24,6 +24,7 @@ Entity::Entity(int type, bool isSpawn):
 {
     name = "Untitled_" + std::to_string(s_count);
     ID = GenerateID();
+    render_layer = 0;
 
     SetShader("sprite");
     
@@ -57,6 +58,7 @@ Entity::Entity(int type, float x, float y, bool isSpawn):
     flipY = false;
     depth = s_depth + 1;
     ID = GenerateID();
+    render_layer = 0;
 
     SetShader("sprite");
 
@@ -234,7 +236,7 @@ void Geometry::Render()
         depth
     ); 
 
-    System::Application::renderer->drawStyle = m_drawStyle;
+    System::Renderer::Get()->drawStyle = m_drawStyle;
 }
 
 
@@ -767,7 +769,7 @@ void Sprite::Render()
             flipY
         );  
 
-        System::Application::renderer->drawStyle = 1;
+        System::Renderer::Get()->drawStyle = 1;
 
     }
 

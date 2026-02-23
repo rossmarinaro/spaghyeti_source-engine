@@ -20,7 +20,7 @@ class Entity {
 
         enum { GENERIC, UI, SPRITE, GEOMETRY, TEXT, TILE };
 
-		int depth;
+		int depth, render_layer;
 
 		float rotation, alpha, outlineWidth;  
 		
