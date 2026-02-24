@@ -24,6 +24,8 @@ void Editor::Update()
 
     const auto gui = GUI::Get();
 
+    //set grid shader and render
+
     if (gui->grid) 
     {
         auto shader = Graphics::Shader::Get("grid");
@@ -32,7 +34,7 @@ void Editor::Update()
         shader.SetFloat("alpha", gui->grid->alpha);
 
         gui->grid->Render(); 
-        Renderer::Flush(true);
+        Renderer::Flush();
     }
 
     Time::Update(glfwGetTime());
@@ -51,10 +53,6 @@ void Editor::Update()
         else 
             s_self->events->canSave = true;
     }
- 
-    glfwPollEvents();
-
-    gui->Render(); 
 
     //track mouse position by translating screen space to world space 
 
@@ -72,7 +70,7 @@ void Editor::Update()
     s_self->game->inputs->mouseX = resultPosition.x - s_self->game->camera->GetPosition()->x - 50;        
     s_self->game->inputs->mouseY = resultPosition.y - s_self->game->camera->GetPosition()->y;
 
-    //current selected entity
+    //current selected entity / render selector
        
     if (s_self->s_selector && selectedEntity)
     {
@@ -93,11 +91,13 @@ void Editor::Update()
             const auto text = std::static_pointer_cast<Text>(selectedEntity);
             s_self->s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
         } 
-
-        s_self->s_selector->Render();
-
-        Renderer::Flush(true);
     } 
+
+    glfwPollEvents();
+
+    //render main gui overlay
+
+    gui->Render(); 
     
 	glfwSetFramebufferSizeCallback(Renderer::GLFW_window_instance, Renderer::framebuffer_size_callback);
     glfwSetWindowSizeCallback(Renderer::GLFW_window_instance, Renderer::window_size_callback); 
@@ -211,6 +211,7 @@ void Editor::Start()
     s_self->s_selector->SetDrawStyle(0);
     s_self->s_selector->SetThickness(2.0f);
     s_self->s_selector->SetAlpha(0.0f);
+    s_self->s_selector->SetDepth(1000);
 
     //main update loop
 

@@ -603,6 +603,15 @@ void Game::RenderUI()
     if (!currentScene->UI.empty())
         Renderer::Flush(false); 
 
+    //render geom layer 2
+
+    for (const auto& UI : currentScene->UI)
+        if (UI->renderable && UI->GetType() == Entity::GEOMETRY && UI->render_layer == 2) 
+            UI->Render();
+
+    if (!currentScene->UI.empty())
+        Renderer::Flush(false); 
+
     //render text layer 2
 
     for (const auto& UI : currentScene->UI)

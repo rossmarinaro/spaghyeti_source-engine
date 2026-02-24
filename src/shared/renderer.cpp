@@ -226,7 +226,7 @@ void Renderer::Flush(bool renderOpaque)
 
         //draw elements from vertices vector
 
-        glDrawElements(s_instance->drawStyle == 0 ? GL_LINES : GL_TRIANGLES, s_instance->indexCount, GL_UNSIGNED_INT, 0); //tell ui about it
+        glDrawElements(s_instance->drawStyle == 0 ? GL_LINE_LOOP : GL_TRIANGLES, s_instance->indexCount, GL_UNSIGNED_INT, 0); 
         glBindVertexArray(0);
 
         //disable attributes and unbind
