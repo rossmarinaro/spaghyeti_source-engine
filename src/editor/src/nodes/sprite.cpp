@@ -494,9 +494,9 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         {
                             //apply frames
  
-                            if (ImGui::Button("apply") && !framesApplied && frames.size()) {
+                            if (ImGui::Button("apply") && !framesApplied) {
                           
-                                frames.clear();
+                                frames.clear(); Editor::Log("1");
 
                                 for (int i = 0; i < frame; i++) 
                                     frames.push_back({ frame_x[i], frame_y[i], frame_width[i], frame_height[i], frame_fX[i], frame_fY[i]}); 
@@ -806,7 +806,7 @@ void SpriteNode::Render(float _positionX, float _positionY, float _rotation, flo
 
         else
             spriteHandle->StopAnimation();
-            
+             
         //entity physics body transform
         
         if (bodies.size())

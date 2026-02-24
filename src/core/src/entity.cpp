@@ -588,7 +588,6 @@ void Sprite::SetStroke(bool isOutlined, const Math::Vector3& color, float width)
 
 void Sprite::ReadSpritesheetData()
 {    
-    
     const auto spritesheet = System::Resources::Manager::GetSpritesheetPath(key);
     const auto rawSpritesheetData = System::Resources::Manager::GetRawSpritesheetData(key);
 
