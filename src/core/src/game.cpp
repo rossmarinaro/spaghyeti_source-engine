@@ -480,17 +480,17 @@ void Game::UpdateFrame()
 
     //debug UI
 
-    // #if DEVELOPMENT == 1
-    //     if (physics && physics->enableDebug) {
-    //         static_cast<b2World*>(physics->GetWorld())->DebugDraw();
-    //         _debug->SetFlags(_debug_flags);
-    //         _debug->Flush();
+    #if DEVELOPMENT == 1
+        if (physics && physics->enableDebug) {
+            static_cast<b2World*>(physics->GetWorld())->DebugDraw();
+            _debug->SetFlags(_debug_flags);
+            _debug->Flush();
 
-    //         #if STANDALONE == 1
-    //             _displayInfo->Update(&m_context);  
-    //         #endif 
-    //     } 
-    // #endif
+            #if STANDALONE == 1
+                _displayInfo->Update(&m_context);  
+            #endif 
+        } 
+    #endif
   
 }
 
@@ -499,7 +499,7 @@ void Game::UpdateFrame()
 
 
 bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity) 
-{return true;
+{
     //cull sprite and tile type entities out of view space
 
     const float width = entity->texture.FrameWidth,
@@ -578,7 +578,7 @@ void Game::RenderEntities()
         std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
 
         check_visibility(currentScene->entities);
-
+ 
         if (!currentScene->entities.empty())
             Renderer::Flush(false);
     #endif

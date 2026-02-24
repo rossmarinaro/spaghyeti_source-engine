@@ -3,8 +3,7 @@
 #include "../../build/sdk/include/window.h"
 #include "../core/src/debug.h"
 #include "./renderer.h"
-#include "../vendors/glm/glm.hpp"
-#include "../vendors/glm/gtc/type_ptr.hpp"
+
 using namespace System;
 
 //--------------------------------- 
@@ -30,7 +29,7 @@ void EnableAttributes()
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, rotation)); //rotation
     glEnableVertexAttribArray(2);
 
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, u)); //uv
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, u)); //uv (tex coords)
     glEnableVertexAttribArray(3);
 
     glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, texID)); //texID
@@ -39,14 +38,15 @@ void EnableAttributes()
     glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, r)); //rgba
     glEnableVertexAttribArray(5);
 
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineR)); //rgba
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineR)); //outline rgba
     glEnableVertexAttribArray(6);
 
-    glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineWidth)); //rgba
+    glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineWidth)); //outline size
     glEnableVertexAttribArray(7);
 
     for (int i = 0; i < 4; i++) { //4 x 4 model view matrix 
-        glVertexAttribPointer(8 + i, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, modelView) + (sizeof(float) * 4 * i)); 
+        size_t offset = offsetof(Math::Graphics::Vertex, modelView) + sizeof(float) * 4 * i;
+        glVertexAttribPointer(8 + i, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), reinterpret_cast<const void*>(offset)); 
         glEnableVertexAttribArray(8 + i);
     }
 
@@ -63,10 +63,6 @@ Renderer::Renderer()
    drawStyle = 1;
    activeShaderID = 0;
 
-    #ifndef __EMSCRIPTEN__
-        drawStyle = GL_FILL;
-    #endif
-
     for (size_t i = 0; i < BUFFERS; i++)  
         m_fences[i] = nullptr;
 
@@ -79,7 +75,7 @@ Renderer::Renderer()
 //---------------------------------- batch rendering
 
 
-void Renderer::Init(Renderer* instance) 
+void Renderer::Init() 
 {
     s_instance = new Renderer;
 
@@ -121,7 +117,10 @@ void Renderer::Init(Renderer* instance)
 
     EnableBlending();
     EnableAttributes();
-    //CreateFrameBuffer();
+
+    #if STANDALONE == 1
+        CreateFrameBuffer();
+    #endif
 
     glDisable(GL_CULL_FACE); 
     glBindBuffer(GL_ARRAY_BUFFER, 0);       
@@ -137,11 +136,18 @@ void Renderer::Update(void* camera)
     const auto backgroundColor = static_cast<Camera*>(camera)->GetBackgroundColor();
 
     glfwSwapInterval(s_vsync); //enable / disable vsync
-    
-   // if (s_instance)
-       //glBindFramebuffer(GL_FRAMEBUFFER, s_instance->m_FBO);
 
-    //glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight); 
+    #if STANDALONE == 1
+        if (s_instance) {
+            glBindFramebuffer(GL_FRAMEBUFFER, s_instance->m_FBO);
+            glViewport(0, 0, m_frameBufferWidth, m_frameBufferHeight); 
+        }
+    #else
+        int screenWidth, screenHeight;
+        glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
+        glViewport(0, 0, screenWidth, screenHeight); 
+    #endif
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
     glClearColor( 
         backgroundColor->r * backgroundColor->a, //r
@@ -149,12 +155,6 @@ void Renderer::Update(void* camera)
         backgroundColor->b * backgroundColor->a, //b
         backgroundColor->a //a
     ); 
-    
-    
-    
-    int screenWidth, screenHeight;
-        glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
-    glViewport(0, 0, screenWidth, screenHeight); 
 }
 
 
@@ -162,22 +162,29 @@ void Renderer::Update(void* camera)
 
 
 void Renderer::Flush(bool renderOpaque)
-{glDisable(GL_DEPTH_TEST);
+{
+    if (!s_instance)
+        return;
+
     //render quads in verts vector
     
     if (!s_instance->vertices.empty()) 
     {
-        if (renderOpaque) {
-            glEnable(GL_DEPTH_TEST);
-            glDepthFunc(GL_LEQUAL);
-            glDepthMask(GL_TRUE);
-            glDisable(GL_BLEND);
-        }
-
-        else {
-            EnableBlending();
-            glDepthMask(GL_FALSE);
-        }
+        #if STANDALONE == 1
+            if (renderOpaque) {
+                glEnable(GL_DEPTH_TEST);
+                glDepthFunc(GL_LEQUAL);
+                glDepthMask(GL_TRUE);
+                glDisable(GL_BLEND);
+            }
+            else {
+                EnableBlending();
+                glDepthMask(GL_FALSE);
+            }
+        #else
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_SCISSOR_TEST);
+        #endif
 
         //wait for gpu to finish rendering current buffer
 
@@ -216,30 +223,10 @@ void Renderer::Flush(bool renderOpaque)
 
         EnableAttributes();
         glUseProgram(s_instance->activeShaderID);
-//  auto shader = Graphics::Shader::Get("sprite");
-//     int samplers[System::Renderer::MAX_TEXTURES];
 
-//     for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++) 
-//         samplers[i] = i;
-
-//     shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
-
-//     const auto camera = System::Application::game->camera;
-
-//     const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-//     const glm::mat4 ortho = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
-
-//     const Math::Matrix4 proj = { 
-//         { ortho[0][0], ortho[0][1], ortho[0][2], ortho[0][3] }, 
-//         { ortho[1][0], ortho[1][1], ortho[1][2], ortho[1][3] },   
-//         { ortho[2][0], ortho[2][1], ortho[2][2], ortho[2][3] },  
-//         { ortho[3][0], ortho[3][1], ortho[3][2], ortho[3][3] }
-//     };
-
-//     shader.SetMat4("proj", proj);  
         //draw elements from vertices vector
 
-        glDrawElements(s_instance->drawStyle == GL_LINE ? GL_LINES : GL_TRIANGLES, s_instance->indexCount, GL_UNSIGNED_INT, 0); //tell ui about it
+        glDrawElements(s_instance->drawStyle == 0 ? GL_LINES : GL_TRIANGLES, s_instance->indexCount, GL_UNSIGNED_INT, 0); //tell ui about it
         glBindVertexArray(0);
 
         //disable attributes and unbind
@@ -296,10 +283,10 @@ void Renderer::CreateFrameBuffer()
 
         //render buffer
 
-        glBindRenderbuffer(GL_RENDERBUFFER, s_instance->m_RBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_instance->m_RBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0); 
+        // glBindRenderbuffer(GL_RENDERBUFFER, s_instance->m_RBO);
+        // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
+        // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_instance->m_RBO);
+        // glBindRenderbuffer(GL_RENDERBUFFER, 0); 
 
     }
 }
@@ -327,21 +314,6 @@ void Renderer::UpdateFrameBuffer(void* camera)
     }
 }
 
-void Renderer::RescaleFrameBuffer(float width, float height)
-{
-    if (!s_instance)
-        return;
-
-    glBindTexture(GL_TEXTURE_2D, s_instance->m_textureColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s_instance->m_textureColorBuffer, 0);
-
-    glBindRenderbuffer(GL_RENDERBUFFER, s_instance->m_RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_instance->m_RBO);
-}
 
 //---------------------------------
 
@@ -418,37 +390,25 @@ void Renderer::input_callback(GLFWwindow* window, int input, int action, int mod
 }
 
 
+void Resize(GLFWwindow* window, int width, int height) {
+    Window::s_width = width;
+    Window::s_height = height;
+    glViewport(0, 0, Window::s_width, Window::s_height);
+}
+
+
 //----------------------------------------
 
 
 void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    Window::s_width = width;
-    Window::s_height = height;
-    glViewport(0, 0,400, 400); LOG(11);
-    auto shader = Graphics::Shader::Get("sprite");
-// LOG(111);
-//     const auto camera = System::Game::GetScene()->GetContext().camera;LOG(12);
-// if (!camera)return;LOG(13);
-//     const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-//     const glm::mat4 ortho = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
-
-//     const Math::Matrix4 proj = { 
-//         { ortho[0][0], ortho[0][1], ortho[0][2], ortho[0][3] }, 
-//         { ortho[1][0], ortho[1][1], ortho[1][2], ortho[1][3] },   
-//         { ortho[2][0], ortho[2][1], ortho[2][2], ortho[2][3] },  
-//         { ortho[3][0], ortho[3][1], ortho[3][2], ortho[3][3] }
-//     };
-
-//     shader.SetMat4("proj", proj);  
+    Resize(window, width, height);
 }
 
 //-----------------------------------
 
 
 void Renderer::window_size_callback(GLFWwindow* window, int width, int height) {
-    Window::s_width = width;
-    Window::s_height = height;
-    glViewport(0, 0, Window::s_width, Window::s_height);
+    Resize(window, width, height);
 }
 
 

@@ -58,11 +58,11 @@ namespace /* SPAGHYETI_CORE */ System {
             static void input_callback(GLFWwindow* window, int input, int action, int mods);
             static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
             static void window_size_callback(GLFWwindow* window, int width, int height);
-        static void RescaleFrameBuffer(float width, float height);
+
 	        //static void InitInstances();
             //static void RenderInstances();
             
-            static void Init(Renderer* instance);
+            static void Init();
             static void Update(void* camera);
             static void ShutDown();  
             static void Flush(bool renderOpaque = true); 
@@ -81,7 +81,7 @@ namespace /* SPAGHYETI_CORE */ System {
 
             GLsync m_fences[BUFFERS];
             GLuint m_VBOs[BUFFERS]; //ring buffer
-            GLuint m_textureColorBuffer, m_VAO, m_EBO, m_FBO ,m_RBO; 
+            GLuint m_textureColorBuffer, m_VAO, m_EBO, m_FBO/* , m_RBO */; 
             std::vector<GLuint> m_indices;
 
             static inline Renderer* s_instance;

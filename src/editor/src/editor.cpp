@@ -22,19 +22,30 @@ void Editor::Update()
 {
     Renderer::Update(s_self->game->camera); 
 
-    if (GUI::Get()->grid)
-        GUI::Get()->grid->Render();
-glDisable(GL_SCISSOR_TEST);
+    const auto gui = GUI::Get();
+
+    if (gui->grid) 
+    {
+        auto shader = Graphics::Shader::Get("grid");
+
+        shader.SetFloat("pitch", gui->grid_quantity);
+        shader.SetFloat("alpha", gui->grid->alpha);
+
+        gui->grid->Render(); 
+        Renderer::Flush(true);
+    }
+
     Time::Update(glfwGetTime());
-    //Renderer::UpdateFrameBuffer(s_self->game->camera);
 
     //save hotkey
        
     if (s_self->projectOpen)
     {
-        if (s_self->events->canSave && (ImGui::IsKeyPressed(ImGuiKey_LeftCtrl) || ImGui::IsKeyPressed(ImGuiKey_RightCtrl)) && ImGui::IsKeyPressed(ImGuiKey_S)) {
-            s_self->events->canSave = false; 
-            s_self->events->SaveScene(s_self->events->saveFlag);
+        if (s_self->events->canSave && 
+            (ImGui::IsKeyPressed(ImGuiKey_LeftCtrl) || ImGui::IsKeyPressed(ImGuiKey_RightCtrl)) && 
+            ImGui::IsKeyPressed(ImGuiKey_S)) {
+                s_self->events->canSave = false; 
+                s_self->events->SaveScene(s_self->events->saveFlag);
         }
 
         else 
@@ -43,7 +54,7 @@ glDisable(GL_SCISSOR_TEST);
  
     glfwPollEvents();
 
-    GUI::Get()->Render(); 
+    gui->Render(); 
 
     //track mouse position by translating screen space to world space 
 
@@ -63,32 +74,29 @@ glDisable(GL_SCISSOR_TEST);
 
     //current selected entity
        
-    if (s_self->s_selector) 
+    if (s_self->s_selector && selectedEntity)
     {
-        if (selectedEntity)
-        {
-            s_self->s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
-            s_self->s_selector->SetAlpha(1.0f);
-        
-            if (selectedEntity->GetType() == Entity::SPRITE) {
-                const auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
-                s_self->s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
-            }
-         
-            if (selectedEntity->GetType() == Entity::GEOMETRY) {
-                const auto geom = std::static_pointer_cast<Geometry>(selectedEntity);
-                s_self->s_selector->SetSize(geom->width, geom->height);
-            }
-       
-            if (selectedEntity->GetType() == Entity::TEXT) {
-                const auto text = std::static_pointer_cast<Text>(selectedEntity);
-                s_self->s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
-            } 
+        s_self->s_selector->SetPosition(selectedEntity->position.x, selectedEntity->position.y); 
+        s_self->s_selector->SetAlpha(1.0f);
+    
+        if (selectedEntity->GetType() == Entity::SPRITE) {
+            const auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
+            s_self->s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
         }
+        
+        if (selectedEntity->GetType() == Entity::GEOMETRY) {
+            const auto geom = std::static_pointer_cast<Geometry>(selectedEntity);
+            s_self->s_selector->SetSize(geom->width, geom->height);
+        }
+    
+        if (selectedEntity->GetType() == Entity::TEXT) {
+            const auto text = std::static_pointer_cast<Text>(selectedEntity);
+            s_self->s_selector->SetSize(text->GetTextDimensions().x, text->GetTextDimensions().y + text->GetTextDimensions().x / 2); 
+        } 
 
-        else
-            s_self->s_selector->SetAlpha(0.0f);
-       
+        s_self->s_selector->Render();
+
+        Renderer::Flush(true);
     } 
     
 	glfwSetFramebufferSizeCallback(Renderer::GLFW_window_instance, Renderer::framebuffer_size_callback);
@@ -165,8 +173,6 @@ void Editor::Start()
 
     Window::Init();
 
-    Renderer renderer;
-
     EventListener el;
     s_self->events = &el;
 
@@ -177,7 +183,7 @@ void Editor::Start()
 
     s_self->game->LoadScene<System::Scene>();
 
-    Application::Init(&renderer, s_self->game); 
+    Application::Init(s_self->game); 
     Game::SetCullPosition(g.camera->GetPosition());
 
     AssetManager am;

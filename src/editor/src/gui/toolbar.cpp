@@ -766,14 +766,9 @@ void editor::GUI::ShowViewport()
     ImGui::Text("grid");
     ImGui::Separator();
 
-    ImGui::SliderFloat("grid alpha", (float*)&grid->alpha, 0.0f, 1.0f);
+    if (grid)
+        ImGui::SliderFloat("grid alpha", (float*)&grid->alpha, 0.0f, 1.0f);
+    
     ImGui::SliderFloat("pitch", (float*)&grid_quantity, 0.0f, 200.0f);
 
-    //cursor
-
-    ImGui::Text("cursor");
-    ImGui::Separator();
-
-    ImGui::SliderFloat("cursor alpha", (float*)&cursor->alpha, 0.0f, 1.0f);
-    ImGui::ColorEdit3("tint", (float*)&cursor->tint);
 }

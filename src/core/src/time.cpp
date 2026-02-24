@@ -1,13 +1,5 @@
 #include "../../../build/sdk/include/app.h"
-
-//#include <fstream>
-//#include <ctime>
-//#include <chrono>
-//#include <iomanip>
-//#include <thread>
-
-//using namespace std::chrono_literals;
-
+#include "../../shared/renderer.h"
 
 Time::Time(float time): m_now(time) {}
 
@@ -22,7 +14,12 @@ void Time::Update(double _time)
     time->delta = delta; 
 
     System::Application::game->UpdateFrame(); 
-    //System::Renderer::UpdateFrameBuffer(System::Application::game->camera);
+
+    #if STANDALONE == 1
+        const auto camera = System::Game::GetScene()->GetContext().camera;
+        if (camera)
+            System::Renderer::UpdateFrameBuffer(camera);
+    #endif
 }
 
 
@@ -81,6 +78,15 @@ void Time::DelayedCallThread(int milliseconds, std::function<void()>&& fn_ptr, i
 
 
 //-------------- chrono timer
+
+
+//#include <fstream>
+//#include <ctime>
+//#include <chrono>
+//#include <iomanip>
+//#include <thread>
+
+//using namespace std::chrono_literals;
 
 
 // void Time::RunClock(int milliseconds)

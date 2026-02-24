@@ -39,7 +39,7 @@ void Shader::InitBaseShaders()
             "precision mediump float;\n"
         #else
             "#version 330 core\n"
-          //  "precision lowp float;\n"
+            "precision lowp float;\n"
         #endif
 
         "layout(location = 0) in vec3 a_Pos;\n"
@@ -87,7 +87,7 @@ void Shader::InitBaseShaders()
             "precision mediump float;\n"
         #else
             "#version 330 core\n"
-          //  "precision lowp float;\n"
+            "precision lowp float;\n"
         #endif
 
         "flat in float texID;\n"
@@ -429,7 +429,7 @@ void Shader::InitBaseShaders()
 
     LOG("Shader: Base shaders initialized.");
 
-    //set uniforms
+    //set uniforms that do not require updates
 
     auto shader = Get("sprite");
     int samplers[System::Renderer::MAX_TEXTURES];
@@ -438,20 +438,6 @@ void Shader::InitBaseShaders()
         samplers[i] = i;
 
     shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
-
-    const auto camera = System::Application::game->camera;
-
-    const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    const glm::mat4 ortho = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
-
-    const Math::Matrix4 proj = { 
-        { ortho[0][0], ortho[0][1], ortho[0][2], ortho[0][3] }, 
-        { ortho[1][0], ortho[1][1], ortho[1][2], ortho[1][3] },   
-        { ortho[2][0], ortho[2][1], ortho[2][2], ortho[2][3] },  
-        { ortho[3][0], ortho[3][1], ortho[3][2], ortho[3][3] }
-    };
-
-    shader.SetMat4("proj", proj);  
 
 }
 

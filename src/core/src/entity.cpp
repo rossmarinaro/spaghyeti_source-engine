@@ -12,7 +12,6 @@
 
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/window.h"
-#include "debug.h"
 
 
 //---------------------------------- empty entity
@@ -206,7 +205,7 @@ void Geometry::Render()
     const auto camera = System::Application::game->camera;
 
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
-    
+   
     const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
                                         { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
                                         { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
@@ -214,7 +213,7 @@ void Geometry::Render()
                     mv = view * transform;
 
     const auto shader = Graphics::Shader::Get(shaderKey);
- 
+
     const Math::Matrix4 modelView = { 
         { mv[0][0], mv[0][1], mv[0][2], mv[0][3] }, 
         { mv[1][0], mv[1][1], mv[1][2], mv[1][3] },   
@@ -223,7 +222,7 @@ void Geometry::Render()
     };
 
     const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha }; 
-    
+
     texture.Update(
         shader.ID, 
         position, 
@@ -236,7 +235,10 @@ void Geometry::Render()
         depth
     ); 
 
-    System::Renderer::Get()->drawStyle = m_drawStyle;
+    const auto renderer = System::Renderer::Get();
+
+    if (renderer)
+        renderer->drawStyle = m_drawStyle;   
 }
 
 
@@ -252,18 +254,8 @@ void Geometry::SetSize(float width, float height) {
 //-------------------------------------- 
 
 
-void Geometry::SetDrawStyle(int style) 
-{ 
-    #ifndef __EMSCRIPTEN__
-        if (style == 1)
-            m_drawStyle = GL_FILL;
-        else if (style == 0)
-            m_drawStyle = GL_LINE;
-        else
-            m_drawStyle = style; 
-    #else
-        m_drawStyle = style;
-    #endif
+void Geometry::SetDrawStyle(int style) { 
+    m_drawStyle = style;
 } 
 
 
@@ -769,7 +761,10 @@ void Sprite::Render()
             flipY
         );  
 
-        System::Renderer::Get()->drawStyle = 1;
+        const auto renderer = System::Renderer::Get();
+
+        if (renderer)
+            renderer->drawStyle = 1;
 
     }
 

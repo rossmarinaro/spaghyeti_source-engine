@@ -26,7 +26,7 @@
 
 #include "./game.h"
 #include "./events.h"
-#include "../../../src/shared/renderer.h"
+
 
 /****** Application *****/
 
@@ -39,13 +39,14 @@ namespace /* SPAGHYETI_CORE */ System {
 
             static inline std::string name;
 
-            static void Init(Renderer* renderer, Game* layer);
+            static void Init(Game* layer);
             
             static void Start(
                 Game* layer = nullptr, 
                 const std::string& key = "", 
                 bool isMultithreaded = false, 
-                bool isMobileSupported = false
+                bool isMobileSupported = false,
+                int vsync = 0
             );
 
             static void ShutDown();

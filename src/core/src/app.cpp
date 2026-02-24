@@ -2,9 +2,8 @@
 #include "../../../build/sdk/include/window.h"
 #include "../../shared/renderer.h"
 
-void System::Application::Init(Renderer* renderer, Game* layer)
+void System::Application::Init(Game* layer)
 {
-
     //set top-left header and bottom toolbar icon (not binary, this image is stored as pixel data)
 
     /* const auto image_data = Resources::Manager::GetResource("icon small");
@@ -21,9 +20,9 @@ void System::Application::Init(Renderer* renderer, Game* layer)
         game = layer;
     #endif
 
-    Renderer::Init(renderer);
+    Renderer::Init();
 
-    Graphics::Texture2D::InitBaseTexture();LOG(3);
+    Graphics::Texture2D::InitBaseTexture();
     Graphics::Shader::InitBaseShaders();
     
     game->Boot();
@@ -72,7 +71,13 @@ void System::Application::Update(void* layer)
 
 
 
-void System::Application::Start(Game* layer, const std::string& key, bool isMultithreaded, bool isMobileSupported)
+void System::Application::Start(
+    Game* layer, 
+    const std::string& key, 
+    bool isMultithreaded, 
+    bool isMobileSupported,
+    int vsync
+)
 { 
     name = key;
 
@@ -96,12 +101,12 @@ void System::Application::Start(Game* layer, const std::string& key, bool isMult
         game = layer;
 
         Window::Init();  
-        
-        Renderer renderer;
+
+        Renderer::SetVsync(vsync);
  
         //run main app process
 
-        Init(&renderer, game);
+        Init(game);
 
         #ifdef __EMSCRIPTEN__
             emscripten_set_main_loop_arg(Update, game, 0, 1);

@@ -750,7 +750,6 @@ void EventListener::BuildAndRun()
 
     if (Editor::platform == "Windows")
     {
-
         bool has_icon = false;
 
         std::string icon_path;
@@ -1815,8 +1814,7 @@ void EventListener::BuildAndRun()
 
     int vsync = Editor::Get()->vsync ? 1 : 0;
 
-    game_src << "   System::Renderer::SetVsync(" + std::to_string(vsync) + ");\n";
-    game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\", " + isMultiThreaded + ", isMobile);\n";
+    game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\", " + isMultiThreaded + ", isMobile, " + std::to_string(vsync) + ");\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       emscripten_exit_with_live_runtime();\n";
     game_src <<	"   #endif\n";

@@ -69,7 +69,7 @@ GUI::GUI()
         "void main()\n"
         "{\n"    
             "gl_Position = vec4(vert.xy, 0.0, 1.0);\n" 
-        "}\n"; 
+        "}"; 
 
 
     static constexpr const char* checker_fragment =  
@@ -78,29 +78,26 @@ GUI::GUI()
 
         "precision mediump float;\n"
 
-        "uniform float alphaVal;\n"
+        "uniform float alpha;\n"
         "uniform float pitch;\n"
-        "out vec4 fColor;\n"
+        "out vec4 color;\n"
 
         "void main()\n" 
         "{\n"    
 
             "vec2 pitch = vec2(pitch, pitch);\n"
 
-            "if (mod(gl_FragCoord.x, pitch[0]) < 1. ||\n"
-                "mod(gl_FragCoord.y, pitch[1]) < 1.) {\n"
-                "fColor = vec4(0.25, 0.25, 0.25, alphaVal);\n"
-            "} else {\n"
-                "fColor = vec4(0.0);\n"
-                
-            "}\n"
-        "}\n";
+            "if (mod(gl_FragCoord.x, pitch[0]) < 1.0 || mod(gl_FragCoord.y, pitch[1]) < 1.0) \n"
+                "color = vec4(0.25, 0.25, 0.25, alpha);\n"
+            "else \n"
+                "color = vec4(0.0);\n"
+        "}";
 
 
     Graphics::Shader::Load("grid", checker_vertex, checker_fragment); 
 
     s_self->grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    s_self->grid->SetShader("grid"); 
+    s_self->grid->SetShader("grid");
     s_self->grid_quantity = 20.0f;
 
     //load embedded assets
@@ -116,11 +113,6 @@ GUI::GUI()
 
     glfwSetScrollCallback(System::Renderer::GLFW_window_instance, scroll_callback); 
 
-    s_self->cursor = std::make_unique<Geometry>(0.0f, 0.0f, 10.0f, 10.0f);
-    s_self->cursor->SetTint({ 1.0f, 0.0f, 0.0f }); 
-    s_self->cursor->SetAlpha(0.0f);
-    s_self->cursor->SetStatic(true); 
-System::Renderer::CreateFrameBuffer();
     Editor::Log("GUI launched.");
 
 }
@@ -131,7 +123,6 @@ System::Renderer::CreateFrameBuffer();
 
 void GUI::AlignForWidth(float width, float alignment)
 {
-
     ImGuiStyle& style = ImGui::GetStyle();
 
     float avail = ImGui::GetContentRegionAvail().x;
@@ -139,7 +130,6 @@ void GUI::AlignForWidth(float width, float alignment)
 
     if (off > 0.0f)
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
-
 }
 
 
@@ -174,17 +164,7 @@ void GUI::Render()
     ImGui::Render();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    if (grid) {
-       auto shader = Graphics::Shader::Get("grid");
-      // shader.SetFloat("pitch", grid_quantity, true);
-    }
-
-    if (cursor) {
-      //  cursor->SetPosition(ImGui::GetMousePos().x, ImGui::GetMousePos().y);   
-      //  cursor->Render();
-    }
-//System::Renderer::CreateFrameBuffer();
+    
 }
 
 
@@ -241,8 +221,6 @@ void GUI::ShowOptionsInit()
 
     const float window_width = ImGui::GetContentRegionAvail().x;
     const float window_height = ImGui::GetContentRegionAvail().y;
-
-    //System::Renderer::RescaleFrameBuffer(window_width, window_height);
  
     ImVec2 pos = ImGui::GetCursorScreenPos();
 

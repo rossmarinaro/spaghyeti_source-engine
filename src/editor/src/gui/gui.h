@@ -25,7 +25,6 @@ namespace editor {
             float grid_quantity;
 
             std::unique_ptr<Geometry> grid;
-            std::shared_ptr<Geometry> cursor;
             
             GUI();
            ~GUI();
