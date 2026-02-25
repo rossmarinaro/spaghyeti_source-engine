@@ -37,6 +37,8 @@ void Editor::Update()
         Renderer::Flush();
     }
 
+    //update time and game loop / rendering
+
     Time::Update(glfwGetTime());
 
     //save hotkey
@@ -153,6 +155,7 @@ void Editor::Start()
     s_self->preserveSrc = false;
     s_self->isMultiThreaded = false;
     s_self->vsync = false;
+    s_self->depthSort = false;
     s_self->cullTarget = { "", { 0.0f, 0.0f } };
 
     //AllocConsole();

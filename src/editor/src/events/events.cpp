@@ -577,6 +577,8 @@ void EventListener::BuildAndRun()
     system("cls");
     ShowWindow(GetConsoleWindow(), SW_SHOW);
 
+    const auto session = Editor::Get();
+
     Editor::Log("building for " + Editor::platform + ", build type: " + Editor::buildType + ", release type: " + Editor::releaseType);
 
     //directory / builder files
@@ -615,7 +617,7 @@ void EventListener::BuildAndRun()
 
     const std::string asset_types[] = { "images", "audio", "fonts" };
 
-    Editor::Log(Editor::Get()->embed_files ? "embedding assets" : "copying assets to build folder"); 
+    Editor::Log(session->embed_files ? "embedding assets" : "copying assets to build folder"); 
 
     std::map<std::string, std::array<std::string, 2>> rawFiles;
 
@@ -634,7 +636,7 @@ void EventListener::BuildAndRun()
 
         //encode / embed assets
 
-        if (Editor::Get()->embed_files) 
+        if (session->embed_files) 
         {
             std::string rawFolder = Editor::projectPath + "resources/assets/raw/" + System::Utils::ReplaceFrom(name, ".", "") + ".hpp",
                         pathWithoutSpecialChars = rsrcPath;
@@ -776,12 +778,12 @@ void EventListener::BuildAndRun()
             icon_rc << "            VALUE \"""Comments""\"," "\"""Produced with SpaghYeti Engine\""" \n";
             icon_rc << "            VALUE \"""CompanyName\""", \"""Pastaboss Enterprise\""" \n";
             icon_rc << "            VALUE \"""FileDescription\""", \"""entertainment software\"""\n";
-            icon_rc << "            VALUE \"""FileVersion\""", \"""" << std::to_string(Editor::Get()->maxVersion) << "." << std::to_string(Editor::Get()->midVersion) << "." << std::to_string(Editor::Get()->minVersion) << ".0\"""\n";
+            icon_rc << "            VALUE \"""FileVersion\""", \"""" << std::to_string(session->maxVersion) << "." << std::to_string(session->midVersion) << "." << std::to_string(session->minVersion) << ".0\"""\n";
             icon_rc << "            VALUE \"""InternalName\""", \"""SpaghYeti Engine\"""\n";
             icon_rc << "            VALUE \"""LegalCopyright\""", \"""Copyright Pastaboss Enterprise\"""\n";
             icon_rc << "            VALUE \"""OriginalName\""", \"""SpaghYeti Engine\"""\n";
             icon_rc << "            VALUE \"""ProductName\""", \"""" << s_currentProject << "\"""\n";
-            icon_rc << "            VALUE \"""ProductVersion\""", \"""" << std::to_string(Editor::Get()->maxVersion) << "." << std::to_string(Editor::Get()->midVersion) << "." << std::to_string(Editor::Get()->minVersion) << ".0\"""\n";
+            icon_rc << "            VALUE \"""ProductVersion\""", \"""" << std::to_string(session->maxVersion) << "." << std::to_string(session->midVersion) << "." << std::to_string(session->minVersion) << ".0\"""\n";
             icon_rc << "        END\n";
             icon_rc << "    END\n";
             icon_rc << "    BLOCK \"""VarFileInfo\"""\n";
@@ -855,16 +857,16 @@ void EventListener::BuildAndRun()
     else if (Editor::platform == "WebGL")
     {
 
-        const std::string use_pthreads = Editor::Get()->use_pthreads ? "1" : "0",
-                          shared_memory = Editor::Get()->shared_memory ? "1" : "0",
-                          allow_memory_growth = Editor::Get()->allow_memory_growth ? "1" : "0",
-                          allow_exception_catching = Editor::Get()->allow_memory_growth ? "1" : "0",
-                          export_all = Editor::Get()->export_all ? "1" : "0",
-                          wasm = Editor::Get()->wasm ? "1" : "0",
-                          gl_assertions = Editor::Get()->gl_assertions ? "1" : "0",
-                          use_webgl2 = Editor::Get()->use_webgl2 ? "1" : "0",
-                          full_es3 = Editor::Get()->full_es3 ? "1" : "0",
-                          webgl_embed_files = Editor::Get()->webgl_embed_files ? "--embed-file" : "--preload-file";
+        const std::string use_pthreads = session->use_pthreads ? "1" : "0",
+                          shared_memory = session->shared_memory ? "1" : "0",
+                          allow_memory_growth = session->allow_memory_growth ? "1" : "0",
+                          allow_exception_catching = session->allow_memory_growth ? "1" : "0",
+                          export_all = session->export_all ? "1" : "0",
+                          wasm = session->wasm ? "1" : "0",
+                          gl_assertions = session->gl_assertions ? "1" : "0",
+                          use_webgl2 = session->use_webgl2 ? "1" : "0",
+                          full_es3 = session->full_es3 ? "1" : "0",
+                          webgl_embed_files = session->webgl_embed_files ? "--embed-file" : "--preload-file";
    
         std::string name_upper = s_currentProject;
         transform(name_upper.begin(), name_upper.end(), name_upper.begin(), ::toupper);
@@ -989,7 +991,7 @@ void EventListener::BuildAndRun()
 
     //include embeddable assets if any
 
-    if (Editor::Get()->embed_files) 
+    if (session->embed_files) 
     {
         for (const auto& file : std::filesystem::recursive_directory_iterator(Editor::projectPath + "resources/assets/raw")) 
         {
@@ -1018,9 +1020,9 @@ void EventListener::BuildAndRun()
 
     //copy shaders (Windows)
 
-    Editor::Log(Editor::Get()->embed_files ? "embedding shaders" : "copying shaders to build folder");
+    Editor::Log(session->embed_files ? "embedding shaders" : "copying shaders to build folder");
 
-    if (!Editor::Get()->embed_files) 
+    if (!session->embed_files) 
     {
         const auto iterate_shader = [] (const std::string& name, std::string path, const std::string& copiedFile) -> void
         {
@@ -1156,7 +1158,7 @@ void EventListener::BuildAndRun()
 
             //embedded assets
 
-            if (Editor::Get()->embed_files) {
+            if (session->embed_files) {
                 const auto rawFile = rawFiles.find(asset); 
 
                 if (rawFile != rawFiles.end()) 
@@ -1179,7 +1181,7 @@ void EventListener::BuildAndRun()
 
             //embedded shaders
 
-            if (Editor::Get()->embed_files) 
+            if (session->embed_files) 
             {
                 std::ifstream vertFile(vertPath),
                               fragFile(fragPath);
@@ -1330,6 +1332,9 @@ void EventListener::BuildAndRun()
 
                 command_queue << "   this->SetGlobal(\"" + global.first + "\", " + value + ");\n";
             }
+
+        const std::string depthSort = session->depthSort ? "true" : "false";
+        command_queue << "   this->SetDepthSort(" + depthSort + ");\n"; 
 
         command_queue << "   this->SetWorldDimensions(" + std::to_string(target.second->worldWidth) + ", " + std::to_string(target.second->worldHeight) + ");\n";
         
@@ -1765,7 +1770,7 @@ void EventListener::BuildAndRun()
 
     //game template
 
-    const std::string isMultiThreaded = Editor::Get()->isMultiThreaded ? "true" : "false";
+    const std::string isMultiThreaded = session->isMultiThreaded ? "true" : "false";
 
     game_src << "\n\n//-----------------------------------------------------------------------------\n\n";
     game_src << "\n#ifdef __EMSCRIPTEN__\n";
@@ -1801,7 +1806,7 @@ void EventListener::BuildAndRun()
 
     game_src <<	"       System::Game game;\n";
  
-    for (const auto& scene : Editor::Get()->scenes) 
+    for (const auto& scene : session->scenes) 
     {
         std::string className = scene;
 
@@ -1812,7 +1817,7 @@ void EventListener::BuildAndRun()
         game_src << "       game.LoadScene<" + className + ">();\n";
     }
 
-    int vsync = Editor::Get()->vsync ? 1 : 0;
+    int vsync = session->vsync ? 1 : 0;
 
     game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\", " + isMultiThreaded + ", isMobile, " + std::to_string(vsync) + ");\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
@@ -1829,7 +1834,7 @@ void EventListener::BuildAndRun()
     else if (Editor::platform == "Windows")
         system(("chdir sdk && buildGame.bat " + Editor::projectPath + " " + s_currentProject).c_str());
 
-    if (!Editor::Get()->preserveSrc)
+    if (!session->preserveSrc)
         remove(srcPath.c_str());
         
     remove(makefile_path.c_str());

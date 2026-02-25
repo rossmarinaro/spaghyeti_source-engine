@@ -61,7 +61,8 @@ namespace editor {
                  webgl_embed_files,
                  preserveSrc,
                  isMultiThreaded,
-                 vsync;
+                 vsync,
+                 depthSort;
 			
 			System::Game* game;
             EventListener* events;

@@ -19,6 +19,7 @@ void Scene::Init(const std::string& key)
     this->key = key;
     s_ID++;
     m_paused = false;
+    m_depthSort = false;
     m_worldWidth = 0; 
     m_worldHeight = 0;
     cameraTarget = GetContext().camera->GetPosition(); 
@@ -29,6 +30,12 @@ void Scene::Init(const std::string& key)
 void Scene::SetWorldDimensions(float width, float height) { 
     m_worldWidth = width;
     m_worldHeight = height;
+}
+
+//---------------------------------
+
+void Scene::SetDepthSort(bool depthSort) { 
+    m_depthSort = depthSort;
 }
 
 //--------------------------------- assign entity to react to input

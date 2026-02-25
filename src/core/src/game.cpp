@@ -545,10 +545,10 @@ void Game::RenderEntities()
             }
     };
 
-    //sort opaque / transparent entities and render in standalone mode
+    //sort opaque / transparent entities and render
 
-    #if STANDALONE == 1
-
+    if (currentScene->GetDepthSort())
+    {
         std::vector<std::shared_ptr<Entity>> opaque_entities, transparent_entities;
 
         for (const auto& entity : currentScene->entities) {
@@ -559,7 +559,7 @@ void Game::RenderEntities()
         }
 
         std::sort(opaque_entities.begin(), opaque_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //f-b <
-        std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
+        std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth > b->depth; }); //b-f >
 
         //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
 
@@ -572,16 +572,19 @@ void Game::RenderEntities()
 
         if (!transparent_entities.empty())
             Renderer::Flush(false);
+    }
 
-    #else //sort and render entities in editor
+    //sort all entities by depth
 
+    else {
         std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
 
         check_visibility(currentScene->entities);
  
         if (!currentScene->entities.empty())
-            Renderer::Flush(false);
-    #endif
+            Renderer::Flush(false);   
+    }
+
 }
 
 

@@ -757,6 +757,9 @@ void editor::GUI::ShowViewport()
     ImGui::SliderFloat("vignette", &session->vignetteVisibility, 0.0f, 1.0f);
     ImGui::ColorEdit4("color", (float*)session->game->camera->GetBackgroundColor()); 
     ImGui::Checkbox("vsync", &session->vsync);
+    ImGui::SameLine();
+    ImGui::Checkbox("depth sort", &session->depthSort);
+    session->game->GetScene()->SetDepthSort(session->depthSort);
 
     System::Renderer::SetVsync(session->vsync);
 

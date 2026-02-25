@@ -289,10 +289,10 @@ void Texture2D::Update(
         offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 };
 
     else if (!flipX && flipY) //flip y
-        offset = { FrameWidth, FrameHeight, U1, V2, U2, V1 }; //fix
+        offset = { FrameWidth, FrameHeight, U1, V2, U2, V1 }; 
 
     else if (flipX && flipY) //flip x, y
-        offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 }; //fix
+        offset = { FrameWidth, FrameHeight, U2, V2, U1, V1 }; 
 
     else //no flip
         offset = { FrameWidth, FrameHeight, U1, V1, U2, V2 };

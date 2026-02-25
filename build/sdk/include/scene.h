@@ -56,6 +56,7 @@ namespace System {
             const Process::Context& GetContext();
 
             void SetPause(bool isPaused);
+            void SetDepthSort(bool depthSort);
 
             //assign entity to react to input
             void SetInteractive(const std::shared_ptr<Entity>& entity, bool interactive = true);
@@ -64,6 +65,10 @@ namespace System {
 
             //check if cursor is hovering entity
             const bool ListenForInteraction(const std::shared_ptr<Entity>& entity); 
+
+            const inline bool GetDepthSort() {
+                return m_depthSort;
+            } 
 
             //get scene entity by name or key (passing true as an argument treats input string as "ID")
             template <typename T>
@@ -108,7 +113,7 @@ namespace System {
             int m_worldWidth, 
                 m_worldHeight;
 
-            bool m_paused;
+            bool m_paused, m_depthSort;
    
             Process::Context m_context;
 
