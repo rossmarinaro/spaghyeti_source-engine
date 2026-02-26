@@ -27,6 +27,7 @@ namespace Graphics {
             void Delete();
             
             static void InitBaseShaders(); 
+            static void UpdateVertexUniforms(const std::string& shaderKey);
             static void Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomPath = nullptr);
             static void UnLoad(const std::string& key);
             static const Shader& Get(const std::string& key);

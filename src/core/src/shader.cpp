@@ -15,14 +15,13 @@ void Shader::Delete() {
     LOG("Shader: shader of key: " + key + " deleted.");
 }
 
-//-------------------------------
+//------------------------------- get shader by key
 
 
 const Shader& Shader::Get(const std::string& key) {
     return System::Application::resources->shaders[
         System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end() ? key : "sprite"];
 }
-
 
 
 //--------------------------- init base shaders
@@ -429,16 +428,43 @@ void Shader::InitBaseShaders()
 
     LOG("Shader: Base shaders initialized.");
 
-    //set uniforms that do not require updates
+}
 
-    auto shader = Get("sprite");
-    int samplers[System::Renderer::MAX_TEXTURES];
 
-    for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++) 
-        samplers[i] = i;
+//---------------------------------
 
-    shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
 
+void Shader::UpdateVertexUniforms(const std::string& shaderKey)
+{
+    const auto renderer = System::Renderer::Get();
+
+    if (renderer) 
+    {
+        //update projection matrix
+
+        auto shader = Graphics::Shader::Get(shaderKey);
+        const auto camera = System::Game::GetScene()->GetContext().camera;
+        const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+        const glm::mat4 ortho = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
+
+        const Math::Matrix4 proj = { 
+            { ortho[0][0], ortho[0][1], ortho[0][2], ortho[0][3] }, 
+            { ortho[1][0], ortho[1][1], ortho[1][2], ortho[1][3] },   
+            { ortho[2][0], ortho[2][1], ortho[2][2], ortho[2][3] },  
+            { ortho[3][0], ortho[3][1], ortho[3][2], ortho[3][3] }
+        };
+
+        shader.SetMat4("proj", proj); 
+
+        //update image samplers
+
+        int samplers[System::Renderer::MAX_TEXTURES];
+
+        for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++) 
+            samplers[i] = i;
+
+        shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
+    }
 }
 
 

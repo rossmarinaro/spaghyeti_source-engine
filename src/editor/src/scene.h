@@ -25,8 +25,9 @@ namespace editor {
             bool shaders_applied,
                  animations_applied,
                  globals_applied, 
-                 gravity_continuous,
-                 gravity_sleeping;
+                 gravity_continuous, 
+                 gravity_sleeping,
+                 depthSort;
     
             Math::Vector2 cameraPosition;
             Math::Vector4 cameraBackgroundColor;
@@ -52,6 +53,7 @@ namespace editor {
                 globals_applied(false), 
                 gravity_continuous(true),
                 gravity_sleeping(true),
+                depthSort(false),
                 cullTarget({ "", { 0.0f, 0.0f } })
             {}
 

@@ -61,7 +61,7 @@ Renderer::Renderer()
    textureSlotIndex = 1;
    indexCount = 0;
    drawStyle = 1;
-   activeShaderID = 0;
+   activeShader = { "", -1 };
 
     for (size_t i = 0; i < BUFFERS; i++)  
         m_fences[i] = nullptr;
@@ -170,7 +170,8 @@ void Renderer::Flush(bool renderOpaque)
     
     if (!s_instance->vertices.empty()) 
     {
-        #if STANDALONE == 1
+        if (System::Game::GetScene()->GetDepthSort()) 
+        {
             if (renderOpaque) {
                 glEnable(GL_DEPTH_TEST);
                 glDepthFunc(GL_LEQUAL);
@@ -181,10 +182,12 @@ void Renderer::Flush(bool renderOpaque)
                 EnableBlending();
                 glDepthMask(GL_FALSE);
             }
-        #else
+        }
+        else {
+            EnableBlending();
             glDisable(GL_DEPTH_TEST);
             glDisable(GL_SCISSOR_TEST);
-        #endif
+        }
 
         //wait for gpu to finish rendering current buffer
 
@@ -222,7 +225,7 @@ void Renderer::Flush(bool renderOpaque)
         glBufferSubData(GL_ARRAY_BUFFER, 0, s_instance->vertices.size() * sizeof(Math::Graphics::Vertex), s_instance->vertices.data());
 
         EnableAttributes();
-        glUseProgram(s_instance->activeShaderID);
+        glUseProgram(s_instance->activeShader.second);
 
         //draw elements from vertices vector
 

@@ -25,6 +25,10 @@
     #include "../vendors/GLFW/glfw3native.h" 
 #endif
 
+#if STANDALONE == 0
+    #include <string>
+#endif
+
 #include "../../build/sdk/include/math.h"
 
 //-----------------------------
@@ -41,8 +45,9 @@ namespace /* SPAGHYETI_CORE */ System {
             uint32_t indexCount, 
                      textureSlotIndex;
 
-            unsigned int drawStyle, activeShaderID; 
+            unsigned int drawStyle; 
 
+            std::pair<std::string, unsigned int> activeShader;
             std::array<uint32_t, MAX_TEXTURES> textureSlots;
             std::vector<Math::Graphics::Vertex> vertices;
 

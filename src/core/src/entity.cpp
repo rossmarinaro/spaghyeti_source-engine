@@ -86,7 +86,7 @@ void Entity::SetData(const std::string& key, const std::any& value) {
 
 void Entity::SetShader(const std::string& key) {  
     if (System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end())
-        shaderKey = Graphics::Shader::Get(key).key; 
+        shader = Graphics::Shader::Get(key); 
 }
 
 
@@ -162,6 +162,7 @@ Geometry::Geometry(float x, float y, float width, float height, bool isSpawn):
     this->height = height;
 
     SetDrawStyle(1);
+    SetShader("sprite");
 
     tint = { 0.0f, 0.0f, 1.0f };
     texture = Graphics::Texture2D::Get("base");
@@ -212,8 +213,6 @@ void Geometry::Render()
                                         { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
                     mv = view * transform;
 
-    const auto shader = Graphics::Shader::Get(shaderKey);
-
     const Math::Matrix4 modelView = { 
         { mv[0][0], mv[0][1], mv[0][2], mv[0][3] }, 
         { mv[1][0], mv[1][1], mv[1][2], mv[1][3] },   
@@ -224,7 +223,7 @@ void Geometry::Render()
     const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha }; 
 
     texture.Update(
-        shader.ID, 
+        shader, 
         position, 
         scale, 
         color, 
@@ -742,12 +741,10 @@ void Sprite::Render()
             { mv[3][0], mv[3][1], mv[3][2], mv[3][3] }
         };
 
-        const auto shader = Graphics::Shader::Get(shaderKey);
-
         //update texture
 
         texture.Update(
-            shader.ID, 
+            shader, 
             position, 
             scale, 
             color, 

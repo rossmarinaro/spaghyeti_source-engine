@@ -3,7 +3,7 @@
 #include "../../vendors/glm/glm.hpp"
 #include "../../vendors/glm/gtc/matrix_transform.hpp"
 
-
+#include "../../shared/renderer.h"
 Camera::Camera():
     m_zoom(1.0f),
     m_rotation(0.0f),
@@ -138,28 +138,11 @@ const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 
 
 void Camera::Update() 
-{
+{    
     if (m_canFollow && InBounds()) {
         m_position.x = (-m_target.first->x + m_target.second.first); 
         m_position.y = (-m_target.first->y + m_target.second.second);  
     }
-
-    //update projection matrix
-
-    auto shader = Graphics::Shader::Get("sprite");
-
-    const Math::Vector4& pm = GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    const glm::mat4 ortho = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
-
-    const Math::Matrix4 proj = { 
-        { ortho[0][0], ortho[0][1], ortho[0][2], ortho[0][3] }, 
-        { ortho[1][0], ortho[1][1], ortho[1][2], ortho[1][3] },   
-        { ortho[2][0], ortho[2][1], ortho[2][2], ortho[2][3] },  
-        { ortho[3][0], ortho[3][1], ortho[3][2], ortho[3][3] }
-    };
-
-    shader.SetMat4("proj", proj); 
-
 }
 
 

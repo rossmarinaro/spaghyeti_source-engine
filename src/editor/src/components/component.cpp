@@ -57,11 +57,11 @@ Component::~Component() {
 
 void Component::Make()
 {
-
     //shader
 
     if (type == SHADER)
     {
+        //default image shader (supports batch rendering)
 
         if (!filename.size())
             return;
@@ -80,34 +80,57 @@ void Component::Make()
         std::ofstream vert_src(vert);
         std::ofstream frag_src(frag);
 
-        //default red tint image shader
+        //vert
 
-        vert_src << "#version 330 core\n\n";
-        vert_src << "layout (location = 0) in vec2 vert;\n";
-        vert_src << "layout (location = 1) in vec2 UV;\n\n";
-        vert_src << "out vec2 uv;\n\n";
-        vert_src << "uniform mat4 mvp;\n";
-        vert_src << "uniform vec2 offset;\n\n";
+        vert_src << "layout(location = 0) in vec3 a_Pos;\n";
+        vert_src << "layout(location = 1) in vec2 a_Scale;\n";
+        vert_src << "layout(location = 2) in float a_Rotation;\n";
+        vert_src << "layout(location = 3) in vec2 a_UV;\n";
+        vert_src << "layout(location = 4) in float a_TextureId;\n";
+        vert_src << "layout(location = 5) in vec4 a_RGBA;\n";
+        vert_src << "layout(location = 6) in vec3 a_OutlineColor;\n";
+        vert_src << "layout(location = 7) in float a_OutlineWidth;\n";
+        vert_src << "layout(location = 8) in mat4 a_ModelView;\n";
+
+        vert_src << "flat out float texID;\n";
+        vert_src << "out float outlineWidth;\n";
+        vert_src << "out vec3 outlineColor;\n";
+        vert_src << "out vec2 uv;\n";
+        vert_src << "out vec4 rgba;\n";
+
+        vert_src << "uniform mat4 proj;\n";
+
         vert_src << "void main()\n";
         vert_src << "{\n";
-        vert_src << "   uv = UV;\n";
-        vert_src << "   gl_Position = mvp * vec4(vert.xy + offset.xy, 0.0, 1.0);\n";
+        vert_src << "   texID = a_TextureId;\n";
+        vert_src << "   rgba = a_RGBA;\n";
+        vert_src << "   uv = a_UV;\n";
+        vert_src << "   outlineColor = a_OutlineColor;\n";
+        vert_src << "   outlineWidth = a_OutlineWidth;\n";
+        vert_src << "   vec3 scaledPosition = vec3(a_Pos.xy * a_Scale, a_Pos.z);\n";
+        vert_src << "   vert_src << float c = cos(a_Rotation);\n";
+        vert_src << "   vert_src << float s = sin(a_Rotation);\n";
+        vert_src << "   vert_src << vec3 position = vec3(scaledPosition.x * c - scaledPosition.y * s, scaledPosition.x * s + scaledPosition.y * c, scaledPosition.z);\n";
+            
+        vert_src << "   gl_Position = proj * a_ModelView * vec4(position, 1.0);\n";
         vert_src << "}";
 
-        frag_src << "#version 330 core\n\n";
+        //frag
+
+        frag_src << "flat in float texID;\n";
         frag_src << "in vec2 uv;\n";
+        frag_src << "in vec4 rgba;\n";
         frag_src << "out vec4 color;\n";
-        frag_src << "uniform sampler2D image;\n";
+        frag_src << "uniform sampler2D images[32];\n";
         frag_src << "void main()\n";
         frag_src << "{\n";
-        frag_src << "   color = vec4(1., 0., 0., 1.) * texture(image, uv);\n";
+        frag_src << "   color = rgba * texture(images[int(texID)], uv);\n";
         frag_src << "}";
 
         vert_src.close();
         frag_src.close();
 
         filename = "";
-
     }
 
 

@@ -556,6 +556,7 @@ void editor::GUI::ShowMenu()
     ImGui::MenuItem(("Platform: " + Editor::platform).c_str(), NULL, false, false);
     ImGui::MenuItem(("Build: " + Editor::buildType).c_str(), NULL, false, false);
     ImGui::MenuItem(("Distribution: " + Editor::releaseType).c_str(), NULL, false, false);
+    ImGui::Checkbox("Enable vsync", &session->vsync);
 
     ImGui::Separator();
 
@@ -593,7 +594,6 @@ void editor::GUI::ShowMenu()
 
     if (ImGui::BeginMenu("Options"))
     {
-
         //build 
 
         if (ImGui::BeginMenu("Build"))
@@ -738,10 +738,10 @@ void editor::GUI::ShowViewport()
 {
     auto session = Editor::Get();
 
+    //viewport display inverted camera coords
+
     ImGui::Text("viewport");
     ImGui::Separator();
-
-    //display inverted camera coords
 
     char bufX[32];
     ImFormatString(bufX, IM_ARRAYSIZE(bufX), "%.2f", -session->game->camera->GetPosition()->x);
@@ -756,8 +756,6 @@ void editor::GUI::ShowViewport()
     ImGui::SliderFloat("rotation", session->game->camera->GetRotation(), 0.0f, 360.0f);
     ImGui::SliderFloat("vignette", &session->vignetteVisibility, 0.0f, 1.0f);
     ImGui::ColorEdit4("color", (float*)session->game->camera->GetBackgroundColor()); 
-    ImGui::Checkbox("vsync", &session->vsync);
-    ImGui::SameLine();
     ImGui::Checkbox("depth sort", &session->depthSort);
     session->game->GetScene()->SetDepthSort(session->depthSort);
 
@@ -766,12 +764,17 @@ void editor::GUI::ShowViewport()
     //vignette visibility
 
     session->game->GetScene()->vignette->SetAlpha(session->vignetteVisibility);
+
+    //grid
+    
     ImGui::Text("grid");
     ImGui::Separator();
+
+    ImGui::SliderFloat("line pitch", (float*)&grid_quantity, 0.0f, 200.0f);
+
+    ImGui::ColorEdit3("grid color", (float*)&grid_color);
 
     if (grid)
         ImGui::SliderFloat("grid alpha", (float*)&grid->alpha, 0.0f, 1.0f);
     
-    ImGui::SliderFloat("pitch", (float*)&grid_quantity, 0.0f, 200.0f);
-
 }

@@ -253,7 +253,7 @@ void Texture2D::UnLoad(const std::string& key)
 //---------------------------------------- updates textures position and texture coordinates, appends to array for rendering
 
 void Texture2D::Update(
-    unsigned int shaderID, 
+    const Graphics::Shader& shader, 
     const Math::Vector2& position, 
     const Math::Vector2& scale,
     const Math::Vector4& rgba, 
@@ -273,13 +273,15 @@ void Texture2D::Update(
 
     if (renderer->indexCount >= elementCount || 
         renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 ||
-        shaderID != renderer->activeShaderID
-    ) 
-        System::Renderer::Flush();
+        shader.ID != renderer->activeShader.second
+    ) {
+        Graphics::Shader::UpdateVertexUniforms(shader.key);
+        System::Renderer::Flush(m_opaque); 
+    }
 
     //set active shader
 
-    renderer->activeShaderID = shaderID;
+    renderer->activeShader = { shader.key, shader.ID };
 
     //format texture
  

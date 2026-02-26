@@ -32,6 +32,7 @@ void Editor::Update()
 
         shader.SetFloat("pitch", gui->grid_quantity);
         shader.SetFloat("alpha", gui->grid->alpha);
+        shader.SetVec3f("tint", gui->grid_color);
 
         gui->grid->Render(); 
         Renderer::Flush();

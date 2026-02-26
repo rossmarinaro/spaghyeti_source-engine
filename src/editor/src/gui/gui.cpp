@@ -80,6 +80,7 @@ GUI::GUI()
 
         "uniform float alpha;\n"
         "uniform float pitch;\n"
+        "uniform vec3 tint;\n"
         "out vec4 color;\n"
 
         "void main()\n" 
@@ -88,7 +89,7 @@ GUI::GUI()
             "vec2 pitch = vec2(pitch, pitch);\n"
 
             "if (mod(gl_FragCoord.x, pitch[0]) < 1.0 || mod(gl_FragCoord.y, pitch[1]) < 1.0) \n"
-                "color = vec4(0.25, 0.25, 0.25, alpha);\n"
+                "color = vec4(tint, alpha);\n"
             "else \n"
                 "color = vec4(0.0);\n"
         "}";
@@ -98,6 +99,7 @@ GUI::GUI()
 
     s_self->grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
     s_self->grid->SetShader("grid");
+    s_self->grid_color = { 0.25f, 0.25f, 0.25f };
     s_self->grid_quantity = 20.0f;
 
     //load embedded assets

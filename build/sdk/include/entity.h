@@ -35,9 +35,10 @@ class Entity {
 
 		Math::Vector3 tint, outlineColor, shadowColor; 
 		Math::Vector2 position, scale, scrollFactor;
-		std::string ID, name, shaderKey;
+		std::string ID, name;
 
         Graphics::Texture2D texture;
+        Graphics::Shader shader;
 
 		template<typename T>
 		inline const T GetData(const std::string& key) { 

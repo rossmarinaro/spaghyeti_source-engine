@@ -61,9 +61,9 @@ namespace editor {
                  webgl_embed_files,
                  preserveSrc,
                  isMultiThreaded,
-                 vsync,
-                 depthSort;
-			
+                 depthSort,
+                 vsync;
+			 
 			System::Game* game;
             EventListener* events;
             std::pair<std::string, Math::Vector2> cullTarget;

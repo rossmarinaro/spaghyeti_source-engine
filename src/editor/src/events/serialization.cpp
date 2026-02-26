@@ -105,7 +105,6 @@ void EventListener::DecodeFile(const std::string& outPath, const std::filesystem
 
 void EventListener::Serialize(json& data, bool newScene)
 {
-
     json scenes = json::array(),
          nodes = json::array(),
          sprites,
@@ -138,10 +137,14 @@ void EventListener::Serialize(json& data, bool newScene)
     data["camera"]["color"]["w"] = newScene ? 1.0f : session->game->camera->GetBackgroundColor()->a;
     data["camera"]["alpha"] = newScene ? 1.0f : GUI::Get()->grid->alpha;
     data["camera"]["pitch"] = newScene ? 20.0f : GUI::Get()->grid_quantity;
+    data["camera"]["grid tint"]["r"] = newScene ? 0.25f : GUI::Get()->grid_color.x;
+    data["camera"]["grid tint"]["g"] = newScene ? 0.25f : GUI::Get()->grid_color.y;
+    data["camera"]["grid tint"]["b"] = newScene ? 0.25f : GUI::Get()->grid_color.z;
     data["camera"]["bounds"]["width"]["begin"] = newScene ? 0.0f : session->game->camera->currentBoundsWidthBegin;
     data["camera"]["bounds"]["width"]["end"] = newScene ? 0.0f : session->game->camera->currentBoundsWidthEnd;
     data["camera"]["bounds"]["height"]["begin"] = newScene ? 0.0f : session->game->camera->currentBoundsHeightBegin;
     data["camera"]["bounds"]["height"]["end"] = newScene ? 0.0f : session->game->camera->currentBoundsHeightEnd;
+    data["camera"]["depth sort"] = newScene ? false : session->depthSort;
 
     //settings
 
@@ -245,7 +248,6 @@ void EventListener::Serialize(json& data, bool newScene)
 //project de-serialization
 void EventListener::Deserialize(std::ifstream& JSON)
 {
-
     if (!JSON.good()) {
         Editor::Log("There was a problem reading the file.");
         return;
@@ -291,9 +293,15 @@ void EventListener::Deserialize(std::ifstream& JSON)
 
     GUI::Get()->grid->alpha = data["camera"]["alpha"];
     GUI::Get()->grid_quantity = data["camera"]["pitch"];
+
+    if (data["camera"].contains("grid tint"))
+        GUI::Get()->grid_color = { data["camera"]["grid tint"]["r"], data["camera"]["grid tint"]["g"], data["camera"]["grid tint"]["b"] }; 
     
     session->worldWidth = data["camera"]["width"];
     session->worldHeight = data["camera"]["height"];
+
+    if (data["camera"].contains("depth sort"))
+        session->depthSort = data["camera"]["depth sort"];
 
     session->gravityX = data["settings"]["physics"]["gravity"]["x"];
     session->gravityY = data["settings"]["physics"]["gravity"]["y"];
@@ -372,7 +380,6 @@ void EventListener::Deserialize(std::ifstream& JSON)
 //extracts saved data from scene to compile
 void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 {
-
     auto scene = new editor::Scene;
 
     json data = json::parse(JSON);
@@ -395,6 +402,9 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
     
     scene->worldWidth = data["camera"]["width"];
     scene->worldHeight = data["camera"]["height"];
+
+    if (data["camera"].contains("depth sort"))
+        scene->depthSort = data["camera"]["depth sort"];
 
     scene->gravityX = data["settings"]["physics"]["gravity"]["x"];
     scene->gravityY = data["settings"]["physics"]["gravity"]["y"];

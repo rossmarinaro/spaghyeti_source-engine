@@ -474,7 +474,7 @@ void Game::UpdateFrame()
             event->callback();
         } 
         
-    //update camera
+    //update scene
 
     currentScene->Update(); 
 

@@ -1333,7 +1333,7 @@ void EventListener::BuildAndRun()
                 command_queue << "   this->SetGlobal(\"" + global.first + "\", " + value + ");\n";
             }
 
-        const std::string depthSort = session->depthSort ? "true" : "false";
+        const std::string depthSort = target.second->depthSort ? "true" : "false";
         command_queue << "   this->SetDepthSort(" + depthSort + ");\n"; 
 
         command_queue << "   this->SetWorldDimensions(" + std::to_string(target.second->worldWidth) + ", " + std::to_string(target.second->worldHeight) + ");\n";

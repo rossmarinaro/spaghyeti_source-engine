@@ -23,7 +23,7 @@ namespace editor {
                  show_grid;
 
             float grid_quantity;
-
+            Math::Vector3 grid_color;
             std::unique_ptr<Geometry> grid;
             
             GUI();
