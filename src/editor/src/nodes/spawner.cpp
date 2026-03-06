@@ -57,7 +57,7 @@ void SpawnerNode::Reset(int component_type)
 
     if (m_textHandle)
         System::Game::DestroyEntity(m_textHandle);
-}
+} 
 
 //---------------------------
 
@@ -72,7 +72,7 @@ void SpawnerNode::ApplyTexture(const std::string& asset) {
 
 void SpawnerNode::CreateMarker() {
     rectHandle = System::Game::CreateGeom(0.0f, 0.0f, 80.0f, 80.0f);
-    m_textHandle = System::Game::CreateText("spawner", 0.0f, 0.0f, "", 1);
+    m_textHandle = System::Game::CreateText("spawner", 0.0f, 0.0f, "", 2);
 
     rectHandle->SetTint({ 1.0f, 0.0f, 0.0f });
     m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
@@ -316,6 +316,7 @@ void SpawnerNode::Render(float _positionX, float _positionY, float _rotation, fl
     {
         rectHandle->SetPosition(positionX + _positionX, positionY + _positionY);
         m_textHandle->SetPosition((positionX + _positionX) + 8.0f, (positionY + _positionY) + 30.0f);
+        m_textHandle->SetDepth(m_textHandle->depth + 1);
 
         //color coded types
 

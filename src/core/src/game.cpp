@@ -510,9 +510,9 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
                 fy = (1.0f - entity->scrollFactor.y) + 1.0f,
                 posX = entity->position.x * fx,
                 posY = entity->position.y * fy,
-                left = (camPosX - (Window::s_scaleWidth) / 2) * entity->scrollFactor.x, 
+                left = (camPosX - (Window::s_scaleWidth / 2) + (Window::s_scaleWidth / 2)) * entity->scrollFactor.x, 
                 right = (camPosX + (Window::s_scaleWidth)) * fx, 
-                bottom = (camPosY - (Window::s_scaleHeight) / 2) * entity->scrollFactor.y, 
+                bottom = (camPosY - (Window::s_scaleHeight / 2) + (Window::s_scaleHeight / 2)) * entity->scrollFactor.y, 
                 top = (camPosY + Window::s_scaleHeight) * fy; 
 
     return (posX + width > left && 

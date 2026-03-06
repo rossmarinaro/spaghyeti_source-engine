@@ -577,7 +577,7 @@ void editor::GUI::ShowMenu()
     }
 
     if (ImGui::MenuItem("Open", "Ctrl+O"))
-        session->events->OpenProject();
+        session->events->OpenScene();
 
     if (ImGui::MenuItem("Save", "Ctrl+S"))
         if(!session->events->SaveScene())

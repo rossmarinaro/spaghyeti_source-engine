@@ -124,7 +124,7 @@ void Window::Init()
     Renderer::GLFW_window_instance = glfwCreateWindow(
         s_width, 
         s_height,
-        (Application::name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2025 🍝👌").c_str(), 
+        (Application::name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2026 🍝👌").c_str(), 
         isFullScreen, 
         NULL
     );

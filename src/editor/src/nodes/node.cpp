@@ -157,6 +157,7 @@ int Node::ChangeName(ImGuiInputTextCallbackData* data)
             Editor::Log("Cannot change node name, node not found.");
 
         data->DeleteChars(0, data->BufTextLen);
+        EventListener::UpdateSession();
     }
 
     return 0;
@@ -190,6 +191,8 @@ void Node::DeleteNode(std::vector<std::shared_ptr<Node>>& arr)
             --it;
         }
     }
+
+    EventListener::UpdateSession();
 }
 
 
@@ -222,8 +225,10 @@ void Node::ShowOptions(std::vector<std::shared_ptr<Node>>& arr)
         {
             json data = WriteData(node);
             
-            if (ReadData(data, true, nullptr, arr)) 
+            if (ReadData(data, true, nullptr, arr)) {
+                EventListener::UpdateSession();
                 Editor::Log("node " + name + " duplicated.");  
+            }
             else
                 Editor::Log("node could not be duplicated.");
         }
@@ -250,8 +255,7 @@ void Node::AddComponent(int type, bool init)
     //return if component exists 
     
     if (std::find_if(components.begin(), components.end(), 
-        [&](std::shared_ptr<Component> component){ return component->type == type; }) 
-        != components.end()) {
+        [&](std::shared_ptr<Component> component){ return component->type == type; }) != components.end()) {
             Editor::Log("Component " + Component::Get(type) + " already exists!");
             return;
         }
@@ -260,9 +264,8 @@ void Node::AddComponent(int type, bool init)
 
     components.push_back(component); 
 
-    if (init)
+    if (init) 
         component->Make();
-
 }
 
 
@@ -276,6 +279,7 @@ void Node::RemoveComponent(const std::shared_ptr<Component>& component)
     if (it != components.end()) {
         Reset((*it)->type);
         components.erase(it);
+        EventListener::UpdateSession();
     }
 }
 
@@ -325,14 +329,18 @@ void Node::ApplyShader(std::shared_ptr<Node>& node, const std::string& name)
 {
     if (node->type == SPRITE) {
         const auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
-        if (sn->spriteHandle)
+        if (sn->spriteHandle) {
             sn->spriteHandle->SetShader(name);
+            EventListener::UpdateSession();
+        }
     }
 
     if (node->type == EMPTY) {
         const auto en = std::dynamic_pointer_cast<EmptyNode>(node);
-        if (en->debugGraphic)
+        if (en->debugGraphic) {
             en->debugGraphic->SetShader(name);
+            EventListener::UpdateSession();
+        }
     }
 }
 
@@ -393,7 +401,6 @@ void Node::RenderShaderOptions(const std::string& nodeId, const std::vector<std:
         {
             if (ImGui::BeginMenu("new shader")) 
             {
-                
                 ImGui::InputText("name", &component->filename);
 
                 if (component->filename.size())
@@ -405,21 +412,18 @@ void Node::RenderShaderOptions(const std::string& nodeId, const std::vector<std:
 
             if (ImGui::BeginMenu("select shader"))
             {
-
                 if (std::filesystem::is_empty(Editor::projectPath + AssetManager::Get()->shader_dir))
                     ImGui::Text("no shaders in directory.");
 
                 else
                     for (const auto &dir : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->shader_dir))
                     {
-
                         if (dir.is_directory())
                         {
                             std::string name = dir.path().filename().string();
                             
                             if (ImGui::MenuItem(name.c_str()))
                             {
-
                                 std::string vertPath, fragPath;
 
                                 for (const auto &shader : std::filesystem::recursive_directory_iterator(dir))
@@ -499,8 +503,10 @@ void Node::RenderScriptOptions(const std::string& nodeId, const std::vector<std:
 
                             std::map<std::string, std::string>::iterator it = node->behaviors.find(behavior.first);
 
-                            if (it != node->behaviors.end())
+                            if (it != node->behaviors.end()) {
                                 node->behaviors.erase(it);
+                                EventListener::UpdateSession();
+                            }
                         }
                         
                         ImGui::EndMenu();
@@ -519,7 +525,6 @@ void Node::RenderScriptOptions(const std::string& nodeId, const std::vector<std:
         {
             if (ImGui::BeginMenu("new behavior")) 
             {
-                
                 ImGui::InputText("name", &component->filename);
 
                 if (component->filename.size())
@@ -531,7 +536,6 @@ void Node::RenderScriptOptions(const std::string& nodeId, const std::vector<std:
 
             if (ImGui::BeginMenu("select behavior"))
             {
-
                 if (std::filesystem::is_empty(Editor::projectPath + am->script_dir))
                     ImGui::Text("no behaviors in directory.");
 
@@ -544,7 +548,6 @@ void Node::RenderScriptOptions(const std::string& nodeId, const std::vector<std:
                     for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + am->script_dir)) 
                         if (!script.is_directory())
                         {
-
                             std::string filename = script.path().filename().string();
 
                             if (System::Utils::str_endsWith(filename, ".h"))
@@ -558,8 +561,10 @@ void Node::RenderScriptOptions(const std::string& nodeId, const std::vector<std:
 
                                     while (src >> line)
                                         if (line == "class")  
-                                            if (src >> line)
+                                            if (src >> line) {
                                                 node->behaviors.insert({ line, filename });  
+                                                EventListener::UpdateSession();
+                                            }
 
                                     src.close();
 

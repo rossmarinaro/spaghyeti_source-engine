@@ -181,6 +181,8 @@ void SpriteNode::ApplyAnimation(const std::string& key)
                 spriteHandle->ReadSpritesheetData();   
             } 
         }
+
+        EventListener::UpdateSession();
     }
 
     catch (std::runtime_error& err) { 
@@ -246,8 +248,10 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 {
                     ImGui::Text(("animations: " + std::to_string(animations.size())).c_str()); 
                     
-                    if (ImGui::Button("add animation")) 
+                    if (ImGui::Button("add animation")) {
                         animations.push_back({ "", 0, 0, 2, -1, false }); 
+                        EventListener::UpdateSession();
+                    }
             
                     ImGui::SameLine();
 
@@ -295,15 +299,21 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                         if (it != animations.end()) {
                                             it = animations.erase(it);
                                             --it;
+                                            EventListener::UpdateSession();
                                         }
                                     }
                                 }
 
-                                ImGui::InputText("key", &animations[i].key);
-                                ImGui::InputInt("start", &animations[i].start); 
-                                ImGui::InputInt("end", &animations[i].end);
-                                ImGui::InputInt("rate", &animations[i].rate);
-                                ImGui::InputInt("repeat", &animations[i].repeat);
+                                if (ImGui::InputText("key", &animations[i].key))
+                                    EventListener::UpdateSession();
+                                if (ImGui::InputInt("start", &animations[i].start))
+                                    EventListener::UpdateSession(); 
+                                if (ImGui::InputInt("end", &animations[i].end))
+                                    EventListener::UpdateSession();
+                                if (ImGui::InputInt("rate", &animations[i].rate))
+                                    EventListener::UpdateSession();
+                                if (ImGui::InputInt("repeat", &animations[i].repeat))
+                                    EventListener::UpdateSession();
 
                                 if (animations[i].repeat < -1)
                                     animations[i].repeat = -1;

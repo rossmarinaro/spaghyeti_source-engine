@@ -161,15 +161,14 @@ void Editor::Start()
 
     //AllocConsole();
 
+    remove("appLog.txt");
+
+    rootPath = std::filesystem::current_path().string();
+    sessionFilePath = rootPath + "\\spaghyeditor.json";
     platform = "Windows";
     releaseType = "debug";
     buildType = "dynamic";
     projectPath = "";
-    rootPath;
-
-    remove("appLog.txt");
-
-    rootPath = std::filesystem::current_path().string();
 
     Log("Editor Root: " + rootPath);
 
@@ -232,17 +231,17 @@ void Editor::Start()
 
 void Editor::ShutDown()
 {
-
     if (!s_self->preserveSrc)
         remove((projectPath + "\\game.cpp").c_str());
-    
-    remove((projectPath + "\\spaghyeti_parse.json").c_str());
+
+    remove(sessionFilePath.c_str());
 
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "editor logo");
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "icon large");
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "audio src");
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "data src"); 
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "folder src");
+    Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "arrow src");
 
     Application::ShutDown();
 
@@ -271,8 +270,8 @@ void Editor::Log(const std::string& message) {
 
 void Editor::Reset()
 {
-
     remove((projectPath + "\\game.cpp").c_str());
+    remove(sessionFilePath.c_str());
 
     Node::ClearAll();
 

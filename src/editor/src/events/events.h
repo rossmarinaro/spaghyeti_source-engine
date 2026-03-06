@@ -22,8 +22,10 @@ namespace editor {
             const bool NewScene(const char* root_path = "C:\\");
             const bool NewProject(const char* root_path = "C:\\");
             const bool SaveScene(bool saveAs = false);
-            const bool OpenProject();
+            const bool OpenScene();
             
+            void StartSession(std::ifstream& JSON);
+            void ApplyState(bool increment);
             void BuildAndRun();
             void OpenFile();
             void DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath);
@@ -34,19 +36,17 @@ namespace editor {
             static inline std::string s_currentProject = "",
                                       s_currentScene = "";
 
-            /* 
-            struct Event { int index; std::function<void()>&& fn; };
+            static inline const unsigned int ACTIONS_LIMIT = 5;
+            static inline unsigned int actionsCount, eventCount;
+            static inline bool actionsInit;
 
-            std::vector<Event> events;
-            
-            void SetState(); */                      
+            static void UpdateSession();                      
 
         private:
-            
-            void Serialize(json& data, bool newScene = false); 
-            void Deserialize(std::ifstream& JSON);
-            void ParseScene(const std::string& sceneKey, std::ifstream& JSON);
 
+            static void ParseScene(const std::string& sceneKey, std::ifstream& JSON);
+            static void Serialize(json& data, bool newScene = false); 
+            static void Deserialize(std::ifstream& JSON, int index = 0);
             static inline EventListener* s_self;
     };
 }

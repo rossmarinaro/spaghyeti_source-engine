@@ -9,6 +9,7 @@
 #include "../assets/embedded/images/icon_large.hpp"
 #include "../assets/embedded/images/folder.hpp"
 #include "../assets/embedded/images/text.hpp"
+#include "../assets/embedded/images/arrow.hpp"
 
 using namespace editor;
 
@@ -110,6 +111,7 @@ GUI::GUI()
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "data src", data_png, data_png_len);
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "folder src", folder_png, folder_png_len);
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "text src", text_png, text_png_len);
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "arrow src", arrow_png, arrow_png_len);
 
     System::Resources::Manager::RegisterTextures();
 
@@ -215,7 +217,7 @@ void GUI::ShowOptionsInit()
     }
 
     if (ImGui::Button("Open", ImVec2(System::Window::s_width, 0.0f))) {
-        if (Editor::Get()->events->OpenProject())
+        if (Editor::Get()->events->OpenScene())
             show_init = false;
     }
  
@@ -324,10 +326,30 @@ void GUI::RenderNodes()
     if (!running)
         return;
 
+    //undo / redo
+
+    const ImVec4 alpha_hundred = ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
+                 alpha_twentyFive = ImVec4(1.0f, 1.0f, 1.0f, 0.25f);
+
+    if (ImGui::ImageButton("undo button", (void*)(intptr_t)Graphics::Texture2D::Get("arrow src").ID, 
+        ImVec2(20, 20), ImVec2(1, 0), ImVec2(0, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
+        EventListener::eventCount > 0 && EventListener::actionsInit && 
+        EventListener::actionsCount > 0 ? alpha_hundred : alpha_twentyFive))
+            Editor::Get()->events->ApplyState(false);
+
+    ImGui::SameLine();
+
+    if (ImGui::ImageButton("redo button", (void*)(intptr_t)Graphics::Texture2D::Get("arrow src").ID, 
+        ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
+        EventListener::actionsInit && EventListener::actionsCount < EventListener::eventCount && 
+        EventListener::actionsCount < EventListener::ACTIONS_LIMIT ? alpha_hundred : alpha_twentyFive))
+            Editor::Get()->events->ApplyState(true);
+
+    //nodes list
+
     if (ImGui::BeginMenu("New Node"))
     {
-        if (ImGui::MenuItem("Load Prefab")) 
-        {
+        if (ImGui::MenuItem("Load Prefab")) {
             if (AssetManager::LoadPrefab())
                 Editor::Log("Prefab loaded.");
             else 

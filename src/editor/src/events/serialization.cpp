@@ -16,6 +16,8 @@ std::string EventListener::GetScriptName(const std::string& path)
     std::ifstream src(path);
     std::string line, scriptName;
 
+    //get string contents next to class keyword
+
     while (src >> line)
         if (line == "class")  
             if (src >> line)
@@ -65,7 +67,6 @@ void EventListener::EncodeFile(const std::string& path, bool newScene)
 
 void EventListener::DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath)
 {
-
     std::string line;
 
     std::ifstream ini_file(currentPath.string());
@@ -73,7 +74,6 @@ void EventListener::DecodeFile(const std::string& outPath, const std::filesystem
 
     while (getline(ini_file, line))
     {
-
         //decode spaghyeti file format to json
 
         for (int i = 0; i < line.length(); i++)
@@ -100,7 +100,7 @@ void EventListener::DecodeFile(const std::string& outPath, const std::filesystem
 }
 
 
-//-----------------------------project serialization (saving scene)
+//-----------------------------project serialization (saving scene from session data)
 
 
 void EventListener::Serialize(json& data, bool newScene)
@@ -246,14 +246,21 @@ void EventListener::Serialize(json& data, bool newScene)
 
 
 //project de-serialization
-void EventListener::Deserialize(std::ifstream& JSON)
+void EventListener::Deserialize(std::ifstream& JSON, int index)
 {
     if (!JSON.good()) {
         Editor::Log("There was a problem reading the file.");
         return;
     }
 
-    json data = json::parse(JSON);
+    json parsed_json = json::parse(JSON);
+
+    const bool hasInstanceIndex = (parsed_json.contains("instances") && parsed_json["instances"].is_array());
+
+    if (hasInstanceIndex && index > parsed_json["instances"].size())
+        return;
+
+    json data = hasInstanceIndex ? parsed_json["instances"][index] : parsed_json;
 
     auto session = Editor::Get();
 
@@ -474,7 +481,7 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
 
     //scene ready for compilation 
 
-    compileQueue.push_back({ sceneKey, scene });
+    Editor::Get()->events->compileQueue.push_back({ sceneKey, scene });
 
 }
 

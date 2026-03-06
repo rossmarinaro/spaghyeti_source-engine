@@ -85,6 +85,7 @@ namespace editor {
                                       releaseType,
                                       buildType,
 									  projectPath,
+                                      sessionFilePath,
 									  rootPath;
 
 			static void Log(const std::string& message);

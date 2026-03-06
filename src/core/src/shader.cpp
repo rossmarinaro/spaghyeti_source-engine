@@ -130,6 +130,8 @@ void Shader::InitBaseShaders()
             "}\n"
         "}";
 
+    //post processing shader
+
     // static constexpr const char* framebufferVertex = \ 
     //     #ifdef __EMSCRIPTEN__
     //         "#version 300 es\n"
@@ -207,31 +209,7 @@ void Shader::InitBaseShaders()
     //--------------------------------------------
 
 
-    static constexpr const char* textFragment = /* \
-
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-        #else
-            "#version 330 core\n"
-        #endif
-        "precision lowp float;\n"
-        "flat in float texID;\n"
-        "in vec2 uv;\n"
-        "in vec4 rgba;\n"
-        "in vec3 outlineColor;\n"
-        "in float outlineWidth;\n" 
-        "out vec4 color;\n"
-
-        "uniform sampler2D image;\n"
-
-        "void main()\n"
-        "{ \n"
-            "vec3 oc = outlineColor;\n"
-            "float ow = outlineWidth;\n" 
-            "float sampled = texture(image, uv).r;\n"
-            "color = vec4(rgba.xyz, sampled * rgba.w); \n"
-        "}"; */
-        \
+    static constexpr const char* textFragment = \
 
         #ifdef __EMSCRIPTEN__
             "#version 300 es\n"
