@@ -3,7 +3,6 @@
 #include "../../vendors/glm/glm.hpp"
 #include "../../vendors/glm/gtc/matrix_transform.hpp"
 
-#include "../../shared/renderer.h"
 Camera::Camera():
     m_zoom(1.0f),
     m_rotation(0.0f),

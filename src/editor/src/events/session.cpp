@@ -11,15 +11,10 @@ void EventListener::StartSession(std::ifstream& JSON)
     actionsInit = false;
     eventCount = 0;
     actionsCount = 0;
- 
-    std::string line;
 
-    std::ofstream out_file(Editor::sessionFilePath);
-
-    out_file << "{ \"instances\": [" << "\n";
-    out_file << JSON.rdbuf();
-    out_file << "]}" << "\n";
-    out_file.close();
+    sessionData << "{ \"instances\": [" << "\n";
+    sessionData << JSON.rdbuf();
+    sessionData << "]}" << "\n";
 }
 
 
@@ -28,42 +23,33 @@ void EventListener::StartSession(std::ifstream& JSON)
 
 void EventListener::UpdateSession() 
 {
-    json JSON;
-    Serialize(JSON);
-
-    std::ifstream session_src(Editor::sessionFilePath);
+    json currentSceneData;
+    Serialize(currentSceneData, false);
     
-    if (session_src.good()) 
-    {  
-        //check instance limit / embed new session instance
+    //check instance limit / embed new session instance
+    
+    json data = json::parse(sessionData);
 
-        json parsed_data = json::parse(session_src);
+    if (data.contains("instances"))
+    {
+        if (!actionsInit) //initial seed
+            actionsCount++;
 
-        if (parsed_data.contains("instances"))
-        {
-            if (!actionsInit) //initial seed
-                actionsCount++;
+        actionsInit = true;
+        data["instances"].push_back(currentSceneData);
 
-            actionsInit = true;
-            parsed_data["instances"].push_back(JSON);
+        //remove first element if reached limit
 
-            //remove first element if reached limit
-
-            if (parsed_data["instances"].size() >= ACTIONS_LIMIT) 
-                parsed_data["instances"].erase(parsed_data["instances"].front());
-            else 
-                eventCount++;
-        }
-
-        session_src.close();
-
-        //write new session instance data to stream
-
-        std::ofstream session_out(Editor::sessionFilePath);
-        session_out << parsed_data.dump();
-        session_out.close();
+        if (data["instances"].size() >= ACTIONS_LIMIT) 
+            data["instances"].erase(data["instances"].front());
+        else 
+            eventCount++;     
     }
 
+    //write new session instance data to stream
+
+    std::stringstream().swap(sessionData);
+    sessionData << data.dump(); 
 }
 
 
@@ -72,6 +58,8 @@ void EventListener::UpdateSession()
 
 void EventListener::ApplyState(bool increment) 
 {
+    //toggle undo/redo of actions
+    
     if (increment) {
         if (actionsCount < ACTIONS_LIMIT && actionsCount < eventCount) 
             actionsCount++;
@@ -85,13 +73,26 @@ void EventListener::ApplyState(bool increment)
             return;
     }
     
-    json JSON;
-    std::ifstream session_src(Editor::sessionFilePath);
+    //set stream read position, load current session's instance index
 
-    //load current session's instance index
+    try {
+        sessionData.seekg(0);
 
-    Editor::Get()->Reset();
-    Deserialize(session_src, actionsCount);
+        json data = json::parse(sessionData);
 
-    session_src.close();
+        const bool arrayInBounds = data.contains("instances") && 
+                                   data["instances"].is_array() && 
+                                   actionsCount <= data["instances"].size() - 1;
+        if (arrayInBounds) 
+        {
+            Editor::Get()->Reset(false);
+
+            json currentSessionData = data["instances"][actionsCount]; 
+            Deserialize(currentSessionData, true); 
+        } 
+    }
+
+    catch(json::exception& err) {
+        Editor::Log("error reading data: " + (std::string)err.what());
+    }
 }

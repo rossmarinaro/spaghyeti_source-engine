@@ -231,8 +231,6 @@ void Component::Make()
 
             }
     }
-
-    EventListener::UpdateSession();
 }
 
 
@@ -256,6 +254,4 @@ void Component::ApplyAnimations(bool init)
         if (!init)
             Editor::Log("animation: " + animation.first + " added.");
     }
-
-    EventListener::UpdateSession();
 }

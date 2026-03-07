@@ -27,7 +27,6 @@ EmptyNode::EmptyNode(bool init):
 
 
 EmptyNode::~EmptyNode() {
-
     if (debugGraphic)
         System::Game::DestroyEntity(debugGraphic);
 
@@ -57,8 +56,8 @@ void EmptyNode::Reset(int component_type) {
 
 void EmptyNode::CreateShape(const std::string &shape)
 {
-    if (!debugGraphic) {
-
+    if (!debugGraphic) 
+    {
         if (shape == "rectangle")
             debugGraphic = System::Game::CreateGeom(20.0f, 20.0f, 10.0f, 10.0f); 
 
@@ -84,16 +83,19 @@ void EmptyNode::Update(std::vector<std::shared_ptr<Node>>& arr)
  
         if (ImGui::TreeNode(("(Empty) " + name).c_str()))
         {
-        
             Node::Update(arr);
 
             if (ImGui::BeginMenu("Add Component"))
             {
-                if (ImGui::MenuItem("Scripts")) 
+                if (ImGui::MenuItem("Scripts")) {
                     AddComponent(Component::SCRIPT); 
+                    EventListener::UpdateSession();
+                }
 
-                if (ImGui::MenuItem("Shader")) 
+                if (ImGui::MenuItem("Shader")) {
                     AddComponent(Component::SHADER);
+                    EventListener::UpdateSession();
+                }
             
                 ImGui::EndMenu();
             }
@@ -121,36 +123,66 @@ void EmptyNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 if (currentShape != "") 
                 {
                     ImGui::SliderInt("depth", &depth, 0, 1000);
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
+
                     ImGui::SliderFloat("line weight", &line_weight, 0.1f, 3.0f); 
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
+
                     ImGui::ColorEdit3("tint", (float*)&debugGraphic->tint); 
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
+
                     ImGui::SliderFloat("alpha", &debugGraphic->alpha, 0.0f, 1.0f);
-                    ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);  
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
+
+                    ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width); 
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
+
                     ImGui::SliderFloat("position y", &positionY, -System::Window::s_width, System::Window::s_width); 
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
                 }
 
                 if (debugGraphic)
                 {
-                    
-                    ImGui::Checkbox("debug", &show_debug);
-                    ImGui::Checkbox("fill", &debug_fill);
+                    if (ImGui::Checkbox("debug", &show_debug))
+                        EventListener::UpdateSession();
 
-                    if (currentShape == "rectangle") {
+                    if (ImGui::Checkbox("fill", &debug_fill))
+                        EventListener::UpdateSession();
+
+                    if (currentShape == "rectangle") 
+                    {
                         ImGui::SliderFloat("width", &rectWidth, 10.0f, 1000.0f); 
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         ImGui::SliderFloat("height", &rectHeight, 10.0f, 1000.0f); 
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
 
                         debugGraphic->SetSize(rectWidth, rectHeight);
                     }
 
-                    if (currentShape == "ellipse") {
+                    if (currentShape == "ellipse") 
+                    {
                         ImGui::SliderFloat("radius", &radius, 10.0f, 1000.0f);  
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         debugGraphic->SetSize(radius);
                     }
                 }
 
                 if (ImGui::BeginMenu("Create Graphic")) {
-
-                    if (ImGui::MenuItem("rectangle"))
+                    if (ImGui::MenuItem("rectangle")) {
                         CreateShape("rectangle");
+                        EventListener::UpdateSession();
+                    }
 
                     ImGui::EndMenu();
                 }

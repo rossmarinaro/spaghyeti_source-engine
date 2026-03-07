@@ -333,8 +333,7 @@ void GUI::RenderNodes()
 
     if (ImGui::ImageButton("undo button", (void*)(intptr_t)Graphics::Texture2D::Get("arrow src").ID, 
         ImVec2(20, 20), ImVec2(1, 0), ImVec2(0, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
-        EventListener::eventCount > 0 && EventListener::actionsInit && 
-        EventListener::actionsCount > 0 ? alpha_hundred : alpha_twentyFive))
+        (EventListener::actionsInit && EventListener::actionsCount > 0) ? alpha_hundred : alpha_twentyFive))
             Editor::Get()->events->ApplyState(false);
 
     ImGui::SameLine();
@@ -358,26 +357,40 @@ void GUI::RenderNodes()
 
         ImGui::Separator();
 
-        if (ImGui::MenuItem("Group")) 
+        if (ImGui::MenuItem("Group")) {
             Node::Make<GroupNode>(true);
+            EventListener::UpdateSession();
+        }
 
-        if (ImGui::MenuItem("Empty"))
+        if (ImGui::MenuItem("Empty")) {
             Node::Make<EmptyNode>(true); 
+            EventListener::UpdateSession();
+        }
 
-        if (ImGui::MenuItem("Audio"))
+        if (ImGui::MenuItem("Audio")) {
             Node::Make<AudioNode>(true); 
+            EventListener::UpdateSession();
+        }
 
-        if (ImGui::MenuItem("Text"))
+        if (ImGui::MenuItem("Text")) {
             Node::Make<TextNode>(true); 
+            EventListener::UpdateSession();
+        }
 
-        if (ImGui::MenuItem("Sprite"))
+        if (ImGui::MenuItem("Sprite")) {
             Node::Make<SpriteNode>(true); 
+            EventListener::UpdateSession();
+        }
 
-        if (ImGui::MenuItem("Tilemap"))
+        if (ImGui::MenuItem("Tilemap")) {
             Node::Make<TilemapNode>(true); 
+            EventListener::UpdateSession();
+        }
 
-        if (ImGui::MenuItem("Spawner"))
+        if (ImGui::MenuItem("Spawner")) {
             Node::Make<SpawnerNode>(true); 
+            EventListener::UpdateSession();
+        }
 
         ImGui::EndMenu();
     }

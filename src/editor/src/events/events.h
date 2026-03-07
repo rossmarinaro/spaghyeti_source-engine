@@ -35,6 +35,8 @@ namespace editor {
 
             static inline std::string s_currentProject = "",
                                       s_currentScene = "";
+                                      
+            static inline std::stringstream sessionData;
 
             static inline const unsigned int ACTIONS_LIMIT = 5;
             static inline unsigned int actionsCount, eventCount;
@@ -44,9 +46,10 @@ namespace editor {
 
         private:
 
+            static json ParseJSONFile(std::ifstream& JSON, int index = 0); 
             static void ParseScene(const std::string& sceneKey, std::ifstream& JSON);
             static void Serialize(json& data, bool newScene = false); 
-            static void Deserialize(std::ifstream& JSON, int index = 0);
+            static void Deserialize(json& data, bool isSession = false);
             static inline EventListener* s_self;
     };
 }

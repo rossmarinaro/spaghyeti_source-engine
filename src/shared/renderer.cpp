@@ -61,7 +61,7 @@ Renderer::Renderer()
    textureSlotIndex = 1;
    indexCount = 0;
    drawStyle = 1;
-   activeShader = { "", -1 };
+   activeShaderID = -1;
 
     for (size_t i = 0; i < BUFFERS; i++)  
         m_fences[i] = nullptr;
@@ -225,7 +225,7 @@ void Renderer::Flush(bool renderOpaque)
         glBufferSubData(GL_ARRAY_BUFFER, 0, s_instance->vertices.size() * sizeof(Math::Graphics::Vertex), s_instance->vertices.data());
 
         EnableAttributes();
-        glUseProgram(s_instance->activeShader.second);
+        glUseProgram(s_instance->activeShaderID);
 
         //draw elements from vertices vector
 

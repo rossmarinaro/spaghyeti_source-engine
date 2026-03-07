@@ -20,7 +20,11 @@ Supports native C++ scripting for nodes.
 
 3 rendering layers.
 
+Uses Unix tool xxd for byte encoding assets
+
 Dynamic entity spawning to mitigate large memory usage.
+
+State management: undo/redo functionality (state snapshot memento pattern saving entire app state as JSON after each action)
 
 Standalone runtime embedded into application builds, use as core only, or as DLL runtime with editor front end.
 
@@ -58,8 +62,6 @@ Libraries used: GLFW / GLAD, GLM, GLText (embedded default text), FreeType (in-a
 
 GLText has some modifications to support OpenGLES as well as outline fragment shader color uniform support
 
-Uses Unix tool xxd for byte encoding assets
-
 Requires install of MingW (gcc) for Windows, although the goal is to be compiler agnostic
 
 ![image info](./images/stack.jpg)
@@ -72,9 +74,6 @@ When targeting specific entity from script use `System::Game::GetScene()->GetEnt
 
 ----------------------------------------------------------
 
-To Do:
-
-state management: undo/redo functionality (state snapshot memento pattern saving entire app state as json after each action)
 
 improve editor entity selection/mouse picking/raycasting
 

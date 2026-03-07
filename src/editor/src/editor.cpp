@@ -119,7 +119,6 @@ void Editor::Update()
 }
 
 
-
 //-----------------------------
 
 
@@ -164,7 +163,7 @@ void Editor::Start()
     remove("appLog.txt");
 
     rootPath = std::filesystem::current_path().string();
-    sessionFilePath = rootPath + "\\spaghyeditor.json";
+
     platform = "Windows";
     releaseType = "debug";
     buildType = "dynamic";
@@ -234,7 +233,7 @@ void Editor::ShutDown()
     if (!s_self->preserveSrc)
         remove((projectPath + "\\game.cpp").c_str());
 
-    remove(sessionFilePath.c_str());
+    //remove(sessionFilePath.c_str());
 
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "editor logo");
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "icon large");
@@ -268,28 +267,33 @@ void Editor::Log(const std::string& message) {
 //--------------------------------
 
 
-void Editor::Reset()
+void Editor::Reset(bool removeSession)
 {
-    remove((projectPath + "\\game.cpp").c_str());
-    remove(sessionFilePath.c_str());
-
     Node::ClearAll();
 
-    s_self->game->camera->Reset();
+    if (removeSession) 
+    {
+        s_self->game->camera->Reset();
 
-    s_self->worldWidth = 2000;
-	s_self->worldHeight = 2000;
+        s_self->worldWidth = 2000;
+        s_self->worldHeight = 2000;
 
-    s_self->globals_applied = false;
-    s_self->gravity_continuous = true;
-    s_self->gravity_sleeping = true;
+        s_self->globals_applied = false;
+        s_self->gravity_continuous = true;
+        s_self->gravity_sleeping = true;
 
-    s_self->globals.clear();
-    s_self->spritesheets.clear();
-    s_self->scenes.clear();
-    s_self->shaders.clear();
+        s_self->globals.clear();
+        s_self->spritesheets.clear();
+        s_self->scenes.clear();
+        s_self->shaders.clear();
 
-    AssetManager::Get()->Reset();
+        std::stringstream().swap(s_self->events->sessionData);
 
-    Log("Workspace reset.");
+        AssetManager::Get()->Reset();
+        
+        remove((projectPath + "\\game.cpp").c_str());
+        
+        Log("Workspace reset."); 
+    }
+
 }

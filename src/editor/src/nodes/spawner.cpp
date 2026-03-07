@@ -41,7 +41,6 @@ SpawnerNode::SpawnerNode(bool init):
 
 
 SpawnerNode::~SpawnerNode() {
-
     if (m_init)
         Editor::Log("Spawner node " + name + " deleted.");
 }
@@ -65,6 +64,7 @@ void SpawnerNode::Reset(int component_type)
 void SpawnerNode::ApplyTexture(const std::string& asset) {
     m_currentTexture = Graphics::Texture2D::Get(asset).ID;  
     textureKey = asset;
+    EventListener::UpdateSession();
 }
 
 //---------------------------
@@ -78,6 +78,7 @@ void SpawnerNode::CreateMarker() {
     m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
 
     System::Game::GetScene()->SetInteractive(rectHandle); 
+    EventListener::UpdateSession();
 }
 
 
@@ -153,8 +154,10 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                     ImGui::Separator();
 
-                    if (ImGui::MenuItem("no behavior"))
+                    if (ImGui::MenuItem("no behavior")) {
                         behaviorKey = "";
+                        EventListener::UpdateSession();
+                    }
 
                     //iterate over script dirs
 
@@ -174,6 +177,7 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                         std::string className(file_name);
                                         className[0] = toupper(className[0]);
                                         behaviorKey = className;
+                                        EventListener::UpdateSession();
                                     }
                                 }
                         
@@ -206,8 +210,10 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         if (Editor::Get()->spritesheets.size())
                             for (const auto& spritesheet : Editor::Get()->spritesheets) {   
-                                if (ImGui::MenuItem(spritesheet.first.c_str()))
+                                if (ImGui::MenuItem(spritesheet.first.c_str())) {
                                     spriteSheetKey = spritesheet;
+                                    EventListener::UpdateSession();
+                                }
                             }
                         else
                             ImGui::Text("no spritesheets loaded.");
@@ -226,8 +232,10 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         if (Editor::Get()->animations.size())
                             for (const auto& animation : Editor::Get()->animations) {   
-                                if (ImGui::MenuItem(animation.first.c_str()))
+                                if (ImGui::MenuItem(animation.first.c_str())) {
                                     animationKey = animation.first;
+                                    EventListener::UpdateSession();
+                                }
                             }
                         else
                             ImGui::Text("no spritesheets loaded.");
@@ -239,14 +247,17 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                     {
                         const std::string exists = body.exist ? "true" : "false";
 
-                        if (ImGui::Button(("exists: " + exists).c_str()))
+                        if (ImGui::Button(("exists: " + exists).c_str())) {
                             body.exist = !body.exist;
+                            
+                        }
 
                         ImGui::SliderFloat("width", &body.w, 0.0f, System::Window::s_width); 
                         ImGui::SliderFloat("height", &body.h, 0.0f, System::Window::s_height);
                         ImGui::SliderFloat("offset x", &body.xOff, -System::Window::s_width, System::Window::s_width);  
                         ImGui::SliderFloat("offset y", &body.yOff, -System::Window::s_height, System::Window::s_height);
-                        ImGui::Checkbox("is sensor", &body.is_sensor); 
+                        if (ImGui::Checkbox("is sensor", &body.is_sensor))
+                            EventListener::UpdateSession();
                         
                         static const char* items[] = { "kinematic", "static", "dynamic" };
 
@@ -294,7 +305,8 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 ImGui::SliderFloat("spawn height", &spawnHeight, 0.0f, System::Window::s_height); 
                 ImGui::ColorEdit3("tint", (float*)&tint); 
                 ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
-                ImGui::Checkbox("loop", &loop);
+                if (ImGui::Checkbox("loop", &loop))
+                    EventListener::UpdateSession();
             }
 
             ImGui::TreePop();

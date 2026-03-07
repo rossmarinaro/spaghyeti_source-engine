@@ -31,8 +31,8 @@ TextNode::TextNode(bool init):
 //---------------------------
  
 
-TextNode::~TextNode() {
-
+TextNode::~TextNode() 
+{
     if (textHandle != nullptr)
         System::Game::DestroyEntity(textHandle);
 
@@ -52,7 +52,7 @@ void TextNode::Reset(int component_type)
     {}
 
     if (component_type == Component::SCRIPT || passAll)
-      behaviors.clear();
+        behaviors.clear();
 }
 
 
@@ -87,11 +87,15 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
             
             if (ImGui::BeginMenu("Add Component"))
             {
-                if (ImGui::MenuItem("Scripts")) 
+                if (ImGui::MenuItem("Scripts")) {
                     AddComponent(Component::SCRIPT); 
+                    EventListener::UpdateSession();
+                }
 
-                if (ImGui::MenuItem("Shader")) 
+                if (ImGui::MenuItem("Shader")) {
                     AddComponent(Component::SHADER);
+                    EventListener::UpdateSession();
+                }
             
                 ImGui::EndMenu();
             }
@@ -129,13 +133,17 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
 
                         if (System::Utils::GetFileType(key) == System::Resources::Manager::TEXT) {
-                            if (ImGui::MenuItem(key.c_str())) 
+                            if (ImGui::MenuItem(key.c_str())) {
                                 ChangeFont(key);
+                                EventListener::UpdateSession();
+                            }
                         }
 
                         else if (!AssetManager::Get()->text.size()) {
-                            if (ImGui::MenuItem("default")) 
+                            if (ImGui::MenuItem("default")) {
                                 ChangeFont();
+                                EventListener::UpdateSession();
+                            }
                         }
                     }
 
@@ -143,27 +151,77 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 }
 
                 ImGui::Text(("current font: " + currFont).c_str());
-                ImGui::InputText("content", &textBuf);
-                ImGui::Checkbox("UI", &UIFlag);
-                ImGui::Checkbox("stroke", &isStroked);
-                ImGui::Checkbox("shadow", &isShadow);
-                ImGui::ColorEdit3("tint", (float*)&tint); 
-                ImGui::ColorEdit3("stroke color", (float*)&strokeColor); 
-                ImGui::ColorEdit3("shadow color", (float*)&shadowColor); 
-                ImGui::SliderInt("depth", &depth, 0, 1000);
-                ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
-                ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_scaleWidth); 
-                ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_scaleHeight); 
-                ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f); 
-                ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
-                ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
-                ImGui::SliderFloat("shadow distance x", &shadowDistanceX, 0.0f, 100.0f);
-                ImGui::SliderFloat("shadow distance y", &shadowDistanceY, 0.0f, 100.0f);
 
-                if (currFont != "default") {
+                if (ImGui::InputText("content", &textBuf))
+                    EventListener::UpdateSession();
+                if (ImGui::Checkbox("UI", &UIFlag))
+                    EventListener::UpdateSession();
+                if (ImGui::Checkbox("stroke", &isStroked))
+                    EventListener::UpdateSession();
+                if (ImGui::Checkbox("shadow", &isShadow))
+                    EventListener::UpdateSession();
+
+                ImGui::ColorEdit3("tint", (float*)&tint);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::ColorEdit3("stroke color", (float*)&strokeColor);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::ColorEdit3("shadow color", (float*)&shadowColor);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderInt("depth", &depth, 0, 1000);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_scaleWidth); 
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_scaleHeight); 
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderFloat("shadow distance x", &shadowDistanceX, 0.0f, 100.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderFloat("shadow distance y", &shadowDistanceY, 0.0f, 100.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                if (currFont != "default") 
+                {
                     ImGui::SliderFloat("stroke width", &strokeWidth, 0.0f, 6.0f);
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
+
                     ImGui::SliderFloat("offset x", &charOffsetX, 0.0f, 100.0f);
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
+
                     ImGui::SliderFloat("offset y", &charOffsetY, 0.0f, 100.0f);
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
                 }
   
             } 

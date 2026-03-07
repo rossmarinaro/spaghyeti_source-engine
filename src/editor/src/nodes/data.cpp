@@ -447,7 +447,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
         if (data["type"] == "Sprite") 
         {
-
             std::shared_ptr<SpriteNode> sn;
 
             if (makeNode) 
@@ -537,9 +536,14 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("stroke width"))
                 sn->strokeWidth = data["stroke width"];
 
-            if (data.contains("currentTexture") && makeNode) {
-                sn->ApplyTexture(data["currentTexture"]);  
-                sn->spriteHandle->SetTexture(data["currentTexture"]);
+            if (data.contains("currentTexture") && makeNode) 
+            { 
+                const std::string currentTexture = data["currentTexture"];
+
+                if (currentTexture.length()) {
+                    sn->ApplyTexture(data["currentTexture"]);  
+                    sn->spriteHandle->SetTexture(data["currentTexture"]); 
+                }
             }
 
             if (data.contains("frames") && data["frames"].size() > 1)
@@ -679,7 +683,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
         if (data["type"] == "Tilemap")
         {
-
             std::shared_ptr<TilemapNode> tmn;
 
             if (makeNode)
@@ -799,7 +802,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
         if (data["type"] == "Empty")
         {
-
             std::shared_ptr<EmptyNode> en;
 
             if (makeNode)
@@ -1072,11 +1074,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("animation key"))
                 sn->animationKey = data["animation key"]; 
 
-            if (data.contains("texture key")) {
+            if (data.contains("texture key")) 
+            {
                 sn->textureKey = data["texture key"];
-                
-                if (makeNode)
-                    sn->ApplyTexture(data["texture key"]);
+
+                if (sn->textureKey.length() && makeNode) 
+                    sn->ApplyTexture(sn->textureKey);
             }
 
             if (data.contains("sprite sheet key"))

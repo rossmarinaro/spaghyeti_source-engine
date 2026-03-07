@@ -45,9 +45,7 @@ namespace /* SPAGHYETI_CORE */ System {
             uint32_t indexCount, 
                      textureSlotIndex;
 
-            unsigned int drawStyle; 
-
-            std::pair<std::string, unsigned int> activeShader;
+            unsigned int drawStyle, activeShaderID;
             std::array<uint32_t, MAX_TEXTURES> textureSlots;
             std::vector<Math::Graphics::Vertex> vertices;
 

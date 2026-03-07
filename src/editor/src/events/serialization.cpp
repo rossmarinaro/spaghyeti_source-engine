@@ -242,31 +242,34 @@ void EventListener::Serialize(json& data, bool newScene)
 }
 
 
+//--------------------------------------- parse data
+
+
+json EventListener::ParseJSONFile(std::ifstream& JSON, int index)
+{
+    if (!JSON.good()) 
+    {
+        Editor::Log("There was a problem reading the file.");
+
+        json empty_data;
+        return empty_data;
+    }
+
+    return json::parse(JSON);
+}
+ 
+
 //--------------------------------------- Save / Load Projects
 
 
 //project de-serialization
-void EventListener::Deserialize(std::ifstream& JSON, int index)
-{
-    if (!JSON.good()) {
-        Editor::Log("There was a problem reading the file.");
-        return;
-    }
-
-    json parsed_json = json::parse(JSON);
-
-    const bool hasInstanceIndex = (parsed_json.contains("instances") && parsed_json["instances"].is_array());
-
-    if (hasInstanceIndex && index > parsed_json["instances"].size())
-        return;
-
-    json data = hasInstanceIndex ? parsed_json["instances"][index] : parsed_json;
-
+void EventListener::Deserialize(json& data, bool isSession)
+{    
     auto session = Editor::Get();
 
     //version
 
-    if (data.contains("minVersion"))
+    if (data.contains("minVersion")) 
         session->minVersion = data["minVersion"];
 
     if (data.contains("midVersion"))
@@ -315,27 +318,6 @@ void EventListener::Deserialize(std::ifstream& JSON, int index)
     session->gravity_continuous = data["settings"]["physics"]["continuous"];
     session->gravity_sleeping = data["settings"]["physics"]["sleeping"];
 
-    for (auto& sprite : data["nodes"]["sprites"])
-        Node::ReadData(sprite, true, nullptr);
-
-    for (auto& tilemap : data["nodes"]["tilemaps"])
-        Node::ReadData(tilemap, true, nullptr);
-
-    for (auto& audio : data["nodes"]["audio"])
-        Node::ReadData(audio, true, nullptr);
-
-    for (auto& empty : data["nodes"]["empty"])
-        Node::ReadData(empty, true, nullptr);
-
-    for (auto& text : data["nodes"]["text"])
-        Node::ReadData(text, true, nullptr);
-
-    for (auto& group : data["nodes"]["groups"])
-        Node::ReadData(group, true, nullptr);
-
-    for (auto& spawn : data["nodes"]["spawns"])
-        Node::ReadData(spawn, true, nullptr);
-
     //loaded data
 
     if (data.contains("spritesheets"))
@@ -376,6 +358,29 @@ void EventListener::Deserialize(std::ifstream& JSON, int index)
         if (data["globals_applied"]) 
             session->globals_applied = true;
     }
+
+    //nodes
+
+    for (auto& sprite : data["nodes"]["sprites"])
+        Node::ReadData(sprite, true, nullptr);
+
+    for (auto& tilemap : data["nodes"]["tilemaps"])
+        Node::ReadData(tilemap, true, nullptr);
+
+    for (auto& audio : data["nodes"]["audio"])
+        Node::ReadData(audio, true, nullptr);
+
+    for (auto& empty : data["nodes"]["empty"])
+        Node::ReadData(empty, true, nullptr);
+
+    for (auto& text : data["nodes"]["text"])
+        Node::ReadData(text, true, nullptr);
+
+    for (auto& group : data["nodes"]["groups"])
+        Node::ReadData(group, true, nullptr);
+
+    for (auto& spawn : data["nodes"]["spawns"])
+        Node::ReadData(spawn, true, nullptr);
 
 }
 

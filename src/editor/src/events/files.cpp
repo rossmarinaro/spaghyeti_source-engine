@@ -126,8 +126,10 @@ const bool EventListener::NewProject(const char* root_path)
 
                 std::ifstream JSON(tmp);
 
-                if (JSON.good()) 
-                    Deserialize(JSON);
+                if (JSON.good()) {
+                    json data = ParseJSONFile(JSON);
+                    Deserialize(data);
+                }
 
                 JSON.close();
 
@@ -198,7 +200,8 @@ const bool EventListener::NewScene(const char* root_path)
                 JSON.close();
                 JSON.open(tmp_json_path);
 
-                Deserialize(JSON);
+                json data = ParseJSONFile(JSON);
+                Deserialize(data);
                 remove(tmp_json_path.c_str());
 
                 JSON.close();
@@ -442,9 +445,13 @@ const bool EventListener::OpenScene() //makes temporary json file to parse data 
             if (JSON.good()) 
             {
                 StartSession(JSON);
+                
                 JSON.close();
                 JSON.open(tmp_json_path);
-                Deserialize(JSON);
+
+                json data = ParseJSONFile(JSON);
+                Deserialize(data);
+
                 JSON.close();
                 remove(tmp_json_path.c_str());
                 

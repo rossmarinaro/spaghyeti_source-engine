@@ -273,7 +273,7 @@ void Texture2D::Update(
 
     if (renderer->indexCount >= elementCount || 
         renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 ||
-        shader.ID != renderer->activeShader.second
+        shader.ID != renderer->activeShaderID
     ) {
         Graphics::Shader::UpdateVertexUniforms(shader.key);
         System::Renderer::Flush(m_opaque); 
@@ -281,7 +281,7 @@ void Texture2D::Update(
 
     //set active shader
 
-    renderer->activeShader = { shader.key, shader.ID };
+    renderer->activeShaderID = shader.ID;
 
     //format texture
  

@@ -61,36 +61,65 @@ void GroupNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                 ImGui::Separator();
                
-                if (ImGui::MenuItem("Group")) 
+                if (ImGui::MenuItem("Group")) {
                     Node::Make<GroupNode>(true, _nodes);
+                    EventListener::UpdateSession();
+                }
 
-                if (ImGui::MenuItem("Empty"))
+                if (ImGui::MenuItem("Empty")) {
                     Node::Make<EmptyNode>(true, _nodes); 
+                    EventListener::UpdateSession();
+                }
 
-                if (ImGui::MenuItem("Audio"))
+                if (ImGui::MenuItem("Audio")) {
                     Node::Make<AudioNode>(true, _nodes); 
+                    EventListener::UpdateSession();
+                }
 
-                if (ImGui::MenuItem("Text"))
+                if (ImGui::MenuItem("Text")) {
                     Node::Make<TextNode>(true, _nodes); 
+                    EventListener::UpdateSession();
+                }
 
-                if (ImGui::MenuItem("Sprite"))
+                if (ImGui::MenuItem("Sprite")) {
                     Node::Make<SpriteNode>(true, _nodes); 
+                    EventListener::UpdateSession();
+                }
 
-                if (ImGui::MenuItem("Tilemap"))
+                if (ImGui::MenuItem("Tilemap")) {
                     Node::Make<TilemapNode>(true, _nodes); 
+                    EventListener::UpdateSession();
+                }
 
-                if (ImGui::MenuItem("Spawner"))
+                if (ImGui::MenuItem("Spawner")) {
                     Node::Make<SpawnerNode>(true, _nodes); 
+                    EventListener::UpdateSession();
+                }
 
                 ImGui::EndMenu(); 
             }
 
-            if (show_options) { 
+            if (show_options) 
+            { 
                 ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_height);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
             }
 
             //update active nodes

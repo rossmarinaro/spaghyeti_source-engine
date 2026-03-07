@@ -191,8 +191,6 @@ void Node::DeleteNode(std::vector<std::shared_ptr<Node>>& arr)
             --it;
         }
     }
-
-    EventListener::UpdateSession();
 }
 
 
@@ -318,29 +316,18 @@ void Node::LoadShader(std::shared_ptr<Node> node, const std::string& name, const
 
     Graphics::Shader::Load(name, vertPath.c_str(), fragPath.c_str());
 
-    ApplyShader(node, name);
-}
+    //apply shader to node
 
-
-//------------------------------- apply shaders
-
-
-void Node::ApplyShader(std::shared_ptr<Node>& node, const std::string& name) 
-{
     if (node->type == SPRITE) {
         const auto sn = std::dynamic_pointer_cast<SpriteNode>(node);
-        if (sn->spriteHandle) {
+        if (sn->spriteHandle) 
             sn->spriteHandle->SetShader(name);
-            EventListener::UpdateSession();
-        }
     }
 
     if (node->type == EMPTY) {
         const auto en = std::dynamic_pointer_cast<EmptyNode>(node);
-        if (en->debugGraphic) {
+        if (en->debugGraphic) 
             en->debugGraphic->SetShader(name);
-            EventListener::UpdateSession();
-        }
     }
 }
 
@@ -404,8 +391,10 @@ void Node::RenderShaderOptions(const std::string& nodeId, const std::vector<std:
                 ImGui::InputText("name", &component->filename);
 
                 if (component->filename.size())
-                    if (ImGui::MenuItem("submit")) 
+                    if (ImGui::MenuItem("submit")) {
                         component->Make();
+                        EventListener::UpdateSession();
+                    }
                 
                 ImGui::EndMenu();
             }
@@ -528,8 +517,10 @@ void Node::RenderScriptOptions(const std::string& nodeId, const std::vector<std:
                 ImGui::InputText("name", &component->filename);
 
                 if (component->filename.size())
-                    if (ImGui::MenuItem("submit")) 
+                    if (ImGui::MenuItem("submit")) {
                         component->Make();
+                        EventListener::UpdateSession();
+                    }
                 
                 ImGui::EndMenu();
             }

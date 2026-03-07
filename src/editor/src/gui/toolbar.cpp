@@ -475,8 +475,10 @@ void editor::GUI::ShowSettings()
 
             ImGui::SameLine();
 
-            if (ImGui::Button("apply"))
+            if (ImGui::Button("apply")) {
                 Component::ApplyAnimations();
+                EventListener::UpdateSession();
+            }
 
             ImGui::Separator();
 

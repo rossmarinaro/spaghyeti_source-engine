@@ -76,7 +76,7 @@ namespace editor {
 			std::vector<std::string> scenes;
 
             static void Start();
-            static void Reset();
+            static void Reset(bool removeSession = true);
             static void ShutDown();
 
             static inline std::shared_ptr<Entity> selectedEntity;
@@ -85,7 +85,6 @@ namespace editor {
                                       releaseType,
                                       buildType,
 									  projectPath,
-                                      sessionFilePath,
 									  rootPath;
 
 			static void Log(const std::string& message);

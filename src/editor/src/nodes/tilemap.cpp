@@ -223,6 +223,8 @@ void TilemapNode::ParseJSONData(const std::string& key, const std::string& path)
                 }  
 
                 ApplyTilemap(true, false, true);
+                EventListener::UpdateSession();
+
             }
             else 
                 Editor::Log("Error parsing tilemap. JSON does not contain layers field.");
@@ -280,8 +282,10 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             if (ImGui::BeginMenu("Add Component"))
             {
-                if (ImGui::MenuItem("Physics"))
+                if (ImGui::MenuItem("Physics")) {
                     AddComponent(Component::PHYSICS);
+                    EventListener::UpdateSession();
+                }
             
                 ImGui::EndMenu();
             }
@@ -329,6 +333,8 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                     if (bod.pb)
                                         Physics::DestroyBody(bod.pb); 
                                 }
+
+                                EventListener::UpdateSession();
                             }
 
                             ImGui::Separator();             
@@ -389,6 +395,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                                     createBodies(body["x"], body["y"], body["width"], body["height"]);
              
                                     m_layersApplied = false;
+                                    EventListener::UpdateSession();
                                 }
                             }
                         }
@@ -396,8 +403,10 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         ImGui::EndMenu();
                     }
                     
-                    if (ImGui::Button("add")) 
+                    if (ImGui::Button("add")) {
                         CreateBody();
+                        EventListener::UpdateSession();
+                    }
 
                     ImGui::SameLine();
 
@@ -417,10 +426,14 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
             {
                 //map dimensions
                 
-                ImGui::InputInt("map width", &map_width);
-                ImGui::InputInt("map height", &map_height);
-                ImGui::InputInt("tile width", &tile_width);
-                ImGui::InputInt("tile height", &tile_height);
+                if (ImGui::InputInt("map width", &map_width))
+                    EventListener::UpdateSession();
+                if (ImGui::InputInt("map height", &map_height))
+                    EventListener::UpdateSession();
+                if (ImGui::InputInt("tile width", &tile_width))
+                    EventListener::UpdateSession();
+                if (ImGui::InputInt("tile height", &tile_height))
+                    EventListener::UpdateSession();
                 
                 if (ImGui::BeginMenu("layers")) 
                 {
@@ -453,6 +466,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                         spr_sheet_width[i] = Graphics::Texture2D::Get(layers[i].textureKey).Width / tile_width;
                                         spr_sheet_height[i] = Graphics::Texture2D::Get(layers[i].textureKey).Height / tile_height; 
                                         m_layersApplied = false;
+                                        EventListener::UpdateSession();
                                     }
                                 }
 
@@ -479,19 +493,27 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         {
                             layers[i].textureKey = AssetManager::Get()->selectedAsset;
                             m_layersApplied = false;
+                            EventListener::UpdateSession();
                         }
 
                         else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) != System::Resources::Manager::IMAGE)
                             ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
 
-                        if (ImGui::SliderInt("depth", &layers[i].depth, 0, 1000))
-                            m_layersApplied = false;
-
-                        if (ImGui::InputFloat("scroll factor x", &layers[i].scrollFactorX))
+                        if (ImGui::SliderInt("depth", &layers[i].depth, 0, 1000)) 
                             m_layersApplied = false;
                         
-                        if (ImGui::InputFloat("scroll factor y", &layers[i].scrollFactorY))
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
+                        if (ImGui::InputFloat("scroll factor x", &layers[i].scrollFactorX)) {
                             m_layersApplied = false;
+                            EventListener::UpdateSession();
+                        }
+                        
+                        if (ImGui::InputFloat("scroll factor y", &layers[i].scrollFactorY)) {
+                            m_layersApplied = false;
+                            EventListener::UpdateSession();
+                        }
 
                         if (ImGui::BeginMenu("select shader"))
                         {
@@ -505,6 +527,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                         if (ImGui::MenuItem(name.c_str())) {
                                             m_layersApplied = false;
                                             layers[i].shader = name;
+                                            EventListener::UpdateSession();
                                         }
                                     }
 
@@ -514,16 +537,21 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         ImGui::PopID();
                     } 
 
-                    if (ImGui::Button("apply") && !m_layersApplied)
+                    if (ImGui::Button("apply") && !m_layersApplied) {
                         ApplyTilemap();
+                        EventListener::UpdateSession();
+                    }
 
                     if (m_layersApplied) { 
                         ImGui::SameLine(); 
                         ImGui::Text("applied");
+                        EventListener::UpdateSession();
                     }
 
-                    if (ImGui::Button("add layer")) 
+                    if (ImGui::Button("add layer")) {
                         AddLayer();                    
+                        EventListener::UpdateSession();
+                    } 
 
                     ImGui::SameLine();
 
@@ -534,6 +562,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         layers.pop_back();
                         layer--;
+                        EventListener::UpdateSession();
                     }
 
                     ImGui::EndMenu();
@@ -558,6 +587,8 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         }
                                 
                     }
+
+                    EventListener::UpdateSession();
 
                     ImGui::EndMenu();
                 }

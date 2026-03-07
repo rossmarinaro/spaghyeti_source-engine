@@ -29,6 +29,7 @@ AudioNode::AudioNode(bool init):
 void AudioNode::Load() {
     audio_source_name = AssetManager::Get()->selectedAsset;
     AssetManager::Register(audio_source_name);
+    EventListener::UpdateSession();
 }
 
 
@@ -79,10 +80,13 @@ void AudioNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 ImGui::Text(("source: " + audio_source_name).c_str());
 
                 ImGui::SliderFloat("volume", &volume, 0.0f, 1.0f); 
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
 
                 System::Audio::setVolume(volume);
 
-                ImGui::Checkbox("loop", &loop);
+                if (ImGui::Checkbox("loop", &loop))
+                    EventListener::UpdateSession();
 
                 if (ImGui::Button("play"))
                     System::Audio::play(audio_source_name.c_str(), loop); 

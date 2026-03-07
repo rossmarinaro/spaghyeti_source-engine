@@ -70,7 +70,6 @@ namespace editor {
 
             static void ClearAll();
 
-            static void ApplyShader(std::shared_ptr<Node>& node, const std::string& name);
             static void LoadShader(std::shared_ptr<Node> node, const std::string& name, const std::string& vertPath, const std::string& fragPath);
             static std::shared_ptr<Node> ReadData(json& data, bool makeNode, void* scene, std::vector<std::shared_ptr<Node>>& arr = nodes);
             static json WriteData(const std::shared_ptr<Node>& node);

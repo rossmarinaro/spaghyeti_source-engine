@@ -72,7 +72,6 @@ SpriteNode::~SpriteNode() {
 
 void SpriteNode::Reset(int component_type)
 {
-
     bool passAll = component_type == Component::NONE;
 
     if (component_type == Component::SHADER || passAll)
@@ -98,7 +97,6 @@ void SpriteNode::Reset(int component_type)
         density = 0.0f;
         friction = 0.0f;
     }
-    
 }
 
 
@@ -140,13 +138,11 @@ void SpriteNode::RegisterFrames()
 
 void SpriteNode::ApplyTexture(const std::string& asset)
 {  
-
     if (!spriteHandle) { 
         spriteHandle = System::Game::CreateSprite(asset, 0.0f, 0.0f);
         spriteHandle->name = name;
         System::Game::GetScene()->SetInteractive(spriteHandle);
     }
- 
     else 
        spriteHandle->SetTexture(asset); 
 
@@ -154,7 +150,6 @@ void SpriteNode::ApplyTexture(const std::string& asset)
     key = asset;
 
     AssetManager::Register(key);
-
 }
 
 
@@ -181,8 +176,6 @@ void SpriteNode::ApplyAnimation(const std::string& key)
                 spriteHandle->ReadSpritesheetData();   
             } 
         }
-
-        EventListener::UpdateSession();
     }
 
     catch (std::runtime_error& err) { 
@@ -217,17 +210,25 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
             {
                 if (spriteHandle) 
                 {
-                    if (ImGui::MenuItem("Animator"))
+                    if (ImGui::MenuItem("Animator")) {
                         AddComponent(Component::ANIMATOR);
+                        EventListener::UpdateSession();
+                    }
 
-                    if (ImGui::MenuItem("Physics"))
+                    if (ImGui::MenuItem("Physics")) {
                         AddComponent(Component::PHYSICS);
+                        EventListener::UpdateSession();
+                    }
                 
-                    if (ImGui::MenuItem("Scripts"))
+                    if (ImGui::MenuItem("Scripts")) {
                         AddComponent(Component::SCRIPT);
+                        EventListener::UpdateSession();
+                    }
 
-                    if (ImGui::MenuItem("Shader"))
+                    if (ImGui::MenuItem("Shader")) {
                         AddComponent(Component::SHADER);
+                        EventListener::UpdateSession();
+                    }
    
                 }
                 else
@@ -288,8 +289,10 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                 if (animations[i].key.size() && animations[i].key.length()) {
                                     ImGui::SameLine();
-                                    if (ImGui::Button("apply")) 
+                                    if (ImGui::Button("apply")) {
                                         ApplyAnimation(animations[i].key);
+                                        EventListener::UpdateSession();
+                                    }
                                 }
 
                                 if (i != 0 && animations.size() > 1) {
@@ -318,7 +321,8 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 if (animations[i].repeat < -1)
                                     animations[i].repeat = -1;
                                 
-                                ImGui::Checkbox("yoyo", &animations[i].yoyo);
+                                if (ImGui::Checkbox("yoyo", &animations[i].yoyo))
+                                    EventListener::UpdateSession();
 
                                 ImGui::Separator();
 
@@ -340,6 +344,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 anim_to_play_on_start.rate = anim.rate;
                                 anim_to_play_on_start.repeat = anim.repeat;
                                 anim_to_play_on_start.yoyo = anim.yoyo;
+                                EventListener::UpdateSession();
                             } 
                         }
                             
@@ -348,8 +353,10 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                     if (anim_to_play_on_start.key.length() && ImGui::BeginMenu("remove default animation")) {
                         
-                        if (ImGui::MenuItem("yes")) 
+                        if (ImGui::MenuItem("yes")) {
                             anim_to_play_on_start = { "", 2, -1, false };
+                            EventListener::UpdateSession();
+                        }
 
                         ImGui::EndMenu();
                     }
@@ -395,16 +402,29 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         ImGui::Text((i == 0) ? "anchor: %d" : "body: %d", i);
 
                         ImGui::SliderFloat("offset x", &body.x, 0.0f, System::Window::s_width); 
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         ImGui::SliderFloat("offset y", &body.y, 0.0f, System::Window::s_height);
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         ImGui::SliderFloat("width", &body.width, 0.0f, System::Window::s_width); 
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         ImGui::SliderFloat("height", &body.height, 0.0f, System::Window::s_height);
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
  
-                        ImGui::InputInt("type", &body_pointer[i]); 
+                        if (ImGui::InputInt("type", &body_pointer[i]))
+                            EventListener::UpdateSession(); 
 
                         if (body_pointer[i] <= -1)
                             body_pointer[i] = -1;
 
-                        ImGui::Checkbox("sensor", &is_sensor[i].b);
+                        if (ImGui::Checkbox("sensor", &is_sensor[i].b))
+                            EventListener::UpdateSession();
 
                         ImGui::Separator();     
 
@@ -445,22 +465,34 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         ImGui::EndCombo();
                     }
 
-                    if (body_type == Physics::Body::Type::DYNAMIC) {
+                    if (body_type == Physics::Body::Type::DYNAMIC) 
+                    {
                         ImGui::SliderFloat("density", &density, 0.0f, 1000.0f);
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         ImGui::SliderFloat("friction", &friction, 0.0f, 1.0f);
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         ImGui::SliderFloat("restitution", &restitution, 0.0f, 1.0f);
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
                     }
 
                     ImGui::Separator();     
 
-                    if (ImGui::Button("add")) 
+                    if (ImGui::Button("add")) {
                         CreateBody();
+                        EventListener::UpdateSession();
+                    }
 
                     ImGui::SameLine();
 
                     if (ImGui::Button("remove") && bodies.size() > 1) {
                         Physics::DestroyBody(bodies.back().pb);
                         bodies.pop_back();
+                        EventListener::UpdateSession();
                     }
 
                     ImGui::SameLine();
@@ -485,9 +517,10 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 {
                     //texture
         
-                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)m_currentTexture, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE)
+                    if (ImGui::ImageButton("texture button", (void*)(intptr_t)m_currentTexture, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE) {
                         ApplyTexture(AssetManager::Get()->selectedAsset);
-
+                        EventListener::UpdateSession();
+                    }
                     else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && AssetManager::Get()->selectedAsset.length() && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) != System::Resources::Manager::IMAGE)
                         ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
 
@@ -506,7 +539,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
  
                             if (ImGui::Button("apply") && !framesApplied) {
                           
-                                frames.clear(); Editor::Log("1");
+                                frames.clear();
 
                                 for (int i = 0; i < frame; i++) 
                                     frames.push_back({ frame_x[i], frame_y[i], frame_width[i], frame_height[i], frame_fX[i], frame_fY[i]}); 
@@ -516,6 +549,8 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 framesApplied = true;
                                 spriteHandle->ReadSpritesheetData(); 
                                 spriteHandle->SetFrame(0);
+
+                                EventListener::UpdateSession();
 
                             }
 
@@ -528,10 +563,8 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                             if (spriteHandle)
                             {
-
                                 if (ImGui::BeginMenu("frames:"))
                                 {
-
                                     if (frame <= 0) 
                                         ImGui::Text("no frames defined"); 
                                    
@@ -548,6 +581,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                             if (ImGui::Button("-x") && frame_fX[i] > 1.0f) {
                                                 framesApplied = false;
                                                 frame_fX[i]--;
+                                                EventListener::UpdateSession();
                                             }
 
                                             ImGui::SameLine();
@@ -555,6 +589,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                             if (ImGui::Button("+x") && frame_fX[i] <= frame) {
                                                 framesApplied = false;
                                                 frame_fX[i]++;
+                                                EventListener::UpdateSession();
                                             }
 
                                             ImGui::SameLine();
@@ -564,6 +599,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                             if (ImGui::Button("-y") && frame_fY[i] > 1) {
                                                 framesApplied = false;
                                                 frame_fY[i]--;
+                                                EventListener::UpdateSession();
                                             }
 
                                             ImGui::SameLine();
@@ -571,6 +607,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                             if (ImGui::Button("+y") && frame_fY[i]) {
                                                 framesApplied = false;
                                                 frame_fY[i]++;
+                                                EventListener::UpdateSession();
                                             }
 
                                             ImGui::SameLine();
@@ -582,23 +619,28 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                                 ImGui::InputInt("position y", &frame_y[i]) || 
                                                 ImGui::InputFloat("width", &frame_width[i]) || 
                                                 ImGui::InputFloat("height", &frame_height[i]) 
-                                            ) 
+                                            ) {
                                                 framesApplied = false;
+                                                EventListener::UpdateSession();
+                                            }
 
                                             ImGui::PopID();
-
                                         } 
 
                                     ImGui::EndMenu();
                                 }
 
-                                if (ImGui::Button("-") && currentFrame > 0) 
+                                if (ImGui::Button("-") && currentFrame > 0) {
                                     currentFrame--;                    
+                                    EventListener::UpdateSession();
+                                }
                                 
                                 ImGui::SameLine();
 
-                                if (ImGui::Button("+") && currentFrame < spriteHandle->frames - 1) 
+                                if (ImGui::Button("+") && currentFrame < spriteHandle->frames - 1) {
                                     currentFrame++; 
+                                    EventListener::UpdateSession();
+                                }
 
                                 ImGui::SameLine();
 
@@ -620,6 +662,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 frame_fY.push_back(1);
 
                                 frame++;
+                                EventListener::UpdateSession();
                             }
 
                             ImGui::SameLine();
@@ -636,6 +679,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 frame_fY.pop_back();
                                 
                                 frame--;
+                                EventListener::UpdateSession();
                             }
 
                             if (ImGui::Button("reset")) 
@@ -650,6 +694,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 frame_fY.clear();
                                 
                                 frame = 0;
+                                EventListener::UpdateSession();
                             }
 
                             //load frame data from file
@@ -658,7 +703,6 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             {
                                 for (const auto& asset : AssetManager::Get()->loadedAssets)
                                 {
-
                                     std::string key = asset.first;
                                     std::string path = asset.second;
 
@@ -667,10 +711,8 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                     if (System::Utils::str_endsWith(path, ".json")) 
                                     {
-
                                         if (ImGui::MenuItem(key.c_str())) 
                                         {
-
                                             //parse json to extract frame data
 
                                             std::ifstream JSON(Editor::projectPath + path);
@@ -713,6 +755,8 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                                     };
                                                 
                                                 frame = data["frames"].size();
+
+                                                EventListener::UpdateSession();
                                             }
                                         }
                                     }
@@ -727,19 +771,35 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         if (ImGui::BeginMenu("UVs"))
                         {
                             ImGui::SliderFloat("U1", &U1, 0.0f, 1.0f); 
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
                             ImGui::SliderFloat("V1", &V1, 0.0f, 1.0f);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
                             ImGui::SliderFloat("U2", &U2, 0.0f, 1.0f);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
                             ImGui::SliderFloat("V2", &V2, 0.0f, 1.0f);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
 
                             ImGui::EndMenu();
                         }
 
-                        ImGui::Checkbox("filter nearest", &filter_nearest);
-                        ImGui::Checkbox("lock image", &lock_in_place);
-                        ImGui::Checkbox("make UI", &make_UI);
+                        if (ImGui::Checkbox("filter nearest", &filter_nearest))
+                            EventListener::UpdateSession();
+                        if (ImGui::Checkbox("lock image", &lock_in_place))
+                            EventListener::UpdateSession();
+                        if (ImGui::Checkbox("make UI", &make_UI))
+                            EventListener::UpdateSession();
 
-                        ImGui::Checkbox("flipX", &flippedX); 
-                        ImGui::Checkbox("flipY", &flippedY);
+                        if (ImGui::Checkbox("flipX", &flippedX))
+                            EventListener::UpdateSession(); 
+                        if (ImGui::Checkbox("flipY", &flippedY))
+                            EventListener::UpdateSession();
  
                         if (filter_nearest) {
                             spriteHandle->texture.Filter_Min = GL_NEAREST;
@@ -754,30 +814,67 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         spriteHandle->texture.SetFiltering();
 
                         ImGui::ColorEdit3("tint", (float*)&tint); 
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f); 
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
 
                     }
 
                 }
 
                 ImGui::SliderInt("depth", &depth, 0, 1000);
-                ImGui::Checkbox("cull", &cull);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+                 
+                if (ImGui::Checkbox("cull", &cull))
+                    EventListener::UpdateSession();
+       
                 ImGui::InputFloat("scroll factor x", &scrollFactorX);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+     
                 ImGui::InputFloat("scroll factor y", &scrollFactorY);
-                ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width); 
-                ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_height); 
-                ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f); 
-                ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
-                ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f); 
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+            
+                ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+             
+                ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_height);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+           
+                ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+             
+                ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+         
+                ImGui::SliderFloat("scale y", &scaleY, -100.0f, 100.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
 
-                ImGui::Checkbox("stroke", &isStroked); 
-                ImGui::ColorEdit3("stroke color", (float*)&strokeColor); 
+                if (ImGui::Checkbox("stroke", &isStroked))
+                    EventListener::UpdateSession(); 
+
+                ImGui::ColorEdit3("stroke color", (float*)&strokeColor);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+        
                 ImGui::SliderFloat("stroke width", &strokeWidth, 0.0f, 100.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+        
             }
 
             ImGui::TreePop();
         }
-
 
         ImGui::PopID();
 
