@@ -169,7 +169,6 @@ const bool AssetManager::SavePrefab(const std::string& nodeId, std::vector<std::
 
 const bool AssetManager::LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes)
 {
-
    #ifdef _WIN32
 
         OPENFILENAME ofn = { 0 };
@@ -189,25 +188,14 @@ const bool AssetManager::LoadPrefab(std::vector<std::shared_ptr<Node>>& nodes)
 
         if (GetOpenFileName(&ofn) == TRUE)
         {
-
             std::filesystem::path result((const char*)ofn.lpstrFile);
 
-            //temporary file for decoding
- 
-            const std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
+            std::stringstream stream = Editor::Get()->events->DecodeFile(result); 
 
-            Editor::Get()->events->DecodeFile(tmp, result); 
-
-            std::ifstream JSON(tmp);
-
-            if (JSON.good()) {
-                json data = json::parse(JSON);
+            if (stream.good()) {
+                json data = json::parse(stream);
                 Node::ReadData(data, true, nullptr, nodes);
             }
-
-            JSON.close();
-
-            remove(tmp.c_str());
 
             return true;
         }

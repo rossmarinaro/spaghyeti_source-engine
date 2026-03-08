@@ -114,26 +114,23 @@ const bool EventListener::NewProject(const char* root_path)
                 std::filesystem::create_directory(resources + "/assets/audio");
                 std::filesystem::create_directory(resources + "/assets/data");
 
-
                 Editor::Log("New project " + s_currentProject + " generated.");
             }
 
+            //save and open
+
             if (SaveScene()) 
             { 
-                const std::string tmp = Editor::projectPath + "scenes/spaghyeti_parse.json"; 
+                std::stringstream JSON = DecodeFile(Editor::projectPath + "scenes/" + s_currentScene + ".scene");
  
-                DecodeFile(tmp, Editor::projectPath + "scenes/" + s_currentScene + ".spaghyeti");
-
-                std::ifstream JSON(tmp);
-
                 if (JSON.good()) {
-                    json data = ParseJSONFile(JSON);
+                    json data = ParseJSONStream(JSON);
                     Deserialize(data);
                 }
-
-                JSON.close();
-
-                remove(tmp.c_str());
+                else {
+                    Editor::Log("Cannot decode scene, there is a problem with the stream.");
+                    return false;
+                }
 
                 Editor::Get()->projectOpen = true;
 
@@ -169,7 +166,7 @@ const bool EventListener::NewScene(const char* root_path)
 
         ofn.lStructSize = sizeof(ofn); 
         ofn.hwndOwner = NULL;
-        ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.spaghyeti)\0*.spaghyeti");
+        ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.scene)\0*.scene");
         ofn.lpstrFile = szFileName;
         ofn.nMaxFile = MAX_PATH;
         ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
@@ -179,39 +176,28 @@ const bool EventListener::NewScene(const char* root_path)
         {
             std::filesystem::path result((const char*)ofn.lpstrFile);
 
-            const std::string file = result.string() + ".spaghyeti";
+            const std::string file = result.string() + ".scene";
 
             EncodeFile(file, true);
 
             s_currentScene = result.filename().string();
 
-            const std::string tmp_json_path = Editor::projectPath + "scenes/spaghyeti_parse.json";
-
-            DecodeFile(tmp_json_path, file);
-
-            Editor::Get()->Reset();
-
-            std::ifstream JSON(tmp_json_path);
+            std::stringstream JSON = DecodeFile(file);
 
             if (JSON.good()) 
             {
+                Editor::Get()->Reset();
+
                 StartSession(JSON);
 
-                JSON.close();
-                JSON.open(tmp_json_path);
-
-                json data = ParseJSONFile(JSON);
+                json data = ParseJSONStream(JSON);
                 Deserialize(data);
-                remove(tmp_json_path.c_str());
-
-                JSON.close();
 
                 Editor::Log("scene " + s_currentScene + " opened.\n");
-
             }
 
             else {
-                Editor::Log("there was a problem deserializing scene.");
+                Editor::Log("Cannot decode scene, there is a problem with the stream.");
                 return false;
             }
 
@@ -232,7 +218,7 @@ const bool EventListener::SaveScene(bool saveAs)
     std::filesystem::current_path(Editor::projectPath + "/scenes");
 
     try {
-        std::string project_root = Editor::projectPath + "scenes/" + s_currentScene + ".spaghyeti";
+        std::string project_root = Editor::projectPath + "scenes/" + s_currentScene + ".scene";
 
         std::ifstream file(project_root);
 
@@ -269,7 +255,7 @@ const bool EventListener::SaveScene(bool saveAs)
 
                 ofn.lStructSize = sizeof(ofn);
                 ofn.hwndOwner = NULL;
-                ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.spaghyeti)\0*.spaghyeti");
+                ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.scene)\0*.scene");
                 ofn.lpstrFile = szFileName;
                 ofn.nMaxFile = MAX_PATH;
                 ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
@@ -281,7 +267,7 @@ const bool EventListener::SaveScene(bool saveAs)
 
                     s_currentScene = result.filename().string();
 
-                    if (saveFile(result.string() + ".spaghyeti"))
+                    if (saveFile(result.string() + ".scene"))
                         return true;
                 }
 
@@ -308,7 +294,7 @@ const bool EventListener::SaveScene(bool saveAs)
 //----------------------------- open scene layer
 
 
-const bool EventListener::OpenScene() //makes temporary json file to parse data from .spaghyeti
+const bool EventListener::OpenScene() //makes temporary json file to parse data from .scene
 {
    #ifdef _WIN32
 
@@ -319,7 +305,7 @@ const bool EventListener::OpenScene() //makes temporary json file to parse data 
         ofn.hwndOwner = NULL;
         ofn.hInstance = NULL;
         ofn.nMaxFile = sizeof(szFile);
-        ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.spaghyeti)\0*.spaghyeti");
+        ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.scene)\0*.scene");
         ofn.lpstrFile = szFile;
         ofn.nFilterIndex = 1;
         ofn.lpstrFileTitle = NULL;
@@ -344,11 +330,9 @@ const bool EventListener::OpenScene() //makes temporary json file to parse data 
             s_currentProject = std::filesystem::path(Editor::projectPath).parent_path().filename().string();
             s_currentScene = System::Utils::ReplaceFrom(filename, ".", "");
 
-            //temporary helper file for decoding
+            //decode scene file
 
-            const std::string tmp_json_path = Editor::projectPath + "scenes/spaghyeti_parse.json";
-
-            DecodeFile(tmp_json_path, result);
+            std::stringstream JSON = DecodeFile(result);
 
             Editor::Get()->Reset();
 
@@ -438,22 +422,14 @@ const bool EventListener::OpenScene() //makes temporary json file to parse data 
                     AssetManager::Get()->text.push_back({ asset, id });
             } 
 
-            //load entity nodes
-
-            std::ifstream JSON(tmp_json_path);            
+            //load entity nodes        
 
             if (JSON.good()) 
             {
                 StartSession(JSON);
-                
-                JSON.close();
-                JSON.open(tmp_json_path);
-
-                json data = ParseJSONFile(JSON);
-                Deserialize(data);
-
-                JSON.close();
-                remove(tmp_json_path.c_str());
+            
+                json data = ParseJSONStream(JSON); 
+                Deserialize(data); 
                 
                 Editor::Log("Project " + s_currentProject + " opened.\nProject root path set: " + Editor::projectPath);
             }

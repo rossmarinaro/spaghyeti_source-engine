@@ -233,8 +233,6 @@ void Editor::ShutDown()
     if (!s_self->preserveSrc)
         remove((projectPath + "\\game.cpp").c_str());
 
-    //remove(sessionFilePath.c_str());
-
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "editor logo");
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "icon large");
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "audio src");

@@ -30,7 +30,7 @@ Standalone runtime embedded into application builds, use as core only, or as DLL
 
 Project generation creates base boilerplate and proxy reference to current application, decoupled from core engine source.
 
-Project configurations are saved as a custom ".SPAGHYETI" file which are decrypted into JSON prior to parsing.
+Project configurations are saved as a custom ".scene" file which are decrypted into JSON prior to parsing.
 
 Editor created in-scene game objects can be saved as prefabs for repeated use.
 

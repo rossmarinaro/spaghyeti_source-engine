@@ -6,15 +6,17 @@ using namespace editor;
 //------------------------------- encapsulate json data in array of temporary "instances"
 
 
-void EventListener::StartSession(std::ifstream& JSON) 
+void EventListener::StartSession(std::stringstream& stream) 
 {
     actionsInit = false;
     eventCount = 0;
     actionsCount = 0;
 
     sessionData << "{ \"instances\": [" << "\n";
-    sessionData << JSON.rdbuf();
-    sessionData << "]}" << "\n";
+    sessionData << stream.rdbuf();
+    sessionData << "]}" << "\n"; 
+    
+    stream.seekg(0);
 }
 
 

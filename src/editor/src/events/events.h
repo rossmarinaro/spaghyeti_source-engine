@@ -24,11 +24,11 @@ namespace editor {
             const bool SaveScene(bool saveAs = false);
             const bool OpenScene();
             
-            void StartSession(std::ifstream& JSON);
+            void StartSession(std::stringstream& stream);
             void ApplyState(bool increment);
             void BuildAndRun();
             void OpenFile();
-            void DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath);
+            std::stringstream DecodeFile(const std::filesystem::path& path);
             void EncodeFile(const std::string& path, bool newScene = false);
             
             std::string GetScriptName(const std::string& path);
@@ -46,11 +46,12 @@ namespace editor {
 
         private:
 
-            static json ParseJSONFile(std::ifstream& JSON, int index = 0); 
-            static void ParseScene(const std::string& sceneKey, std::ifstream& JSON);
+            static inline EventListener* s_self;
+
+            static json ParseJSONStream(std::stringstream& stream, int index = 0); 
+            static void ParseScene(const std::string& sceneKey, std::stringstream& stream);
             static void Serialize(json& data, bool newScene = false); 
             static void Deserialize(json& data, bool isSession = false);
-            static inline EventListener* s_self;
     };
 }
 

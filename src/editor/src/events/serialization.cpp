@@ -27,7 +27,25 @@ std::string EventListener::GetScriptName(const std::string& path)
 }
 
 
-//-----------------------------------
+//--------------------------------------- parse data
+
+
+json EventListener::ParseJSONStream(std::stringstream& stream, int index)
+{
+    if (!stream.good()) 
+    {
+        Editor::Log("There was a problem reading the stream.");
+
+        json empty_data;
+        return empty_data;
+    }
+
+    return json::parse(stream);
+}
+ 
+
+
+//----------------------------------- encode JSON to spaghyeti format
 
 
 void EventListener::EncodeFile(const std::string& path, bool newScene)
@@ -62,20 +80,18 @@ void EventListener::EncodeFile(const std::string& path, bool newScene)
 }
 
 
-//-----------------------------------
+//----------------------------------- decode spaghyeti format to JSON
 
 
-void EventListener::DecodeFile(const std::string& outPath, const std::filesystem::path& currentPath)
+std::stringstream EventListener::DecodeFile(const std::filesystem::path& path)
 {
     std::string line;
 
-    std::ifstream ini_file(currentPath.string());
-    std::ofstream out_file(outPath);
+    std::ifstream in_file(path.string());
+    std::stringstream stream;
 
-    while (getline(ini_file, line))
+    while (getline(in_file, line))
     {
-        //decode spaghyeti file format to json
-
         for (int i = 0; i < line.length(); i++)
             if (line[i] == '%')
                 line[i] = '{';
@@ -90,17 +106,16 @@ void EventListener::DecodeFile(const std::string& outPath, const std::filesystem
             else if (line[i] == '$')
                 line[i] = ':';
 
-        out_file << line << "\n";
-
+        stream << line << "\n";
     }
 
-    ini_file.close();
-    out_file.close();
+    in_file.close();
 
+    return stream;
 }
 
 
-//-----------------------------project serialization (saving scene from session data)
+//-----------------------------project serialization (saving scene from session data to JSON format)
 
 
 void EventListener::Serialize(json& data, bool newScene)
@@ -242,27 +257,9 @@ void EventListener::Serialize(json& data, bool newScene)
 }
 
 
-//--------------------------------------- parse data
-
-
-json EventListener::ParseJSONFile(std::ifstream& JSON, int index)
-{
-    if (!JSON.good()) 
-    {
-        Editor::Log("There was a problem reading the file.");
-
-        json empty_data;
-        return empty_data;
-    }
-
-    return json::parse(JSON);
-}
- 
-
 //--------------------------------------- Save / Load Projects
 
 
-//project de-serialization
 void EventListener::Deserialize(json& data, bool isSession)
 {    
     auto session = Editor::Get();
@@ -280,7 +277,9 @@ void EventListener::Deserialize(json& data, bool isSession)
 
     //scenes 
 
-    if (data["scenes"].size() > 1) //saved in queue
+    session->scenes.clear();
+
+    if (data.contains("scenes") && data["scenes"].size() > 1) //saved in queue
         for (const auto& scene : data["scenes"]) 
             session->scenes.push_back(scene["key"]);
     
@@ -291,34 +290,44 @@ void EventListener::Deserialize(json& data, bool isSession)
 
     //camera 
 
-    session->vignetteVisibility = data["camera"]["vignetteVisibility"];
-    session->game->camera->SetPosition({ data["camera"]["x"], data["camera"]["y"] });
-    session->game->camera->SetZoom(data["camera"]["zoom"]);
-    session->game->camera->SetBackgroundColor({ data["camera"]["color"]["x"], data["camera"]["color"]["y"], data["camera"]["color"]["z"], data["camera"]["color"]["w"] }); 
+    if (data.contains("camera"))
+    {
+        session->vignetteVisibility = data["camera"]["vignetteVisibility"];
 
-    session->game->camera->SetBounds(
-        data["camera"]["bounds"]["width"]["begin"], data["camera"]["bounds"]["width"]["end"],
-        data["camera"]["bounds"]["height"]["begin"], data["camera"]["bounds"]["height"]["end"]
-    );
+        session->game->camera->SetPosition({ data["camera"]["x"], data["camera"]["y"] });
+        session->game->camera->SetZoom(data["camera"]["zoom"]);
+        session->game->camera->SetBackgroundColor({ data["camera"]["color"]["x"], data["camera"]["color"]["y"], data["camera"]["color"]["z"], data["camera"]["color"]["w"] }); 
 
-    GUI::Get()->grid->alpha = data["camera"]["alpha"];
-    GUI::Get()->grid_quantity = data["camera"]["pitch"];
+        session->game->camera->SetBounds(
+            data["camera"]["bounds"]["width"]["begin"], data["camera"]["bounds"]["width"]["end"],
+            data["camera"]["bounds"]["height"]["begin"], data["camera"]["bounds"]["height"]["end"]
+        );
 
-    if (data["camera"].contains("grid tint"))
-        GUI::Get()->grid_color = { data["camera"]["grid tint"]["r"], data["camera"]["grid tint"]["g"], data["camera"]["grid tint"]["b"] }; 
-    
-    session->worldWidth = data["camera"]["width"];
-    session->worldHeight = data["camera"]["height"];
+        GUI::Get()->grid->alpha = data["camera"]["alpha"];
+        GUI::Get()->grid_quantity = data["camera"]["pitch"];
 
-    if (data["camera"].contains("depth sort"))
-        session->depthSort = data["camera"]["depth sort"];
+        if (data["camera"].contains("grid tint"))
+            GUI::Get()->grid_color = { data["camera"]["grid tint"]["r"], data["camera"]["grid tint"]["g"], data["camera"]["grid tint"]["b"] }; 
+        
+        session->worldWidth = data["camera"]["width"];
+        session->worldHeight = data["camera"]["height"];
 
-    session->gravityX = data["settings"]["physics"]["gravity"]["x"];
-    session->gravityY = data["settings"]["physics"]["gravity"]["y"];
-    session->gravity_continuous = data["settings"]["physics"]["continuous"];
-    session->gravity_sleeping = data["settings"]["physics"]["sleeping"];
+        if (data["camera"].contains("depth sort"))
+            session->depthSort = data["camera"]["depth sort"];
+    }
+
+    //physics
+
+    if (data.contains("settings") && data["settings"].contains("physics")) {
+        session->gravityX = data["settings"]["physics"]["gravity"]["x"];
+        session->gravityY = data["settings"]["physics"]["gravity"]["y"];
+        session->gravity_continuous = data["settings"]["physics"]["continuous"];
+        session->gravity_sleeping = data["settings"]["physics"]["sleeping"];
+    }
 
     //loaded data
+
+    session->spritesheets.clear();
 
     if (data.contains("spritesheets"))
         for (const auto& spritesheet : data["spritesheets"])
@@ -328,11 +337,15 @@ void EventListener::Deserialize(json& data, bool isSession)
         for (const auto& asset : data["assets"]) 
             AssetManager::Get()->Register(asset);
 
+    session->shaders.clear();
+
     if (data.contains("shaders"))
         for (const auto& shader : data["shaders"]) {
             session->shaders.push_back({ shader["key"], { shader["vertex"], shader["fragment"] } });
             session->shaders_applied = true;
         }
+
+    session->animations.clear();
 
     if (data.contains("animations"))
         for (const auto& animation : data["animations"]) 
@@ -350,6 +363,8 @@ void EventListener::Deserialize(json& data, bool isSession)
         }
 
     //global variables
+
+    session->globals.clear();
     
     if (data.contains("globals")) {
         for (const auto& global : data["globals"])
@@ -361,26 +376,36 @@ void EventListener::Deserialize(json& data, bool isSession)
 
     //nodes
 
-    for (auto& sprite : data["nodes"]["sprites"])
-        Node::ReadData(sprite, true, nullptr);
+    if (data.contains("nodes")) 
+    {
+        if (data["nodes"].contains("sprites"))
+            for (auto& sprite : data["nodes"]["sprites"])
+                Node::ReadData(sprite, true, nullptr);
 
-    for (auto& tilemap : data["nodes"]["tilemaps"])
-        Node::ReadData(tilemap, true, nullptr);
+        if (data["nodes"].contains("tilemaps"))
+            for (auto& tilemap : data["nodes"]["tilemaps"])
+                Node::ReadData(tilemap, true, nullptr);
 
-    for (auto& audio : data["nodes"]["audio"])
-        Node::ReadData(audio, true, nullptr);
+        if (data["nodes"].contains("audio"))
+            for (auto& audio : data["nodes"]["audio"])
+                Node::ReadData(audio, true, nullptr);
 
-    for (auto& empty : data["nodes"]["empty"])
-        Node::ReadData(empty, true, nullptr);
+        if (data["nodes"].contains("empty"))
+            for (auto& empty : data["nodes"]["empty"])
+                Node::ReadData(empty, true, nullptr);
 
-    for (auto& text : data["nodes"]["text"])
-        Node::ReadData(text, true, nullptr);
+        if (data["nodes"].contains("text"))
+            for (auto& text : data["nodes"]["text"])
+                Node::ReadData(text, true, nullptr);
 
-    for (auto& group : data["nodes"]["groups"])
-        Node::ReadData(group, true, nullptr);
+        if (data["nodes"].contains("groups"))
+            for (auto& group : data["nodes"]["groups"])
+                Node::ReadData(group, true, nullptr);
 
-    for (auto& spawn : data["nodes"]["spawns"])
-        Node::ReadData(spawn, true, nullptr);
+        if (data["nodes"].contains("spawns"))
+            for (auto& spawn : data["nodes"]["spawns"])
+                Node::ReadData(spawn, true, nullptr);
+    }
 
 }
 
@@ -390,59 +415,47 @@ void EventListener::Deserialize(json& data, bool isSession)
 
 
 //extracts saved data from scene to compile
-void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
+void EventListener::ParseScene(const std::string& sceneKey, std::stringstream& stream)
 {
     auto scene = new editor::Scene;
 
-    json data = json::parse(JSON);
+    json data = json::parse(stream);
+
+    stream.seekg(0);
 
     //camera
 
-    scene->vignetteVisibility = data["camera"]["vignetteVisibility"];
-    scene->cameraPosition.x = data["camera"]["x"];
-    scene->cameraPosition.y = data["camera"]["y"];
-    scene->cameraZoom = data["camera"]["zoom"];
-    scene->cameraBackgroundColor.r = data["camera"]["color"]["x"];
-    scene->cameraBackgroundColor.g = data["camera"]["color"]["y"];
-    scene->cameraBackgroundColor.b = data["camera"]["color"]["z"];
-    scene->cameraBackgroundColor.a = data["camera"]["color"]["w"]; 
+    if (data.contains("camera"))
+    {
+        scene->vignetteVisibility = data["camera"]["vignetteVisibility"];
+        scene->cameraPosition.x = data["camera"]["x"];
+        scene->cameraPosition.y = data["camera"]["y"];
+        scene->cameraZoom = data["camera"]["zoom"];
+        scene->cameraBackgroundColor.r = data["camera"]["color"]["x"];
+        scene->cameraBackgroundColor.g = data["camera"]["color"]["y"];
+        scene->cameraBackgroundColor.b = data["camera"]["color"]["z"];
+        scene->cameraBackgroundColor.a = data["camera"]["color"]["w"]; 
 
-    scene->currentBoundsWidthBegin = data["camera"]["bounds"]["width"]["begin"];
-    scene->currentBoundsWidthEnd = data["camera"]["bounds"]["width"]["end"];
-    scene->currentBoundsHeightBegin = data["camera"]["bounds"]["height"]["begin"];
-    scene->currentBoundsHeightEnd = data["camera"]["bounds"]["height"]["end"];
-    
-    scene->worldWidth = data["camera"]["width"];
-    scene->worldHeight = data["camera"]["height"];
+        scene->currentBoundsWidthBegin = data["camera"]["bounds"]["width"]["begin"];
+        scene->currentBoundsWidthEnd = data["camera"]["bounds"]["width"]["end"];
+        scene->currentBoundsHeightBegin = data["camera"]["bounds"]["height"]["begin"];
+        scene->currentBoundsHeightEnd = data["camera"]["bounds"]["height"]["end"];
+        
+        scene->worldWidth = data["camera"]["width"];
+        scene->worldHeight = data["camera"]["height"];
 
-    if (data["camera"].contains("depth sort"))
-        scene->depthSort = data["camera"]["depth sort"];
+        if (data["camera"].contains("depth sort"))
+            scene->depthSort = data["camera"]["depth sort"];
+    }
 
-    scene->gravityX = data["settings"]["physics"]["gravity"]["x"];
-    scene->gravityY = data["settings"]["physics"]["gravity"]["y"];
-    scene->gravity_continuous = data["settings"]["physics"]["continuous"];
-    scene->gravity_sleeping = data["settings"]["physics"]["sleeping"];
+    //settings
 
-    for (auto& sprite : data["nodes"]["sprites"])
-        Node::ReadData(sprite, false, scene);
-
-    for (auto& tilemap : data["nodes"]["tilemaps"])
-        Node::ReadData(tilemap, false, scene);
-
-    for (auto& audio : data["nodes"]["audio"])
-        Node::ReadData(audio, false, scene);
-
-    for (auto& empty : data["nodes"]["empty"])
-        Node::ReadData(empty, false, scene);
-
-    for (auto& text : data["nodes"]["text"])
-        Node::ReadData(text, false, scene);
-
-    for (auto& group : data["nodes"]["groups"])
-        Node::ReadData(group, false, scene);
-
-    for (auto& spawn : data["nodes"]["spawns"])
-        Node::ReadData(spawn, false, scene);
+    if (data.contains("settings")) {
+        scene->gravityX = data["settings"]["physics"]["gravity"]["x"];
+        scene->gravityY = data["settings"]["physics"]["gravity"]["y"];
+        scene->gravity_continuous = data["settings"]["physics"]["continuous"];
+        scene->gravity_sleeping = data["settings"]["physics"]["sleeping"];
+    }
 
     //loaded data
 
@@ -467,7 +480,6 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
            scene->assets.push_back(asset);
 
     if (data.contains("shaders")) {
-
         for (const auto& shader : data["shaders"])
             scene->shaders.push_back({ shader["key"], { shader["vertex"], shader["fragment"] } });
 
@@ -477,11 +489,41 @@ void EventListener::ParseScene(const std::string& sceneKey, std::ifstream& JSON)
     //global variables
     
     if (data.contains("globals")) {
-        
         for (const auto& global : data["globals"])
             scene->globals.push_back({ global["key"], global["type"] });
 
         scene->globals_applied = true;
+    }
+
+    if (data.contains("nodes"))
+    {
+        if (data["nodes"].contains("sprites"))
+            for (auto& sprite : data["nodes"]["sprites"])
+                Node::ReadData(sprite, false, scene);
+
+        if (data["nodes"].contains("tilemaps"))
+            for (auto& tilemap : data["nodes"]["tilemaps"])
+                Node::ReadData(tilemap, false, scene);
+
+        if (data["nodes"].contains("audio"))
+            for (auto& audio : data["nodes"]["audio"])
+                Node::ReadData(audio, false, scene);
+
+        if (data["nodes"].contains("empty"))
+            for (auto& empty : data["nodes"]["empty"])
+                Node::ReadData(empty, false, scene);
+
+        if (data["nodes"].contains("text"))        
+            for (auto& text : data["nodes"]["text"])
+                Node::ReadData(text, false, scene);
+
+        if (data["nodes"].contains("groups"))
+            for (auto& group : data["nodes"]["groups"])
+                Node::ReadData(group, false, scene);
+
+        if (data["nodes"].contains("spawns"))
+            for (auto& spawn : data["nodes"]["spawns"])
+                Node::ReadData(spawn, false, scene);
     }
 
     //scene ready for compilation 

@@ -549,25 +549,15 @@ void EventListener::BuildAndRun()
         {
             if (scene == System::Utils::ReplaceFrom(path, ".", ""))
             {
-                std::string tmp = Editor::projectPath + "spaghyeti_parse.json";
+                std::stringstream stream = DecodeFile(filepath);
 
-                DecodeFile(tmp, filepath);
-
-                std::ifstream JSON(tmp);
-
-                if (JSON.good()) {
-                    ParseScene(scene, JSON);
+                if (stream.good()) {
+                    ParseScene(scene, stream);
                     Editor::Log("Scene: " + scene + " parsed.");
                 }
 
                 else 
                     Editor::Log("There was a problem parsing scene: " + scene + ".");
-
-                JSON.close();
-                 
-                //remove temp json file
-
-                remove(tmp.c_str()); 
             }
         }
     };
@@ -582,12 +572,12 @@ void EventListener::BuildAndRun()
         std::replace(sceneDir.begin(), sceneDir.end(), '\\', '/');
         std::replace(path.begin(), path.end(), '\\', '/');
 
-        if (file.exists() && System::Utils::str_endsWith(path, ".spaghyeti")) 
+        if (file.exists() && System::Utils::str_endsWith(path, ".scene")) 
             parseScene(file);
 
         else if (file.is_directory() && path == sceneDir)
            for (const auto& f : std::filesystem::directory_iterator(sceneDir)) 
-               if (file.exists() && System::Utils::str_endsWith(f.path().string(), ".spaghyeti") && !f.is_directory())
+               if (file.exists() && System::Utils::str_endsWith(f.path().string(), ".scene") && !f.is_directory())
                    parseScene(f);
     }
 

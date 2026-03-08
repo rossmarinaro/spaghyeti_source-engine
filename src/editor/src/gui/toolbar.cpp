@@ -42,12 +42,12 @@ void editor::GUI::ShowSettings()
 
                 std::replace(sceneDir.begin(), sceneDir.end(), '\\', '/');
 
-                if (filename.exists() && System::Utils::str_endsWith(filename.path().string(), ".spaghyeti")) 
+                if (filename.exists() && System::Utils::str_endsWith(filename.path().string(), ".scene")) 
                     IterateScenes(filename);
 
                 else if (filename.is_directory() && filename.path().string() == sceneDir)
                     for (const auto& f : std::filesystem::directory_iterator(sceneDir)) 
-                        if (f.exists() && System::Utils::str_endsWith(f.path().string(), ".spaghyeti"))
+                        if (f.exists() && System::Utils::str_endsWith(f.path().string(), ".scene"))
                             IterateScenes(f);
             }
 
