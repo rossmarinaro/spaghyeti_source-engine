@@ -10,7 +10,12 @@
 using namespace editor;
 
 
-AssetManager::AssetManager() {
+AssetManager::AssetManager() 
+{
+    currentFolder = "";
+    projectIcon = "";
+    selectedAsset = "";
+    
     s_self = this;
     s_self->folderSelected = false;
 }

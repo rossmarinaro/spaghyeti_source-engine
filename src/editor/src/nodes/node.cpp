@@ -58,6 +58,8 @@ std::string Node::CheckName(const std::string& name, std::vector<std::string>& a
 
 void Node::Update(std::vector<std::shared_ptr<Node>>& arr) 
 {
+    GUI::Get()->collapseFolders = false;
+
     static char name_buf[32] = ""; 
 
     NodeInfo data = { ID, arr };
@@ -202,7 +204,7 @@ void Node::ClearAll()
     if (!nodes.size()) 
         return;
 
-    for (const auto& node : nodes) 
+    for (const auto& node : nodes)  
         node->Reset();
     
     nodes.clear();

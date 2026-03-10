@@ -239,6 +239,8 @@ void Editor::ShutDown()
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "data src"); 
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "folder src");
     Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "arrow src");
+    Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "close folders src");
+    Resources::Manager::UnLoadRaw(Resources::Manager::IMAGE, "sort src");
 
     Application::ShutDown();
 
@@ -284,8 +286,6 @@ void Editor::Reset(bool removeSession)
         s_self->spritesheets.clear();
         s_self->scenes.clear();
         s_self->shaders.clear();
-
-        std::stringstream().swap(s_self->events->sessionData);
 
         AssetManager::Get()->Reset();
         

@@ -198,8 +198,11 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
         ImGui::PushID(("(Sprite) " + name).c_str());
 
         std::string selText = (Editor::selectedEntity && spriteHandle) && Editor::selectedEntity->ID == spriteHandle->ID ? "<SELECTED> " : "";
+   
+        if (GUI::Get()->collapseFolders)
+            ImGui::SetNextItemOpen(false, ImGuiCond_Always);
 
-        if (ImGui::TreeNode((selText + "(Sprite) " + name).c_str()))
+        if (ImGui::TreeNodeEx((selText + "(Sprite) " + name).c_str()))
         {
             Node::Update(arr);
 

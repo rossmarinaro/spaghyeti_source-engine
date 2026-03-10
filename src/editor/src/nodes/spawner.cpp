@@ -96,6 +96,9 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
         std::string selText = (Editor::selectedEntity && rectHandle) && Editor::selectedEntity->ID == rectHandle->ID ? "<SELECTED> " : "";
 
+        if (GUI::Get()->collapseFolders)
+            ImGui::SetNextItemOpen(false, ImGuiCond_Always);
+
         if (ImGui::TreeNode((selText + "(Spawner) " + name).c_str()))
         {
             Node::Update(arr);

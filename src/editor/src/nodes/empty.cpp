@@ -80,6 +80,9 @@ void EmptyNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
     {
         ImGui::PushID(("(Empty) " + name).c_str());
+
+        if (GUI::Get()->collapseFolders)
+            ImGui::SetNextItemOpen(false, ImGuiCond_Always);
  
         if (ImGui::TreeNode(("(Empty) " + name).c_str()))
         {
@@ -186,7 +189,6 @@ void EmptyNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                     ImGui::EndMenu();
                 }
-                    
             }
 
             ImGui::TreePop();

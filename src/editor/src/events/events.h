@@ -40,7 +40,7 @@ namespace editor {
 
             static inline const unsigned int ACTIONS_LIMIT = 5;
             static inline unsigned int actionsCount, eventCount;
-            static inline bool actionsInit;
+            static inline bool actionsInitUndo, actionsInitRedo;
 
             static void UpdateSession();                      
 

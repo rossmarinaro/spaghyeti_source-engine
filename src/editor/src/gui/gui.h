@@ -20,7 +20,8 @@ namespace editor {
             bool running,
                  show_init,
                  show_quit,
-                 show_grid;
+                 show_grid,
+                 collapseFolders;
 
             float grid_quantity;
             Math::Vector3 grid_color;

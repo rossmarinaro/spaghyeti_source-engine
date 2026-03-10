@@ -80,8 +80,11 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
         ImGui::PushID(("(Text) " + name).c_str());
 
         std::string selText = (Editor::selectedEntity && textHandle) && Editor::selectedEntity->ID == textHandle->ID ? "<SELECTED> " : "";
+     
+        if (GUI::Get()->collapseFolders)
+            ImGui::SetNextItemOpen(false, ImGuiCond_Always);
 
-        if (ImGui::TreeNode((selText + "(Text) " + name).c_str()))
+        if (ImGui::TreeNodeEx((selText + "(Text) " + name).c_str()))
         {
             Node::Update(arr);
             
@@ -231,7 +234,7 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
         ImGui::PopID();
 
-    }
+    } 
 }
 
 

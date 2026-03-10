@@ -44,6 +44,9 @@ void GroupNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
         ImGui::PushID(("(Group) " + name).c_str());
 
+        if (GUI::Get()->collapseFolders)
+            ImGui::SetNextItemOpen(false, ImGuiCond_Always);
+
         if (ImGui::TreeNode(("(Group) " + name).c_str()))
         {
             Node::Update(arr);

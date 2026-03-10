@@ -90,7 +90,7 @@ namespace editor {
             };
 
             bool m_init;
-                        
+                      
             void SavePrefab(std::vector<std::shared_ptr<Node>>& arr);
             void AddComponent(int type, bool init = true); 
             void RemoveComponent(const std::shared_ptr<Component>& component);

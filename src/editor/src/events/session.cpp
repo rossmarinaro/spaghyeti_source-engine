@@ -8,13 +8,22 @@ using namespace editor;
 
 void EventListener::StartSession(std::stringstream& stream) 
 {
-    actionsInit = false;
+    actionsInitUndo = false;
+    actionsInitRedo = false;
+    
     eventCount = 0;
     actionsCount = 0;
 
-    sessionData << "{ \"instances\": [" << "\n";
-    sessionData << stream.rdbuf();
-    sessionData << "]}" << "\n"; 
+    json data,
+         instance,
+         instances = json::array();
+
+    instance << stream;
+    instances.push_back(instance);
+         
+    data["instances"] = instances;
+
+    sessionData << data;
     
     stream.seekg(0);
 }
@@ -27,31 +36,35 @@ void EventListener::UpdateSession()
 {
     json currentSceneData;
     Serialize(currentSceneData, false);
-    
+  
     //check instance limit / embed new session instance
-    
+
+    sessionData.seekg(0);
+ 
     json data = json::parse(sessionData);
 
-    if (data.contains("instances"))
+    if (data.contains("instances") && data["instances"].is_array())
     {
-        if (!actionsInit) //initial seed
-            actionsCount++;
-
-        actionsInit = true;
-        data["instances"].push_back(currentSceneData);
-
         //remove first element if reached limit
 
         if (data["instances"].size() >= ACTIONS_LIMIT) 
-            data["instances"].erase(data["instances"].front());
+            data["instances"].erase(data["instances"].begin());
         else 
-            eventCount++;     
+            eventCount++;  
+            
+        //add session to array
+
+        data["instances"].push_back(currentSceneData);
+            
+        actionsInitUndo = true;
+        actionsCount++; 
+        
+        //write new session instance data to stream
+
+        std::stringstream().swap(sessionData);
+        sessionData << data.dump(); 
     }
 
-    //write new session instance data to stream
-
-    std::stringstream().swap(sessionData);
-    sessionData << data.dump(); 
 }
 
 
@@ -70,7 +83,12 @@ void EventListener::ApplyState(bool increment)
     }
     else {
         if (actionsCount > 0) 
+        {
             actionsCount--;
+
+            if (eventCount >= 1)
+                actionsInitRedo = true;
+        }
         else 
             return;
     }
@@ -85,10 +103,8 @@ void EventListener::ApplyState(bool increment)
         const bool arrayInBounds = data.contains("instances") && 
                                    data["instances"].is_array() && 
                                    actionsCount <= data["instances"].size() - 1;
-        if (arrayInBounds) 
-        {
+        if (arrayInBounds) {
             Editor::Get()->Reset(false);
-
             json currentSessionData = data["instances"][actionsCount]; 
             Deserialize(currentSessionData, true); 
         } 

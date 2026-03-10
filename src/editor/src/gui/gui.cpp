@@ -10,6 +10,9 @@
 #include "../assets/embedded/images/folder.hpp"
 #include "../assets/embedded/images/text.hpp"
 #include "../assets/embedded/images/arrow.hpp"
+#include "../assets/embedded/images/clear.hpp"
+#include "../assets/embedded/images/sort.hpp"
+#include "../assets/embedded/images/close_folders.hpp"
 
 using namespace editor;
 
@@ -23,6 +26,7 @@ GUI::GUI()
     s_self->show_init = true;
     s_self->show_quit = false;
     s_self->show_grid = false;
+    s_self->collapseFolders = false;
 
     //Poll and handle events (inputs, window resize, etc.)
     //You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -112,6 +116,9 @@ GUI::GUI()
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "folder src", folder_png, folder_png_len);
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "text src", text_png, text_png_len);
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "arrow src", arrow_png, arrow_png_len);
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "clear src", clear_png, clear_png_len);
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "close folders src", close_folders_png, close_folders_png_len);
+    System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "sort src", sort_png, sort_png_len);
 
     System::Resources::Manager::RegisterTextures();
 
@@ -326,23 +333,69 @@ void GUI::RenderNodes()
     if (!running)
         return;
 
-    //undo / redo
+    //undo 
 
     const ImVec4 alpha_hundred = ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
                  alpha_twentyFive = ImVec4(1.0f, 1.0f, 1.0f, 0.25f);
 
     if (ImGui::ImageButton("undo button", (void*)(intptr_t)Graphics::Texture2D::Get("arrow src").ID, 
         ImVec2(20, 20), ImVec2(1, 0), ImVec2(0, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
-        (EventListener::actionsInit && EventListener::actionsCount > 0) ? alpha_hundred : alpha_twentyFive))
+        (EventListener::actionsInitUndo && EventListener::actionsCount > 0) ? alpha_hundred : alpha_twentyFive)) 
             Editor::Get()->events->ApplyState(false);
+
+    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        ImGui::SetTooltip("undo");
 
     ImGui::SameLine();
 
+    //redo
+
     if (ImGui::ImageButton("redo button", (void*)(intptr_t)Graphics::Texture2D::Get("arrow src").ID, 
         ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
-        EventListener::actionsInit && EventListener::actionsCount < EventListener::eventCount && 
-        EventListener::actionsCount < EventListener::ACTIONS_LIMIT ? alpha_hundred : alpha_twentyFive))
+        EventListener::actionsCount < EventListener::eventCount && 
+        EventListener::actionsInitRedo && EventListener::actionsCount < EventListener::ACTIONS_LIMIT ? alpha_hundred : alpha_twentyFive))
             Editor::Get()->events->ApplyState(true);
+
+    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        ImGui::SetTooltip("redo");
+
+    ImGui::SameLine();
+
+    //clear all
+
+    if (ImGui::ImageButton("clear all button", (void*)(intptr_t)Graphics::Texture2D::Get("clear src").ID, 
+        ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
+        Node::nodes.size() ? alpha_hundred : alpha_twentyFive) && Node::nodes.size()) {
+            Node::ClearAll();
+            EventListener::UpdateSession();
+        }
+
+    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        ImGui::SetTooltip("clear all");
+
+    ImGui::SameLine();
+
+    //sort nodes
+
+    if (ImGui::ImageButton("sort nodes", (void*)(intptr_t)Graphics::Texture2D::Get("sort src").ID, 
+        ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
+        Node::nodes.size() ? alpha_hundred : alpha_twentyFive) && Node::nodes.size())
+            std::rotate(Node::nodes.rbegin(), Node::nodes.rbegin() + 1, Node::nodes.rend());
+
+    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        ImGui::SetTooltip("sort nodes");
+
+    ImGui::SameLine();
+
+    //collapse all nodes
+
+    if (ImGui::ImageButton("collapse nodes", (void*)(intptr_t)Graphics::Texture2D::Get("close folders src").ID, 
+        ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
+        Node::nodes.size() ? alpha_hundred : alpha_twentyFive) && Node::nodes.size())
+            collapseFolders = true;
+
+    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        ImGui::SetTooltip("collapse nodes");
 
     //nodes list
 
