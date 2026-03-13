@@ -26,6 +26,8 @@ void EventListener::StartSession(std::stringstream& stream)
     sessionData << data;
     
     stream.seekg(0);
+
+    selected_nodes = &Node::nodes;
 }
 
 

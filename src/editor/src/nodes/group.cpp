@@ -24,7 +24,10 @@ GroupNode::~GroupNode() {
 //---------------------------
 
 
-void GroupNode::Reset(int component_type) {
+void GroupNode::Reset(int component_type) 
+{
+    Editor::Get()->events->selected_nodes = &nodes;
+
     for (const auto& node : _nodes) 
         node->Reset();
     
@@ -53,7 +56,6 @@ void GroupNode::Update(std::vector<std::shared_ptr<Node>>& arr)
             
             if (ImGui::BeginMenu("Add Node"))
             {
-
                 if (ImGui::MenuItem("Load Prefab")) 
                 {
                     if (AssetManager::LoadPrefab(_nodes))
@@ -142,6 +144,11 @@ void GroupNode::Update(std::vector<std::shared_ptr<Node>>& arr)
         
             ImGui::TreePop();
         }
+
+        //set nodes for sorting 
+
+        if (ImGui::IsItemClicked() && _nodes.size())
+            Editor::Get()->events->selected_nodes = &_nodes;
 
         ImGui::PopID();
     }

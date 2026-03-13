@@ -64,7 +64,7 @@ void AudioNode::Update(std::vector<std::shared_ptr<Node>>& arr)
             ImGui::SetNextItemOpen(false, ImGuiCond_Always);
 
         if (ImGui::TreeNode(("(Audio) " + name).c_str()))
-        {
+        {   
             Node::Update(arr);
 
             if (show_options)

@@ -7,13 +7,14 @@ namespace editor {
 
     class EventListener {
 
-        public:
+        public: 
 
             bool exitFlag,
                  saveFlag,
                  buildFlag,
                  canSave;
 
+            std::vector<std::shared_ptr<Node>>* selected_nodes;
             std::vector<std::pair<std::string, Scene*>> compileQueue;
 
             EventListener();

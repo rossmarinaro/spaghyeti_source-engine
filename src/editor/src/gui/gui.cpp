@@ -360,7 +360,7 @@ void GUI::RenderNodes()
         ImGui::SetTooltip("redo");
 
     ImGui::SameLine();
-
+ 
     //clear all
 
     if (ImGui::ImageButton("clear all button", (void*)(intptr_t)Graphics::Texture2D::Get("clear src").ID, 
@@ -377,10 +377,12 @@ void GUI::RenderNodes()
 
     //sort nodes
 
+    auto nodes = Editor::Get()->events->selected_nodes;
+
     if (ImGui::ImageButton("sort nodes", (void*)(intptr_t)Graphics::Texture2D::Get("sort src").ID, 
         ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
-        Node::nodes.size() ? alpha_hundred : alpha_twentyFive) && Node::nodes.size())
-            std::rotate(Node::nodes.rbegin(), Node::nodes.rbegin() + 1, Node::nodes.rend());
+        nodes->size() ? alpha_hundred : alpha_twentyFive) && nodes->size())
+            std::rotate(nodes->rbegin(), nodes->rbegin() + 1, nodes->rend());
 
     else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
         ImGui::SetTooltip("sort nodes");
@@ -391,8 +393,10 @@ void GUI::RenderNodes()
 
     if (ImGui::ImageButton("collapse nodes", (void*)(intptr_t)Graphics::Texture2D::Get("close folders src").ID, 
         ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
-        Node::nodes.size() ? alpha_hundred : alpha_twentyFive) && Node::nodes.size())
+        Node::nodes.size() ? alpha_hundred : alpha_twentyFive) && Node::nodes.size()) {
             collapseFolders = true;
+            Editor::Get()->events->selected_nodes = &Node::nodes;
+        }
 
     else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
         ImGui::SetTooltip("collapse nodes");

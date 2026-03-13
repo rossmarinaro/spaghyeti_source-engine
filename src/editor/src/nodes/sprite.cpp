@@ -189,7 +189,6 @@ void SpriteNode::ApplyAnimation(const std::string& key)
 
 void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 {
-
     ImGui::Separator(); 
 
     {

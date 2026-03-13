@@ -502,18 +502,21 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
 {
     //cull sprite and tile type entities out of view space
 
+    const float* zoom_ptr = camera->GetZoom();
+
     const float width = entity->texture.FrameWidth,
                 height = entity->texture.FrameHeight,
                 camPosX = -camera->GetPosition()->x, 
                 camPosY = -camera->GetPosition()->y,
+                zoom = std::pow(((1.0f - (*zoom_ptr)) + 1.0f), ((1.0f - (*zoom_ptr)) + 1.0f) * 2.0f),
                 fx = (1.0f - entity->scrollFactor.x) + 1.0f,
                 fy = (1.0f - entity->scrollFactor.y) + 1.0f,
                 posX = entity->position.x * fx,
                 posY = entity->position.y * fy,
-                left = (camPosX - (Window::s_scaleWidth / 2) + (Window::s_scaleWidth / 2)) * entity->scrollFactor.x, 
-                right = (camPosX + (Window::s_scaleWidth)) * fx, 
-                bottom = (camPosY - (Window::s_scaleHeight / 2) + (Window::s_scaleHeight / 2)) * entity->scrollFactor.y, 
-                top = (camPosY + Window::s_scaleHeight) * fy; 
+                left = (camPosX - (Window::s_scaleWidth / 2 * zoom) + (Window::s_scaleWidth / 2 * zoom)) * entity->scrollFactor.x, 
+                right = (camPosX + (Window::s_scaleWidth * zoom)) * fx, 
+                bottom = (camPosY - (Window::s_scaleHeight / 2 * zoom) + (Window::s_scaleHeight / 2 * zoom)) * entity->scrollFactor.y, 
+                top = (camPosY + Window::s_scaleHeight * zoom) * fy; 
 
     return (posX + width > left && 
             posX < right && 
