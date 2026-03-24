@@ -298,14 +298,14 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                 if (typeOf == Entity::GEOMETRY)
                 {
-                    ImGui::SliderFloat("width", &width, -System::Window::s_width, System::Window::s_width);  
-                    ImGui::SliderFloat("height", &height, -System::Window::s_height, System::Window::s_height); 
+                    ImGui::SliderFloat("width", &width, -Editor::Get()->worldWidth, Editor::Get()->worldWidth);  
+                    ImGui::SliderFloat("height", &height, -Editor::Get()->worldHeight, Editor::Get()->worldHeight); 
                 }
 
-                ImGui::SliderFloat("position x", &positionX, 0.0f, System::Window::s_width);  
-                ImGui::SliderFloat("position y", &positionY, 0.0f, System::Window::s_height); 
-                ImGui::SliderFloat("spawn width", &spawnWidth, 0.0f, System::Window::s_width);  
-                ImGui::SliderFloat("spawn height", &spawnHeight, 0.0f, System::Window::s_height); 
+                ImGui::SliderFloat("position x", &positionX, 0.0f, Editor::Get()->worldWidth);  
+                ImGui::SliderFloat("position y", &positionY, 0.0f, Editor::Get()->worldHeight); 
+                ImGui::SliderFloat("spawn width", &spawnWidth, 0.0f, Editor::Get()->worldWidth);  
+                ImGui::SliderFloat("spawn height", &spawnHeight, 0.0f, Editor::Get()->worldHeight); 
                 ImGui::ColorEdit3("tint", (float*)&tint); 
                 ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
                 if (ImGui::Checkbox("loop", &loop))

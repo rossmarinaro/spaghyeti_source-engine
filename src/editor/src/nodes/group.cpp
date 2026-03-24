@@ -106,11 +106,11 @@ void GroupNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             if (show_options) 
             { 
-                ImGui::SliderFloat("position x", &positionX, -System::Window::s_width, System::Window::s_width);
+                ImGui::SliderFloat("position x", &positionX, -Editor::Get()->worldWidth, Editor::Get()->worldWidth);
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     EventListener::UpdateSession();
 
-                ImGui::SliderFloat("position y", &positionY, -System::Window::s_height, System::Window::s_height);
+                ImGui::SliderFloat("position y", &positionY, -Editor::Get()->worldHeight, Editor::Get()->worldHeight);
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     EventListener::UpdateSession();
 
