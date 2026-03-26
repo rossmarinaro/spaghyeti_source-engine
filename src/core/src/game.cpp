@@ -527,7 +527,6 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
 
 //-----------------------------
 
-
 void Game::RenderEntities()
 {
     const auto check_visibility = [this](std::vector<std::shared_ptr<Entity>> entities) -> void {

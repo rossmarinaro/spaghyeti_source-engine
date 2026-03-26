@@ -281,6 +281,9 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
         if (ImGui::TreeNode(("(Tilemap) " + name).c_str()))
         {
+            if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+                Editor::Get()->events->selected_nodes = &nodes;
+
             Node::Update(arr);
 
             if (ImGui::BeginMenu("Add Component"))

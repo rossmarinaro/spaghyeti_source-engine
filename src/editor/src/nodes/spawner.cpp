@@ -101,6 +101,9 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
         if (ImGui::TreeNode((selText + "(Spawner) " + name).c_str()))
         {
+            if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+                Editor::Get()->events->selected_nodes = &nodes;
+
             Node::Update(arr);
 
             if (ImGui::Button("Select") && rectHandle)

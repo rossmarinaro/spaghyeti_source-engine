@@ -47,8 +47,8 @@ std::string Node::CheckName(const std::string& name, std::vector<std::string>& a
     if (it != arr.end()) 
         n = System::Utils::ReplaceFrom(n, "-", "") + "_" + UUID::generate_uuid(); 
 
-    if (n.length() > 35)
-        n = n.erase(24) + "_" + UUID::generate_uuid().erase(11);
+    if (n.length() > 40)
+        n = n.erase(29) + "_" + UUID::generate_uuid().erase(11);
 
     arr.emplace_back(n);
 

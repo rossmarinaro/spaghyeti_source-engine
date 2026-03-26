@@ -53,7 +53,6 @@ void Camera::SetVignette(float alpha) {
 }
 
 
-
 //-------------------------------
 
 

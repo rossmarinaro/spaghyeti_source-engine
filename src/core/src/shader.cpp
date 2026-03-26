@@ -386,7 +386,7 @@ void Shader::InitBaseShaders()
     //         "vec2 offset = offsets[gl_InstanceID];\n"
     //         "gl_Position = mvp * vec4(vert.xy + offset, 0.0, 1.0);\n"
     //     "}\n";
-
+ 
 
     //shader char arrays
 

@@ -86,6 +86,9 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
         if (ImGui::TreeNodeEx((selText + "(Text) " + name).c_str()))
         {
+            if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+                Editor::Get()->events->selected_nodes = &nodes;
+
             Node::Update(arr);
             
             if (ImGui::BeginMenu("Add Component"))

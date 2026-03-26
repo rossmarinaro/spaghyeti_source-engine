@@ -21,8 +21,8 @@ Entity::Entity(int type, bool isSpawn):
     m_is_spawn(isSpawn),
     m_isStatic(false)
 {
-    name = "Untitled_" + std::to_string(s_count);
-    ID = GenerateID();
+    name = "Untitled_" + std::to_string(s_count);          
+    ID = GenerateID();  
     render_layer = 0;
 
     SetShader("sprite");
@@ -40,7 +40,7 @@ Entity::Entity(int type, float x, float y, bool isSpawn):
     m_is_spawn(isSpawn),
     m_isStatic(false)
 { 
-    position = { x, y };
+    position = { x, y };                         
     scrollFactor = { 1.0f, 1.0f };
     scale = { 1.0f, 1.0f }; 
     tint = { 1.0f, 1.0f, 1.0f };
@@ -56,7 +56,7 @@ Entity::Entity(int type, float x, float y, bool isSpawn):
     flipX = false;
     flipY = false;
     depth = s_depth + 1;
-    ID = GenerateID();
+    ID = GenerateID(); 
     render_layer = 0;
 
     SetShader("sprite");
@@ -186,18 +186,17 @@ Geometry::~Geometry() {
 
 
 //------------------------------------- 
- 
 
 void Geometry::Render()
 {
-    glm::mat4 transform = glm::mat4(1.0f); 
-
     if (m_type == QUAD) {
         texture.FrameWidth = width;
         texture.FrameHeight = height;
     }
 
     //render other shapes...
+
+    glm::mat4 transform = glm::mat4(1.0f); 
 
     transform = glm::translate(transform, { 0.5f * width + position.x * scale.x, 0.5f * height + position.y * scale.y, 0.0f }); 
     transform = glm::rotate(transform, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
@@ -207,12 +206,10 @@ void Geometry::Render()
 
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
    
-    const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
-                                        { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
-                                        { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
-                                        { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
-                    mv = view * transform;
-
+    const glm::mat4 mv = (m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
+                                                            { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
+                                                            { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
+                                                            { vm.d.r, vm.d.g, vm.d.b, vm.d.a })) * transform;
     const Math::Matrix4 modelView = { 
         { mv[0][0], mv[0][1], mv[0][2], mv[0][3] }, 
         { mv[1][0], mv[1][1], mv[1][2], mv[1][3] },   
@@ -701,15 +698,6 @@ void Sprite::Render()
 
     //sprite model transformations
 
-    const auto camera = System::Application::game->camera;
-
-    const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
-    
-    const glm::mat4 view = !IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
-                                                                    { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
-                                                                    { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
-                                                                    { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
-
     glm::mat4 transform = glm::mat4(1.0f); 
 
     transform = glm::translate(transform, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
@@ -720,8 +708,14 @@ void Sprite::Render()
 
     if (active && renderable)
     {
-        const glm::mat4 mv = view * transform;
+        const auto camera = System::Application::game->camera;
 
+        const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
+    
+        const glm::mat4 mv = (!IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
+                                                                    { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
+                                                                    { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
+                                                                    { vm.d.r, vm.d.g, vm.d.b, vm.d.a })) * transform;
         float r = tint.x, 
               g = tint.y, 
               b = tint.z;
@@ -729,7 +723,7 @@ void Sprite::Render()
         if (texture.Whiteout == 1) { 
             r += 10.0f; 
             g += 10.0f; 
-            b += 10.0f;
+            b += 10.0f; 
         }
 
         const Math::Vector4 color = { r, g, b, alpha };

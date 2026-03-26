@@ -79,6 +79,8 @@ void Renderer::Init()
 {
     s_instance = new Renderer;
 
+    s_instance->vertices.reserve(MAX_QUADS * 4);
+
     s_vsync = 0;
     s_currentBufferIndex = 0;
 
@@ -419,10 +421,10 @@ void Renderer::window_size_callback(GLFWwindow* window, int width, int height) {
 //--------------------------------- instance rendering 
 
 
-//#include "../vendors/glm/gtc/type_ptr.hpp"
+// #include "../vendors/glm/gtc/type_ptr.hpp"
 // void Renderer::InitInstances(/* const std::vector<std::shared_ptr<Sprite>>& sprites */) 
 // {
-//     shader = Graphics::Shader::Get("instance");
+//     auto shader = Graphics::Shader::Get("instance");
 //     const auto sprites = System::Game::GetScene()->tileDefs;
 
 //     glm::vec2 translations[10];

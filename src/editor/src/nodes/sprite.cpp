@@ -203,6 +203,9 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
         if (ImGui::TreeNodeEx((selText + "(Sprite) " + name).c_str()))
         {
+            if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+                Editor::Get()->events->selected_nodes = &nodes;
+
             Node::Update(arr);
 
             if (ImGui::Button("Select") && spriteHandle)

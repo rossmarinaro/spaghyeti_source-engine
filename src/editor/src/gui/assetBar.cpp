@@ -3,7 +3,7 @@
 #include "../editor.h"
 
 static int _thumbnail_begin = 0, 
-           _thumbnail_end = 20;
+           _thumbnail_end = 30;
 
 //-------------- apply currently opened folder
 
@@ -37,7 +37,7 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
                     _thumbnail_end++;
                 }
             }
-        }
+        } 
 
         if (_thumbnail_begin > 0) 
         {
@@ -58,16 +58,19 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 
         for (int i = _thumbnail_begin; i < _thumbnail_end; i++) 
         {
-            if (i >= vec.size())
-                continue;
-
-            if (vec.at(i).second == NULL)
+            if (i >= vec.size() || vec.at(i).second == NULL)
                 continue;
 
             const std::string folder = AssetManager::GetFolder(vec.at(i).first);
+            const auto tex = Graphics::Texture2D::Get(vec.at(i).first);
 
             if (!folder.length())
                 continue;
+
+            if (tex.Width > 2400 || tex.Height > 2400) {
+                Editor::Log("Skipping texture: image dimensions exceed max pixels (2400px)");
+                continue;
+            }
 
             if (folder == AssetManager::Get()->currentFolder)
             {
@@ -81,7 +84,7 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
                 //asset tool tip
 
                 if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-                    ImGui::SetTooltip(vec.at(i).first.c_str());
+                   ImGui::SetTooltip(vec.at(i).first.c_str());
 
                 ImGui::PopID();
 

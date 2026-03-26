@@ -348,11 +348,6 @@ void Texture2D::Update(
 
     //other attributes
 
-    const glm::mat4 modelMat = glm::mat4({ modelView.a.r, modelView.a.g, modelView.a.b, modelView.a.a }, 
-        { modelView.b.r, modelView.b.g, modelView.b.b, modelView.b.a }, 
-        { modelView.c.r, modelView.c.g, modelView.c.b, modelView.c.a }, 
-        { modelView.d.r, modelView.d.g, modelView.d.b, modelView.d.a }); 
-
     for (int i = 0; i < 4; i++) 
     {       
         vertices[i].texID = textureUnit;
@@ -369,14 +364,23 @@ void Texture2D::Update(
         vertices[i].outlineB = outline.z;
         vertices[i].outlineWidth = outlineWidth;
         
-        //copy float array into a standard glm mat4
+        //copy float array 
 
-        std::memcpy(vertices[i].modelView, glm::value_ptr(modelMat), sizeof(vertices[i].modelView)); 
+        const float float_array[16] = {
+            modelView.a.r, modelView.a.g, modelView.a.b, modelView.a.a, 
+            modelView.b.r, modelView.b.g, modelView.b.b, modelView.b.a, 
+            modelView.c.r, modelView.c.g, modelView.c.b, modelView.c.a, 
+            modelView.d.r, modelView.d.g, modelView.d.b, modelView.d.a 
+        };
+
+        std::memcpy(vertices[i].modelView, float_array, sizeof(vertices[i].modelView)); 
+
     }  
 
     //add the vertices to the renderer's vector and increase index count by 6
-    
-    std::copy(vertices, vertices + sizeof(vertices) / sizeof(vertices[0]), std::back_inserter(renderer->vertices));
+
+    for (const auto vertex : vertices) 
+        renderer->vertices.emplace_back(vertex);
 
     renderer->indexCount += 6;
 

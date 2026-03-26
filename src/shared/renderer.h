@@ -33,6 +33,7 @@
 
 //-----------------------------
 
+
 namespace /* SPAGHYETI_CORE */ System {
     //triple buffer batch renderer
     class Renderer {
