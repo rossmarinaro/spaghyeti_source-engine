@@ -44,8 +44,8 @@ void EnableAttributes()
     glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineWidth)); //outline size
     glEnableVertexAttribArray(7);
 
-    for (int i = 0; i < 4; i++) { //4 x 4 model view matrix 
-        size_t offset = offsetof(Math::Graphics::Vertex, modelView) + sizeof(float) * 4 * i;
+    for (int i = 0; i < 4; i++) { //4 x 4 model view projection matrix 
+        size_t offset = offsetof(Math::Graphics::Vertex, mvp) + sizeof(float) * 4 * i;
         glVertexAttribPointer(8 + i, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), reinterpret_cast<const void*>(offset)); 
         glEnableVertexAttribArray(8 + i);
     }

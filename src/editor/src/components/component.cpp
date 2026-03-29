@@ -80,7 +80,7 @@ void Component::Make()
         std::ofstream vert_src(vert);
         std::ofstream frag_src(frag);
 
-        //vert
+        //vert (batch rendering)
 
         vert_src << "layout(location = 0) in vec3 a_Pos;\n";
         vert_src << "layout(location = 1) in vec2 a_Scale;\n";
@@ -90,15 +90,13 @@ void Component::Make()
         vert_src << "layout(location = 5) in vec4 a_RGBA;\n";
         vert_src << "layout(location = 6) in vec3 a_OutlineColor;\n";
         vert_src << "layout(location = 7) in float a_OutlineWidth;\n";
-        vert_src << "layout(location = 8) in mat4 a_ModelView;\n";
+        vert_src << "layout(location = 8) in mat4 a_ModelViewProj;\n";
 
         vert_src << "flat out float texID;\n";
         vert_src << "out float outlineWidth;\n";
         vert_src << "out vec3 outlineColor;\n";
         vert_src << "out vec2 uv;\n";
         vert_src << "out vec4 rgba;\n";
-
-        vert_src << "uniform mat4 proj;\n";
 
         vert_src << "void main()\n";
         vert_src << "{\n";
@@ -112,7 +110,7 @@ void Component::Make()
         vert_src << "   vert_src << float s = sin(a_Rotation);\n";
         vert_src << "   vert_src << vec3 position = vec3(scaledPosition.x * c - scaledPosition.y * s, scaledPosition.x * s + scaledPosition.y * c, scaledPosition.z);\n";
             
-        vert_src << "   gl_Position = proj * a_ModelView * vec4(position, 1.0);\n";
+        vert_src << "   gl_Position = a_ModelViewProj * vec4(position, 1.0);\n";
         vert_src << "}";
 
         //frag

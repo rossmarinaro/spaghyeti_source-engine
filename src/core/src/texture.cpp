@@ -253,12 +253,12 @@ void Texture2D::UnLoad(const std::string& key)
 //---------------------------------------- updates textures position and texture coordinates, appends to array for rendering
 
 void Texture2D::Update(
-    const Graphics::Shader& shader, 
+    Graphics::Shader& shader, 
     const Math::Vector2& position, 
     const Math::Vector2& scale,
     const Math::Vector4& rgba, 
     const Math::Vector3& outline, 
-    const Math::Matrix4& modelView, 
+    const Math::Matrix4& mvp, 
     float outlineWidth,
     float rotation,
     int depth,
@@ -275,7 +275,18 @@ void Texture2D::Update(
         renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 ||
         shader.ID != renderer->activeShaderID
     ) {
-        Graphics::Shader::UpdateVertexUniforms(shader.key);
+        if (renderer) 
+        {
+            //update image samplers
+
+            int samplers[System::Renderer::MAX_TEXTURES];
+
+            for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++) 
+                samplers[i] = i;
+
+            shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
+        }
+
         System::Renderer::Flush(m_opaque); 
     }
 
@@ -367,13 +378,13 @@ void Texture2D::Update(
         //copy float array 
 
         const float float_array[16] = {
-            modelView.a.r, modelView.a.g, modelView.a.b, modelView.a.a, 
-            modelView.b.r, modelView.b.g, modelView.b.b, modelView.b.a, 
-            modelView.c.r, modelView.c.g, modelView.c.b, modelView.c.a, 
-            modelView.d.r, modelView.d.g, modelView.d.b, modelView.d.a 
+            mvp.a.r, mvp.a.g, mvp.a.b, mvp.a.a, 
+            mvp.b.r, mvp.b.g, mvp.b.b, mvp.b.a, 
+            mvp.c.r, mvp.c.g, mvp.c.b, mvp.c.a, 
+            mvp.d.r, mvp.d.g, mvp.d.b, mvp.d.a 
         };
 
-        std::memcpy(vertices[i].modelView, float_array, sizeof(vertices[i].modelView)); 
+        std::memcpy(vertices[i].mvp, float_array, sizeof(vertices[i].mvp)); 
 
     }  
 

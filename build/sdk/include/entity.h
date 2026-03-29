@@ -214,7 +214,6 @@ class Sprite : public Entity {
         inline const Anim& GetCurrentAnimation() { return m_currentAnim; }
 
 		inline void SetContact(bool isContact) { m_contacting = isContact; }
-        inline void SetAsUI(bool isUI) { m_type = isUI ? UI : SPRITE; }
         
 		inline const bool IsContacting() { return m_contacting; }
 		inline const bool IsSpritesheet() { return m_isSpritesheet; } 
@@ -222,7 +221,7 @@ class Sprite : public Entity {
         inline void SetFrame(int frame) { currentFrame = frame; }
 
         const bool CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB);
-		
+		void SetAsUI(bool isUI);
 		void ReadSpritesheetData();
         void RemoveBodies(); 
         void AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vector4& offsets);

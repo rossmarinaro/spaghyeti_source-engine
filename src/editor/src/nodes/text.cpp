@@ -260,6 +260,7 @@ void TextNode::Render(float _positionX, float _positionY, float _rotation, float
         textHandle->SetStroke(isStroked, strokeColor, strokeWidth);
         textHandle->SetShadow(isShadow, shadowColor, shadowDistanceX, shadowDistanceY);
         textHandle->SetSlant(charOffsetX, charOffsetY);
+        textHandle->SetStatic(UIFlag);
 
         if (System::Game::GetScene()->ListenForInteraction(textHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
             Editor::selectedEntity = textHandle;

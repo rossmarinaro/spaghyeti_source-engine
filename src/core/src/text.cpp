@@ -282,32 +282,29 @@ void* Text::GetGLTPointer()
 void Text::Render()
 {
     const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x * scale.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y * scale.y));
-
+    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y));
+    
     glm::mat4 transform(1.0f);
-
+    
     //render default gltext
 
     if (textType == DEFAULT && _GLT_text_buffer)
     {
-        const auto get_mvp = [&vm, &pm, this] (glm::mat4& model) -> const Math::Matrix4 
-        {
-            const glm::mat4 view = m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }), 
-                            proj = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f),
-                            mvp = proj * view * model;
-
-            return { 
-                { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
-                { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
-                { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
-                { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
-            };
-        };
-
         auto handle = static_cast<GLTtext*>(GetGLTPointer());
 
         if (!handle)
             return;
+
+        glm::mat4 viewMat = glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
+                                    { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
+                                    { vm.c.r, vm.c.g, vm.c.b, vm.c.a },  { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * transform;
+        if (m_isStatic)
+            viewMat = glm::mat4(1.0f);
+
+        glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
+
+        if (m_isStatic) 
+            projMat = (glm::highp_mat4)glm::ortho(0.0f, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
 
         SetText(content);
     
@@ -315,30 +312,20 @@ void Text::Render()
 
         if (shadowEnabled) 
         {
-            glm::mat4 _transform(1.0f);
-            _transform = glm::translate(_transform, { position.x + shadowOffsetX, position.y + shadowOffsetY, 0.0f });
-            _transform = glm::scale(_transform, { scale.x, scale.y, 1.0f });
-
-            const Math::Matrix4 mvp = get_mvp(_transform);
-
             gltBeginDraw();
             gltColor(shadowColor.x, shadowColor.y, shadowColor.z, alpha);
             gltOutlineColor(shadowColor.x, shadowColor.y, shadowColor.z, outlineEnabled ? alpha : 0.0f); 
-            gltDrawText(handle, (GLfloat*)&mvp);
+            gltDrawText3D(handle, position.x + shadowOffsetX, position.y + shadowOffsetY, 0.0f, scale.x * scale.y, glm::value_ptr(viewMat), glm::value_ptr(projMat));
             gltEndDraw();
         }
 
         //fill pass
-
-        transform = glm::translate(transform, { position.x, position.y, 0.0f });
-        transform = glm::scale(transform, { scale.x, scale.y, 1.0f }); 
-
-        const Math::Matrix4 mvp = get_mvp(transform);
-
+                       
         gltBeginDraw();
         gltColor(tint.x, tint.y, tint.z, alpha);
         gltOutlineColor(outlineColor.x, outlineColor.y, outlineColor.z, outlineEnabled ? alpha : 0.0f);
-        gltDrawText(handle, (GLfloat*)&mvp);
+        gltDrawText3D(handle, position.x, position.y, 0.0f, scale.x * scale.y, glm::value_ptr(viewMat), glm::value_ptr(projMat));
+
         gltEndDraw();
     }
 
@@ -362,10 +349,12 @@ void Text::Render()
         float localX = position.x,
               localY = position.y;
 
-        transform = glm::translate(transform, { -scale.x, -scale.y, 0.0f });
         transform = glm::scale(transform, { scale.x, scale.y, 0.0f });
 
         glm::mat4 modelProj = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * transform;
+
+        if (m_isStatic) 
+            modelProj = (glm::highp_mat4)glm::ortho(0.0f, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
 
         const Math::Matrix4 mp = {
             { modelProj[0][0], modelProj[0][1], modelProj[0][2], modelProj[0][3] },

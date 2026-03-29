@@ -234,7 +234,6 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         AddComponent(Component::SHADER);
                         EventListener::UpdateSession();
                     }
-   
                 }
                 else
                     ImGui::Text("Please apply texture before creating a component.");
@@ -796,10 +795,15 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         if (ImGui::Checkbox("filter nearest", &filter_nearest))
                             EventListener::UpdateSession();
+
                         if (ImGui::Checkbox("lock image", &lock_in_place))
                             EventListener::UpdateSession();
+
                         if (ImGui::Checkbox("make UI", &make_UI))
                             EventListener::UpdateSession();
+
+                        if (ImGui::IsItemClicked())
+                            spriteHandle->SetAsUI(!make_UI);
 
                         if (ImGui::Checkbox("flipX", &flippedX))
                             EventListener::UpdateSession(); 

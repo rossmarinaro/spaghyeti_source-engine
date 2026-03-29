@@ -40,12 +40,12 @@ namespace Graphics {
             void Delete();
             void SetFiltering(bool filterMin = true, bool filterMax = true, bool wrapS = true, bool wrapT = true);
             void Update(
-                const Graphics::Shader& shader,
+                Graphics::Shader& shader,
                 const Math::Vector2& position, 
                 const Math::Vector2& scale,
                 const Math::Vector4& rgba, 
                 const Math::Vector3& outline,
-                const Math::Matrix4& modelView,
+                const Math::Matrix4& mvp,
                 float outlineWidth,
                 float rotation,
                 int depth,

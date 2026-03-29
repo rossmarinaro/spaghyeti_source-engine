@@ -81,6 +81,7 @@ void Entity::SetData(const std::string& key, const std::any& value) {
 }
 
 
+
 //----------------------------- set shader
 
 
@@ -204,17 +205,35 @@ void Geometry::Render()
 
     const auto camera = System::Application::game->camera;
 
-    const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
+    float scrollX = scrollFactor.x, 
+              scrollY = scrollFactor.y;
+
+    #if STANDALONE == 0
+        scrollX = 1.0f; 
+        scrollY = 1.0f;
+    #endif
+
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX * scale.x), (camera->GetPosition()->y * scrollY * scale.y));
+
+    glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
+
+    if (m_isStatic) 
+        projMat = (glm::highp_mat4)glm::ortho(0.0f, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
    
-    const glm::mat4 mv = (m_isStatic ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
-                                                            { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
-                                                            { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
-                                                            { vm.d.r, vm.d.g, vm.d.b, vm.d.a })) * transform;
-    const Math::Matrix4 modelView = { 
-        { mv[0][0], mv[0][1], mv[0][2], mv[0][3] }, 
-        { mv[1][0], mv[1][1], mv[1][2], mv[1][3] },   
-        { mv[2][0], mv[2][1], mv[2][2], mv[2][3] },  
-        { mv[3][0], mv[3][1], mv[3][2], mv[3][3] }
+    glm::mat4 mvp = projMat * glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
+                    { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
+                    { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
+                    { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * transform;
+
+    if (m_isStatic)
+        mvp = projMat * glm::mat4(1.0f);
+
+    const Math::Matrix4 modelViewProj = { 
+        { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
+        { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
+        { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
+        { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
     };
 
     const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha }; 
@@ -225,7 +244,7 @@ void Geometry::Render()
         scale, 
         color, 
         outlineColor,
-        modelView, 
+        modelViewProj, 
         outlineEnabled ? outlineWidth : 0.0f,
         rotation, 
         depth
@@ -322,7 +341,6 @@ Sprite::Sprite(const std::string& key, const Math::Vector2& position):
     LOG("Sprite: \"" + key + "\" created. (UI)"); 
 }
 
-
   
 //-------------------------------------------
 
@@ -332,7 +350,6 @@ Sprite::~Sprite() {
         LOG("Sprite: \"" + key + "\" destroyed."); 
     }
 }
-
 
 
 //-------------------------------------------
@@ -356,6 +373,39 @@ std::shared_ptr<Sprite> Sprite::Clone()
         }
             
     return clone;
+}
+
+
+//----------------------------- set UI or world sprite
+
+
+void Sprite::SetAsUI(bool isUI) 
+{ 
+    const auto _this = System::Game::GetScene()->GetEntity<Sprite>(ID, true);
+
+    m_type = isUI ? UI : SPRITE; 
+    
+    if (m_type == UI) 
+    {
+        auto it = std::find_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [this](const auto e) { return e->ID == ID; });
+
+        if (it != System::Game::GetScene()->entities.end()) {
+            _this->render_layer = 1;
+            System::Game::GetScene()->UI.emplace_back(_this);
+            it = System::Game::GetScene()->entities.erase(std::move(it));
+            --it;
+        }
+    }
+    else if (m_type == SPRITE)
+    {
+        auto it = std::find_if(System::Game::GetScene()->UI.begin(), System::Game::GetScene()->UI.end(), [this](const auto e) { return e->ID == ID; });
+
+        if (it != System::Game::GetScene()->UI.end()) {
+            System::Game::GetScene()->entities.emplace_back(_this);
+            it = System::Game::GetScene()->UI.erase(std::move(it));
+            --it;
+        }
+    }
 }
 
 
@@ -710,12 +760,30 @@ void Sprite::Render()
     {
         const auto camera = System::Application::game->camera;
 
-        const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
+        float scrollX = scrollFactor.x, 
+              scrollY = scrollFactor.y;
+
+        #if STANDALONE == 0
+            scrollX = 1.0f; 
+            scrollY = 1.0f;
+        #endif
+
+        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+        const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX * scale.x), (camera->GetPosition()->y * scrollY * scale.y));
+
+        glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
+
+        if (!IsSprite()) 
+            projMat = (glm::highp_mat4)glm::ortho(0.0f, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
     
-        const glm::mat4 mv = (!IsSprite() ? glm::mat4(1.0f) : glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
-                                                                    { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
-                                                                    { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
-                                                                    { vm.d.r, vm.d.g, vm.d.b, vm.d.a })) * transform;
+        glm::mat4 mvp = projMat * glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
+                                { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
+                                { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
+                                { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * transform;
+   
+        if (!IsSprite())
+            mvp = projMat * glm::mat4(1.0f);
+
         float r = tint.x, 
               g = tint.y, 
               b = tint.z;
@@ -728,11 +796,11 @@ void Sprite::Render()
 
         const Math::Vector4 color = { r, g, b, alpha };
 
-        const Math::Matrix4 modelView = { 
-            { mv[0][0], mv[0][1], mv[0][2], mv[0][3] }, 
-            { mv[1][0], mv[1][1], mv[1][2], mv[1][3] },   
-            { mv[2][0], mv[2][1], mv[2][2], mv[2][3] },  
-            { mv[3][0], mv[3][1], mv[3][2], mv[3][3] }
+        const Math::Matrix4 modelViewProj = { 
+            { mvp[0][0], mvp[0][1], mvp[0][2], mvp[0][3] }, 
+            { mvp[1][0], mvp[1][1], mvp[1][2], mvp[1][3] },   
+            { mvp[2][0], mvp[2][1], mvp[2][2], mvp[2][3] },  
+            { mvp[3][0], mvp[3][1], mvp[3][2], mvp[3][3] }
         };
 
         //update texture
@@ -743,7 +811,7 @@ void Sprite::Render()
             scale, 
             color, 
             outlineColor,
-            modelView, 
+            modelViewProj, 
             outlineEnabled ? outlineWidth : 0.0f, 
             rotation, 
             depth, 

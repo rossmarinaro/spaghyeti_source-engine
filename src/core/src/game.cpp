@@ -534,7 +534,10 @@ void Game::RenderEntities()
             if ((entity.get() && entity))
             {
                 #if STANDALONE == 0
-                    entity->renderable = CheckEntityRenderable(entity);
+                    if (entity->GetType() == Entity::UI) 
+                        entity->renderable = true;
+                    else
+                        entity->renderable = CheckEntityRenderable(entity);
                 #else
                     if (entity->cull) 
                         entity->renderable = CheckEntityRenderable(entity);

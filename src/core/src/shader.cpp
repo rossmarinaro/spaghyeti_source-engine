@@ -29,7 +29,7 @@ const Shader& Shader::Get(const std::string& key) {
 
 void Shader::InitBaseShaders()
 {
-    //default quad (sprite)
+    //default quad, batch rendering (sprite)
 
     static constexpr const char* spriteQuadShader_vertex = \
 
@@ -49,15 +49,13 @@ void Shader::InitBaseShaders()
         "layout(location = 5) in vec4 a_RGBA;\n"
         "layout(location = 6) in vec3 a_OutlineColor;\n"
         "layout(location = 7) in float a_OutlineWidth;\n"
-        "layout(location = 8) in mat4 a_ModelView;\n"
+        "layout(location = 8) in mat4 a_ModelViewProj;\n"
 
         "flat out float texID;\n"
         "out float outlineWidth;\n"
         "out vec3 outlineColor;\n"
         "out vec2 uv;\n"
         "out vec4 rgba;\n"
-
-        "uniform mat4 proj;\n"
 
         "void main()\n"
         "{\n" 
@@ -72,7 +70,7 @@ void Shader::InitBaseShaders()
             "float s = sin(a_Rotation);\n"
             "vec3 position = vec3(scaledPosition.x * c - scaledPosition.y * s, scaledPosition.x * s + scaledPosition.y * c, scaledPosition.z);\n"
             
-            "gl_Position = proj * a_ModelView * vec4(position, 1.0);\n" //must be proj * modelView per OpenGL
+            "gl_Position = a_ModelViewProj * vec4(position, 1.0);\n" //must be proj * model * view per OpenGL
         "}";
 
 
@@ -406,43 +404,6 @@ void Shader::InitBaseShaders()
 
     LOG("Shader: Base shaders initialized.");
 
-}
-
-
-//---------------------------------
-
-
-void Shader::UpdateVertexUniforms(const std::string& shaderKey)
-{
-    const auto renderer = System::Renderer::Get();
-
-    if (renderer) 
-    {
-        //update projection matrix
-
-        auto shader = Graphics::Shader::Get(shaderKey);
-        const auto camera = System::Game::GetScene()->GetContext().camera;
-        const Math::Vector4& pm = camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-        const glm::mat4 ortho = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f);
-
-        const Math::Matrix4 proj = { 
-            { ortho[0][0], ortho[0][1], ortho[0][2], ortho[0][3] }, 
-            { ortho[1][0], ortho[1][1], ortho[1][2], ortho[1][3] },   
-            { ortho[2][0], ortho[2][1], ortho[2][2], ortho[2][3] },  
-            { ortho[3][0], ortho[3][1], ortho[3][2], ortho[3][3] }
-        };
-
-        shader.SetMat4("proj", proj); 
-
-        //update image samplers
-
-        int samplers[System::Renderer::MAX_TEXTURES];
-
-        for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++) 
-            samplers[i] = i;
-
-        shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
-    }
 }
 
 

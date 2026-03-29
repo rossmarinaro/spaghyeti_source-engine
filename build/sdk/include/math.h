@@ -25,7 +25,7 @@ namespace Math {
                   outlineR, outlineG, outlineB,
                   outlineWidth; 
 
-            float modelView[16]; //4 x 4 model view matrix as an array
+            float mvp[16]; //4 x 4 model view matrix as an array
         }; 
     }
 }
