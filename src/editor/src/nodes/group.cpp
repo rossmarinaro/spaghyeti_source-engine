@@ -117,10 +117,6 @@ void GroupNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     EventListener::UpdateSession();
 
-                ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f);
-                if (ImGui::IsItemDeactivatedAfterEdit())
-                    EventListener::UpdateSession();
-
                 ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f);
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     EventListener::UpdateSession();

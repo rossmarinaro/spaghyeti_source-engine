@@ -9,21 +9,25 @@ DisplayInfo::DisplayInfo(void* _context):
 {
     m_prev = ((Process::Context*)_context)->time->GetSeconds();
 
-    m_fps_text = std::make_unique<Text>("FPS", 10, 0);
-    m_fps_text->SetScale(2.0f, 1.0f);
+    m_fps_text = std::make_unique<Text>("FPS", 10, -40);
+    m_fps_text->SetScale(1.5f);
     m_fps_text->SetStatic(true);
+    m_fps_text->SetStroke(true, { 0.0f, 0.0f, 0.0f }, 0.5f);
 
-    m_cam_text = std::make_unique<Text>("CAMERA", 10, 50);
-    m_cam_text->SetScale(2.0f, 1.0f);
+    m_cam_text = std::make_unique<Text>("CAMERA", 10, 10);
+    m_cam_text->SetScale(1.5f);
     m_cam_text->SetStatic(true);
+    m_cam_text->SetStroke(true, { 0.0f, 0.0f, 0.0f }, 0.5f);
 
-    m_entity_text = std::make_unique<Text>("ENTITIES", 10, 100);
-    m_entity_text->SetScale(2.0f, 1.0f);
+    m_entity_text = std::make_unique<Text>("ENTITIES", 10, 60);
+    m_entity_text->SetScale(1.5f);
     m_entity_text->SetStatic(true);
+    m_entity_text->SetStroke(true, { 0.0f, 0.0f, 0.0f }, 0.5f);
 
-    m_rendered_text = std::make_unique<Text>("RENDERED", 10, 150);
-    m_rendered_text->SetScale(2.0f, 1.0f);
+    m_rendered_text = std::make_unique<Text>("RENDERED", 10, 110);
+    m_rendered_text->SetScale(1.5f);
     m_rendered_text->SetStatic(true);
+    m_rendered_text->SetStroke(true, { 0.0f, 0.0f, 0.0f }, 0.5f);  
 }
 
 //update every frame

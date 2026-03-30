@@ -333,7 +333,7 @@ void SpawnerNode::Render(float _positionX, float _positionY, float _rotation, fl
     if (rectHandle && m_textHandle) 
     {
         rectHandle->SetPosition(positionX + _positionX, positionY + _positionY);
-        m_textHandle->SetPosition((positionX + _positionX) + 8.0f, (positionY + _positionY) + 30.0f);
+        m_textHandle->SetPosition((positionX + _positionX) + 8.0f, (positionY + _positionY) + 15.0f);
         m_textHandle->SetDepth(m_textHandle->depth + 1);
 
         //color coded types

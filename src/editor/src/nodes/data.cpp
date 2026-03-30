@@ -317,7 +317,6 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             { "position y", tn->positionY }, 
             { "actual position x", tn->textHandle ? tn->textHandle->position.x : tn->positionX },      
             { "actual position y", tn->textHandle ? tn->textHandle->position.y : tn->positionY }, 
-            { "rotation", tn->textHandle ? tn->textHandle->rotation : tn->rotation },
             { "scale x", tn->textHandle ? tn->textHandle->scale.x : tn->scaleX },     
             { "scale y", tn->textHandle ? tn->textHandle->scale.y : tn->scaleY },
             { "depth", tn->depth },
@@ -358,7 +357,6 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
         data = { 
             { "position x", gn->positionX },      
             { "position y", gn->positionY }, 
-            { "rotation", gn->rotation },
             { "scale x", gn->scaleX },     
             { "scale y", gn->scaleY },
             { "nodes", nodeData } 
@@ -960,9 +958,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("actual position y"))
                 tn->actualPositionY = data["actual position y" ];
 
-            if (data.contains("rotation"))
-                tn->rotation = data["rotation"];   
-
             if (data.contains("scale x"))
                 tn->scaleX = data["scale x"];      
 
@@ -1019,8 +1014,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 gn->positionX = data["position x"];
             if (data.contains("position y"))
                 gn->positionY = data["position y"];
-            if (data.contains("rotation"))
-                gn->rotation = data["rotation"];
             if (data.contains("scale x"))
                 gn->scaleX = data["scale x"];
             if (data.contains("scale y"))

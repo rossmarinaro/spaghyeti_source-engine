@@ -476,7 +476,7 @@ GLT_API void gltDrawText3D(GLTtext *text, GLfloat x, GLfloat y, GLfloat z, GLflo
 		_gltUpdateBuffers(text);
 
 	if (!text->vertexCount)
-		return;
+		return; 
 
 	const GLfloat model[16] = {
 		scale, 0.0f, 0.0f, 0.0f,

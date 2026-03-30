@@ -195,10 +195,6 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     EventListener::UpdateSession();
 
-                ImGui::SliderFloat("rotation", &rotation, 0.0f, 360.0f);
-                if (ImGui::IsItemDeactivatedAfterEdit())
-                    EventListener::UpdateSession();
-
                 ImGui::SliderFloat("scale x", &scaleX, -100.0f, 100.0f); 
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     EventListener::UpdateSession();
@@ -253,7 +249,6 @@ void TextNode::Render(float _positionX, float _positionY, float _rotation, float
         textHandle->SetText(textBuf);
         textHandle->SetScale(scaleX * _scaleX, scaleY * _scaleY);
         textHandle->SetPosition(positionX + _positionX, positionY + _positionY);
-        textHandle->SetRotation(rotation + _rotation);
         textHandle->SetTint(tint);
         textHandle->SetAlpha(alpha);
         textHandle->SetDepth(depth);

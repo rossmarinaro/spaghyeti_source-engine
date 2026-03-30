@@ -108,6 +108,17 @@ Inputs::Inputs():
 //----------------------------------------
 
 
+const bool Inputs::CheckInteractiveObjectOverlap(float x, float y, float width, float height) {
+    bool overlapX = (x + width / 2) >= mouseX && mouseX + width >= x,
+         overlapY = (y + height / 2) >= mouseY && mouseY + height >= y;
+
+    return overlapX && overlapY;
+}
+
+
+//----------------------------------------
+
+
 void Inputs::ProcessInput()
 {
     //input state
@@ -125,14 +136,6 @@ void Inputs::ProcessInput()
     if (1 == present)
         SetGamepadInputs(GLFW_JOYSTICK_1);
 
-    auto do_check = [&](float x, float y, float width, float height) -> bool {
-
-        bool overlapX = (x + width / 2) >= mouseX && mouseX + width >= x,
-             overlapY = (y + height / 2) >= mouseY && mouseY + height >= y;
-
-        return overlapX && overlapY;
-    };
-
     //set mouse / cursor overlap with object
 
     auto& virtualButtons = Game::GetScene()->virtual_buttons;
@@ -147,12 +150,12 @@ void Inputs::ProcessInput()
 
                 if (UI->GetType() == Entity::UI || UI->GetType() == Entity::SPRITE) {
                     const auto sprite = std::static_pointer_cast<Sprite>(UI); 
-                    virtualButtons[i].first = do_check(sprite->position.x * sprite->scale.x, sprite->position.y * sprite->scale.y, sprite->texture.FrameWidth * sprite->scale.x, sprite->texture.FrameHeight * sprite->scale.y);
+                    virtualButtons[i].first = CheckInteractiveObjectOverlap(sprite->position.x * sprite->scale.x, sprite->position.y * sprite->scale.y, sprite->texture.FrameWidth * sprite->scale.x, sprite->texture.FrameHeight * sprite->scale.y);
                 }
 
                 if (UI->GetType() == Entity::TEXT) {
                     const auto text = std::static_pointer_cast<Text>(UI);
-                    virtualButtons[i].first = do_check((text->position.x + text->GetTextDimensions().x), (text->position.y + text->GetTextDimensions().y), text->GetTextDimensions().x, text->GetTextDimensions().y);
+                    virtualButtons[i].first = CheckInteractiveObjectOverlap((text->position.x + text->GetTextDimensions().x * text->scale.x), (text->position.y + text->GetTextDimensions().y * text->scale.y), text->GetTextDimensions().x * text->scale.x, text->GetTextDimensions().y * text->scale.y);
                 }   
             } 
         } 

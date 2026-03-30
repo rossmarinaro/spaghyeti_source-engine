@@ -627,6 +627,5 @@ void TilemapNode::Render(float _positionX, float _positionY, float _rotation, fl
 
             entity->SetPosition(initialPosition.x + positionX, initialPosition.y + positionY);
             entity->SetScale(entity->scale.x * scaleX, entity->scale.y * scaleY);
-            entity->SetRotation(entity->rotation + rotation);
         }
 }

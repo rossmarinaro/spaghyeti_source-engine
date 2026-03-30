@@ -1,5 +1,6 @@
 #include "../../../build/sdk/include/scene.h"
 #include "../../../build/sdk/include/utils.h"
+
 using namespace System;
 
 Scene::Scene(const Process::Context& context): 
