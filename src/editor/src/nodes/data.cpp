@@ -729,6 +729,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 for (const auto& layer : data["layers"]) 
                 {
                     tmn->layers.push_back({ 
+                        "", //temporary ID which is session agnostic, will update to uuid when applied
                         layer["key"], 
                         layer["path"], 
                         layer["texture"],

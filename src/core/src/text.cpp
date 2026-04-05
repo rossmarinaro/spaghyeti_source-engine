@@ -625,3 +625,21 @@ void Text::SetSlant(float offsetX, float offsetY) {
     charoffsetX = offsetX;
     charoffsetY = offsetY;
 }
+
+//----------------------------- text
+
+
+std::shared_ptr<Text> System::Game::CreateText(const std::string& content, float x, float y, const std::string& font, int layer)
+{
+    const auto text = std::make_shared<Text>(content, x, y, font);
+
+    if (layer == 0)
+        GetScene()->entities.emplace_back(text);
+
+    if (layer == 1 || layer == 2)
+        GetScene()->UI.emplace_back(text);
+
+    text->render_layer = layer;
+
+    return text;
+}

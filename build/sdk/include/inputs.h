@@ -39,8 +39,6 @@ class Inputs {
     private:
 
         bool m_initVirtualControls;
-
-        const bool CheckInteractiveObjectOverlap(float x, float y, float width, float height);
 };
     
  

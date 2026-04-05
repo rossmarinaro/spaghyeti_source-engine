@@ -8,7 +8,9 @@ OBJS = \
 	$(wildcard ../vendors/box2d/src/**/*.cpp) \
 	$(wildcard ../vendors/glad/src/*.c)
 
-CC = g++ -g -O -std=c++17  
+CC = g++ -g -std=c++17  
+
+OPT_FLAGS = -O3 -flto 
 
 INCLUDE_PATHS = \
 	-IC:\libs\glad\include\glad \
@@ -47,7 +49,7 @@ static: compile ar
 web: compile_web emar 
 
 compile: $(OBJS)
-	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) -w -Wfatal-errors -Wl,-subsystem,windows $(LINKER_FLAGS) $(BUILDTYPE) $(BUILDFLAG) $(OUTFILE) 
+	$(CC) $(OPT_FLAGS) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) -w -Wfatal-errors -Wl,-subsystem,windows $(OPT_FLAGS) $(LINKER_FLAGS) $(BUILDTYPE) $(BUILDFLAG) $(OUTFILE) 
 
 compile_web: $(OBJS) 
 	em++ -g -O3 -std=c++20 -w $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_WEB) -pthread -c $(OUTFILE) 

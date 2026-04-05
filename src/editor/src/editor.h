@@ -78,6 +78,7 @@ namespace editor {
             static void Start();
             static void Reset(bool removeSession = true);
             static void ShutDown();
+            static void FocusEntity(const std::shared_ptr<Entity>& entity);
 
             static inline std::shared_ptr<Entity> selectedEntity;
     

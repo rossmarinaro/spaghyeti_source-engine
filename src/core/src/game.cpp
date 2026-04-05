@@ -22,7 +22,9 @@ using namespace System;
 
 static CollisionManager _collisions;
 
-void Game::Flush(bool removeBehaviors)
+//---------------------------
+
+void Game::Reset(bool removeBehaviors)
 {
     LOG("Scene: " + currentScene->key + " stopped.");
 
@@ -38,7 +40,6 @@ void Game::Flush(bool removeBehaviors)
     if (removeBehaviors)
         currentScene->behaviors.clear();
 
-    maps->layers.clear();
     currentScene->UI.clear();
     currentScene->entities.clear();
     currentScene->spawns.clear();
@@ -90,8 +91,6 @@ Game::Game()
     time = new Time;
     camera = new Camera;
     physics = new Physics;
-
-    maps = new MapManager;
 
     //scene context handles
 
@@ -174,7 +173,7 @@ void Game::StartScene(const std::string& key, bool loadMap)
                 cachedScenes.clear();
             }
 
-            game->Flush(game->currentScene->key == key);     
+            game->Reset(game->currentScene->key == key);     
         }
         
         const auto& world = static_cast<b2World*>(game->physics->GetWorld());
@@ -222,7 +221,7 @@ void Game::Exit()
 {
     m_gameState = false;
 
-    Flush();
+    Reset();
 
     for (auto &scene : scenes) {
         delete scene;
@@ -256,9 +255,6 @@ void Game::Exit()
 
     delete inputs;
     inputs = nullptr;
-
-    delete maps;
-    maps = nullptr;
 
     LOG("Game: exited.");
 }
@@ -687,132 +683,7 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 }
 
 
-
-/* entity containers for instantiation */
-
-//----------------------------- sprite
-
-std::shared_ptr<Sprite> Game::CreateSprite(const std::string& key, float x, float y, int frame, float scale, int layer, bool isSpawn)
-{
-    const auto sprite = std::make_shared<Sprite>(key, x, y, isSpawn);
-
-    if (layer == 1)
-        GetScene()->entities.emplace_back(sprite);
-
-    if (layer == 2)
-        GetScene()->UI.emplace_back(sprite);
-
-    #if STANDALONE == 1
-        sprite->ReadSpritesheetData();
-        sprite->SetFrame(frame);
-    #endif
-
-    sprite->SetScale(scale);
-
-    return sprite;
-}
-
-
-//----------------------------- ui sprite default layer 1
-
-
-std::shared_ptr<Sprite> Game::CreateUISprite(const std::string& key, float x, float y, int frame)
-{
-    const Math::Vector2 pos = { x, y };
-
-    const auto element = std::make_shared<Sprite>(key, pos);
-
-    GetScene()->UI.emplace_back(element);
-
-    #if STANDALONE == 1
-        element->ReadSpritesheetData();
-        element->SetFrame(frame);
-    #endif
-
-    element->render_layer = 1;
-
-    return element;
-}
-
-
-//----------------------------- tile
-
-
-std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, float y, int frame)
-{
-    const auto ts = std::make_shared<Sprite>(key, x, y, false, true);
-
-    GetScene()->entities.emplace_back(ts);
-
-    ts->ReadSpritesheetData();
-    ts->SetFrame(frame);
-
-    return ts;
-}
-
-
-//----------------------------- text
-
-
-std::shared_ptr<Text> Game::CreateText(const std::string& content, float x, float y, const std::string& font, int layer)
-{
-    const auto text = std::make_shared<Text>(content, x, y, font);
-
-    if (layer == 0)
-        GetScene()->entities.emplace_back(text);
-
-    if (layer == 1 || layer == 2)
-        GetScene()->UI.emplace_back(text);
-
-    text->render_layer = layer;
-
-    return text;
-}
-
-
-//----------------------------- quad
-
-
-std::shared_ptr<Geometry> Game::CreateGeom(float x, float y, float width, float height, int layer, bool isStatic, bool isSpawn)
-{
-    const auto geom = std::make_shared<Geometry>(x, y, width, height, isSpawn);
-
-    if (isStatic)
-        geom->SetStatic(true);
-
-    if (layer == 0)
-        GetScene()->entities.emplace_back(geom);
-
-    if (layer == 1 || layer == 2)
-        GetScene()->UI.emplace_back(geom);
-
-    geom->render_layer = layer;
-
-    return geom;
-}
-
-
-//----------------------------- base entity wrapper
-
-
-std::shared_ptr<Entity> Game::CreateEntity(int type, int layer)
-{
-    const auto entity = std::make_shared<Entity>(type);
-
-    if (layer == 0)
-        GetScene()->entities.emplace_back(entity);
-
-    if (layer == 1 || layer == 2)
-        GetScene()->UI.emplace_back(entity);
-
-    entity->render_layer = layer;
-
-    return entity;
-}
-
-
-//---------------------------- spawn
-
+//----------------------------- 
 
 void Game::CreateSpawn(
     int type, 

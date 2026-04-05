@@ -257,8 +257,8 @@ void TextNode::Render(float _positionX, float _positionY, float _rotation, float
         textHandle->SetSlant(charOffsetX, charOffsetY);
         textHandle->SetStatic(UIFlag);
 
-        if (System::Game::GetScene()->ListenForInteraction(textHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            Editor::selectedEntity = textHandle;
+        if (System::Game::GetScene()->ListenForInteraction(textHandle)) 
+            Editor::FocusEntity(textHandle);
     }
 }
 

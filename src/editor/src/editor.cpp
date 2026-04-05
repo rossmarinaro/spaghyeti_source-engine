@@ -70,8 +70,8 @@ void Editor::Update()
     const glm::vec4 worldCoords(ndc.x, ndc.y, 0.0f, 1.0f),
                     resultPosition = localCoords * worldCoords;
 
-    s_self->game->inputs->mouseX = resultPosition.x - s_self->game->camera->GetPosition()->x - 50;        
-    s_self->game->inputs->mouseY = resultPosition.y - s_self->game->camera->GetPosition()->y;
+    s_self->game->inputs->mouseX = resultPosition.x - 100;        
+    s_self->game->inputs->mouseY = resultPosition.y - 100;
 
     //current selected entity / render selector
        
@@ -293,5 +293,49 @@ void Editor::Reset(bool removeSession)
         
         Log("Workspace reset."); 
     }
+}
 
+
+//--------------------------------
+
+
+void Editor::FocusEntity(const std::shared_ptr<Entity>& entity) 
+{
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse) 
+    {
+        float width = 0.0f, 
+              height = 0.0f;
+
+        if (entity->GetType() == Entity::SPRITE) {
+            const auto sprite = std::static_pointer_cast<Sprite>(entity);
+            width = sprite->texture.FrameWidth;
+            height = sprite->texture.FrameHeight;
+        }
+        else if (entity->GetType() == Entity::TEXT) 
+        {
+            const auto text = std::static_pointer_cast<Text>(entity);
+
+            if (text) {
+                width = text->GetTextDimensions().x;
+                height = text->GetTextDimensions().y;
+            }
+            else {
+                width = text->texture.FrameWidth;
+                height = text->texture.FrameHeight;
+            }
+        }
+        else if (entity->GetType() == Entity::GEOMETRY) {
+            const auto geom = std::static_pointer_cast<Geometry>(entity);
+            width = geom->width;
+            height = geom->height;
+        }
+
+        Get()->game->camera->SetZoom(1.0f);
+        Get()->game->camera->SetPosition({ 
+            -(entity->position.x - System::Window::s_scaleWidth / 2) - width, 
+            -(entity->position.y - System::Window::s_scaleHeight / 2) - height
+        });
+
+        selectedEntity = entity;
+    }
 }

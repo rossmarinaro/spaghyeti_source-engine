@@ -5,11 +5,11 @@
     #include <bits/stdc++.h>
 #endif
 
-#include "../../../build/sdk/include/tilemap.h"
+#include "../../../build/sdk/include/game.h"
 #include "../../../build/sdk/include/app.h"
+#include "../../vendors/UUID.hpp"
 
-
-const bool MapManager::CreateLayer (
+const std::string System::Game::CreateTileLayer(
     const char* texture_key,
     const char* data_key,
     uint32_t mapWidth,
@@ -32,12 +32,10 @@ const bool MapManager::CreateLayer (
 
     if (!data.size()) {                                       
         LOG("Tilemap: layer data not found. Expected " + (std::string)data_key);
-        return false;
+        return "";
     }
-
-    std::vector<std::shared_ptr<Sprite>> layer; 
-
-    layer.reserve(10000);
+    
+    const std::string ID = UUID::generate_uuid(); 
 
     std::stringstream ss; 
     std::string line; 
@@ -57,7 +55,7 @@ const bool MapManager::CreateLayer (
         {
             if ((data.begin() + (x + y * mapWidth)) == data.end()) {
                 LOG("Tilemap: index overflow, truncating map.");
-                return false;
+                return "";
             }
 
             //convert string to int at index
@@ -106,66 +104,57 @@ const bool MapManager::CreateLayer (
                 tile->SetScale(scaleX, scaleY); 
                 tile->SetScrollFactor({ scrollFactorX, scrollFactorY });
                 tile->SetCull(true);
+                tile->SetData(ID, true);
 
                 if (shaderKey.length())
                     tile->SetShader(shaderKey);
 
                 if (diag)
-                    tile->SetRotation(rotation + 90);  
-
-                //add layer to stack
-
-                layer.emplace_back(tile);
+                    tile->SetRotation(rotation + 90.0f);  
             }
-
         }
 
-    System::Application::game->maps->layers.emplace_back(layer);
+    LOG("Tilemap: Initialized layer: " + ID + " with texture key: " + (std::string)texture_key + " and data key: " + (std::string)data_key);
 
-    LOG("Tilemap: Initialized layer with texture key: " + (std::string)texture_key + " data key: " + (std::string)data_key);
-
-    return true;
+    return ID;
 }
 
 
 //------------------------------------- remove layer
 
 
-void MapManager::RemoveLayer(const std::string& key) 
+void System::Game::RemoveTileLayer(const std::string& ID) 
 {
-    for (auto it = System::Application::game->maps->layers.begin(); it != System::Application::game->maps->layers.end(); ++it) {
+    //remove tiles in layer from entity render queue
 
-        auto layer = *it;
+    const auto entities = System::Game::GetScene()->entities;
 
-        layer.erase(
-            std::remove_if(layer.begin(), layer.end(), [&](auto t) { 
-                return t->GetType() == Entity::TILE && t->name == key; 
-            }), layer.end());
+    for (auto it = entities.begin(); it != entities.end(); ++it) {
+        const auto tile = *it;
+        if (tile->GetData<bool>(ID) && tile->GetType() == Entity::TILE) 
+            System::Game::DestroyEntity(tile); 
     }
 
-    System::Game::GetScene()->entities.erase(
-        std::remove_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [&](auto t) { 
-            return t->GetType() == Entity::TILE && t->name == key; }), 
-                System::Game::GetScene()->entities.end());
-
-    LOG("Tilemap: layer " + key + " cleared.");
+    LOG("Tilemap: layer " + ID + " cleared.");
 }
 
+//----------------------------- tile
 
-//------------------------------------- clear all layers
 
-
-void MapManager::ClearMap() 
+std::shared_ptr<Sprite> System::Game::CreateTileSprite(const std::string& key, float x, float y, int frame)
 {
-    System::Application::game->maps->layers.clear();
+    const auto ts = std::make_shared<Sprite>(key, x, y, false, true);
 
-    System::Game::GetScene()->entities.erase(
-        std::remove_if(System::Game::GetScene()->entities.begin(), System::Game::GetScene()->entities.end(), [](auto t) { 
-            return t->GetType() == Entity::TILE; }), 
-                System::Game::GetScene()->entities.end());
+    GetScene()->entities.emplace_back(ts);
 
-    LOG("Tilemap: layers cleared.");
+    ts->ReadSpritesheetData();
+    ts->SetFrame(frame);
 
+    return ts;
 }
+
+
+
+
 
 

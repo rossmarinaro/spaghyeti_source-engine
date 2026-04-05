@@ -2,9 +2,8 @@
 #include "../editor.h"
 #include "../assets/assets.h"
 #include "../../../../build/sdk/include/app.h"
-
 #include "../../../vendors/box2d/include/box2d/box2d.h"
-
+#include "../../../vendors/UUID.hpp"
 
 using namespace editor;
 
@@ -30,8 +29,9 @@ TilemapNode::TilemapNode(bool init):
 
 TilemapNode::~TilemapNode() {
     
-    if (m_mapApplied)
-        MapManager::ClearMap();
+    if (m_mapApplied) 
+        for (const auto& _layer : layers)
+            System::Game::RemoveTileLayer(_layer.ID);
 
     if (m_init)
         Editor::Log("Tilemap node " + name + " deleted.");
@@ -43,17 +43,18 @@ TilemapNode::~TilemapNode() {
 
 void TilemapNode::AddLayer() 
 {
-    Layer l;
+    Layer _layer;
 
-    l.dataKey = "";
-    l.textureKey = "";
-    l.path = "";
-    l.shader = "";
-    l.depth = layers.size() ? layers.back().depth + 1 : 0;
-    l.scrollFactorX = 1.0f;
-    l.scrollFactorY = 1.0f;
+    _layer.ID = UUID::generate_uuid();
+    _layer.dataKey = "";
+    _layer.textureKey = "";
+    _layer.path = "";
+    _layer.shader = "";
+    _layer.depth = layers.size() ? layers.back().depth + 1 : 0;
+    _layer.scrollFactorX = 1.0f;
+    _layer.scrollFactorY = 1.0f;
 
-    layers.push_back(l);
+    layers.push_back(_layer);
 
     layer++;
     spr_sheet_width.push_back(0);
@@ -77,8 +78,9 @@ void TilemapNode::Reset(int component_type)
 
     m_mapApplied = false;
 
-    if (passAll)
-        MapManager::ClearMap();
+    if (passAll) 
+        for (const auto& _layer : layers)
+            System::Game::RemoveTileLayer(_layer.ID);
 }
 
 
@@ -132,8 +134,10 @@ void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
      
             //parse data and load map layer
 
-            if (MapManager::CreateLayer(texture.c_str(), dataKey.c_str(), map_width, map_height, tile_width, tile_height, layers[i].depth, i)) 
-            {
+            const std::string layerID = System::Game::CreateTileLayer(texture.c_str(), dataKey.c_str(), map_width, map_height, tile_width, tile_height, layers[i].depth, i);
+
+            if (layerID.size()) { 
+                layers[i].ID = layerID;
                 m_layersApplied = true;
                 m_mapApplied = true;
             }
@@ -543,7 +547,8 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         ImGui::PopID();
                     } 
 
-                    if (ImGui::Button("apply") && !m_layersApplied) {
+                    if (ImGui::Button("apply") && !m_layersApplied && layers.size()) {
+                        System::Game::RemoveTileLayer(layers[layer - 1].ID);
                         ApplyTilemap();
                         EventListener::UpdateSession();
                     }
@@ -551,7 +556,6 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                     if (m_layersApplied) { 
                         ImGui::SameLine(); 
                         ImGui::Text("applied");
-                        EventListener::UpdateSession();
                     }
 
                     if (ImGui::Button("add layer")) {
@@ -563,8 +567,8 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                     if (ImGui::Button("remove layer") && layer > 0) 
                     {
-                        if (layers.size())
-                            System::Game::maps->RemoveLayer(layers[layer - 1].dataKey);
+                        if (layers.size()) 
+                            System::Game::RemoveTileLayer(layers[layer - 1].ID);
 
                         layers.pop_back();
                         layer--;

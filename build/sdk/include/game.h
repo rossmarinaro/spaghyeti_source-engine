@@ -1,7 +1,6 @@
 #pragma once
 
 #include "./particles.h"
-#include "./tilemap.h"
 #include "./entity.h"
 #include "./physics.h"
 #include "./time.h"
@@ -39,12 +38,7 @@ namespace System {
 
             void Boot();
             void UpdateFrame();
-            void Flush(bool removeBehaviors = true);
             void Exit();
-
-            //map manager
- 
-            static inline MapManager* maps;
  
             //create objects 
 
@@ -55,6 +49,26 @@ namespace System {
             static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y, const std::string& font = "", int layer = 2);
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height, int layer = 1, bool isStatic = false, bool isSpawn = false);
 
+            //create tilemap layer from csv or json
+            static const std::string CreateTileLayer (
+                const char* texture_key, 
+                const char* data_key,
+                uint32_t mapWidth, 
+                uint32_t mapHeight, 
+                uint32_t tileWidth, 
+                uint32_t tileHeight,
+                uint32_t depth,
+                int index,
+                float posX = 0.0f,
+                float posY = 0.0f,
+                float rotation = 0.0f,
+                float scaleX = 1.0f,
+                float scaleY = 1.0f,
+                float scrollFactorX = 1.0f,
+                float scrollFactorY = 1.0f,
+                const std::string& shaderKey = ""
+            );
+        
             static void CreateSpawn(
                 int type, 
                 const std::string& filename, 
@@ -71,6 +85,7 @@ namespace System {
                 const Scene::Spawn::Body& body
             );
 
+            static void RemoveTileLayer(const std::string& ID);
             static void DestroyEntity(std::shared_ptr<Entity> entity);
             static void SetCullPosition(Math::Vector2* position);
             static void StartScene(const std::string& key, bool loadMap);
@@ -106,6 +121,7 @@ namespace System {
             bool CheckEntityRenderable(std::shared_ptr<Entity>& entity);
             void RenderEntities();
             void RenderUI();
+            void Reset(bool removeBehaviors = true);
     }; 
 
 }

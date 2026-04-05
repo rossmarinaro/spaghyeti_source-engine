@@ -78,6 +78,7 @@ void Node::Update(std::vector<std::shared_ptr<Node>>& arr)
     }
 
     ImGui::Checkbox("Edit", &show_options);
+
 }
 
 

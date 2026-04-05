@@ -76,6 +76,53 @@ using namespace System;
 
 //----------------------------------------
 
+
+const bool CheckInteractiveObjectOverlap(const std::shared_ptr<Entity>& entity) 
+{
+    float mouseX = System::Game::GetScene()->GetContext().inputs->mouseX, 
+          mouseY = System::Game::GetScene()->GetContext().inputs->mouseY,
+          xPos = entity->position.x * entity->scale.x,
+          yPos = entity->position.y * entity->scale.y,
+          width = 0.0f, 
+          height = 0.0f;
+
+    if (entity->GetType() == Entity::SPRITE || entity->GetType() == Entity::UI) {
+        const auto sprite = std::static_pointer_cast<Sprite>(entity);
+        width = sprite->texture.FrameWidth * sprite->scale.x;
+        height = sprite->texture.FrameHeight * sprite->scale.y;
+    }
+    else if (entity->GetType() == Entity::TEXT) 
+    {
+        const auto text = std::static_pointer_cast<Text>(entity);
+
+        if (text) 
+        {
+            width = text->GetTextDimensions().x * text->scale.x;
+            height = text->GetTextDimensions().y * text->scale.y;
+            xPos += text->GetTextDimensions().x;
+            yPos += text->GetTextDimensions().y;
+        }
+        else {
+            width = text->texture.FrameWidth * text->scale.x;
+            height = text->texture.FrameHeight * text->scale.y;
+        }
+    }
+    else if (entity->GetType() == Entity::GEOMETRY) {
+        const auto geom = std::static_pointer_cast<Geometry>(entity);
+        width = geom->width * geom->scale.x;
+        height = geom->height * geom->scale.y;
+    }
+
+    const bool overlapX = (xPos + width / 2) >= mouseX && mouseX + width >= xPos,
+               overlapY = (yPos + height / 2) >= mouseY && mouseY + height >= yPos;
+
+    return overlapX && overlapY;
+}
+
+
+//----------------------------------------
+
+
 Inputs::Inputs():
     cursorReset(false), 
     m_initVirtualControls(false)
@@ -108,17 +155,6 @@ Inputs::Inputs():
 //----------------------------------------
 
 
-const bool Inputs::CheckInteractiveObjectOverlap(float x, float y, float width, float height) {
-    bool overlapX = (x + width / 2) >= mouseX && mouseX + width >= x,
-         overlapY = (y + height / 2) >= mouseY && mouseY + height >= y;
-
-    return overlapX && overlapY;
-}
-
-
-//----------------------------------------
-
-
 void Inputs::ProcessInput()
 {
     //input state
@@ -141,23 +177,13 @@ void Inputs::ProcessInput()
     auto& virtualButtons = Game::GetScene()->virtual_buttons;
 
     if (virtualButtons.size())
-        for (int i = 0; i < virtualButtons.size(); i++)
-        {  
+        for (int i = 0; i < virtualButtons.size(); i++) {  
+            for (auto& entity : Game::GetScene()->entities) 
+                if (entity->ID == virtualButtons[i].second) 
+                    virtualButtons[i].first = CheckInteractiveObjectOverlap(entity); 
             for (auto& UI : Game::GetScene()->UI) 
-            {
-                if (UI->ID != virtualButtons[i].second) 
-                    continue;
-
-                if (UI->GetType() == Entity::UI || UI->GetType() == Entity::SPRITE) {
-                    const auto sprite = std::static_pointer_cast<Sprite>(UI); 
-                    virtualButtons[i].first = CheckInteractiveObjectOverlap(sprite->position.x * sprite->scale.x, sprite->position.y * sprite->scale.y, sprite->texture.FrameWidth * sprite->scale.x, sprite->texture.FrameHeight * sprite->scale.y);
-                }
-
-                if (UI->GetType() == Entity::TEXT) {
-                    const auto text = std::static_pointer_cast<Text>(UI);
-                    virtualButtons[i].first = CheckInteractiveObjectOverlap((text->position.x + text->GetTextDimensions().x * text->scale.x), (text->position.y + text->GetTextDimensions().y * text->scale.y), text->GetTextDimensions().x * text->scale.x, text->GetTextDimensions().y * text->scale.y);
-                }   
-            } 
+                if (UI->ID == virtualButtons[i].second) 
+                    virtualButtons[i].first = CheckInteractiveObjectOverlap(UI);   
         } 
 }
 
@@ -304,7 +330,6 @@ void Inputs::SetGamepadInputs(unsigned int joystick)
 
 void Inputs::ShutDown()
 {
-
     ResetControls();
 
     if (Application::events->isMobile) {

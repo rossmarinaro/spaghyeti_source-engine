@@ -99,15 +99,17 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
         if (GUI::Get()->collapseFolders)
             ImGui::SetNextItemOpen(false, ImGuiCond_Always);
 
-        if (ImGui::TreeNode((selText + "(Spawner) " + name).c_str()))
+        if (ImGui::TreeNodeEx((void*)(intptr_t)0, ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick, (selText + "(Spawner) " + name).c_str()))
         {
             if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
                 Editor::Get()->events->selected_nodes = &nodes;
 
             Node::Update(arr);
 
-            if (ImGui::Button("Select") && rectHandle)
+            if (ImGui::Button("Select") && rectHandle) {
                 Editor::selectedEntity = rectHandle;
+                Editor::Get()->game->camera->SetPosition({ -rectHandle->position.x + System::Window::s_scaleWidth / 2, -rectHandle->position.y + System::Window::s_scaleHeight / 2 });
+            }
 
             if (show_options)
             {
@@ -400,6 +402,8 @@ void SpawnerNode::Render(float _positionX, float _positionY, float _rotation, fl
         default: m_bodyType = "static"; break;
     }
 
+    if (System::Game::GetScene()->ListenForInteraction(rectHandle))
+        Editor::FocusEntity(rectHandle);
 }
 
 

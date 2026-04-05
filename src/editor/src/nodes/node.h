@@ -219,7 +219,7 @@ namespace editor {
     class TilemapNode : public Node {
 
         struct Layer {
-            std::string dataKey, path, textureKey, shader;
+            std::string ID, dataKey, path, textureKey, shader;
             int depth;
             float scrollFactorX, scrollFactorY;
         };

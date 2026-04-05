@@ -258,7 +258,9 @@ void EventListener::BuildAndRun()
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/*.cpp) \\\n";
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/*.cpp) \\\n";
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/**/*.cpp) \\\n";
-        main_makeFile << "    ./game.cpp \\\n";
+        main_makeFile << "    ./game.cpp \\\n"; 
+        
+        main_makeFile << "OPT_FLAGS = -O3 -flto \\\n";
 
         //dynamic builds physically copies dll to local folder, static references sdk folder
 
@@ -290,7 +292,7 @@ void EventListener::BuildAndRun()
         const unsigned int devMode = Editor::releaseType == "debug" ? 1 : 0;
         
         main_makeFile << "compile : $(OBJS)\n"; 
-        main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
+        main_makeFile << "\tg++ -g -std=c++17 $(OPT_FLAGS) $(OBJS) $(OPT_FLAGS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
 
         main_makeFile.close();
 
@@ -1038,7 +1040,7 @@ void EventListener::BuildAndRun()
                             
                             if (tmn->layers[i].dataKey.length()) {
                                 const std::string shader = tmn->layers[i].shader.length() ? tmn->layers[i].shader : "\"\"";
-                                command_queue << "      MapManager::CreateLayer(\"" + tmn->layers[i].textureKey + "\", ""\"" + tmn->layers[i].dataKey + "\", " + 
+                                command_queue << "      System::Game::CreateTileLayer(\"" + tmn->layers[i].textureKey + "\", ""\"" + tmn->layers[i].dataKey + "\", " + 
                                 std::to_string(tmn->map_width) + ", " + 
                                 std::to_string(tmn->map_height) + ", " + 
                                 std::to_string(tmn->tile_width) + ", " + 
