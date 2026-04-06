@@ -11,7 +11,7 @@ OBJS = \
 
 CC = g++ -g -std=c++17 
 
-OPT_FLAGS = -O3 -flto
+OPT_FLAGS = -Ofast -flto 
 
 LINKER_FLAGS = -lmingw32 -lopengl32 -lglfw3 -lgdi32 -luser32 -lkernel32 -mconsole -mwindows -lm
 

@@ -127,6 +127,7 @@ void Editor::Start()
     Editor session;
     s_self = &session;
 
+    s_self->LTO = "-O0";
     s_self->minVersion = 0;
     s_self->midVersion = 0;
     s_self->maxVersion = 1;
@@ -302,7 +303,7 @@ void Editor::Reset(bool removeSession)
 void Editor::FocusEntity(const std::shared_ptr<Entity>& entity) 
 {
     float width = 0.0f, 
-            height = 0.0f;
+          height = 0.0f;
 
     if (entity->GetType() == Entity::SPRITE) {
         const auto sprite = std::static_pointer_cast<Sprite>(entity);

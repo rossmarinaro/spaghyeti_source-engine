@@ -10,7 +10,7 @@ OBJS = \
 
 CC = g++ -g -std=c++17  
 
-OPT_FLAGS = -O3 -flto 
+OPT_FLAGS = -O2 -flto 
 
 INCLUDE_PATHS = \
 	-IC:\libs\glad\include\glad \

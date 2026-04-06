@@ -194,7 +194,8 @@ void EventListener::BuildAndRun()
     
     game_src.open(srcPath, std::ofstream::trunc);
 
-    std::string root_path = Editor::rootPath;
+    std::string root_path = Editor::rootPath; 
+
     std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
     game_src << "/* ---------- GENERATED CODE ----------- */\n";
@@ -267,9 +268,8 @@ void EventListener::BuildAndRun()
 
         else 
             main_makeFile << "    " << Editor::rootPath << "\\sdk\\" << lib << "\n\n";
-
                     
-        main_makeFile << "OPT_FLAGS = -O3 -flto\n\n";
+        main_makeFile << "OPT_FLAGS = " << session->LTO << " -flto\n\n";
 
         //if project icon is defined, compile it, else use default
 
@@ -336,7 +336,7 @@ void EventListener::BuildAndRun()
         web_makeFile << "   ../game.cpp \\\n";
         web_makeFile << "   " << Editor::rootPath << "\\sdk\\spaghyeti-web.a\n\n";
 
-        web_makeFile << "OPT_FLAGS = -O3 -flto\\\n";
+        web_makeFile << "OPT_FLAGS = " << session->LTO << " -flto\\\n";
 
         web_makeFile << "LINKER_FLAGS = \\\n";
         web_makeFile << "   -sEXPORT_ALL=" << export_all << " \\\n";

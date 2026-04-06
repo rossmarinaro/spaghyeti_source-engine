@@ -6,7 +6,6 @@
 
 void editor::GUI::ShowSettings()
 {
-
     auto session = Editor::Get();
     auto am = AssetManager::Get();
 
@@ -14,7 +13,6 @@ void editor::GUI::ShowSettings()
 
     if (ImGui::BeginMenu("Scenes")) 
     {
-
         if (ImGui::BeginMenu("scenes in queue")) {
             for (int i = 0; i < session->scenes.size(); i++) 
                 ImGui::Text(("scene " + std::to_string(i) + ": " + session->scenes[i]).c_str());
@@ -600,13 +598,31 @@ void editor::GUI::ShowMenu()
 
         if (ImGui::BeginMenu("Build"))
         {  
-            //std::ostringstream oss;
-            //oss << std::fixed << std::setprecision(1) << session->maxVersion << std::fixed << std::setprecision(1) << session->minVersion;
-            //ImGui::Text(("version: " + oss.str()).c_str());
-            ImGui::Text(("version: " + std::to_string(session->maxVersion) + "." + std::to_string(session->midVersion) + "." + std::to_string(session->minVersion)/* oss.str() */).c_str());
+            ImGui::Text(("version: " + std::to_string(session->maxVersion) + "." + std::to_string(session->midVersion) + "." + std::to_string(session->minVersion)).c_str());
             ImGui::InputInt("maxVersion", &session->maxVersion);
             ImGui::InputInt("midVersion", &session->midVersion);
             ImGui::InputInt("minVersion", &session->minVersion);
+
+            static const std::string items[] = { 
+                "-O0", "-O1", "-O2", 
+                "-O3", "-Oz", "-Ofast" 
+            };
+
+            if (ImGui::BeginCombo("link-time optimization", session->LTO.c_str()))
+            {
+                for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+                {
+                    bool is_sel = (session->LTO == items[n]);
+
+                    if (ImGui::Selectable((items[n]).c_str(), is_sel)) 
+                        session->LTO = items[n];
+
+                    if (is_sel)
+                        ImGui::SetItemDefaultFocus();
+                }
+
+                ImGui::EndCombo();
+            }
 
             if (ImGui::BeginMenu("type")) 
             {

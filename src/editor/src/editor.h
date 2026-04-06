@@ -38,7 +38,11 @@ namespace editor {
 
 		public:
 
-			int worldWidth, worldHeight, minVersion, midVersion, maxVersion;
+			int worldWidth, 
+                worldHeight, 
+                minVersion, 
+                midVersion, 
+                maxVersion;
 
 			float gravityX, gravityY, vignetteVisibility;
 
@@ -86,14 +90,14 @@ namespace editor {
                                       releaseType,
                                       buildType,
 									  projectPath,
-									  rootPath;
+									  rootPath,
+                                      LTO;
 
 			static void Log(const std::string& message);
 
             static inline Editor* Get() {
                 return s_self;
             }
-
 
 		private:
 
