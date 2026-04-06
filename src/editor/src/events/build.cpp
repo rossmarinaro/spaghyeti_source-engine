@@ -259,8 +259,6 @@ void EventListener::BuildAndRun()
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/*.cpp) \\\n";
         main_makeFile << "    $(wildcard ./resources/scripts/**/**/**/**/*.cpp) \\\n";
         main_makeFile << "    ./game.cpp \\\n"; 
-        
-        main_makeFile << "OPT_FLAGS = -O3 -flto \\\n";
 
         //dynamic builds physically copies dll to local folder, static references sdk folder
 
@@ -269,6 +267,9 @@ void EventListener::BuildAndRun()
 
         else 
             main_makeFile << "    " << Editor::rootPath << "\\sdk\\" << lib << "\n\n";
+
+                    
+        main_makeFile << "OPT_FLAGS = -O3 -flto\n\n";
 
         //if project icon is defined, compile it, else use default
 
@@ -292,7 +293,7 @@ void EventListener::BuildAndRun()
         const unsigned int devMode = Editor::releaseType == "debug" ? 1 : 0;
         
         main_makeFile << "compile : $(OBJS)\n"; 
-        main_makeFile << "\tg++ -g -std=c++17 $(OPT_FLAGS) $(OBJS) $(OPT_FLAGS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
+        main_makeFile << "\tg++ -g -std=c++17 $(OPT_FLAGS) $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w $(OPT_FLAGS) -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
 
         main_makeFile.close();
 
@@ -333,7 +334,9 @@ void EventListener::BuildAndRun()
         web_makeFile << "   $(wildcard ../resources/scripts/**/*.cpp) \\\n";
         web_makeFile << "   $(wildcard ../resources/scripts/**/**/*.cpp) \\\n";
         web_makeFile << "   ../game.cpp \\\n";
-        web_makeFile << "   " << Editor::rootPath << "\\sdk\\spaghyeti-web.a \n\n";
+        web_makeFile << "   " << Editor::rootPath << "\\sdk\\spaghyeti-web.a\n\n";
+
+        web_makeFile << "OPT_FLAGS = -O3 -flto\\\n";
 
         web_makeFile << "LINKER_FLAGS = \\\n";
         web_makeFile << "   -sEXPORT_ALL=" << export_all << " \\\n";
@@ -341,9 +344,9 @@ void EventListener::BuildAndRun()
         web_makeFile << "   -sGL_ASSERTIONS=" << gl_assertions << "\\\n";
         web_makeFile << "   -sUSE_WEBGL2=" << use_webgl2 << " \\\n";
         web_makeFile << "   -sFULL_ES3=" << full_es3 << " \\\n";
-        web_makeFile << "   -sUSE_PTHREADS=" << use_pthreads << " \\\n";
-        web_makeFile << "   -sSHARED_MEMORY=" << shared_memory << " \\\n";
-        web_makeFile << "   -sALLOW_MEMORY_GROWTH=" << allow_memory_growth << " \\\n";
+        web_makeFile << "   -sUSE_PTHREADS=" << use_pthreads << "\\\n";
+        web_makeFile << "   -sSHARED_MEMORY=" << shared_memory << "\\\n";
+        web_makeFile << "   -sALLOW_MEMORY_GROWTH=" << allow_memory_growth << "\\\n";
         web_makeFile << "   -sNO_DISABLE_EXCEPTION_CATCHING=" << allow_exception_catching << " \\\n";
         //web_makeFile << "   -sPTHREADS_DEBUG=1 \\\n";
         //web_makeFile << "   -sPROXY_TO_PTHREAD=1 \\\n";
@@ -371,7 +374,7 @@ void EventListener::BuildAndRun()
         web_makeFile << "   --shell-file template.html\n\n";
 
         web_makeFile << "all: $(OBJS)\n";
-        web_makeFile << "\tem++ -std=c++20 $(OBJS) -O3 -o dist/index.html $(LINKER_FLAGS)\n";
+        web_makeFile << "\tem++ -std=c++20 $(OPT_FLAGS) $(OBJS) -O3 -o dist/index.html $(OPT_FLAGS) $(LINKER_FLAGS)\n";
 
         web_preJS << "Module['window']\n";
         web_preJS << "Module['document']\n";
