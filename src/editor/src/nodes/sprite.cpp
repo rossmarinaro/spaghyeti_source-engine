@@ -208,10 +208,8 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             Node::Update(arr);
 
-            if (ImGui::Button("Select") && spriteHandle) {
-                Editor::selectedEntity = spriteHandle;
-                Editor::Get()->game->camera->SetPosition({ -spriteHandle->position.x + System::Window::s_scaleWidth / 2, -spriteHandle->position.y + System::Window::s_scaleHeight / 2 });
-            }
+            if (ImGui::Button("Select") && spriteHandle) 
+                Editor::FocusEntity(spriteHandle);
             
             if (ImGui::BeginMenu("Add Component"))
             {
@@ -938,7 +936,7 @@ void SpriteNode::Render(float _positionX, float _positionY, float _rotation, flo
             default: m_bodyType = "static"; break;
         }
 
-        if (System::Game::GetScene()->ListenForInteraction(spriteHandle))
+        if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse)
             Editor::FocusEntity(spriteHandle);
 
     }   

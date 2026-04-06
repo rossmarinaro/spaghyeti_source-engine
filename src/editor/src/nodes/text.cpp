@@ -90,6 +90,9 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 Editor::Get()->events->selected_nodes = &nodes;
 
             Node::Update(arr);
+
+            if (ImGui::Button("Select") && textHandle) 
+                Editor::FocusEntity(textHandle);
             
             if (ImGui::BeginMenu("Add Component"))
             {
@@ -257,7 +260,7 @@ void TextNode::Render(float _positionX, float _positionY, float _rotation, float
         textHandle->SetSlant(charOffsetX, charOffsetY);
         textHandle->SetStatic(UIFlag);
 
-        if (System::Game::GetScene()->ListenForInteraction(textHandle)) 
+        if (System::Game::GetScene()->ListenForInteraction(textHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse) 
             Editor::FocusEntity(textHandle);
     }
 }

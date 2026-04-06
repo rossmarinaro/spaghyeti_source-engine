@@ -106,10 +106,8 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             Node::Update(arr);
 
-            if (ImGui::Button("Select") && rectHandle) {
-                Editor::selectedEntity = rectHandle;
-                Editor::Get()->game->camera->SetPosition({ -rectHandle->position.x + System::Window::s_scaleWidth / 2, -rectHandle->position.y + System::Window::s_scaleHeight / 2 });
-            }
+            if (ImGui::Button("Select") && rectHandle) 
+                Editor::FocusEntity(rectHandle);
 
             if (show_options)
             {
@@ -402,7 +400,7 @@ void SpawnerNode::Render(float _positionX, float _positionY, float _rotation, fl
         default: m_bodyType = "static"; break;
     }
 
-    if (System::Game::GetScene()->ListenForInteraction(rectHandle))
+    if (System::Game::GetScene()->ListenForInteraction(rectHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse)
         Editor::FocusEntity(rectHandle);
 }
 
