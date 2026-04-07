@@ -74,20 +74,23 @@ using namespace System;
 #endif
 
 
-//----------------------------------------
+//---------------------------------------- check cursor hover over interactive entity
 
 
 const bool CheckInteractiveObjectOverlap(const std::shared_ptr<Entity>& entity) 
 {
-    float mouseX = System::Game::GetScene()->GetContext().inputs->mouseX, 
-          mouseY = System::Game::GetScene()->GetContext().inputs->mouseY,
-          xPos = entity->position.x * entity->scale.x,
+    const float mouseX = System::Game::GetScene()->GetContext().inputs->mouseX, 
+                mouseY = System::Game::GetScene()->GetContext().inputs->mouseY;
+
+    float xPos = entity->position.x * entity->scale.x,
           yPos = entity->position.y * entity->scale.y,
           width = 0.0f, 
           height = 0.0f;
 
-    if (entity->GetType() == Entity::SPRITE || entity->GetType() == Entity::UI) {
+    if (entity->GetType() == Entity::SPRITE || entity->GetType() == Entity::UI) 
+    {
         const auto sprite = std::static_pointer_cast<Sprite>(entity);
+
         width = sprite->texture.FrameWidth * sprite->scale.x;
         height = sprite->texture.FrameHeight * sprite->scale.y;
     }
@@ -107,8 +110,10 @@ const bool CheckInteractiveObjectOverlap(const std::shared_ptr<Entity>& entity)
             height = text->texture.FrameHeight * text->scale.y;
         }
     }
-    else if (entity->GetType() == Entity::GEOMETRY) {
+    else if (entity->GetType() == Entity::GEOMETRY) 
+    {
         const auto geom = std::static_pointer_cast<Geometry>(entity);
+
         width = geom->width * geom->scale.x;
         height = geom->height * geom->scale.y;
     }

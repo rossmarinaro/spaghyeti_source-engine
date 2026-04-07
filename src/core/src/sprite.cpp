@@ -377,7 +377,6 @@ void Sprite::ReadSpritesheetData()
 
     if (spritesheet && System::Utils::str_endsWith(*spritesheet, ".json")) 
     {
-
         #if USE_JSON == 1 
 
             std::ifstream JSON(*spritesheet);
@@ -482,7 +481,7 @@ void Sprite::Render()
  
     }
 
-    //sprite model transformations
+    //sprite model rotation transformation
 
     glm::mat4 transform = glm::mat4(1.0f); 
 
@@ -549,7 +548,6 @@ void Sprite::Render()
             outlineColor,
             modelViewProj, 
             outlineEnabled ? outlineWidth : 0.0f, 
-            rotation, 
             depth, 
             flipX, 
             flipY
@@ -581,7 +579,7 @@ void Sprite::Render()
         const int rate = m_currentAnim.rate;
 
         const uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
-        
+
         try {
 
             if (m_isSpritesheet && active)
@@ -602,7 +600,6 @@ void Sprite::Render()
 
                 if (yoyo)
                 {
-
                     for (int i = anim->second.first; i < anim->second.second + 1; i++) 
                         frames.emplace_back(i);
                     
@@ -643,7 +640,8 @@ void Sprite::Render()
 
                 m_currentAnim.can_complete = true;
 
-                if (currentFrame == anim->second.second) {
+                if (currentFrame == anim->second.second) 
+                {
                     if (m_currentAnim.can_decrement) {
                         m_currentAnim.can_decrement = false;
 
@@ -651,10 +649,9 @@ void Sprite::Render()
                             m_currentAnim.repeat--; 
                     }
                 }
-
                 else 
                     m_currentAnim.can_decrement = true;
-
+ 
             }
         }
 

@@ -671,7 +671,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                             static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
                         );
                 }
-
             }
 
             return sn;

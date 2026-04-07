@@ -47,7 +47,6 @@ namespace Graphics {
                 const Math::Vector3& outline,
                 const Math::Matrix4& mvp,
                 float outlineWidth,
-                float rotation,
                 int depth,
                 bool flipX = false, 
                 bool flipY = false

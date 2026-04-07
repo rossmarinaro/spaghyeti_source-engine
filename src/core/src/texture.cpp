@@ -260,7 +260,6 @@ void Texture2D::Update(
     const Math::Vector3& outline, 
     const Math::Matrix4& mvp, 
     float outlineWidth,
-    float rotation,
     int depth,
     bool flipX, 
     bool flipY
@@ -363,7 +362,6 @@ void Texture2D::Update(
     {       
         vertices[i].texID = textureUnit;
         vertices[i].z = static_cast<float>(depth) / 1000.0f;
-        vertices[i].rotation = rotation;
         vertices[i].scaleX = scale.x;
         vertices[i].scaleY = scale.y;
         vertices[i].r = rgba.r;

@@ -43,7 +43,6 @@ void Shader::InitBaseShaders()
 
         "layout(location = 0) in vec3 a_Pos;\n"
         "layout(location = 1) in vec2 a_Scale;\n"
-        "layout(location = 2) in float a_Rotation;\n"
         "layout(location = 3) in vec2 a_UV;\n"
         "layout(location = 4) in float a_TextureId;\n" 
         "layout(location = 5) in vec4 a_RGBA;\n"
@@ -65,11 +64,7 @@ void Shader::InitBaseShaders()
             "outlineColor = a_OutlineColor;\n"
             "outlineWidth = a_OutlineWidth;\n"
 
-            "vec3 scaledPosition = vec3(a_Pos.xy * a_Scale, a_Pos.z);\n"
-            "float c = cos(a_Rotation);\n"
-            "float s = sin(a_Rotation);\n"
-            "vec3 position = vec3(scaledPosition.x * c - scaledPosition.y * s, scaledPosition.x * s + scaledPosition.y * c, scaledPosition.z);\n"
-            
+            "vec3 position = vec3(a_Pos.xy, a_Pos.z);\n"
             "gl_Position = a_ModelViewProj * vec4(position, 1.0);\n" //must be proj * model * view per OpenGL
         "}";
 

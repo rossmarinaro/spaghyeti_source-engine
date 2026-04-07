@@ -96,8 +96,7 @@ void Geometry::Render()
         color, 
         outlineColor,
         modelViewProj, 
-        outlineEnabled ? outlineWidth : 0.0f,
-        rotation, 
+        outlineEnabled ? outlineWidth : 0.0f, 
         depth
     ); 
 

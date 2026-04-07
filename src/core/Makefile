@@ -52,10 +52,10 @@ compile: $(OBJS)
 	$(CC) $(OPT_FLAGS) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) -w -Wfatal-errors -Wl,-subsystem,windows $(OPT_FLAGS) $(LINKER_FLAGS) $(BUILDTYPE) $(BUILDFLAG) $(OUTFILE) 
 
 compile_web: $(OBJS) 
-	em++ -g -O3 -std=c++20 -w $(OPT_FLAGS) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_WEB) $(OPT_FLAGS) -pthread -c $(OUTFILE) 
+	em++ -g -O3 -std=c++20 -w $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS_WEB) -pthread -c $(OUTFILE) 
 
 ar: 
-	ar rvs spaghyeti.a $(wildcard *.o)
+	gcc-ar rvs spaghyeti.a $(wildcard *.o)
 
 emar:
 	emar rvs spaghyeti-web.a $(wildcard *.o)

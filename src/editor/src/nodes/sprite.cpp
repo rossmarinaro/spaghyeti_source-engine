@@ -159,7 +159,6 @@ void SpriteNode::ApplyTexture(const std::string& asset)
 void SpriteNode::ApplyAnimation(const std::string& key)
 {
     try {
-
         std::map<const std::string, std::pair<int, int>> animsToLoad;
 
         for (const auto& anim : animations) 
@@ -291,7 +290,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                         m_currentAnim = { "", 0, 0, 2, -1, false };
                                 }
 
-                                if (animations[i].key.size() && animations[i].key.length()) {
+                                if (animations[i].key.size()) {
                                     ImGui::SameLine();
                                     if (ImGui::Button("apply")) {
                                         ApplyAnimation(animations[i].key);
@@ -906,7 +905,6 @@ void SpriteNode::Render(float _positionX, float _positionY, float _rotation, flo
         spriteHandle->texture.U2 = U2;
         spriteHandle->texture.V2 = V2;
 
-        spriteHandle->SetFrame(currentFrame);
         spriteHandle->SetScale(scaleX * _scaleX, scaleY * _scaleY);  
         spriteHandle->SetPosition(positionX + _positionX, positionY + _positionY);   
         spriteHandle->SetRotation(rotation + _rotation); 
@@ -918,10 +916,11 @@ void SpriteNode::Render(float _positionX, float _positionY, float _rotation, flo
         spriteHandle->SetCull(cull);
 
         if (m_currentAnim.key.length())   
-            spriteHandle->SetAnimation(m_currentAnim.key.c_str(), m_currentAnim.yoyo, m_currentAnim.rate, m_currentAnim.repeat);
-
-        else
+            spriteHandle->SetAnimation(m_currentAnim.key, m_currentAnim.yoyo, m_currentAnim.rate, m_currentAnim.repeat);
+        else {
             spriteHandle->StopAnimation();
+            spriteHandle->SetFrame(currentFrame);
+        }
              
         //entity physics body transform
         
