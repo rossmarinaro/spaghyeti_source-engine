@@ -105,7 +105,7 @@ std::shared_ptr<Sprite> Sprite::Clone()
             const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
             const Math::Vector4 offset = m_bodies[0].second;
 
-            clone->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, offset.r, offset.g, offset.b, offset.a, body->isSensor, body->pointer, body->density, body->friction, body->restitution), { offset.r, offset.g, offset.b, offset.a } );
+            clone->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, offset.r, offset.g, offset.b, offset.a, body->isSensor, body->pointer, body->density, body->friction, body->restitution), { offset.r, offset.g, offset.b, offset.a } );
         }
             
     return clone;
@@ -304,7 +304,7 @@ void Sprite::RemoveBodies()
 
 //----------------------------- 
 
-void Sprite::AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vector4& offsets) {
+void Sprite::AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vector4& offsets) { 
     std::pair<std::shared_ptr<Physics::Body>, Math::Vector4> b = { body, offsets };
     m_bodies.emplace_back(b);
 }
@@ -563,7 +563,7 @@ void Sprite::Render()
     //update physics bodies if any
 
     for (const auto& body : m_bodies)
-        if (body.first->IsEnabled() && 
+        if (body.first->IsEnabled() &&  
             body.first->GetType() == b2_dynamicBody || body.first->GetType() == b2_kinematicBody
         ) {
             Math::Vector2 pos = body.first->GetPosition(); 

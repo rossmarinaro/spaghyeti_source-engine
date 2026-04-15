@@ -44,14 +44,14 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
         json frames = json::array();
 
-        for (int i = 0; i < sn->frame; ++i)
+        for (const auto& frame : sn->frames)
             frames.push_back({
-                { "offset x", sn->frame_x.size() ? sn->frame_x[i] : 0 },
-                { "offset y", sn->frame_y.size() ? sn->frame_y[i] : 0 },
-                { "width", sn->frame_width.size() ? sn->frame_width[i] : 0 },
-                { "height", sn->frame_height.size() ? sn->frame_height[i] : 0 },
-                { "factor x", sn->frame_fX.size() ? sn->frame_fX[i] : 1 },
-                { "factor y", sn->frame_fY.size() ? sn->frame_fY[i] : 1 }
+                { "offset x", frame.x },
+                { "offset y", frame.y },
+                { "width", frame.width },
+                { "height", frame.height },
+                { "factor x", frame.factorX },
+                { "factor y", frame.factorY }
             });
 
         //animations
@@ -73,21 +73,20 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
         json bodies = json::array();
 
-        int bodIndex = 0;
-
         for (const auto& body : sn->bodies)
-        {
             bodies.push_back({
-                { "body_width", body.width },
-                { "body_height", body.height },
-                { "bodyX", body.x },
-                { "bodyY", body.y },
-                { "pointer", sn->body_pointer.size() ? sn->body_pointer[bodIndex] : 0 },
-                { "sensor", sn->is_sensor.size() ? sn->is_sensor[bodIndex].b : false }
+                { "type", body.first },
+                { "shape", body.second->shape },
+                { "body_width", body.second->width },
+                { "body_height", body.second->height },
+                { "bodyX", body.second->x },
+                { "bodyY", body.second->y },
+                { "pointer", body.second->pointer },
+                { "sensor", body.second->isSensor },
+                { "friction", body.second->friction },
+                { "restitution", body.second->restitution },
+                { "density", body.second->density }
             });
-
-            bodIndex++;
-        }
 
         //settings
 
@@ -132,12 +131,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             { "components", {
                     { "physics", {
                             { "exists", sn->HasComponent(Component::PHYSICS) },
-                            { "bodies", bodies },
-                            { "friction", sn->friction },
-                            { "restitution", sn->restitution },
-                            { "density", sn->density },
-                            { "type", sn->body_type },
-                            { "shape", sn->body_shape }
+                            { "bodies", bodies }
                         }
                     },
                     { "animator", {
@@ -196,7 +190,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
         json bodies = json::array();
 
         for (const auto& body : tmn->bodies) 
-            bodies.push_back({ { "body_width", body.width }, { "body_height", body.height }, { "bodyX", body.x }, { "bodyY", body.y } });
+            bodies.push_back({ { "body_width", body->width }, { "body_height", body->height }, { "bodyX", body->x }, { "bodyY", body->y } });
 
         data = {
             { "position x", tmn->positionX },
@@ -544,43 +538,25 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 }
             }
 
-            if (data.contains("frames") && data["frames"].size() > 1)
+            if (data.contains("frames") && data["frames"].size())
             {
-                sn->frame_x.clear();
-                sn->frame_y.clear();
-                sn->frame_width.clear();
-                sn->frame_height.clear();
-                sn->frame_fX.clear();
-                sn->frame_fY.clear();
-
-                for (int i = 0; i < data["frames"].size(); i++) 
+                for (const auto& frame : data["frames"]) 
                 {   
-                    int xOff = data["frames"][i]["offset x"],
-                        yOff = data["frames"][i]["offset y"];
+                    const int xOff = frame["offset x"],
+                              yOff = frame["offset y"];
 
-                    float frWidth = data["frames"][i]["width"],
-                          frHeight = data["frames"][i]["height"],
-                          fX = data["frames"][i]["factor x"],
-                          fY = data["frames"][i]["factor y"];
+                    const float frWidth = frame["width"],
+                                frHeight = frame["height"],
+                                fX = frame["factor x"],
+                                fY = frame["factor y"];
 
-                    sn->frame_x.emplace_back(xOff);
-                    sn->frame_y.emplace_back(yOff);
-                    sn->frame_width.emplace_back(frWidth);
-                    sn->frame_height.emplace_back(frHeight);
-                    sn->frame_fX.emplace_back(fX);
-                    sn->frame_fY.emplace_back(fY);
-                }
-
-                sn->frame = data["frames"].size();
-
-                if (data.contains("current frame"))
-                    sn->currentFrame = data["current frame"];
-      
-                for (int i = 0; i < sn->frame; i++) {
-                    const SpriteNode::Frames fr = { sn->frame_x[i], sn->frame_y[i], sn->frame_width[i], sn->frame_height[i], sn->frame_fX[i], sn->frame_fY[i]};
+                    const SpriteNode::Frame fr = { xOff, yOff, frWidth, frHeight, fX, fY };
                     sn->frames.emplace_back(fr); 
                 }
 
+                if (data.contains("current frame"))
+                    sn->currentFrame = data["current frame"];
+    
                 sn->RegisterFrames();
 
                 if (makeNode) {
@@ -600,7 +576,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     sn->AddComponent(Component::ANIMATOR, false);
 
                     for (const auto& anim : data["components"]["animator"]["animations"]) {    
-                        const SpriteNode::Anims a = { anim["key"], anim["start"], anim["end"], anim["rate"], anim["repeat"], anim["yoyo"] };
+                        const Sprite::Anim a = { anim["key"], anim["start"], anim["end"], anim["rate"], anim["repeat"], anim["yoyo"] };
                         sn->animations.emplace_back(a);
                         sn->ApplyAnimation(anim["key"]);
                     }
@@ -617,30 +593,48 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 {
                     sn->AddComponent(Component::PHYSICS, false);
 
-                    sn->friction = data["components"]["physics"]["friction"];
-                    sn->restitution = data["components"]["physics"]["restitution"];
-                    sn->density = data["components"]["physics"]["density"]; 
-
                     if (data["components"]["physics"]["bodies"].size()) 
                         for (const auto& body : data["components"]["physics"]["bodies"]) 
-                            if (makeNode)
-                                sn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"], body["sensor"], body["pointer"]);
+                        {if (body.contains("type")) Editor::Log(body["type"]);
+                            int physType = 2,//body.contains("type") ? static_cast<int>(body["type"]) : Physics::Body::Type::DYNAMIC,
+                                shape = body.contains("shape") ? static_cast<int>(body["shape"]) : Physics::Body::Shape::BOX;
+
+                            float x = body.contains("bodyX") ? static_cast<float>(body["bodyX"]) : 0.0f,
+                                  y = body.contains("bodyY") ? static_cast<float>(body["bodyY"]) : 0.0f,
+                                  width = body.contains("body_width") ? static_cast<float>(body["body_width"]) : 0.0f,
+                                  height = body.contains("body_height") ? static_cast<float>(body["body_height"]) : 0.0f,
+                                  radius = body.contains("radius") ? static_cast<float>(body["radius"]) : 0.0f,
+                                  density = body.contains("density") ? static_cast<float>(body["density"]) : 0.0f,
+                                  friction = body.contains("friction") ? static_cast<float>(body["friction"]) : 0.0f,
+                                  restitution = body.contains("restitution") ? static_cast<float>(body["restitution"]) : 0.0f;
+
+
+                            if (makeNode) {
+                                const auto body = sn->CreateBody(physType, shape, x, y, width, height, radius, restitution, density, friction);
+                                sn->UpdateBody(body);
+                            }
 
                             else 
                             {
-                                SpriteNode::BoolContainer bc;
+                                auto pb = std::make_shared<Physics::Body>();
+                                
+                                pb->x = x; 
+                                pb->y = y;
+                                pb->type = physType;
+                                pb->shape = shape;
+                                pb->width = width;
+                                pb->height = height;
+                                pb->radius = radius;
+                                pb->density = density;
+                                pb->friction = friction;
+                                pb->restitution = restitution;
 
-                                if (body.contains("type"))
-                                    sn->body_type = body["type"];
+                                const std::string physTypeStr = sn->BodyTypeToString(pb->type);
+                                const std::pair b = { physTypeStr, pb };
 
-                                if (body.contains("shape"))
-                                    sn->body_shape = body["shape"];
-
-                                bc.b = body["sensor"];
-                                sn->is_sensor.push_back(bc);
-                                sn->body_pointer.push_back(body["pointer"]);
-                                sn->bodies.push_back({ nullptr, body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]});
+                                sn->bodies.emplace_back(b);
                             }
+                        }         
                 }
 
                 //script
@@ -758,9 +752,16 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                                 tmn->UpdateBody(i);
                         }
 
-                        else {
-                            const Body b  { nullptr, body["bodyX"], body["bodyY"], body["body_width"], body["body_height"] };
-                            tmn->bodies.emplace_back(b);
+                        else 
+                        {
+                            auto pb = std::make_shared<Physics::Body>();
+
+                            pb->x = body["bodyX"];
+                            pb->y = body["bodyY"]; 
+                            pb->width = body["body_width"];
+                            pb->height = body["body_height"];
+                            
+                            tmn->bodies.emplace_back(pb);
                         }
                     }
             }

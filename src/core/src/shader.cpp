@@ -64,8 +64,7 @@ void Shader::InitBaseShaders()
             "outlineColor = a_OutlineColor;\n"
             "outlineWidth = a_OutlineWidth;\n"
 
-            "vec3 position = vec3(a_Pos.xy, a_Pos.z);\n"
-            "gl_Position = a_ModelViewProj * vec4(position, 1.0);\n" //must be proj * model * view per OpenGL
+            "gl_Position = a_ModelViewProj * vec4(a_Pos, 1.0);\n" //must be proj * model * view per OpenGL
         "}";
 
 

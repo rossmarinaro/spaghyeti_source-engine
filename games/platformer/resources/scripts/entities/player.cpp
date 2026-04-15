@@ -26,7 +26,7 @@ PlayerController::PlayerController(std::shared_ptr<Entity> entity):
     magicEnabled = false;
     cigarEnabled = false;
   
-    attackBox = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 30, 40, true, 1);   
+    attackBox = Physics::CreateBody(Physics::Body::Type::DYNAMIC, 0, 0, 30, 40, true, 1);   
     attackBox->SetEnabled(false);
 
     const auto player = std::static_pointer_cast<Sprite>(entity);
@@ -381,7 +381,7 @@ void PlayerController::SetState(const State& state, int option)
                     if (type == "ring")
                         projectile->SetShader("trippy2");
 
-                    projectile->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 10, 10, true, 1), { 0, 0, 10, 10 });
+                    projectile->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, 0, 0, 10, 10, true, 1), { 0, 0, 10, 10 });
                 }
 
                 if (type == "cigar" && cigar <= 0) 

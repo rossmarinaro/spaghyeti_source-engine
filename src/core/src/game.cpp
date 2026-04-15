@@ -321,7 +321,6 @@ void Game::UpdateFrame()
 
                                 sprite->AddBody(Physics::CreateBody(
                                     spawn.body.type, 
-                                    spawn.body.shape, 
                                     spawn.posX, 
                                     spawn.posY, 
                                     spawn.body.w, 

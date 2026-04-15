@@ -186,15 +186,21 @@ class Text : public Entity {
 //sprite container
 class Sprite : public Entity {
 
-    struct Anim { 
-        std::string key; 
-        int rate, repeat; 
-        bool yoyo, can_decrement, can_complete; 
-    } m_currentAnim;
-
     std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> m_bodies;  
 
 	public:  
+
+        struct Anim 
+        { 
+            std::string key; 
+            
+            int start = 0, end = 0, 
+                rate = 2, repeat = -1; 
+
+            bool yoyo = false, 
+                 can_decrement = false, 
+                 can_complete = false; 
+        };
 
 		int frames, 
 			currentFrame, 
@@ -235,7 +241,7 @@ class Sprite : public Entity {
         void StopAnimation();
 		void SetAnimation(const std::string& key, bool yoyo = false, int rate = 2, int repeat = -1);
 
-		void SetVelocity(float velX, float velY);
+		void SetVelocity(float velX = 0.0f, float velY = 0.0f);
 		void SetVelocityX(float velX);
 		void SetVelocityY(float velY);
 
@@ -271,6 +277,8 @@ class Sprite : public Entity {
 		//internal spritesheet data 
 
 		std::vector<std::array<int, 6>> m_resourceData; 
+
+        Anim m_currentAnim;
 };
 
 

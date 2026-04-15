@@ -568,6 +568,8 @@ void editor::GUI::ShowMenu()
         if (ImGui::MenuItem("project"))
             if (!session->events->NewProject())
                 Editor::Log("could not create project.");
+            else 
+                session->events->OpenScene();
 
         if (ImGui::MenuItem("scene"))
             if (!session->events->NewScene())

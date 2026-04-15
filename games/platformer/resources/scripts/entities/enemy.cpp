@@ -43,7 +43,7 @@ void entity_behaviors::Enemy::Initialize(std::shared_ptr<Entity> entity)
     if (System::Utils::str_includes(entity->name, "hooligan")) {
         health = 4;
         m_damage = 1;
-        hb = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 50, 60, true, 1);
+        hb = Physics::CreateBody(Physics::Body::Type::DYNAMIC, 0, 0, 50, 60, true, 1);
     }
 
     if (System::Utils::str_includes(sprite->name, "pidgeon")) {
@@ -51,7 +51,7 @@ void entity_behaviors::Enemy::Initialize(std::shared_ptr<Entity> entity)
         m_damage = 1;
         m_canMoveRight = true;
         sprite->SetAnimation("flap", false, 14);
-        hb = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 60, 20, true, 1);
+        hb = Physics::CreateBody(Physics::Body::Type::DYNAMIC, 0, 0, 60, 20, true, 1);
     }
 
     if (System::Utils::str_includes(entity->name, "pitbull")) {
@@ -59,7 +59,7 @@ void entity_behaviors::Enemy::Initialize(std::shared_ptr<Entity> entity)
         m_damage = 2;
         m_canMoveLeft = true;
         m_reverse = true;
-        hb = Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, 0, 0, 100, 70, true, 1);
+        hb = Physics::CreateBody(Physics::Body::Type::DYNAMIC, 0, 0, 100, 70, true, 1);
     }
 
     m_startPos = sprite->position.x;

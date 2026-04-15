@@ -25,7 +25,7 @@ namespace System {
                     int type, shape; 
                     bool exist, is_sensor; 
                     float xOff, yOff, w, h, density, friction, restitution; 
-                } body;
+                } body; 
 
                 //check if spawn has behavior, attach and return false to verify next frame
                 bool hasBehavior(const std::string& behaviorName);

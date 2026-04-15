@@ -32,11 +32,11 @@ SPAWNITEM::SPAWNITEM(std::shared_ptr<Entity> entity):
 
         item->SetName("item_box" + ID);
         item->SetAlpha(0);
-        item->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, sprite->position.x + 40, sprite->position.y + 40, 20, 20, true, 1), { 20, 20, 0, 0 });
+        item->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, sprite->position.x + 40, sprite->position.y + 40, 20, 20, true, 1), { 20, 20, 0, 0 });
     }
 
     else
-        sprite->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, sprite->position.x, sprite->position.y, 20, 20, true, 1), { 20, 20, 0, 0 });
+        sprite->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, sprite->position.x, sprite->position.y, 20, 20, true, 1), { 20, 20, 0, 0 });
 }
 
 

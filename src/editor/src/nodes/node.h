@@ -21,7 +21,7 @@ namespace editor {
 
             enum { SPRITE, TILEMAP, TEXT, AUDIO, EMPTY, GROUP, SPAWNER };
 
-            int type, body_type, body_shape;
+            int type;
 
             bool created, 
                  active, 
@@ -43,9 +43,6 @@ namespace editor {
             std::string ID, name;
 
             Math::Vector3 strokeColor, shadowColor;
-
-            struct StringContainer { std::string s = ""; };
-            struct BoolContainer { bool b = false; };
 
             std::pair<std::string, std::pair<std::string, std::string>> shader;
             std::map<std::string, std::string> behaviors;
@@ -84,11 +81,6 @@ namespace editor {
 
         protected:
 
-            struct Body {
-                std::shared_ptr<Physics::Body> pb;
-                float x, y, width, height;
-            };
-
             bool m_init;
                       
             void SavePrefab(std::vector<std::shared_ptr<Node>>& arr);
@@ -125,23 +117,16 @@ namespace editor {
 
         public:
 
-            struct Frames { int x, y, width, height, factorX, factorY; };
-
-            struct Anims { 
-                
-                std::string key = ""; 
-
-                int start = 0, 
-                    end = 0, 
-                    rate = 2, 
-                    repeat = -1; 
-
-                bool yoyo = false; 
+            struct Frame { 
+                int x = 0, 
+                    y = 0, 
+                    width = 0, 
+                    height = 0, 
+                    factorX = 1, 
+                    factorY = 1; 
             };
 
-            int frame, 
-                depth,
-                currentFrame;
+            int depth, currentFrame;
 
             bool framesApplied,       
                  filter_nearest,
@@ -156,33 +141,20 @@ namespace editor {
                   U2,
                   V2,
                   alpha,
-                  restitution,
-                  density, 
-                  friction,
                   scrollFactorX,
                   scrollFactorY;
 
             std::string key;
             Math::Vector3 tint;
 
-            std::vector<Frames> frames; 
-            std::vector<Anims> animations; 
+            std::vector<Frame> frames; 
+            std::vector<Sprite::Anim> animations; 
 
-            Anims anim_to_play_on_start; 
+            Sprite::Anim anim_to_play_on_start; 
 
             std::shared_ptr<Sprite> spriteHandle;
-            std::vector<BoolContainer> is_sensor, anim_yoyo;
 
-            std::vector<int> frame_x,
-                             frame_y,
-                             body_pointer;
-
-            std::vector<float> frame_width,
-                               frame_height,
-                               frame_fX,
-                               frame_fY;
-
-            std::vector<Body> bodies;  
+            std::vector<std::pair<std::string, std::shared_ptr<Physics::Body>>> bodies;  
 
             SpriteNode(bool init);
             ~SpriteNode();      
@@ -194,21 +166,29 @@ namespace editor {
             void RegisterFrames();
             void ApplyTexture(const std::string& key);
             void ApplyAnimation(const std::string& key);
+            void UpdateBody(const std::shared_ptr<Physics::Body>& body);
 
-            void CreateBody(
+            std::shared_ptr<Physics::Body> CreateBody(
+                int type,
+                int shape,
                 float x = 0.0f, 
                 float y = 0.0f, 
                 float width = 0.0f, 
                 float height = 0.0f,
+                float radius = 0.0f,
+                float restitution = 0.0f,
+                float density = 0.0f,
+                float friction = 0.0f,
                 bool isSensor = false,
                 int pointerType = -1
             );
 
+            const std::string BodyTypeToString(int type);
+
         private:
 
             bool m_show_sprite_texture;
-            std::string m_bodyType;
-            Anims m_currentAnim;
+            Sprite::Anim m_currentAnim;
             unsigned int m_currentTexture = NULL;
 
     };
@@ -242,7 +222,7 @@ namespace editor {
 
             std::vector<Layer> layers;
             std::vector<std::array<int, 6>> offset;
-            std::vector<Body> bodies;
+            std::vector<std::shared_ptr<Physics::Body>> bodies;
 
             TilemapNode(bool init);
             ~TilemapNode();
@@ -260,8 +240,6 @@ namespace editor {
             bool m_layersApplied, m_mapApplied;
             void AddLayer();
             void ParseJSONData(const std::string& key, const std::string& path);
-
-
     };
 
     //--------------------------------- text, font

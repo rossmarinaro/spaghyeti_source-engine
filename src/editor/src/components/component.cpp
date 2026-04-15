@@ -105,12 +105,8 @@ void Component::Make()
         vert_src << "   uv = a_UV;\n";
         vert_src << "   outlineColor = a_OutlineColor;\n";
         vert_src << "   outlineWidth = a_OutlineWidth;\n";
-        vert_src << "   vec3 scaledPosition = vec3(a_Pos.xy * a_Scale, a_Pos.z);\n";
-        vert_src << "   vert_src << float c = cos(a_Rotation);\n";
-        vert_src << "   vert_src << float s = sin(a_Rotation);\n";
-        vert_src << "   vert_src << vec3 position = vec3(scaledPosition.x * c - scaledPosition.y * s, scaledPosition.x * s + scaledPosition.y * c, scaledPosition.z);\n";
             
-        vert_src << "   gl_Position = a_ModelViewProj * vec4(position, 1.0);\n";
+        vert_src << "   gl_Position = a_ModelViewProj * vec4(a_Pos, 1.0);\n";
         vert_src << "}";
 
         //frag
@@ -216,11 +212,6 @@ void Component::Make()
     {
         for (const auto& node : Node::nodes)
             if (node->ID == ID) {
-
-                if (m_nodeType == Node::SPRITE) {
-                    auto sn = std::dynamic_pointer_cast<SpriteNode>(Node::Get(ID));
-                    sn->CreateBody();
-                }
 
                 if (m_nodeType == Node::TILEMAP) {
                     auto tmn = std::dynamic_pointer_cast<TilemapNode>(Node::Get(ID));

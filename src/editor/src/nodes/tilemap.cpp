@@ -71,7 +71,7 @@ void TilemapNode::Reset(int component_type)
 
     if (component_type == Component::PHYSICS || passAll) {
         for (const auto& body : bodies)
-            Physics::DestroyBody(body.pb);
+            Physics::DestroyBody(body);
 
         bodies.clear();
     }
@@ -228,7 +228,6 @@ void TilemapNode::ParseJSONData(const std::string& key, const std::string& path)
 
                 ApplyTilemap(true, false, true);
                 EventListener::UpdateSession();
-
             }
             else 
                 Editor::Log("Error parsing tilemap. JSON does not contain layers field.");
@@ -242,30 +241,19 @@ void TilemapNode::ParseJSONData(const std::string& key, const std::string& path)
 //---------------------------
 
 
-void TilemapNode::CreateBody(float x, float y, float width, float height) 
-{
-    const auto body = Physics::CreateBody(Physics::Body::Type::STATIC, Physics::Body::Shape::BOX, x, y, width, height);
-    const Body b = { body, x, y, width, height };
-
-    bodies.emplace_back(b);
+void TilemapNode::CreateBody(float x, float y, float width, float height) {
+    const auto pb = Physics::CreateBody(Physics::Body::Type::STATIC, x, y, width, height);
+    bodies.emplace_back(pb);
 }
 
 
 //---------------------------
 
 
-void TilemapNode::UpdateBody(int index) 
-{
-    b2PolygonShape body;  
-
-    body.SetAsBox(bodies[index].width / 2, bodies[index].height / 2);
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &body; 
-
-    if (bodies[index].pb) {
-        bodies[index].pb->DestroyFixture();
-        bodies[index].pb->CreateFixture(&fixtureDef);
-        bodies[index].pb->SetTransform(bodies[index].x + bodies[index].width / 2, bodies[index].y + bodies[index].height / 2);
+void TilemapNode::UpdateBody(int index) {
+    if (bodies[index]) {
+        bodies[index]->UpdateFixture(bodies[index]->width / 2, bodies[index]->height / 2);
+        bodies[index]->SetTransform(bodies[index]->x + bodies[index]->width / 2, bodies[index]->y + bodies[index]->height / 2);
     }
 }
 
@@ -316,32 +304,31 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         for (auto& body : bodies)
                         {
-
                             ImGui::PushID(i);
 
                             ImGui::Text("body: %d", i);
 
-                            ImGui::SliderFloat("width", &body.width, 0.0f, Editor::Get()->game->camera->currentBoundsWidthEnd * 2, NULL, ImGuiSliderFlags_AlwaysClamp); 
-                            ImGui::SliderFloat("height", &body.height, 0.0f, map_height * tile_height, NULL, ImGuiSliderFlags_AlwaysClamp); 
+                            ImGui::SliderFloat("width", &body->width, 0.0f, Editor::Get()->game->camera->currentBoundsWidthEnd, NULL, ImGuiSliderFlags_AlwaysClamp); 
+                            ImGui::SliderFloat("height", &body->height, 0.0f, Editor::Get()->game->camera->currentBoundsHeightEnd, NULL, ImGuiSliderFlags_AlwaysClamp); 
 
-                            ImGui::SliderFloat("x", &body.x, 0.0f, Editor::Get()->game->camera->currentBoundsWidthEnd * 2, NULL, ImGuiSliderFlags_AlwaysClamp);  
-                            ImGui::SliderFloat("y", &body.y, 0.0f, Editor::Get()->worldHeight, NULL, ImGuiSliderFlags_AlwaysClamp); 
+                            ImGui::SliderFloat("x", &body->x, 0.0f, Editor::Get()->game->camera->currentBoundsWidthEnd, NULL, ImGuiSliderFlags_AlwaysClamp);  
+                            ImGui::SliderFloat("y", &body->y, 0.0f, Editor::Get()->game->camera->currentBoundsHeightEnd, NULL, ImGuiSliderFlags_AlwaysClamp); 
                             
                             UpdateBody(i);
 
                             if (ImGui::Button("remove") && bodies.size() > 1) 
                             {
-                                auto it = std::find_if(bodies.begin(), bodies.end(), [&](const Body& b) { return b.pb->id == body.pb->id; });
+                                auto it = std::find_if(bodies.begin(), bodies.end(), [&](const std::shared_ptr<Physics::Body>& b) { return b->id == body->id; });
                             
                                 if (it != bodies.end()) 
                                 {
-                                    auto bod = *it;   
+                                    const auto pb = *it;   
 
                                     it = bodies.erase(std::move(it));
                                     --it;
 
-                                    if (bod.pb)
-                                        Physics::DestroyBody(bod.pb); 
+                                    if (pb)
+                                        Physics::DestroyBody(pb); 
                                 }
 
                                 EventListener::UpdateSession();
@@ -364,7 +351,6 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                     {
                         for (const auto& asset : AssetManager::Get()->loadedAssets)
                         {
-
                             std::string key = asset.first,
                                         path = asset.second;
 
@@ -376,7 +362,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 if (ImGui::MenuItem(key.c_str())) 
                                 {
                                     for (const auto& body : bodies)
-                                        Physics::DestroyBody(body.pb);
+                                        Physics::DestroyBody(body);
 
                                     bodies.clear();
 
@@ -386,7 +372,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                     json data = json::parse(JSON);
 
-                                    auto createBodies = [&](float x, float y, float w, float h) {
+                                    const auto createBodies = [&](float x, float y, float w, float h) {
 
                                         CreateBody(x, y, w, h);
                                         

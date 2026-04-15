@@ -93,8 +93,8 @@ const bool EventListener::NewProject(const char* root_path)
        
             s_currentProject = std::filesystem::path{ path }.filename().string();
 
-            std::string root_path = Editor::rootPath;
-            std::replace(root_path.begin(), root_path.end(), '\\', '/');
+            // std::string root_path = Editor::rootPath;
+            // std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
             const std::string resources = Editor::projectPath + "/resources";
 
@@ -119,10 +119,10 @@ const bool EventListener::NewProject(const char* root_path)
 
             //save and open
 
-            if (SaveScene()) 
+            if (SaveScene(true)) 
             { 
                 std::stringstream JSON = DecodeFile(Editor::projectPath + "scenes/" + s_currentScene + ".scene");
- 
+
                 if (JSON.good()) {
                     json data = ParseJSONStream(JSON);
                     Deserialize(data);
@@ -215,7 +215,7 @@ const bool EventListener::NewScene(const char* root_path)
 
 const bool EventListener::SaveScene(bool saveAs)
 {
-    std::filesystem::current_path(Editor::projectPath + "/scenes");
+    //std::filesystem::current_path(Editor::projectPath + "/scenes");
 
     try {
         std::string project_root = Editor::projectPath + "scenes/" + s_currentScene + ".scene";
@@ -227,7 +227,7 @@ const bool EventListener::SaveScene(bool saveAs)
 
         file.close();
 
-        auto saveFile = [&](std::string filepath) -> bool {
+        const auto saveFile = [&](std::string filepath) -> bool {
 
             EncodeFile(filepath);
 
@@ -247,18 +247,30 @@ const bool EventListener::SaveScene(bool saveAs)
         {
             #ifdef _WIN32
 
+                std::filesystem::path win_path(Editor::projectPath + "scenes");
+                win_path.make_preferred(); 
+
+                std::string doubleslash_path;
+
+                for (char c : win_path.string()) {
+                    doubleslash_path += c;
+                    if (c == '\\')
+                        doubleslash_path += '\\';
+                }
+                doubleslash_path += "\\\\*.*";
+Editor::Log(doubleslash_path);
                 OPENFILENAME ofn;
 
                 char szFileName[MAX_PATH] = "";
 
                 ZeroMemory(&ofn, sizeof(ofn));
-
+std::string f = "C:\\Users\\Ross\\Documents\\New Folder (2)\\*.*"; strcpy(szFileName, f.c_str());
                 ofn.lStructSize = sizeof(ofn);
                 ofn.hwndOwner = NULL;
                 ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.scene)\0*.scene");
                 ofn.lpstrFile = szFileName;
                 ofn.nMaxFile = MAX_PATH;
-                ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+                ofn.Flags = OFN_PATHMUSTEXIST | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
                 ofn.lpstrDefExt = NULL;
 
                 if (GetSaveFileName(&ofn) == TRUE)

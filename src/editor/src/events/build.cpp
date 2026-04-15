@@ -899,9 +899,16 @@ void EventListener::BuildAndRun()
                     {
                         int i = 0; 
 
-                        for (const auto& body : sn->bodies) {
-                            const std::string is_sensor = sn->is_sensor[i].b ? "true" : "false";
-                            command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(sn->body_type) + ", " + std::to_string(sn->body_shape) + ", " + std::to_string(sn->actualPositionX + body.x) + ", " + std::to_string(sn->actualPositionY + body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + ", " + is_sensor + ", " + std::to_string(sn->body_pointer[i]) + ", " + std::to_string(sn->density) + ", " + std::to_string(sn->friction) + ", " + std::to_string(sn->restitution) + "), { " + std::to_string(body.x) + ", " + std::to_string(body.y) + ", " + std::to_string(body.width) + ", " + std::to_string(body.height) + " });\n"; 
+                        for (const auto& body : sn->bodies) 
+                        {
+                            const std::string is_sensor = body.second->isSensor ? "true" : "false";
+
+                            if (body.second->shape == Physics::Body::Shape::BOX)
+                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + std::to_string(sn->actualPositionX + body.second->x) + ", " + std::to_string(sn->actualPositionY + body.second->y) + ", " + std::to_string(body.second->width) + ", " + std::to_string(body.second->height) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + std::to_string(body.second->density) + ", " + std::to_string(body.second->friction) + ", " + std::to_string(body.second->restitution) + "), { " + std::to_string(body.second->x) + ", " + std::to_string(body.second->y) + ", " + std::to_string(body.second->width) + ", " + std::to_string(body.second->height) + " });\n"; 
+                            
+                            if (body.second->shape == Physics::Body::Shape::CIRCLE)
+                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + std::to_string(sn->actualPositionX + body.second->x) + ", " + std::to_string(sn->actualPositionY + body.second->y) + ", " + std::to_string(body.second->radius) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + std::to_string(body.second->density) + ", " + std::to_string(body.second->friction) + ", " + std::to_string(body.second->restitution) + "), { " + std::to_string(body.second->x) + ", " + std::to_string(body.second->y) + ", " + std::to_string(body.second->width) + ", " + std::to_string(body.second->height) + " });\n"; 
+                            
                             i++;
                         }
 
@@ -1077,7 +1084,7 @@ void EventListener::BuildAndRun()
 
                     if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies.size()) 
                         for (const auto& body : tmn->bodies) 
-                            command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, Physics::Body::Shape::BOX, " + std::to_string(body.x + body.width / 2) + ", " + std::to_string(body.y + body.height / 2) + ", " + std::to_string(body.width / 2) + ", " + std::to_string(body.height / 2) + ");\n";
+                            command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + std::to_string(body->x + body->width / 2) + ", " + std::to_string(body->y + body->height / 2) + ", " + std::to_string(body->width / 2) + ", " + std::to_string(body->height / 2) + ");\n";
 
                 } 
 

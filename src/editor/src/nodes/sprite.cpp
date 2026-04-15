@@ -22,12 +22,8 @@ SpriteNode::SpriteNode(bool init):
     lock_in_place = false;
     cull = false; 
     make_UI = false;
-    frame = 0;
     currentFrame = 0;
     depth = 1;
-    restitution = 0.0f;
-    density = 0.0f;
-    friction = 0.0f;
     alpha = 1.0f;
     U1 = 0.0f;
     V1 = 0.0f;
@@ -35,16 +31,8 @@ SpriteNode::SpriteNode(bool init):
     V2 = 1.0f;
     scrollFactorX = 1.0f;
     scrollFactorY = 1.0f;
-    frame_x.push_back(0);
-    frame_y.push_back(0); 
-    frame_width.push_back(0);
-    frame_height.push_back(0);
-    frame_fX.push_back(1);
-    frame_fY.push_back(1);
     spriteHandle = nullptr;
     anim_to_play_on_start = { "", 2, -1, false };
-    body_type = Physics::Body::Type::DYNAMIC;
-    body_shape = Physics::Body::Shape::BOX;
 
     if (m_init)
         Editor::Log("Sprite node " + name + " created.");   
@@ -87,15 +75,9 @@ void SpriteNode::Reset(int component_type)
     if (component_type == Component::PHYSICS || passAll)
     {
         for (const auto& body : bodies)
-            Physics::DestroyBody(body.pb);
+            Physics::DestroyBody(body.second);
         
-        body_pointer.clear();
         bodies.clear();
-        is_sensor.clear();
-
-        restitution = 0.0f;
-        density = 0.0f;
-        friction = 0.0f;
     }
 }
 
@@ -103,21 +85,61 @@ void SpriteNode::Reset(int component_type)
 //---------------------------------
 
 
-void SpriteNode::CreateBody(float x, float y, float width, float height, bool isSensor, int pointerType) 
+std::shared_ptr<Physics::Body> SpriteNode::CreateBody(
+    int type,
+    int shape, 
+    float x, 
+    float y, 
+    float width, 
+    float height, 
+    float radius, 
+    float restitution,
+    float density,
+    float friction,
+    bool isSensor, 
+    int pointerType
+) 
 {
-    BoolContainer bc;
+    const auto pb = shape == Physics::Body::Shape::BOX ? 
+        Physics::CreateBody(type, x, y, width, height, isSensor, pointerType, density, friction, restitution) : //box
+        Physics::CreateBody(type, x, y, radius, isSensor, pointerType, density, friction, restitution); //circle
 
-    bc.b = isSensor;
+    std::pair body = { "", pb };
 
-    is_sensor.push_back(bc);
-    body_pointer.push_back(pointerType);
+    bodies.emplace_back(body);
 
-    const auto body = Physics::CreateBody(body_type, body_shape, x, y, width, height);
-    const Body b = { body, x, y, width, height };
-
-    bodies.emplace_back(b);
+    return pb;
 }
 
+
+
+//---------------------------------
+
+
+void SpriteNode::UpdateBody(const std::shared_ptr<Physics::Body>& body) 
+{
+    if (body->shape == Physics::Body::Shape::BOX)
+        body->UpdateFixture(body->width, body->height);   
+
+    if (body->shape == Physics::Body::Shape::CIRCLE)
+        body->UpdateFixture(body->radius);
+
+    body->SetTransform(body->x + body->width / 2, body->y + body->height / 2);
+}
+
+
+//---------------------------------
+
+
+const std::string SpriteNode::BodyTypeToString(int type) {
+    switch (type) {
+        case Physics::Body::Type::DYNAMIC: return "dynamic";
+        case Physics::Body::Type::KINEMATIC: return "kinematic";
+        case Physics::Body::Type::STATIC: 
+        default: return "static";
+    }
+
+}
 
 //--------------------------------- load frames, overwrite previously cached key
 
@@ -126,8 +148,15 @@ void SpriteNode::RegisterFrames()
 {
     std::vector<std::array<int, 6>> framesToPush;
 
-    for (const auto& frame : frames)
-        framesToPush.push_back({ frame.x, frame.y, frame.width, frame.height, frame.factorX, frame.factorY });
+    for (const auto& frame : frames) {
+        std::array<int, 6> fr = { 
+            frame.x, frame.y, 
+            frame.width, frame.height, 
+            frame.factorX, frame.factorY 
+        };
+
+        framesToPush.emplace_back(fr);
+    }
 
     System::Resources::Manager::LoadFrames(key, framesToPush);
 }
@@ -298,10 +327,10 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                     }
                                 }
 
-                                if (i != 0 && animations.size() > 1) {
+                                if (i != 0 && animations.size()) {
                                     ImGui::SameLine(); 
                                     if (ImGui::Button("remove")) {
-                                        auto it = std::find_if(animations.begin(), animations.end(), [&](const Anims& anim) { return anim.key == animations[i].key; });
+                                        auto it = std::find_if(animations.begin(), animations.end(), [&](const Sprite::Anim& anim) { return anim.key == animations[i].key; });
                                         if (it != animations.end()) {
                                             it = animations.erase(it);
                                             --it;
@@ -402,103 +431,138 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                     {
                         ImGui::PushID(i);
 
+                        if (i >= 1)
+                            ImGui::Separator();
+
                         ImGui::Text((i == 0) ? "anchor: %d" : "body: %d", i);
-
-                        ImGui::SliderFloat("offset x", &body.x, 0.0f, System::Window::s_width); 
-                        if (ImGui::IsItemDeactivatedAfterEdit())
+                        
+                        if (ImGui::Checkbox("is sensor", &body.second->isSensor))
                             EventListener::UpdateSession();
 
-                        ImGui::SliderFloat("offset y", &body.y, 0.0f, System::Window::s_height);
-                        if (ImGui::IsItemDeactivatedAfterEdit())
-                            EventListener::UpdateSession();
-
-                        ImGui::SliderFloat("width", &body.width, 0.0f, System::Window::s_width); 
-                        if (ImGui::IsItemDeactivatedAfterEdit())
-                            EventListener::UpdateSession();
-
-                        ImGui::SliderFloat("height", &body.height, 0.0f, System::Window::s_height);
-                        if (ImGui::IsItemDeactivatedAfterEdit())
-                            EventListener::UpdateSession();
- 
-                        if (ImGui::InputInt("type", &body_pointer[i]))
+                        if (ImGui::InputInt("int pointer", (int*)&body.second->pointer))
                             EventListener::UpdateSession(); 
 
-                        if (body_pointer[i] <= -1)
-                            body_pointer[i] = -1;
+                        if (body.second->pointer <= -1)
+                            body.second->pointer = -1;  
+                        
+                        static const char* items[] = { "kinematic", "static", "dynamic" };
 
-                        if (ImGui::Checkbox("sensor", &is_sensor[i].b))
+                        if (ImGui::BeginCombo("body type", body.first.c_str()))
+                        {
+                            for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+                            {
+                                bool is_sel = (body.first == items[n]);
+
+                                if (ImGui::Selectable(items[n], is_sel)) 
+                                    switch (n) {
+                                        case 0: body.second->type = Physics::Body::Type::KINEMATIC; break;
+                                        case 1: body.second->type = Physics::Body::Type::STATIC; break;
+                                        case 2: default: body.second->type = Physics::Body::Type::DYNAMIC; break;
+                                    }
+
+                                if (is_sel)
+                                    ImGui::SetItemDefaultFocus();
+                            }
+
+                            ImGui::EndCombo();
+                        }
+
+                        if (ImGui::SliderFloat("offset x", &body.second->x, 0.0f, System::Window::s_width))
+                            UpdateBody(body.second);
+
+                        if (ImGui::IsItemDeactivatedAfterEdit())
                             EventListener::UpdateSession();
 
-                        ImGui::Separator();     
+                        if (ImGui::SliderFloat("offset y", &body.second->y, 0.0f, System::Window::s_height))
+                            UpdateBody(body.second);
 
-                        b2PolygonShape bod;
-                        bod.SetAsBox(body.width, body.height);
-                        b2FixtureDef fixtureDef;
-                        fixtureDef.shape = &bod;
+                        if (ImGui::IsItemDeactivatedAfterEdit()) 
+                            EventListener::UpdateSession();
 
-                        bodies[i].pb->DestroyFixture();
-                        bodies[i].pb->CreateFixture(&fixtureDef);    
+                        //shapes
+
+                        if (body.second->shape == Physics::Body::Shape::BOX)
+                        {
+                            if (ImGui::SliderFloat("width", &body.second->width, 0.0f, System::Window::s_width))
+                                UpdateBody(body.second);
+
+                            if (ImGui::IsItemDeactivatedAfterEdit()) 
+                                EventListener::UpdateSession();
+
+                            if (ImGui::SliderFloat("height", &body.second->height, 0.0f, System::Window::s_height))
+                                UpdateBody(body.second);
+
+                            if (ImGui::IsItemDeactivatedAfterEdit()) 
+                                EventListener::UpdateSession();
+                        }
+
+                        if (body.second->shape == Physics::Body::Shape::CIRCLE) 
+                        {
+                            if (ImGui::SliderFloat("radius", &body.second->radius, 0.0f, 2000.0f))
+                                UpdateBody(body.second);
+
+                            if (ImGui::IsItemDeactivatedAfterEdit()) 
+                                EventListener::UpdateSession();
+                        }
+
+                        //settings
+
+                        if (body.second->type == Physics::Body::Type::DYNAMIC) 
+                        {
+                            ImGui::SliderFloat("density", &body.second->density, 0.0f, 1000.0f);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
+                            ImGui::SliderFloat("friction", &body.second->friction, 0.0f, 1.0f);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
+                            ImGui::SliderFloat("restitution", &body.second->restitution, 0.0f, 1.0f);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+                        }
  
                         ImGui::PopID();
 
                         i++;
                     } 
 
-                    ImGui::Text("settings");
+                    if (i >= 1)
+                        ImGui::Separator();
 
-                    static const char* items[] = { "kinematic", "static", "dynamic" };
-
-                    if (ImGui::BeginCombo("type", m_bodyType.c_str()))
+                    if (ImGui::BeginMenu("add")) 
                     {
-                        for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+                        if (ImGui::MenuItem("box")) {
+                            CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX);
+                            EventListener::UpdateSession();
+                        }
+                        
+                        if (ImGui::MenuItem("circle")) {
+                            CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::CIRCLE);
+                            EventListener::UpdateSession();
+                        }
+ 
+                        ImGui::EndMenu();
+                    }
+
+                    if (ImGui::BeginMenu("remove"))
+                    {
+                        if (ImGui::MenuItem("last") && bodies.size() > 0) 
                         {
-                            bool is_sel = (m_bodyType == items[n]);
-
-                            if (ImGui::Selectable(items[n], is_sel)) 
-                                switch (n) {
-                                    case 0: body_type = Physics::Body::Type::KINEMATIC; break;
-                                    case 1: body_type = Physics::Body::Type::STATIC; break;
-                                    case 2: default: body_type = Physics::Body::Type::DYNAMIC; break;
-                                }
-
-                            if (is_sel)
-                                ImGui::SetItemDefaultFocus();
+                            Physics::DestroyBody(bodies.back().second);
+                            bodies.pop_back();
+                            EventListener::UpdateSession();       
                         }
 
-                        ImGui::EndCombo();
+                        if (ImGui::MenuItem("all") && bodies.size() > 0) {
+                            for (const auto& body : bodies)
+                                Physics::DestroyBody(body.second);
+        
+                            bodies.clear();
+                        }
+                        
+                        ImGui::EndMenu();
                     }
-
-                    if (body_type == Physics::Body::Type::DYNAMIC) 
-                    {
-                        ImGui::SliderFloat("density", &density, 0.0f, 1000.0f);
-                        if (ImGui::IsItemDeactivatedAfterEdit())
-                            EventListener::UpdateSession();
-
-                        ImGui::SliderFloat("friction", &friction, 0.0f, 1.0f);
-                        if (ImGui::IsItemDeactivatedAfterEdit())
-                            EventListener::UpdateSession();
-
-                        ImGui::SliderFloat("restitution", &restitution, 0.0f, 1.0f);
-                        if (ImGui::IsItemDeactivatedAfterEdit())
-                            EventListener::UpdateSession();
-                    }
-
-                    ImGui::Separator();     
-
-                    if (ImGui::Button("add")) {
-                        CreateBody();
-                        EventListener::UpdateSession();
-                    }
-
-                    ImGui::SameLine();
-
-                    if (ImGui::Button("remove") && bodies.size() > 1) {
-                        Physics::DestroyBody(bodies.back().pb);
-                        bodies.pop_back();
-                        EventListener::UpdateSession();
-                    }
-
-                    ImGui::SameLine();
 
                     if (ImGui::BeginMenu("remove physics?"))
                     {
@@ -540,13 +604,8 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         {
                             //apply frames
  
-                            if (ImGui::Button("apply") && !framesApplied) {
-                          
-                                frames.clear();
-
-                                for (int i = 0; i < frame; i++) 
-                                    frames.push_back({ frame_x[i], frame_y[i], frame_width[i], frame_height[i], frame_fX[i], frame_fY[i]}); 
-
+                            if (ImGui::Button("apply") && !framesApplied) 
+                            {
                                 RegisterFrames();  
                                 
                                 framesApplied = true;
@@ -554,7 +613,6 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 spriteHandle->SetFrame(0);
 
                                 EventListener::UpdateSession();
-
                             }
 
                             if (framesApplied) {  
@@ -568,67 +626,71 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             {
                                 if (ImGui::BeginMenu("frames:"))
                                 {
-                                    if (frame <= 0) 
+                                    if (!frames.size()) 
                                         ImGui::Text("no frames defined"); 
-                                   
                                     else 
-                                        for (int i = 0; i < frame; i++)
+                                    {
+                                        int i = 0;
+                                        
+                                        for (auto& frame : frames)
                                         {
-
                                             ImGui::Separator(); 
                                         
                                             ImGui::Text("frame: %d", i); 
                                             
                                             ImGui::PushID(i);
                                             
-                                            if (ImGui::Button("-x") && frame_fX[i] > 1.0f) {
+                                            if (ImGui::Button("-x") && frame.factorX > 1) {
                                                 framesApplied = false;
-                                                frame_fX[i]--;
+                                                frame.factorX--;
                                                 EventListener::UpdateSession();
                                             }
 
                                             ImGui::SameLine();
 
-                                            if (ImGui::Button("+x") && frame_fX[i] <= frame) {
+                                            if (ImGui::Button("+x") && frame.factorX <= frames.size()) {
                                                 framesApplied = false;
-                                                frame_fX[i]++;
+                                                frame.factorX++;
                                                 EventListener::UpdateSession();
                                             }
 
                                             ImGui::SameLine();
 
-                                            ImGui::Text("factor x: %d", frame_fX[i]);
+                                            ImGui::Text("factor x: %d", frame.factorX);
 
-                                            if (ImGui::Button("-y") && frame_fY[i] > 1) {
+                                            if (ImGui::Button("-y") && frame.factorY > 1) {
                                                 framesApplied = false;
-                                                frame_fY[i]--;
+                                                frame.factorY--;
                                                 EventListener::UpdateSession();
                                             }
 
                                             ImGui::SameLine();
 
-                                            if (ImGui::Button("+y") && frame_fY[i]) {
+                                            if (ImGui::Button("+y") && frame.factorY <= frames.size()) {
                                                 framesApplied = false;
-                                                frame_fY[i]++;
+                                                frame.factorY++;
                                                 EventListener::UpdateSession();
                                             }
 
                                             ImGui::SameLine();
 
-                                            ImGui::Text("factor y: %d", frame_fY[i]);
+                                            ImGui::Text("factor y: %d", frame.factorY);
 
                                             if (
-                                                ImGui::InputInt("position x", &frame_x[i]) ||
-                                                ImGui::InputInt("position y", &frame_y[i]) || 
-                                                ImGui::InputFloat("width", &frame_width[i]) || 
-                                                ImGui::InputFloat("height", &frame_height[i]) 
+                                                ImGui::InputInt("position x", &frame.x) ||
+                                                ImGui::InputInt("position y", &frame.y) || 
+                                                ImGui::InputInt("width", &frame.width) || 
+                                                ImGui::InputInt("height", &frame.height) 
                                             ) {
                                                 framesApplied = false;
                                                 EventListener::UpdateSession();
                                             }
 
                                             ImGui::PopID();
+
+                                            i++;
                                         } 
+                                    }
 
                                     ImGui::EndMenu();
                                 }
@@ -651,52 +713,27 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                 ImGui::SameLine();
 
-                                ImGui::Text("total: %d", frame); 
+                                ImGui::Text("total: %d", frames.size()); 
 
                             }
 
                             if (ImGui::Button("add frame")) 
                             {
-                                frame_x.push_back(0);
-                                frame_y.push_back(0);
-                                frame_width.push_back(0);
-                                frame_height.push_back(0);
-                                frame_fX.push_back(1);
-                                frame_fY.push_back(1);
-
-                                frame++;
+                                Frame fr = { 0, 0, 0, 0, 1, 1 };
+                                frames.emplace_back(fr);
+                                
                                 EventListener::UpdateSession();
                             }
 
                             ImGui::SameLine();
 
-                            if (ImGui::Button("remove frame") && frame > 0) 
-                            {
+                            if (ImGui::Button("remove frame") && frames.size()) {
                                 frames.pop_back();
-
-                                frame_x.pop_back();
-                                frame_y.pop_back();
-                                frame_width.pop_back();
-                                frame_height.pop_back();
-                                frame_fX.pop_back();
-                                frame_fY.pop_back();
-                                
-                                frame--;
                                 EventListener::UpdateSession();
                             }
 
-                            if (ImGui::Button("reset")) 
-                            {
+                            if (ImGui::Button("reset")) {
                                 frames.clear();
-
-                                frame_x.clear();
-                                frame_y.clear();
-                                frame_width.clear();
-                                frame_height.clear();
-                                frame_fX.clear();
-                                frame_fY.clear();
-                                
-                                frame = 0;
                                 EventListener::UpdateSession();
                             }
 
@@ -729,35 +766,26 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                                 //clear previous frames
 
-                                                frame = 1;
                                                 frames.clear();
 
-                                                frame_x.clear();
-                                                frame_y.clear();
-                                                frame_width.clear();
-                                                frame_height.clear();
-                                                frame_fX.clear();
-                                                frame_fY.clear();
-
-                                                if (data["frames"].size() > 1)
+                                                if (data["frames"].size())
                                                     for (const auto& index : data["frames"]) 
                                                     {
                                                         int x = index["frame"]["x"],
                                                             y = index["frame"]["y"];
 
                                                         float width = index["frame"]["w"],
-                                                            height = index["frame"]["h"];
+                                                              height = index["frame"]["h"];
 
-                                                        frame_x.push_back(x);
-                                                        frame_y.push_back(y);
-                                                        frame_width.push_back(width);
-                                                        frame_height.push_back(height);
-                                                        frame_fX.push_back(1);
-                                                        frame_fY.push_back(1);
+                                                        Frame frame;
 
+                                                        frame.x = x;
+                                                        frame.y = y;
+                                                        frame.width = width;
+                                                        frame.height = height;
+
+                                                        frames.emplace_back(frame);
                                                     };
-                                                
-                                                frame = data["frames"].size();
 
                                                 EventListener::UpdateSession();
                                             }
@@ -925,19 +953,13 @@ void SpriteNode::Render(float _positionX, float _positionY, float _rotation, flo
         //entity physics body transform
         
         if (bodies.size())
-            for (const auto& body : bodies)   
-                body.pb->SetTransform(spriteHandle->position.x + body.x, spriteHandle->position.y + body.y);
-
-        switch (body_type) {
-            case Physics::Body::Type::DYNAMIC: m_bodyType = "dynamic"; break;
-            case Physics::Body::Type::KINEMATIC: m_bodyType = "kinematic"; break;
-            case Physics::Body::Type::STATIC: 
-            default: m_bodyType = "static"; break;
-        }
+            for (auto& body : bodies) {
+                body.first = BodyTypeToString(body.second->type);
+                body.second->SetTransform(spriteHandle->position.x + body.second->x, spriteHandle->position.y + body.second->y);
+            }
 
         if (System::Game::GetScene()->ListenForInteraction(spriteHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse)
             Editor::FocusEntity(spriteHandle);
-
     }   
 }
 
