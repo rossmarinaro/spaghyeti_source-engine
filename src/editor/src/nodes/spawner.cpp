@@ -8,13 +8,14 @@ using namespace editor;
 
 
 SpawnerNode::SpawnerNode(bool init):  
-    Node(init, SPAWNER)
+    Node(init, SPAWNER),
+    m_spawnType("sprite"),
+    m_bodyType("kinematic"),
+    m_shapeType("box"),
+    m_category("red")
 {  
     typeOf = Entity::SPRITE;
     category = 0;
-    m_spawnType = "sprite";
-    m_bodyType = "kinematic";
-    m_category = "red";
     textureKey = "";
     behaviorKey = "";
     animationKey = ""; 
@@ -253,32 +254,47 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                     {
                         const std::string exists = body.exist ? "true" : "false";
 
-                        if (ImGui::Button(("exists: " + exists).c_str())) {
+                        if (ImGui::Button(("exists: " + exists).c_str())) 
                             body.exist = !body.exist;
-                            
+
+                        if (m_shapeType == "box") 
+                        {
+                            ImGui::SliderFloat("width", &body.w, 0.0f, System::Window::s_width); 
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
+                            ImGui::SliderFloat("height", &body.h, 0.0f, System::Window::s_height);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
                         }
 
-                        ImGui::SliderFloat("width", &body.w, 0.0f, System::Window::s_width); 
-                        ImGui::SliderFloat("height", &body.h, 0.0f, System::Window::s_height);
+                        if (m_shapeType == "circle") {
+                            ImGui::SliderFloat("radius", &body.radius, 0.0f, System::Window::s_width);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+                        }
+
                         ImGui::SliderFloat("offset x", &body.xOff, -System::Window::s_width, System::Window::s_width);  
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         ImGui::SliderFloat("offset y", &body.yOff, -System::Window::s_height, System::Window::s_height);
+                        if (ImGui::IsItemDeactivatedAfterEdit())
+                            EventListener::UpdateSession();
+
                         if (ImGui::Checkbox("is sensor", &body.is_sensor))
                             EventListener::UpdateSession();
                         
-                        static const char* items[] = { "kinematic", "static", "dynamic" };
+                        static const char* pt_items[] = { "dynamic", "kinematic", "static" };
 
                         if (ImGui::BeginCombo("type", m_bodyType.c_str()))
                         {
-                            for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+                            for (int n = 0; n < IM_ARRAYSIZE(pt_items); n++)
                             {
-                                bool is_sel = (m_bodyType == items[n]);
+                                bool is_sel = (m_bodyType == pt_items[n]);
 
-                                if (ImGui::Selectable(items[n], is_sel)) 
-                                    switch (n) {
-                                        case 0: body.type = Physics::Body::Type::KINEMATIC; break;
-                                        case 1: body.type = Physics::Body::Type::STATIC; break;
-                                        case 2: default: body.type = Physics::Body::Type::DYNAMIC; break;
-                                    }
+                                if (ImGui::Selectable(pt_items[n], is_sel)) 
+                                    m_bodyType = pt_items[n];
 
                                 if (is_sel)
                                     ImGui::SetItemDefaultFocus();
@@ -287,10 +303,37 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             ImGui::EndCombo();
                         }
 
-                        if (body.type == Physics::Body::Type::DYNAMIC) {
+                        static const char* shape_items[] = { "box", "circle" };
+
+                        if (ImGui::BeginCombo("shape", m_shapeType.c_str()))
+                        {
+                            for (int n = 0; n < IM_ARRAYSIZE(shape_items); n++)
+                            {
+                                bool is_sel = (m_shapeType == shape_items[n]);
+
+                                if (ImGui::Selectable(shape_items[n], is_sel)) 
+                                    m_shapeType = shape_items[n];
+
+                                if (is_sel)
+                                    ImGui::SetItemDefaultFocus();
+                            }
+
+                            ImGui::EndCombo();
+                        }
+
+                        if (body.type == Physics::Body::Type::DYNAMIC) 
+                        {
                             ImGui::SliderFloat("density", &body.density, 0.0f, 1000.0f);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
                             ImGui::SliderFloat("friction", &body.friction, 0.0f, 1.0f);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
                             ImGui::SliderFloat("restitution", &body.restitution, 0.0f, 1.0f);
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
                         }
 
                         ImGui::EndMenu();
@@ -301,16 +344,39 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                 if (typeOf == Entity::GEOMETRY)
                 {
-                    ImGui::SliderFloat("width", &width, -Editor::Get()->worldWidth, Editor::Get()->worldWidth);  
+                    ImGui::SliderFloat("width", &width, -Editor::Get()->worldWidth, Editor::Get()->worldWidth); 
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
+
                     ImGui::SliderFloat("height", &height, -Editor::Get()->worldHeight, Editor::Get()->worldHeight); 
+                    if (ImGui::IsItemDeactivatedAfterEdit())
+                        EventListener::UpdateSession();
                 }
 
-                ImGui::SliderFloat("position x", &positionX, 0.0f, Editor::Get()->worldWidth);  
+                ImGui::SliderFloat("position x", &positionX, 0.0f, Editor::Get()->worldWidth);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 ImGui::SliderFloat("position y", &positionY, 0.0f, Editor::Get()->worldHeight); 
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 ImGui::SliderFloat("spawn width", &spawnWidth, 0.0f, Editor::Get()->worldWidth);  
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 ImGui::SliderFloat("spawn height", &spawnHeight, 0.0f, Editor::Get()->worldHeight); 
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 ImGui::ColorEdit3("tint", (float*)&tint); 
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 ImGui::SliderFloat("alpha", &alpha, 0.0f, 1.0f);
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
                 if (ImGui::Checkbox("loop", &loop))
                     EventListener::UpdateSession();
             }
@@ -391,13 +457,6 @@ void SpawnerNode::Render(float _positionX, float _positionY, float _rotation, fl
         case Entity::SPRITE: m_spawnType = "sprite"; break;
         case Entity::GEOMETRY: m_spawnType = "geometry"; break;
         default: break;
-    }
-
-    switch (body.type) {
-        case Physics::Body::Type::DYNAMIC: m_bodyType = "dynamic"; break;
-        case Physics::Body::Type::KINEMATIC: m_bodyType = "kinematic"; break;
-        case Physics::Body::Type::STATIC: 
-        default: m_bodyType = "static"; break;
     }
 
     if (System::Game::GetScene()->ListenForInteraction(rectHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse)

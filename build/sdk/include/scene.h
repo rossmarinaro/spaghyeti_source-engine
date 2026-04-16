@@ -5,7 +5,7 @@
 
 namespace System {
     
-    //container for gameplay instance
+    //container for gameplay instance 
     class Scene {
 
 	    std::map<std::string, std::any> m_globals;
@@ -24,7 +24,9 @@ namespace System {
                 struct Body { 
                     int type, shape; 
                     bool exist, is_sensor; 
-                    float xOff, yOff, w, h, density, friction, restitution; 
+                    float xOff, yOff, 
+                          w = 0.0f, h = 0.0f, radius = 0.0f, 
+                          density, friction, restitution; 
                 } body; 
 
                 //check if spawn has behavior, attach and return false to verify next frame

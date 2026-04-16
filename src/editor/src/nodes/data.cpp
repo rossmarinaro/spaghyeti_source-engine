@@ -75,7 +75,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
         for (const auto& body : sn->bodies)
             bodies.push_back({
-                { "type", body.first },
+                { "type", body.second->type },
                 { "shape", body.second->shape },
                 { "body_width", body.second->width },
                 { "body_height", body.second->height },
@@ -400,6 +400,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
                     { "yOff", sn->body.yOff },
                     { "w", sn->body.w },
                     { "h", sn->body.h },
+                    { "radius", sn->body.radius },
                     { "density", sn->body.density },
                     { "friction", sn->body.friction },
                     { "restitution", sn->body.restitution }
@@ -595,8 +596,8 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                     if (data["components"]["physics"]["bodies"].size()) 
                         for (const auto& body : data["components"]["physics"]["bodies"]) 
-                        {if (body.contains("type")) Editor::Log(body["type"]);
-                            int physType = 2,//body.contains("type") ? static_cast<int>(body["type"]) : Physics::Body::Type::DYNAMIC,
+                        {
+                            int physType = body.contains("type") ? static_cast<int>(body["type"]) : Physics::Body::Type::DYNAMIC,
                                 shape = body.contains("shape") ? static_cast<int>(body["shape"]) : Physics::Body::Shape::BOX;
 
                             float x = body.contains("bodyX") ? static_cast<float>(body["bodyX"]) : 0.0f,
@@ -1104,16 +1105,17 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn->spawnHeight = data["spawn height"];  
 
             if (data.contains("body")) {
-                sn->body.exist = data["body"]["exist"]; 
-                sn->body.w = data["body"]["w"]; 
-                sn->body.h = data["body"]["h"]; 
-                sn->body.xOff = data["body"]["xOff"]; 
-                sn->body.yOff = data["body"]["yOff"];
-                sn->body.is_sensor = data["body"]["is sensor"]; 
-                sn->body.type = data["body"]["type"];
-                sn->body.density = data["body"]["density"];
-                sn->body.friction = data["body"]["friction"]; 
-                sn->body.restitution = data["body"]["restitution"];
+                sn->body.type = data["body"].contains("type") ? static_cast<int>(data["body"]["type"]) : Physics::Body::Type::DYNAMIC;
+                sn->body.exist = data["body"].contains("exist") ? static_cast<bool>(data["body"]["exist"]) : false; 
+                sn->body.is_sensor = data["body"].contains("is sensor") ? static_cast<bool>(data["body"]["is sensor"]) : false; 
+                sn->body.w = data["body"].contains("w") ? static_cast<float>(data["body"]["w"]) : 0.0f; 
+                sn->body.h = data["body"].contains("h") ? static_cast<float>(data["body"]["h"]) : 0.0f;
+                sn->body.radius = data["body"].contains("radius") ? static_cast<float>(data["body"]["radius"]) : 0.0f;
+                sn->body.xOff = data["body"].contains("xOff") ? static_cast<float>(data["body"]["xOff"]) : 0.0f;
+                sn->body.yOff = data["body"].contains("yOff") ? static_cast<float>(data["body"]["yOff"]) : 0.0f;
+                sn->body.density = data["body"].contains("density") ? static_cast<float>(data["body"]["density"]) : 0.0f;
+                sn->body.friction = data["body"].contains("friction") ? static_cast<float>(data["body"]["friction"]) : 0.0f;
+                sn->body.restitution = data["body"].contains("restitution") ? static_cast<float>(data["body"]["restitution"]) : 0.0f;
             }
 
             return sn;

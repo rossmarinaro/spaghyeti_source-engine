@@ -372,7 +372,7 @@ namespace editor {
         private:
          
             unsigned int m_currentTexture = NULL;
-            std::string m_spawnType, m_bodyType, m_category;
+            std::string m_spawnType, m_bodyType, m_shapeType, m_category;
             std::shared_ptr<Text> m_textHandle;
     };
 }

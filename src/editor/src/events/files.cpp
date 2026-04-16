@@ -54,9 +54,7 @@ EventListener::EventListener() {
 }
 
 
-
 //-------------------------------- new project layer
-
 
 
 const bool EventListener::NewProject(const char* root_path)
@@ -92,9 +90,6 @@ const bool EventListener::NewProject(const char* root_path)
             Editor::projectPath = System::Utils::SanitizePath(path) + "/";
        
             s_currentProject = std::filesystem::path{ path }.filename().string();
-
-            // std::string root_path = Editor::rootPath;
-            // std::replace(root_path.begin(), root_path.end(), '\\', '/');
 
             const std::string resources = Editor::projectPath + "/resources";
 
@@ -158,12 +153,18 @@ const bool EventListener::NewScene(const char* root_path)
 
     #ifdef _WIN32
 
+        std::filesystem::path win_path(Editor::projectPath + "scenes");
+        win_path.make_preferred(); 
+
+        const auto path = std::filesystem::canonical(win_path);
+
         OPENFILENAME ofn;
 
         char szFileName[MAX_PATH] = "";
 
         ZeroMemory(&ofn, sizeof(ofn));
 
+        strcpy(szFileName, (path.string() += R"(\*.*)").c_str()); 
         ofn.lStructSize = sizeof(ofn); 
         ofn.hwndOwner = NULL;
         ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.scene)\0*.scene");
@@ -215,7 +216,7 @@ const bool EventListener::NewScene(const char* root_path)
 
 const bool EventListener::SaveScene(bool saveAs)
 {
-    //std::filesystem::current_path(Editor::projectPath + "/scenes");
+    std::filesystem::current_path(Editor::projectPath + "/scenes");
 
     try {
         std::string project_root = Editor::projectPath + "scenes/" + s_currentScene + ".scene";
@@ -250,21 +251,14 @@ const bool EventListener::SaveScene(bool saveAs)
                 std::filesystem::path win_path(Editor::projectPath + "scenes");
                 win_path.make_preferred(); 
 
-                std::string doubleslash_path;
+                const auto path = std::filesystem::canonical(win_path);
 
-                for (char c : win_path.string()) {
-                    doubleslash_path += c;
-                    if (c == '\\')
-                        doubleslash_path += '\\';
-                }
-                doubleslash_path += "\\\\*.*";
-Editor::Log(doubleslash_path);
                 OPENFILENAME ofn;
 
                 char szFileName[MAX_PATH] = "";
 
                 ZeroMemory(&ofn, sizeof(ofn));
-std::string f = "C:\\Users\\Ross\\Documents\\New Folder (2)\\*.*"; strcpy(szFileName, f.c_str());
+                strcpy(szFileName, (path.string() += R"(\*.*)").c_str()); 
                 ofn.lStructSize = sizeof(ofn);
                 ofn.hwndOwner = NULL;
                 ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.scene)\0*.scene");
@@ -312,6 +306,13 @@ const bool EventListener::OpenScene() //makes temporary json file to parse data 
 
         OPENFILENAME ofn = {0};
         TCHAR szFile[260] = {0};
+
+        if (Editor::projectPath.size()) {
+            std::filesystem::path win_path(Editor::projectPath + "scenes");
+            win_path.make_preferred(); 
+            const auto path = std::filesystem::canonical(win_path);
+            strcpy(szFile, (path.string() += R"(\*.*)").c_str()); 
+        }
 
         ofn.lStructSize = sizeof (ofn);
         ofn.hwndOwner = NULL;

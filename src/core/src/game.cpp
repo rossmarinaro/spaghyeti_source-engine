@@ -319,23 +319,46 @@ void Game::UpdateFrame()
                             {
                                 const auto sprite = std::static_pointer_cast<Sprite>(entity);
 
-                                sprite->AddBody(Physics::CreateBody(
-                                    spawn.body.type, 
-                                    spawn.posX, 
-                                    spawn.posY, 
-                                    spawn.body.w, 
-                                    spawn.body.h, 
-                                    spawn.body.is_sensor, 
-                                    1,                  
-                                    spawn.body.density, 
-                                    spawn.body.friction, 
-                                    spawn.body.restitution
-                                ), { 
-                                    spawn.body.xOff, 
-                                    spawn.body.yOff, 
-                                    spawn.body.w, 
-                                    spawn.body.h, 
-                                }); 
+                                if (spawn.body.shape == Physics::Body::Shape::BOX)
+                                {
+                                    sprite->AddBody(Physics::CreateBody(
+                                        spawn.body.type, 
+                                        spawn.posX, 
+                                        spawn.posY, 
+                                        spawn.body.w, 
+                                        spawn.body.h, 
+                                        spawn.body.is_sensor, 
+                                        1,                  
+                                        spawn.body.density, 
+                                        spawn.body.friction, 
+                                        spawn.body.restitution
+                                    ), { 
+                                        spawn.body.xOff, 
+                                        spawn.body.yOff, 
+                                        spawn.body.w, 
+                                        spawn.body.h, 
+                                    }); 
+                                }
+
+                                if (spawn.body.shape == Physics::Body::Shape::CIRCLE)
+                                {
+                                    sprite->AddBody(Physics::CreateBody(
+                                        spawn.body.type, 
+                                        spawn.posX, 
+                                        spawn.posY, 
+                                        spawn.body.radius, 
+                                        spawn.body.is_sensor, 
+                                        1,                  
+                                        spawn.body.density, 
+                                        spawn.body.friction, 
+                                        spawn.body.restitution
+                                    ), { 
+                                        spawn.body.xOff, 
+                                        spawn.body.yOff, 
+                                        spawn.body.w, 
+                                        spawn.body.h, 
+                                    });
+                                }
                             }
                             
                         break;
