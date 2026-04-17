@@ -319,44 +319,44 @@ void Game::UpdateFrame()
                             {
                                 const auto sprite = std::static_pointer_cast<Sprite>(entity);
 
-                                if (spawn.body.shape == Physics::Body::Shape::BOX)
+                                if (spawn.body.self.shape == Physics::Body::Shape::BOX)
                                 {
                                     sprite->AddBody(Physics::CreateBody(
-                                        spawn.body.type, 
+                                        spawn.body.self.type, 
                                         spawn.posX, 
                                         spawn.posY, 
-                                        spawn.body.w, 
-                                        spawn.body.h, 
-                                        spawn.body.is_sensor, 
+                                        spawn.body.self.width, 
+                                        spawn.body.self.height, 
+                                        spawn.body.self.isSensor, 
                                         1,                  
-                                        spawn.body.density, 
-                                        spawn.body.friction, 
-                                        spawn.body.restitution
+                                        spawn.body.self.density, 
+                                        spawn.body.self.friction, 
+                                        spawn.body.self.restitution
                                     ), { 
-                                        spawn.body.xOff, 
-                                        spawn.body.yOff, 
-                                        spawn.body.w, 
-                                        spawn.body.h, 
+                                        spawn.body.self.x, 
+                                        spawn.body.self.y, 
+                                        spawn.body.self.width, 
+                                        spawn.body.self.height, 
                                     }); 
                                 }
 
-                                if (spawn.body.shape == Physics::Body::Shape::CIRCLE)
+                                if (spawn.body.self.shape == Physics::Body::Shape::CIRCLE)
                                 {
                                     sprite->AddBody(Physics::CreateBody(
-                                        spawn.body.type, 
+                                        spawn.body.self.type, 
                                         spawn.posX, 
                                         spawn.posY, 
-                                        spawn.body.radius, 
-                                        spawn.body.is_sensor, 
+                                        spawn.body.self.radius, 
+                                        spawn.body.self.isSensor, 
                                         1,                  
-                                        spawn.body.density, 
-                                        spawn.body.friction, 
-                                        spawn.body.restitution
+                                        spawn.body.self.density, 
+                                        spawn.body.self.friction, 
+                                        spawn.body.self.restitution
                                     ), { 
-                                        spawn.body.xOff, 
-                                        spawn.body.yOff, 
-                                        spawn.body.w, 
-                                        spawn.body.h, 
+                                        spawn.body.self.x, 
+                                        spawn.body.self.y, 
+                                        spawn.body.self.width, 
+                                        spawn.body.self.height, 
                                     });
                                 }
                             }
@@ -737,20 +737,8 @@ void Game::CreateSpawn(
     spawn.tint = tint;
     spawn.alpha = alpha;
     spawn.loop = loop;
+    spawn.body = { body.exist, body.self };
     spawn.index = System::Utils::ReplaceFrom(spawn.filename, ".", "") + std::to_string(s_spawn_count);
-    spawn.body = { 
-        body.type, 
-        body.shape, 
-        body.exist, 
-        body.is_sensor, 
-        body.xOff, 
-        body.yOff, 
-        body.w, 
-        body.h,
-        body.density, 
-        body.friction, 
-        body.restitution
-    };
 
     //append behaviors if name matches valid loaded behavior name
 

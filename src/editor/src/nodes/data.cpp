@@ -394,16 +394,16 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             },
             { "body", {
                     { "exist", sn->body.exist },
-                    { "is sensor", sn->body.is_sensor },
-                    { "type", sn->body.type },
-                    { "xOff", sn->body.xOff },
-                    { "yOff", sn->body.yOff },
-                    { "w", sn->body.w },
-                    { "h", sn->body.h },
-                    { "radius", sn->body.radius },
-                    { "density", sn->body.density },
-                    { "friction", sn->body.friction },
-                    { "restitution", sn->body.restitution }
+                    { "is sensor", sn->body.self.isSensor },
+                    { "type", sn->body.self.type },
+                    { "xOff", sn->body.self.x },
+                    { "yOff", sn->body.self.y },
+                    { "w", sn->body.self.width },
+                    { "h", sn->body.self.height },
+                    { "radius", sn->body.self.radius },
+                    { "density", sn->body.self.density },
+                    { "friction", sn->body.self.friction },
+                    { "restitution", sn->body.self.restitution }
                 } 
             }
         };
@@ -1105,17 +1105,17 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn->spawnHeight = data["spawn height"];  
 
             if (data.contains("body")) {
-                sn->body.type = data["body"].contains("type") ? static_cast<int>(data["body"]["type"]) : Physics::Body::Type::DYNAMIC;
+                sn->body.self.type = data["body"].contains("type") ? static_cast<int>(data["body"]["type"]) : Physics::Body::Type::DYNAMIC;
                 sn->body.exist = data["body"].contains("exist") ? static_cast<bool>(data["body"]["exist"]) : false; 
-                sn->body.is_sensor = data["body"].contains("is sensor") ? static_cast<bool>(data["body"]["is sensor"]) : false; 
-                sn->body.w = data["body"].contains("w") ? static_cast<float>(data["body"]["w"]) : 0.0f; 
-                sn->body.h = data["body"].contains("h") ? static_cast<float>(data["body"]["h"]) : 0.0f;
-                sn->body.radius = data["body"].contains("radius") ? static_cast<float>(data["body"]["radius"]) : 0.0f;
-                sn->body.xOff = data["body"].contains("xOff") ? static_cast<float>(data["body"]["xOff"]) : 0.0f;
-                sn->body.yOff = data["body"].contains("yOff") ? static_cast<float>(data["body"]["yOff"]) : 0.0f;
-                sn->body.density = data["body"].contains("density") ? static_cast<float>(data["body"]["density"]) : 0.0f;
-                sn->body.friction = data["body"].contains("friction") ? static_cast<float>(data["body"]["friction"]) : 0.0f;
-                sn->body.restitution = data["body"].contains("restitution") ? static_cast<float>(data["body"]["restitution"]) : 0.0f;
+                sn->body.self.isSensor = data["body"].contains("is sensor") ? static_cast<bool>(data["body"]["is sensor"]) : false; 
+                sn->body.self.width = data["body"].contains("w") ? static_cast<float>(data["body"]["w"]) : 0.0f; 
+                sn->body.self.height = data["body"].contains("h") ? static_cast<float>(data["body"]["h"]) : 0.0f;
+                sn->body.self.radius = data["body"].contains("radius") ? static_cast<float>(data["body"]["radius"]) : 0.0f;
+                sn->body.self.x = data["body"].contains("xOff") ? static_cast<float>(data["body"]["xOff"]) : 0.0f;
+                sn->body.self.y = data["body"].contains("yOff") ? static_cast<float>(data["body"]["yOff"]) : 0.0f;
+                sn->body.self.density = data["body"].contains("density") ? static_cast<float>(data["body"]["density"]) : 0.0f;
+                sn->body.self.friction = data["body"].contains("friction") ? static_cast<float>(data["body"]["friction"]) : 0.0f;
+                sn->body.self.restitution = data["body"].contains("restitution") ? static_cast<float>(data["body"]["restitution"]) : 0.0f;
             }
 
             return sn;

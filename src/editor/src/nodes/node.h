@@ -361,7 +361,7 @@ namespace editor {
             std::shared_ptr<Geometry> rectHandle;
 
             SpawnerNode(bool init);
-            ~SpawnerNode();      
+            ~SpawnerNode();       
 
             void Update(std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override;

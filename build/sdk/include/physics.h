@@ -19,7 +19,7 @@ class Physics {
                  width = 0.0f, height = 0.0f, radius = 0.0f, 
                  density, friction, restitution;
 
-            std::string id;
+            std::string id; 
 
             Body(int physicsType, float x, float y, float width, float height, int pointer, bool isSensor, float density, float friction, float restitution);
             Body(int physicsType, float x, float y, float radius, int pointer, bool isSensor, float density, float friction, float restitution);

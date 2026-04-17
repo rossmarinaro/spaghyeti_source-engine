@@ -1100,7 +1100,6 @@ void EventListener::BuildAndRun()
 
                     command_queue << "   const auto audio_" + node->ID + " = System::Game::CreateEntity(\"" + "audio" + "\");\n\t";
                     command_queue << "   audio_" + node->ID + "->SetName(\"" + an->name + "\");\n";
-                    
                 }
 
                 if (node->type == Node::SPAWNER) 
@@ -1109,10 +1108,28 @@ void EventListener::BuildAndRun()
 
                     const std::string body_exists = spawn_node->body.exist ? "true" : "false",
                                       is_loop = spawn_node->loop ? "true" : "false",
-                                      is_sensor = spawn_node->body.is_sensor ? "true" : "false";
+                                      is_sensor = spawn_node->body.self.isSensor ? "true" : "false";
 
-                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->actualPositionX) + ", " + std::to_string(spawn_node->actualPositionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", " + std::to_string(spawn_node->spawnWidth) + ", " + std::to_string(spawn_node->spawnHeight) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " + std::to_string(spawn_node->body.type) + ", " + std::to_string(spawn_node->body.shape) + ", " + body_exists + ", " + is_sensor + ", " + std::to_string(spawn_node->body.xOff) +  ", " + std::to_string(spawn_node->body.yOff) + ", " + std::to_string(spawn_node->body.w) +  ", " + std::to_string(spawn_node->body.h) + ", " + std::to_string(spawn_node->body.density) + ", " + std::to_string(spawn_node->body.friction) +  ", " + std::to_string(spawn_node->body.restitution) + " });\n";
+                    command_queue << "Physics::Body " + node->ID + "_bodyDef;";
+                    command_queue << node->ID + "_bodyDef.type = " + std::to_string(spawn_node->body.self.type) + ";\n";
+                    command_queue << node->ID + "_bodyDef.shape = " + std::to_string(spawn_node->body.self.shape) + ";\n";
+                    command_queue << node->ID + "_bodyDef.isSensor = " + is_sensor + ";\n";
+                    command_queue << node->ID + "_bodyDef.x = " + std::to_string(spawn_node->body.self.x) + ";\n";
+                    command_queue << node->ID + "_bodyDef.y = " + std::to_string(spawn_node->body.self.y) + ";\n";
 
+                    if (spawn_node->body.self.shape == Physics::Body::Shape::BOX) {
+                        command_queue << node->ID + "_bodyDef.width = " + std::to_string(spawn_node->body.self.width) + ";\n";
+                        command_queue << node->ID + "_bodyDef.height = " + std::to_string(spawn_node->body.self.height) + ";\n";
+                    }
+
+                    if (spawn_node->body.self.shape == Physics::Body::Shape::CIRCLE)
+                        command_queue << node->ID + "_bodyDef.radius = " + std::to_string(spawn_node->body.self.radius) + ";\n";
+
+                    command_queue << node->ID + "_bodyDef.density = " + std::to_string(spawn_node->body.self.density) + ";\n";
+                    command_queue << node->ID + "_bodyDef.friction = " + std::to_string(spawn_node->body.self.friction) + ";\n";
+                    command_queue << node->ID + "_bodyDef.restitution = " + std::to_string(spawn_node->body.self.restitution) + ";\n";
+
+                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->actualPositionX) + ", " + std::to_string(spawn_node->actualPositionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", " + std::to_string(spawn_node->spawnWidth) + ", " + std::to_string(spawn_node->spawnHeight) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " +  body_exists + ", " + node->ID + "_bodyDef });\n";
                 }
 
                 //define behaviors

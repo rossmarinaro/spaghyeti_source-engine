@@ -8,7 +8,7 @@ using namespace editor;
 
 
 SpawnerNode::SpawnerNode(bool init):  
-    Node(init, SPAWNER),
+    Node(init, SPAWNER), 
     m_spawnType("sprite"),
     m_bodyType("kinematic"),
     m_shapeType("box"),
@@ -26,7 +26,8 @@ SpawnerNode::SpawnerNode(bool init):
     loop = false;
     alpha = 1.0f;
     tint = { 1.0f, 1.0f, 1.0f }; 
-    body = { Physics::Body::KINEMATIC, Physics::Body::Shape::BOX, false, false, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+
+    body = { false, {}};
 
     rectHandle = nullptr;
     m_textHandle = nullptr;
@@ -259,30 +260,30 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         if (m_shapeType == "box") 
                         {
-                            ImGui::SliderFloat("width", &body.w, 0.0f, System::Window::s_width); 
+                            ImGui::SliderFloat("width", &body.self.width, 0.0f, System::Window::s_width); 
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
 
-                            ImGui::SliderFloat("height", &body.h, 0.0f, System::Window::s_height);
+                            ImGui::SliderFloat("height", &body.self.height, 0.0f, System::Window::s_height);
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
                         }
 
                         if (m_shapeType == "circle") {
-                            ImGui::SliderFloat("radius", &body.radius, 0.0f, System::Window::s_width);
+                            ImGui::SliderFloat("radius", &body.self.radius, 0.0f, System::Window::s_width);
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
                         }
 
-                        ImGui::SliderFloat("offset x", &body.xOff, -System::Window::s_width, System::Window::s_width);  
+                        ImGui::SliderFloat("offset x", &body.self.x, -System::Window::s_width, System::Window::s_width);  
                         if (ImGui::IsItemDeactivatedAfterEdit())
                             EventListener::UpdateSession();
 
-                        ImGui::SliderFloat("offset y", &body.yOff, -System::Window::s_height, System::Window::s_height);
+                        ImGui::SliderFloat("offset y", &body.self.y, -System::Window::s_height, System::Window::s_height);
                         if (ImGui::IsItemDeactivatedAfterEdit())
                             EventListener::UpdateSession();
 
-                        if (ImGui::Checkbox("is sensor", &body.is_sensor))
+                        if (ImGui::Checkbox("is sensor", &body.self.isSensor))
                             EventListener::UpdateSession();
                         
                         static const char* pt_items[] = { "dynamic", "kinematic", "static" };
@@ -321,17 +322,17 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             ImGui::EndCombo();
                         }
 
-                        if (body.type == Physics::Body::Type::DYNAMIC) 
+                        if (body.self.type == Physics::Body::Type::DYNAMIC) 
                         {
-                            ImGui::SliderFloat("density", &body.density, 0.0f, 1000.0f);
+                            ImGui::SliderFloat("density", &body.self.density, 0.0f, 1000.0f);
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
 
-                            ImGui::SliderFloat("friction", &body.friction, 0.0f, 1.0f);
+                            ImGui::SliderFloat("friction", &body.self.friction, 0.0f, 1.0f);
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
 
-                            ImGui::SliderFloat("restitution", &body.restitution, 0.0f, 1.0f);
+                            ImGui::SliderFloat("restitution", &body.self.restitution, 0.0f, 1.0f);
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
                         }
