@@ -7,6 +7,7 @@ class Physics {
 
     public:
 
+        //wrapper type for Box2D rigid bodies
         struct Body 
         {
             enum Type { STATIC, KINEMATIC, DYNAMIC };
@@ -14,7 +15,9 @@ class Physics {
 
             int type, shape;
             bool isSensor, isEnabled;
+
             uintptr_t pointer;
+            
             float x, y, 
                  width = 0.0f, height = 0.0f, radius = 0.0f, 
                  density, friction, restitution;
@@ -34,6 +37,7 @@ class Physics {
             void ApplyLinearImpulse(float velocityX, float velocityY);
             void SetEnabled(bool enabled);
             void SetSensor(bool sensor);
+            void SetType(int type);
             void SetFixedRotation(bool isFixedRotation);
             void SetGravityScale(float gs);
             void CreateFixture(float width, float height, bool isSensor, float density, float friction, float restitution);

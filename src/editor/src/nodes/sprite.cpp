@@ -454,11 +454,15 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 bool is_sel = (body.first == items[n]);
 
                                 if (ImGui::Selectable(items[n], is_sel)) 
+                                {
                                     switch (n) {
-                                        case 0: body.second->type = Physics::Body::Type::KINEMATIC; break;
-                                        case 1: body.second->type = Physics::Body::Type::STATIC; break;
-                                        case 2: default: body.second->type = Physics::Body::Type::DYNAMIC; break;
+                                        case 0: body.second->SetType(Physics::Body::Type::KINEMATIC); break;
+                                        case 1: body.second->SetType(Physics::Body::Type::STATIC); break;
+                                        case 2: default: body.second->SetType(Physics::Body::Type::DYNAMIC); break;
                                     }
+
+                                    EventListener::UpdateSession();
+                                }
 
                                 if (is_sel)
                                     ImGui::SetItemDefaultFocus();

@@ -249,7 +249,7 @@ void entity_behaviors::Enemy::Update()
                 const auto poo = System::Game::CreateSprite("pidgeon_poo.png", sprite->position.x + 100, sprite->position.y + 90);
                 poo->SetName("pidgeon_poo");
                 poo->SetData("dead", false);
-                poo->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, Physics::Body::Shape::BOX, sprite->position.x + 100, sprite->position.y + 90, 10, 10, false, 0, 0.5f), { 0, 0, 10, 10 });
+                poo->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, sprite->position.x + 100, sprite->position.y + 90, 10, 10, false, 0, 0.5f), { 0, 0, 10, 10 });
 
                 Time::DelayedCall(500, [this] { m_canAttack = true; });
 

@@ -525,28 +525,49 @@ const Math::Vector2 Physics::Body::GetLinearVelocity() {
 //----------------------------------
 
 
-const int Physics::Body::GetType() {
+const int Physics::Body::GetType() 
+{
     const auto body = _GetBox2DBody(id);
-    if (body)
-        return body->GetType();
+
+    if (body) 
+    {
+        b2BodyType bodyType = body->GetType();
+
+        if (bodyType == b2_staticBody)
+            return Physics::Body::Type::STATIC;
+
+        else if (bodyType == b2_kinematicBody)
+            return Physics::Body::Type::KINEMATIC;
+
+        else if (bodyType == b2_dynamicBody)
+            return Physics::Body::Type::DYNAMIC;
+    }
 
     return 0;
 }
 
-
 //----------------------------------
 
 
-void Physics::Body::SetSensor(bool isSensor) 
+void Physics::Body::SetType(int type)
 {
     const auto body = _GetBox2DBody(id);
     
     if (body) 
     {
-        const auto fixtureList = body->GetFixtureList();
+        if (type == Physics::Body::Type::STATIC)
+            body->SetType(b2_staticBody);
 
-        if (fixtureList)
-            fixtureList->SetSensor(isSensor);
+        else if (type == Physics::Body::Type::KINEMATIC)
+            body->SetType(b2_kinematicBody);
+
+        else if (type == Physics::Body::Type::DYNAMIC)
+            body->SetType(b2_dynamicBody);
+
+        else
+            return;
+
+        this->type = type;
     }
 }
 
@@ -611,6 +632,22 @@ void Physics::Body::SetGravityScale(float gs) {
         body->SetGravityScale(gs);
 }
 
+
+//----------------------------------
+
+
+void Physics::Body::SetSensor(bool isSensor) 
+{
+    const auto body = _GetBox2DBody(id);
+    
+    if (body) 
+    {
+        const auto fixtureList = body->GetFixtureList();
+
+        if (fixtureList)
+            fixtureList->SetSensor(isSensor);
+    }
+}
 
 
 

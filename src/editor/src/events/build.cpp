@@ -20,6 +20,12 @@
 
 using namespace editor;
 
+std::string FloatToString(float f, int limit = 2) {
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(limit) << f << "f"; 
+    return ss.str();
+}
+
 
 //build game from project source
 
@@ -784,9 +790,9 @@ void EventListener::BuildAndRun()
         
         command_queue << "   this->GetContext().camera->SetVignette(" + std::to_string(target.second->vignetteVisibility) + ");\n"; 
         command_queue << "   this->GetContext().camera->SetBounds(" + std::to_string(target.second->currentBoundsWidthBegin) + ", " + std::to_string(target.second->currentBoundsWidthEnd) + ", " + std::to_string(target.second->currentBoundsHeightBegin) + ", " + std::to_string(target.second->currentBoundsHeightEnd) + ");\n";
-        command_queue << "   this->GetContext().camera->SetBackgroundColor({ " + std::to_string(target.second->cameraBackgroundColor.r) + ", " + std::to_string(target.second->cameraBackgroundColor.g) + ", " + std::to_string(target.second->cameraBackgroundColor.b) + ", " + std::to_string(target.second->cameraBackgroundColor.a) + " });\n";
-        command_queue << "   this->GetContext().camera->SetZoom(" + std::to_string(target.second->cameraZoom) + ");\n";
-        command_queue << "   this->GetContext().camera->SetPosition({ " + std::to_string(target.second->cameraPosition.x) + ", " + std::to_string(target.second->cameraPosition.y) + " });\n";
+        command_queue << "   this->GetContext().camera->SetBackgroundColor({ " + FloatToString(target.second->cameraBackgroundColor.r) + ", " + FloatToString(target.second->cameraBackgroundColor.g) + ", " + FloatToString(target.second->cameraBackgroundColor.b) + ", " + std::to_string(target.second->cameraBackgroundColor.a) + " });\n";
+        command_queue << "   this->GetContext().camera->SetZoom(" + FloatToString(target.second->cameraZoom) + ");\n";
+        command_queue << "   this->GetContext().camera->SetPosition({ " + FloatToString(target.second->cameraPosition.x) + ", " + FloatToString(target.second->cameraPosition.y) + " });\n";
     
         const std::string phys_isCont = target.second->gravity_continuous ? "true" : "false",
                           phys_isSleeping = target.second->gravity_sleeping ? "true" : "false";
@@ -867,14 +873,14 @@ void EventListener::BuildAndRun()
                     command_queue << "   sprite_" + node->ID + "->texture.SetFiltering(" + filtering + ", " + filtering + ");\n";
 
                     command_queue << "   sprite_" + node->ID + "->SetFrame(" + std::to_string(sn->currentFrame) + ");\n";
-                    command_queue << "   sprite_" + node->ID + "->SetScale(" + std::to_string(sn->scaleX) + ", " + std::to_string(sn->scaleY) + ");\n";
-                    command_queue << "   sprite_" + node->ID + "->SetRotation(" + std::to_string(sn->rotation) + ");\n";
-                    command_queue << "   sprite_" + node->ID + "->SetTint({ " + std::to_string(sn->tint.x) + ", " + std::to_string(sn->tint.y) + ", " + std::to_string(sn->tint.z) + " });\n";
+                    command_queue << "   sprite_" + node->ID + "->SetScale(" + FloatToString(sn->scaleX) + ", " + FloatToString(sn->scaleY) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetRotation(" + FloatToString(sn->rotation) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetTint({ " + FloatToString(sn->tint.x) + ", " + FloatToString(sn->tint.y) + ", " + FloatToString(sn->tint.z) + " });\n";
                     command_queue << "   sprite_" + node->ID + "->SetDepth(" + std::to_string(sn->depth) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetFlip(" + std::to_string(sn->flippedX) + ", " + std::to_string(sn->flippedY) + ");\n";
-                    command_queue << "   sprite_" + node->ID + "->SetAlpha(" + std::to_string(sn->alpha) + ");\n";
-                    command_queue << "   sprite_" + node->ID + "->SetScrollFactor({" + std::to_string(sn->scrollFactorX) + ", " + std::to_string(sn->scrollFactorY) + "});\n";
-                    command_queue << "   sprite_" + node->ID + "->SetStroke(" + isStroke + ", { " + std::to_string(sn->strokeColor.x) + ", " + std::to_string(sn->strokeColor.y) +  ", " + std::to_string(sn->strokeColor.z) + " }, " + std::to_string(sn->strokeWidth) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetAlpha(" + FloatToString(sn->alpha) + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->SetScrollFactor({" + FloatToString(sn->scrollFactorX) + ", " + FloatToString(sn->scrollFactorY) + "});\n";
+                    command_queue << "   sprite_" + node->ID + "->SetStroke(" + isStroke + ", { " + FloatToString(sn->strokeColor.x) + ", " + FloatToString(sn->strokeColor.y) +  ", " + FloatToString(sn->strokeColor.z) + " }, " + FloatToString(sn->strokeWidth) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetName(\"" + node->name + "\");\n";   
 
                     //set default animation if applied
@@ -904,10 +910,10 @@ void EventListener::BuildAndRun()
                             const std::string is_sensor = body.second->isSensor ? "true" : "false";
 
                             if (body.second->shape == Physics::Body::Shape::BOX)
-                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + std::to_string(sn->actualPositionX + body.second->x) + ", " + std::to_string(sn->actualPositionY + body.second->y) + ", " + std::to_string(body.second->width) + ", " + std::to_string(body.second->height) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + std::to_string(body.second->density) + ", " + std::to_string(body.second->friction) + ", " + std::to_string(body.second->restitution) + "), { " + std::to_string(body.second->x) + ", " + std::to_string(body.second->y) + ", " + std::to_string(body.second->width) + ", " + std::to_string(body.second->height) + " });\n"; 
+                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + FloatToString(sn->actualPositionX + body.second->x) + ", " + FloatToString(sn->actualPositionY + body.second->y) + ", " + FloatToString(body.second->width) + ", " + FloatToString(body.second->height) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + FloatToString(body.second->density) + ", " + FloatToString(body.second->friction) + ", " + FloatToString(body.second->restitution) + "), { " + FloatToString(body.second->x) + ", " + FloatToString(body.second->y) + ", " + FloatToString(body.second->width) + ", " + FloatToString(body.second->height) + " });\n"; 
                             
                             if (body.second->shape == Physics::Body::Shape::CIRCLE)
-                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + std::to_string(sn->actualPositionX + body.second->x) + ", " + std::to_string(sn->actualPositionY + body.second->y) + ", " + std::to_string(body.second->radius) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + std::to_string(body.second->density) + ", " + std::to_string(body.second->friction) + ", " + std::to_string(body.second->restitution) + "), { " + std::to_string(body.second->x) + ", " + std::to_string(body.second->y) + ", " + std::to_string(body.second->width) + ", " + std::to_string(body.second->height) + " });\n"; 
+                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + FloatToString(sn->actualPositionX + body.second->x) + ", " + FloatToString(sn->actualPositionY + body.second->y) + ", " + FloatToString(body.second->radius) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + FloatToString(body.second->density) + ", " + FloatToString(body.second->friction) + ", " + FloatToString(body.second->restitution) + "), { " + FloatToString(body.second->x) + ", " + FloatToString(body.second->y) + ", " + FloatToString(body.second->width) + ", " + FloatToString(body.second->height) + " });\n"; 
                             
                             i++;
                         }
@@ -936,16 +942,16 @@ void EventListener::BuildAndRun()
                     const std::string isStroke = tn->isStroked ? "true" : "false",
                                       isShadow = tn->isShadow ? "true" : "false";
 
-                    command_queue << "   const auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + std::to_string(tn->actualPositionX) + ", " + std::to_string(tn->actualPositionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(isUI) + ");\n"; 
+                    command_queue << "   const auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + FloatToString(tn->actualPositionX) + ", " + FloatToString(tn->actualPositionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(isUI) + ");\n"; 
 
                     command_queue << "   text_" + node->ID + "->SetStatic(" + (isUI == 2 ? "true" : "false") + ");\n";
-                    command_queue << "   text_" + node->ID + "->SetScale(" + std::to_string(tn->scaleX) + ", " + std::to_string(tn->scaleY) + ");\n";
-                    command_queue << "   text_" + node->ID + "->SetTint({ " + std::to_string(tn->tint.x) + ", " + std::to_string(tn->tint.y) + ", " + std::to_string(tn->tint.z) + " });\n";
-                    command_queue << "   text_" + node->ID + "->SetAlpha(" + std::to_string(tn->alpha) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetScale(" + FloatToString(tn->scaleX) + ", " + FloatToString(tn->scaleY) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetTint({ " + FloatToString(tn->tint.x) + ", " + FloatToString(tn->tint.y) + ", " + FloatToString(tn->tint.z) + " });\n";
+                    command_queue << "   text_" + node->ID + "->SetAlpha(" + FloatToString(tn->alpha) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetDepth(" + std::to_string(tn->depth) + ");\n";
-                    command_queue << "   text_" + node->ID + "->SetShadow(" + isShadow + ", { " + std::to_string(tn->shadowColor.x) + ", " + std::to_string(tn->shadowColor.y) +  ", " + std::to_string(tn->shadowColor.z) + " }, " + std::to_string(tn->shadowDistanceX) + ", " + std::to_string(tn->shadowDistanceY) + ");\n";
-                    command_queue << "   text_" + node->ID + "->SetStroke(" + isStroke + ", { " + std::to_string(tn->strokeColor.x) + ", " + std::to_string(tn->strokeColor.y) +  ", " + std::to_string(tn->strokeColor.z) + " }, " + std::to_string(tn->strokeWidth) + ");\n";
-                    command_queue << "   text_" + node->ID + "->SetSlant(" + std::to_string(tn->charOffsetX) + ", " + std::to_string(tn->charOffsetY) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetShadow(" + isShadow + ", { " + FloatToString(tn->shadowColor.x) + ", " + FloatToString(tn->shadowColor.y) +  ", " + FloatToString(tn->shadowColor.z) + " }, " + FloatToString(tn->shadowDistanceX) + ", " + FloatToString(tn->shadowDistanceY) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetStroke(" + isStroke + ", { " + FloatToString(tn->strokeColor.x) + ", " + FloatToString(tn->strokeColor.y) +  ", " + FloatToString(tn->strokeColor.z) + " }, " + FloatToString(tn->strokeWidth) + ");\n";
+                    command_queue << "   text_" + node->ID + "->SetSlant(" + FloatToString(tn->charOffsetX) + ", " + FloatToString(tn->charOffsetY) + ");\n";
                     command_queue << "   text_" + node->ID + "->SetName(\"" + node->name + "\");\n";
         
                 }
@@ -962,14 +968,14 @@ void EventListener::BuildAndRun()
                         //TODO: set shape
 
                         if (en->currentShape == "rectangle") {
-                            command_queue << "   const auto empty_" + node->ID + " = System::Game::CreateGeom(" + std::to_string(en->actualPositionX) + ", " + std::to_string(en->actualPositionY) + ", " + std::to_string(en->rectWidth) + ", " + std::to_string(en->rectHeight) + ");\n";
+                            command_queue << "   const auto empty_" + node->ID + " = System::Game::CreateGeom(" + FloatToString(en->actualPositionX) + ", " + FloatToString(en->actualPositionY) + ", " + FloatToString(en->rectWidth) + ", " + FloatToString(en->rectHeight) + ");\n";
                             command_queue << "   empty_" + node->ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
                         }
 
                         if (en->currentShape.length()) {
-                            command_queue << "   empty_" + node->ID + "->SetThickness(" + std::to_string(en->line_weight) + ");\n";
-                            command_queue << "   empty_" + node->ID + "->SetTint({" + std::to_string(en->debugGraphic->tint.x) + ", " + std::to_string(en->debugGraphic->tint.y) + ", " + std::to_string(en->debugGraphic->tint.z) + "});\n";
-                            command_queue << "   empty_" + node->ID + "->SetAlpha(" + std::to_string(en->debugGraphic->alpha) + ");\n";
+                            command_queue << "   empty_" + node->ID + "->SetThickness(" + FloatToString(en->line_weight) + ");\n";
+                            command_queue << "   empty_" + node->ID + "->SetTint({" + FloatToString(en->debugGraphic->tint.x) + ", " + FloatToString(en->debugGraphic->tint.y) + ", " + FloatToString(en->debugGraphic->tint.z) + "});\n";
+                            command_queue << "   empty_" + node->ID + "->SetAlpha(" + FloatToString(en->debugGraphic->alpha) + ");\n";
 
                             //shader
 
@@ -1057,13 +1063,13 @@ void EventListener::BuildAndRun()
                                 std::to_string(tmn->tile_height) + ", " + 
                                 std::to_string(tmn->layers[i].depth) + ", " + 
                                 std::to_string(i) + ", " + 
-                                std::to_string(tmn->actualPositionX) + ", " + 
-                                std::to_string(tmn->actualPositionY) + ", " + 
-                                std::to_string(tmn->rotation) + ", " + 
-                                std::to_string(tmn->scaleX) + ", " + 
-                                std::to_string(tmn->scaleY) + ", " +
-                                std::to_string(tmn->layers[i].scrollFactorX) + ", " +
-                                std::to_string(tmn->layers[i].scrollFactorY) + ", " +
+                                FloatToString(tmn->actualPositionX) + ", " + 
+                                FloatToString(tmn->actualPositionY) + ", " + 
+                                FloatToString(tmn->rotation) + ", " + 
+                                FloatToString(tmn->scaleX) + ", " + 
+                                FloatToString(tmn->scaleY) + ", " +
+                                FloatToString(tmn->layers[i].scrollFactorX) + ", " +
+                                FloatToString(tmn->layers[i].scrollFactorY) + ", " +
                                 shader +
                                 ");\n";
                             } 
@@ -1084,7 +1090,7 @@ void EventListener::BuildAndRun()
 
                     if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies.size()) 
                         for (const auto& body : tmn->bodies) 
-                            command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + std::to_string(body->x + body->width / 2) + ", " + std::to_string(body->y + body->height / 2) + ", " + std::to_string(body->width / 2) + ", " + std::to_string(body->height / 2) + ");\n";
+                            command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x + body->width / 2) + ", " + FloatToString(body->y + body->height / 2) + ", " + FloatToString(body->width / 2) + ", " + FloatToString(body->height / 2) + ");\n";
 
                 } 
 
@@ -1096,7 +1102,7 @@ void EventListener::BuildAndRun()
 
                     std::string loop = an->loop ? "true" : "false";
 
-                    command_queue << "   System::Audio::play(\"" + an->audio_source_name + "\", " + loop + ", " + std::to_string(an->volume) + ");\n";
+                    command_queue << "   System::Audio::play(\"" + an->audio_source_name + "\", " + loop + ", " + FloatToString(an->volume) + ");\n";
 
                     command_queue << "   const auto audio_" + node->ID + " = System::Game::CreateEntity(\"" + "audio" + "\");\n\t";
                     command_queue << "   audio_" + node->ID + "->SetName(\"" + an->name + "\");\n";
@@ -1114,22 +1120,22 @@ void EventListener::BuildAndRun()
                     command_queue << node->ID + "_bodyDef.type = " + std::to_string(spawn_node->body.self.type) + ";\n";
                     command_queue << node->ID + "_bodyDef.shape = " + std::to_string(spawn_node->body.self.shape) + ";\n";
                     command_queue << node->ID + "_bodyDef.isSensor = " + is_sensor + ";\n";
-                    command_queue << node->ID + "_bodyDef.x = " + std::to_string(spawn_node->body.self.x) + ";\n";
-                    command_queue << node->ID + "_bodyDef.y = " + std::to_string(spawn_node->body.self.y) + ";\n";
+                    command_queue << node->ID + "_bodyDef.x = " + FloatToString(spawn_node->body.self.x) + ";\n";
+                    command_queue << node->ID + "_bodyDef.y = " + FloatToString(spawn_node->body.self.y) + ";\n";
 
                     if (spawn_node->body.self.shape == Physics::Body::Shape::BOX) {
-                        command_queue << node->ID + "_bodyDef.width = " + std::to_string(spawn_node->body.self.width) + ";\n";
-                        command_queue << node->ID + "_bodyDef.height = " + std::to_string(spawn_node->body.self.height) + ";\n";
+                        command_queue << node->ID + "_bodyDef.width = " + FloatToString(spawn_node->body.self.width) + ";\n";
+                        command_queue << node->ID + "_bodyDef.height = " + FloatToString(spawn_node->body.self.height) + ";\n";
                     }
 
                     if (spawn_node->body.self.shape == Physics::Body::Shape::CIRCLE)
-                        command_queue << node->ID + "_bodyDef.radius = " + std::to_string(spawn_node->body.self.radius) + ";\n";
+                        command_queue << node->ID + "_bodyDef.radius = " + FloatToString(spawn_node->body.self.radius) + ";\n";
 
-                    command_queue << node->ID + "_bodyDef.density = " + std::to_string(spawn_node->body.self.density) + ";\n";
-                    command_queue << node->ID + "_bodyDef.friction = " + std::to_string(spawn_node->body.self.friction) + ";\n";
-                    command_queue << node->ID + "_bodyDef.restitution = " + std::to_string(spawn_node->body.self.restitution) + ";\n";
+                    command_queue << node->ID + "_bodyDef.density = " + FloatToString(spawn_node->body.self.density) + ";\n";
+                    command_queue << node->ID + "_bodyDef.friction = " + FloatToString(spawn_node->body.self.friction) + ";\n";
+                    command_queue << node->ID + "_bodyDef.restitution = " + FloatToString(spawn_node->body.self.restitution) + ";\n";
 
-                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + std::to_string(spawn_node->actualPositionX) + ", " + std::to_string(spawn_node->actualPositionY) + ", " + std::to_string(spawn_node->width) + ", " + std::to_string(spawn_node->height) + ", " + std::to_string(spawn_node->spawnWidth) + ", " + std::to_string(spawn_node->spawnHeight) + ", { " + std::to_string(spawn_node->tint.x) + ", " + std::to_string(spawn_node->tint.y) + ", " + std::to_string(spawn_node->tint.z) + " }, " + std::to_string(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " +  body_exists + ", " + node->ID + "_bodyDef });\n";
+                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + FloatToString(spawn_node->actualPositionX) + ", " + FloatToString(spawn_node->actualPositionY) + ", " + FloatToString(spawn_node->width) + ", " + FloatToString(spawn_node->height) + ", " + FloatToString(spawn_node->spawnWidth) + ", " + FloatToString(spawn_node->spawnHeight) + ", { " + FloatToString(spawn_node->tint.x) + ", " + FloatToString(spawn_node->tint.y) + ", " + FloatToString(spawn_node->tint.z) + " }, " + FloatToString(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " +  body_exists + ", " + node->ID + "_bodyDef });\n";
                 }
 
                 //define behaviors
