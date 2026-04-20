@@ -438,7 +438,6 @@ void Sprite::StopAnimation() {
     m_currentAnim.key = "";
 }
 
-
 //------------------------------------------ render sprite / update transformations
 
 
