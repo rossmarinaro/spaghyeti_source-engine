@@ -1,0 +1,92 @@
+{"frames": [
+
+{
+	"filename": "0.png",
+	"frame": {"x":0,"y":0,"w":132,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":132,"h":96},
+	"sourceSize": {"w":132,"h":96}
+},
+{
+	"filename": "1.png",
+	"frame": {"x":132,"y":0,"w":132,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":132,"h":96},
+	"sourceSize": {"w":132,"h":96}
+},
+{
+	"filename": "2.png",
+	"frame": {"x":264,"y":0,"w":132,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":132,"h":96},
+	"sourceSize": {"w":132,"h":96}
+},
+{
+	"filename": "3.png",
+	"frame": {"x":396,"y":0,"w":132,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":132,"h":96},
+	"sourceSize": {"w":132,"h":96}
+},
+{
+	"filename": "4.png",
+	"frame": {"x":528,"y":0,"w":132,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":132,"h":96},
+	"sourceSize": {"w":132,"h":96}
+},
+{
+	"filename": "5.png",
+	"frame": {"x":660,"y":0,"w":132,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":132,"h":96},
+	"sourceSize": {"w":132,"h":96}
+},
+{
+	"filename": "6.png",
+	"frame": {"x":792,"y":0,"w":132,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":132,"h":96},
+	"sourceSize": {"w":132,"h":96}
+},
+{
+	"filename": "7.png",
+	"frame": {"x":924,"y":0,"w":132,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":132,"h":96},
+	"sourceSize": {"w":132,"h":96}
+},
+{
+	"filename": "8.png",
+	"frame": {"x":1056,"y":0,"w":127,"h":85},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":127,"h":85},
+	"sourceSize": {"w":127,"h":85}
+},
+{
+	"filename": "9.png",
+	"frame": {"x":1183,"y":0,"w":127,"h":85},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":127,"h":85},
+	"sourceSize": {"w":127,"h":85}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "pidgeon.png",
+	"format": "RGBA8888",
+	"size": {"w":1310,"h":96},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:8469527658b47347447f33c4ab48ad20:efb2eb97098065765c97fb7a9247f81d:46d02f7b9904b248ebb57395335f137c$"
+}
+}
