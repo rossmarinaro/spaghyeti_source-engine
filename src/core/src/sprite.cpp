@@ -579,7 +579,7 @@ void Sprite::Render()
         const std::string& animKey = m_currentAnim.key;
         const bool yoyo = m_currentAnim.yoyo;
         const int rate = m_currentAnim.rate;
-LOG(m_currentAnim.rate);
+
         const uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
 
         try {

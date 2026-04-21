@@ -58,7 +58,7 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 
         for (int i = _thumbnail_begin; i < _thumbnail_end; i++) 
         {
-            if (i >= vec.size() || vec.at(i).second == NULL)
+            if (i >= vec.size() || !vec.at(i).second)
                 continue;
 
             const std::string folder = AssetManager::GetFolder(vec.at(i).first);
@@ -76,10 +76,11 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
             {
                 ImGui::PushID(i);  
 
-                if (ImGui::ImageButton("asset icon", (void*)(intptr_t) vec.at(i).second, ImVec2(70, 70))) { 
-                    AssetManager::Get()->selectedAsset = vec.at(i).first;
-                    Editor::Log("Current asset selected: " + AssetManager::Get()->selectedAsset);
-                }
+                if (vec.at(i).second != 0 && vec.at(i).second != -1)
+                    if (ImGui::ImageButton(("asset icon" + std::to_string(i)).c_str(), (void*)(intptr_t) vec.at(i).second, ImVec2(70, 70))) { 
+                        AssetManager::Get()->selectedAsset = vec.at(i).first;
+                        Editor::Log("Current asset selected: " + AssetManager::Get()->selectedAsset);
+                    }
 
                 //asset tool tip
 
