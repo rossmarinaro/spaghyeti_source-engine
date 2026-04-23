@@ -27,7 +27,7 @@ Texture2D::Texture2D():
     Filter_Max = GL_NEAREST;
     Channels = 3;
     Repeat = 1;
-    Whiteout = 0;
+    Whiteout = false;
 
     glGenTextures(1, &ID); 
 }
@@ -260,6 +260,7 @@ void Texture2D::Update(
     const Math::Vector3& outline, 
     const Math::Matrix4& mvp, 
     float outlineWidth,
+    float whiteout,
     int depth,
     bool flipX, 
     bool flipY
@@ -372,6 +373,7 @@ void Texture2D::Update(
         vertices[i].outlineG = outline.y;
         vertices[i].outlineB = outline.z;
         vertices[i].outlineWidth = outlineWidth;
+        vertices[i].whiteout = whiteout;
         
         //copy float array 
 

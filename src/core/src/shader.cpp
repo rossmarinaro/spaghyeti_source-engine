@@ -48,9 +48,11 @@ void Shader::InitBaseShaders()
         "layout(location = 5) in vec4 a_RGBA;\n"
         "layout(location = 6) in vec3 a_OutlineColor;\n"
         "layout(location = 7) in float a_OutlineWidth;\n"
-        "layout(location = 8) in mat4 a_ModelViewProj;\n"
+        "layout(location = 8) in float a_Whiteout;\n"
+        "layout(location = 9) in mat4 a_ModelViewProj;\n"
 
         "flat out float texID;\n"
+        "out float whiteout;\n"
         "out float outlineWidth;\n"
         "out vec3 outlineColor;\n"
         "out vec2 uv;\n"
@@ -63,6 +65,7 @@ void Shader::InitBaseShaders()
             "uv = a_UV;\n"
             "outlineColor = a_OutlineColor;\n"
             "outlineWidth = a_OutlineWidth;\n"
+            "whiteout = a_Whiteout;\n"
 
             "gl_Position = a_ModelViewProj * vec4(a_Pos, 1.0);\n" //must be proj * model * view per OpenGL
         "}";
@@ -86,6 +89,7 @@ void Shader::InitBaseShaders()
         "in vec4 rgba;\n"
         "in vec3 outlineColor;\n"
         "in float outlineWidth;\n" 
+        "in float whiteout;\n"
         "out vec4 color;\n"
 
         "uniform sampler2D images[32];\n"
@@ -116,8 +120,11 @@ void Shader::InitBaseShaders()
                 "color = mix(c, vec4(outlineColor, rgba.w), outline - c.a);\n"
 
             "}\n"
+            "if (whiteout > 0.0) {\n" //tint fill
+                "color = vec4(rgba.xyz, c.a);\n"
+            "}\n"
             "else {\n" //fill
-               "color = rgba * texture(images[int(texID)], uv);\n"
+               "color = rgba * texture(images[int(texID)], uv);\n" 
                 //"if (color.r > 0.9 && color.g < 0.1 && color.b > 0.9) discard;\n" //remove magenta background 
             "}\n"
         "}";

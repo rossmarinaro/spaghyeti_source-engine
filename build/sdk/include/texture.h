@@ -17,12 +17,13 @@ namespace Graphics {
 
             std::string key;
 
+            bool Whiteout;
+
             float FrameWidth, FrameHeight, U1, V1, U2, V2, Width, Height; 
             
             unsigned int ID,
                          Channels,
                          Repeat,
-                         Whiteout,
                          Wrap_S, 
                          Wrap_T, 
                          Filter_Min, //texture pixels < screen pixels
@@ -47,6 +48,7 @@ namespace Graphics {
                 const Math::Vector3& outline,
                 const Math::Matrix4& mvp,
                 float outlineWidth,
+                float whiteout,
                 int depth,
                 bool flipX = false, 
                 bool flipY = false

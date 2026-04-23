@@ -58,8 +58,7 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 
         for (int i = _thumbnail_begin; i < _thumbnail_end; i++) 
         {
-            if (i >= vec.size() || !vec.at(i).second)
-                continue;
+            ImGui::PushID(i);  
 
             const std::string folder = AssetManager::GetFolder(vec.at(i).first);
             const auto tex = Graphics::Texture2D::Get(vec.at(i).first);
@@ -74,10 +73,8 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 
             if (folder == AssetManager::Get()->currentFolder)
             {
-                ImGui::PushID(i);  
-
                 if (vec.at(i).second != 0 && vec.at(i).second != -1)
-                    if (ImGui::ImageButton(("asset icon" + std::to_string(i)).c_str(), (void*)(intptr_t) vec.at(i).second, ImVec2(70, 70))) { 
+                    if (ImGui::ImageButton(("##asset icon" + std::to_string(i)).c_str(), (void*)(intptr_t) vec.at(i).second, ImVec2(70, 70))) { 
                         AssetManager::Get()->selectedAsset = vec.at(i).first;
                         Editor::Log("Current asset selected: " + AssetManager::Get()->selectedAsset);
                     }
@@ -87,13 +84,13 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
                 if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                    ImGui::SetTooltip(vec.at(i).first.c_str());
 
-                ImGui::PopID();
-
                 //determine if image btn is on new line
 
                 if (i < 9 || (i >= 10 && (i + 1) % 10 != 0)) 
                     ImGui::SameLine(); 
             }
+
+            ImGui::PopID();
         }
     }
 }

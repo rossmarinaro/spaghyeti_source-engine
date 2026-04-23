@@ -400,15 +400,15 @@ bool entity_behaviors::Enemy::DoDamage(int amount)
     if (!sprite)
         return false;
 
-    sprite->texture.Whiteout = 1; 
+    sprite->texture.Whiteout = true; 
 
     health -= amount;
     m_canDamage = false;
 
-    Time::DelayedCall(280, [sprite, this] { 
+    Time::DelayedCall(50, [sprite, this] { 
         
         if (sprite)
-            sprite->texture.Whiteout = 0; 
+            sprite->texture.Whiteout = false; 
 
         Time::DelayedCall(200, [sprite, this] { 
             

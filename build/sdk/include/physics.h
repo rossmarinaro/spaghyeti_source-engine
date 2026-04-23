@@ -13,10 +13,8 @@ class Physics {
             enum Type { STATIC, KINEMATIC, DYNAMIC };
             enum Shape { BOX, CIRCLE };
 
-            int type, shape;
+            int type, shape, pointer;
             bool isSensor, isEnabled;
-
-            uintptr_t pointer;
             
             float x, y, 
                  width = 0.0f, height = 0.0f, radius = 0.0f, 

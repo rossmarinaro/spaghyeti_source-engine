@@ -445,7 +445,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         if (ImGui::Checkbox("is sensor", &body.second->isSensor))
                             EventListener::UpdateSession();
 
-                        if (ImGui::InputInt("int pointer", (int*)&body.second->pointer))
+                        if (ImGui::InputInt("int pointer", &body.second->pointer))
                             EventListener::UpdateSession(); 
 
                         if (body.second->pointer <= -1)

@@ -90,7 +90,8 @@ void Component::Make()
         vert_src << "layout(location = 5) in vec4 a_RGBA;\n";
         vert_src << "layout(location = 6) in vec3 a_OutlineColor;\n";
         vert_src << "layout(location = 7) in float a_OutlineWidth;\n";
-        vert_src << "layout(location = 8) in mat4 a_ModelViewProj;\n";
+        vert_src << "layout(location = 8) in float a_Whiteout;\n";
+        vert_src << "layout(location = 9) in mat4 a_ModelViewProj;\n";
 
         vert_src << "flat out float texID;\n";
         vert_src << "out float outlineWidth;\n";
@@ -118,7 +119,12 @@ void Component::Make()
         frag_src << "uniform sampler2D images[32];\n";
         frag_src << "void main()\n";
         frag_src << "{\n";
+        frag_src <<   "if (whiteout > 0.0) {\n";
+        frag_src <<      "color = vec4(rgba.xyz, c.a);\n";
+        frag_src <<  "}\n";
+        frag_src <<   "else {\n";
         frag_src << "   color = rgba * texture(images[int(texID)], uv);\n";
+        frag_src << "}\n";
         frag_src << "}";
 
         vert_src.close();

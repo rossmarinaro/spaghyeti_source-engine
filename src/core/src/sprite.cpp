@@ -520,15 +520,14 @@ void Sprite::Render()
         if (!IsSprite())
             mvp = projMat * glm::mat4(1.0f);
 
-        float r = tint.x, 
-              g = tint.y, 
-              b = tint.z;
+        const float r = tint.x, 
+                    g = tint.y, 
+                    b = tint.z;
 
-        if (texture.Whiteout == 1) { 
-            r += 10.0f; 
-            g += 10.0f; 
-            b += 10.0f; 
-        }
+        float whiteout = 0.0f; 
+
+        if (texture.Whiteout) 
+            whiteout = 1.0f;
 
         const Math::Vector4 color = { r, g, b, alpha };
 
@@ -549,6 +548,7 @@ void Sprite::Render()
             outlineColor,
             modelViewProj, 
             outlineEnabled ? outlineWidth : 0.0f, 
+            whiteout,
             depth, 
             flipX, 
             flipY

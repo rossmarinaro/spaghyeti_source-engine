@@ -89,6 +89,10 @@ void Geometry::Render()
 
     const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha }; 
 
+    float whiteout = 0.0f; 
+    if (texture.Whiteout) 
+        whiteout = 1.0f;
+
     texture.Update(
         shader, 
         position, 
@@ -97,6 +101,7 @@ void Geometry::Render()
         outlineColor,
         modelViewProj, 
         outlineEnabled ? outlineWidth : 0.0f, 
+        whiteout,
         depth
     ); 
 

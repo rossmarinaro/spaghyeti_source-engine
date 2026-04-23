@@ -23,7 +23,8 @@ namespace Math {
                   texID, 
                   r, g, b, a,
                   outlineR, outlineG, outlineB,
-                  outlineWidth; 
+                  outlineWidth,
+                  whiteout; 
 
             float mvp[16]; //4 x 4 model view matrix as an array
         }; 
