@@ -83,15 +83,13 @@ void Component::Make()
         //vert (batch rendering)
 
         vert_src << "layout(location = 0) in vec3 a_Pos;\n";
-        vert_src << "layout(location = 1) in vec2 a_Scale;\n";
-        vert_src << "layout(location = 2) in float a_Rotation;\n";
-        vert_src << "layout(location = 3) in vec2 a_UV;\n";
-        vert_src << "layout(location = 4) in float a_TextureId;\n";
-        vert_src << "layout(location = 5) in vec4 a_RGBA;\n";
-        vert_src << "layout(location = 6) in vec3 a_OutlineColor;\n";
-        vert_src << "layout(location = 7) in float a_OutlineWidth;\n";
-        vert_src << "layout(location = 8) in float a_Whiteout;\n";
-        vert_src << "layout(location = 9) in mat4 a_ModelViewProj;\n";
+        vert_src << "layout(location = 1) in vec2 a_UV;\n";
+        vert_src << "layout(location = 2) in float a_TextureId;\n";
+        vert_src << "layout(location = 3) in vec4 a_RGBA;\n";
+        vert_src << "layout(location = 4) in vec3 a_OutlineColor;\n";
+        vert_src << "layout(location = 5) in float a_OutlineWidth;\n";
+        vert_src << "layout(location = 6) in float a_Whiteout;\n";
+        vert_src << "layout(location = 7) in mat4 a_ModelViewProj;\n";
 
         vert_src << "flat out float texID;\n";
         vert_src << "out float outlineWidth;\n";
@@ -106,6 +104,7 @@ void Component::Make()
         vert_src << "   uv = a_UV;\n";
         vert_src << "   outlineColor = a_OutlineColor;\n";
         vert_src << "   outlineWidth = a_OutlineWidth;\n";
+        vert_src << "   whiteout = a_Whiteout;\n";
             
         vert_src << "   gl_Position = a_ModelViewProj * vec4(a_Pos, 1.0);\n";
         vert_src << "}";
@@ -115,11 +114,38 @@ void Component::Make()
         frag_src << "flat in float texID;\n";
         frag_src << "in vec2 uv;\n";
         frag_src << "in vec4 rgba;\n";
+        frag_src << "in vec3 outlineColor;\n";
+        frag_src << "in float outlineWidth;\n";
         frag_src << "out vec4 color;\n";
         frag_src << "uniform sampler2D images[32];\n";
+
         frag_src << "void main()\n";
         frag_src << "{\n";
-        frag_src <<   "if (whiteout > 0.0) {\n";
+        frag_src << "   vec4 c = texture(images[int(texID)], uv);\n";
+
+        frag_src <<    "if (c.a == 0.0 && outlineWidth > 0.0)\n"; 
+        frag_src <<    "{\n";
+
+        frag_src <<        "ivec2 texSize2d = textureSize(images[int(texID)], 0);\n";
+        frag_src <<        "float texSize = float(texSize2d.x);\n";
+        frag_src <<        "float texelSize = 1.0 / texSize;\n";
+        frag_src <<        "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n";
+        frag_src <<        "float outline = texture(images[int(texID)], uv + vec2(-size.x, 0.0)).a;\n";
+
+        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(0.0, size.y)).a;\n";
+        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(size.x, 0.0)).a;\n";
+        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(0.0, -size.y)).a;\n";
+        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(-size.x, size.y)).a;\n";
+        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(size.x, size.y)).a;\n";
+        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(-size.x, size.y)).a;\n";
+        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(size.x, -size.y)).a;\n";
+        frag_src <<        "outline = min(outline, 1.0);\n";
+
+        frag_src <<        "color = mix(c, vec4(outlineColor, rgba.w), outline - c.a);\n";
+
+        frag_src <<    "}\n";
+
+        frag_src <<   "else if (whiteout > 0.0) {\n";
         frag_src <<      "color = vec4(rgba.xyz, c.a);\n";
         frag_src <<  "}\n";
         frag_src <<   "else {\n";

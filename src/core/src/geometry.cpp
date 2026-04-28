@@ -96,7 +96,6 @@ void Geometry::Render()
     texture.Update(
         shader, 
         position, 
-        scale, 
         color, 
         outlineColor,
         modelViewProj, 

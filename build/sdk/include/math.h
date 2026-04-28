@@ -17,8 +17,6 @@ namespace Math {
         struct Vertex 
         { 
             float x, y, z, 
-                  scaleX, scaleY,
-                  rotation,
                   u, v, 
                   texID, 
                   r, g, b, a,

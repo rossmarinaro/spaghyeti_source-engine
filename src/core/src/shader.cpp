@@ -42,14 +42,13 @@ void Shader::InitBaseShaders()
         #endif
 
         "layout(location = 0) in vec3 a_Pos;\n"
-        "layout(location = 1) in vec2 a_Scale;\n"
-        "layout(location = 3) in vec2 a_UV;\n"
-        "layout(location = 4) in float a_TextureId;\n" 
-        "layout(location = 5) in vec4 a_RGBA;\n"
-        "layout(location = 6) in vec3 a_OutlineColor;\n"
-        "layout(location = 7) in float a_OutlineWidth;\n"
-        "layout(location = 8) in float a_Whiteout;\n"
-        "layout(location = 9) in mat4 a_ModelViewProj;\n"
+        "layout(location = 1) in vec2 a_UV;\n"
+        "layout(location = 2) in float a_TextureId;\n" 
+        "layout(location = 3) in vec4 a_RGBA;\n"
+        "layout(location = 4) in vec3 a_OutlineColor;\n"
+        "layout(location = 5) in float a_OutlineWidth;\n"
+        "layout(location = 6) in float a_Whiteout;\n"
+        "layout(location = 7) in mat4 a_ModelViewProj;\n"
 
         "flat out float texID;\n"
         "out float whiteout;\n"
@@ -120,7 +119,7 @@ void Shader::InitBaseShaders()
                 "color = mix(c, vec4(outlineColor, rgba.w), outline - c.a);\n"
 
             "}\n"
-            "if (whiteout > 0.0) {\n" //tint fill
+            "else if (whiteout > 0.0) {\n" //tint fill
                 "color = vec4(rgba.xyz, c.a);\n"
             "}\n"
             "else {\n" //fill

@@ -489,6 +489,7 @@ void Sprite::Render()
     transform = glm::translate(transform, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
     transform = glm::rotate(transform, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
     transform = glm::translate(transform, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
+    transform = glm::scale(transform, { scale.x, scale.y, 1.0f });
 
     //update texture
 
@@ -543,7 +544,6 @@ void Sprite::Render()
         texture.Update(
             shader, 
             position, 
-            scale, 
             color, 
             outlineColor,
             modelViewProj, 

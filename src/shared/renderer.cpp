@@ -23,34 +23,28 @@ void EnableAttributes()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)0); //position
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, scaleX)); //scale
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, u)); //uv (tex coords)
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, rotation)); //rotation
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, texID)); //texID
     glEnableVertexAttribArray(2);
 
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, u)); //uv (tex coords)
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, r)); //rgba
     glEnableVertexAttribArray(3);
 
-    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, texID)); //texID
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineR)); //outline rgba
     glEnableVertexAttribArray(4);
 
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, r)); //rgba
-    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineWidth)); //outline size
+    glEnableVertexAttribArray(5); 
 
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineR)); //outline rgba
-    glEnableVertexAttribArray(6);
-
-    glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineWidth)); //outline size
-    glEnableVertexAttribArray(7); 
-
-    glVertexAttribPointer(8, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, whiteout)); //outline size
-    glEnableVertexAttribArray(8); 
+    glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, whiteout)); //outline size
+    glEnableVertexAttribArray(6); 
 
     for (int i = 0; i < 4; i++) { //4 x 4 model view projection matrix 
         size_t offset = offsetof(Math::Graphics::Vertex, mvp) + sizeof(float) * 4 * i;
-        glVertexAttribPointer(9 + i, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), reinterpret_cast<const void*>(offset)); 
-        glEnableVertexAttribArray(9 + i);
+        glVertexAttribPointer(7 + i, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), reinterpret_cast<const void*>(offset)); 
+        glEnableVertexAttribArray(7 + i);
     }
 
 }

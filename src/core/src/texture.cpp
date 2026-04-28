@@ -255,7 +255,6 @@ void Texture2D::UnLoad(const std::string& key)
 void Texture2D::Update(
     Graphics::Shader& shader, 
     const Math::Vector2& position, 
-    const Math::Vector2& scale,
     const Math::Vector4& rgba, 
     const Math::Vector3& outline, 
     const Math::Matrix4& mvp, 
@@ -275,7 +274,7 @@ void Texture2D::Update(
         renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 ||
         shader.ID != renderer->activeShaderID
     ) {
-        if (renderer) 
+        if (renderer)  
         {
             //update image samplers
 
@@ -363,8 +362,6 @@ void Texture2D::Update(
     {       
         vertices[i].texID = textureUnit;
         vertices[i].z = static_cast<float>(depth) / 1000.0f;
-        vertices[i].scaleX = scale.x;
-        vertices[i].scaleY = scale.y;
         vertices[i].r = rgba.r;
         vertices[i].g = rgba.g;
         vertices[i].b = rgba.b;

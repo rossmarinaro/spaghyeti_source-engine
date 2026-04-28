@@ -43,7 +43,6 @@ namespace Graphics {
             void Update(
                 Graphics::Shader& shader,
                 const Math::Vector2& position, 
-                const Math::Vector2& scale,
                 const Math::Vector4& rgba, 
                 const Math::Vector3& outline,
                 const Math::Matrix4& mvp,
