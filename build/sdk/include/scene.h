@@ -12,6 +12,13 @@ namespace System {
 
         public: 
 
+            struct TilemapLayer {
+                std::string ID, dataKey, path, textureKey, shader;
+                int depth;
+                float scrollFactorX, scrollFactorY, spriteWidth;
+                std::vector<Physics::Body> bodies;
+            };
+
             struct Spawn 
             {
                 int type;
@@ -35,7 +42,7 @@ namespace System {
             Math::Vector2* cameraTarget;
 
             std::unique_ptr<Geometry> vignette;
-            
+
             std::vector<Spawn> spawns; 
             std::vector<std::shared_ptr<Entity>> entities;
             std::vector<std::shared_ptr<Entity>> UI;

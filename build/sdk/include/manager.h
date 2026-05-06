@@ -50,6 +50,8 @@ namespace System {
                 //can be used to load frames from a texture during preload, or at runtime to overwrite previous frames
                 static void LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames); 
                 static void LoadAtlas(const std::string& key, const std::string& path); 
+                //loads json maps into memory and returns number of layers
+                static void LoadTilemapFromJSON(const std::string& key, const std::string& path);
 
                 static void UnLoadFile(const std::string& key);
                 static void UnLoadRaw(const int type, const std::string& key);

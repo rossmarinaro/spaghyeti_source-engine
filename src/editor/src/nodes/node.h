@@ -198,12 +198,6 @@ namespace editor {
 
     class TilemapNode : public Node {
 
-        struct Layer {
-            std::string ID, dataKey, path, textureKey, shader;
-            int depth;
-            float scrollFactorX, scrollFactorY;
-        };
-
         public:
 
             int layer, 
@@ -211,7 +205,7 @@ namespace editor {
                 map_height,
                 tile_width, 
                 tile_height;
-
+   std::string filename, filepath;
             std::vector<int> spr_sheet_width,
                              spr_sheet_height;
 
@@ -220,7 +214,7 @@ namespace editor {
 
             std::vector<std::string> shaders;
 
-            std::vector<Layer> layers;
+            std::vector<System::Scene::TilemapLayer> layers;
             std::vector<std::array<int, 6>> offset;
             std::vector<std::shared_ptr<Physics::Body>> bodies;
 
@@ -231,7 +225,7 @@ namespace editor {
             void Reset(const int component_type = Component::NONE) override; 
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
 
-            void ApplyTilemap(bool clearPrevious = true, bool renderReversed = false, bool isJSON = false);
+            void ApplyTilemap(const std::string& dataKey);
             void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
             void UpdateBody(int index);
  
@@ -239,7 +233,6 @@ namespace editor {
 
             bool m_layersApplied, m_mapApplied;
             void AddLayer();
-            void ParseJSONData(const std::string& key, const std::string& path);
     };
 
     //--------------------------------- text, font

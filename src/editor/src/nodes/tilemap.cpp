@@ -18,6 +18,8 @@ TilemapNode::TilemapNode(bool init):
     map_height = 10;
     tile_width = 64;
     tile_height = 64;
+    filename = ""; 
+    filepath = "";
 
     if (m_init)
         Editor::Log("Tilemap node " + name + " created."); 
@@ -29,9 +31,9 @@ TilemapNode::TilemapNode(bool init):
 
 TilemapNode::~TilemapNode() {
     
-    if (m_mapApplied) 
-        for (const auto& _layer : layers)
-            System::Game::RemoveTileLayer(_layer.ID);
+ //   if (m_mapApplied) 
+      //  for (const auto& _layer : layers)
+         //   System::Game::RemoveTileLayer(_layer.ID);
 
     if (m_init)
         Editor::Log("Tilemap node " + name + " deleted.");
@@ -43,7 +45,7 @@ TilemapNode::~TilemapNode() {
 
 void TilemapNode::AddLayer() 
 {
-    Layer _layer;
+    System::Scene::TilemapLayer _layer;
 
     _layer.ID = UUID::generate_uuid();
     _layer.dataKey = "";
@@ -53,12 +55,13 @@ void TilemapNode::AddLayer()
     _layer.depth = layers.size() ? layers.back().depth + 1 : 0;
     _layer.scrollFactorX = 1.0f;
     _layer.scrollFactorY = 1.0f;
+    _layer.spriteWidth = 0.0f; 
 
     layers.push_back(_layer);
 
     layer++;
-    spr_sheet_width.push_back(0);
-    spr_sheet_height.push_back(0);
+    //spr_sheet_width.push_back(0);
+    //spr_sheet_height.push_back(0);
 }
 
 
@@ -78,165 +81,79 @@ void TilemapNode::Reset(int component_type)
 
     m_mapApplied = false;
 
-    if (passAll) 
-        for (const auto& _layer : layers)
-            System::Game::RemoveTileLayer(_layer.ID);
+    //if (passAll) 
+       // for (const auto& _layer : layers) 
+          //  System::Game::RemoveTileLayer(_layer.ID);
 }
 
 
 //---------------------------
 
 
-void TilemapNode::ApplyTilemap(bool clearPrev, bool renderReversed, bool isJSON)
-{
-    if (clearPrev) 
-        offset.clear();
+void TilemapNode::ApplyTilemap(const std::string& dataKey)
+{ 
+    // for (int i = 0; i < layer; i++)
+    // {
+    //     const std::string dataKey = layers[i].dataKey,
+    //                       texture = layers[i].textureKey;
 
-    //for every layer, iterate over widths and heights by index, decrementing height each iteration by 1 until 0
+    //     AssetManager::Register(texture); 
+    //     AssetManager::Register(dataKey);
 
-    for (int i = 0; i < layer; i++) 
-    { 
-        int w = 0,  
-            h = renderReversed ? spr_sheet_height[i] - 1 : 0; 
+    //     const std::string layerID = System::Game::CreateTileLayer(
+    //         texture.c_str(), 
+    //         dataKey.c_str(), 
+    //         map_width, 
+    //         map_height, 
+    //         tile_width, 
+    //         tile_height, 
+    //         layers[i].depth, 
+    //         i
+    //     );
 
-        for (int y = 0; y < map_height; ++y)
-            for (int x = 0; x < map_width; ++x)
-            {
-                if (w == spr_sheet_width[i]) 
-                { 
-                    w = 0;
+    //    if (layerID.size()) { 
+    //         layers[i].ID = layerID;
+    //         m_layersApplied = true;
+    //         m_mapApplied = true;
+    //    }
 
-                    if (renderReversed)
-                        h--;  
-                    else 
-                        h++; 
-                }   
+    //    else {
+    //        Editor::Log("There was a problem parsing tilemap file.");
+    //        return;
+    //    }
+    // }
 
-                if (w < map_width) {
-                    std::array<int, 6> off = { w, h, tile_width, tile_height, 1, 1 };
-                    offset.emplace_back(off); 
-                    w++;
-                }
-            }
+    // for (const auto& map : System::Game::GetScene()->tilemaps)
+    //     if (map.second.second.size()) {
+    //         AddComponent(Component::PHYSICS);
+    //         break;
+    //     }
 
-        std::string dataKey = layers[i].dataKey;
-
-        const std::string texture = layers[i].textureKey,
-                          localPath = Editor::projectPath + "resources/assets/data/" + dataKey; 
-
-        AssetManager::Register(texture); 
-        AssetManager::Register(dataKey); 
-        
-        if (clearPrev)
-        {
-            System::Resources::Manager::LoadFrames(texture, offset); //image texture with frame offsets
-            System::Resources::Manager::LoadFile(dataKey.c_str(), localPath.c_str()); //csv or json data relative to current project
-     
-            //parse data and load map layer
-
-            const std::string layerID = System::Game::CreateTileLayer(texture.c_str(), dataKey.c_str(), map_width, map_height, tile_width, tile_height, layers[i].depth, i);
-
-            if (layerID.size()) { 
-                layers[i].ID = layerID;
-                m_layersApplied = true;
-                m_mapApplied = true;
-            }
-
-            else {
-                const std::string dataType = isJSON ? "JSON" : "CSV";
-                Editor::Log("There was a problem parsing " + dataType + " file.");
-            }
-        }
-
-    }
-
-    //set tiles initial position for group node origin data
-
-    for (const auto& entity : System::Game::GetScene()->entities) 
-        if (entity->GetType() == Entity::TILE) 
-            entity->SetData("initial position", entity->position);
-}
-
-
-//--------------------------- parse json to extract tileset and body data
-
-
-void TilemapNode::ParseJSONData(const std::string& key, const std::string& path)
-{
-    std::ifstream JSON(Editor::projectPath + path);
+    const std::string path = *System::Resources::Manager::GetFilePath(dataKey);
+    std::ifstream JSON(path);
 
     if (!JSON.good()) {
-        Editor::Log("Tilemap: unable to parse, invalid json.");
+        Editor::Log("problem");//LOG("Tilemap: unable to parse, invalid json.");
         return;
     }
 
     const json data = json::parse(JSON);
 
-    if (!data.contains("width") || 
-        !data.contains("height") || 
-        !data.contains("tilewidth") || 
-        !data.contains("tileheight") || 
-        !data.contains("layers"))
-            Editor::Log("Tilemap: cannot construct from json missing params: [width, height, tilewidth, tileheight, layers].");
+    if (data.contains("layers") && data["layers"].size()) 
+        layer = data["layers"].size();
 
-    else 
-    {            
-        map_width = data["width"];
-        map_height = data["height"];
-        tile_width = data["tilewidth"];
-        tile_height = data["tileheight"];
+    AssetManager::Register(dataKey);
 
-        if (data.contains("tilesets")) 
-        {
-            if (data.contains("layers") && data["layers"].size())
-            {
-                int i = 0;
+    m_layersApplied = true;
+    m_mapApplied = true;
+    
 
-                for (const auto& layer : data["layers"])  
-                {
-                    if (layer.contains("data")) 
-                    {
-                        //iterate tileset, bounds check, default to 0 index if over
-                        
-                        const int tilesetIndex = data["tilesets"].size() > i ? i : 0;
+    //set tiles initial position for group node origin data
 
-                        AddLayer();
-
-                        layers[i].dataKey = key;
-                        layers[i].path = path;
-                        layers[i].textureKey = static_cast<std::string>(data["tilesets"][tilesetIndex]["name"]) + ".png";
-                        layers[i].depth = i;
-
-                        spr_sheet_width[i] = Graphics::Texture2D::Get(layers[i].textureKey).Width / tile_width;
-                        spr_sheet_height[i] = Graphics::Texture2D::Get(layers[i].textureKey).Height / tile_height; 
-
-                        ++i;
-                    }
-
-                    if (layer.contains("objects")) 
-                    {
-                        AddComponent(Component::PHYSICS);
-
-                        for (const auto& body : layer["objects"]) {
-                            CreateBody(body["x"], body["y"], body["width"], body["height"]);
-        
-                            for (int i = 0; i < bodies.size(); i++)
-                                UpdateBody(i);
-                        }
-                    }
-                }  
-
-                ApplyTilemap(true, false, true);
-                EventListener::UpdateSession();
-            }
-            else 
-                Editor::Log("Error parsing tilemap. JSON does not contain layers field.");
-        }
-        else 
-            Editor::Log("Error parsing tilemap. JSON does not contain tilesets field.");
-    }
+    for (const auto& entity : System::Game::GetScene()->entities) 
+        if (entity->GetType() == Entity::TILE) 
+            entity->SetData("initial position", entity->position);      Editor::Log("ok");
 }
-
 
 //---------------------------
 
@@ -455,20 +372,22 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                 if (System::Utils::str_endsWith(path, ".csv")) 
                                 {
-                                    if (ImGui::MenuItem(key.c_str())) {
-                                        layers[i].dataKey = key;
-                                        layers[i].path = path;
-                                        layers[i].depth = i;
-                                        spr_sheet_width[i] = Graphics::Texture2D::Get(layers[i].textureKey).Width / tile_width;
-                                        spr_sheet_height[i] = Graphics::Texture2D::Get(layers[i].textureKey).Height / tile_height; 
-                                        m_layersApplied = false;
-                                        EventListener::UpdateSession();
-                                    }
+                                    // if (ImGui::MenuItem(key.c_str())) {
+                                    //     layers[i].dataKey = key;
+                                    //     layers[i].path = path;
+                                    //     layers[i].depth = i;
+                                    //     spr_sheet_width[i] = Graphics::Texture2D::Get(layers[i].textureKey).Width / tile_width;
+                                    //     spr_sheet_height[i] = Graphics::Texture2D::Get(layers[i].textureKey).Height / tile_height; 
+                                    //     m_layersApplied = false;
+                                    //     EventListener::UpdateSession();
+                                    // }
                                 }
 
                                if (System::Utils::str_endsWith(path, ".json")) {
-                                    if (ImGui::MenuItem(key.c_str())) 
-                                       ParseJSONData(key, path);
+                                    if (ImGui::MenuItem(key.c_str())) {
+                                        /* layer = */ System::Resources::Manager::LoadTilemapFromJSON(key, path);//ParseJSONData(key, path);
+                                        ApplyTilemap(key);
+                                    }
                                }
                                        
                             }
@@ -534,8 +453,8 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                     } 
 
                     if (ImGui::Button("apply") && !m_layersApplied && layers.size()) {
-                        System::Game::RemoveTileLayer(layers[layer - 1].ID);
-                        ApplyTilemap();
+                        //System::Game::RemoveTileLayer(layers[layer - 1].ID);
+                        //ApplyTilemap();
                         EventListener::UpdateSession();
                     }
 
@@ -553,8 +472,8 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                     if (ImGui::Button("remove layer") && layer > 0) 
                     {
-                        if (layers.size()) 
-                            System::Game::RemoveTileLayer(layers[layer - 1].ID);
+                       // if (layers.size()) 
+                            //System::Game::RemoveTileLayer(layers[layer - 1].ID);
 
                         layers.pop_back();
                         layer--;
@@ -578,8 +497,10 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         if (System::Utils::str_endsWith(path, ".json")) {
                             ImGui::SetTooltip("Note: Only CSV Tile format supported."); 
-                            if (ImGui::MenuItem(key.c_str())) 
-                                ParseJSONData(key, path);
+                            if (ImGui::MenuItem(key.c_str())) {
+                                /* layer = */ System::Resources::Manager::LoadTilemapFromJSON(key, path);
+                                ApplyTilemap(key);
+                            }
                         }
                                 
                     }

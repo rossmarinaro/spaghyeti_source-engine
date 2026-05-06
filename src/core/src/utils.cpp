@@ -1,4 +1,5 @@
 #include <functional>
+#include <filesystem>
 
 #include "../../../build/sdk/include/utils.h"
 #include "../../../build/sdk/include/manager.h"
@@ -119,6 +120,25 @@ std::string System::Utils::SanitizePath(std::string& path) {
     return path;
 }
 
+//---------------------------------------
+
+
+std::string System::Utils::GetPathExtension(std::string& path) {
+    std::filesystem::path p(path); 
+    return std::filesystem::exists(p) ? 
+        p.extension().string() : "";
+}
+
+
+//---------------------------------------
+
+
+std::string System::Utils::GetFileExtension(std::string& filename) {
+   size_t lastDot = filename.find_last_of(".");
+    if (lastDot != std::string::npos) 
+        return filename.substr(lastDot);
+    return "";
+}
 
 //---------------------------------------
 

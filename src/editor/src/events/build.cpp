@@ -998,24 +998,24 @@ void EventListener::BuildAndRun()
 
                     //load frames
 
-                    std::ostringstream offset_oss;
-                    std::vector<std::string> offsetsToLoad;
+                    // std::ostringstream offset_oss;
+                    // std::vector<std::string> offsetsToLoad;
 
-                    if (tmn->offset.size()) 
-                    {
-                        for (const auto& offset : tmn->offset)
-                            offsetsToLoad.emplace_back("{" + std::to_string(offset[0]) + ", " + 
-                                                        std::to_string(offset[1]) + ", " + 
-                                                        std::to_string(offset[2]) + ", " + 
-                                                        std::to_string(offset[3]) + ", " + 
-                                                        std::to_string(offset[4]) + ", " + 
-                                                        std::to_string(offset[5]) + "}");
+                    // if (tmn->offset.size()) 
+                    // {
+                    //     for (const auto& offset : tmn->offset)
+                    //         offsetsToLoad.emplace_back("{" + std::to_string(offset[0]) + ", " + 
+                    //                                     std::to_string(offset[1]) + ", " + 
+                    //                                     std::to_string(offset[2]) + ", " + 
+                    //                                     std::to_string(offset[3]) + ", " + 
+                    //                                     std::to_string(offset[4]) + ", " + 
+                    //                                     std::to_string(offset[5]) + "}");
                     
-                        if (!offsetsToLoad.empty()) {
-                            std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
-                            offset_oss << offsetsToLoad.back();
-                        } 
-                    }
+                    //     if (!offsetsToLoad.empty()) {
+                    //         std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
+                    //         offset_oss << offsetsToLoad.back();
+                    //     } 
+                    // }
 
                     //this flag loads maps on scene load but not restart
 
@@ -1023,14 +1023,16 @@ void EventListener::BuildAndRun()
 
                     if (tmn->layers.size())
                     {
-                        //load frames / layers
-
                         for (int i = 0; i < tmn->layer; i++)
                         {
                             //copy or embed relevant map data if json
 
                             if (System::Utils::str_includes(tmn->layers[i].path, ".json")) 
                             {
+                                //load frames / layers
+
+                                preload_queue << "    System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->layers[i].dataKey + """\", ""\"" + tmn->layers[i].path + """\");\n";
+
                                 const std::string projResPath = Editor::projectPath + "resources/assets/data",
                                                   enumType = "System::Resources::Manager::DATA";
 
@@ -1050,12 +1052,15 @@ void EventListener::BuildAndRun()
                             }
 
                             if (tmn->layers[i].textureKey.length()) {
-                                command_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i].textureKey + "\", { " + offset_oss.str() + " });\n";
-                                loadedFrames.emplace_back(tmn->layers[i].textureKey);
+                                //command_queue << "  System::Resources::Manager::LoadAtlas(\"" + tmn->layers[i].dataKey + "\", \"assets/" + tmn->layers[i].dataKey + "\");\n";
+                                //command_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i].textureKey + "\", { " + offset_oss.str() + " });\n";
+                                //loadedFrames.emplace_back(tmn->layers[i].textureKey);
                             }
                             
-                            if (tmn->layers[i].dataKey.length()) {
+                            if (tmn->layers[i].dataKey.length()) 
+                            {
                                 const std::string shader = tmn->layers[i].shader.length() ? tmn->layers[i].shader : "\"\"";
+
                                 command_queue << "      System::Game::CreateTileLayer(\"" + tmn->layers[i].textureKey + "\", ""\"" + tmn->layers[i].dataKey + "\", " + 
                                 std::to_string(tmn->map_width) + ", " + 
                                 std::to_string(tmn->map_height) + ", " + 
@@ -1065,13 +1070,28 @@ void EventListener::BuildAndRun()
                                 std::to_string(i) + ", " + 
                                 FloatToString(tmn->actualPositionX) + ", " + 
                                 FloatToString(tmn->actualPositionY) + ", " + 
-                                FloatToString(tmn->rotation) + ", " + 
-                                FloatToString(tmn->scaleX) + ", " + 
-                                FloatToString(tmn->scaleY) + ", " +
                                 FloatToString(tmn->layers[i].scrollFactorX) + ", " +
                                 FloatToString(tmn->layers[i].scrollFactorY) + ", " +
                                 shader +
                                 ");\n";
+
+                            //     command_queue << "  std::vector<System::Scene::TilemapLayer> layers;\n";
+                            //     command_queue << "      System::Game::ApplyTilemap(layers, \"" + tmn->layers[i].path + "\", ""\"" + tmn->layers[i].textureKey + "\", ""\"" + tmn->layers[i].dataKey + "\", " + 
+                            //     std::to_string(tmn->map_width) + ", " + 
+                            //     std::to_string(tmn->map_height) + ", " + 
+                            //     std::to_string(tmn->tile_width) + ", " + 
+                            //     std::to_string(tmn->tile_height) + ", " + 
+                            //     std::to_string(tmn->layers[i].depth) + ", " + 
+                            //     std::to_string(i) + ", " + 
+                            //     FloatToString(tmn->actualPositionX) + ", " + 
+                            //     FloatToString(tmn->actualPositionY) + ", " + 
+                            //     FloatToString(tmn->rotation) + ", " + 
+                            //     FloatToString(tmn->scaleX) + ", " + 
+                            //     FloatToString(tmn->scaleY) + ", " +
+                            //     FloatToString(tmn->layers[i].scrollFactorX) + ", " +
+                            //     FloatToString(tmn->layers[i].scrollFactorY) + ", " +
+                            //     shader +
+                            //     ");\n";
                             } 
                         }
 

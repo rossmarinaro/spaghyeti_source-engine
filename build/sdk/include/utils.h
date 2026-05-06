@@ -6,15 +6,15 @@
 
 #ifndef LOG
 
-    #if DEVELOPMENT == 1 && STANDALONE == 1
+    //#if DEVELOPMENT == 1 && STANDALONE == 1
         #include <iostream>
         #include <fstream>
         #define LOG(msg) \
             std::cout << msg << std::endl; \
             std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; 
-    #else
-       #define LOG(msg) 0;
-    #endif
+   // #else
+    //   #define LOG(msg) 0;
+    //#endif
 
 #endif
  
@@ -41,7 +41,9 @@ namespace System {
 			static const bool CoinFlip();
 
 			static const int GetFileType(const std::string& path);
-			static std::string SanitizePath(std::string& path);
+			static std::string GetFileExtension(std::string& filename);
+            static std::string GetPathExtension(std::string& path);
+            static std::string SanitizePath(std::string& path);
             static std::string ReplaceFrom(std::string& str, const char* position, const char* replace_str);
 
         private:

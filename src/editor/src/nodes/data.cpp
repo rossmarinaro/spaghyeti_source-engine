@@ -193,6 +193,8 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             bodies.push_back({ { "body_width", body->width }, { "body_height", body->height }, { "bodyX", body->x }, { "bodyY", body->y } });
 
         data = {
+            { "filename", tmn->filename },
+            { "filepath", tmn->filepath },
             { "position x", tmn->positionX },
             { "position y", tmn->positionY },
             { "rotation", tmn->rotation },
@@ -716,59 +718,65 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("tile_height"))
                 tmn->tile_height = data["tile_height"];
                 
-            if (data.contains("layer"))
-                tmn->layer = data["layer"];
+            //if (data.contains("layer"))
+               // tmn->layer = data["layer"];
 
-            if (data.contains("layers") && data["layers"].size()) 
-                for (const auto& layer : data["layers"]) 
-                {
-                    tmn->layers.push_back({ 
-                        "", //temporary ID which is session agnostic, will update to uuid when applied
-                        layer["key"], 
-                        layer["path"], 
-                        layer["texture"],
-                        layer["shader"],
-                        layer["depth"],
-                        layer["scroll factor x"],
-                        layer["scroll factor y"]
-                    });
+           // if (data.contains("filename") && data.contains("filepath")) 
+            {
+                const std::string asset_path = "resources/assets/data/cave.json";//data["filepath"]; 
+        Editor::Log("0");   System::Resources::Manager::LoadTilemapFromJSON(/* data["filename"] */ "cave.json", Editor::projectPath + asset_path); Editor::Log("1");
+            }
+            
+                // for (const auto& layer : data["layers"]) 
+                // {
+                //     tmn->layers.push_back({ 
+                //         "", //temporary ID which is session agnostic, will update to uuid when applied
+                //         layer["key"], 
+                //         layer["path"], 
+                //         layer["texture"],
+                //         layer["shader"],
+                //         layer["depth"],
+                //         layer["scroll factor x"],
+                //         layer["scroll factor y"]
+                //     });
 
-                    tmn->spr_sheet_width.push_back(layer["frames x"]);
-                    tmn->spr_sheet_height.push_back(layer["frames y"]);
-                }
+                //     const std::string asset_path = layer["path"]; 
+                //     System::Resources::Manager::LoadTilemapFromJSON(layer["key"], Editor::projectPath + asset_path);
+                // }
 
             if (data.contains("components"))
             {
-                //physics 
+                //physics  
        
                 if (data["components"]["physics"]["exists"]) 
                     tmn->AddComponent(Component::PHYSICS, false);
 
-                if (data["components"]["physics"]["bodies"].size())
-                    for (const auto& body : data["components"]["physics"]["bodies"]) 
-                    {
-                        if (makeNode) {
-                            tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
-                            for (int i = 0; i < tmn->bodies.size(); i++)
-                                tmn->UpdateBody(i);
-                        }
+                // if (data["components"]["physics"]["bodies"].size())
+                //     for (const auto& body : data["components"]["physics"]["bodies"]) 
+                //     {
+                //        if (makeNode) {
+                //             tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+                //             for (int i = 0; i < tmn->bodies.size(); i++)
+                //                 tmn->UpdateBody(i);
+                //        }
+                //       else 
+                //         {
+                //             auto pb = std::make_shared<Physics::Body>();
 
-                        else 
-                        {
-                            auto pb = std::make_shared<Physics::Body>();
-
-                            pb->x = body["bodyX"];
-                            pb->y = body["bodyY"]; 
-                            pb->width = body["body_width"];
-                            pb->height = body["body_height"];
+                //             pb->x = body["bodyX"];
+                //             pb->y = body["bodyY"]; 
+                //             pb->width = body["body_width"];
+                //             pb->height = body["body_height"];
                             
-                            tmn->bodies.emplace_back(pb);
-                        }
-                    }
+                //             tmn->bodies.emplace_back(pb);
+                //         }
+                //     }
             }
             
-            if (data.contains("layers") && data["layers"].size())
-                tmn->ApplyTilemap(makeNode);
+           // if (data.contains("filename") /* data.contains("layers") && data["layers"].size() */) {
+                System::Game::CreateTilemapFromJSON("cave.json"/* data["filename"] */);Editor::Log("2");//tmn->ApplyTilemap(/* makeNode */);
+                tmn->ApplyTilemap("cave.json"/* data["filename"] */);Editor::Log("3");
+           // }
 
             return tmn;
         }

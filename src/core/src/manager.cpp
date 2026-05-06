@@ -2,10 +2,10 @@
 #include <fstream>
 #include <type_traits>
 
-#if USE_JSON == 1
+//#if USE_JSON == 1
 	#include "../../vendors/nlohmann/json.hpp"
 	using json = nlohmann::json;
-#endif
+//#endif
 
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/manager.h"
@@ -94,7 +94,7 @@ void Manager::LoadRaw(const int type, const std::string& key, const unsigned cha
 
 //load frames from vector of int arrays
 void Manager::LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames) {
-    UnLoadFrames(key);
+    UnLoadFrames(key); 
     System::Application::resources->m_atlases.insert( { key, frames } );
 }
 
@@ -117,6 +117,90 @@ void Manager::LoadAnims(const std::string& key, const std::map<const std::string
     UnLoadAnims(key);
     System::Application::resources->m_anims.insert( { key, anims } );
 }
+
+
+//------------------------------------ 
+
+
+void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& path)
+{
+    //#if USE_JSON == 1
+
+    std::ifstream JSON(path);
+
+    if (!JSON.good()) {
+        LOG("Tilemap: unable to parse, invalid json.");
+        return;
+    }
+
+    const json data = json::parse(JSON);
+
+    if (!data.contains("width") || 
+        !data.contains("height") || 
+        !data.contains("tilewidth") || 
+        !data.contains("tileheight") || 
+        !data.contains("layers")) {
+            LOG("Tilemap: cannot construct from json missing params: [width, height, tilewidth, tileheight, layers].");
+            return;
+        }
+          
+    const float map_width = data["width"],
+                map_height = data["height"],
+                tile_width = data["tilewidth"],
+                tile_height = data["tileheight"];
+
+
+        if (data.contains("layers") && data["layers"].size())
+        {
+            LoadFile(key, path); //csv or json data relative to current project
+             
+            //for every layer, iterate over widths and heights by index, 
+            //decrementing height each iteration by 1 until 0 / load frames and data file
+
+            if (data["tilesets"].size())
+                for (const auto& tileset : data["tilesets"])
+                {
+                    std::vector<std::array<int, 6>> offset;
+
+                    int w = 0,  
+                        h = 0; 
+
+                    for (int y = 0; y < map_height; ++y)
+                        for (int x = 0; x < map_width; ++x)
+                        {
+                            if (w == tileset["imagewidth"]) { 
+                                w = 0;
+                                h++; 
+                            }   
+
+                            if (w < map_width) {
+                                std::array<int, 6> off = { w, h, tile_width, tile_height, 1, 1 };
+                                offset.emplace_back(off); 
+                                w++;
+                            }
+                        } 
+
+                    std::string textureFilePath = static_cast<std::string>(tileset["image"]),
+                                ext = Utils::GetFileExtension(textureFilePath),
+                                texture = static_cast<std::string>(tileset["name"]) + ext;
+
+                    LoadFrames(texture, offset); //image texture with frame offsets
+                } 
+        }
+        else {
+            LOG("Error parsing tilemap. JSON does not contain layers field.");
+        }
+    }
+    //else  {
+      //  LOG("Error parsing tilemap. JSON does not contain tilesets field.");
+    
+
+   // #else 
+    //    LOG("Error parsing tilemap. USE_JSON not enabled.");
+   //d #endif
+
+    //return;
+//}
 
 
 //-------------------------------------  
@@ -200,7 +284,7 @@ const std::map<const std::string, std::pair<int, int>>* Manager::GetAnimations(c
 
 //get atlas path
 const std::string* Manager::GetSpritesheetPath(const std::string& key) {
-    const auto it = System::Application::resources->m_atlas_paths.find(key);
+    const auto it = System::Application::resources->m_atlas_paths.find(key); 
     return it != System::Application::resources->m_atlas_paths.end() ? 
         &it->second : nullptr;
 }

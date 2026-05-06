@@ -4,12 +4,114 @@
 #ifndef __EMSCRIPTEN__
     #include <bits/stdc++.h>
 #endif
+//#if USE_JSON == 1
+	#include "../../vendors/nlohmann/json.hpp"
+	using json = nlohmann::json;
+//#endif
 
 #include "../../../build/sdk/include/game.h"
 #include "../../../build/sdk/include/app.h"
 #include "../../vendors/UUID.hpp"
 
-const std::string System::Game::CreateTileLayer(
+using namespace System;
+
+
+//---------------------------------------------- construct tilemap on the fly from a loaded map json file
+
+
+void Game::CreateTilemapFromJSON(const std::string& key) 
+{
+    const std::string path = *Resources::Manager::GetFilePath(key); 
+    std::ifstream in(path);
+    json data = json::parse(in);
+
+    unsigned int index = 0;
+
+    //bodies
+
+    if (data.contains("layers") && data["layers"].size()) 
+        for (const auto& layer : data["layers"]) 
+        {
+            if (static_cast<std::string>(layer["type"]) == "tilelayer")
+            {
+                //assign corresponding texture key
+
+                std::string textureKey = "";
+
+                const auto getExtension = [](const std::string& filename) -> std::string {
+                    size_t lastDot = filename.find_last_of(".");
+                    if (lastDot != std::string::npos) 
+                        return filename.substr(lastDot);
+                    return "";
+                }
+
+                if (data.contains("tilesets") && data["tilesets"].size()) 
+                {   
+                    if (index <= data["tilesets"].size()) 
+                    {
+                      
+                        std::string p = static_cast<std::string>(data["tilesets"][index]["image"]),
+                                    ext = Utils::GetFileExtension(p);
+                        textureKey = static_cast<std::string>(data["tilesets"][index]["name"]) + ext; 
+                    }
+                    else {
+                        std::string p = static_cast<std::string>(data["tilesets"][0]["image"]),
+                                    ext = Utils::GetFileExtension(p);
+                        textureKey = static_cast<std::string>(data["tilesets"][0]["name"]) + ext;  
+                    }
+                }
+
+                int id = static_cast<int>(layer["id"]);
+
+                const uint32_t width = static_cast<uint32_t>(layer["width"]),
+                               height = static_cast<uint32_t>(layer["height"]),
+                               tilewidth = static_cast<uint32_t>(data["tilewidth"]),
+                               tileHeight = static_cast<uint32_t>(data["tileheight"]),
+                               depth = layer.contains("z") ? static_cast<uint32_t>(layer["z"]) : index;
+
+                float x = static_cast<float>(layer["x"]),
+                      y = static_cast<float>(layer["y"]),
+                      scrollFactorX = layer.contains("parallaxx") ? static_cast<float>(layer["parallaxx"]) : 1.0f,
+                      scrollFactorY = layer.contains("parallaxy") ? static_cast<float>(layer["parallaxy"]) : 1.0f;
+
+                //create the tile layer
+
+                CreateTileLayer(
+                    id,
+                    textureKey.c_str(),
+                    key.c_str(),
+                    width,
+                    height,
+                    tilewidth,
+                    tileHeight,
+                    depth,
+                    index,
+                    x,
+                    y,
+                    scrollFactorX,
+                    scrollFactorY
+                );   LOG(32);
+            }
+
+            if (layer.contains("objects")) 
+                for (auto& body : layer["objects"]) 
+                    Physics::CreateBody(Physics::Body::Type::STATIC, 
+                        static_cast<float>(body["x"]), 
+                        static_cast<float>(body["x"]), 
+                        static_cast<float>(body["width"]), 
+                        static_cast<float>(body["height"])
+                    );
+
+            index++;
+        } ;LOG(22);
+}
+
+
+//----------------------------------------------
+
+
+const std::string Game::CreateTileLayer(
+    int layer,
     const char* texture_key,
     const char* data_key,
     uint32_t mapWidth,
@@ -20,22 +122,19 @@ const std::string System::Game::CreateTileLayer(
     int index,
     float posX,
     float posY,
-    float rotation,
-    float scaleX,
-    float scaleY,
     float scrollFactorX,
     float scrollFactorY,
     const std::string& shaderKey
 )
 {
-    auto data = System::Resources::Manager::ParseMapData(data_key, index);
+    auto data = Resources::Manager::ParseMapData(data_key, index);
 
     if (!data.size()) {                                       
         LOG("Tilemap: layer data not found. Expected " + (std::string)data_key);
         return "";
     }
     
-    const std::string ID = UUID::generate_uuid(); 
+    //int layer;//const std::string ID = UUID::generate_uuid(); 
 
     std::stringstream ss; 
     std::string line; 
@@ -86,7 +185,7 @@ const std::string System::Game::CreateTileLayer(
                     bin_reset[1] = '0';
                     bin_reset[2] = '0';
                     
-                    tileType = System::Utils::BinToDec(atoi(bin_reset.c_str()));       
+                    tileType = Utils::BinToDec(atoi(bin_reset.c_str()));       
                                 
                     flipX = static_cast<std::string>(flags).substr(0, 1) == "1";
                     flipY = static_cast<std::string>(flags).substr(1, 1) == "1";
@@ -95,53 +194,108 @@ const std::string System::Game::CreateTileLayer(
 
                 //create tilesprite entity
 
-                const auto tile = System::Game::CreateTileSprite(texture_key, (x * tileWidth) + posX, (y * tileHeight) + posY, tileType); 
+                const auto tile = Game::CreateTileSprite(texture_key, (x * tileWidth) + posX, (y * tileHeight) + posY, tileType); 
             
                 tile->SetName((std::string)data_key);
                 tile->SetDepth(depth); 
                 tile->SetFlip(flipX, flipY);   
-                tile->SetRotation(rotation); 
-                tile->SetScale(scaleX, scaleY); 
                 tile->SetScrollFactor({ scrollFactorX, scrollFactorY });
                 tile->SetCull(true);
-                tile->SetData(ID, true);
+                tile->SetData(data_key, true);
+                tile->SetData("layer", layer);
 
                 if (shaderKey.length())
                     tile->SetShader(shaderKey);
 
                 if (diag)
-                    tile->SetRotation(rotation + 90.0f);  
+                    tile->SetRotation(90.0f);  
             }
         }
+ 
+    LOG("Tilemap: Initialized layer: " + std::to_string(layer) + " with texture key: " + (std::string)texture_key + " and data key: " + (std::string)data_key);
 
-    LOG("Tilemap: Initialized layer: " + ID + " with texture key: " + (std::string)texture_key + " and data key: " + (std::string)data_key);
+}
 
-    return ID;
+//------------------------------------- get map
+
+
+std::vector<std::shared_ptr<Sprite>> Game::GetTileMap(const std::string& key) 
+{
+    std::vector<std::shared_ptr<Sprite>> tiles;
+    const auto entities = Game::GetScene()->entities;
+
+    for (auto it = entities.begin(); it != entities.end(); ++it) {
+        const auto entity = *it;
+        if (entity->GetData<bool>(key) && entity->GetType() == Entity::TILE) {
+           const auto tile = std::static_pointer_cast<Sprite>(entity);
+           tiles.emplace_back(tile);
+        }
+    }
+
+    return tiles;
+}
+
+
+//------------------------------------- get layer
+
+
+std::vector<std::shared_ptr<Sprite>> Game::GetTileLayer(int layer) 
+{
+    std::vector<std::shared_ptr<Sprite>> tiles;
+    const auto entities = Game::GetScene()->entities;
+
+    for (auto it = entities.begin(); it != entities.end(); ++it) {
+        const auto entity = *it;
+        if (entity->GetData<int>("layer") == layer && entity->GetType() == Entity::TILE) {
+            const auto tile = std::static_pointer_cast<Sprite>(entity);
+            tiles.emplace_back(tile);
+        }
+    }
+
+    return tiles;
+}
+
+//------------------------------------- remove map
+
+
+void Game::RemoveTilemap(const std::string& key) 
+{
+    //remove tiles in layer from entity render queue
+
+    const auto entities = Game::GetScene()->entities;
+
+    for (auto it = entities.begin(); it != entities.end(); ++it) {
+        const auto tile = *it;
+        if (tile->GetData<bool>(key) && tile->GetType() == Entity::TILE) 
+            Game::DestroyEntity(tile); 
+    }
+
+    LOG("Tilemap: layer " + key + " removed.");
 }
 
 
 //------------------------------------- remove layer
 
 
-void System::Game::RemoveTileLayer(const std::string& ID) 
+void Game::RemoveTileLayer(int layer) 
 {
     //remove tiles in layer from entity render queue
 
-    const auto entities = System::Game::GetScene()->entities;
+    const auto entities = Game::GetScene()->entities;
 
     for (auto it = entities.begin(); it != entities.end(); ++it) {
         const auto tile = *it;
-        if (tile->GetData<bool>(ID) && tile->GetType() == Entity::TILE) 
-            System::Game::DestroyEntity(tile); 
+        if (tile->GetData<int>("layer") == layer && tile->GetType() == Entity::TILE) 
+            Game::DestroyEntity(tile); 
     }
 
-    LOG("Tilemap: layer " + ID + " cleared.");
+    LOG("Tilemap: layer " + std::to_string(layer) + " removed.");
 }
 
 //----------------------------- tile
 
 
-std::shared_ptr<Sprite> System::Game::CreateTileSprite(const std::string& key, float x, float y, int frame)
+std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, float y, int frame)
 {
     const auto ts = std::make_shared<Sprite>(key, x, y, false, true);
 
