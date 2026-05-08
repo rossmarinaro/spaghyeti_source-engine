@@ -21,7 +21,15 @@ using namespace System;
 
 void Game::CreateTilemapFromJSON(const std::string& key) 
 {
-    const std::string path = *Resources::Manager::GetFilePath(key); 
+    const auto pathPointer = Resources::Manager::GetFilePath(key); 
+
+    if (!pathPointer) {
+        LOG("error");
+        return;
+    }
+
+    const std::string path = *pathPointer;
+    
     std::ifstream in(path);
     json data = json::parse(in);
 
@@ -38,41 +46,36 @@ void Game::CreateTilemapFromJSON(const std::string& key)
 
                 std::string textureKey = "";
 
-                const auto getExtension = [](const std::string& filename) -> std::string {
-                    size_t lastDot = filename.find_last_of(".");
-                    if (lastDot != std::string::npos) 
-                        return filename.substr(lastDot);
-                    return "";
-                }
+                uint32_t tilewidth, tileHeight;
 
                 if (data.contains("tilesets") && data["tilesets"].size()) 
                 {   
-                    if (index <= data["tilesets"].size()) 
-                    {
+                    // if (index /* <= */< data["tilesets"].size()) 
+                    // {
                       
-                        std::string p = static_cast<std::string>(data["tilesets"][index]["image"]),
-                                    ext = Utils::GetFileExtension(p);
-                        textureKey = static_cast<std::string>(data["tilesets"][index]["name"]) + ext; 
-                    }
-                    else {
+                    //     std::string p = static_cast<std::string>(data["tilesets"][index]["image"]),
+                    //                 ext = Utils::GetFileExtension(p);
+                    //     textureKey = static_cast<std::string>(data["tilesets"][index]["name"]) + ext; 
+                    // }
+                    // else {
                         std::string p = static_cast<std::string>(data["tilesets"][0]["image"]),
                                     ext = Utils::GetFileExtension(p);
                         textureKey = static_cast<std::string>(data["tilesets"][0]["name"]) + ext;  
-                    }
+
+                        tilewidth = data["tilesets"][0].contains("tilewidth") ? static_cast<uint32_t>(data["tilesets"][0]["tilewidth"]) : 0,
+                        tileHeight = data["tilesets"][0].contains("tileheight") ? static_cast<uint32_t>(data["tilesets"][0]["tileheight"]) : 0;
+                    //}
                 }
 
-                int id = static_cast<int>(layer["id"]);
-
-                const uint32_t width = static_cast<uint32_t>(layer["width"]),
-                               height = static_cast<uint32_t>(layer["height"]),
-                               tilewidth = static_cast<uint32_t>(data["tilewidth"]),
-                               tileHeight = static_cast<uint32_t>(data["tileheight"]),
+                const uint32_t id = layer.contains("id") ? static_cast<int>(layer["id"]) : 0,
+                               width = layer.contains("width") ? static_cast<uint32_t>(layer["width"]) : 0,
+                               height = layer.contains("height") ? static_cast<uint32_t>(layer["height"]) : 0,
                                depth = layer.contains("z") ? static_cast<uint32_t>(layer["z"]) : index;
 
-                float x = static_cast<float>(layer["x"]),
-                      y = static_cast<float>(layer["y"]),
-                      scrollFactorX = layer.contains("parallaxx") ? static_cast<float>(layer["parallaxx"]) : 1.0f,
-                      scrollFactorY = layer.contains("parallaxy") ? static_cast<float>(layer["parallaxy"]) : 1.0f;
+                const float x = layer.contains("x") ? static_cast<float>(layer["x"]) : 0.0f,
+                            y = layer.contains("y") ? static_cast<float>(layer["y"]) : 0.0f,
+                            scrollFactorX = layer.contains("parallaxx") ? static_cast<float>(layer["parallaxx"]) : 1.0f,
+                            scrollFactorY = layer.contains("parallaxy") ? static_cast<float>(layer["parallaxy"]) : 1.0f;
 
                 //create the tile layer
 
@@ -90,19 +93,21 @@ void Game::CreateTilemapFromJSON(const std::string& key)
                     y,
                     scrollFactorX,
                     scrollFactorY
-                );   LOG(32);
+                );   
+
+                index++;
             }
 
-            if (layer.contains("objects")) 
-                for (auto& body : layer["objects"]) 
-                    Physics::CreateBody(Physics::Body::Type::STATIC, 
-                        static_cast<float>(body["x"]), 
-                        static_cast<float>(body["x"]), 
-                        static_cast<float>(body["width"]), 
-                        static_cast<float>(body["height"])
-                    );
+            // if (layer.contains("objects")) 
+            //     for (auto& body : layer["objects"]) 
+            //         Physics::CreateBody(Physics::Body::Type::STATIC, 
+            //             static_cast<float>(body["x"]), 
+            //             static_cast<float>(body["x"]), 
+            //             static_cast<float>(body["width"]), 
+            //             static_cast<float>(body["height"])
+            //         );
 
-            index++;
+   
         } ;LOG(22);
 }
 
@@ -110,7 +115,7 @@ void Game::CreateTilemapFromJSON(const std::string& key)
 //----------------------------------------------
 
 
-const std::string Game::CreateTileLayer(
+void Game::CreateTileLayer(
     int layer,
     const char* texture_key,
     const char* data_key,
@@ -126,12 +131,12 @@ const std::string Game::CreateTileLayer(
     float scrollFactorY,
     const std::string& shaderKey
 )
-{
+{ LOG(index);
     auto data = Resources::Manager::ParseMapData(data_key, index);
 
     if (!data.size()) {                                       
         LOG("Tilemap: layer data not found. Expected " + (std::string)data_key);
-        return "";
+        return;
     }
     
     //int layer;//const std::string ID = UUID::generate_uuid(); 
@@ -153,8 +158,8 @@ const std::string Game::CreateTileLayer(
         for (int x = 0; x < mapWidth; ++x) 
         {
             if ((data.begin() + (x + y * mapWidth)) == data.end()) {
-                LOG("Tilemap: index overflow, truncating map.");
-                return "";
+                LOG("Tilemap: Error - data overflow.");
+                return;
             }
 
             //convert string to int at index
@@ -189,19 +194,19 @@ const std::string Game::CreateTileLayer(
                                 
                     flipX = static_cast<std::string>(flags).substr(0, 1) == "1";
                     flipY = static_cast<std::string>(flags).substr(1, 1) == "1";
-                    diag = static_cast<std::string>(flags).substr(2, 1) == "1";
+                    diag = static_cast<std::string>(flags).substr(2, 1) == "1";  
                 }
 
                 //create tilesprite entity
-
-                const auto tile = Game::CreateTileSprite(texture_key, (x * tileWidth) + posX, (y * tileHeight) + posY, tileType); 
-            
+//LOG("x: "+std::to_string(x)+", y:"+std::to_string(y)+", tileW: "+std::to_string(tileWidth)+", tileH: "+std::to_string(tileHeight));
+                const auto tile = CreateTileSprite(texture_key, (x * tileWidth) + posX, (y * tileHeight) + posY, tileType); 
+       
                 tile->SetName((std::string)data_key);
                 tile->SetDepth(depth); 
                 tile->SetFlip(flipX, flipY);   
                 tile->SetScrollFactor({ scrollFactorX, scrollFactorY });
                 tile->SetCull(true);
-                tile->SetData(data_key, true);
+                //tile->SetData(data_key, true);
                 tile->SetData("layer", layer);
 
                 if (shaderKey.length())

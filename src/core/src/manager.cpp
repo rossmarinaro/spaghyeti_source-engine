@@ -149,58 +149,41 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
                 tile_width = data["tilewidth"],
                 tile_height = data["tileheight"];
 
+    LoadFile(key, path); //csv or json data relative to current project
 
-        if (data.contains("layers") && data["layers"].size())
+    //for every layer, iterate over widths and heights by index, 
+    //decrementing height each iteration by 1 until 0 / load frames and data file
+
+    if (data["tilesets"].size())
+        for (const auto& tileset : data["tilesets"])
         {
-            LoadFile(key, path); //csv or json data relative to current project
-             
-            //for every layer, iterate over widths and heights by index, 
-            //decrementing height each iteration by 1 until 0 / load frames and data file
+            std::vector<std::array<int, 6>> offset;
 
-            if (data["tilesets"].size())
-                for (const auto& tileset : data["tilesets"])
+            int w = 0,  
+                h = 0; 
+
+            for (int y = 0; y < map_height; ++y)
+                for (int x = 0; x < map_width; ++x)
                 {
-                    std::vector<std::array<int, 6>> offset;
+                    if (tileset.contains("columns") && w == tileset["columns"]) { //columns are amouunt of frames per sprite sheet
+                        w = 0;
+                        h++; 
+                    }   
 
-                    int w = 0,  
-                        h = 0; 
-
-                    for (int y = 0; y < map_height; ++y)
-                        for (int x = 0; x < map_width; ++x)
-                        {
-                            if (w == tileset["imagewidth"]) { 
-                                w = 0;
-                                h++; 
-                            }   
-
-                            if (w < map_width) {
-                                std::array<int, 6> off = { w, h, tile_width, tile_height, 1, 1 };
-                                offset.emplace_back(off); 
-                                w++;
-                            }
-                        } 
-
-                    std::string textureFilePath = static_cast<std::string>(tileset["image"]),
-                                ext = Utils::GetFileExtension(textureFilePath),
-                                texture = static_cast<std::string>(tileset["name"]) + ext;
-
-                    LoadFrames(texture, offset); //image texture with frame offsets
+                    if (w < map_width) {
+                        std::array<int, 6> off = { w, h, tile_width, tile_height, 1, 1 };
+                        offset.emplace_back(off); 
+                        w++;
+                    }
                 } 
-        }
-        else {
-            LOG("Error parsing tilemap. JSON does not contain layers field.");
-        }
-    }
-    //else  {
-      //  LOG("Error parsing tilemap. JSON does not contain tilesets field.");
-    
 
-   // #else 
-    //    LOG("Error parsing tilemap. USE_JSON not enabled.");
-   //d #endif
+            std::string textureFilePath = static_cast<std::string>(tileset["image"]),
+                        ext = Utils::GetFileExtension(textureFilePath),
+                        texture = static_cast<std::string>(tileset["name"]) + ext;
 
-    //return;
-//}
+            LoadFrames(texture, offset); //image texture with frame offsets
+        } 
+}
 
 
 //-------------------------------------  
@@ -355,7 +338,7 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
 
                             while(getline(ss, line))
                                 result.emplace_back(line);
-                        }
+                        } 
                 }
 
             #else 
@@ -377,7 +360,7 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
         if (in.is_open())
             in.close();      
     }
-        
+       
     return result; 
 
 }

@@ -152,7 +152,7 @@ void TilemapNode::ApplyTilemap(const std::string& dataKey)
 
     for (const auto& entity : System::Game::GetScene()->entities) 
         if (entity->GetType() == Entity::TILE) 
-            entity->SetData("initial position", entity->position);      Editor::Log("ok");
+            entity->SetData("initial position", entity->position);      
 }
 
 //---------------------------
@@ -536,7 +536,7 @@ void TilemapNode::Render(float _positionX, float _positionY, float _rotation, fl
         {
             const auto initialPosition = entity->GetData<Math::Vector2>("initial position");
 
-            entity->SetPosition(initialPosition.x + positionX, initialPosition.y + positionY);
-            entity->SetScale(entity->scale.x * scaleX, entity->scale.y * scaleY);
+            //entity->SetPosition(initialPosition.x + positionX, initialPosition.y + positionY);
+            //entity->SetScale(entity->scale.x * scaleX, entity->scale.y * scaleY);
         }
 }

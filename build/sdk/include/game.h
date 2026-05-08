@@ -53,7 +53,7 @@ namespace System {
             static void CreateTilemapFromJSON(const std::string& key); 
 
             //create tilemap layer from csv or json
-            static const std::string CreateTileLayer (
+            static void CreateTileLayer (
                 int layer,
                 const char* texture_key, 
                 const char* data_key,

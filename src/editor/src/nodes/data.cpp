@@ -748,8 +748,8 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             {
                 //physics  
        
-                if (data["components"]["physics"]["exists"]) 
-                    tmn->AddComponent(Component::PHYSICS, false);
+                //if (data["components"]["physics"]["exists"]) 
+                 //   tmn->AddComponent(Component::PHYSICS, false);
 
                 // if (data["components"]["physics"]["bodies"].size())
                 //     for (const auto& body : data["components"]["physics"]["bodies"]) 
@@ -774,8 +774,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             }
             
            // if (data.contains("filename") /* data.contains("layers") && data["layers"].size() */) {
-                System::Game::CreateTilemapFromJSON("cave.json"/* data["filename"] */);Editor::Log("2");//tmn->ApplyTilemap(/* makeNode */);
-                tmn->ApplyTilemap("cave.json"/* data["filename"] */);Editor::Log("3");
+              //System::Game::CreateTileSprite("cave2.png"/* data["filename"] */ ,180,180,0); 
+               System::Game::CreateTilemapFromJSON("cave.json"/* data["filename"] */);Editor::Log("2");//tmn->ApplyTilemap(/* makeNode */);
+                //tmn->ApplyTilemap("cave.json"/* data["filename"] */);Editor::Log("3");
            // }
 
             return tmn;
