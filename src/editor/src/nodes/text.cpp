@@ -45,7 +45,7 @@ TextNode::~TextNode()
 
 
 void TextNode::Reset(int component_type)
-{
+{ 
     bool passAll = component_type == Component::NONE;
 
     if (component_type == Component::SHADER || passAll)

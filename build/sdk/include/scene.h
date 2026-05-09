@@ -13,8 +13,8 @@ namespace System {
         public: 
 
             struct TilemapLayer {
-                std::string ID, dataKey, path, textureKey, shader;
-                int depth;
+                std::string dataKey, path, textureKey, shader;
+                int ID, depth;
                 float scrollFactorX, scrollFactorY, spriteWidth;
                 std::vector<Physics::Body> bodies;
             };

@@ -54,7 +54,7 @@ namespace System {
 
             //create tilemap layer from csv or json
             static void CreateTileLayer (
-                int layer,
+                int id,
                 const char* texture_key, 
                 const char* data_key,
                 uint32_t mapWidth, 
@@ -70,7 +70,7 @@ namespace System {
                 const std::string& shaderKey = ""
             );
 
-            static void CreateSpawn(
+            static void CreateSpawn (
                 int type, 
                 const std::string& filename, 
                 float x, 
@@ -87,7 +87,7 @@ namespace System {
             );
 
             static std::vector<std::shared_ptr<Sprite>> GetTileMap(const std::string& key); 
-            static std::vector<std::shared_ptr<Sprite>> GetTileLayer(int layer); 
+            static std::vector<std::shared_ptr<Sprite>> GetTileLayer(int id); 
 
             static void RemoveTilemap(const std::string& key);
             static void RemoveTileLayer(int layer);

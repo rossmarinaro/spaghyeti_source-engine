@@ -174,6 +174,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
         for (int i = 0; i < tmn->layers.size(); i++)
             layers.push_back({
+                { "id", tmn->layers[i].ID },
                 { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
                 { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
                 { "scroll factor x", tmn->layers[i].scrollFactorX },
@@ -193,8 +194,6 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             bodies.push_back({ { "body_width", body->width }, { "body_height", body->height }, { "bodyX", body->x }, { "bodyY", body->y } });
 
         data = {
-            { "filename", tmn->filename },
-            { "filepath", tmn->filepath },
             { "position x", tmn->positionX },
             { "position y", tmn->positionY },
             { "rotation", tmn->rotation },
@@ -718,31 +717,42 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("tile_height"))
                 tmn->tile_height = data["tile_height"];
                 
-            //if (data.contains("layer"))
-               // tmn->layer = data["layer"];
+            if (data.contains("layer"))
+                tmn->layer = data["layer"];
 
-           // if (data.contains("filename") && data.contains("filepath")) 
+            int layerIndex = 0;
+
+            for (const auto& layer : data["layers"]) 
             {
-                const std::string asset_path = "resources/assets/data/cave.json";//data["filepath"]; 
-        Editor::Log("0");   System::Resources::Manager::LoadTilemapFromJSON(/* data["filename"] */ "cave.json", Editor::projectPath + asset_path); Editor::Log("1");
-            }
-            
-                // for (const auto& layer : data["layers"]) 
-                // {
-                //     tmn->layers.push_back({ 
-                //         "", //temporary ID which is session agnostic, will update to uuid when applied
-                //         layer["key"], 
-                //         layer["path"], 
-                //         layer["texture"],
-                //         layer["shader"],
-                //         layer["depth"],
-                //         layer["scroll factor x"],
-                //         layer["scroll factor y"]
-                //     });
+                int layerID = layer.contains("id") ? static_cast<int>(layer["id"]) : 6;
 
-                //     const std::string asset_path = layer["path"]; 
-                //     System::Resources::Manager::LoadTilemapFromJSON(layer["key"], Editor::projectPath + asset_path);
-                // }
+                tmn->layers.push_back({ 
+                    layer["key"], 
+                    layer["path"], 
+                    layer["texture"],
+                    layer["shader"],
+                    layerID, 
+                    layer["depth"],
+                    layer["scroll factor x"],
+                    layer["scroll factor y"]
+                });
+
+                System::Resources::Manager::LoadTilemapFrames(layer["texture"], 8/* columns */, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
+                
+                System::Game::CreateTileLayer(
+                    layerID,
+                    tmn->layers[layerIndex].textureKey.c_str(),
+                    tmn->layers[layerIndex].dataKey.c_str(),
+                    tmn->map_width,
+                    tmn->map_height,
+                    tmn->tile_width,
+                    tmn->tile_height,
+                    tmn->layers[layerIndex].depth,
+                    layerIndex
+                ); 
+
+                layerIndex++;
+            }
 
             if (data.contains("components"))
             {
@@ -774,8 +784,8 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             }
             
            // if (data.contains("filename") /* data.contains("layers") && data["layers"].size() */) {
-              //System::Game::CreateTileSprite("cave2.png"/* data["filename"] */ ,180,180,0); 
-               System::Game::CreateTilemapFromJSON("cave.json"/* data["filename"] */);Editor::Log("2");//tmn->ApplyTilemap(/* makeNode */);
+          
+              // System::Game::CreateTilemapFromJSON("cave.json"/* data["filename"] */);Editor::Log("2");//tmn->ApplyTilemap(/* makeNode */);
                 //tmn->ApplyTilemap("cave.json"/* data["filename"] */);Editor::Log("3");
            // }
 

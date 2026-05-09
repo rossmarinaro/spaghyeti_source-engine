@@ -52,6 +52,7 @@ namespace System {
                 static void LoadAtlas(const std::string& key, const std::string& path); 
                 //loads json maps into memory and returns number of layers
                 static void LoadTilemapFromJSON(const std::string& key, const std::string& path);
+                static void LoadTilemapFrames(const std::string& textureKey, int columns, float map_width, float map_height, float tile_width, float tile_height); 
 
                 static void UnLoadFile(const std::string& key);
                 static void UnLoadRaw(const int type, const std::string& key);

@@ -47,7 +47,7 @@ void TilemapNode::AddLayer()
 {
     System::Scene::TilemapLayer _layer;
 
-    _layer.ID = UUID::generate_uuid();
+    _layer.ID = layers.size();
     _layer.dataKey = "";
     _layer.textureKey = "";
     _layer.path = "";
@@ -81,9 +81,9 @@ void TilemapNode::Reset(int component_type)
 
     m_mapApplied = false;
 
-    //if (passAll) 
-       // for (const auto& _layer : layers) 
-          //  System::Game::RemoveTileLayer(_layer.ID);
+    if (passAll) 
+        for (const auto& _layer : layers) 
+            System::Game::RemoveTileLayer(_layer.ID);
 }
 
 

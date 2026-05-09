@@ -208,8 +208,8 @@ void Node::ClearAll()
     if (!nodes.size()) 
         return;
 
-    //for (const auto& node : nodes)  
-       // node->Reset();
+    for (const auto& node : nodes)  
+        node->Reset();
     
     nodes.clear();
     s_names.clear();

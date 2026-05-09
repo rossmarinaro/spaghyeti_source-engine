@@ -214,15 +214,10 @@ Texture2D: "water.png" loaded. (filepath)
 Resources: assets registered.
 Sprite: "player.png" created. (generic)
 Sprite: "sewar floor.png" created. (generic)
-0
 Tilemap: Initialized layer: 6 with texture key: cave2.png and data key: cave.json
-1
-Tilemap: Initialized layer: 3 with texture key: cave2.png and data key: cave.json
-2
-Tilemap: Initialized layer: 5 with texture key: cave2.png and data key: cave.json
-3
-Tilemap: Initialized layer: 4 with texture key: cave2.png and data key: cave.json
-22
+Tilemap: Initialized layer: 6 with texture key: cave2.png and data key: cave.json
+Tilemap: Initialized layer: 6 with texture key: cave2.png and data key: cave.json
+Tilemap: Initialized layer: 6 with texture key: cave2.png and data key: cave.json
 Text:  created. (default)
 Text: score: created. (default)
 Text:  destroyed.
@@ -288,3 +283,83 @@ Sprite: "coin.png" created. (generic)
 Sprite: "coin.png" created. (generic)
 Sprite: "coin.png" created. (generic)
 Sprite: "coin.png" created. (generic)
+Tilemap: layer 6 removed.
+Tilemap: layer 6 removed.
+Tilemap: layer 6 removed.
+Tilemap: layer 6 removed.
+Sprite: "box.png" destroyed.
+Sprite: "box.png" destroyed.
+Sprite: "box.png" destroyed.
+Sprite: "box.png" destroyed.
+Sprite: "box.png" destroyed.
+Sprite: "box.png" destroyed.
+Sprite: "box.png" destroyed.
+Sprite: "bum.png" destroyed.
+Sprite: "bum.png" destroyed.
+Sprite: "bum.png" destroyed.
+Sprite: "rat.png" destroyed.
+Sprite: "rat.png" destroyed.
+Sprite: "rat.png" destroyed.
+Sprite: "rat.png" destroyed.
+Sprite: "sewar_fish.png" destroyed.
+Sprite: "sewar_fish.png" destroyed.
+Sprite: "sewar_fish.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "coin.png" destroyed.
+Sprite: "player.png" destroyed.
+Sprite: "sewar floor.png" destroyed.
+Text: score: destroyed.
+Shader: shader of key: Lines deleted.
+Shader: shader of key: Points deleted.
+Shader: shader of key: Triangles deleted.
+Shader: shader of key: grid deleted.
+Shader: shader of key: sprite deleted.
+Shader: shader of key: text deleted.
+Resources: assets cleared.
+Events: shut down.
+Renderer: shutting down...
+Application terminated successfully. 👌
+Geometry: quad destroyed.

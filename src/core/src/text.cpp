@@ -248,10 +248,8 @@ Text::~Text()
 {
     if (textType == DEFAULT) {
         auto it = std::find_if(_GLT_text_handles.begin(), _GLT_text_handles.end(), [this](const std::pair<std::string, GLTtext*>& text){ return this->ID == text.first; });
-        if (it != _GLT_text_handles.end()) {
-            it = _GLT_text_handles.erase(std::move(it));
-            --it;
-        }
+        if (it != _GLT_text_handles.end()) 
+            it = _GLT_text_handles.erase(it);
     }
 
     if (textType == FONT) {
@@ -550,7 +548,8 @@ void Text::SetText(const std::string& content) {
     this->content = content;
     if (textType == DEFAULT) {
         GLTtext* handle = static_cast<GLTtext*>(GetGLTPointer());
-        gltSetText(handle, this->content.c_str());
+        if (handle)
+            gltSetText(handle, this->content.c_str());
     }
 }
 
@@ -563,6 +562,10 @@ const Math::Vector2 Text::GetTextDimensions()
     if (textType == DEFAULT) 
     {
         const GLTtext* handle = static_cast<GLTtext*>(GetGLTPointer());
+
+        if (!handle) 
+            return { 0.0f, 0.0f };
+
         const GLfloat width = gltGetTextWidth(handle, scale.x),
                       height = gltGetTextHeight(handle, scale.y);
 

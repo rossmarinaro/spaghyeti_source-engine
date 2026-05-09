@@ -2,10 +2,10 @@
 #include <fstream>
 #include <type_traits>
 
-//#if USE_JSON == 1
+#if USE_JSON == 1
 	#include "../../vendors/nlohmann/json.hpp"
 	using json = nlohmann::json;
-//#endif
+#endif
 
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/manager.h"
@@ -124,12 +124,12 @@ void Manager::LoadAnims(const std::string& key, const std::map<const std::string
 
 void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& path)
 {
-    //#if USE_JSON == 1
+    #if USE_JSON == 1
 
     std::ifstream JSON(path);
 
     if (!JSON.good()) {
-        LOG("Tilemap: unable to parse, invalid json.");
+        LOG("Tilemap: unable to parse, invalid JSON.");
         return;
     }
 
@@ -140,7 +140,7 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
         !data.contains("tilewidth") || 
         !data.contains("tileheight") || 
         !data.contains("layers")) {
-            LOG("Tilemap: cannot construct from json missing params: [width, height, tilewidth, tileheight, layers].");
+            LOG("Tilemap: cannot construct from JSON - missing params: [width, height, tilewidth, tileheight, layers].");
             return;
         }
           
@@ -151,38 +151,60 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
 
     LoadFile(key, path); //csv or json data relative to current project
 
-    //for every layer, iterate over widths and heights by index, 
-    //decrementing height each iteration by 1 until 0 / load frames and data file
-
     if (data["tilesets"].size())
         for (const auto& tileset : data["tilesets"])
         {
-            std::vector<std::array<int, 6>> offset;
-
-            int w = 0,  
-                h = 0; 
-
-            for (int y = 0; y < map_height; ++y)
-                for (int x = 0; x < map_width; ++x)
-                {
-                    if (tileset.contains("columns") && w == tileset["columns"]) { //columns are amouunt of frames per sprite sheet
-                        w = 0;
-                        h++; 
-                    }   
-
-                    if (w < map_width) {
-                        std::array<int, 6> off = { w, h, tile_width, tile_height, 1, 1 };
-                        offset.emplace_back(off); 
-                        w++;
-                    }
-                } 
+            if (!tileset.contains("columns")) {
+                LOG("Tilemap: Cannot load frames - JSON does not contain columns value.")
+                return;
+            }
 
             std::string textureFilePath = static_cast<std::string>(tileset["image"]),
                         ext = Utils::GetFileExtension(textureFilePath),
-                        texture = static_cast<std::string>(tileset["name"]) + ext;
+                        textureKey = static_cast<std::string>(tileset["name"]) + ext;
 
-            LoadFrames(texture, offset); //image texture with frame offsets
+            LoadTilemapFrames(textureKey, static_cast<int>(tileset["columns"]), map_width, map_height, tile_width, tile_height);
         } 
+
+    #else
+        LOG("Tilemap: Cannot load from JSON file. USE_JSON=0");
+    #endif
+}
+
+
+//--------------------------------------------------------------
+
+
+void Manager::LoadTilemapFrames(
+    const std::string& textureKey,
+    int columns,
+    float map_width,
+    float map_height,
+    float tile_width,
+    float tile_height
+) 
+{
+    std::vector<std::array<int, 6>> offset;
+
+    int w = 0,  
+        h = 0; 
+
+    for (int y = 0; y < map_height; ++y)
+        for (int x = 0; x < map_width; ++x)
+        {
+            if (w == columns) { //columns are amouunt of frames per sprite sheet
+                w = 0;
+                h++; 
+            }   
+
+            if (w < map_width) {
+                std::array<int, 6> off = { w, h, tile_width, tile_height, 1, 1 };
+                offset.emplace_back(off); 
+                w++;
+            }
+        }
+
+    LoadFrames(textureKey, offset); //image texture with frame offsets
 }
 
 
