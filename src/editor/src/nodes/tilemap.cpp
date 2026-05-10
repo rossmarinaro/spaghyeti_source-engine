@@ -139,15 +139,18 @@ void TilemapNode::ApplyTilemap(const std::string& dataKey)
 
     const json data = json::parse(JSON);
 
-    if (data.contains("layers") && data["layers"].size()) 
+    if (data.contains("layers") && data["layers"].size()) {
         layer = data["layers"].size();
+        for (const auto& layer : data["layers"]) {
+            if (layer.contains("objects")) Editor::Log("Okkk");
+        }
+    }
 
     AssetManager::Register(dataKey);
 
     m_layersApplied = true;
     m_mapApplied = true;
     
-
     //set tiles initial position for group node origin data
 
     for (const auto& entity : System::Game::GetScene()->entities) 
@@ -385,7 +388,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                if (System::Utils::str_endsWith(path, ".json")) {
                                     if (ImGui::MenuItem(key.c_str())) {
-                                        /* layer = */ System::Resources::Manager::LoadTilemapFromJSON(key, path);//ParseJSONData(key, path);
+                                        System::Resources::Manager::LoadTilemapFromJSON(key, path);//ParseJSONData(key, path);
                                         ApplyTilemap(key);
                                     }
                                }
@@ -498,11 +501,11 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         if (System::Utils::str_endsWith(path, ".json")) {
                             ImGui::SetTooltip("Note: Only CSV Tile format supported."); 
                             if (ImGui::MenuItem(key.c_str())) {
-                                /* layer = */ System::Resources::Manager::LoadTilemapFromJSON(key, path);
-                                ApplyTilemap(key);
+                                System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
+                                System::Game::CreateTilemapFromJSON(key);
+                               // ApplyTilemap(key);
                             }
-                        }
-                                
+                        }    
                     }
 
                     EventListener::UpdateSession();

@@ -167,7 +167,7 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
         } 
 
     #else
-        LOG("Tilemap: Cannot load from JSON file. USE_JSON=0");
+        LOG("Tilemap: Cannot load tilemap from JSON file. USE_JSON=0");
     #endif
 }
 

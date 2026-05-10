@@ -4,10 +4,10 @@
 #ifndef __EMSCRIPTEN__
     #include <bits/stdc++.h>
 #endif
-//#if USE_JSON == 1
+#if USE_JSON == 1
 	#include "../../vendors/nlohmann/json.hpp"
 	using json = nlohmann::json;
-//#endif
+#endif
 
 #include "../../../build/sdk/include/game.h"
 #include "../../../build/sdk/include/app.h"
@@ -21,10 +21,12 @@ using namespace System;
 
 void Game::CreateTilemapFromJSON(const std::string& key) 
 {
+    #if USE_JSON == 1
+
     const auto pathPointer = Resources::Manager::GetFilePath(key); 
 
     if (!pathPointer) {
-        LOG("error");
+        LOG("Tilemap: Cannot create map - data filepath not found.");
         return;
     }
 
@@ -34,8 +36,6 @@ void Game::CreateTilemapFromJSON(const std::string& key)
     json data = json::parse(in);
 
     unsigned int index = 0;
-
-    //bodies
 
     if (data.contains("layers") && data["layers"].size()) 
         for (const auto& layer : data["layers"]) 
@@ -50,7 +50,7 @@ void Game::CreateTilemapFromJSON(const std::string& key)
 
                 if (data.contains("tilesets") && data["tilesets"].size()) 
                 {   
-                    const auto applyTexture = [&data] (int i) -> void {
+                    const auto applyTexture = [&] (int i) -> void {
 
                         std::string p = static_cast<std::string>(data["tilesets"][i]["image"]),
                                     ext = Utils::GetFileExtension(p);
@@ -75,36 +75,31 @@ void Game::CreateTilemapFromJSON(const std::string& key)
 
                 //create the tile layer
 
-                CreateTileLayer(
-                    id,
-                    textureKey.c_str(),
-                    key.c_str(),
-                    width,
-                    height,
-                    tilewidth,
-                    tileHeight,
-                    depth,
-                    index,
-                    x,
-                    y,
-                    scrollFactorX,
-                    scrollFactorY
-                );   
+                CreateTileLayer(id, textureKey.c_str(), key.c_str(), width, height, tilewidth, tileHeight, depth, index, x, y, scrollFactorX, scrollFactorY);   
 
                 index++;
             }
 
-            // if (layer.contains("objects")) 
-            //     for (auto& body : layer["objects"]) 
-            //         Physics::CreateBody(Physics::Body::Type::STATIC, 
-            //             static_cast<float>(body["x"]), 
-            //             static_cast<float>(body["x"]), 
-            //             static_cast<float>(body["width"]), 
-            //             static_cast<float>(body["height"])
-            //         );
+            //bodies
 
-   
+            if (layer.contains("objects")) 
+                for (auto& body : layer["objects"]) 
+                {
+                    const float x = body.contains("x") ? static_cast<float>(body["x"]) : 0.0f,
+                                y = body.contains("y") ? static_cast<float>(body["y"]) : 0.0f,
+                                width = body.contains("width") ? static_cast<float>(body["width"]) : 0.0f,
+                                height = body.contains("height") ? static_cast<float>(body["height"]) : 0.0f;
+
+                    const auto pb = Physics::CreateBody(Physics::Body::Type::STATIC, x, y, width, height);
+
+                    pb->UpdateFixture(pb->width / 2, pb->height / 2);
+                    pb->SetTransform(pb->x + pb->width / 2, pb->y + pb->height / 2);
+                }
         } 
+
+    #else
+        LOG("Tilemap: Cannot create tilemap from JSON - USE_JSON=0");
+    #endif
 }
 
 

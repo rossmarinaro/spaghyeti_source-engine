@@ -722,65 +722,57 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             int layerIndex = 0;
 
-            for (const auto& layer : data["layers"]) 
-            {
-                int layerID = layer.contains("id") ? static_cast<int>(layer["id"]) : 6;
+            if (data.contains("layers"))
+                for (const auto& layer : data["layers"]) 
+                {
+                    int layerID = layer.contains("id") ? static_cast<int>(layer["id"]) : 6,
+                        depth = layer.contains("depth") ? static_cast<int>(layer["depth"]) : 0,
+                        spriteFramesX = layer.contains("frames x") ? static_cast<int>(layer["frames x"]) : 0;
 
-                tmn->layers.push_back({ 
-                    layer["key"], 
-                    layer["path"], 
-                    layer["texture"],
-                    layer["shader"],
-                    layerID, 
-                    layer["depth"],
-                    layer["scroll factor x"],
-                    layer["scroll factor y"]
-                });
+                    float scrollFactorX = layer.contains("scroll factor x") ? static_cast<float>(layer["scroll factor x"]) : 0.0f,
+                          scrollFactorY = layer.contains("scroll factor y") ? static_cast<float>(layer["scroll factor y"]) : 0.0f;
 
-                System::Resources::Manager::LoadTilemapFrames(layer["texture"], 8/* columns */, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
-                
-                System::Game::CreateTileLayer(
-                    layerID,
-                    tmn->layers[layerIndex].textureKey.c_str(),
-                    tmn->layers[layerIndex].dataKey.c_str(),
-                    tmn->map_width,
-                    tmn->map_height,
-                    tmn->tile_width,
-                    tmn->tile_height,
-                    tmn->layers[layerIndex].depth,
-                    layerIndex
-                ); 
+                    const std::string key = layer.contains("key") ? static_cast<std::string>(layer["key"]) : "", 
+                                      path = layer.contains("path") ? static_cast<std::string>(layer["path"]) : "", 
+                                      texture = layer.contains("texture") ? static_cast<std::string>(layer["texture"]) : "",
+                                      shader = layer.contains("shader") ? static_cast<std::string>(layer["shader"]) : "";
 
-                layerIndex++;
-            }
+                    tmn->layers.push_back({ key, path, texture, shader, layerID, depth, scrollFactorX, scrollFactorY });
+
+                    System::Resources::Manager::LoadTilemapFrames(texture, spriteFramesX, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
+
+                    System::Game::CreateTileLayer(layerID, texture.c_str(), key.c_str(), tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height, depth, layerIndex); 
+
+                    layerIndex++;
+                }
 
             if (data.contains("components"))
             {
                 //physics  
        
-                //if (data["components"]["physics"]["exists"]) 
-                 //   tmn->AddComponent(Component::PHYSICS, false);
+                if (data["components"]["physics"]["exists"]) 
+                   tmn->AddComponent(Component::PHYSICS, false);
 
-                // if (data["components"]["physics"]["bodies"].size())
-                //     for (const auto& body : data["components"]["physics"]["bodies"]) 
-                //     {
-                //        if (makeNode) {
-                //             tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
-                //             for (int i = 0; i < tmn->bodies.size(); i++)
-                //                 tmn->UpdateBody(i);
-                //        }
-                //       else 
-                //         {
-                //             auto pb = std::make_shared<Physics::Body>();
+                if (data["components"]["physics"]["bodies"].size())
+                    for (const auto& body : data["components"]["physics"]["bodies"]) 
+                    {
+                       if (makeNode) {
+                            tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+                            for (int i = 0; i < tmn->bodies.size(); i++)
+                                tmn->UpdateBody(i);
+                       }
+                      else 
+                        {
+                            auto pb = std::make_shared<Physics::Body>();
 
-                //             pb->x = body["bodyX"];
-                //             pb->y = body["bodyY"]; 
-                //             pb->width = body["body_width"];
-                //             pb->height = body["body_height"];
+                            pb->x = body["bodyX"];
+                            pb->y = body["bodyY"]; 
+                            pb->width = body["body_width"];
+                            pb->height = body["body_height"];
                             
-                //             tmn->bodies.emplace_back(pb);
-                //         }
-                //     }
+                            tmn->bodies.emplace_back(pb);
+                        }
+                    }
             }
             
            // if (data.contains("filename") /* data.contains("layers") && data["layers"].size() */) {
