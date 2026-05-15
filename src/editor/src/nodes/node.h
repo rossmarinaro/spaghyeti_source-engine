@@ -205,7 +205,7 @@ namespace editor {
                 map_height,
                 tile_width, 
                 tile_height;
-   std::string filename, filepath;
+
             std::vector<int> spr_sheet_width,
                              spr_sheet_height;
 
@@ -214,9 +214,9 @@ namespace editor {
 
             std::vector<std::string> shaders;
 
-            std::vector<System::Scene::TilemapLayer> layers;
+            std::vector<System::Scene::TilemapLayer>* layers;
             std::vector<std::array<int, 6>> offset;
-            std::vector<std::shared_ptr<Physics::Body>> bodies;
+            std::vector<std::shared_ptr<Physics::Body>>* bodies;
 
             TilemapNode(bool init);
             ~TilemapNode();

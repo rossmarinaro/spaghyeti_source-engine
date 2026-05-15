@@ -1021,17 +1021,19 @@ void EventListener::BuildAndRun()
 
                     command_queue << "   if (loadMap) {\n";
 
-                    if (tmn->layers.size())
+                    if (tmn->layers->size())
                     {
                         for (int i = 0; i < tmn->layer; i++)
                         {
+                            const auto tl = (*tmn->layers)[i];
+
                             //copy or embed relevant map data if json
 
-                            if (System::Utils::str_includes(tmn->layers[i].path, ".json")) 
+                            if (System::Utils::str_includes(tl.path, ".json")) 
                             {
                                 //load frames / layers
 
-                                preload_queue << "    System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->layers[i].dataKey + """\", ""\"" + tmn->layers[i].path + """\");\n";
+                                preload_queue << "    System::Resources::Manager::LoadTilemapFromJSON(""\"" + tl.dataKey + """\", ""\"" + tl.path + """\");\n";
 
                                 const std::string projResPath = Editor::projectPath + "resources/assets/data",
                                                   enumType = "System::Resources::Manager::DATA";
@@ -1051,27 +1053,27 @@ void EventListener::BuildAndRun()
                                         iterateFolder(file, projResPath, enumType);
                             }
 
-                            if (tmn->layers[i].textureKey.length()) {
+                            if (tl.textureKey.length()) {
                                 //command_queue << "  System::Resources::Manager::LoadAtlas(\"" + tmn->layers[i].dataKey + "\", \"assets/" + tmn->layers[i].dataKey + "\");\n";
                                 //command_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i].textureKey + "\", { " + offset_oss.str() + " });\n";
                                 //loadedFrames.emplace_back(tmn->layers[i].textureKey);
                             }
                             
-                            if (tmn->layers[i].dataKey.length()) 
+                            if (tl.dataKey.length()) 
                             {
-                                const std::string shader = tmn->layers[i].shader.length() ? tmn->layers[i].shader : "\"\"";
+                                const std::string shader = tl.shader.length() ? tl.shader : "\"\"";
 
-                                command_queue << "      System::Game::CreateTileLayer(\"" + tmn->layers[i].textureKey + "\", ""\"" + tmn->layers[i].dataKey + "\", " + 
+                                command_queue << "      System::Game::CreateTileLayer(\"" + tl.textureKey + "\", ""\"" + tl.dataKey + "\", " + 
                                 std::to_string(tmn->map_width) + ", " + 
                                 std::to_string(tmn->map_height) + ", " + 
                                 std::to_string(tmn->tile_width) + ", " + 
                                 std::to_string(tmn->tile_height) + ", " + 
-                                std::to_string(tmn->layers[i].depth) + ", " + 
+                                std::to_string(tl.depth) + ", " + 
                                 std::to_string(i) + ", " + 
                                 FloatToString(tmn->actualPositionX) + ", " + 
                                 FloatToString(tmn->actualPositionY) + ", " + 
-                                FloatToString(tmn->layers[i].scrollFactorX) + ", " +
-                                FloatToString(tmn->layers[i].scrollFactorY) + ", " +
+                                FloatToString(tl.scrollFactorX) + ", " +
+                                FloatToString(tl.scrollFactorY) + ", " +
                                 shader +
                                 ");\n";
 
@@ -1097,7 +1099,7 @@ void EventListener::BuildAndRun()
 
                         //create map entity handle
 
-                        if (tmn->layers[0].dataKey.length()) {
+                        if ((*tmn->layers)[0].dataKey.length()) {
                             command_queue << "      const auto map_" + node->ID + " = System::Game::CreateEntity(Entity::TILE);\n\t";
                             command_queue << "   map_" + node->ID + "->SetName(\"" + tmn->name + "\");\n";
                         }
@@ -1108,8 +1110,8 @@ void EventListener::BuildAndRun()
 
                     //static physics bodies
 
-                    if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies.size()) 
-                        for (const auto& body : tmn->bodies) 
+                    if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies->size()) 
+                        for (const auto& body : (*tmn->bodies)) 
                             command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x + body->width / 2) + ", " + FloatToString(body->y + body->height / 2) + ", " + FloatToString(body->width / 2) + ", " + FloatToString(body->height / 2) + ");\n";
 
                 } 

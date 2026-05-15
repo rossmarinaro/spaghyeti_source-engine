@@ -19,15 +19,18 @@ using namespace System;
 //---------------------------------------------- construct tilemap on the fly from a loaded map json file
 
 
-void Game::CreateTilemapFromJSON(const std::string& key) 
+std::pair<std::vector<Scene::TilemapLayer>, std::vector<std::shared_ptr<Physics::Body>>> Game::CreateTilemapFromJSON(const std::string& key) 
 {
+    std::vector<Scene::TilemapLayer> map;
+    std::vector<std::shared_ptr<Physics::Body>> bodies;
+
     #if USE_JSON == 1
 
     const auto pathPointer = Resources::Manager::GetFilePath(key); 
 
     if (!pathPointer) {
         LOG("Tilemap: Cannot create map - data filepath not found.");
-        return;
+        return { map, bodies };
     }
 
     const std::string path = *pathPointer;
@@ -75,7 +78,9 @@ void Game::CreateTilemapFromJSON(const std::string& key)
 
                 //create the tile layer
 
-                CreateTileLayer(id, textureKey.c_str(), key.c_str(), width, height, tilewidth, tileHeight, depth, index, x, y, scrollFactorX, scrollFactorY);   
+                const auto tileLayer = CreateTileLayer(id, textureKey.c_str(), key.c_str(), width, height, tilewidth, tileHeight, depth, index, x, y, scrollFactorX, scrollFactorY);  
+                
+                map.emplace_back(tileLayer);
 
                 index++;
             }
@@ -94,19 +99,25 @@ void Game::CreateTilemapFromJSON(const std::string& key)
 
                     pb->UpdateFixture(pb->width / 2, pb->height / 2);
                     pb->SetTransform(pb->x + pb->width / 2, pb->y + pb->height / 2);
+
+                    bodies.emplace_back(pb);
                 }
         } 
 
     #else
         LOG("Tilemap: Cannot create tilemap from JSON - USE_JSON=0");
     #endif
+
+    map.emplace_back();
+
+    return { map, bodies };
 }
 
 
 //----------------------------------------------
 
 
-void Game::CreateTileLayer(
+Scene::TilemapLayer Game::CreateTileLayer(
     int id,
     const char* texture_key,
     const char* data_key,
@@ -123,11 +134,21 @@ void Game::CreateTileLayer(
     const std::string& shaderKey
 )
 { 
+    Scene::TilemapLayer layer;
+    
+    layer.textureKey = texture_key;
+    layer.dataKey = data_key;
+    layer.ID = id;
+    layer.depth = depth;
+    layer.shader = shaderKey;
+    layer.scrollFactorX = scrollFactorX;
+    layer.scrollFactorY = scrollFactorY;
+
     auto data = Resources::Manager::ParseMapData(data_key, index);
 
     if (!data.size()) {                                       
         LOG("Tilemap: layer data not found. Expected " + (std::string)data_key);
-        return;
+        return layer;
     }
 
     std::stringstream ss; 
@@ -148,7 +169,7 @@ void Game::CreateTileLayer(
         {
             if ((data.begin() + (x + y * mapWidth)) == data.end()) {
                 LOG("Tilemap: Error - data overflow.");
-                return;
+                return layer;
             }
 
             //convert string to int at index
@@ -207,6 +228,8 @@ void Game::CreateTileLayer(
         }
  
     LOG("Tilemap: Initialized layer: " + std::to_string(id) + " with texture key: " + (std::string)texture_key + " and data key: " + (std::string)data_key);
+
+    return layer;
 
 }
 

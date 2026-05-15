@@ -165,33 +165,39 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
     if (node->type == TILEMAP)
     {
-
         const auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
 
         //layers
 
         json layers = json::array();
 
-        for (int i = 0; i < tmn->layers.size(); i++)
-            layers.push_back({
-                { "id", tmn->layers[i].ID },
-                { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
-                { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
-                { "scroll factor x", tmn->layers[i].scrollFactorX },
-                { "scroll factor y", tmn->layers[i].scrollFactorY },
-                { "shader", tmn->layers[i].shader },
-                { "depth", tmn->layers[i].depth },
-                { "key", tmn->layers[i].dataKey },
-                { "path", tmn->layers[i].path },
-                { "texture", tmn->layers[i].textureKey }
-            });
+        if (tmn->layers)
+            for (int i = 0; i < tmn->layers->size(); i++) 
+            {
+                const auto layer = (*tmn->layers)[i];
+                
+                layers.push_back({
+                    { "id", layer.ID },
+                    { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
+                    { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
+                    { "scroll factor x", layer.scrollFactorX },
+                    { "scroll factor y", layer.scrollFactorY },
+                    { "shader", layer.shader },
+                    { "depth", layer.depth },
+                    { "key", layer.dataKey },
+                    { "path", layer.path },
+                    { "texture", layer.textureKey }
+                });
 
+            }
+   
         //physics bodies
 
         json bodies = json::array();
 
-        for (const auto& body : tmn->bodies) 
-            bodies.push_back({ { "body_width", body->width }, { "body_height", body->height }, { "bodyX", body->x }, { "bodyY", body->y } });
+        if (tmn->bodies)
+            for (const auto& body : *tmn->bodies) 
+                bodies.push_back({ { "body_width", body->width }, { "body_height", body->height }, { "bodyX", body->x }, { "bodyY", body->y } });
 
         data = {
             { "position x", tmn->positionX },
@@ -737,7 +743,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                                       texture = layer.contains("texture") ? static_cast<std::string>(layer["texture"]) : "",
                                       shader = layer.contains("shader") ? static_cast<std::string>(layer["shader"]) : "";
 
-                    tmn->layers.push_back({ key, path, texture, shader, layerID, depth, scrollFactorX, scrollFactorY });
+                    tmn->layers->push_back({ key, path, texture, shader, layerID, depth, scrollFactorX, scrollFactorY });
 
                     System::Resources::Manager::LoadTilemapFrames(texture, spriteFramesX, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
 
@@ -756,12 +762,14 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 if (data["components"]["physics"]["bodies"].size())
                     for (const auto& body : data["components"]["physics"]["bodies"]) 
                     {
-                       if (makeNode) {
+                        if (makeNode) 
+                        {
                             tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
-                            for (int i = 0; i < tmn->bodies.size(); i++)
+
+                            for (int i = 0; i < tmn->bodies->size(); i++)
                                 tmn->UpdateBody(i);
-                       }
-                      else 
+                        }
+                        else 
                         {
                             auto pb = std::make_shared<Physics::Body>();
 
@@ -770,7 +778,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                             pb->width = body["body_width"];
                             pb->height = body["body_height"];
                             
-                            tmn->bodies.emplace_back(pb);
+                            tmn->bodies->emplace_back(pb);
                         }
                     }
             }

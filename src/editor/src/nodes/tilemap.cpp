@@ -18,9 +18,9 @@ TilemapNode::TilemapNode(bool init):
     map_height = 10;
     tile_width = 64;
     tile_height = 64;
-    filename = ""; 
-    filepath = "";
-
+    layers = nullptr; 
+    bodies = nullptr;
+    
     if (m_init)
         Editor::Log("Tilemap node " + name + " created."); 
 }
@@ -47,17 +47,17 @@ void TilemapNode::AddLayer()
 {
     System::Scene::TilemapLayer _layer;
 
-    _layer.ID = layers.size();
+    _layer.ID = layers->size();
     _layer.dataKey = "";
     _layer.textureKey = "";
     _layer.path = "";
     _layer.shader = "";
-    _layer.depth = layers.size() ? layers.back().depth + 1 : 0;
+    _layer.depth = layers->size() ? layers->back().depth + 1 : 0;
     _layer.scrollFactorX = 1.0f;
     _layer.scrollFactorY = 1.0f;
     _layer.spriteWidth = 0.0f; 
 
-    layers.push_back(_layer);
+    layers->push_back(_layer);
 
     layer++;
     //spr_sheet_width.push_back(0);
@@ -72,18 +72,25 @@ void TilemapNode::Reset(int component_type)
 {
     bool passAll = component_type == Component::NONE;
 
-    if (component_type == Component::PHYSICS || passAll) {
-        for (const auto& body : bodies)
+    if (component_type == Component::PHYSICS || passAll && bodies) {
+        for (const auto& body : *bodies)
             Physics::DestroyBody(body);
 
-        bodies.clear();
+        bodies->clear();
+        delete bodies;
+        bodies = nullptr;
     }
 
     m_mapApplied = false;
 
-    if (passAll) 
-        for (const auto& _layer : layers) 
-            System::Game::RemoveTileLayer(_layer.ID);
+    if (passAll && layers) 
+    {
+        for (const auto& _layer : *layers) 
+            System::Game::RemoveTileLayer(_layer.ID); 
+        delete layers;
+        layers = nullptr;
+    }
+  
 }
 
 
@@ -163,7 +170,7 @@ void TilemapNode::ApplyTilemap(const std::string& dataKey)
 
 void TilemapNode::CreateBody(float x, float y, float width, float height) {
     const auto pb = Physics::CreateBody(Physics::Body::Type::STATIC, x, y, width, height);
-    bodies.emplace_back(pb);
+    bodies->emplace_back(pb);
 }
 
 
@@ -171,9 +178,10 @@ void TilemapNode::CreateBody(float x, float y, float width, float height) {
 
 
 void TilemapNode::UpdateBody(int index) {
-    if (bodies[index]) {
-        bodies[index]->UpdateFixture(bodies[index]->width / 2, bodies[index]->height / 2);
-        bodies[index]->SetTransform(bodies[index]->x + bodies[index]->width / 2, bodies[index]->y + bodies[index]->height / 2);
+    if (bodies->size()) {
+        const auto body = (*bodies)[index];
+        body->UpdateFixture(body->width / 2, body->height / 2);
+        body->SetTransform(body->x + body->width / 2, body->y + body->height / 2);
     }
 }
 
@@ -222,7 +230,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         
                         int i = 0;
 
-                        for (auto& body : bodies)
+                        for (auto& body : *bodies)
                         {
                             ImGui::PushID(i);
 
@@ -236,15 +244,15 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             
                             UpdateBody(i);
 
-                            if (ImGui::Button("remove") && bodies.size() > 1) 
+                            if (ImGui::Button("remove") && bodies->size() > 1) 
                             {
-                                auto it = std::find_if(bodies.begin(), bodies.end(), [&](const std::shared_ptr<Physics::Body>& b) { return b->id == body->id; });
+                                auto it = std::find_if(bodies->begin(), bodies->end(), [&](const std::shared_ptr<Physics::Body>& b) { return b->id == body->id; });
                             
-                                if (it != bodies.end()) 
+                                if (it != bodies->end()) 
                                 {
                                     const auto pb = *it;   
 
-                                    it = bodies.erase(std::move(it));
+                                    it = bodies->erase(std::move(it));
                                     --it;
 
                                     if (pb)
@@ -281,10 +289,10 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             {
                                 if (ImGui::MenuItem(key.c_str())) 
                                 {
-                                    for (const auto& body : bodies)
+                                    for (const auto& body : *bodies)
                                         Physics::DestroyBody(body);
 
-                                    bodies.clear();
+                                    bodies->clear();
 
                                     //parse json to extract body data
 
@@ -296,7 +304,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                         CreateBody(x, y, w, h);
                                         
-                                        for (int i = 0; i < bodies.size(); i++)
+                                        for (int i = 0; i < bodies->size(); i++)
                                             UpdateBody(i);
                                     };
 
@@ -402,14 +410,14 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         std::string data_file_name = "";
 
-                        if (layers.size())
-                            data_file_name = layers[i].dataKey;
+                        if (layers->size())
+                            data_file_name = (*layers)[i].dataKey;
 
                         ImGui::Text(data_file_name.c_str()); 
 
-                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get(layers[i].textureKey).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE) 
+                        if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get((*layers)[i].textureKey).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE) 
                         {
-                            layers[i].textureKey = AssetManager::Get()->selectedAsset;
+                            (*layers)[i].textureKey = AssetManager::Get()->selectedAsset;
                             m_layersApplied = false;
                             EventListener::UpdateSession();
                         }
@@ -417,18 +425,18 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) != System::Resources::Manager::IMAGE)
                             ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
 
-                        if (ImGui::SliderInt("depth", &layers[i].depth, 0, 1000)) 
+                        if (ImGui::SliderInt("depth", &(*layers)[i].depth, 0, 1000)) 
                             m_layersApplied = false;
                         
                         if (ImGui::IsItemDeactivatedAfterEdit())
                             EventListener::UpdateSession();
 
-                        if (ImGui::InputFloat("scroll factor x", &layers[i].scrollFactorX)) {
+                        if (ImGui::InputFloat("scroll factor x", &(*layers)[i].scrollFactorX)) {
                             m_layersApplied = false;
                             EventListener::UpdateSession();
                         }
                         
-                        if (ImGui::InputFloat("scroll factor y", &layers[i].scrollFactorY)) {
+                        if (ImGui::InputFloat("scroll factor y", &(*layers)[i].scrollFactorY)) {
                             m_layersApplied = false;
                             EventListener::UpdateSession();
                         }
@@ -444,7 +452,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                         std::string name = dir.path().filename().string();
                                         if (ImGui::MenuItem(name.c_str())) {
                                             m_layersApplied = false;
-                                            layers[i].shader = name;
+                                            (*layers)[i].shader = name;
                                             EventListener::UpdateSession();
                                         }
                                     }
@@ -455,7 +463,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         ImGui::PopID();
                     } 
 
-                    if (ImGui::Button("apply") && !m_layersApplied && layers.size()) {
+                    if (ImGui::Button("apply") && !m_layersApplied && layers->size()) {
                         //System::Game::RemoveTileLayer(layers[layer - 1].ID);
                         //ApplyTilemap();
                         EventListener::UpdateSession();
@@ -478,7 +486,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                        // if (layers.size()) 
                             //System::Game::RemoveTileLayer(layers[layer - 1].ID);
 
-                        layers.pop_back();
+                        layers->pop_back();
                         layer--;
                         EventListener::UpdateSession();
                     }
@@ -500,9 +508,23 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         if (System::Utils::str_endsWith(path, ".json")) {
                             ImGui::SetTooltip("Note: Only CSV Tile format supported."); 
-                            if (ImGui::MenuItem(key.c_str())) {
+                            if (ImGui::MenuItem(key.c_str())) 
+                            {
                                 System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
-                                System::Game::CreateTilemapFromJSON(key);
+
+                                auto map = System::Game::CreateTilemapFromJSON(key);
+
+                                //for (const auto& layer : map.first)
+                                    //layers.emplace_back(layer);
+
+                                //for (const auto& body : map.second)
+                                    //bodies.emplace_back(body);
+
+                                layers = new std::vector<System::Scene::TilemapLayer>();//&map.first;
+                                bodies = new std::vector<std::shared_ptr<Physics::Body>>();//&map.second;
+
+                                if (bodies && bodies->size()) 
+                                    AddComponent(Component::PHYSICS, false);
                                // ApplyTilemap(key);
                             }
                         }    

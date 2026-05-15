@@ -49,11 +49,11 @@ namespace System {
             static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y, const std::string& font = "", int layer = 2);
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height, int layer = 1, bool isStatic = false, bool isSpawn = false);
 
-            //construct tilemap on the fly from a loaded map json file
-            static void CreateTilemapFromJSON(const std::string& key); 
+            //construct tilemap on the fly from a loaded map json file and return map
+            static std::pair<std::vector<Scene::TilemapLayer>, std::vector<std::shared_ptr<Physics::Body>>> CreateTilemapFromJSON(const std::string& key); 
 
             //create tilemap layer from csv or json
-            static void CreateTileLayer (
+            static Scene::TilemapLayer CreateTileLayer (
                 int id,
                 const char* texture_key, 
                 const char* data_key,
