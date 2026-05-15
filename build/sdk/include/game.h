@@ -90,7 +90,7 @@ namespace System {
             static std::vector<std::shared_ptr<Sprite>> GetTileLayer(int id); 
 
             static void RemoveTilemap(const std::string& key);
-            static void RemoveTileLayer(int layer);
+            static void RemoveTileLayer(int id);
 
             static void DestroyEntity(std::shared_ptr<Entity> entity);
             static void SetCullPosition(Math::Vector2* position);

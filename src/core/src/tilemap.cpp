@@ -296,7 +296,7 @@ void Game::RemoveTilemap(const std::string& key)
 //------------------------------------- remove layer
 
 
-void Game::RemoveTileLayer(int layer) 
+void Game::RemoveTileLayer(int id) 
 {
     //remove tiles in layer from entity render queue
 
@@ -304,11 +304,11 @@ void Game::RemoveTileLayer(int layer)
 
     for (auto it = entities.begin(); it != entities.end(); ++it) {
         const auto tile = *it;
-        if (tile->GetData<int>("layer") == layer && tile->GetType() == Entity::TILE) 
+        if (tile->GetData<int>("id") == id && tile->GetType() == Entity::TILE) 
             Game::DestroyEntity(tile); 
     }
 
-    LOG("Tilemap: layer " + std::to_string(layer) + " removed.");
+    LOG("Tilemap: layer " + std::to_string(id) + " removed.");
 }
 
 //----------------------------- tile

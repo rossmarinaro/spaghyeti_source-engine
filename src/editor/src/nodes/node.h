@@ -233,6 +233,7 @@ namespace editor {
 
             bool m_layersApplied, m_mapApplied;
             void AddLayer();
+            void InitMap(const std::string& key, const std::string& path);
     };
 
     //--------------------------------- text, font

@@ -31,9 +31,20 @@ TilemapNode::TilemapNode(bool init):
 
 TilemapNode::~TilemapNode() {
     
- //   if (m_mapApplied) 
-      //  for (const auto& _layer : layers)
-         //   System::Game::RemoveTileLayer(_layer.ID);
+    if (m_mapApplied) 
+        for (const auto& _layer : *layers)
+            System::Game::RemoveTileLayer(_layer.ID);
+
+    if (layers)
+    {
+        delete layers;
+        layers = nullptr;
+    }
+    if (bodies)
+    {
+        delete bodies;
+        bodies = nullptr;
+    }
 
     if (m_init)
         Editor::Log("Tilemap node " + name + " deleted.");
@@ -91,6 +102,49 @@ void TilemapNode::Reset(int component_type)
         layers = nullptr;
     }
   
+}
+
+
+//---------------------------
+
+
+void TilemapNode::InitMap(const std::string& key, const std::string& path) 
+{
+    if (System::Utils::str_endsWith(path, ".json"))
+    {
+        System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
+
+        auto map = System::Game::CreateTilemapFromJSON(key);
+
+        if (!layers)
+            layers = new std::vector<System::Scene::TilemapLayer>();
+
+        if (!bodies)
+            bodies = new std::vector<std::shared_ptr<Physics::Body>>();
+
+        for (const auto& layer : map.first)
+            layers->emplace_back(layer);
+
+        for (const auto& body : map.second)
+            bodies->emplace_back(body);
+
+        if (bodies && bodies->size()) 
+            AddComponent(Component::PHYSICS, false);
+    }
+
+    if (System::Utils::str_endsWith(path, ".csv")) 
+    {
+        // if (ImGui::MenuItem(key.c_str())) {
+        //     layers[i].dataKey = key;
+        //     layers[i].path = path;
+        //     layers[i].depth = i;
+        //     spr_sheet_width[i] = Graphics::Texture2D::Get(layers[i].textureKey).Width / tile_width;
+        //     spr_sheet_height[i] = Graphics::Texture2D::Get(layers[i].textureKey).Height / tile_height; 
+        //     m_layersApplied = false;
+        //     EventListener::UpdateSession();
+        // }
+    }
+
 }
 
 
@@ -381,26 +435,13 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
                                 path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
 
-                                if (System::Utils::str_endsWith(path, ".csv")) 
-                                {
-                                    // if (ImGui::MenuItem(key.c_str())) {
-                                    //     layers[i].dataKey = key;
-                                    //     layers[i].path = path;
-                                    //     layers[i].depth = i;
-                                    //     spr_sheet_width[i] = Graphics::Texture2D::Get(layers[i].textureKey).Width / tile_width;
-                                    //     spr_sheet_height[i] = Graphics::Texture2D::Get(layers[i].textureKey).Height / tile_height; 
-                                    //     m_layersApplied = false;
-                                    //     EventListener::UpdateSession();
-                                    // }
-                                }
+                                if (System::Utils::str_endsWith(path, ".csv") || System::Utils::str_endsWith(path, ".json")) 
+                                    if (ImGui::MenuItem(key.c_str())) 
+                                    {
+                                        InitMap(key, path);
+                                        //ApplyTilemap(key);
 
-                               if (System::Utils::str_endsWith(path, ".json")) {
-                                    if (ImGui::MenuItem(key.c_str())) {
-                                        System::Resources::Manager::LoadTilemapFromJSON(key, path);//ParseJSONData(key, path);
-                                        ApplyTilemap(key);
-                                    }
-                               }
-                                       
+                                    }      
                             }
                   
                             ImGui::EndMenu();
@@ -464,7 +505,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                     } 
 
                     if (ImGui::Button("apply") && !m_layersApplied && layers->size()) {
-                        //System::Game::RemoveTileLayer(layers[layer - 1].ID);
+                        //System::Game::RemoveTileLayer(layers->back().ID);
                         //ApplyTilemap();
                         EventListener::UpdateSession();
                     }
@@ -481,10 +522,10 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                     ImGui::SameLine();
 
-                    if (ImGui::Button("remove layer") && layer > 0) 
+                    if (ImGui::Button("remove layer") && layers && layer > 0) 
                     {
-                       // if (layers.size()) 
-                            //System::Game::RemoveTileLayer(layers[layer - 1].ID);
+                        if (layers->size()) 
+                            System::Game::RemoveTileLayer(layers->back().ID);
 
                         layers->pop_back();
                         layer--;
@@ -510,21 +551,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             ImGui::SetTooltip("Note: Only CSV Tile format supported."); 
                             if (ImGui::MenuItem(key.c_str())) 
                             {
-                                System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
-
-                                auto map = System::Game::CreateTilemapFromJSON(key);
-
-                                //for (const auto& layer : map.first)
-                                    //layers.emplace_back(layer);
-
-                                //for (const auto& body : map.second)
-                                    //bodies.emplace_back(body);
-
-                                layers = new std::vector<System::Scene::TilemapLayer>();//&map.first;
-                                bodies = new std::vector<std::shared_ptr<Physics::Body>>();//&map.second;
-
-                                if (bodies && bodies->size()) 
-                                    AddComponent(Component::PHYSICS, false);
+                                InitMap(key, path);
                                // ApplyTilemap(key);
                             }
                         }    
@@ -559,7 +586,7 @@ void TilemapNode::Render(float _positionX, float _positionY, float _rotation, fl
     for (const auto& entity : System::Game::GetScene()->entities) 
         if (entity->GetType() == Entity::TILE) 
         {
-            const auto initialPosition = entity->GetData<Math::Vector2>("initial position");
+            //const auto initialPosition = entity->GetData<Math::Vector2>("initial position");
 
             //entity->SetPosition(initialPosition.x + positionX, initialPosition.y + positionY);
             //entity->SetScale(entity->scale.x * scaleX, entity->scale.y * scaleY);

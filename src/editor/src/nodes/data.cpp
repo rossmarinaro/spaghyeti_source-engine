@@ -729,6 +729,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             int layerIndex = 0;
 
             if (data.contains("layers"))
+            {
+                tmn->layers = new std::vector<System::Scene::TilemapLayer>();
+
                 for (const auto& layer : data["layers"]) 
                 {
                     int layerID = layer.contains("id") ? static_cast<int>(layer["id"]) : 6,
@@ -743,14 +746,14 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                                       texture = layer.contains("texture") ? static_cast<std::string>(layer["texture"]) : "",
                                       shader = layer.contains("shader") ? static_cast<std::string>(layer["shader"]) : "";
 
-                    tmn->layers->push_back({ key, path, texture, shader, layerID, depth, scrollFactorX, scrollFactorY });
-
                     System::Resources::Manager::LoadTilemapFrames(texture, spriteFramesX, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
 
-                    System::Game::CreateTileLayer(layerID, texture.c_str(), key.c_str(), tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height, depth, layerIndex); 
+                    const auto tl = System::Game::CreateTileLayer(layerID, texture.c_str(), key.c_str(), tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height, depth, layerIndex); 
+                    tmn->layers->emplace_back(tl);
 
                     layerIndex++;
                 }
+            }
 
             if (data.contains("components"))
             {
@@ -760,6 +763,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                    tmn->AddComponent(Component::PHYSICS, false);
 
                 if (data["components"]["physics"]["bodies"].size())
+                {
+                    tmn->bodies = new std::vector<std::shared_ptr<Physics::Body>>();
+
                     for (const auto& body : data["components"]["physics"]["bodies"]) 
                     {
                         if (makeNode) 
@@ -781,6 +787,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                             tmn->bodies->emplace_back(pb);
                         }
                     }
+                }
             }
             
            // if (data.contains("filename") /* data.contains("layers") && data["layers"].size() */) {
