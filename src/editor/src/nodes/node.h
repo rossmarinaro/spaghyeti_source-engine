@@ -200,22 +200,12 @@ namespace editor {
 
         public:
 
-            int layer, 
-                map_width, 
+            int map_width, 
                 map_height,
                 tile_width, 
                 tile_height;
 
-            std::vector<int> spr_sheet_width,
-                             spr_sheet_height;
-
-            std::vector<float> scrollFactorX,
-                               scrollFactorY;
-
-            std::vector<std::string> shaders;
-
             std::vector<System::Scene::TilemapLayer>* layers;
-            std::vector<std::array<int, 6>> offset;
             std::vector<std::shared_ptr<Physics::Body>>* bodies;
 
             TilemapNode(bool init);
@@ -224,16 +214,13 @@ namespace editor {
             void Update(std::vector<std::shared_ptr<Node>>& arr) override;
             void Reset(const int component_type = Component::NONE) override; 
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
-
-            void ApplyTilemap(const std::string& dataKey);
             void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
             void UpdateBody(int index);
  
         private: 
 
-            bool m_layersApplied, m_mapApplied;
             void AddLayer();
-            void InitMap(const std::string& key, const std::string& path);
+            void InitMapFromJSON(const std::string& key, const std::string& path);
     };
 
     //--------------------------------- text, font

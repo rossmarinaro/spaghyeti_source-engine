@@ -108,8 +108,6 @@ std::pair<std::vector<Scene::TilemapLayer>, std::vector<std::shared_ptr<Physics:
         LOG("Tilemap: Cannot create tilemap from JSON - USE_JSON=0");
     #endif
 
-    map.emplace_back();
-
     return { map, bodies };
 }
 

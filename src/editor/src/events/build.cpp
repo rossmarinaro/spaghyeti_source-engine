@@ -72,7 +72,7 @@ void EventListener::BuildAndRun()
 
     const auto options = std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive;
 
-    const std::string asset_types[] = { "images", "audio", "fonts" };
+    const std::string asset_types[] = { "images", "audio", "fonts", "data" };
 
     Editor::Log(session->embed_files ? "embedding assets" : "copying assets to build folder"); 
 
@@ -151,6 +151,9 @@ void EventListener::BuildAndRun()
 
         else if (folder == "fonts")
             type = "System::Resources::Manager::TEXT";
+
+        else if (folder == "data")
+            type = "System::Resources::Manager::DATA";
 
         else continue;
 
@@ -996,114 +999,48 @@ void EventListener::BuildAndRun()
                 {
                     const auto tmn = std::dynamic_pointer_cast<TilemapNode>(node);
 
-                    //load frames
-
-                    // std::ostringstream offset_oss;
-                    // std::vector<std::string> offsetsToLoad;
-
-                    // if (tmn->offset.size()) 
-                    // {
-                    //     for (const auto& offset : tmn->offset)
-                    //         offsetsToLoad.emplace_back("{" + std::to_string(offset[0]) + ", " + 
-                    //                                     std::to_string(offset[1]) + ", " + 
-                    //                                     std::to_string(offset[2]) + ", " + 
-                    //                                     std::to_string(offset[3]) + ", " + 
-                    //                                     std::to_string(offset[4]) + ", " + 
-                    //                                     std::to_string(offset[5]) + "}");
-                    
-                    //     if (!offsetsToLoad.empty()) {
-                    //         std::copy(offsetsToLoad.begin(), offsetsToLoad.end() - 1, std::ostream_iterator<std::string>(offset_oss, ", "));
-                    //         offset_oss << offsetsToLoad.back();
-                    //     } 
-                    // }
-
                     //this flag loads maps on scene load but not restart
 
                     command_queue << "   if (loadMap) {\n";
 
                     if (tmn->layers->size())
                     {
-                        for (int i = 0; i < tmn->layer; i++)
+                        for (int i = 0; i < tmn->layers->size(); i++)
                         {
                             const auto tl = (*tmn->layers)[i];
 
-                            //copy or embed relevant map data if json
+                            if (!System::Utils::str_includes(tl.path, ".csv")) 
+                                continue;
 
-                            if (System::Utils::str_includes(tl.path, ".json")) 
-                            {
-                                //load frames / layers
-
-                                preload_queue << "    System::Resources::Manager::LoadTilemapFromJSON(""\"" + tl.dataKey + """\", ""\"" + tl.path + """\");\n";
-
-                                const std::string projResPath = Editor::projectPath + "resources/assets/data",
-                                                  enumType = "System::Resources::Manager::DATA";
-
-                                const auto check_is_file = [](const std::filesystem::directory_entry& file) -> bool {
-                                    const auto it = std::find(AssetManager::Get()->assets.begin(), AssetManager::Get()->assets.end(), file.path().filename().string());
-                                    return  it != AssetManager::Get()->assets.end();
-                                };
-
-                                for (const auto& file : std::filesystem::directory_iterator(projResPath)) 
-                                    if (file.is_directory()) {
-                                        for (const auto& f : std::filesystem::directory_iterator(file))
-                                            if (!std::filesystem::is_empty(f.path()) && !f.is_directory() && check_is_file(f))
-                                                iterateFolder(f, projResPath, enumType);
-                                    }
-                                    else if (check_is_file(file))
-                                        iterateFolder(file, projResPath, enumType);
-                            }
-
-                            if (tl.textureKey.length()) {
-                                //command_queue << "  System::Resources::Manager::LoadAtlas(\"" + tmn->layers[i].dataKey + "\", \"assets/" + tmn->layers[i].dataKey + "\");\n";
-                                //command_queue << "  System::Resources::Manager::LoadFrames(\"" + tmn->layers[i].textureKey + "\", { " + offset_oss.str() + " });\n";
-                                //loadedFrames.emplace_back(tmn->layers[i].textureKey);
-                            }
+                            preload_queue << "      System::Resources::Manager::LoadFile(" + tl.dataKey + ", " + tl.path + ");\n";
+                            preload_queue << "      System::Resources::Manager::LoadTilemapFrames(" + tl.textureKey + ", " + std::to_string(tl.spriteWidth) + ", " + std::to_string(tmn->map_width) + " , " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n";
                             
-                            if (tl.dataKey.length()) 
-                            {
-                                const std::string shader = tl.shader.length() ? tl.shader : "\"\"";
-
-                                command_queue << "      System::Game::CreateTileLayer(\"" + tl.textureKey + "\", ""\"" + tl.dataKey + "\", " + 
-                                std::to_string(tmn->map_width) + ", " + 
-                                std::to_string(tmn->map_height) + ", " + 
-                                std::to_string(tmn->tile_width) + ", " + 
-                                std::to_string(tmn->tile_height) + ", " + 
-                                std::to_string(tl.depth) + ", " + 
-                                std::to_string(i) + ", " + 
-                                FloatToString(tmn->actualPositionX) + ", " + 
-                                FloatToString(tmn->actualPositionY) + ", " + 
-                                FloatToString(tl.scrollFactorX) + ", " +
-                                FloatToString(tl.scrollFactorY) + ", " +
-                                shader +
-                                ");\n";
-
-                            //     command_queue << "  std::vector<System::Scene::TilemapLayer> layers;\n";
-                            //     command_queue << "      System::Game::ApplyTilemap(layers, \"" + tmn->layers[i].path + "\", ""\"" + tmn->layers[i].textureKey + "\", ""\"" + tmn->layers[i].dataKey + "\", " + 
-                            //     std::to_string(tmn->map_width) + ", " + 
-                            //     std::to_string(tmn->map_height) + ", " + 
-                            //     std::to_string(tmn->tile_width) + ", " + 
-                            //     std::to_string(tmn->tile_height) + ", " + 
-                            //     std::to_string(tmn->layers[i].depth) + ", " + 
-                            //     std::to_string(i) + ", " + 
-                            //     FloatToString(tmn->actualPositionX) + ", " + 
-                            //     FloatToString(tmn->actualPositionY) + ", " + 
-                            //     FloatToString(tmn->rotation) + ", " + 
-                            //     FloatToString(tmn->scaleX) + ", " + 
-                            //     FloatToString(tmn->scaleY) + ", " +
-                            //     FloatToString(tmn->layers[i].scrollFactorX) + ", " +
-                            //     FloatToString(tmn->layers[i].scrollFactorY) + ", " +
-                            //     shader +
-                            //     ");\n";
-                            } 
+                            command_queue << "      System::Game::CreateTileLayer(" + std::to_string(tmn->layers->size()) + ", " + 
+                            tl.textureKey.c_str() + ", " + 
+                            tl.dataKey.c_str() + ", " + 
+                            std::to_string(tmn->map_width) + ", " + 
+                            std::to_string(tmn->map_height) + ", " + 
+                            std::to_string(tmn->tile_width) + ", " + 
+                            std::to_string(tmn->tile_height) + ", " + 
+                            std::to_string(tl.depth) + ", " + 
+                            std::to_string(i) + ", " + 
+                            std::to_string(0.0f) + ", " + 
+                            std::to_string(0.0f) + ", " + 
+                            std::to_string(tl.scrollFactorX) + ", " + 
+                            std::to_string(tl.scrollFactorY) + ");\n";
                         }
 
+                        if (System::Utils::str_endsWith((*tmn->layers)[0].path, ".json")) {
+                            preload_queue << "    System::Resources::Manager::LoadTilemapFromJSON(""\"" + (*tmn->layers)[0].dataKey + """\", ""\"" + (*tmn->layers)[0].path + """\");\n";
+                            command_queue << "    System::Game::CreateTilemapFromJSON(" + (*tmn->layers)[0].dataKey + ");\n";
+                        }
+                        
                         //create map entity handle
 
                         if ((*tmn->layers)[0].dataKey.length()) {
                             command_queue << "      const auto map_" + node->ID + " = System::Game::CreateEntity(Entity::TILE);\n\t";
                             command_queue << "   map_" + node->ID + "->SetName(\"" + tmn->name + "\");\n";
                         }
-
                     }
 
                     command_queue << "   }\n";
@@ -1113,7 +1050,6 @@ void EventListener::BuildAndRun()
                     if (tmn->HasComponent(Component::PHYSICS) && tmn->bodies->size()) 
                         for (const auto& body : (*tmn->bodies)) 
                             command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x + body->width / 2) + ", " + FloatToString(body->y + body->height / 2) + ", " + FloatToString(body->width / 2) + ", " + FloatToString(body->height / 2) + ");\n";
-
                 } 
 
                 //--------------- audio

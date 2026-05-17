@@ -149,7 +149,7 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
                 tile_width = data["tilewidth"],
                 tile_height = data["tileheight"];
 
-    LoadFile(key, path); //csv or json data relative to current project
+    LoadFile(key, path); //json data relative to current project
 
     if (data["tilesets"].size())
         for (const auto& tileset : data["tilesets"])

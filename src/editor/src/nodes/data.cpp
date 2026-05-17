@@ -178,8 +178,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
                 
                 layers.push_back({
                     { "id", layer.ID },
-                    { "frames x", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
-                    { "frames y", tmn->spr_sheet_width.size() ? tmn->spr_sheet_width[i] : 0 },
+                    { "frames x", layer.spriteWidth },
                     { "scroll factor x", layer.scrollFactorX },
                     { "scroll factor y", layer.scrollFactorY },
                     { "shader", layer.shader },
@@ -205,7 +204,6 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             { "rotation", tmn->rotation },
             { "scale x", tmn->scaleX },
             { "scale y", tmn->scaleY },
-            { "layer", tmn->layer },
             { "layers", layers },
             { "map_width", tmn->map_width },
             { "map_height", tmn->map_height },
@@ -722,16 +720,11 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("tile_height"))
                 tmn->tile_height = data["tile_height"];
-                
-            if (data.contains("layer"))
-                tmn->layer = data["layer"];
 
             int layerIndex = 0;
 
             if (data.contains("layers"))
             {
-                tmn->layers = new std::vector<System::Scene::TilemapLayer>();
-
                 for (const auto& layer : data["layers"]) 
                 {
                     int layerID = layer.contains("id") ? static_cast<int>(layer["id"]) : 6,
@@ -764,8 +757,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 if (data["components"]["physics"]["bodies"].size())
                 {
-                    tmn->bodies = new std::vector<std::shared_ptr<Physics::Body>>();
-
                     for (const auto& body : data["components"]["physics"]["bodies"]) 
                     {
                         if (makeNode) 
@@ -789,12 +780,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     }
                 }
             }
-            
-           // if (data.contains("filename") /* data.contains("layers") && data["layers"].size() */) {
-          
-              // System::Game::CreateTilemapFromJSON("cave.json"/* data["filename"] */);Editor::Log("2");//tmn->ApplyTilemap(/* makeNode */);
-                //tmn->ApplyTilemap("cave.json"/* data["filename"] */);Editor::Log("3");
-           // }
 
             return tmn;
         }
