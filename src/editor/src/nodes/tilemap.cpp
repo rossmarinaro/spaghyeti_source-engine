@@ -25,8 +25,7 @@ TilemapNode::TilemapNode(bool init):
 //---------------------------
  
 
-TilemapNode::~TilemapNode() 
-{
+TilemapNode::~TilemapNode() {
     if (m_init)
         Editor::Log("Tilemap node " + name + " deleted.");
 }
@@ -39,15 +38,16 @@ void TilemapNode::AddLayer()
 {
     System::Scene::TilemapLayer layer;
 
-    layer.ID = UUID::generate_uuid();
+    layer.ID = map.layers.size();
+    layer.key = UUID::generate_uuid();
     layer.dataKey = "";
+    layer.dataPath = "";
     layer.textureKey = "";
-    layer.path = "";
     layer.shader = "";
     layer.depth = map.layers.size() ? map.layers.back().depth + 1 : 0;
+    layer.columns = 1; 
     layer.scrollFactorX = 1.0f;
     layer.scrollFactorY = 1.0f;
-    layer.spriteWidth = 0.0f; 
 
     map.layers.emplace_back(layer);
 }
@@ -60,16 +60,12 @@ void TilemapNode::Reset(int component_type)
 {
     bool passAll = component_type == Component::NONE;
 
-    if (passAll) 
-    {
-        for (const auto& layer : map.layers) 
-           System::Game::RemoveTileLayer(layer.ID);
-
+    if (passAll) {
+        System::Game::RemoveTilemap(map.key);
         map.layers.clear();
     }
 
-    if (component_type == Component::PHYSICS || passAll)
-    {
+    if (component_type == Component::PHYSICS || passAll) {
         for (const auto& body : map.bodies)
             Physics::DestroyBody(body);
 
@@ -83,20 +79,30 @@ void TilemapNode::Reset(int component_type)
 
 void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& path) 
 {
-    if (System::Utils::str_endsWith(path, ".json"))
-    {
-        System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
-
-        map = System::Game::CreateTilemapFromJSON(key);
-
-        map_width = map.width;
-        map_height = map.height;
-        tile_width = map.tileWidth;
-        tile_height = map.tileHeight;
-
-        if (map.bodies.size()) 
-            AddComponent(Component::PHYSICS, false);
+    if (!System::Utils::str_endsWith(path, ".json")) {
+        Editor::Log("Cannot init map from JSON - file is not of type JSON.");
+        return;
     }
+
+    System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
+
+    map = System::Game::CreateTilemapFromJSON(key);
+
+    if (!map.layers.size()) {
+        Editor::Log("Cannot initialize map - JSON must have following values [layers, width, height, tilewidth, tileheight].");
+        return;
+    }
+
+    map_width = map.width;
+    map_height = map.height;
+    tile_width = map.tileWidth;
+    tile_height = map.tileHeight;
+
+    if (map.bodies.size()) 
+        AddComponent(Component::PHYSICS, false);
+
+    AssetManager::Register(map.layers[0].dataKey);  
+    AssetManager::Register(map.layers[0].textureKey);
 }
 
 
@@ -323,15 +329,17 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                         {
                                             if (System::Utils::str_endsWith(path, ".csv")) 
                                             {
+                                                AssetManager::Register(map.layers[i].dataKey);  
+                                                AssetManager::Register(map.layers[i].textureKey);
+
                                                 System::Resources::Manager::LoadFile(key, path);
-                                                System::Resources::Manager::LoadTilemapFrames(map.layers[i].textureKey, map.layers[i].spriteWidth, map_width, map_height, tile_width, tile_height);
+                                                System::Resources::Manager::LoadTilemapFrames(map.layers[i].textureKey, map.layers[i].columns, map_width, map_height, tile_width, tile_height);
                                                 
-                                                map.layers[i] = System::Game::CreateTileLayer(map.layers[i].textureKey.c_str(), map.layers[i].dataKey.c_str(), map_width, map_height, tile_width, tile_height, map.layers[i].depth, i, 0.0f, 0.0f, map.layers[i].scrollFactorX, map.layers[i].scrollFactorY);  
+                                                map.layers[i] = System::Game::CreateTileLayer(i, map.layers[i].textureKey.c_str(), map.layers[i].dataKey.c_str(), map_width, map_height, tile_width, tile_height, map.layers[i].depth, i, 0.0f, 0.0f, map.layers[i].scrollFactorX, map.layers[i].scrollFactorY);  
                                             }
                                             else 
                                                 InitMapFromJSON(key, path);
-                                                
-                                            AssetManager::Register(key);
+                                            
                                             EventListener::UpdateSession();
                                         }      
                                 }
@@ -356,6 +364,9 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                             else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) != System::Resources::Manager::IMAGE)
                                 ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
+
+                            if (ImGui::InputInt("columns", &map.layers[i].columns) && map.layers[i].columns > 0) 
+                                EventListener::UpdateSession();
 
                             ImGui::SliderInt("depth", &map.layers[i].depth, 0, 1000);
                             if (ImGui::IsItemDeactivatedAfterEdit())
@@ -396,7 +407,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         ImGui::SameLine();
 
                         if (ImGui::Button("remove layer") && map.layers.size()) {
-                            System::Game::RemoveTileLayer(map.layers.back().ID);
+                            System::Game::RemoveTileLayer(map.key, map.layers.back().ID);
                             map.layers.pop_back();
                             EventListener::UpdateSession();
                         }  
@@ -425,7 +436,6 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                             if (ImGui::MenuItem(key.c_str())) {
                                 InitMapFromJSON(key, path);
-                                AssetManager::Register(key);
                                 EventListener::UpdateSession();
                             }
                         }    
@@ -465,7 +475,7 @@ void TilemapNode::Render(float _positionX, float _positionY, float _rotation, fl
             {
                 const auto layer = *it; 
 
-                if (entity->GetType() == Entity::TILE && layer.ID == entity->GetData<std::string>("id"))
+                if (entity->GetType() == Entity::TILE && layer.key == entity->GetData<std::string>("layer key"))
                     entity->SetDepth(layer.depth); 
             }
 }

@@ -72,8 +72,10 @@ namespace System {
 
             //create tilemap layer from csv or json
             static Scene::TilemapLayer CreateTileLayer (
+                int ID,
                 const char* texture_key, 
                 const char* data_key,
+                uint32_t columns,
                 uint32_t mapWidth, 
                 uint32_t mapHeight, 
                 uint32_t tileWidth, 
@@ -88,10 +90,10 @@ namespace System {
             );
 
             static std::vector<std::shared_ptr<Sprite>> GetTileMapSprites(const std::string& key); 
-            static std::vector<std::shared_ptr<Sprite>> GetTileLayerSprites(const std::string& id); 
+            static std::vector<std::shared_ptr<Sprite>> GetTileLayerSprites(const std::string& mapKey, int layerID); 
 
             static void RemoveTilemap(const std::string& key);
-            static void RemoveTileLayer(const std::string& id);
+            static void RemoveTileLayer(const std::string& mapKey, int layerID);
 
             static void DestroyEntity(std::shared_ptr<Entity> entity);
             static void SetCullPosition(Math::Vector2* position);

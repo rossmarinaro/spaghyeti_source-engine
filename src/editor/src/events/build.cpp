@@ -596,6 +596,8 @@ void EventListener::BuildAndRun()
         }
     }
 
+    Editor::Log("Compiling game...");
+
     //now compile each scene
 
     for (const auto& target : compileQueue)
@@ -1002,8 +1004,6 @@ void EventListener::BuildAndRun()
 
                     //this flag loads maps on scene load but not restart
 
-                    //command_queue << "   if (loadMap) {\n";
-
                     if (tmn->map.layers.size())
                     {
                         //csv layers
@@ -1012,14 +1012,15 @@ void EventListener::BuildAndRun()
                         {
                             const auto tl = tmn->map.layers[i];
 
-                            if (!System::Utils::str_includes(tl.path, ".csv")) 
+                            if (!System::Utils::str_includes(tl.dataPath, ".csv")) 
                                 continue;
 
-                            preload_queue << "      System::Resources::Manager::LoadFile(\"" + tl.dataKey + "\", ""\"" + tl.path + "\");\n";
-                            preload_queue << "      System::Resources::Manager::LoadTilemapFrames(\"" + tl.textureKey + "\", " + std::to_string(tl.spriteWidth) + ", " + std::to_string(tmn->map_width) + " , " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n";
+                            preload_queue << "      System::Resources::Manager::LoadFile(\"" + tl.dataKey + "\", ""\"" + tl.dataPath + "\");\n";
+                            preload_queue << "      System::Resources::Manager::LoadTilemapFrames(\"" + tl.textureKey + "\", " + std::to_string(tl.columns) + ", " + std::to_string(tmn->map_width) + " , " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n";
                             
                             command_queue << "      System::Game::CreateTileLayer(" + tl.textureKey + ", " + 
                             tl.dataKey + ", " + 
+                            std::to_string(tl.columns) + ", " + 
                             std::to_string(tmn->map_width) + ", " + 
                             std::to_string(tmn->map_height) + ", " + 
                             std::to_string(tmn->tile_width) + ", " + 
@@ -1034,33 +1035,26 @@ void EventListener::BuildAndRun()
 
                         //json file
 
-                        if (System::Utils::str_endsWith(tmn->map.layers[0].path, ".json")) 
+                        if (System::Utils::str_endsWith(tmn->map.path, ".json")) 
                         {
-                            preload_queue << "  System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->map.layers[0].dataKey + """\", ""\"" + tmn->map.layers[0].path + """\");\n";
-                            command_queue << "     System::Game::CreateTilemapFromJSON(\"" + tmn->map.layers[0].dataKey + "\");\n";
+                            preload_queue << "  System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->map.key + """\", ""\"" + tmn->map.path + """\");\n";
+                            command_queue << "  System::Game::CreateTilemapFromJSON(\"" + tmn->map.key + "\");\n";
                             
                             //set depth on tilesprite layers
 
                             for (const auto& layer : tmn->map.layers) {
-                                command_queue << "    for (const auto& sprite : System::Game::GetTileLayerSprites(\"" + layer.ID + "\"))\n";
+                                command_queue << "    for (const auto& sprite : System::Game::GetTileLayerSprites(\"" + tmn->map.key + "\", " + std::to_string(layer.ID) + "))\n";
                                 command_queue << "       sprite->SetDepth(" + std::to_string(layer.depth) + ");\n";
                             }
                         }
-                        else {
-                            //static physics bodies
 
-                            if (tmn->HasComponent(Component::PHYSICS) && tmn->map.bodies.size()) 
-                                for (const auto& body : tmn->map.bodies) 
-                                    command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x + body->width / 2) + ", " + FloatToString(body->y + body->height / 2) + ", " + FloatToString(body->width / 2) + ", " + FloatToString(body->height / 2) + ");\n";
-                        }
+                        //static physics bodies for manual (csv) layers
+
+                        else if (tmn->HasComponent(Component::PHYSICS) && tmn->map.bodies.size()) 
+                            for (const auto& body : tmn->map.bodies) 
+                                command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x + body->width / 2) + ", " + FloatToString(body->y + body->height / 2) + ", " + FloatToString(body->width / 2) + ", " + FloatToString(body->height / 2) + ");\n";
                         
-                        //create map entity handle
-
-                        //command_queue << "      const auto map_" + node->ID + " = System::Game::CreateEntity(Entity::TILE);\n\t";
-                        //command_queue << "   map_" + node->ID + "->SetName(\"" + tmn->name + "\");\n";
                     }
-
-                    //command_queue << "   }\n";
                 } 
 
                 //--------------- audio

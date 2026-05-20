@@ -177,7 +177,7 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
 
 void Manager::LoadTilemapFrames(
     const std::string& textureKey,
-    int columns,
+    unsigned int columns,
     float map_width,
     float map_height,
     float tile_width,

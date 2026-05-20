@@ -13,12 +13,13 @@ namespace System {
         public: 
 
             struct TilemapLayer {
-                std::string ID, dataKey, path, textureKey, shader;
-                int depth;
-                float scrollFactorX, scrollFactorY, spriteWidth;
+                std::string key, dataKey, dataPath, textureKey, shader;
+                int ID, depth, columns;
+                float scrollFactorX, scrollFactorY;
             };
 
             struct Tilemap {
+                std::string key, path;
                 int width, height, tileWidth, tileHeight;
                 std::vector<Scene::TilemapLayer> layers;
                 std::vector<std::shared_ptr<Physics::Body>> bodies;

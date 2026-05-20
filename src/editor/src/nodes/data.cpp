@@ -3,7 +3,6 @@
 #include "./node.h"
 #include "../editor.h"
 #include "../assets/assets.h"
-#include "../../../vendors/UUID.hpp"
 
 using namespace editor;
 
@@ -173,21 +172,18 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
         json layers = json::array();
 
         if (tmn->map.layers.size())
-            for (int i = 0; i < tmn->map.layers.size(); i++) 
-            {
-                const auto layer = tmn->map.layers[i];
+            for (const auto& layer : tmn->map.layers) 
                 layers.push_back({
                     { "id", layer.ID },
-                    { "frames x", layer.spriteWidth },
+                    { "frames x", layer.columns },
                     { "scroll factor x", layer.scrollFactorX },
                     { "scroll factor y", layer.scrollFactorY },
                     { "shader", layer.shader },
                     { "depth", layer.depth },
                     { "key", layer.dataKey },
-                    { "path", layer.path },
+                    { "path", layer.dataPath },
                     { "texture", layer.textureKey }
                 });
-            }
    
         //physics bodies
 
@@ -723,8 +719,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("layers"))
                 for (const auto& layer : data["layers"]) 
                 {
-                    int depth = layer.contains("depth") ? static_cast<int>(layer["depth"]) : 0,
-                        spriteFramesX = layer.contains("frames x") ? static_cast<int>(layer["frames x"]) : 0;
+                    int ID = layer.contains("id") ? static_cast<int>(layer["id"]) : 0,
+                        depth = layer.contains("depth") ? static_cast<int>(layer["depth"]) : 0,
+                        columns = layer.contains("frames x") ? static_cast<int>(layer["frames x"]) : 0;
 
                     float scrollFactorX = layer.contains("scroll factor x") ? static_cast<float>(layer["scroll factor x"]) : 0.0f,
                           scrollFactorY = layer.contains("scroll factor y") ? static_cast<float>(layer["scroll factor y"]) : 0.0f;
@@ -735,22 +732,27 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                                       shader = layer.contains("shader") ? static_cast<std::string>(layer["shader"]) : "";
 
                     if (makeNode) {
-                        System::Resources::Manager::LoadTilemapFrames(texture, spriteFramesX, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
-                        const auto layer = System::Game::CreateTileLayer(texture.c_str(), key.c_str(), tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height, depth, layerIndex); 
+                        System::Resources::Manager::LoadTilemapFrames(texture, columns, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
+                        const auto layer = System::Game::CreateTileLayer(ID, texture.c_str(), key.c_str(), columns, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height, depth, layerIndex); 
                         tmn->map.layers.emplace_back(layer);
                     }
-                    else 
+                    else //for build purposes
                     {
+                        tmn->map.key = key;
+                        tmn->map.path = path;
+
                         System::Scene::TilemapLayer layer;
 
                         layer.textureKey = texture;
                         layer.dataKey = key;
-                        layer.path = "assets/" + key;
-                        layer.ID = UUID::generate_uuid();
+                        layer.dataPath = "assets/" + key;
+                        layer.ID = ID;
+                        layer.key = "";
                         layer.depth = depth;
                         layer.shader = shader;
                         layer.scrollFactorX = scrollFactorX;
                         layer.scrollFactorY = scrollFactorY;
+                        layer.columns = columns;
 
                         tmn->map.layers.emplace_back(layer);
                     }
