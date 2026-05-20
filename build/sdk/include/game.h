@@ -49,27 +49,6 @@ namespace System {
             static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y, const std::string& font = "", int layer = 2);
             static std::shared_ptr<Geometry> CreateGeom(float x, float y, float width, float height, int layer = 1, bool isStatic = false, bool isSpawn = false);
 
-            //construct tilemap on the fly from a loaded map json file and return map
-            static std::pair<std::vector<Scene::TilemapLayer>, std::vector<std::shared_ptr<Physics::Body>>> CreateTilemapFromJSON(const std::string& key); 
-
-            //create tilemap layer from csv or json
-            static Scene::TilemapLayer CreateTileLayer (
-                int id,
-                const char* texture_key, 
-                const char* data_key,
-                uint32_t mapWidth, 
-                uint32_t mapHeight, 
-                uint32_t tileWidth, 
-                uint32_t tileHeight,
-                uint32_t depth,
-                int index,
-                float posX = 0.0f,
-                float posY = 0.0f,
-                float scrollFactorX = 1.0f,
-                float scrollFactorY = 1.0f,
-                const std::string& shaderKey = ""
-            );
-
             static void CreateSpawn (
                 int type, 
                 const std::string& filename, 
@@ -86,11 +65,33 @@ namespace System {
                 const Scene::Spawn::Body& body
             );
 
-            static std::vector<std::shared_ptr<Sprite>> GetTileMap(const std::string& key); 
-            static std::vector<std::shared_ptr<Sprite>> GetTileLayer(int id); 
+            //tilemap
+
+            //construct tilemap on the fly from a loaded map json file and return map
+            static Scene::Tilemap CreateTilemapFromJSON(const std::string& key); 
+
+            //create tilemap layer from csv or json
+            static Scene::TilemapLayer CreateTileLayer (
+                const char* texture_key, 
+                const char* data_key,
+                uint32_t mapWidth, 
+                uint32_t mapHeight, 
+                uint32_t tileWidth, 
+                uint32_t tileHeight,
+                uint32_t depth,
+                int index,
+                float posX = 0.0f,
+                float posY = 0.0f,
+                float scrollFactorX = 1.0f,
+                float scrollFactorY = 1.0f,
+                const std::string& shaderKey = ""
+            );
+
+            static std::vector<std::shared_ptr<Sprite>> GetTileMapSprites(const std::string& key); 
+            static std::vector<std::shared_ptr<Sprite>> GetTileLayerSprites(const std::string& id); 
 
             static void RemoveTilemap(const std::string& key);
-            static void RemoveTileLayer(int id);
+            static void RemoveTileLayer(const std::string& id);
 
             static void DestroyEntity(std::shared_ptr<Entity> entity);
             static void SetCullPosition(Math::Vector2* position);

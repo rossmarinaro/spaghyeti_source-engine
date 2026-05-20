@@ -205,8 +205,7 @@ namespace editor {
                 tile_width, 
                 tile_height;
 
-            std::vector<System::Scene::TilemapLayer>* layers;
-            std::vector<std::shared_ptr<Physics::Body>>* bodies;
+            System::Scene::Tilemap map;
 
             TilemapNode(bool init);
             ~TilemapNode();

@@ -159,13 +159,10 @@ void Component::Make()
         filename = "";
     }
 
-
     //script
-
 
     if (type == SCRIPT)
     {
-
         if (!filename.size())
             return;
 
@@ -221,7 +218,6 @@ void Component::Make()
         src.close();
 
         filename = "";
-
     }
 
     //animator
@@ -239,17 +235,14 @@ void Component::Make()
 
     //physics
 
-
     if (type == PHYSICS)
     {
         for (const auto& node : Node::nodes)
             if (node->ID == ID) {
-
                 if (m_nodeType == Node::TILEMAP) {
                     auto tmn = std::dynamic_pointer_cast<TilemapNode>(Node::Get(ID));
                     tmn->CreateBody();
                 }
-
             }
     }
 }

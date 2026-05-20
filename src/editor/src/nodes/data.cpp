@@ -3,6 +3,7 @@
 #include "./node.h"
 #include "../editor.h"
 #include "../assets/assets.h"
+#include "../../../vendors/UUID.hpp"
 
 using namespace editor;
 
@@ -171,11 +172,10 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
 
         json layers = json::array();
 
-        if (tmn->layers)
-            for (int i = 0; i < tmn->layers->size(); i++) 
+        if (tmn->map.layers.size())
+            for (int i = 0; i < tmn->map.layers.size(); i++) 
             {
-                const auto layer = (*tmn->layers)[i];
-                
+                const auto layer = tmn->map.layers[i];
                 layers.push_back({
                     { "id", layer.ID },
                     { "frames x", layer.spriteWidth },
@@ -187,15 +187,14 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
                     { "path", layer.path },
                     { "texture", layer.textureKey }
                 });
-
             }
    
         //physics bodies
 
         json bodies = json::array();
 
-        if (tmn->bodies)
-            for (const auto& body : *tmn->bodies) 
+        if (tmn->map.bodies.size())
+            for (const auto& body : tmn->map.bodies) 
                 bodies.push_back({ { "body_width", body->width }, { "body_height", body->height }, { "bodyX", body->x }, { "bodyY", body->y } });
 
         data = {
@@ -647,7 +646,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 if (data["components"]["script"]["exists"]) 
                 {
-                    
                     sn->AddComponent(Component::SCRIPT, false);
 
                     if (data["components"]["script"]["scripts"].size())
@@ -661,7 +659,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 if (data["components"]["shader"]["exists"]) 
                 {
-
                     sn->AddComponent(Component::SHADER, false); 
 
                     if (data["components"]["shader"]["shaders"].size())
@@ -724,11 +721,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             int layerIndex = 0;
 
             if (data.contains("layers"))
-            {
                 for (const auto& layer : data["layers"]) 
                 {
-                    int layerID = layer.contains("id") ? static_cast<int>(layer["id"]) : 6,
-                        depth = layer.contains("depth") ? static_cast<int>(layer["depth"]) : 0,
+                    int depth = layer.contains("depth") ? static_cast<int>(layer["depth"]) : 0,
                         spriteFramesX = layer.contains("frames x") ? static_cast<int>(layer["frames x"]) : 0;
 
                     float scrollFactorX = layer.contains("scroll factor x") ? static_cast<float>(layer["scroll factor x"]) : 0.0f,
@@ -739,14 +734,29 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                                       texture = layer.contains("texture") ? static_cast<std::string>(layer["texture"]) : "",
                                       shader = layer.contains("shader") ? static_cast<std::string>(layer["shader"]) : "";
 
-                    System::Resources::Manager::LoadTilemapFrames(texture, spriteFramesX, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
+                    if (makeNode) {
+                        System::Resources::Manager::LoadTilemapFrames(texture, spriteFramesX, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
+                        const auto layer = System::Game::CreateTileLayer(texture.c_str(), key.c_str(), tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height, depth, layerIndex); 
+                        tmn->map.layers.emplace_back(layer);
+                    }
+                    else 
+                    {
+                        System::Scene::TilemapLayer layer;
 
-                    const auto tl = System::Game::CreateTileLayer(layerID, texture.c_str(), key.c_str(), tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height, depth, layerIndex); 
-                    tmn->layers->emplace_back(tl);
+                        layer.textureKey = texture;
+                        layer.dataKey = key;
+                        layer.path = "assets/" + key;
+                        layer.ID = UUID::generate_uuid();
+                        layer.depth = depth;
+                        layer.shader = shader;
+                        layer.scrollFactorX = scrollFactorX;
+                        layer.scrollFactorY = scrollFactorY;
 
+                        tmn->map.layers.emplace_back(layer);
+                    }
+                  
                     layerIndex++;
                 }
-            }
 
             if (data.contains("components"))
             {
@@ -763,7 +773,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                         {
                             tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
 
-                            for (int i = 0; i < tmn->bodies->size(); i++)
+                            for (int i = 0; i < tmn->map.bodies.size(); i++)
                                 tmn->UpdateBody(i);
                         }
                         else 
@@ -775,7 +785,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                             pb->width = body["body_width"];
                             pb->height = body["body_height"];
                             
-                            tmn->bodies->emplace_back(pb);
+                            tmn->map.bodies.emplace_back(pb);
                         }
                     }
                 }

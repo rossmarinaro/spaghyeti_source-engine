@@ -79,7 +79,6 @@ void Physics::SetGravity(float x, float y) {
 }
 
 
-
 //------------------------------
 
 
@@ -97,6 +96,15 @@ void Physics::ClearBodies()
 }
 
 
+//------------------------------
+
+
+std::shared_ptr<Physics::Body> Physics::GetBody(const std::string& id) {
+    const auto it = std::find_if(_active_b2d_bodies.begin(), _active_b2d_bodies.end(), [&id](const auto& b) { return b.first == id; });
+    return it != _active_b2d_bodies.end() ? (*it).second.first : nullptr;
+}
+
+
 //-------------------------------
 
 
@@ -106,18 +114,14 @@ void Physics::Cleanup()
 
     for (auto it = _bodiesToRemove.begin(); it != _bodiesToRemove.end(); ++it)
     {
-        auto body = *it;
+        const auto body = *it;
         auto b_it = std::find_if(_active_b2d_bodies.begin(), _active_b2d_bodies.end(), [body](const auto& b) { return b.first == body.first; });
 
-        if (b_it != _active_b2d_bodies.end()) {
+        if (b_it != _active_b2d_bodies.end()) 
             b_it = _active_b2d_bodies.erase(b_it);
-            --b_it;
-        }
 
-        if (body.second != nullptr) {
+        if (body.second != nullptr) 
             _world->DestroyBody(body.second);
-            body.second = nullptr;
-        }
     }
 
     _bodiesToRemove.clear(); 

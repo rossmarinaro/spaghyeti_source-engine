@@ -15,9 +15,7 @@ TilemapNode::TilemapNode(bool init):
     map_height = 10;
     tile_width = 64;
     tile_height = 64;
-
-    layers = new std::vector<System::Scene::TilemapLayer>();
-    bodies = new std::vector<std::shared_ptr<Physics::Body>>();
+    map = {};
     
     if (m_init)
         Editor::Log("Tilemap node " + name + " created."); 
@@ -28,20 +26,7 @@ TilemapNode::TilemapNode(bool init):
  
 
 TilemapNode::~TilemapNode() 
-{//System::Game::RemoveTilemap(const std::string& key);
-   // if (m_mapApplied) 
-        for (const auto& layer : *layers)
-            System::Game::RemoveTileLayer(layer.ID);
-
-    if (layers) {
-        delete layers;
-        layers = nullptr;
-    }
-    // if (bodies) {
-    //     delete bodies;
-    //     bodies = nullptr;
-    // }
-
+{
     if (m_init)
         Editor::Log("Tilemap node " + name + " deleted.");
 }
@@ -54,17 +39,17 @@ void TilemapNode::AddLayer()
 {
     System::Scene::TilemapLayer layer;
 
-    layer.ID = layers->size();
+    layer.ID = UUID::generate_uuid();
     layer.dataKey = "";
     layer.textureKey = "";
     layer.path = "";
     layer.shader = "";
-    layer.depth = layers->size() ? layers->back().depth + 1 : 0;
+    layer.depth = map.layers.size() ? map.layers.back().depth + 1 : 0;
     layer.scrollFactorX = 1.0f;
     layer.scrollFactorY = 1.0f;
     layer.spriteWidth = 0.0f; 
 
-    layers->push_back(layer);
+    map.layers.emplace_back(layer);
 }
 
 
@@ -75,23 +60,21 @@ void TilemapNode::Reset(int component_type)
 {
     bool passAll = component_type == Component::NONE;
 
-    if (component_type == Component::PHYSICS || passAll && bodies) {
-        //for (const auto& body : *bodies)
-            //Physics::DestroyBody(body);
-
-        //bodies->clear();
-       // delete bodies;
-       // bodies = nullptr;
-    }
-
-    if (passAll && layers) 
+    if (passAll) 
     {
-        //for (const auto& _layer : *layers) 
-          //  System::Game::RemoveTileLayer(_layer.ID); 
-       // delete layers;
-       // layers = nullptr;
+        for (const auto& layer : map.layers) 
+           System::Game::RemoveTileLayer(layer.ID);
+
+        map.layers.clear();
     }
-  
+
+    if (component_type == Component::PHYSICS || passAll)
+    {
+        for (const auto& body : map.bodies)
+            Physics::DestroyBody(body);
+
+        map.bodies.clear();
+    }
 }
 
 
@@ -104,15 +87,14 @@ void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& pat
     {
         System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
 
-        const auto map = System::Game::CreateTilemapFromJSON(key);
+        map = System::Game::CreateTilemapFromJSON(key);
 
-        for (const auto& layer : map.first)
-            layers->emplace_back(layer);
+        map_width = map.width;
+        map_height = map.height;
+        tile_width = map.tileWidth;
+        tile_height = map.tileHeight;
 
-        for (const auto& body : map.second)
-            bodies->emplace_back(body);
-
-        if (bodies && bodies->size()) 
+        if (map.bodies.size()) 
             AddComponent(Component::PHYSICS, false);
     }
 }
@@ -123,7 +105,7 @@ void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& pat
 
 void TilemapNode::CreateBody(float x, float y, float width, float height) {
     const auto pb = Physics::CreateBody(Physics::Body::Type::STATIC, x, y, width, height);
-    bodies->emplace_back(pb);
+    map.bodies.emplace_back(pb);
 }
 
 
@@ -131,8 +113,8 @@ void TilemapNode::CreateBody(float x, float y, float width, float height) {
 
 
 void TilemapNode::UpdateBody(int index) {
-    if (bodies->size()) {
-        const auto body = (*bodies)[index];
+    if (map.bodies.size()) {
+        const auto body = map.bodies[index];
         body->UpdateFixture(body->width / 2, body->height / 2);
         body->SetTransform(body->x + body->width / 2, body->y + body->height / 2);
     }
@@ -180,14 +162,18 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                     if (ImGui::BeginMenu("bodies"))
                     {
                         ImGui::Text("manual input: CTRL + click");
-                        
-                        int i = 0;
 
-                        for (auto& body : *bodies)
+                        //container for removing bodies in any arbitrary order from main loop over bodies
+
+                        std::vector<std::string> bodies_to_remove;
+
+                        for (int i = 0; i < map.bodies.size(); i++)
                         {
                             ImGui::PushID(i);
 
                             ImGui::Text("body: %d", i);
+
+                            auto body = map.bodies[i]; 
 
                             ImGui::SliderFloat("width", &body->width, 0.0f, Editor::Get()->game->camera->currentBoundsWidthEnd, NULL, ImGuiSliderFlags_AlwaysClamp); 
                             ImGui::SliderFloat("height", &body->height, 0.0f, Editor::Get()->game->camera->currentBoundsHeightEnd, NULL, ImGuiSliderFlags_AlwaysClamp); 
@@ -197,31 +183,28 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             
                             UpdateBody(i);
 
-                            if (ImGui::Button("remove") && bodies->size() > 1) 
+                            if (ImGui::Button("remove") && map.bodies.size()) 
                             {
-                                auto it = std::find_if(bodies->begin(), bodies->end(), [&](const std::shared_ptr<Physics::Body>& b) { return b->id == body->id; });
-                            
-                                if (it != bodies->end()) 
-                                {
-                                    const auto pb = *it;   
-
-                                    it = bodies->erase(std::move(it));
-                                    --it;
-
-                                    if (pb)
-                                        Physics::DestroyBody(pb); 
-                                }
+                                bodies_to_remove.emplace_back(body->id);
+             
+                                if (body)
+                                    Physics::DestroyBody(body); 
 
                                 EventListener::UpdateSession();
                             }
 
-                            ImGui::Separator();             
+                            if (i < map.bodies.size() - 1)
+                                ImGui::Separator();             
                             
                             ImGui::PopID();
-
-                            i++;
-
                         }
+
+                        //remove any bodies qeued for removal
+
+                        for (const auto& id : bodies_to_remove)
+                            map.bodies.erase(std::remove_if(map.bodies.begin(), map.bodies.end(), [&id](const std::shared_ptr<Physics::Body>& b) { return b->id == id; }), map.bodies.end());
+                        
+                            bodies_to_remove.clear();
 
                         ImGui::EndMenu();
                     }
@@ -242,10 +225,10 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             {
                                 if (ImGui::MenuItem(key.c_str())) 
                                 {
-                                    for (const auto& body : *bodies)
+                                    for (const auto& body : map.bodies)
                                         Physics::DestroyBody(body);
 
-                                    bodies->clear();
+                                    map.bodies.clear();
 
                                     //parse json to extract body data
 
@@ -257,7 +240,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                         CreateBody(x, y, w, h);
                                         
-                                        for (int i = 0; i < bodies->size(); i++)
+                                        for (int i = 0; i < map.bodies.size(); i++)
                                             UpdateBody(i);
                                     };
 
@@ -313,11 +296,11 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 
                 if (ImGui::BeginMenu("layers")) 
                 {
-                    if (layers)
+                    if (map.layers.size())
                     {
-                        ImGui::Text("layers: %d", layers->size()); 
+                        ImGui::Text("layers: %d", map.layers.size()); 
 
-                        for (int i = 0; i < layers->size(); ++i)
+                        for (int i = 0; i < map.layers.size(); ++i)
                         {
                             ImGui::Separator();
                         
@@ -341,9 +324,9 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                             if (System::Utils::str_endsWith(path, ".csv")) 
                                             {
                                                 System::Resources::Manager::LoadFile(key, path);
-                                                System::Resources::Manager::LoadTilemapFrames((*layers)[i].textureKey, (*layers)[i].spriteWidth, map_width, map_height, tile_width, tile_height);
+                                                System::Resources::Manager::LoadTilemapFrames(map.layers[i].textureKey, map.layers[i].spriteWidth, map_width, map_height, tile_width, tile_height);
                                                 
-                                                (*layers)[i] = System::Game::CreateTileLayer(layers->size(), (*layers)[i].textureKey.c_str(), (*layers)[i].dataKey.c_str(), map_width, map_height, tile_width, tile_height, (*layers)[i].depth, i, 0.0f, 0.0f, (*layers)[i].scrollFactorX, (*layers)[i].scrollFactorY);  
+                                                map.layers[i] = System::Game::CreateTileLayer(map.layers[i].textureKey.c_str(), map.layers[i].dataKey.c_str(), map_width, map_height, tile_width, tile_height, map.layers[i].depth, i, 0.0f, 0.0f, map.layers[i].scrollFactorX, map.layers[i].scrollFactorY);  
                                             }
                                             else 
                                                 InitMapFromJSON(key, path);
@@ -360,28 +343,28 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                             std::string data_file_name = "";
 
-                            if (layers->size())
-                                data_file_name = (*layers)[i].dataKey;
+                            if (map.layers.size())
+                                data_file_name = map.layers[i].dataKey;
 
                             ImGui::Text(data_file_name.c_str()); 
 
-                            if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get((*layers)[i].textureKey).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE) 
+                            if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get(map.layers[i].textureKey).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE) 
                             {
-                                (*layers)[i].textureKey = AssetManager::Get()->selectedAsset;
+                                map.layers[i].textureKey = AssetManager::Get()->selectedAsset;
                                 EventListener::UpdateSession();
                             }
 
                             else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) != System::Resources::Manager::IMAGE)
                                 ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
 
-                            ImGui::SliderInt("depth", &(*layers)[i].depth, 0, 1000);
+                            ImGui::SliderInt("depth", &map.layers[i].depth, 0, 1000);
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
 
-                            if (ImGui::InputFloat("scroll factor x", &(*layers)[i].scrollFactorX)) 
+                            if (ImGui::InputFloat("scroll factor x", &map.layers[i].scrollFactorX)) 
                                 EventListener::UpdateSession();
                             
-                            if (ImGui::InputFloat("scroll factor y", &(*layers)[i].scrollFactorY)) 
+                            if (ImGui::InputFloat("scroll factor y", &map.layers[i].scrollFactorY)) 
                                 EventListener::UpdateSession();
 
                             if (ImGui::BeginMenu("select shader"))
@@ -394,7 +377,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                         if (dir.is_directory()) {
                                             std::string name = dir.path().filename().string();
                                             if (ImGui::MenuItem(name.c_str())) {
-                                                (*layers)[i].shader = name;
+                                                map.layers[i].shader = name;
                                                 EventListener::UpdateSession();
                                             }
                                         }
@@ -412,12 +395,14 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         ImGui::SameLine();
 
-                        if (ImGui::Button("remove layer") && layers && layers->size()) {
-                            System::Game::RemoveTileLayer(layers->back().ID);
-                            layers->pop_back();
+                        if (ImGui::Button("remove layer") && map.layers.size()) {
+                            System::Game::RemoveTileLayer(map.layers.back().ID);
+                            map.layers.pop_back();
                             EventListener::UpdateSession();
                         }  
                     }
+                    else
+                        ImGui::Text("No layers defined.");
 
                     ImGui::EndMenu();
                 }
@@ -471,4 +456,16 @@ void TilemapNode::Render(float _positionX, float _positionY, float _rotation, fl
     rotation = _rotation;
     scaleX = _scaleX;
     scaleY = _scaleY;
+
+    //update tilesprite
+
+    for (auto it = map.layers.begin(); it != map.layers.end(); ++it) 
+        if (it != map.layers.end())
+            for (const auto& entity : System::Game::GetScene()->entities) 
+            {
+                const auto layer = *it; 
+
+                if (entity->GetType() == Entity::TILE && layer.ID == entity->GetData<std::string>("id"))
+                    entity->SetDepth(layer.depth); 
+            }
 }

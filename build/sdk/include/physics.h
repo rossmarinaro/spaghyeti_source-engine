@@ -90,6 +90,8 @@ class Physics {
 
         //does not destroy body immediately. body will be destroyed after next timestep
         static void DestroyBody(const std::shared_ptr<Body>& body);
+        
+        static std::shared_ptr<Body> GetBody(const std::string& id);
 
         void Update();
         void ClearBodies();

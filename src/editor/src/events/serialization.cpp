@@ -209,9 +209,9 @@ void EventListener::Serialize(json& data, bool newScene)
             }
             
         if (session->scenes.size() > 1) {
-            for (int i = 0; i < session->scenes.size(); i++)
-                scenes.push_back({ { "key", session->scenes[i] } });
-
+            for (const auto& scene : session->scenes)
+                scenes.push_back({ { "key", scene } });
+ 
             data["scenes"] = scenes;
         }
 
@@ -281,8 +281,7 @@ void EventListener::Deserialize(json& data, bool isSession)
 
     if (data.contains("scenes") && data["scenes"].size() > 1) //saved in queue
         for (const auto& scene : data["scenes"]) 
-            session->scenes.push_back(scene["key"]);
-    
+            session->scenes.push_back(scene["key"]); 
     else //register opened scene
         session->scenes.push_back(session->events->s_currentScene);
 
@@ -413,7 +412,7 @@ void EventListener::Deserialize(json& data, bool isSession)
 
 //-------------------------------------------------
 
-
+    
 //extracts saved data from scene to compile
 void EventListener::ParseScene(const std::string& sceneKey, std::stringstream& stream)
 {
