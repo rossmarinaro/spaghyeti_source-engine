@@ -108,17 +108,14 @@ Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key)
         //bodies
 
         if (layer.contains("objects")) 
-            for (auto& body : layer["objects"]) 
+            for (const auto& body : layer["objects"]) 
             {
                 const float x = body.contains("x") ? static_cast<float>(body["x"]) : 0.0f,
                             y = body.contains("y") ? static_cast<float>(body["y"]) : 0.0f,
                             width = body.contains("width") ? static_cast<float>(body["width"]) : 0.0f,
                             height = body.contains("height") ? static_cast<float>(body["height"]) : 0.0f;
 
-                const auto pb = Physics::CreateBody(Physics::Body::Type::STATIC, x, y, width, height);
-
-                pb->UpdateFixture(pb->width / 2, pb->height / 2);
-                pb->SetTransform(pb->x + pb->width / 2, pb->y + pb->height / 2);
+                const auto pb = Physics::CreateBody(Physics::Body::Type::STATIC, x + (width / 2), y + (height / 2), width / 2, height / 2);
 
                 bodies.emplace_back(pb);
             }

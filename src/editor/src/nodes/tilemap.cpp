@@ -15,6 +15,7 @@ TilemapNode::TilemapNode(bool init):
     map_height = 10;
     tile_width = 64;
     tile_height = 64;
+
     map = {};
     
     if (m_init)
@@ -84,6 +85,10 @@ void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& pat
         return;
     }
 
+    //remove any prev map and layers / bodies
+
+    Reset();
+
     System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
 
     map = System::Game::CreateTilemapFromJSON(key);
@@ -118,7 +123,7 @@ void TilemapNode::CreateBody(float x, float y, float width, float height) {
 //---------------------------
 
 
-void TilemapNode::UpdateBody(int index) {
+void TilemapNode::UpdateBody(unsigned int index) {
     if (map.bodies.size()) {
         const auto body = map.bodies[index];
         body->UpdateFixture(body->width / 2, body->height / 2);
@@ -291,13 +296,13 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
             {
                 //map dimensions
                 
-                if (ImGui::InputInt("map width", &map_width))
+                if (ImGui::InputScalar("map width", ImGuiDataType_U32, &map_width))
                     EventListener::UpdateSession();
-                if (ImGui::InputInt("map height", &map_height))
+                if (ImGui::InputScalar("map height", ImGuiDataType_U32, &map_height))
                     EventListener::UpdateSession();
-                if (ImGui::InputInt("tile width", &tile_width))
+                if (ImGui::InputScalar("tile width", ImGuiDataType_U32, &tile_width))
                     EventListener::UpdateSession();
-                if (ImGui::InputInt("tile height", &tile_height))
+                if (ImGui::InputScalar("tile height", ImGuiDataType_U32, &tile_height))
                     EventListener::UpdateSession();
                 
                 if (ImGui::BeginMenu("layers")) 
@@ -440,8 +445,6 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             }
                         }    
                     }
-
-                    EventListener::UpdateSession();
 
                     ImGui::EndMenu();
                 }

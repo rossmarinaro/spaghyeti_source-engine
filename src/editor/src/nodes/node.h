@@ -200,10 +200,10 @@ namespace editor {
 
         public:
 
-            int map_width, 
-                map_height,
-                tile_width, 
-                tile_height;
+            unsigned int map_width, 
+                         map_height,
+                         tile_width, 
+                         tile_height;
 
             System::Scene::Tilemap map;
 
@@ -214,11 +214,11 @@ namespace editor {
             void Reset(const int component_type = Component::NONE) override; 
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
             void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
-            void UpdateBody(int index);
  
         private: 
 
             void AddLayer();
+            void UpdateBody(unsigned int index);
             void InitMapFromJSON(const std::string& key, const std::string& path);
     };
 

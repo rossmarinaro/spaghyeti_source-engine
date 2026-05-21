@@ -93,7 +93,7 @@ void Manager::LoadRaw(const int type, const std::string& key, const unsigned cha
 //------------------------------------
 
 //load frames from vector of int arrays
-void Manager::LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames) {
+void Manager::LoadFrames(const std::string& key, const std::vector<std::array<unsigned int, 6>>& frames) {
     UnLoadFrames(key); 
     System::Application::resources->m_atlases.insert( { key, frames } );
 }
@@ -144,10 +144,10 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
             return;
         }
           
-    const float map_width = data["width"],
-                map_height = data["height"],
-                tile_width = data["tilewidth"],
-                tile_height = data["tileheight"];
+    unsigned int map_width = static_cast<unsigned int>(data["width"]),
+                 map_height = static_cast<unsigned int>(data["height"]),
+                 tile_width = static_cast<unsigned int>(data["tilewidth"]),
+                 tile_height = static_cast<unsigned int>(data["tileheight"]);
 
     LoadFile(key, path); //json data relative to current project
 
@@ -178,16 +178,16 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
 void Manager::LoadTilemapFrames(
     const std::string& textureKey,
     unsigned int columns,
-    float map_width,
-    float map_height,
-    float tile_width,
-    float tile_height
+    unsigned int map_width,
+    unsigned int map_height,
+    unsigned int tile_width,
+    unsigned int tile_height
 ) 
 {
-    std::vector<std::array<int, 6>> offset;
+    std::vector<std::array<unsigned int, 6>> offset;
 
-    int w = 0,  
-        h = 0; 
+    unsigned int w = 0,  
+                 h = 0; 
 
     for (int y = 0; y < map_height; ++y)
         for (int x = 0; x < map_width; ++x)
@@ -198,7 +198,7 @@ void Manager::LoadTilemapFrames(
             }   
 
             if (w < map_width) {
-                std::array<int, 6> off = { w, h, tile_width, tile_height, 1, 1 };
+                std::array<unsigned int, 6> off = { w, h, tile_width, tile_height, 1, 1 };
                 offset.emplace_back(off); 
                 w++;
             }
@@ -268,7 +268,7 @@ const BinaryResource* Manager::GetResource(const std::string& key) {
 //-------------------------------- 
 
 //get raw atlas
-const std::vector<std::array<int, 6>>* Manager::GetRawSpritesheetData(const std::string& key) {
+const std::vector<std::array<unsigned int, 6>>* Manager::GetRawSpritesheetData(const std::string& key) {
     const auto it = System::Application::resources->m_atlases.find(key);
     return it != System::Application::resources->m_atlases.end() ?
         &it->second : nullptr;

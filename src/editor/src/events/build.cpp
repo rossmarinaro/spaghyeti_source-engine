@@ -1038,7 +1038,7 @@ void EventListener::BuildAndRun()
                         if (System::Utils::str_endsWith(tmn->map.path, ".json")) 
                         {
                             preload_queue << "  System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->map.key + """\", ""\"" + tmn->map.path + """\");\n";
-                            command_queue << "  System::Game::CreateTilemapFromJSON(\"" + tmn->map.key + "\");\n";
+                            command_queue << "   System::Game::CreateTilemapFromJSON(\"" + tmn->map.key + "\");\n";
                             
                             //set depth on tilesprite layers
 
@@ -1053,7 +1053,6 @@ void EventListener::BuildAndRun()
                         else if (tmn->HasComponent(Component::PHYSICS) && tmn->map.bodies.size()) 
                             for (const auto& body : tmn->map.bodies) 
                                 command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x + body->width / 2) + ", " + FloatToString(body->y + body->height / 2) + ", " + FloatToString(body->width / 2) + ", " + FloatToString(body->height / 2) + ");\n";
-                        
                     }
                 } 
 

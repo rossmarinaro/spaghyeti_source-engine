@@ -104,7 +104,7 @@ void EventListener::ApplyState(bool increment)
 
         const bool arrayInBounds = data.contains("instances") && 
                                    data["instances"].is_array() && 
-                                   actionsCount <= data["instances"].size() - 1;
+                                   actionsCount <= data["instances"].size() - 1;   
         if (arrayInBounds) {
             Editor::Get()->Reset(false);
             json currentSessionData = data["instances"][actionsCount]; 
@@ -112,7 +112,7 @@ void EventListener::ApplyState(bool increment)
         } 
     }
 
-    catch(json::exception& err) {
+    catch (json::exception& err) {
         Editor::Log("error reading data: " + (std::string)err.what());
     }
 }

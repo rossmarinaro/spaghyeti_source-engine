@@ -730,13 +730,14 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                                       path = layer.contains("path") ? static_cast<std::string>(layer["path"]) : "", 
                                       texture = layer.contains("texture") ? static_cast<std::string>(layer["texture"]) : "",
                                       shader = layer.contains("shader") ? static_cast<std::string>(layer["shader"]) : "";
+                    //edit
 
                     if (makeNode) {
                         System::Resources::Manager::LoadTilemapFrames(texture, columns, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
                         const auto layer = System::Game::CreateTileLayer(ID, texture.c_str(), key.c_str(), columns, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height, depth, layerIndex); 
                         tmn->map.layers.emplace_back(layer);
                     }
-                    else //for build purposes
+                    else //build 
                     {
                         tmn->map.key = key;
                         tmn->map.path = path;
@@ -768,29 +769,29 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                    tmn->AddComponent(Component::PHYSICS, false);
 
                 if (data["components"]["physics"]["bodies"].size())
-                {
                     for (const auto& body : data["components"]["physics"]["bodies"]) 
                     {
-                        if (makeNode) 
-                        {
-                            tmn->CreateBody(body["bodyX"], body["bodyY"], body["body_width"], body["body_height"]);
+                        const float x = static_cast<float>(body["bodyX"]),
+                                    y = static_cast<float>(body["bodyY"]), 
+                                    width = static_cast<float>(body["body_width"]),
+                                    height = static_cast<float>(body["body_height"]);
+                        //edit
 
-                            for (int i = 0; i < tmn->map.bodies.size(); i++)
-                                tmn->UpdateBody(i);
-                        }
-                        else 
+                        if (makeNode) 
+                            tmn->CreateBody(x + (width / 2), y + (height / 2), width / 2, height / 2);
+
+                        else //build
                         {
                             auto pb = std::make_shared<Physics::Body>();
 
-                            pb->x = body["bodyX"];
-                            pb->y = body["bodyY"]; 
-                            pb->width = body["body_width"];
-                            pb->height = body["body_height"];
+                            pb->x = x;
+                            pb->y = y; 
+                            pb->width = width;
+                            pb->height = height;
                             
                             tmn->map.bodies.emplace_back(pb);
                         }
                     }
-                }
             }
 
             return tmn;

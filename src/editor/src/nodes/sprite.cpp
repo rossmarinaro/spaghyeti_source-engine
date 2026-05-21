@@ -146,10 +146,10 @@ const std::string SpriteNode::BodyTypeToString(int type) {
 
 void SpriteNode::RegisterFrames() 
 {
-    std::vector<std::array<int, 6>> framesToPush;
+    std::vector<std::array<unsigned int, 6>> framesToPush;
 
     for (const auto& frame : frames) {
-        std::array<int, 6> fr = { 
+        std::array<unsigned int, 6> fr = { 
             frame.x, frame.y, 
             frame.width, frame.height, 
             frame.factorX, frame.factorY 

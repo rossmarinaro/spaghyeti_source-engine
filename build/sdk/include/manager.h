@@ -38,7 +38,7 @@ namespace System {
                 static const std::string* GetSpritesheetPath(const std::string& key);
                 static const BinaryResource* GetResource(const std::string& key);   
                 static const std::map<const std::string, std::pair<int, int>>* GetAnimations(const std::string& key);
-                static const std::vector<std::array<int, 6>>* GetRawSpritesheetData(const std::string& key);
+                static const std::vector<std::array<unsigned int, 6>>* GetRawSpritesheetData(const std::string& key);
                 //parse CSV or JSON map data array
                 static const std::vector<std::string> ParseMapData(const std::string& key, int index = 0);
 
@@ -48,11 +48,11 @@ namespace System {
                 static void LoadRaw(const int type, const std::string& key, const unsigned char* arr, const unsigned int bytes);
                 static void LoadAnims(const std::string& key, const std::map<const std::string, std::pair<int, int>>& anims);
                 //can be used to load frames from a texture during preload, or at runtime to overwrite previous frames
-                static void LoadFrames(const std::string& key, const std::vector<std::array<int, 6>>& frames); 
+                static void LoadFrames(const std::string& key, const std::vector<std::array<unsigned int, 6>>& frames); 
                 static void LoadAtlas(const std::string& key, const std::string& path); 
                 //loads json maps into memory and returns number of layers
                 static void LoadTilemapFromJSON(const std::string& key, const std::string& path);
-                static void LoadTilemapFrames(const std::string& textureKey, unsigned int columns, float map_width, float map_height, float tile_width, float tile_height); 
+                static void LoadTilemapFrames(const std::string& textureKey, unsigned int columns, unsigned int map_width, unsigned int map_height, unsigned int tile_width, unsigned int tile_height); 
 
                 static void UnLoadFile(const std::string& key);
                 static void UnLoadRaw(const int type, const std::string& key);
@@ -64,7 +64,7 @@ namespace System {
 
                 //asset storage
 
-                std::map<const std::string, std::vector<std::array<int, 6>>> m_atlases;
+                std::map<const std::string, std::vector<std::array<unsigned int, 6>>> m_atlases;
                 std::map<const std::string, std::map<const std::string, std::pair<int, int>>> m_anims;
                 std::map<const std::string, const std::string> m_atlas_paths;
                 std::map<const std::string, std::pair<int, const std::string>> m_file_assets;
