@@ -1052,7 +1052,7 @@ void EventListener::BuildAndRun()
 
                         else if (tmn->HasComponent(Component::PHYSICS) && tmn->map.bodies.size()) 
                             for (const auto& body : tmn->map.bodies) 
-                                command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x + body->width / 2) + ", " + FloatToString(body->y + body->height / 2) + ", " + FloatToString(body->width / 2) + ", " + FloatToString(body->height / 2) + ");\n";
+                                command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x /* + body->width / 2 */) + ", " + FloatToString(body->y /* + body->height / 2 */) + ", " + FloatToString(body->width /* / 2 */) + ", " + FloatToString(body->height /* / 2 */) + ");\n";
                     }
                 } 
 

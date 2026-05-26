@@ -79,21 +79,6 @@ void Camera::SetBounds(float widthBegin, float widthEnd, float heightBegin, floa
     currentBoundsHeightEnd = heightEnd;
 }
 
- 
-//-------------------------------
-
-
-const bool Camera::InBounds() 
-{ 
-    if (!m_target.first)
-        return false;
-
-    return m_target.first->x > currentBoundsWidthBegin &&
-           m_target.first->x < currentBoundsWidthEnd && 
-           m_target.first->y > currentBoundsHeightBegin &&
-           m_target.first->y < currentBoundsHeightEnd;
-}
-
 
 //------------------------------
 
@@ -136,11 +121,17 @@ const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 
 
 void Camera::Update() 
-{    
-    if (m_canFollow && InBounds()) {
+{     
+    if (!m_target.first)
+        return;
+
+    //camera follows target within world bounds
+
+    if (m_target.first->x > currentBoundsWidthBegin && m_target.first->x < currentBoundsWidthEnd)
         m_position.x = (-m_target.first->x + m_target.second.first); 
+        
+    if (m_target.first->y > currentBoundsHeightBegin && m_target.first->y < currentBoundsHeightEnd)
         m_position.y = (-m_target.first->y + m_target.second.second);  
-    }
 }
 
 

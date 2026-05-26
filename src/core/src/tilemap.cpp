@@ -114,8 +114,16 @@ Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key)
                             y = body.contains("y") ? static_cast<float>(body["y"]) : 0.0f,
                             width = body.contains("width") ? static_cast<float>(body["width"]) : 0.0f,
                             height = body.contains("height") ? static_cast<float>(body["height"]) : 0.0f;
+                
+                std::shared_ptr<Physics::Body> pb;
 
-                const auto pb = Physics::CreateBody(Physics::Body::Type::STATIC, x + (width / 2), y + (height / 2), width / 2, height / 2);
+                #if STANDALONE == 0
+                    pb = Physics::CreateBody(Physics::Body::Type::STATIC, x, y, width, height); 
+                    pb->UpdateFixture(pb->width / 2, pb->height / 2);
+                    pb->SetTransform(pb->x + pb->width / 2, pb->y + pb->height / 2);
+                #else 
+                    pb = Physics::CreateBody(Physics::Body::Type::STATIC, x + (width / 2), y + (height / 2), width / 2, height / 2); 
+                #endif
 
                 bodies.emplace_back(pb);
             }
@@ -222,12 +230,11 @@ Scene::TilemapLayer Game::CreateTileLayer(
                     bin_reset[0] = '0'; 
                     bin_reset[1] = '0';
                     bin_reset[2] = '0';
-                    
                     tileType = Utils::BinToDec(atoi(bin_reset.c_str()));       
                                 
-                    flipX = static_cast<std::string>(flags).substr(0, 1) == "1";
-                    flipY = static_cast<std::string>(flags).substr(1, 1) == "1";
-                    diag = static_cast<std::string>(flags).substr(2, 1) == "1";  
+                    flipX = flags[0] == '1'; 
+                    flipY = flags[1] == '1';
+                    diag = flags[2] == '1';       
                 }
 
                 //create tilesprite entity
@@ -236,7 +243,6 @@ Scene::TilemapLayer Game::CreateTileLayer(
        
                 tile->SetName((std::string)data_key);
                 tile->SetDepth(depth); 
-                tile->SetFlip(flipX, flipY);   
                 tile->SetScrollFactor({ scrollFactorX, scrollFactorY });
                 tile->SetCull(true);
                 tile->SetData(data_key, true);
@@ -246,8 +252,24 @@ Scene::TilemapLayer Game::CreateTileLayer(
                 if (shaderKey.length())
                     tile->SetShader(shaderKey);
 
-                if (diag)
-                    tile->SetRotation(90.0f);  
+                //transform tile
+
+                if (flipX && flipY && diag) {
+                    tile->SetRotation(90.0f); 
+                    tile->SetFlipX(true);
+                }
+                else if (flipX && diag) 
+                    tile->SetRotation(90.0f); 
+
+                else if (flipY && diag)
+                    tile->SetRotation(270.0f); 
+
+                else if (diag) {
+                    tile->SetRotation(90.0f); 
+                    tile->SetFlipY(true);
+                }
+                else 
+                    tile->SetFlip(flipX, flipY);   
             }
         }
  

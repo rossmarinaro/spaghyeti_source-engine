@@ -507,7 +507,7 @@ void Sprite::Render()
 
         const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
         const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX * scale.x), (camera->GetPosition()->y * scrollY * scale.y));
-
+ 
         glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
 
         if (!IsSprite()) 

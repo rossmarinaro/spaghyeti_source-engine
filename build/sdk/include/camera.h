@@ -31,8 +31,7 @@ class Camera {
         void StartFollow(Math::Vector2* position, float offsetX = 0.0f, float offsetY = 0.0f);
         void SetVignette(float alpha);
         void Fade(float rate, const std::string& direction);
-        void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd); 
-        const bool InBounds(); 
+        void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd);  
 
         const Math::Vector4 GetProjectionMatrix(float width, float height);
         const Math::Matrix4 GetViewMatrix(float x, float y);

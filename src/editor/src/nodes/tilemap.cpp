@@ -17,7 +17,7 @@ TilemapNode::TilemapNode(bool init):
     tile_height = 64;
 
     map = {};
-    
+
     if (m_init)
         Editor::Log("Tilemap node " + name + " created."); 
 }
@@ -78,6 +78,22 @@ void TilemapNode::Reset(int component_type)
 //---------------------------
 
 
+void TilemapNode::SetInitialPosition() 
+{
+    for (auto it = map.layers.begin(); it != map.layers.end(); ++it) 
+        if (it != map.layers.end())
+            for (const auto& entity : System::Game::GetScene()->entities) {
+                const auto layer = *it; 
+
+                if (entity->GetType() == Entity::TILE && layer.key == entity->GetData<std::string>("layer key"))
+                        entity->SetData("initial position", entity->position);
+            } 
+}
+
+
+//---------------------------
+
+
 void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& path) 
 {
     if (!System::Utils::str_endsWith(path, ".json")) {
@@ -103,8 +119,13 @@ void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& pat
     tile_width = map.tileWidth;
     tile_height = map.tileHeight;
 
-    if (map.bodies.size()) 
+    SetInitialPosition();    
+
+    if (map.bodies.size()) {
         AddComponent(Component::PHYSICS, false);
+        // for (int i = 0; i < map.bodies.size(); i++) 
+        //     UpdateBody(i);
+    }
 
     AssetManager::Register(map.layers[0].dataKey);  
     AssetManager::Register(map.layers[0].textureKey);
@@ -341,6 +362,8 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                                 System::Resources::Manager::LoadTilemapFrames(map.layers[i].textureKey, map.layers[i].columns, map_width, map_height, tile_width, tile_height);
                                                 
                                                 map.layers[i] = System::Game::CreateTileLayer(i, map.layers[i].textureKey.c_str(), map.layers[i].dataKey.c_str(), map_width, map_height, tile_width, tile_height, map.layers[i].depth, i, 0.0f, 0.0f, map.layers[i].scrollFactorX, map.layers[i].scrollFactorY);  
+                                            
+                                                SetInitialPosition();
                                             }
                                             else 
                                                 InitMapFromJSON(key, path);
@@ -470,7 +493,7 @@ void TilemapNode::Render(float _positionX, float _positionY, float _rotation, fl
     scaleX = _scaleX;
     scaleY = _scaleY;
 
-    //update tilesprite
+    //update tilesprite layers
 
     for (auto it = map.layers.begin(); it != map.layers.end(); ++it) 
         if (it != map.layers.end())
@@ -478,7 +501,18 @@ void TilemapNode::Render(float _positionX, float _positionY, float _rotation, fl
             {
                 const auto layer = *it; 
 
-                if (entity->GetType() == Entity::TILE && layer.key == entity->GetData<std::string>("layer key"))
+                if (entity->GetType() == Entity::TILE && layer.key == entity->GetData<std::string>("layer key")) 
+                {
+                    const auto initialPosition = entity->GetData<Math::Vector2>("initial position");
+
+                    entity->SetPosition(initialPosition.x + positionX, initialPosition.y + positionY);
+                    entity->SetScale(entity->scale.x * scaleX, entity->scale.y * scaleY);
                     entity->SetDepth(layer.depth); 
+                }
             }
+
+    //update bodies
+
+    //for (const auto& body : map.bodies)
+     //  body->SetTransform(body->x + (body->width / 2) + positionX, body->y + (body->height / 2) + positionY, false); 
 }

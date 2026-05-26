@@ -214,11 +214,12 @@ namespace editor {
             void Reset(const int component_type = Component::NONE) override; 
             void Render(float _positionX, float _positionY, float _rotation, float _scaleX, float _scaleY) override;
             void CreateBody(float x = 0.0f, float y = 0.0f, float width = 0.0f, float height = 0.0f);
- 
+            void UpdateBody(unsigned int index);
+            void SetInitialPosition();
+            
         private: 
 
             void AddLayer();
-            void UpdateBody(unsigned int index);
             void InitMapFromJSON(const std::string& key, const std::string& path);
     };
 

@@ -761,6 +761,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     layerIndex++;
                 }
 
+            if (makeNode)
+                tmn->SetInitialPosition();
+
             if (data.contains("components"))
             {
                 //physics  
@@ -769,6 +772,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                    tmn->AddComponent(Component::PHYSICS, false);
 
                 if (data["components"]["physics"]["bodies"].size())
+                {
+                    unsigned int i = 0;
+
                     for (const auto& body : data["components"]["physics"]["bodies"]) 
                     {
                         const float x = static_cast<float>(body["bodyX"]),
@@ -777,8 +783,10 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                                     height = static_cast<float>(body["body_height"]);
                         //edit
 
-                        if (makeNode) 
-                            tmn->CreateBody(x + (width / 2), y + (height / 2), width / 2, height / 2);
+                        if (makeNode) {
+                            tmn->CreateBody(x, y, width, height);
+                            tmn->UpdateBody(i);
+                        }
 
                         else //build
                         {
@@ -791,7 +799,10 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                             
                             tmn->map.bodies.emplace_back(pb);
                         }
+
+                        i++;
                     }
+                }
             }
 
             return tmn;

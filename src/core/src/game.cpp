@@ -422,7 +422,7 @@ void Game::UpdateFrame()
             }
 
     #endif
-
+        
     //entity render queue 
 
     Entity::s_rendered = 0;
@@ -517,7 +517,7 @@ void Game::UpdateFrame()
 
 
 bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity) 
-{
+{ 
     //cull sprite and tile type entities out of view space
 
     const float* zoom_ptr = camera->GetZoom();
@@ -526,7 +526,8 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
                 height = entity->texture.FrameHeight,
                 camPosX = -camera->GetPosition()->x, 
                 camPosY = -camera->GetPosition()->y,
-                zoom = std::pow(((1.0f - (*zoom_ptr)) + 1.0f), ((1.0f - (*zoom_ptr)) + 1.0f) * 2.0f),
+                zoom_padding = 1.25f,
+                zoom = std::pow(((1.0f - (*zoom_ptr)) + 1.0f) * zoom_padding, ((1.0f - (*zoom_ptr)) + 1.0f) * zoom_padding),
                 fx = (1.0f - entity->scrollFactor.x) + 1.0f,
                 fy = (1.0f - entity->scrollFactor.y) + 1.0f,
                 posX = entity->position.x * fx,

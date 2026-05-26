@@ -41,7 +41,7 @@ namespace /* SPAGHYETI_CORE */ System {
         public:
 
             static inline const size_t MAX_TEXTURES = 32,
-                                       MAX_QUADS = 10000;
+                                       MAX_QUADS = 100000;
 
             uint32_t indexCount, 
                      textureSlotIndex;
