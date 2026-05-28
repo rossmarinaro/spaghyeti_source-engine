@@ -172,6 +172,8 @@ Scene::TilemapLayer Game::CreateTileLayer(
     layer.scrollFactorX = scrollFactorX;
     layer.scrollFactorY = scrollFactorY;
     layer.columns = columns;
+    layer.alpha = 1.0f;
+    layer.tint = { 1.0f, 1.0f, 1.0f };
 
     auto data = Resources::Manager::ParseMapData(data_key, index);
 

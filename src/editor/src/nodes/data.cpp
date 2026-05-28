@@ -182,7 +182,14 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
                     { "depth", layer.depth },
                     { "key", layer.dataKey },
                     { "path", layer.dataPath },
-                    { "texture", layer.textureKey }
+                    { "texture", layer.textureKey },
+                    { "alpha", layer.alpha },
+                    { "tint", {
+                            { "x", layer.tint.x },
+                            { "y", layer.tint.y },
+                            { "z", layer.tint.z }
+                        }
+                    }
                 });
    
         //physics bodies
@@ -724,38 +731,62 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                         columns = layer.contains("frames x") ? static_cast<int>(layer["frames x"]) : 0;
 
                     float scrollFactorX = layer.contains("scroll factor x") ? static_cast<float>(layer["scroll factor x"]) : 0.0f,
-                          scrollFactorY = layer.contains("scroll factor y") ? static_cast<float>(layer["scroll factor y"]) : 0.0f;
+                          scrollFactorY = layer.contains("scroll factor y") ? static_cast<float>(layer["scroll factor y"]) : 0.0f,
+                          alpha = layer.contains("alpha") ? static_cast<float>(layer["alpha"]) : 1.0f;
 
                     const std::string key = layer.contains("key") ? static_cast<std::string>(layer["key"]) : "", 
                                       path = layer.contains("path") ? static_cast<std::string>(layer["path"]) : "", 
                                       texture = layer.contains("texture") ? static_cast<std::string>(layer["texture"]) : "",
                                       shader = layer.contains("shader") ? static_cast<std::string>(layer["shader"]) : "";
+
+                    Math::Vector3 tint;
+                    
+                    if (layer.contains("tint"))
+                        tint = { layer["tint"]["x"], layer["tint"]["y"], layer["tint"]["z"] };
+                    else 
+                        tint = { 1.0f, 1.0f, 1.0f };
+                    
                     //edit
 
                     if (makeNode) {
                         System::Resources::Manager::LoadTilemapFrames(texture, columns, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
-                        const auto layer = System::Game::CreateTileLayer(ID, texture.c_str(), key.c_str(), columns, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height, depth, layerIndex); 
-                        tmn->map.layers.emplace_back(layer);
+
+                        auto _layer = System::Game::CreateTileLayer(
+                            ID, 
+                            texture.c_str(), 
+                            key.c_str(), 
+                            columns, 
+                            tmn->map_width, tmn->map_height, 
+                            tmn->tile_width, tmn->tile_height, 
+                            depth, layerIndex
+                        ); 
+
+                        _layer.alpha = alpha;
+                        _layer.tint = tint;
+
+                        tmn->map.layers.emplace_back(_layer);
                     }
                     else //build 
                     {
                         tmn->map.key = key;
                         tmn->map.path = path;
 
-                        System::Scene::TilemapLayer layer;
+                        System::Scene::TilemapLayer _layer;
 
-                        layer.textureKey = texture;
-                        layer.dataKey = key;
-                        layer.dataPath = "assets/" + key;
-                        layer.ID = ID;
-                        layer.key = "";
-                        layer.depth = depth;
-                        layer.shader = shader;
-                        layer.scrollFactorX = scrollFactorX;
-                        layer.scrollFactorY = scrollFactorY;
-                        layer.columns = columns;
+                        _layer.textureKey = texture;
+                        _layer.dataKey = key;
+                        _layer.dataPath = "assets/" + key;
+                        _layer.ID = ID;
+                        _layer.key = "";
+                        _layer.depth = depth;
+                        _layer.shader = shader;
+                        _layer.scrollFactorX = scrollFactorX;
+                        _layer.scrollFactorY = scrollFactorY;
+                        _layer.columns = columns;
+                        _layer.alpha = alpha;
+                        _layer.tint = tint;
 
-                        tmn->map.layers.emplace_back(layer);
+                        tmn->map.layers.emplace_back(_layer);
                     }
                   
                     layerIndex++;
@@ -784,7 +815,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                         //edit
 
                         if (makeNode) {
-                            tmn->CreateBody(x, y, width, height);
+                            tmn->CreateBody(x, y, width, height); 
                             tmn->UpdateBody(i);
                         }
 

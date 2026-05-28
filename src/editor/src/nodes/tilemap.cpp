@@ -49,6 +49,8 @@ void TilemapNode::AddLayer()
     layer.columns = 1; 
     layer.scrollFactorX = 1.0f;
     layer.scrollFactorY = 1.0f;
+    layer.alpha = 1.0f;
+    layer.tint = { 1.0f, 1.0f, 1.0f };
 
     map.layers.emplace_back(layer);
 }
@@ -121,11 +123,8 @@ void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& pat
 
     SetInitialPosition();    
 
-    if (map.bodies.size()) {
+    if (map.bodies.size()) 
         AddComponent(Component::PHYSICS, false);
-        // for (int i = 0; i < map.bodies.size(); i++) 
-        //     UpdateBody(i);
-    }
 
     AssetManager::Register(map.layers[0].dataKey);  
     AssetManager::Register(map.layers[0].textureKey);
@@ -172,16 +171,6 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 Editor::Get()->events->selected_nodes = &nodes;
 
             Node::Update(arr);
-
-            if (ImGui::BeginMenu("Add Component"))
-            {
-                if (ImGui::MenuItem("Physics")) {
-                    AddComponent(Component::PHYSICS);
-                    EventListener::UpdateSession();
-                }
-            
-                ImGui::EndMenu();
-            }
 
             //components
 
@@ -393,6 +382,14 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) != System::Resources::Manager::IMAGE)
                                 ImGui::SetTooltip("cannot set texture because selected asset is not of type image.");
 
+                            ImGui::ColorEdit3("tint", (float*)&map.layers[i].tint); 
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
+                            ImGui::SliderFloat("alpha", &map.layers[i].alpha, 0.0f, 1.0f); 
+                            if (ImGui::IsItemDeactivatedAfterEdit())
+                                EventListener::UpdateSession();
+
                             if (ImGui::InputInt("columns", &map.layers[i].columns) && map.layers[i].columns > 0) 
                                 EventListener::UpdateSession();
 
@@ -508,11 +505,13 @@ void TilemapNode::Render(float _positionX, float _positionY, float _rotation, fl
                     entity->SetPosition(initialPosition.x + positionX, initialPosition.y + positionY);
                     entity->SetScale(entity->scale.x * scaleX, entity->scale.y * scaleY);
                     entity->SetDepth(layer.depth); 
+                    entity->SetAlpha(layer.alpha); 
+                    entity->SetTint({ layer.tint.x, layer.tint.y, layer.tint.z }); 
                 }
             }
 
     //update bodies
 
-    //for (const auto& body : map.bodies)
-     //  body->SetTransform(body->x + (body->width / 2) + positionX, body->y + (body->height / 2) + positionY, false); 
+    for (const auto& body : map.bodies)
+       body->SetTransform(body->x + (body->width / 2) + positionX, body->y + (body->height / 2) + positionY, false); 
 }

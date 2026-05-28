@@ -1040,11 +1040,13 @@ void EventListener::BuildAndRun()
                             preload_queue << "  System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->map.key + """\", ""\"" + tmn->map.path + """\");\n";
                             command_queue << "   System::Game::CreateTilemapFromJSON(\"" + tmn->map.key + "\");\n";
                             
-                            //set depth on tilesprite layers
+                            //update tilesprites per layer
 
                             for (const auto& layer : tmn->map.layers) {
-                                command_queue << "    for (const auto& sprite : System::Game::GetTileLayerSprites(\"" + tmn->map.key + "\", " + std::to_string(layer.ID) + "))\n";
-                                command_queue << "       sprite->SetDepth(" + std::to_string(layer.depth) + ");\n";
+                                command_queue << "    for (const auto& ts : System::Game::GetTileLayerSprites(\"" + tmn->map.key + "\", " + std::to_string(layer.ID) + ")) {\n";
+                                command_queue << "       ts->SetDepth(" + std::to_string(layer.depth) + ");\n"; 
+                                command_queue << "       ts->SetAlpha(" + std::to_string(layer.alpha) + ");\n"; 
+                                command_queue << "       ts->SetTint({" + std::to_string(layer.tint.x) + ", " + std::to_string(layer.tint.y) + ", " + std::to_string(layer.tint.z) + "});\n\t}\n"; 
                             }
                         }
 
@@ -1052,7 +1054,7 @@ void EventListener::BuildAndRun()
 
                         else if (tmn->HasComponent(Component::PHYSICS) && tmn->map.bodies.size()) 
                             for (const auto& body : tmn->map.bodies) 
-                                command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x /* + body->width / 2 */) + ", " + FloatToString(body->y /* + body->height / 2 */) + ", " + FloatToString(body->width /* / 2 */) + ", " + FloatToString(body->height /* / 2 */) + ");\n";
+                                command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x) + ", " + FloatToString(body->y) + ", " + FloatToString(body->width) + ", " + FloatToString(body->height) + ");\n";
                     }
                 } 
 

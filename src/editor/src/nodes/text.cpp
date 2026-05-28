@@ -93,21 +93,6 @@ void TextNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             if (ImGui::Button("Select") && textHandle) 
                 Editor::FocusEntity(textHandle);
-            
-            if (ImGui::BeginMenu("Add Component"))
-            {
-                if (ImGui::MenuItem("Scripts")) {
-                    AddComponent(Component::SCRIPT); 
-                    EventListener::UpdateSession();
-                }
-
-                if (ImGui::MenuItem("Shader")) {
-                    AddComponent(Component::SHADER);
-                    EventListener::UpdateSession();
-                }
-            
-                ImGui::EndMenu();
-            }
 
             //component options
 

@@ -238,37 +238,7 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             if (ImGui::Button("Select") && spriteHandle) 
                 Editor::FocusEntity(spriteHandle);
-            
-            if (ImGui::BeginMenu("Add Component"))
-            {
-                if (spriteHandle) 
-                {
-                    if (ImGui::MenuItem("Animator")) {
-                        AddComponent(Component::ANIMATOR);
-                        EventListener::UpdateSession();
-                    }
-
-                    if (ImGui::MenuItem("Physics")) {
-                        AddComponent(Component::PHYSICS);
-                        EventListener::UpdateSession();
-                    }
-                
-                    if (ImGui::MenuItem("Scripts")) {
-                        AddComponent(Component::SCRIPT);
-                        EventListener::UpdateSession();
-                    }
-
-                    if (ImGui::MenuItem("Shader")) {
-                        AddComponent(Component::SHADER);
-                        EventListener::UpdateSession();
-                    }
-                }
-                else
-                    ImGui::Text("Please apply texture before creating a component.");
-                
-                ImGui::EndMenu();
-            }
-
+        
             //component options
 
             //-------------------------------- animator

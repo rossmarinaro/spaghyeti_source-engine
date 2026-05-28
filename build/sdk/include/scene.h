@@ -15,7 +15,8 @@ namespace System {
             struct TilemapLayer {
                 std::string key, dataKey, dataPath, textureKey, shader;
                 int ID, depth, columns;
-                float scrollFactorX, scrollFactorY;
+                float scrollFactorX, scrollFactorY, alpha;
+                Math::Vector3 tint;
             };
 
             struct Tilemap {

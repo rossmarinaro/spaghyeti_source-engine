@@ -94,23 +94,45 @@ const std::string AssetManager::GetThumbnail(const std::string& asset) {
 //---------------------------------
 
 
-const bool AssetManager::SavePrefab(const std::string& nodeId, std::vector<std::shared_ptr<Node>>& arr)
+void AssetManager::SavePrefab(const std::string& nodeId, std::vector<std::shared_ptr<Node>>& arr)
 {
     const auto node = Node::Get(nodeId, arr);
     
     if (!node)
-        return false;
+        return;
 
     try {
 
-        auto saveFile = [&](const std::string& filename) -> bool
+    //windows save prompt
+
+    #ifdef _WIN32
+
+        std::filesystem::path win_path(Editor::projectPath + "resources/prefabs");
+        win_path.make_preferred(); 
+
+        const auto path = std::filesystem::canonical(win_path);
+
+        OPENFILENAME ofn;
+
+        char szFileName[MAX_PATH] = "";
+
+        ZeroMemory(&ofn, sizeof(ofn));
+
+        strcpy(szFileName, (path.string() += R"(\*.*)").c_str()); 
+        ofn.lStructSize = sizeof(ofn);
+        ofn.hwndOwner = NULL;
+        ofn.lpstrFilter = _T("SpaghYeti Prefabs (*.prefab)\0*.prefab");
+        ofn.lpstrFile = szFileName;
+        ofn.nMaxFile = MAX_PATH;
+        ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+        ofn.lpstrDefExt = NULL;
+ 
+        if (GetSaveFileName(&ofn) == TRUE) 
         {
-             
-            std::ofstream src(filename);
-
-            json data;
-
-            data = Node::WriteData(node);
+            std::filesystem::path result((const char*)ofn.lpstrFile);
+       
+            std::ofstream src(result.string() + ".prefab");
+            json data = Node::WriteData(node);
 
             std::string JSON = data.dump();
 
@@ -131,32 +153,7 @@ const bool AssetManager::SavePrefab(const std::string& nodeId, std::vector<std::
                     JSON[i] = '$';
 
             src << JSON;
-
             src.close();
-    };
-
-    //windows save prompt
-
-    #ifdef _WIN32
-
-        OPENFILENAME ofn;
-
-        char szFileName[MAX_PATH] = "";
-
-        ZeroMemory(&ofn, sizeof(ofn));
-
-        ofn.lStructSize = sizeof(ofn);
-        ofn.hwndOwner = NULL;
-        ofn.lpstrFilter = _T("SpaghYeti Prefabs (*.prefab)\0*.prefab");
-        ofn.lpstrFile = szFileName;
-        ofn.nMaxFile = MAX_PATH;
-        ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-        ofn.lpstrDefExt = NULL;
-
-        if (GetSaveFileName(&ofn) == TRUE) {
-            std::filesystem::path result((const char*)ofn.lpstrFile);
-            if (saveFile(result.string() + ".prefab"))
-                return true;
         }
  
     #endif
@@ -164,7 +161,6 @@ const bool AssetManager::SavePrefab(const std::string& nodeId, std::vector<std::
 
     catch (std::runtime_error& err) {
         Editor::Log("Runtime error saving prefab: " + (std::string)err.what());
-        return false;
     }
 }
 

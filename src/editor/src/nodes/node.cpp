@@ -221,6 +221,75 @@ void Node::ClearAll()
 
 void Node::ShowOptions(std::vector<std::shared_ptr<Node>>& arr)
 {
+    if (ImGui::BeginMenu("Add Component"))
+    {
+        std::vector<int> components;
+
+        switch (type)
+        {
+            case SPRITE:
+            {
+                const auto node = Get(ID, arr);
+                const auto spriteNode = std::static_pointer_cast<SpriteNode>(node);
+
+                if (spriteNode && spriteNode->spriteHandle) {
+                    components.push_back(Component::PHYSICS);
+                    components.push_back(Component::SCRIPT);
+                    components.push_back(Component::SHADER);
+                    components.push_back(Component::ANIMATOR);
+                }
+                else
+                    ImGui::Text("Please apply texture before creating a component.");
+            }
+            break;
+            case TILEMAP:
+                components.push_back(Component::PHYSICS);
+            break;
+            case TEXT:
+            case EMPTY:
+                components.push_back(Component::SCRIPT);
+                components.push_back(Component::SHADER);
+            break;
+            default: break;
+        }
+
+        //apply component if exists
+
+        if (std::find(components.begin(), components.end(), Component::PHYSICS) != components.end())
+            if (ImGui::MenuItem("Physics")) {
+                AddComponent(Component::PHYSICS);
+                EventListener::UpdateSession();
+            }
+
+        if (std::find(components.begin(), components.end(), Component::ANIMATOR) != components.end())
+            if (ImGui::MenuItem("Animator")) {
+                AddComponent(Component::ANIMATOR);
+                EventListener::UpdateSession();
+            }
+
+        if (std::find(components.begin(), components.end(), Component::SCRIPT) != components.end())
+            if (ImGui::MenuItem("Script")) {
+                AddComponent(Component::SCRIPT);
+                EventListener::UpdateSession();
+            }
+
+        if (std::find(components.begin(), components.end(), Component::SHADER) != components.end())
+            if (ImGui::MenuItem("Shader")) {
+                AddComponent(Component::SHADER);
+                EventListener::UpdateSession();
+            }
+        
+        ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Delete"))
+    {
+        if (ImGui::MenuItem("Are You Sure?")) 
+            DeleteNode(arr);
+
+        ImGui::EndMenu();
+    }
+
     if (ImGui::MenuItem("Duplicate")) 
     {
         const auto node = Get(ID, arr);
@@ -239,15 +308,7 @@ void Node::ShowOptions(std::vector<std::shared_ptr<Node>>& arr)
     }
 
     if (type != AUDIO && type != TILEMAP && ImGui::MenuItem("Save prefab")) 
-        SavePrefab(arr); 
-
-    if (ImGui::BeginMenu("Delete"))
-    {
-        if (ImGui::MenuItem("Are You Sure?")) 
-            DeleteNode(arr);
-
-        ImGui::EndMenu();
-    }
+        AssetManager::SavePrefab(ID, arr);
 }
 
  
@@ -335,18 +396,6 @@ void Node::LoadShader(std::shared_ptr<Node> node, const std::string& name, const
         if (en->debugGraphic) 
             en->debugGraphic->SetShader(name);
     }
-}
-
-
-//---------------------------------- save prefab
-
-
-void Node::SavePrefab(std::vector<std::shared_ptr<Node>>& arr) {
-
-    if (AssetManager::SavePrefab(ID, arr))
-        Editor::Log("Prefab " + name + " saved.");
-    else    
-        Editor::Log("There was a problem saving prefab.");
 }
 
 
