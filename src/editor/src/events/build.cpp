@@ -1046,6 +1046,7 @@ void EventListener::BuildAndRun()
                                 command_queue << "    for (const auto& ts : System::Game::GetTileLayerSprites(\"" + tmn->map.key + "\", " + std::to_string(layer.ID) + ")) {\n";
                                 command_queue << "       ts->SetDepth(" + std::to_string(layer.depth) + ");\n"; 
                                 command_queue << "       ts->SetAlpha(" + std::to_string(layer.alpha) + ");\n"; 
+                                command_queue << "       ts->SetScrollFactor({" + std::to_string(layer.scrollFactorX) + ", " + std::to_string(layer.scrollFactorY) + "});\n"; 
                                 command_queue << "       ts->SetTint({" + std::to_string(layer.tint.x) + ", " + std::to_string(layer.tint.y) + ", " + std::to_string(layer.tint.z) + "});\n\t}\n"; 
                             }
                         }

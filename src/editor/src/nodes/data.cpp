@@ -728,10 +728,10 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 {
                     int ID = layer.contains("id") ? static_cast<int>(layer["id"]) : 0,
                         depth = layer.contains("depth") ? static_cast<int>(layer["depth"]) : 0,
-                        columns = layer.contains("frames x") ? static_cast<int>(layer["frames x"]) : 0;
+                        columns = layer.contains("frames x") ? static_cast<int>(layer["frames x"]) : 1;
 
-                    float scrollFactorX = layer.contains("scroll factor x") ? static_cast<float>(layer["scroll factor x"]) : 0.0f,
-                          scrollFactorY = layer.contains("scroll factor y") ? static_cast<float>(layer["scroll factor y"]) : 0.0f,
+                    float scrollFactorX = layer.contains("scroll factor x") ? static_cast<float>(layer["scroll factor x"]) : 1.0f,
+                          scrollFactorY = layer.contains("scroll factor y") ? static_cast<float>(layer["scroll factor y"]) : 1.0f,
                           alpha = layer.contains("alpha") ? static_cast<float>(layer["alpha"]) : 1.0f;
 
                     const std::string key = layer.contains("key") ? static_cast<std::string>(layer["key"]) : "", 
@@ -763,6 +763,8 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                         _layer.alpha = alpha;
                         _layer.tint = tint;
+                        _layer.scrollFactorX = scrollFactorX;
+                        _layer.scrollFactorY = scrollFactorY;
 
                         tmn->map.layers.emplace_back(_layer);
                     }
