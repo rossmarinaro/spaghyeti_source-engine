@@ -724,6 +724,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             int layerIndex = 0;
 
             if (data.contains("layers"))
+            {
                 for (const auto& layer : data["layers"]) 
                 {
                     int ID = layer.contains("id") ? static_cast<int>(layer["id"]) : 0,
@@ -793,6 +794,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                   
                     layerIndex++;
                 }
+
+                tmn->map.key = tmn->map.layers[0].dataKey; //define map as first layer's dataKey (json or csv)
+            }
 
             if (makeNode)
                 tmn->SetInitialPosition();
