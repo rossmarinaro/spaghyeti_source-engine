@@ -524,9 +524,9 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
 
     const float width = entity->texture.FrameWidth,
                 height = entity->texture.FrameHeight,
-                camPosX = -camera->GetPosition()->x, 
+                camPosX = -camera->GetPosition()->x,  
                 camPosY = -camera->GetPosition()->y,
-                zoom_padding = 1.25f,
+                zoom_padding = 1.2f,//1.25f,
                 zoom = std::pow(((1.0f - (*zoom_ptr)) + 1.0f) * zoom_padding, ((1.0f - (*zoom_ptr)) + 1.0f) * zoom_padding),
                 fx = (1.0f - entity->scrollFactor.x) + 1.0f,
                 fy = (1.0f - entity->scrollFactor.y) + 1.0f,
@@ -566,6 +566,8 @@ void Game::RenderEntities()
                     entity->Render();
                     Entity::s_rendered++;
                 }  
+
+                entity->Update();
             }
     };
 

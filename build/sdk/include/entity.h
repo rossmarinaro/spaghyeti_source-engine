@@ -62,6 +62,7 @@ class Entity {
         inline void SetScrollFactor(const Math::Vector2& scrollFactor) { this->scrollFactor = scrollFactor; }
         inline void SetStatic(bool is_static) { m_isStatic = is_static; }
 		 
+        virtual void Update() {}
 		virtual void Render() {}
         virtual ~Entity() { s_count--; }
 
@@ -263,6 +264,7 @@ class Sprite : public Entity {
 	    ~Sprite();
 
        	void Render() override;
+        void Update() override;
 
 	private:
 

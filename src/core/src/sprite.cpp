@@ -438,6 +438,24 @@ void Sprite::StopAnimation() {
     m_currentAnim.key = "";
 }
 
+
+//------------------------------------------
+
+
+void Sprite::Update()
+{
+    //update physics bodies if any
+
+    for (const auto& body : m_bodies)
+        if (body.first->IsEnabled() &&  
+            body.first->GetType() == Physics::Body::Type::DYNAMIC || 
+            body.first->GetType() == Physics::Body::Type::KINEMATIC
+        ) {
+            Math::Vector2 pos = body.first->GetPosition(); 
+            SetPosition((pos.x / scale.x) - body.second.r, (pos.y / scale.y) - body.second.g);
+        }
+}
+
 //------------------------------------------ render sprite / update transformations
 
 
@@ -558,19 +576,7 @@ void Sprite::Render()
 
         if (renderer)
             renderer->drawStyle = 1;
-
     }
-
-    //update physics bodies if any
-
-    for (const auto& body : m_bodies)
-        if (body.first->IsEnabled() &&  
-            body.first->GetType() == Physics::Body::Type::DYNAMIC || 
-            body.first->GetType() == Physics::Body::Type::KINEMATIC
-        ) {
-            Math::Vector2 pos = body.first->GetPosition(); 
-            SetPosition((pos.x / scale.x) - body.second.r, (pos.y / scale.y) - body.second.g);
-        }
 
     //play current animation
 
