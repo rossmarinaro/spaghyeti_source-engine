@@ -775,9 +775,17 @@ void editor::GUI::ShowViewport()
     ImGui::SliderFloat("zoom", session->game->camera->GetZoom(), 0.01f, 1.99f);
     ImGui::SliderFloat("rotation", session->game->camera->GetRotation(), 0.0f, 360.0f);
     ImGui::SliderFloat("vignette", &session->vignetteVisibility, 0.0f, 1.0f);
-    ImGui::ColorEdit4("color", (float*)session->game->camera->GetBackgroundColor()); 
+    ImGui::ColorEdit4("background color", (float*)session->game->camera->GetBackgroundColor()); 
     ImGui::Checkbox("depth sort", &session->depthSort);
     session->game->GetScene()->SetDepthSort(session->depthSort);
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("reset camera")) {
+        session->game->camera->SetPosition({ 0.0f, 0.0f });
+        session->game->camera->SetRotation(0.0f);
+        session->game->camera->SetZoom(1.0f);
+    }
 
     System::Renderer::SetVsync(session->vsync);
 
