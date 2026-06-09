@@ -779,9 +779,7 @@ void editor::GUI::ShowViewport()
     ImGui::Checkbox("depth sort", &session->depthSort);
     session->game->GetScene()->SetDepthSort(session->depthSort);
 
-    ImGui::SameLine();
-
-    if (ImGui::Button("reset camera")) {
+    if (ImGui::Button("reset camera orientation")) {
         session->game->camera->SetPosition({ 0.0f, 0.0f });
         session->game->camera->SetRotation(0.0f);
         session->game->camera->SetZoom(1.0f);

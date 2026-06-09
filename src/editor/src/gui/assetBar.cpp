@@ -56,6 +56,8 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
             }
         }
 
+        //render thumbail buttons
+
         const ImVec2 thumbnailSize = ImVec2(70, 70);
         float thumbnailPadding = 16.0f;
         float panelWidth = ImGui::GetContentRegionAvail().x;
