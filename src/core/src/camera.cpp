@@ -122,7 +122,7 @@ const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 
 void Camera::Update() 
 {     
-    if (!m_target.first)
+    if (!m_target.first || !m_canFollow)
         return;
 
     //camera follows target within world bounds

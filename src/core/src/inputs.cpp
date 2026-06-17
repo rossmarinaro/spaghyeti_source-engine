@@ -82,8 +82,8 @@ const bool CheckInteractiveObjectOverlap(const std::shared_ptr<Entity>& entity)
     const float mouseX = System::Game::GetScene()->GetContext().inputs->mouseX, 
                 mouseY = System::Game::GetScene()->GetContext().inputs->mouseY;
 
-    float xPos = entity->position.x * entity->scale.x,
-          yPos = entity->position.y * entity->scale.y,
+    float xPos = entity->position.x,
+          yPos = entity->position.y,
           width = 0.0f, 
           height = 0.0f;
 
@@ -102,12 +102,8 @@ const bool CheckInteractiveObjectOverlap(const std::shared_ptr<Entity>& entity)
         {
             width = text->GetTextDimensions().x * text->scale.x;
             height = text->GetTextDimensions().y * text->scale.y;
-            xPos += text->GetTextDimensions().x;
-            yPos += text->GetTextDimensions().y;
-        }
-        else {
-            width = text->texture.FrameWidth * text->scale.x;
-            height = text->texture.FrameHeight * text->scale.y;
+             xPos += text->GetTextDimensions().x * text->scale.x;
+             yPos += text->GetTextDimensions().y * text->scale.y; 
         }
     }
     else if (entity->GetType() == Entity::GEOMETRY) 

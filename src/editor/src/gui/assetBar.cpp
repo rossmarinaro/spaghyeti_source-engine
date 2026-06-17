@@ -76,10 +76,8 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
             if (!folder.length())
                 continue;
 
-            if (tex.Width > 2400 || tex.Height > 2400) {
-                Editor::Log("Skipping texture: image dimensions exceed max pixels (2400px)");
-                continue;
-            }
+            if (tex.Width > 2400 || tex.Height > 2400) 
+               Editor::Log("Warning: image dimensions exceed 2400px. This may impact performance.");
 
             if (folder == AssetManager::Get()->currentFolder)
             {
