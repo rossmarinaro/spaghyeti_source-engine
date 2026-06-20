@@ -966,7 +966,6 @@ void EventListener::BuildAndRun()
 
                 if (node->type == Node::EMPTY)
                 {
-
                     const auto en = std::dynamic_pointer_cast<EmptyNode>(node);
 
                     if (en->debugGraphic)
@@ -1035,7 +1034,7 @@ void EventListener::BuildAndRun()
 
                         //json file
 
-                        if (System::Utils::str_endsWith(tmn->map.path, ".json")) 
+                        if (tmn->map.layers.size() && System::Utils::str_endsWith(tmn->map.path, ".json")) 
                         {
                             preload_queue << "  System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->map.key + """\", ""\"" + tmn->map.path + """\");\n";
                             command_queue << "   System::Game::CreateTilemapFromJSON(\"" + tmn->map.key + "\");\n";
@@ -1051,12 +1050,14 @@ void EventListener::BuildAndRun()
                             }
                         }
 
-                        //static physics bodies for manual (csv) layers
-
-                        else if (tmn->HasComponent(Component::PHYSICS) && tmn->map.bodies.size()) 
-                            for (const auto& body : tmn->map.bodies) 
-                                command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x) + ", " + FloatToString(body->y) + ", " + FloatToString(body->width) + ", " + FloatToString(body->height) + ");\n";
                     }
+                        
+                    //static physics bodies for manual (csv) layers
+
+                    else if (tmn->HasComponent(Component::PHYSICS) && tmn->map.bodies.size()) 
+                        for (const auto& body : tmn->map.bodies) 
+                            command_queue << "   Physics::CreateBody(Physics::Body::Type::STATIC, " + FloatToString(body->x + (body->width / 2)) + ", " + FloatToString(body->y + (body->height / 2)) + ", " + FloatToString(body->width / 2) + ", " + FloatToString(body->height / 2) + ");\n";
+                            
                 } 
 
                 //--------------- audio

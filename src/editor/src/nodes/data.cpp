@@ -795,7 +795,8 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     layerIndex++;
                 }
 
-                tmn->map.key = tmn->map.layers[0].dataKey; //define map as first layer's dataKey (json or csv)
+                tmn->map.key = tmn->map.layers.size() ? 
+                    tmn->map.layers[0].dataKey : ""; //define map as first layer's dataKey (json or csv)
             }
 
             if (makeNode)
@@ -804,7 +805,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("components"))
             {
                 //physics  
-       
+
                 if (data["components"]["physics"]["exists"]) 
                    tmn->AddComponent(Component::PHYSICS, false);
 
@@ -838,7 +839,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                         }
 
                         i++;
-                    }
+                    } 
                 }
             }
 

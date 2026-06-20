@@ -160,18 +160,18 @@ void Sprite::SetVelocity(float velX, float velY)
     {
         const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
 
-        float posX = body->GetPosition().x,
-              posY = body->GetPosition().y;
-
         if (body->GetType() == Physics::Body::Type::DYNAMIC)
             body->SetLinearVelocity(velocityX, velocityY);
-        else if (body->GetType() == Physics::Body::Type::KINEMATIC)
-            body->SetTransform((posX += (velocityX / 100.0f)), (posY += (velocityY / 100.0f)));
+        else if (body->GetType() == Physics::Body::Type::KINEMATIC) {
+            const float posX = body->GetPosition().x,
+                        posY = body->GetPosition().y;
+            body->SetTransform((posX + velocityX), (posY + velocityY));
+        }
     }
 
     else {
-        (position.x += velocityX) * System::Application::game->time->GetSeconds(); 
-        (position.y += velocityY) * System::Application::game->time->GetSeconds(); 
+        ((position.x += velocityX) / 1000.0f) * System::Application::game->time->GetSeconds(); 
+        ((position.y += velocityY) / 1000.0f) * System::Application::game->time->GetSeconds(); 
     }
 }
 
@@ -189,17 +189,18 @@ void Sprite::SetVelocityX(float velX)
     if (m_bodies.size()) 
     {
         const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
-        float posX = body->GetPosition().x;
 
         if (body->GetType() == Physics::Body::Type::DYNAMIC)
             body->SetLinearVelocity(velocityX, body->GetLinearVelocity().y);
 
-        else if (body->GetType() == Physics::Body::Type::KINEMATIC)
-            body->SetTransform((posX += (velocityX / 100.0f)), body->GetPosition().y);
+        else if (body->GetType() == Physics::Body::Type::KINEMATIC) {
+            const float posX = body->GetPosition().x;
+            body->SetTransform((posX + velocityX), body->GetPosition().y);
+        }
     }
 
     else
-        (position.x += velocityX) * System::Application::game->time->GetSeconds();     
+        ((position.x += velocityX) / 1000.0f) * System::Application::game->time->GetSeconds();     
 }
 
 
@@ -216,16 +217,17 @@ void Sprite::SetVelocityY(float velY)
     if (m_bodies.size()) 
     {
         const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
-        float posY = body->GetPosition().y;
 
         if (body->GetType() == Physics::Body::Type::DYNAMIC)
             body->SetLinearVelocity(body->GetLinearVelocity().x, velocityY);
             
-        else if (body->GetType() == Physics::Body::Type::KINEMATIC)
-            body->SetTransform(body->GetLinearVelocity().x, (posY += (velocityY / 100.0f)));
+        else if (body->GetType() == Physics::Body::Type::KINEMATIC) {
+            const float posY = body->GetPosition().y;
+            body->SetTransform(body->GetLinearVelocity().x, (posY + velocityY));
+        }
     }
     else
-        (position.y += velocityY) * System::Application::game->time->GetSeconds(); 
+        ((position.y += velocityY) / 1000.0f) * System::Application::game->time->GetSeconds(); 
 }
 
 
@@ -525,18 +527,14 @@ void Sprite::Render()
 
         const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
         const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX * scale.x), (camera->GetPosition()->y * scrollY * scale.y));
- 
-        glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
-
-        if (!IsSprite()) 
-            projMat = (glm::highp_mat4)glm::ortho(0.0f, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
+        const glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
     
         glm::mat4 mvp = projMat * glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
                                 { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
                                 { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
                                 { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * transform;
    
-        if (!IsSprite())
+        if (!IsSprite()) //UI do not have view matrix
             mvp = projMat * glm::mat4(1.0f);
 
         const float r = tint.x, 

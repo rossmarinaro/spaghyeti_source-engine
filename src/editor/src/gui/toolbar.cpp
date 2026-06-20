@@ -562,6 +562,8 @@ void editor::GUI::ShowMenu()
 
     if (ImGui::MenuItem("Build / Run"))
         session->events->buildFlag = true;
+    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        ImGui::SetTooltip("build application from last save.");
 
     if (ImGui::BeginMenu("New")) 
     {
@@ -784,6 +786,9 @@ void editor::GUI::ShowViewport()
         session->game->camera->SetRotation(0.0f);
         session->game->camera->SetZoom(1.0f);
     }
+
+    else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+        ImGui::SetTooltip("reset viewport x, y, rotation, and zoom.");
 
     System::Renderer::SetVsync(session->vsync);
 
