@@ -107,7 +107,10 @@ void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& pat
 
     Reset();
 
-    System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
+    std::string errorMessage = System::Resources::Manager::LoadTilemapFromJSON(key, (Editor::projectPath + path));
+
+    if (errorMessage.size())
+        Editor::Log(errorMessage);
 
     map = System::Game::CreateTilemapFromJSON(key);
 

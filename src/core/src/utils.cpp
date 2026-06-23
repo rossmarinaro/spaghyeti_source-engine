@@ -110,6 +110,21 @@ std::string System::Utils::ReplaceFrom(std::string& str, const char* position, c
     return new_str;
 }
 
+
+//---------------------------------------replace string before specific position
+
+
+std::string System::Utils::RemovePrefix(std::string& str, const char* character, int index) 
+{
+    size_t pos = str.find(character /* '_' */);
+
+    if (pos != std::string::npos) 
+        str.erase(0, pos + index);
+
+    return str;
+}
+
+
 //---------------------------------------
 
 std::string System::Utils::SanitizePath(std::string& path) {

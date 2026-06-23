@@ -8,7 +8,7 @@ OBJS = \
 	$(wildcard ../vendors/box2d/src/**/*.cpp) \
 	$(wildcard ../vendors/glad/src/*.c)
 
-CC = g++ -g -std=c++17  
+CC = g++ -g -std=c++17 -fext-numeric-literals
 
 OPT_FLAGS = -O2 -flto 
 

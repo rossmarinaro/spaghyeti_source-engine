@@ -1076,32 +1076,32 @@ void EventListener::BuildAndRun()
 
                 if (node->type == Node::SPAWNER) 
                 {
-                    const auto spawn_node = std::dynamic_pointer_cast<SpawnerNode>(node);
+                    const auto sn = std::dynamic_pointer_cast<SpawnerNode>(node);
 
-                    const std::string body_exists = spawn_node->body.exist ? "true" : "false",
-                                      is_loop = spawn_node->loop ? "true" : "false",
-                                      is_sensor = spawn_node->body.self.isSensor ? "true" : "false";
+                    const std::string body_exists = sn->body.exist ? "true" : "false",
+                                      is_loop = sn->loop ? "true" : "false",
+                                      is_sensor = sn->body.self.isSensor ? "true" : "false";
 
-                    command_queue << "Physics::Body " + node->ID + "_bodyDef;";
-                    command_queue << node->ID + "_bodyDef.type = " + std::to_string(spawn_node->body.self.type) + ";\n";
-                    command_queue << node->ID + "_bodyDef.shape = " + std::to_string(spawn_node->body.self.shape) + ";\n";
-                    command_queue << node->ID + "_bodyDef.isSensor = " + is_sensor + ";\n";
-                    command_queue << node->ID + "_bodyDef.x = " + FloatToString(spawn_node->body.self.x) + ";\n";
-                    command_queue << node->ID + "_bodyDef.y = " + FloatToString(spawn_node->body.self.y) + ";\n";
+                    command_queue << "Physics::Body spawnBodyDef_" + node->ID + ";";
+                    command_queue << "spawnBodyDef_" + node->ID + ".type = " + std::to_string(sn->body.self.type) + ";\n";
+                    command_queue << "spawnBodyDef_" + node->ID + ".shape = " + std::to_string(sn->body.self.shape) + ";\n";
+                    command_queue << "spawnBodyDef_" + node->ID + ".isSensor = " + is_sensor + ";\n";
+                    command_queue << "spawnBodyDef_" + node->ID + ".x = " + FloatToString(sn->body.self.x) + ";\n";
+                    command_queue << "spawnBodyDef_" + node->ID + ".y = " + FloatToString(sn->body.self.y) + ";\n";
 
-                    if (spawn_node->body.self.shape == Physics::Body::Shape::BOX) {
-                        command_queue << node->ID + "_bodyDef.width = " + FloatToString(spawn_node->body.self.width) + ";\n";
-                        command_queue << node->ID + "_bodyDef.height = " + FloatToString(spawn_node->body.self.height) + ";\n";
+                    if (sn->body.self.shape == Physics::Body::Shape::BOX) {
+                        command_queue << "spawnBodyDef_" + node->ID + ".width = " + FloatToString(sn->body.self.width) + ";\n";
+                        command_queue << "spawnBodyDef_" + node->ID + ".height = " + FloatToString(sn->body.self.height) + ";\n";
                     }
 
-                    if (spawn_node->body.self.shape == Physics::Body::Shape::CIRCLE)
-                        command_queue << node->ID + "_bodyDef.radius = " + FloatToString(spawn_node->body.self.radius) + ";\n";
+                    if (sn->body.self.shape == Physics::Body::Shape::CIRCLE)
+                        command_queue << "spawnBodyDef_" + node->ID + ".radius = " + FloatToString(sn->body.self.radius) + ";\n";
 
-                    command_queue << node->ID + "_bodyDef.density = " + FloatToString(spawn_node->body.self.density) + ";\n";
-                    command_queue << node->ID + "_bodyDef.friction = " + FloatToString(spawn_node->body.self.friction) + ";\n";
-                    command_queue << node->ID + "_bodyDef.restitution = " + FloatToString(spawn_node->body.self.restitution) + ";\n";
+                    command_queue << "spawnBodyDef_" + node->ID + ".density = " + FloatToString(sn->body.self.density) + ";\n";
+                    command_queue << "spawnBodyDef_" + node->ID + ".friction = " + FloatToString(sn->body.self.friction) + ";\n";
+                    command_queue << "spawnBodyDef_" + node->ID + ".restitution = " + FloatToString(sn->body.self.restitution) + ";\n";
 
-                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(spawn_node->typeOf) +  ", \"" + spawn_node->textureKey + "\", " + FloatToString(spawn_node->actualPositionX) + ", " + FloatToString(spawn_node->actualPositionY) + ", " + FloatToString(spawn_node->width) + ", " + FloatToString(spawn_node->height) + ", " + FloatToString(spawn_node->spawnWidth) + ", " + FloatToString(spawn_node->spawnHeight) + ", { " + FloatToString(spawn_node->tint.x) + ", " + FloatToString(spawn_node->tint.y) + ", " + FloatToString(spawn_node->tint.z) + " }, " + FloatToString(spawn_node->alpha) + ", " + is_loop + ", \"" + spawn_node->behaviorKey + "\", { " +  body_exists + ", " + node->ID + "_bodyDef });\n";
+                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(sn->typeOf) +  ", \"" + sn->textureKey + "\", " + FloatToString(sn->actualPositionX) + ", " + FloatToString(sn->actualPositionY) + ", " + FloatToString(sn->width) + ", " + FloatToString(sn->height) + ", " + FloatToString(sn->spawnWidth) + ", " + FloatToString(sn->spawnHeight) + ", { " + FloatToString(sn->tint.x) + ", " + FloatToString(sn->tint.y) + ", " + FloatToString(sn->tint.z) + " }, " + FloatToString(sn->alpha) + ", " + is_loop + ", \"" + sn->behaviorKey + "\", { " + body_exists + ", spawnBodyDef_" + node->ID + " });\n";
                 }
 
                 //define behaviors
@@ -1110,7 +1110,6 @@ void EventListener::BuildAndRun()
 
                 for (const auto& behavior : node->behaviors) {
                     transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
-
                     command_queue << "   System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
                 }
 

@@ -43,11 +43,9 @@ void Manager::Clear(bool all)
 
 //-----------------------------------
 
-//register the textures
+//load registered textures
 void Manager::RegisterTextures()
 {
-    //load textures
-
     for (const auto& asset : System::Application::resources->m_raw_assets)
         if (asset.second.type == IMAGE && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(asset.first);
@@ -55,9 +53,6 @@ void Manager::RegisterTextures()
     for (const auto& asset : System::Application::resources->m_file_assets)
         if (asset.second.first == IMAGE && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(asset.first);
-
-    LOG("Resources: assets registered.");
-
 }
 
 
@@ -67,7 +62,7 @@ void Manager::RegisterTextures()
 void Manager::LoadFile(const std::string& key, const std::string& path) {
 
     if (System::Utils::GetFileType(path) == NOT_SUPPORTED) {
-        LOG("Resources: filetype not available for loading.");
+        LOG("Resources: failed to load " + path + " - filetype not available for loading.");
         return;
     }
     
@@ -122,15 +117,18 @@ void Manager::LoadAnims(const std::string& key, const std::map<const std::string
 //------------------------------------ 
 
 
-void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& path)
+std::string Manager::LoadTilemapFromJSON(const std::string& key, const std::string& path)
 {
+    std::string errorMessage = "";
+    
     #if USE_JSON == 1
 
     std::ifstream JSON(path);
 
     if (!JSON.good()) {
-        LOG("Tilemap: unable to parse, invalid JSON.");
-        return;
+        errorMessage = "Tilemap: unable to parse, invalid JSON.";
+        LOG(errorMessage);
+        return errorMessage;
     }
 
     const json data = json::parse(JSON);
@@ -139,9 +137,11 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
         !data.contains("height") || 
         !data.contains("tilewidth") || 
         !data.contains("tileheight") || 
-        !data.contains("layers")) {
-            LOG("Tilemap: cannot construct from JSON - missing params: [width, height, tilewidth, tileheight, layers].");
-            return;
+        !data.contains("layers") ||
+        !data.contains("tilesets")) {
+            errorMessage = "Tilemap: cannot construct from JSON - missing params: width | height | tilewidth | tileheight | layers | tilesets.";
+            LOG(errorMessage);
+            return errorMessage;
         }
           
     unsigned int map_width = static_cast<unsigned int>(data["width"]),
@@ -151,24 +151,35 @@ void Manager::LoadTilemapFromJSON(const std::string& key, const std::string& pat
 
     LoadFile(key, path); //json data relative to current project
 
-    if (data["tilesets"].size())
-        for (const auto& tileset : data["tilesets"])
-        {
-            if (!tileset.contains("columns")) {
-                LOG("Tilemap: Cannot load frames - JSON does not contain columns value.")
-                return;
-            }
+    for (const auto& tileset : data["tilesets"])
+    {
+        if (!tileset.contains("columns")) {
+            errorMessage = "Tilemap: Cannot load frames - JSON does not contain columns value.";
+            LOG(errorMessage);
+            return errorMessage;
+        }
 
-            std::string textureFilePath = static_cast<std::string>(tileset["image"]),
-                        ext = Utils::GetFileExtension(textureFilePath),
-                        textureKey = static_cast<std::string>(tileset["name"]) + ext;
+        std::string textureRelPath = static_cast<std::string>(tileset["image"]),
+                    ext = Utils::GetFileExtension(textureRelPath);
 
-            LoadTilemapFrames(textureKey, static_cast<int>(tileset["columns"]), map_width, map_height, tile_width, tile_height);
-        } 
+        const std::string textureWithExt = static_cast<std::string>(tileset["name"]) + ext;
+
+        if (System::Application::resources->m_atlases.find(textureWithExt) != System::Application::resources->m_atlases.end()) {
+            errorMessage = "Tilemap: Error - multiple maps share the same texture with key " + textureWithExt + ". This results in conflicting texture atlas dimensions.";
+            LOG(errorMessage);
+            return errorMessage;
+        }
+
+        LoadTilemapFrames(textureWithExt, static_cast<int>(tileset["columns"]), map_width, map_height, tile_width, tile_height);
+    } 
+
+    LOG("Tilemap: loaded map " + key);
 
     #else
         LOG("Tilemap: Cannot load tilemap from JSON file. USE_JSON=0");
     #endif
+
+    return errorMessage;
 }
 
 

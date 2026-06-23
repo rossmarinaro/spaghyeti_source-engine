@@ -295,7 +295,18 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                 bool is_sel = (m_bodyType == pt_items[n]);
 
                                 if (ImGui::Selectable(pt_items[n], is_sel)) 
+                                {
                                     m_bodyType = pt_items[n];
+                                    
+                                    if (m_bodyType == "static")
+                                        body.self.type = Physics::Body::Type::STATIC;
+
+                                    if (m_bodyType == "dynamic")
+                                        body.self.type = Physics::Body::Type::DYNAMIC;
+
+                                    if (m_bodyType == "kinematic")
+                                        body.self.type = Physics::Body::Type::KINEMATIC;
+                                }
 
                                 if (is_sel)
                                     ImGui::SetItemDefaultFocus();
