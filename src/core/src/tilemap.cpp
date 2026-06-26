@@ -22,19 +22,30 @@ Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key)
 {
     #if USE_JSON == 1
 
+    json data;
+    std::string path = "";
+
     //read / parse file data
 
     const auto pathPointer = Resources::Manager::GetFilePath(key); 
 
-    if (!pathPointer) {
-        LOG("Tilemap: Cannot create map - data filepath not found.");
-        return {};
-    }
+    if (!pathPointer) 
+    {
+        const auto pathData = Resources::Manager::GetResource(key);
 
-    const std::string path = *pathPointer;
-    
-    std::ifstream in(path);
-    json data = json::parse(in);
+        if (!pathData) {
+            LOG("Tilemap: Cannot create map - data filepath not found.");
+            return {};
+        }
+
+        std::string jsonStr(reinterpret_cast<const char*>(pathData->array_buffer), pathData->byte_length);
+        data = json::parse(jsonStr);
+    }
+    else {
+        path = *pathPointer;
+        std::ifstream in(path);
+        data = json::parse(in);
+    }
 
     if (!data.contains("layers") && !data.contains("width") && !data.contains("height") && !data.contains("tilewidth") && !data.contains("tileheight")) {
         LOG("Tilemap: Cannot create map - JSON must have following values [layers, width, height, tilewidth, tileheight].");

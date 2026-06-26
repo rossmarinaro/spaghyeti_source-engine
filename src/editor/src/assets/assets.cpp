@@ -36,9 +36,12 @@ void AssetManager::Reset() {
 //-------------------------- 
 
 
-void AssetManager::Register(const std::string& asset) {
-    if (std::find(s_self->assets.begin(), s_self->assets.end(), asset) == s_self->assets.end())
-        s_self->assets.push_back(asset);
+void AssetManager::Register(const std::string& asset) 
+{ 
+    const auto registeredAsset = std::find(s_self->assets.begin(), s_self->assets.end(), asset);
+    
+    if (asset.size() && registeredAsset == s_self->assets.end()) 
+        s_self->assets.emplace_back(asset);
 }
 
  

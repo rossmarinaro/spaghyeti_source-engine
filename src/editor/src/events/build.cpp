@@ -278,7 +278,7 @@ void EventListener::BuildAndRun()
         else 
             main_makeFile << "    " << Editor::rootPath << "\\sdk\\" << lib << "\n\n";
                     
-        main_makeFile << "OPT_FLAGS = " << session->LTO << " -flto\n\n";
+        main_makeFile << "OPT_FLAGS = " << session->LTO << " -flto -flto-partition=none\n\n";
 
         //if project icon is defined, compile it, else use default
 
@@ -302,7 +302,7 @@ void EventListener::BuildAndRun()
         const unsigned int devMode = Editor::releaseType == "debug" ? 1 : 0;
         
         main_makeFile << "compile : $(OBJS)\n"; 
-        main_makeFile << "\tg++ -g -std=c++17 $(OPT_FLAGS) $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w $(OPT_FLAGS) -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
+        main_makeFile << "\tg++ -g -std=c++17  $(OPT_FLAGS) $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w $(OPT_FLAGS) -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
 
         main_makeFile.close();
 
@@ -345,7 +345,7 @@ void EventListener::BuildAndRun()
         web_makeFile << "   ../game.cpp \\\n";
         web_makeFile << "   " << Editor::rootPath << "\\sdk\\spaghyeti-web.a\n\n";
 
-        web_makeFile << "OPT_FLAGS = " << session->LTO << " -flto\\\n";
+        web_makeFile << "OPT_FLAGS = " << session->LTO << " -flto \n\n";
 
         web_makeFile << "LINKER_FLAGS = \\\n";
         web_makeFile << "   -sEXPORT_ALL=" << export_all << " \\\n";
@@ -558,7 +558,7 @@ void EventListener::BuildAndRun()
     const auto parseScene = [this](const std::filesystem::directory_entry& filepath) -> void 
     {
         std::string path = filepath.path().filename().string();
-//Editor::Log(std::to_string(Editor::Get()->scenes.size()));
+
         for (const auto& scene : Editor::Get()->scenes)
         {
             if (scene == System::Utils::ReplaceFrom(path, ".", ""))

@@ -98,7 +98,6 @@ static void _ProcessAudio(const char* key, bool loop, float volume)
     deviceConfig.pUserData         = loop ? &_music_decoder : &_sound_decoder;
 
     if (ma_device_init(NULL, &deviceConfig, loop ? &_music_device : &_sound_device) != MA_SUCCESS) {
-
         LOG("Audio: failed to open playback device.");
         ma_decoder_uninit(loop ? &_music_decoder : &_sound_decoder);
         return;

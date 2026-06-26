@@ -151,7 +151,7 @@ void Window::Init()
 
     #endif
 
-    LOG("Window: GL Version - " << glGetString(GL_VERSION));
+    LOG("Window: GL Version - " + (std::string)reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 }
 

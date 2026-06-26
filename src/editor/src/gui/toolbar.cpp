@@ -301,7 +301,6 @@ void editor::GUI::ShowSettings()
 
             const auto iterate = [&] (const std::string& type, std::string& p, int index) -> void 
             {
-
                 if (System::Utils::str_endsWith(p, type)) 
                     if (ImGui::MenuItem(p.c_str())) {
                         if (type == ".vert")
@@ -334,48 +333,50 @@ void editor::GUI::ShowSettings()
                 }
             };
 
-            for (int i = 0; i < session->shaders.size(); i++)
-            {
-
-                ImGui::PushID(i);
-
-                ImGui::InputText("key", &session->shaders[i].first);
-
-                ImGui::SameLine();
-
-                if (ImGui::Button("remove"))
+            if (session->shaders.size())
+                for (int i = 0; i < session->shaders.size(); i++)
                 {
-                    auto it = std::find_if(session->shaders.begin(), session->shaders.end(), [&session, &i](const auto& sh) { return sh.first == session->shaders[i].first; });
+                    ImGui::PushID(i);
 
-                    if (it != session->shaders.end()) {
-                        it = session->shaders.erase(it);
-                        --it;
+                    ImGui::InputText("key", &session->shaders[i].first);
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("remove"))
+                    {
+                        auto it = std::find_if(session->shaders.begin(), session->shaders.end(), [&session, &i](const auto& sh) { return sh.first == session->shaders[i].first; });
+
+                        if (it != session->shaders.end()) {
+                            it = session->shaders.erase(it);
+                            --it;
+                        }
                     }
+
+                    ImGui::Text(("vertex: " + session->shaders[i].second.first).c_str());
+
+                    ImGui::SameLine();
+                    
+                    if (ImGui::BeginMenu(".vert")) {
+                        searchShaderFolders(i, ".vert");
+                        ImGui::EndMenu();
+                    }
+
+                    ImGui::Text(("fragment: " + session->shaders[i].second.second).c_str());
+
+                    ImGui::SameLine();
+
+                    if (ImGui::BeginMenu(".frag")) {
+                        searchShaderFolders(i, ".frag");
+                        ImGui::EndMenu();
+                    }
+
+                    ImGui::Separator();
+
+                    ImGui::PopID();
+
                 }
-
-                ImGui::Text(("vertex: " + session->shaders[i].second.first).c_str());
-
-                ImGui::SameLine();
-                
-                if (ImGui::BeginMenu(".vert")) {
-                    searchShaderFolders(i, ".vert");
-                    ImGui::EndMenu();
-                }
-
-                ImGui::Text(("fragment: " + session->shaders[i].second.second).c_str());
-
-                ImGui::SameLine();
-
-                if (ImGui::BeginMenu(".frag")) {
-                    searchShaderFolders(i, ".frag");
-                    ImGui::EndMenu();
-                }
-
-                ImGui::Separator();
-
-                ImGui::PopID();
-
-            }
+            else
+                ImGui::MenuItem("no shaders loaded.");
 
             ImGui::EndMenu();
         }
@@ -397,56 +398,61 @@ void editor::GUI::ShowSettings()
 
             int i = 0;
 
-            for (auto& spritesheet : session->spritesheets)
-            {
-                ImGui::PushID(i);
-
-                i++;
-
-                ImGui::Separator();
-
-                std::string alias_key = spritesheet.first;
-
-                ImGui::InputText("texture key", &alias_key);
-
-                spritesheet.first = alias_key;
-
-                ImGui::SameLine();
-
-                if (ImGui::BeginCombo("path", spritesheet.second.c_str()))
+            if (session->spritesheets.size())
+                for (auto& spritesheet : session->spritesheets)
                 {
-                    for (const auto& asset : am->loadedAssets)
+                    ImGui::PushID(i);
+
+                    i++;
+
+                    ImGui::Separator();
+
+                    std::string alias_key = spritesheet.first;
+
+                    ImGui::InputText("texture key", &alias_key);
+
+                    spritesheet.first = alias_key;
+
+                    ImGui::SameLine();
+
+                    if (ImGui::BeginCombo("path", spritesheet.second.c_str()))
                     {
-                        std::string key = asset.first,
-                                    path = asset.second;
+                        for (const auto& asset : am->loadedAssets)
+                        {
+                            std::string key = asset.first,
+                                        path = asset.second;
 
-                        key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
-                        path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
+                            key.erase(std::remove(key.begin(), key.end(), '\"'), key.end());
+                            path.erase(std::remove(path.begin(), path.end(), '\"'), path.end());
 
-                        if (System::Utils::str_endsWith(path, ".json")) 
-                            if (ImGui::MenuItem(key.c_str())) 
-                                spritesheet.second = path;
+                            if (System::Utils::str_endsWith(path, ".json")) 
+                                if (ImGui::MenuItem(key.c_str())) 
+                                    spritesheet.second = path;
+                        }
+
+                        ImGui::EndCombo();
                     }
 
-                    ImGui::EndCombo();
-                }
+                    ImGui::SameLine();
 
-                ImGui::SameLine();
+                    if (ImGui::Button("remove"))
+                    {
+                        auto it = std::find_if(session->spritesheets.begin(), session->spritesheets.end(), [&spritesheet](const auto& sh) { return sh.first == spritesheet.first; });
 
-                if (ImGui::Button("remove"))
-                {
-                    auto it = std::find_if(session->spritesheets.begin(), session->spritesheets.end(), [&spritesheet](const auto& sh) { return sh.first == spritesheet.first; });
-
-                    if (it != session->spritesheets.end()) {
-                        it = session->spritesheets.erase(it);
-                        --it;
+                        if (it != session->spritesheets.end()) {
+                            it = session->spritesheets.erase(it);
+                            --it;
+                        }
                     }
+
+                    ImGui::Separator();
+
+                    ImGui::PopID();
                 }
 
-                ImGui::Separator();
-
-                ImGui::PopID();
-            }
+            else
+                ImGui::MenuItem("no spritesheets loaded.");
+            
     
             ImGui::EndMenu();
             

@@ -32,7 +32,7 @@ void Text::Init()
     //GLtext
 
     if (!gltInit()) {
-        LOG(stderr << "Text: Failed to initialize text: " << EXIT_FAILURE);
+        LOG("Text: Failed to initialize glText.");
 	}
     else {
         _GLT_text_buffer = gltCreateText();

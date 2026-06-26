@@ -6,15 +6,23 @@
 
 #ifndef LOG
 
+    #include <iostream>
+    #include <fstream>
+
     #if DEVELOPMENT == 1 && STANDALONE == 1
-        #include <iostream>
-        #include <fstream>
-        #define LOG(msg) \
-            std::cout << msg << std::endl; \
-            std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; 
+        inline constexpr bool kLoggingEnabled = true;
     #else
-       #define LOG(msg) 0;
+        inline constexpr bool kLoggingEnabled = false;
     #endif
+
+    #define LOG(msg) \
+        do { \
+            if constexpr (!kLoggingEnabled) {} \
+            else { \
+                std::cout << msg << std::endl; \
+                std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; \
+            } \
+        } while(0)
 
 #endif
  

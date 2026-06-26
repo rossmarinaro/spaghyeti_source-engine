@@ -43,7 +43,7 @@ namespace System {
             //create objects 
 
             static std::shared_ptr<Entity> CreateEntity(int type = Entity::GENERIC, int layer = 1);
-            static std::shared_ptr<Sprite> CreateUISprite(const std::string& key, float x, float y, int frame = 0);
+            static std::shared_ptr<Sprite> CreateUISprite(const std::string& key, float x, float y, int frame = 0, float scale = 1.0f);
             static std::shared_ptr<Sprite> CreateSprite(const std::string& key, float x, float y, int frame = 0, float scale = 1.0f, int layer = 1, bool isSpawn = false);
             static std::shared_ptr<Sprite> CreateTileSprite(const std::string& key, float x, float y, int frame);
             static std::shared_ptr<Text> CreateText(const std::string& content, float x, float y, const std::string& font = "", int layer = 2);

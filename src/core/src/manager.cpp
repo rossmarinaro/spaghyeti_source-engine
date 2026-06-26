@@ -76,8 +76,8 @@ void Manager::LoadFile(const std::string& key, const std::string& path) {
 //load raw char array / size in bytes
 void Manager::LoadRaw(const int type, const std::string& key, const unsigned char* arr, const unsigned int bytes) {
 
-    if (type != IMAGE && type != AUDIO && type != TEXT) {
-        LOG("Resources: file not available for loading.");
+    if (type != DATA && type != IMAGE && type != AUDIO && type != TEXT) {
+        LOG("Resources: file " + key + " not available for loading.");
         return;
     }
 
@@ -165,9 +165,8 @@ std::string Manager::LoadTilemapFromJSON(const std::string& key, const std::stri
         const std::string textureWithExt = static_cast<std::string>(tileset["name"]) + ext;
 
         if (System::Application::resources->m_atlases.find(textureWithExt) != System::Application::resources->m_atlases.end()) {
-            errorMessage = "Tilemap: Error - multiple maps share the same texture with key " + textureWithExt + ". This results in conflicting texture atlas dimensions.";
+            errorMessage = "Tilemap: warning - multiple maps share the same texture " + textureWithExt + ". This may results in conflicting atlas dimensions.";
             LOG(errorMessage);
-            return errorMessage;
         }
 
         LoadTilemapFrames(textureWithExt, static_cast<int>(tileset["columns"]), map_width, map_height, tile_width, tile_height);
@@ -325,53 +324,57 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
 
     result.reserve(10000);
 
-    const auto it = System::Application::resources->m_file_assets.find(key);
- 
-    if (it->second.first == DATA && it != System::Application::resources->m_file_assets.end())  
-    { 
+    const auto parseJSON = [&result, &line, index](const json& data) -> void 
+    {
+        std::stringstream ss;
+
+        if (data.contains("layers")) 
+            if (data["layers"][index].contains("data")) 
+            {
+                for (auto& d : data["layers"][index]["data"]) 
+                { 
+                    //check if data is base64 (not supported)
+
+                    if (std::is_same<std::string, decltype(d)>::value) {
+                        LOG("cannot parse map data. Only CSV tile format supported.");
+                        break;
+                    }
+
+                    int gid = static_cast<int>(d);
+
+                    //tiled uses 0 indexed gids
+
+                    if (gid == 0)
+                        gid = -1;
+
+                    else 
+                        gid = gid - 1; 
+
+                    ss << gid << ","; 
+                }
+
+                while(getline(ss, line))
+                    result.emplace_back(line);
+            }
+    };
+
+    const auto f_it = System::Application::resources->m_file_assets.find(key);
+
+    if (f_it->second.first == DATA && f_it != System::Application::resources->m_file_assets.end())  
+    {
         std::ifstream in;
 
         //json array
 
-        if (System::Utils::str_endsWith(it->second.second, ".json")) 
+        if (System::Utils::str_endsWith(f_it->second.second, ".json")) 
         {
             #if USE_JSON == 1 
 
-                in.open(it->second.second);
+                in.open(f_it->second.second);
 
-                if (in.is_open()) 
-                {
+                if (in.is_open()) {
                     json data = json::parse(in);
-                    std::stringstream ss;
-
-                    if (data.contains("layers")) 
-                        if (data["layers"][index].contains("data")) 
-                        {
-                            for (auto& d : data["layers"][index]["data"]) 
-                            { 
-                                //check if data is base64 (not supported)
-
-                                if (std::is_same<std::string, decltype(d)>::value) {
-                                    LOG("cannot parse map data. Only CSV tile format supported.");
-                                    break;
-                                }
-
-                                int gid = static_cast<int>(d);
-
-                                //tiled uses 0 indexed gids
-
-                                if (gid == 0)
-                                   gid = -1;
-
-                               else 
-                                   gid = gid - 1; 
-
-                                ss << gid << ","; 
-                            }
-
-                            while(getline(ss, line))
-                                result.emplace_back(line);
-                        } 
+                    parseJSON(data);
                 }
 
             #else 
@@ -381,21 +384,36 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
 
         //plain csv file 
 
-        else if (System::Utils::str_endsWith(it->second.second, ".csv")) 
+        else if (System::Utils::str_endsWith(f_it->second.second, ".csv")) 
         {
-            in.open(it->second.second);
+            in.open(f_it->second.second);
             
             if (in.is_open()) 
                 while(getline(in, line))
                     result.emplace_back(line + ",");
         }
-     
-        if (in.is_open())
-            in.close();      
-    }
-       
-    return result; 
 
+        if (in.is_open())
+            in.close(); 
+    }
+
+    else {
+        const auto r_it = System::Application::resources->m_raw_assets.find(key);
+        if (r_it->second.type == DATA && r_it != System::Application::resources->m_raw_assets.end()) 
+        {
+            //json
+
+            #if USE_JSON == 1 
+                if (r_it->second.byte_length >= 4 && r_it->second.array_buffer[0] == 0x7B && r_it->second.array_buffer[0] == 0x5B) {
+                    std::string jsonStr(reinterpret_cast<const char*>(r_it->second.array_buffer), r_it->second.byte_length);
+                    json data = json::parse(jsonStr);
+                    parseJSON(data);
+                }
+            #endif
+        }
+    }
+  
+    return result; 
 }
 
 

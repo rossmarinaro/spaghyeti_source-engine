@@ -170,8 +170,8 @@ void Sprite::SetVelocity(float velX, float velY)
     }
 
     else {
-        ((position.x += velocityX) / 1000.0f) * System::Application::game->time->GetSeconds(); 
-        ((position.y += velocityY) / 1000.0f) * System::Application::game->time->GetSeconds(); 
+        (position.x += (velocityX / 100.0f)) * System::Application::game->time->GetSeconds(); 
+        (position.y += (velocityY / 100.0f)) * System::Application::game->time->GetSeconds(); 
     }
 }
 
@@ -200,7 +200,7 @@ void Sprite::SetVelocityX(float velX)
     }
 
     else
-        ((position.x += velocityX) / 1000.0f) * System::Application::game->time->GetSeconds();     
+        (position.x += (velocityX / 100.0f)) * System::Application::game->time->GetSeconds();     
 }
 
 
@@ -227,7 +227,7 @@ void Sprite::SetVelocityY(float velY)
         }
     }
     else
-        ((position.y += velocityY) / 1000.0f) * System::Application::game->time->GetSeconds(); 
+        (position.y += (velocityY / 100.0f)) * System::Application::game->time->GetSeconds(); 
 }
 
 
@@ -535,7 +535,7 @@ void Sprite::Render()
                                 { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * transform;
    
         if (!IsSprite()) //UI do not have view matrix
-            mvp = projMat * glm::mat4(1.0f);
+            mvp = projMat * glm::mat4(1.0f) * transform;
 
         const float r = tint.x, 
                     g = tint.y, 
@@ -632,14 +632,12 @@ void Sprite::Render()
                 }
 
                 else {
-
                     for (int i = anim->second.first; i < anim->second.second + 1; i++) 
                         frames.emplace_back(i);
                     
                     const uint32_t elapsed = seconds % frames.size();
                 
                     SetFrame(frames[elapsed]);
-
                 }
 
                 //animation complete
@@ -657,15 +655,13 @@ void Sprite::Render()
                 }
                 else 
                     m_currentAnim.can_decrement = true;
- 
             }
         }
 
         catch (std::runtime_error& err) { 
-            LOG("Sprite: error playing animation: " << err.what()); 
+            LOG("Sprite: error playing animation: " + (std::string)err.what()); 
         }
     }
-
 }
  
 
@@ -716,7 +712,7 @@ std::shared_ptr<Sprite> System::Game::CreateSprite(const std::string& key, float
 //----------------------------- ui sprite default layer 1
 
 
-std::shared_ptr<Sprite> System::Game::CreateUISprite(const std::string& key, float x, float y, int frame)
+std::shared_ptr<Sprite> System::Game::CreateUISprite(const std::string& key, float x, float y, int frame, float scale)
 {
     const Math::Vector2 pos = { x, y };
 
@@ -729,6 +725,7 @@ std::shared_ptr<Sprite> System::Game::CreateUISprite(const std::string& key, flo
         element->SetFrame(frame);
     #endif
 
+    element->SetScale(scale);
     element->render_layer = 1;
 
     return element;
