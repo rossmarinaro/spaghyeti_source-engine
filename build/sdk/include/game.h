@@ -99,6 +99,8 @@ namespace System {
             static void SetCullPosition(Math::Vector2* position);
             static void StartScene(const std::string& key, bool loadMap);
             static Scene* GetScene(const std::string& key = "");
+
+            //behaviors
             
             template <typename T>
             static inline std::shared_ptr<T> CreateBehavior(const std::shared_ptr<Entity>& entity, Scene* scene) {

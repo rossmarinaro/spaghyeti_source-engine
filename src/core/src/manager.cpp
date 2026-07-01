@@ -324,6 +324,8 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
 
     result.reserve(10000);
 
+    //parse inputs
+
     const auto parseJSON = [&result, &line, index](const json& data) -> void 
     {
         std::stringstream ss;
@@ -358,13 +360,13 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
             }
     };
 
+    //files
+
     const auto f_it = System::Application::resources->m_file_assets.find(key);
 
     if (f_it->second.first == DATA && f_it != System::Application::resources->m_file_assets.end())  
     {
         std::ifstream in;
-
-        //json array
 
         if (System::Utils::str_endsWith(f_it->second.second, ".json")) 
         {
@@ -382,8 +384,6 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
             #endif       
         }
 
-        //plain csv file 
-
         else if (System::Utils::str_endsWith(f_it->second.second, ".csv")) 
         {
             in.open(f_it->second.second);
@@ -397,11 +397,14 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
             in.close(); 
     }
 
-    else {
+    //raw assets
+
+    else 
+    {
         const auto r_it = System::Application::resources->m_raw_assets.find(key);
+
         if (r_it->second.type == DATA && r_it != System::Application::resources->m_raw_assets.end()) 
         {
-            //json
 
             #if USE_JSON == 1 
                 if (r_it->second.byte_length >= 4 && r_it->second.array_buffer[0] == 0x7B && r_it->second.array_buffer[0] == 0x5B) {
@@ -409,7 +412,14 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
                     json data = json::parse(jsonStr);
                     parseJSON(data);
                 }
-            #endif
+            #else 
+                LOG("cannot parse map data. USE_JSON flag not enabled.");
+            #endif       
+        }
+
+        else if (System::Utils::str_endsWith(f_it->second.second, ".csv")) 
+        {
+            LOG("cannot parse map data. raw csv is not compatible.");
         }
     }
   

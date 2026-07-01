@@ -153,11 +153,11 @@ void Sprite::SetVelocity(float velX, float velY)
     if (!active)
         return;
 
-    velocityX = velX;
-    velocityY = velY;
-
     if (m_bodies.size()) 
     {
+        velocityX = velX;
+        velocityY = velY;
+
         const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
 
         if (body->GetType() == Physics::Body::Type::DYNAMIC)
@@ -170,8 +170,8 @@ void Sprite::SetVelocity(float velX, float velY)
     }
 
     else {
-        (position.x += (velocityX / 100.0f)) * System::Application::game->time->GetSeconds(); 
-        (position.y += (velocityY / 100.0f)) * System::Application::game->time->GetSeconds(); 
+        velocityX = velX / 1000.0f;
+        velocityY = velY / 1000.0f;
     }
 }
 
@@ -184,10 +184,10 @@ void Sprite::SetVelocityX(float velX)
     if (!active)
         return;
 
-    velocityX = velX; 
-
     if (m_bodies.size()) 
     {
+        velocityX = velX; 
+
         const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
 
         if (body->GetType() == Physics::Body::Type::DYNAMIC)
@@ -200,7 +200,7 @@ void Sprite::SetVelocityX(float velX)
     }
 
     else
-        (position.x += (velocityX / 100.0f)) * System::Application::game->time->GetSeconds();     
+        velocityX = velX / 1000.0f;    
 }
 
 
@@ -211,11 +211,11 @@ void Sprite::SetVelocityY(float velY)
 { 
     if (!active)
         return;
- 
-    velocityY = velY;
-        
+         
     if (m_bodies.size()) 
     {
+        velocityY = velY;
+
         const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
 
         if (body->GetType() == Physics::Body::Type::DYNAMIC)
@@ -226,8 +226,9 @@ void Sprite::SetVelocityY(float velY)
             body->SetTransform(body->GetLinearVelocity().x, (posY + velocityY));
         }
     }
+
     else
-        (position.y += (velocityY / 100.0f)) * System::Application::game->time->GetSeconds(); 
+        velocityY = velY / 1000.0f;  
 }
 
 

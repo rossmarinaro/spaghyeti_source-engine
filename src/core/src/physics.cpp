@@ -136,14 +136,34 @@ void Physics::Update()
     if (!_world)
         return;
 
+    //timestep update
+
     static double accumulator = 0.0;
 
     accumulator += System::Application::game->time->delta;
 
-    while (accumulator >= System::Application::game->time->timeStep) {
+    while (accumulator >= System::Application::game->time->timeStep) 
+    {
+        //update sprites without rigid bodies
+
+        for (const auto& entity : System::Game::GetScene()->entities) {
+            if (entity->GetType() == Entity::SPRITE) {
+                const auto sprite = std::static_pointer_cast<Sprite>(entity);
+                if (!sprite->GetBodies().size()) {
+                    (sprite->position.x += sprite->velocityX) * System::Application::game->time->GetSeconds();
+                    (sprite->position.y += sprite->velocityY) * System::Application::game->time->GetSeconds();
+                }
+            }
+        }
+
+        //update sprites with rigid bodies
+
         _world->Step(System::Application::game->time->timeStep, s_velocityIterations, s_positionIterations);
+        
         accumulator -= System::Application::game->time->timeStep;
     }
+
+    //apply attributes
 
 	_world->SetAllowSleeping(sleeping);
 	_world->SetWarmStarting(setWarmStart);
@@ -154,6 +174,8 @@ void Physics::Update()
     //cleanup removed bodies
 
     Cleanup();
+
+    //apply new gravity
     
     _world->SetGravity(b2Vec2(gravityX, gravityY));
 }

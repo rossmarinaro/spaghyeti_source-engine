@@ -1,4 +1,4 @@
-#include "../../../build/sdk/include/game.h"
+#include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/window.h"
 #include "../../vendors/glm/glm.hpp"
 #include "../../vendors/glm/gtc/matrix_transform.hpp"
@@ -16,8 +16,21 @@ Camera::Camera():
     currentBoundsHeightBegin = 0.0f;
     currentBoundsHeightEnd = 0.0f;
 
+    pan = { 0.0f, 0.0f };
+
     LOG("Camera: initialized.");
 }
+
+//-------------------------------
+
+
+void Camera::SetPan(float panX, float panY) {
+    pan.x = panX;
+
+    if (panY != 0.0f)
+        pan.y = panY;
+}
+
 
 //-------------------------------
 
@@ -121,17 +134,31 @@ const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 
 
 void Camera::Update() 
-{     
-    if (!m_target.first || !m_canFollow)
-        return;
-
+{    
     //camera follows target within world bounds
 
-    if (m_target.first->x > currentBoundsWidthBegin && m_target.first->x < currentBoundsWidthEnd)
-        m_position.x = (-m_target.first->x + m_target.second.first); 
-        
-    if (m_target.first->y > currentBoundsHeightBegin && m_target.first->y < currentBoundsHeightEnd)
-        m_position.y = (-m_target.first->y + m_target.second.second);  
+    if (m_target.first && m_canFollow){
+        if (m_target.first->x > currentBoundsWidthBegin && m_target.first->x < currentBoundsWidthEnd)
+            m_position.x = (-m_target.first->x + m_target.second.first);
+            
+        if (m_target.first->y > currentBoundsHeightBegin && m_target.first->y < currentBoundsHeightEnd)
+            m_position.y = (-m_target.first->y + m_target.second.second);  
+    }
+
+    //apply panning
+
+    else 
+    {
+        static double accumulator = 0.0;
+
+        accumulator += System::Application::game->time->delta;
+
+        while (accumulator >= System::Application::game->time->timeStep) {
+            (m_position.x -= (pan.x / 10.0f)) * System::Application::game->time->GetSeconds();
+            (m_position.y -= (pan.y / 10.0f)) * System::Application::game->time->GetSeconds();
+            accumulator -= System::Application::game->time->timeStep;
+        }
+    }
 }
 
 

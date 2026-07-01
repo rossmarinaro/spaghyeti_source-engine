@@ -74,15 +74,18 @@ When targeting specific entity from script use `System::Game::GetScene()->GetEnt
 
 ----------------------------------------------------------
 
+Todo:
 
-improve editor entity selection/mouse picking/raycasting
+1. fix inefficient text rendering
 
-tilemap editor
+2. improve editor entity selection/mouse picking/raycasting
 
-sprite texture packer
+3. tilemap editor
 
-fix big .o files (audio.o manager.o game.o entity.o tilemap.o texture.o shader.o)
+4. sprite texture packer
 
-add CMakeLists.txt build option and build script with: `cmake -S . -B build -G "Your Generator" -DCMAKE_C_COMPILER=gcc -DCMAKE_POLICY_VERSION_MINIMUM=3.5` 
+5. fix big .o files (audio.o manager.o game.o entity.o tilemap.o texture.o shader.o)
+
+6. add CMakeLists.txt build option and build script with: `cmake -S . -B build -G "Your Generator" -DCMAKE_C_COMPILER=gcc -DCMAKE_POLICY_VERSION_MINIMUM=3.5` 
 note: "Your Generator" ie: "MinGW Makefiles", "CodeBlocks", etc.
 

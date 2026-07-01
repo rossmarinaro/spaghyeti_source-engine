@@ -12,6 +12,8 @@ class Camera {
               currentBoundsHeightBegin,
               currentBoundsHeightEnd;
 
+        Math::Vector2 pan;
+
         inline const bool IsFollow() { return m_canFollow; }
 
         inline float* GetZoom() { return &m_zoom; }
@@ -32,6 +34,7 @@ class Camera {
         void SetVignette(float alpha);
         void Fade(float rate, const std::string& direction);
         void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd);  
+        void SetPan(float panX = 0.0f, float panY = 0.0f);
 
         const Math::Vector4 GetProjectionMatrix(float width, float height);
         const Math::Matrix4 GetViewMatrix(float x, float y);
