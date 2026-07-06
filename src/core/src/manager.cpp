@@ -8,6 +8,7 @@
 #endif
 
 #include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/audio.h"
 #include "../../../build/sdk/include/manager.h"
 
 using namespace System::Resources;
@@ -43,16 +44,26 @@ void Manager::Clear(bool all)
 
 //-----------------------------------
 
-//load registered textures
-void Manager::RegisterTextures()
+//load registered assets
+void Manager::Register()
 {
-    for (const auto& asset : System::Application::resources->m_raw_assets)
+    for (const auto& asset : System::Application::resources->m_raw_assets) 
+    {
         if (asset.second.type == IMAGE && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
             Graphics::Texture2D::Load(asset.first);
+            
+        if (asset.second.type == AUDIO)
+                Audio::Load(asset.first);
+    }
 
-    for (const auto& asset : System::Application::resources->m_file_assets)
-        if (asset.second.first == IMAGE && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end())
+    for (const auto& asset : System::Application::resources->m_file_assets) 
+    {
+        if (asset.second.first == IMAGE && System::Application::resources->textures.find(asset.first) == System::Application::resources->textures.end()) 
             Graphics::Texture2D::Load(asset.first);
+        
+        if (asset.second.first == AUDIO)
+            Audio::Load(asset.first);
+    }
 }
 
 

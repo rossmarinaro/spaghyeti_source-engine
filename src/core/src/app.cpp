@@ -1,4 +1,5 @@
 #include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/audio.h"
 #include "../../../build/sdk/include/window.h"
 #include "../../shared/renderer.h"
 
@@ -20,6 +21,7 @@ void System::Application::Init(Game* layer)
         game = layer;
     #endif
 
+    Audio::Init();
     Renderer::Init();
 
     Graphics::Texture2D::InitBaseTexture();
@@ -145,6 +147,7 @@ void System::Application::ShutDown()
     delete events;
     events = nullptr;
 
+    Audio::ShutDown();
     Renderer::ShutDown();
 
     LOG("Application terminated successfully. 👌");

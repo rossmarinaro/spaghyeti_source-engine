@@ -407,7 +407,7 @@ const bool EventListener::OpenScene() //makes temporary json file to parse data 
 
             //register the textures
 
-            System::Resources::Manager::RegisterTextures();
+            System::Resources::Manager::Register();
 
             //load thumbnails
 
@@ -500,7 +500,7 @@ void EventListener::OpenFile()
             //load asset in sandbox
 
             System::Resources::Manager::LoadFile(asset, result.string());
-            System::Resources::Manager::RegisterTextures();
+            System::Resources::Manager::Register();
 
             //copy asset to game template
 

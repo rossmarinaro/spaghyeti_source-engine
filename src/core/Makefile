@@ -35,7 +35,7 @@ COMPILER_FLAGS_WEB = \
 	-DSPAGHYETI_CORE \
 	-DTHREAD_COUNT=$(THREAD_COUNT) \
 	-DDEVELOPMENT=0 \
-	-DUSE_JSON=0 \
+	-DUSE_JSON=1 \
 	-DSTANDALONE=1
 
 LINKER_FLAGS = -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 -mwindows -lm  

@@ -16,7 +16,7 @@ AudioNode::AudioNode(bool init):
     loop = false;
     volume = 1.0f;
 
-    System::Resources::Manager::RegisterTextures();
+    System::Resources::Manager::Register();
     
     if (m_init)
         Editor::Log("Audio node " + name + " created.");   
@@ -88,25 +88,24 @@ void AudioNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     EventListener::UpdateSession();
 
-                System::Audio::setVolume(volume);
+                System::Audio::SetVolume(volume);
 
                 if (ImGui::Checkbox("loop", &loop))
                     EventListener::UpdateSession();
 
                 if (ImGui::Button("play"))
-                    System::Audio::play(audio_source_name.c_str(), loop); 
+                    System::Audio::Play(audio_source_name, loop, volume); 
 
                 ImGui::SameLine();
                 
                 if (ImGui::Button("stop"))
-                    System::Audio::stop(); 
+                    System::Audio::Stop(audio_source_name); 
 
 
             }
 
             ImGui::TreePop(); 
         }
-                
     }
 
     ImGui::PopID();

@@ -21,7 +21,7 @@ namespace System {
 
             struct Tilemap {
                 std::string key, path;
-                int width, height, tileWidth, tileHeight;
+                unsigned int width, height, tileWidth, tileHeight;
                 std::vector<Scene::TilemapLayer> layers;
                 std::vector<std::shared_ptr<Physics::Body>> bodies;
             };

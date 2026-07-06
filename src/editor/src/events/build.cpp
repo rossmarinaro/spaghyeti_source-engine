@@ -1121,7 +1121,7 @@ void EventListener::BuildAndRun()
 
         //register scene textures
 
-        preload_queue << "  System::Resources::Manager::RegisterTextures();\n"; 
+        preload_queue << "  System::Resources::Manager::Register();\n"; 
 
         //scene update
 

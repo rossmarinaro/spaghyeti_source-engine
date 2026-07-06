@@ -120,7 +120,7 @@ GUI::GUI()
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "close folders src", close_folders_png, close_folders_png_len);
     System::Resources::Manager::LoadRaw(System::Resources::Manager::IMAGE, "sort src", sort_png, sort_png_len);
 
-    System::Resources::Manager::RegisterTextures();
+    System::Resources::Manager::Register();
 
     glfwSetScrollCallback(System::Renderer::GLFW_window_instance, scroll_callback); 
 

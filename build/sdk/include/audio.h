@@ -1,20 +1,16 @@
 #pragma once
 
 namespace System {
-
-  //audio (sound, music)
   class Audio {
-
-    public:
-
-      static inline bool musicPlaying = false;
-
-      static void play(const char* key, bool loop = false, float volume = 1);
-      static void stop();
-      static void setVolume(float volume);
-
-  };
-
+        public:
+            static void Init();
+            static void Load(const std::string& key);
+            static void Play(const std::string& key, bool loop = false, float volume = 1);
+            static void Stop(const std::string& key);
+            static void StopAll();
+            static void SetVolume(float volume);
+            static void ShutDown();
+    };
 }
 
           

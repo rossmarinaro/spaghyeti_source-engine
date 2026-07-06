@@ -389,10 +389,10 @@ void Sprite::ReadSpritesheetData()
                 for (const auto& frame : data["frames"])
                     if (frame.contains("frame")) 
                     {
-                        int x = frame["frame"]["x"],
-                            y = frame["frame"]["y"],
-                            w = frame["frame"]["w"],
-                            h = frame["frame"]["h"];
+                        const unsigned int x = frame["frame"]["x"],
+                                           y = frame["frame"]["y"],
+                                           w = frame["frame"]["w"],
+                                           h = frame["frame"]["h"];
 
                         m_resourceData.push_back({ x, y, w, h });
                     }

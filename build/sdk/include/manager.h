@@ -42,7 +42,7 @@ namespace System {
                 //parse CSV or JSON map data array
                 static const std::vector<std::string> ParseMapData(const std::string& key, int index = 0);
 
-                static void RegisterTextures();
+                static void Register();
                 static void Clear(bool all = true);
                 static void LoadFile(const std::string& key, const std::string& path);
                 static void LoadRaw(const int type, const std::string& key, const unsigned char* arr, const unsigned int bytes);
