@@ -1128,7 +1128,7 @@ void EventListener::BuildAndRun()
         update_queue << "   for (auto& spawn : spawns) \n";
         update_queue << "   {\n\t\t std::shared_ptr<Entity> entity;\n\n";
         update_queue << "        if (spawn.type == Entity::SPRITE)\n";
-        update_queue << "           entity = GetEntity<Sprite>(spawn.index);\n"; 
+        update_queue << "           entity = GetEntity<Sprite>(spawn.index);\n";  
         update_queue << "        else if (spawn.type == Entity::GEOMETRY) \n";
         update_queue << "           entity = GetEntity<Geometry>(spawn.index);\n\n"; 
         update_queue << "        if (entity)\n";

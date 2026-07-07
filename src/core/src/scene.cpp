@@ -25,7 +25,7 @@ void Scene::Init(const std::string& key)
     m_worldHeight = 0;
     cameraTarget = GetContext().camera->GetPosition(); 
 }
-
+ 
 //---------------------------------
 
 void Scene::SetWorldDimensions(float width, float height) { 

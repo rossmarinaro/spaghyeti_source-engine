@@ -18,6 +18,7 @@ class Camera {
 
         inline float* GetZoom() { return &m_zoom; }
         inline float* GetRotation() { return &m_rotation; }
+        inline Math::Vector2* GetTarget() { return m_target.first; }
         inline Math::Vector2* GetPosition() { return &m_position; }
         inline Math::Vector4* GetBackgroundColor() { return &m_backgroundColor; }
         
@@ -51,6 +52,6 @@ class Camera {
         Math::Vector2 m_position;
         Math::Vector4 m_backgroundColor;
 
-        std::pair<Math::Vector2*, std::pair<float, float>> m_target;
+        std::pair<Math::Vector2*, std::pair<float, float>> m_target; //position, offset
 
 };

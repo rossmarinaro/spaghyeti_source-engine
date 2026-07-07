@@ -14,8 +14,7 @@ namespace entity_behaviors {
             std::string ID, key, name; 
             std::atomic_char active;
             
-            inline Behavior(const std::string& ID, const std::string& key, const std::string& name) 
-            {
+            inline Behavior(const std::string& ID, const std::string& key, const std::string& name) {
                 this->key = key; 
                 this->ID = ID;
                 this->name = name;
@@ -25,7 +24,7 @@ namespace entity_behaviors {
 
             virtual ~Behavior() {}
             virtual void Update() {}           
-            virtual void Cleanup() {}   
+            virtual void Cleanup() {}  
     };
 
 }

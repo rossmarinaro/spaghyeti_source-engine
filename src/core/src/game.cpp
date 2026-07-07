@@ -1,4 +1,5 @@
 #include "../../../build/sdk/include/app.h"
+#include "../../../build/sdk/include/audio.h"
 #include "../../../build/sdk/include/window.h"
 
 #include "../../shared/renderer.h"
@@ -27,6 +28,8 @@ static CollisionManager _collisions;
 void Game::Reset(bool removeBehaviors)
 {
     LOG("Scene: " + currentScene->key + " stopped.");
+
+    Audio::StopAll();
 
     inputs->ResetControls();
 
@@ -263,10 +266,8 @@ void Game::Exit()
 //----------------------------
 
 
-void Game::SetCullPosition(Math::Vector2* position) 
-{ 
+void Game::SetCullPosition(Math::Vector2* position) { 
     const auto scene = GetScene();
-
     if (scene)
         scene->cameraTarget = position; 
 }
@@ -290,7 +291,7 @@ void Game::UpdateFrame()
         if (currentScene->cameraTarget)
             for (auto& spawn : currentScene->spawns)
             {
-                if (Math::distanceBetween(currentScene->cameraTarget->x - spawn.posX) >= spawn.spawn_width * 1.5f && spawn.loop)  
+                if (Math::distanceBetween(currentScene->cameraTarget->x - spawn.posX) >= spawn.spawn_width * 2.0f && spawn.loop)  
                     spawn.can_create = true;
 
                 //create / runtime instantiation of game objects
@@ -300,7 +301,8 @@ void Game::UpdateFrame()
                     currentScene->cameraTarget->y >= spawn.posY - spawn.spawn_height && currentScene->cameraTarget->y <= spawn.posY + spawn.spawn_height
                 ) 
                 {
-                    if (std::find_if(GetScene()->entities.begin(), GetScene()->entities.end(), [&spawn](std::shared_ptr<Entity> e) { return e->name == spawn.index; }) != System::Game::GetScene()->entities.end()) 
+                    if (std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [&spawn](std::shared_ptr<Entity> e) 
+                    { return e->name == spawn.index; }) != currentScene->entities.end()) 
                         continue;
 
                     spawn.can_create = false; 
@@ -387,10 +389,10 @@ void Game::UpdateFrame()
                     std::shared_ptr<Entity> entity;  
 
                     if (spawn.type == Entity::SPRITE)
-                        entity = GetScene()->GetEntity<Sprite>(spawn.index);
+                        entity = currentScene->GetEntity<Sprite>(spawn.index);
 
                     else if (spawn.type == Entity::GEOMETRY)
-                        entity = GetScene()->GetEntity<Geometry>(spawn.index);
+                        entity = currentScene->GetEntity<Geometry>(spawn.index);
 
                     if (entity) 
                     {
@@ -406,10 +408,10 @@ void Game::UpdateFrame()
 
                         //remove associated behaviors
 
-                        const auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&id](auto b)
+                        const auto behavior_it = std::find_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [&id](auto b)
                             { return b->ID == id; });
 
-                        if (behavior_it != GetScene()->behaviors.end())
+                        if (behavior_it != currentScene->behaviors.end())
                         {
                             auto behavior = *behavior_it;
                             
@@ -693,6 +695,11 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         }
     }
 
+            for (auto& spawn : GetScene()->spawns)
+            if (entity->name == spawn.index) 
+                for (auto& b : spawn.behaviors_attached)
+                    b.second = false;
+
     //remove from vector and disappear into the void
  
     if (entity.unique())
@@ -703,8 +710,15 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&](auto b)
                                     { return b->ID == ID; });
 
-    if (behavior_it != GetScene()->behaviors.end())
-        (*behavior_it)->active = false;
+    if (behavior_it != GetScene()->behaviors.end()) 
+    {
+        auto behavior = (*behavior_it);
+
+        behavior->active = false;
+        behavior.reset();
+        behavior_it = GetScene()->behaviors.erase(std::move(behavior_it));
+    }
+
 }
 
 
@@ -742,6 +756,7 @@ void Game::CreateSpawn(
     spawn.loop = loop;
     spawn.body = { body.exist, body.self };
     spawn.index = System::Utils::ReplaceFrom(spawn.filename, ".", "") + std::to_string(s_spawn_count);
+    //spawn.ID = 
 
     //append behaviors if name matches valid loaded behavior name
 

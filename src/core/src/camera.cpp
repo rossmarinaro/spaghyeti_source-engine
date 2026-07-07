@@ -38,6 +38,7 @@ void Camera::SetPan(float panX, float panY) {
 void Camera::StartFollow(Math::Vector2* position, float offsetX, float offsetY) {
     m_target = { position, { offsetX, offsetY } };
     m_canFollow = true;
+    System::Game::GetScene()->cameraTarget = position;
 }
 
 //-------------------------------
