@@ -718,7 +718,6 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         behavior.reset();
         behavior_it = GetScene()->behaviors.erase(std::move(behavior_it));
     }
-
 }
 
 
