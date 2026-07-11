@@ -89,8 +89,8 @@ void Shader::InitBaseShaders()
             "int targetId = int(texID);\n"
 
             #ifdef __EMSCRIPTEN__
-                "vec4 c = sampleTextureSlot(targetId, uv);\n"
-                "ivec2 texSize2d = sampleTextureSize(targetId);\n"
+                "vec4 c = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv);\n"
+                "ivec2 texSize2d = SPAGHYETI_WEBGL_TEXTURE_SIZE(targetId);\n"
             #else
                 "vec4 c = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n"
                 "ivec2 texSize2d = textureSize(SPAGHYETI_ACTIVE_TEXTURES[targetId], 0);\n"
@@ -103,11 +103,11 @@ void Shader::InitBaseShaders()
             "if (c.a == 0.0 && outlineWidth > 0.0)\n" //outline
             "{\n"
                 #ifdef __EMSCRIPTEN__
-                    "vec4 baseColor = sampleTextureSlot(targetId, uv);\n"
-                    "float alphaTop = sampleTextureSlot(targetId, uv + vec2(0.0, size.y)).a;\n"
-                    "float alphaBottom = sampleTextureSlot(targetId, uv - vec2(0.0, size.y)).a;\n"
-                    "float alphaLeft = sampleTextureSlot(targetId, uv - vec2(size.x, 0.0)).a;\n"
-                    "float alphaRight = sampleTextureSlot(targetId, uv + vec2(size.x, 0.0)).a;\n"
+                    "vec4 baseColor = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv);\n"
+                    "float alphaTop = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv + vec2(0.0, size.y)).a;\n"
+                    "float alphaBottom = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv - vec2(0.0, size.y)).a;\n"
+                    "float alphaLeft = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv - vec2(size.x, 0.0)).a;\n"
+                    "float alphaRight = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv + vec2(size.x, 0.0)).a;\n"
                 #else
                     "vec4 baseColor = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n"
                     "float alphaTop = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv + vec2(0.0, size.y)).a;\n"
@@ -127,7 +127,7 @@ void Shader::InitBaseShaders()
             "}\n"
             "else {\n" //fill
                 #ifdef __EMSCRIPTEN__
-                    "color = rgba * sampleTextureSlot(targetId, uv);\n" 
+                    "color = rgba * SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv);\n" 
                 #else
                     "color = rgba * texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n" 
                 #endif
@@ -409,57 +409,56 @@ const std::string Shader::TextureUtility(bool webgl)
     std::string textures;
 
     if (webgl)
-        textures = "#define MAX_TEXTURES 16\n"; //8 webgl 1
+    {
+        textures = "#define MAX_TEXTURES 16\n\n" //8 webgl 1
+        "vec4 SPAGHYETI_WEBGL_TEXTURE_SLOT(int slot, vec2 uv)\n"
+        "{\n"
+            "\tswitch (slot) {\n"
+                "\t\tcase 0: default: return texture(SPAGHYETI_ACTIVE_TEXTURES[0], uv);\n"
+                "\t\tcase 1: return texture(SPAGHYETI_ACTIVE_TEXTURES[1], uv);\n"
+                "\t\tcase 2: return texture(SPAGHYETI_ACTIVE_TEXTURES[2], uv);\n"
+                "\t\tcase 3: return texture(SPAGHYETI_ACTIVE_TEXTURES[3], uv);\n"
+                "\t\tcase 4: return texture(SPAGHYETI_ACTIVE_TEXTURES[4], uv);\n"
+                "\t\tcase 5: return texture(SPAGHYETI_ACTIVE_TEXTURES[5], uv);\n"
+                "\t\tcase 6: return texture(SPAGHYETI_ACTIVE_TEXTURES[6], uv);\n"
+                "\t\tcase 7: return texture(SPAGHYETI_ACTIVE_TEXTURES[7], uv);\n"
+                "\t\tcase 8: return texture(SPAGHYETI_ACTIVE_TEXTURES[8], uv);\n"
+                "\t\tcase 9: return texture(SPAGHYETI_ACTIVE_TEXTURES[9], uv);\n"
+                "\t\tcase 10: return texture(SPAGHYETI_ACTIVE_TEXTURES[10], uv);\n"
+                "\t\tcase 11: return texture(SPAGHYETI_ACTIVE_TEXTURES[11], uv);\n"
+                "\t\tcase 12: return texture(SPAGHYETI_ACTIVE_TEXTURES[12], uv);\n"
+                "\t\tvcase 13: return texture(SPAGHYETI_ACTIVE_TEXTURES[13], uv);\n"
+                "\t\tcase 14: return texture(SPAGHYETI_ACTIVE_TEXTURES[14], uv);\n"
+                "\t\tcase 15: return texture(SPAGHYETI_ACTIVE_TEXTURES[15], uv);\n"
+            "\t}\n"
+        "}\n"
+
+        "ivec2 SPAGHYETI_WEBGL_TEXTURE_SIZE(int slot)\n"
+        "{\n"
+            "\tswitch (slot) {\n"
+                "\t\tcase 0: default: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[0], 0);\n"
+                "\t\tcase 1: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[1], 0);\n"
+                "\t\tcase 2: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[2], 0);\n"
+                "\t\tcase 3: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[3], 0);\n"
+                "\t\tcase 4: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[4], 0);\n"
+                "\t\tcase 5: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[5], 0);\n"
+                "\t\tcase 6: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[6], 0);\n"
+                "\t\tcase 7: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[7], 0);\n"
+                "\t\tcase 8: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[8], 0);\n"
+                "\t\tcase 9: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[9], 0);\n"
+                "\t\tcase 10: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[10], 0);\n"
+                "\t\tcase 11: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[11], 0);\n"
+                "\t\tcase 12: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[12], 0);\n"
+                "\t\tcase 13: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[13], 0);\n"
+                "\t\tcase 14: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[14], 0);\n"
+                "\t\tcase 15: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[15], 0);\n"
+            "\t}\n"
+        "}\n\n";
+    }
     else
-        textures = "#define MAX_TEXTURES 32\n";
+        textures = "#define MAX_TEXTURES 32\n\n";
 
-    const std::string str = textures + \
-     
-    "uniform sampler2D SPAGHYETI_ACTIVE_TEXTURES[MAX_TEXTURES];\n"
-    
-    "vec4 sampleTextureSlot(int slot, vec2 uv)\n"
-    "{\n"
-        "switch (slot) {\n"
-            "case 0: default: return texture(SPAGHYETI_ACTIVE_TEXTURES[0], uv);\n"
-            "case 1: return texture(SPAGHYETI_ACTIVE_TEXTURES[1], uv);\n"
-            "case 2: return texture(SPAGHYETI_ACTIVE_TEXTURES[2], uv);\n"
-            "case 3: return texture(SPAGHYETI_ACTIVE_TEXTURES[3], uv);\n"
-            "case 4: return texture(SPAGHYETI_ACTIVE_TEXTURES[4], uv);\n"
-            "case 5: return texture(SPAGHYETI_ACTIVE_TEXTURES[5], uv);\n"
-            "case 6: return texture(SPAGHYETI_ACTIVE_TEXTURES[6], uv);\n"
-            "case 7: return texture(SPAGHYETI_ACTIVE_TEXTURES[7], uv);\n"
-            "case 8: return texture(SPAGHYETI_ACTIVE_TEXTURES[8], uv);\n"
-            "case 9: return texture(SPAGHYETI_ACTIVE_TEXTURES[9], uv);\n"
-            "case 10: return texture(SPAGHYETI_ACTIVE_TEXTURES[10], uv);\n"
-            "case 11: return texture(SPAGHYETI_ACTIVE_TEXTURES[11], uv);\n"
-            "case 12: return texture(SPAGHYETI_ACTIVE_TEXTURES[12], uv);\n"
-            "case 13: return texture(SPAGHYETI_ACTIVE_TEXTURES[13], uv);\n"
-            "case 14: return texture(SPAGHYETI_ACTIVE_TEXTURES[14], uv);\n"
-            "case 15: return texture(SPAGHYETI_ACTIVE_TEXTURES[15], uv);\n"
-        "}\n"
-    "}\n"
-
-    "ivec2 sampleTextureSize(int slot)\n"
-    "{\n"
-        "switch (slot) {\n"
-            "case 0: default: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[0], 0);\n"
-            "case 1: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[1], 0);\n"
-            "case 2: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[2], 0);\n"
-            "case 3: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[3], 0);\n"
-            "case 4: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[4], 0);\n"
-            "case 5: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[5], 0);\n"
-            "case 6: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[6], 0);\n"
-            "case 7: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[7], 0);\n"
-            "case 8: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[8], 0);\n"
-            "case 9: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[9], 0);\n"
-            "case 10: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[10], 0);\n"
-            "case 11: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[11], 0);\n"
-            "case 12: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[12], 0);\n"
-            "case 13: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[13], 0);\n"
-            "case 14: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[14], 0);\n"
-            "case 15: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[15], 0);\n"
-        "}\n"
-    "}";
+    const std::string str = textures + "uniform sampler2D SPAGHYETI_ACTIVE_TEXTURES[MAX_TEXTURES];\n\n";
 
     return str;
 }

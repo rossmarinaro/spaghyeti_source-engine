@@ -91,13 +91,13 @@ void Component::Make()
         vert_src << "layout(location = 4) in vec3 a_OutlineColor;\n";
         vert_src << "layout(location = 5) in float a_OutlineWidth;\n";
         vert_src << "layout(location = 6) in float a_Whiteout;\n";
-        vert_src << "layout(location = 7) in mat4 a_ModelViewProj;\n";
+        vert_src << "layout(location = 7) in mat4 a_ModelViewProj;\n\n";
 
         vert_src << "flat out float texID;\n";
         vert_src << "out float outlineWidth;\n";
         vert_src << "out vec3 outlineColor;\n";
         vert_src << "out vec2 uv;\n";
-        vert_src << "out vec4 rgba;\n";
+        vert_src << "out vec4 rgba;\n\n";
 
         vert_src << "void main()\n";
         vert_src << "{\n";
@@ -121,11 +121,16 @@ void Component::Make()
         frag_src << "in vec4 rgba;\n";
         frag_src << "in vec3 outlineColor;\n";
         frag_src << "in float outlineWidth;\n";
-        frag_src << "out vec4 color;\n";
+        frag_src << "out vec4 color;\n\n";
 
         frag_src << "void main()\n";
         frag_src << "{\n";
-        frag_src << "   color = rgba * texture(SPAGHYETI_ACTIVE_TEXTURES[int(texID)], uv);\n";
+        frag_src << "   int targetId = int(texID);\n";
+        if (Editor::Get()->platform == "WebGL")
+            frag_src << "   color = rgba * SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv);\n";
+        else
+            frag_src << "   color = rgba * texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n";
+            
         frag_src << "}";
 
         vert_src.close();

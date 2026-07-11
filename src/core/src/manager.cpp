@@ -394,10 +394,8 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
             #endif       
         }
 
-        else if (System::Utils::str_endsWith(f_it->second.second, ".csv")) 
-        {
+        else if (System::Utils::str_endsWith(f_it->second.second, ".csv")) {
             in.open(f_it->second.second);
-            
             if (in.is_open()) 
                 while(getline(in, line))
                     result.emplace_back(line + ",");
@@ -413,10 +411,8 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
     {
         const auto r_it = System::Application::resources->m_raw_assets.find(key);
 
-        if (r_it->second.type == DATA && r_it != System::Application::resources->m_raw_assets.end()) 
-        {
+        if (r_it->second.type == DATA && r_it != System::Application::resources->m_raw_assets.end()) {
             #if USE_JSON == 1 
-            
                 if (json::accept(r_it->second.array_buffer, r_it->second.array_buffer + r_it->second.byte_length)) {
                     std::string jsonStr(reinterpret_cast<const char*>(r_it->second.array_buffer), r_it->second.byte_length);
                     json data = json::parse(jsonStr);
@@ -429,6 +425,7 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
 
         else if (System::Utils::str_endsWith(f_it->second.second, ".csv")) 
         {
+            //todo: implement raw xxd csv support
             LOG("cannot parse map data. raw csv is not compatible.");
         }
     }
