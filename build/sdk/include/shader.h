@@ -26,6 +26,10 @@ namespace Graphics {
 
             void Delete();
             
+            //includes version and precision float
+            static const std::string PreProcessorUtility(bool webgl = false);
+            //includes [ MAX_TEXTURES, vec4 sampleTextureSlot(int slot, vec2 uv), ivec2 sampleTextureSize(int slot) ]
+            static const std::string TextureUtility(bool webgl = false);
             static void InitBaseShaders(); 
             static void Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomPath = nullptr);
             static void UnLoad(const std::string& key);

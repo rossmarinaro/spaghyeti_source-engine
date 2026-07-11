@@ -143,12 +143,10 @@ void Window::Init()
     LOG("Window: initialized.");
 
     #ifndef __EMSCRIPTEN__ 
-
         if (!gladLoadGL() || !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
             LOG("GLFW: Failed to initialize GLAD");
             exit(EXIT_FAILURE);
         }
-
     #endif
 
     LOG("Window: GL Version - " + (std::string)reinterpret_cast<const char*>(glGetString(GL_VERSION)));

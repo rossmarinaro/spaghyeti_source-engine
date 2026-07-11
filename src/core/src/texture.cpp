@@ -213,7 +213,9 @@ void Texture2D::Load(const std::string& key)
 
     glBindTexture(GL_TEXTURE_2D, texture.ID);
     
-    #ifndef __EMSCRIPTEN__
+    #ifdef __EMSCRIPTEN__
+        EM_ASM({ GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, true) }); //flip image uv in webgl builds
+    #else
         glGenerateMipmap(GL_TEXTURE_2D);
     #endif
 
@@ -283,7 +285,7 @@ void Texture2D::Update(
             for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++) 
                 samplers[i] = i;
 
-            shader.SetIntV("images", System::Renderer::MAX_TEXTURES, samplers);
+            shader.SetIntV("SPAGHYETI_ACTIVE_TEXTURES", System::Renderer::MAX_TEXTURES, samplers);
         }
 
         System::Renderer::Flush(m_opaque); 

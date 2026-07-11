@@ -70,18 +70,10 @@ void Shader::InitBaseShaders()
         "}";
 
 
-    //--------------------------------------------
+    //-------------------------------------------- webgl compatible 
 
 
     static constexpr const char* spriteQuadShader_fragment = \
-
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-            "precision lowp float;\n"
-        #endif
 
         "flat in float texID;\n"
         "in vec2 uv;\n"
@@ -91,42 +83,60 @@ void Shader::InitBaseShaders()
         "in float whiteout;\n"
         "out vec4 color;\n"
 
-        "uniform sampler2D images[32];\n"
-
         "void main()\n"
-        "{ \n"
+        "{\n"
 
-            "vec4 c = texture(images[int(texID)], uv);\n"
+            "int targetId = int(texID);\n"
+
+            #ifdef __EMSCRIPTEN__
+                "vec4 c = sampleTextureSlot(targetId, uv);\n"
+                "ivec2 texSize2d = sampleTextureSize(targetId);\n"
+            #else
+                "vec4 c = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n"
+                "ivec2 texSize2d = textureSize(SPAGHYETI_ACTIVE_TEXTURES[targetId], 0);\n"
+            #endif
+
+            "float texSize = float(texSize2d.x);\n"
+            "float texelSize = 1.0 / texSize;\n"
+            "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
 
             "if (c.a == 0.0 && outlineWidth > 0.0)\n" //outline
-            "{\n" 
+            "{\n"
+                #ifdef __EMSCRIPTEN__
+                    "vec4 baseColor = sampleTextureSlot(targetId, uv);\n"
+                    "float alphaTop = sampleTextureSlot(targetId, uv + vec2(0.0, size.y)).a;\n"
+                    "float alphaBottom = sampleTextureSlot(targetId, uv - vec2(0.0, size.y)).a;\n"
+                    "float alphaLeft = sampleTextureSlot(targetId, uv - vec2(size.x, 0.0)).a;\n"
+                    "float alphaRight = sampleTextureSlot(targetId, uv + vec2(size.x, 0.0)).a;\n"
+                #else
+                    "vec4 baseColor = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n"
+                    "float alphaTop = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv + vec2(0.0, size.y)).a;\n"
+                    "float alphaBottom = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv - vec2(0.0, size.y)).a;\n"
+                    "float alphaLeft = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv - vec2(size.x, 0.0)).a;\n"
+                    "float alphaRight = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv + vec2(size.x, 0.0)).a;\n"
+                #endif
 
-                "ivec2 texSize2d = textureSize(images[int(texID)], 0);\n"
-                "float texSize = float(texSize2d.x);\n"
-                "float texelSize = 1.0 / texSize;\n"
-                "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
-                "float outline = texture(images[int(texID)], uv + vec2(-size.x, 0.0)).a;\n"
-
-                "outline += texture(images[int(texID)], uv + vec2(0.0, size.y)).a;\n"
-                "outline += texture(images[int(texID)], uv + vec2(size.x, 0.0)).a;\n"
-                "outline += texture(images[int(texID)], uv + vec2(0.0, -size.y)).a;\n"
-                "outline += texture(images[int(texID)], uv + vec2(-size.x, size.y)).a;\n"
-                "outline += texture(images[int(texID)], uv + vec2(size.x, size.y)).a;\n"
-                "outline += texture(images[int(texID)], uv + vec2(-size.x, size.y)).a;\n"
-                "outline += texture(images[int(texID)], uv + vec2(size.x, -size.y)).a;\n"
-                "outline = min(outline, 1.0);\n"
-
-                "color = mix(c, vec4(outlineColor, rgba.w), outline - c.a);\n"
-
+                "float maxNeighborAlpha = max(max(alphaTop, alphaBottom), max(alphaLeft, alphaRight));\n"
+                "float outlineFactor = maxNeighborAlpha * (1.0 - baseColor.a);\n"
+                "vec4 mixedColor = mix(baseColor, vec4(outlineColor, c.a), outlineFactor);\n"
+                "if (mixedColor.a < 0.01) discard;\n"
+                "color = mixedColor;\n"
             "}\n"
             "else if (whiteout > 0.0) {\n" //tint fill
                 "color = vec4(rgba.xyz, c.a);\n"
             "}\n"
             "else {\n" //fill
-               "color = rgba * texture(images[int(texID)], uv);\n" 
+                #ifdef __EMSCRIPTEN__
+                    "color = rgba * sampleTextureSlot(targetId, uv);\n" 
+                #else
+                    "color = rgba * texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n" 
+                #endif
                 //"if (color.r > 0.9 && color.g < 0.1 && color.b > 0.9) discard;\n" //remove magenta background 
             "}\n"
         "}";
+
+
+    //--------------------------------------------
 
     //post processing shader
 
@@ -230,56 +240,6 @@ void Shader::InitBaseShaders()
             "color = vec4(textColor, sampled * alphaVal); \n"
         "}";
 
-
-    //--------------------------------------------
-
-
-    // static constexpr const char* textOutlineFragment = \
-
-    //      #ifdef __EMSCRIPTEN__
-    //         "#version 300 es\n"
-    //         "precision mediump float;\n"
-    //     #else
-    //         "#version 330 core\n"
-    //     #endif
-
-    //     "uniform sampler2D image;\n"  
-    //     "uniform float outlineWidth;\n" 
-    //     "uniform vec3 outlineColor;\n" 
-    //     "uniform float alphaVal;\n" 
-    //     "uniform float characterWidth;\n" 
-
-    //     "out vec4 color;\n"
-    //     "in vec2 uv;\n"
-
-    //     "void main() {\n"
-
-    //         "vec4 c = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
-
-    //         "if (c.a == 0.0) {\n"
-
-    //             "ivec2 texSize2d = textureSize(image, 0);\n"
-    //             "float texSize = characterWidth;\n" 
-    //             "float texelSize = 1.0 / texSize;\n"
-    //             "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
-    //             "float outline = vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, 0.0))).a;\n"
- 
-    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(0.0, size.y))).a;\n"
-    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, 0.0))).a;\n"
-    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(0.0, -size.y))).a;\n"
-    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, size.y))).a;\n"
-    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, size.y))).a;\n"
-    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(-size.x, size.y))).a;\n"
-    //             "outline += vec4(1.0, 1.0, 1.0, texture(image, uv + vec2(size.x, -size.y))).a;\n"
-    //             "outline = min(outline, 1.0);\n"
-
-    //             "vec4 c = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
-    //             "color = mix(c, vec4(outlineColor, alphaVal), outline - c.a);\n"
-
-    //         "}\n"
-    //         "else\n"
-    //            "color = vec4(1.0, 1.0, 1.0, texture(image, uv));\n"
-    //     "}";
 
     //--------------------------------------------
 
@@ -388,9 +348,23 @@ void Shader::InitBaseShaders()
 
     //shader char arrays
 
-    Load("sprite", spriteQuadShader_vertex, spriteQuadShader_fragment);
+    Load("sprite", 
+        spriteQuadShader_vertex, 
+        (PreProcessorUtility(
+            #ifdef __EMSCRIPTEN__
+                true
+            #else
+                false
+            #endif
+        ) + TextureUtility(
+            #ifdef __EMSCRIPTEN__
+                true
+            #else
+                false
+            #endif
+        ) + spriteQuadShader_fragment).c_str());
+
     Load("text", textVertex/* spriteQuadShader_vertex */, textFragment);  
-    //Load("instance", spriteInstanceShader_vertex, spriteQuadShader_fragment);
 
     #if DEVELOPMENT == 1
         Load("Points", geom_vertex1, geom_fragment);
@@ -406,6 +380,89 @@ void Shader::InitBaseShaders()
 
 }
 
+
+//---------------------------------
+
+
+const std::string Shader::PreProcessorUtility(bool webgl) 
+{
+    std::string str; 
+    
+    if (webgl)
+        str = \
+            "#version 300 es\n"
+            "precision mediump float;\n";
+    else
+        str = \
+            "#version 330 core\n"
+            "precision lowp float;\n";
+
+    return str;
+}
+
+
+//---------------------------------
+
+
+const std::string Shader::TextureUtility(bool webgl) 
+{
+    std::string textures;
+
+    if (webgl)
+        textures = "#define MAX_TEXTURES 16\n"; //8 webgl 1
+    else
+        textures = "#define MAX_TEXTURES 32\n";
+
+    const std::string str = textures + \
+     
+    "uniform sampler2D SPAGHYETI_ACTIVE_TEXTURES[MAX_TEXTURES];\n"
+    
+    "vec4 sampleTextureSlot(int slot, vec2 uv)\n"
+    "{\n"
+        "switch (slot) {\n"
+            "case 0: default: return texture(SPAGHYETI_ACTIVE_TEXTURES[0], uv);\n"
+            "case 1: return texture(SPAGHYETI_ACTIVE_TEXTURES[1], uv);\n"
+            "case 2: return texture(SPAGHYETI_ACTIVE_TEXTURES[2], uv);\n"
+            "case 3: return texture(SPAGHYETI_ACTIVE_TEXTURES[3], uv);\n"
+            "case 4: return texture(SPAGHYETI_ACTIVE_TEXTURES[4], uv);\n"
+            "case 5: return texture(SPAGHYETI_ACTIVE_TEXTURES[5], uv);\n"
+            "case 6: return texture(SPAGHYETI_ACTIVE_TEXTURES[6], uv);\n"
+            "case 7: return texture(SPAGHYETI_ACTIVE_TEXTURES[7], uv);\n"
+            "case 8: return texture(SPAGHYETI_ACTIVE_TEXTURES[8], uv);\n"
+            "case 9: return texture(SPAGHYETI_ACTIVE_TEXTURES[9], uv);\n"
+            "case 10: return texture(SPAGHYETI_ACTIVE_TEXTURES[10], uv);\n"
+            "case 11: return texture(SPAGHYETI_ACTIVE_TEXTURES[11], uv);\n"
+            "case 12: return texture(SPAGHYETI_ACTIVE_TEXTURES[12], uv);\n"
+            "case 13: return texture(SPAGHYETI_ACTIVE_TEXTURES[13], uv);\n"
+            "case 14: return texture(SPAGHYETI_ACTIVE_TEXTURES[14], uv);\n"
+            "case 15: return texture(SPAGHYETI_ACTIVE_TEXTURES[15], uv);\n"
+        "}\n"
+    "}\n"
+
+    "ivec2 sampleTextureSize(int slot)\n"
+    "{\n"
+        "switch (slot) {\n"
+            "case 0: default: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[0], 0);\n"
+            "case 1: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[1], 0);\n"
+            "case 2: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[2], 0);\n"
+            "case 3: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[3], 0);\n"
+            "case 4: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[4], 0);\n"
+            "case 5: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[5], 0);\n"
+            "case 6: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[6], 0);\n"
+            "case 7: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[7], 0);\n"
+            "case 8: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[8], 0);\n"
+            "case 9: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[9], 0);\n"
+            "case 10: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[10], 0);\n"
+            "case 11: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[11], 0);\n"
+            "case 12: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[12], 0);\n"
+            "case 13: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[13], 0);\n"
+            "case 14: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[14], 0);\n"
+            "case 15: return textureSize(SPAGHYETI_ACTIVE_TEXTURES[15], 0);\n"
+        "}\n"
+    "}";
+
+    return str;
+}
 
 //---------------------------------
 

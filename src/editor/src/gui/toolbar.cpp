@@ -608,25 +608,24 @@ void editor::GUI::ShowMenu()
 
         if (ImGui::BeginMenu("Build"))
         {  
+            ImGui::Text(("platform: " + Editor::platform).c_str());
             ImGui::Text(("version: " + std::to_string(session->maxVersion) + "." + std::to_string(session->midVersion) + "." + std::to_string(session->minVersion)).c_str());
+            
             ImGui::InputInt("maxVersion", &session->maxVersion);
             ImGui::InputInt("midVersion", &session->midVersion);
             ImGui::InputInt("minVersion", &session->minVersion);
 
             static const std::string items[] = { 
                 "-O0", "-O1", "-O2", 
-                "-O3", "-Oz", "-Ofast" 
+                "-O3", "-Oz", "-Og" 
             };
 
-            if (ImGui::BeginCombo("link-time optimization", session->LTO.c_str()))
+            if (ImGui::BeginCombo("compile-time optimization", session->CTO.c_str()))
             {
-                for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-                {
-                    bool is_sel = (session->LTO == items[n]);
-
+                for (int n = 0; n < IM_ARRAYSIZE(items); n++) {
+                    bool is_sel = (session->CTO == items[n]);
                     if (ImGui::Selectable((items[n]).c_str(), is_sel)) 
-                        session->LTO = items[n];
-
+                        session->CTO = items[n];
                     if (is_sel)
                         ImGui::SetItemDefaultFocus();
                 }
@@ -634,28 +633,44 @@ void editor::GUI::ShowMenu()
                 ImGui::EndCombo();
             }
 
-            if (ImGui::BeginMenu("type")) 
+            ImGui::Checkbox("enable link-time optimization (-flto)", &session->LTO);
+            ImGui::Checkbox("preserve source file", &session->preserveSrc);
+
+            if (ImGui::BeginMenu("configurations")) 
             {
-                if (Editor::platform == "WebGL")
-                    ImGui::Text("WebGL builds are static by default.");
-
-                else 
+                if (Editor::platform == "WebGL") 
                 {
-                    if (ImGui::MenuItem("static")) {
-                        Editor::buildType = "static";
-                        Editor::releaseType = "release";
-                    }
+                    ImGui::Checkbox("use pthreads", &session->use_pthreads);
+                    ImGui::Checkbox("shared memory", &session->shared_memory);
+                    ImGui::Checkbox("allow memory growth", &session->allow_memory_growth);
+                    ImGui::Checkbox("allow exception catching", &session->allow_exception_catching);
+                    ImGui::Checkbox("export all", &session->export_all);
+                    ImGui::Checkbox("WASM", &session->wasm);
+                    ImGui::Checkbox("GL assertions", &session->gl_assertions);
+                    ImGui::Checkbox("use WebGL2", &session->use_webgl2);
+                    ImGui::Checkbox("full ES3", &session->full_es3);
+                    ImGui::Checkbox("embed assets", &session->webgl_embed_files);
 
-                    if (ImGui::MenuItem("dynamic"))
-                        Editor::buildType = "dynamic";
+                    session->isMultiThreaded = session->use_pthreads;
+
+                    if (session->isMultiThreaded) {
+                        session->shared_memory = true;
+                        session->allow_memory_growth = true;
+                    }
+                    else 
+                        session->shared_memory = false;
                 }
 
+                else {
+                    ImGui::Checkbox("embed assets", &session->embed_files);
+                    ImGui::Checkbox("multi threaded", &session->isMultiThreaded);
+                }
+                
                 ImGui::EndMenu();
             }
 
             if (ImGui::BeginMenu("distribution")) 
             {
-
                 if (Editor::platform == "WebGL")
                     ImGui::Text("WebGL builds are release by default.");
 
@@ -673,6 +688,24 @@ void editor::GUI::ShowMenu()
                 ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("type")) 
+            {
+                if (Editor::platform == "WebGL")
+                    ImGui::Text("WebGL builds are static by default.");
+                else 
+                {
+                    if (ImGui::MenuItem("static")) {
+                        Editor::buildType = "static";
+                        Editor::releaseType = "release";
+                    }
+
+                    if (ImGui::MenuItem("dynamic"))
+                        Editor::buildType = "dynamic";
+                }
+
+                ImGui::EndMenu();
+            }
+
             if (ImGui::BeginMenu("icon")) 
             {
                 const char* icon = AssetManager::Get()->projectIcon.length() ? 
@@ -684,34 +717,6 @@ void editor::GUI::ShowMenu()
 
                 if (ImGui::MenuItem("select icon")) 
                     session->events->OpenFile(); 
-
-                ImGui::EndMenu();
-            }
-
-            if (ImGui::BeginMenu("configurations")) 
-            {
-                ImGui::Checkbox("multi threaded", &session->isMultiThreaded);
-                ImGui::Checkbox("preserve source file", &session->preserveSrc);
-                
-                ImGui::Text(("platform: " + Editor::platform).c_str());
-
-                ImGui::Separator();
-
-                if (Editor::platform == "WebGL") {
-                    ImGui::Checkbox("use pthreads", &session->use_pthreads);
-                    ImGui::Checkbox("shared memory", &session->shared_memory);
-                    ImGui::Checkbox("allow memory growth", &session->allow_memory_growth);
-                    ImGui::Checkbox("allow exception catching", &session->allow_exception_catching);
-                    ImGui::Checkbox("export all", &session->export_all);
-                    ImGui::Checkbox("WASM", &session->wasm);
-                    ImGui::Checkbox("GL assertions", &session->gl_assertions);
-                    ImGui::Checkbox("use WebGL2", &session->use_webgl2);
-                    ImGui::Checkbox("full ES3", &session->full_es3);
-                    ImGui::Checkbox("embed assets", &session->webgl_embed_files);
-                }
-
-                else 
-                    ImGui::Checkbox("embed assets", &session->embed_files);
                 
                 ImGui::EndMenu();
             }

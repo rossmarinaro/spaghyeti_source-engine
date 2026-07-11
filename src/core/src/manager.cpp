@@ -17,7 +17,6 @@ using namespace System::Resources;
 //clear resources and assets, "all" flag true removes textures and shaders
 void Manager::Clear(bool all)
 {
-    
     System::Application::resources->m_atlases.clear();
     System::Application::resources->m_atlas_paths.clear();
     System::Application::resources->m_anims.clear();
@@ -131,7 +130,7 @@ void Manager::LoadAnims(const std::string& key, const std::map<const std::string
 std::string Manager::LoadTilemapFromJSON(const std::string& key, const std::string& path)
 {
     std::string errorMessage = "";
-    
+ 
     #if USE_JSON == 1
 
     std::ifstream JSON(path);
@@ -176,7 +175,7 @@ std::string Manager::LoadTilemapFromJSON(const std::string& key, const std::stri
         const std::string textureWithExt = static_cast<std::string>(tileset["name"]) + ext;
 
         if (System::Application::resources->m_atlases.find(textureWithExt) != System::Application::resources->m_atlases.end()) {
-            errorMessage = "Tilemap: warning - multiple maps share the same texture " + textureWithExt + ". This may results in conflicting atlas dimensions.";
+            errorMessage = "Tilemap: warning - multiple maps share the same texture " + textureWithExt + ". This may result in conflicting atlas dimensions.";
             LOG(errorMessage);
         }
 
@@ -210,8 +209,8 @@ void Manager::LoadTilemapFrames(
     unsigned int w = 0,  
                  h = 0; 
 
-    for (int y = 0; y < map_height; ++y)
-        for (int x = 0; x < map_width; ++x)
+    for (int row = 0; row < map_height; ++row)
+        for (int column = 0; column < map_width; ++column)
         {
             if (w == columns) { //columns are amouunt of frames per sprite sheet
                 w = 0;
@@ -416,9 +415,9 @@ const std::vector<std::string> Manager::ParseMapData(const std::string& key, int
 
         if (r_it->second.type == DATA && r_it != System::Application::resources->m_raw_assets.end()) 
         {
-
             #if USE_JSON == 1 
-                if (r_it->second.byte_length >= 4 && r_it->second.array_buffer[0] == 0x7B && r_it->second.array_buffer[0] == 0x5B) {
+            
+                if (json::accept(r_it->second.array_buffer, r_it->second.array_buffer + r_it->second.byte_length)) {
                     std::string jsonStr(reinterpret_cast<const char*>(r_it->second.array_buffer), r_it->second.byte_length);
                     json data = json::parse(jsonStr);
                     parseJSON(data);

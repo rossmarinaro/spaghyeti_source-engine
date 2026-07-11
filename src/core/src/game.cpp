@@ -440,6 +440,10 @@ void Game::UpdateFrame()
         Renderer::Flush(false);    
     }     
 
+    //remove active behaviors
+    
+    currentScene->behaviors.erase(std::remove_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](const auto& b) { return !b->active; }), currentScene->behaviors.end());
+
     //update behaviors, pass game process context to subclasses
 
     for (const auto& behavior : currentScene->behaviors)
@@ -695,10 +699,12 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
         }
     }
 
-            for (auto& spawn : GetScene()->spawns)
-            if (entity->name == spawn.index) 
-                for (auto& b : spawn.behaviors_attached)
-                    b.second = false;
+    //reset spawn if applied
+
+    for (auto& spawn : GetScene()->spawns)
+        if (entity->name == spawn.index) 
+            for (auto& b : spawn.behaviors_attached)
+                b.second = false;
 
     //remove from vector and disappear into the void
  
@@ -710,14 +716,15 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
     auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&](auto b)
                                     { return b->ID == ID; });
 
-    if (behavior_it != GetScene()->behaviors.end()) 
-    {
+    if (behavior_it != GetScene()->behaviors.end()) {
         auto behavior = (*behavior_it);
-
         behavior->active = false;
         behavior.reset();
-        behavior_it = GetScene()->behaviors.erase(std::move(behavior_it));
     }
+    
+    // //remove behavior
+    
+    // GetScene()->behaviors.erase(std::remove_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [](const auto& b) { return !b->active; }), GetScene()->behaviors.end());
 }
 
 

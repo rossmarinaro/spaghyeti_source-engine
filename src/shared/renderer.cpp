@@ -134,7 +134,9 @@ void Renderer::Update(void* camera)
 { 
     const auto backgroundColor = static_cast<Camera*>(camera)->GetBackgroundColor();
 
-    glfwSwapInterval(s_vsync); //enable / disable vsync
+    #ifndef __EMSCRIPTEN__
+        glfwSwapInterval(s_vsync); //enable / disable vsync
+    #endif
 
     #if STANDALONE == 1
         if (s_instance) {
@@ -192,7 +194,13 @@ void Renderer::Flush(bool renderOpaque)
 
         if (s_instance->m_fences[s_currentBufferIndex] != nullptr) 
         {
-            GLenum result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
+            GLenum result;
+
+            #ifdef __EMSCRIPTEN__
+                result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], 0, 0);
+            #else
+                result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
+            #endif
 
             if (result == GL_WAIT_FAILED) { 
                 LOG("Renderer: skipping render. buffer wait failed.");

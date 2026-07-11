@@ -96,7 +96,7 @@ Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key)
                     columns = data["tilesets"][tileset]["columns"];
                 };
 
-                applyTexture(index < data["tilesets"].size() ? index : 0);
+                applyTexture(index < data["tilesets"].size() ? index : 0);  
             }
 
             const uint32_t ID = layer.contains("id") ? static_cast<uint32_t>(layer["id"]) : index,
@@ -208,17 +208,17 @@ Scene::TilemapLayer Game::CreateTileLayer(
 
     //create tilesprites and add to entity queue;
 
-    for (int y = 0; y < mapHeight; ++y)
-        for (int x = 0; x < mapWidth; ++x) 
+    for (int row = 0; row < mapHeight; ++row)
+        for (int column = 0; column < mapWidth; ++column) 
         {
-            if ((data.begin() + (x + y * mapWidth)) == data.end()) {
+            if ((data.begin() + (column + row * mapWidth)) == data.end()) {
                 LOG("Tilemap: Error - data overflow.");
                 return layer;
             }
 
             //convert string to int at index
 
-            int tileType = atoi(data[x + y * mapWidth].c_str());
+            int tileType = atoi(data[column + row * mapWidth].c_str());
 
             //skip if no tile
 
@@ -252,7 +252,7 @@ Scene::TilemapLayer Game::CreateTileLayer(
 
                 //create tilesprite entity
 
-                const auto tile = CreateTileSprite(texture_key, (x * tileWidth) + posX, (y * tileHeight) + posY, tileType); 
+                const auto tile = CreateTileSprite(texture_key, (column * tileWidth) + posX, (row * tileHeight) + posY, tileType); 
        
                 tile->SetName((std::string)data_key);
                 tile->SetDepth(depth); 

@@ -54,7 +54,7 @@ static int GetSoundByID(const std::string& key) {
 
 
 static void ReadFrames(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
-{//return;
+{
     float* pOutFloat = (float*)pOutput;
 
     ma_uint32 channels = pDevice->playback.channels,

@@ -127,7 +127,7 @@ void Editor::Start()
     Editor session;
     s_self = &session;
 
-    s_self->LTO = "-O0";
+    s_self->CTO = "-O0";
     s_self->minVersion = 0;
     s_self->midVersion = 0;
     s_self->maxVersion = 1;
@@ -136,20 +136,21 @@ void Editor::Start()
     s_self->gravityX = 0.0f;
     s_self->gravityY = 500.0f;
     s_self->vignetteVisibility = 0.0f;
+    s_self->LTO = false;
     s_self->projectOpen = false;
     s_self->shaders_applied = false;
     s_self->globals_applied = false;
     s_self->animations_applied = false;
     s_self->gravity_continuous = true;
     s_self->gravity_sleeping = true;
-    s_self->use_pthreads = true;
+    s_self->use_pthreads = false;
     s_self->shared_memory = false;
     s_self->allow_memory_growth = false;
     s_self->allow_exception_catching = true;
     s_self->export_all = true;
     s_self->wasm = true;
     s_self->gl_assertions = true;
-    s_self->use_webgl2 = false;
+    s_self->use_webgl2 = true;
     s_self->full_es3 = false;
     s_self->embed_files = false;
     s_self->webgl_embed_files = true;

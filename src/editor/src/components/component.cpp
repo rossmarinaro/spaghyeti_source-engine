@@ -82,6 +82,8 @@ void Component::Make()
 
         //vert (batch rendering)
 
+        vert_src << Graphics::Shader::PreProcessorUtility(Editor::Get()->platform == "WebGL");
+
         vert_src << "layout(location = 0) in vec3 a_Pos;\n";
         vert_src << "layout(location = 1) in vec2 a_UV;\n";
         vert_src << "layout(location = 2) in float a_TextureId;\n";
@@ -111,46 +113,19 @@ void Component::Make()
 
         //frag
 
+        frag_src << Graphics::Shader::PreProcessorUtility(Editor::Get()->platform == "WebGL");
+        frag_src << Graphics::Shader::TextureUtility(Editor::Get()->platform == "WebGL");
+
         frag_src << "flat in float texID;\n";
         frag_src << "in vec2 uv;\n";
         frag_src << "in vec4 rgba;\n";
         frag_src << "in vec3 outlineColor;\n";
         frag_src << "in float outlineWidth;\n";
         frag_src << "out vec4 color;\n";
-        frag_src << "uniform sampler2D images[32];\n";
 
         frag_src << "void main()\n";
         frag_src << "{\n";
-        frag_src << "   vec4 c = texture(images[int(texID)], uv);\n";
-
-        frag_src <<    "if (c.a == 0.0 && outlineWidth > 0.0)\n"; 
-        frag_src <<    "{\n";
-
-        frag_src <<        "ivec2 texSize2d = textureSize(images[int(texID)], 0);\n";
-        frag_src <<        "float texSize = float(texSize2d.x);\n";
-        frag_src <<        "float texelSize = 1.0 / texSize;\n";
-        frag_src <<        "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n";
-        frag_src <<        "float outline = texture(images[int(texID)], uv + vec2(-size.x, 0.0)).a;\n";
-
-        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(0.0, size.y)).a;\n";
-        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(size.x, 0.0)).a;\n";
-        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(0.0, -size.y)).a;\n";
-        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(-size.x, size.y)).a;\n";
-        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(size.x, size.y)).a;\n";
-        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(-size.x, size.y)).a;\n";
-        frag_src <<        "outline += texture(images[int(texID)], uv + vec2(size.x, -size.y)).a;\n";
-        frag_src <<        "outline = min(outline, 1.0);\n";
-
-        frag_src <<        "color = mix(c, vec4(outlineColor, rgba.w), outline - c.a);\n";
-
-        frag_src <<    "}\n";
-
-        frag_src <<   "else if (whiteout > 0.0) {\n";
-        frag_src <<      "color = vec4(rgba.xyz, c.a);\n";
-        frag_src <<  "}\n";
-        frag_src <<   "else {\n";
-        frag_src << "   color = rgba * texture(images[int(texID)], uv);\n";
-        frag_src << "}\n";
+        frag_src << "   color = rgba * texture(SPAGHYETI_ACTIVE_TEXTURES[int(texID)], uv);\n";
         frag_src << "}";
 
         vert_src.close();

@@ -278,7 +278,7 @@ void EventListener::BuildAndRun()
         else 
             main_makeFile << "    " << Editor::rootPath << "\\sdk\\" << lib << "\n\n";
                     
-        main_makeFile << "OPT_FLAGS = " << session->LTO << " -flto -flto-partition=none\n\n";
+        main_makeFile << "OPT_FLAGS = " << session->CTO << " -flto -flto-partition=none\n\n";
 
         //if project icon is defined, compile it, else use default
 
@@ -302,7 +302,11 @@ void EventListener::BuildAndRun()
         const unsigned int devMode = Editor::releaseType == "debug" ? 1 : 0;
         
         main_makeFile << "compile : $(OBJS)\n"; 
-        main_makeFile << "\tg++ -g -std=c++17  $(OPT_FLAGS) $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w $(OPT_FLAGS) -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
+
+        if (session->LTO)
+            main_makeFile << "\tg++ -g -std=c++17 $(OPT_FLAGS) $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w $(OPT_FLAGS) -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
+        else
+            main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
 
         main_makeFile.close();
 
@@ -312,7 +316,6 @@ void EventListener::BuildAndRun()
         game_src <<	"#define WIN32_LEAN_AND_MEAN\n";
         game_src <<	"#include <windows.h>\n";
         game_src << "#endif\n";
-
     }
 
     //WebGL 
@@ -345,8 +348,6 @@ void EventListener::BuildAndRun()
         web_makeFile << "   ../game.cpp \\\n";
         web_makeFile << "   " << Editor::rootPath << "\\sdk\\spaghyeti-web.a\n\n";
 
-        web_makeFile << "OPT_FLAGS = " << session->LTO << " -flto \n\n";
-
         web_makeFile << "LINKER_FLAGS = \\\n";
         web_makeFile << "   -sEXPORT_ALL=" << export_all << " \\\n";
         web_makeFile << "   -sWASM=" << wasm << "\\\n";
@@ -357,24 +358,26 @@ void EventListener::BuildAndRun()
         web_makeFile << "   -sSHARED_MEMORY=" << shared_memory << "\\\n";
         web_makeFile << "   -sALLOW_MEMORY_GROWTH=" << allow_memory_growth << "\\\n";
         web_makeFile << "   -sNO_DISABLE_EXCEPTION_CATCHING=" << allow_exception_catching << " \\\n";
+        //web_makeFile << "   -sSTACK_SIZE=5mb\\\n";
         //web_makeFile << "   -sPTHREADS_DEBUG=1 \\\n";
         //web_makeFile << "   -sPROXY_TO_PTHREAD=1 \\\n";
         //web_makeFile << "   -sOFFSCREENCANVAS_SUPPORT=1 \\\n";
         //web_makeFile << "   -sOFFSCREEN_FRAMEBUFFER=1 \\\n";
-        //web_makeFile << "   -sINITIAL_MEMORY=420mb \\\n";
+        web_makeFile << "   -sINITIAL_MEMORY=420mb \\\n";
         //web_makeFile << "   -sMAXIMUM_MEMORY=1000mb \\\n";
         //web_makeFile << "   -sPTHREAD_POOL_SIZE_STRICT=33 \\\n";
         //-sEXPORT_NAME="Example" //in html: window.Example(i).then(module => {})
         web_makeFile << "   -sPTHREAD_POOL_SIZE=navigator.hardwareConcurrency \\\n";
         web_makeFile << "   -sUSE_GLFW=3 \\\n";
         web_makeFile << "   -sLEGACY_GL_EMULATION=0 \\\n";
-        web_makeFile << "   -sASSERTIONS \\\n";
+        web_makeFile << "   -sASSERTIONS=0 \\\n";
         web_makeFile << "   -sMAX_WEBGL_VERSION=2 \\\n";
         web_makeFile << "   -sMIN_WEBGL_VERSION=0 \\\n";
         web_makeFile << "   -sUSE_FREETYPE=1 \\\n";
         web_makeFile << "   -sUSE_LIBPNG=1 \\\n";
         web_makeFile << "   -sUSE_ZLIB \\\n";
         web_makeFile << "   -sASYNCIFY \\\n";
+        //web_makeFile << "   -sSAFE_HEAP=1 -g4 \\\n";
         web_makeFile << "   -Wl,--whole-archive \\\n";
         
         web_makeFile << "   --pre-js pre-js.js \\\n";
@@ -383,7 +386,11 @@ void EventListener::BuildAndRun()
         web_makeFile << "   --shell-file template.html\n\n";
 
         web_makeFile << "all: $(OBJS)\n";
-        web_makeFile << "\tem++ -std=c++20 $(OPT_FLAGS) $(OBJS) -O3 -o dist/index.html $(OPT_FLAGS) $(LINKER_FLAGS)\n";
+
+        if (session->LTO)
+            web_makeFile << "\tem++ -std=c++20 -flto -flto-partition=none $(OBJS) " << session->CTO << " -o dist/index.html -flto -flto-partition=none $(LINKER_FLAGS)\n";
+        else
+            web_makeFile << "\tem++ -std=c++20 $(OBJS) " << session->CTO << " -o dist/index.html $(LINKER_FLAGS)\n";
 
         web_preJS << "Module['window']\n";
         web_preJS << "Module['document']\n";
@@ -1016,7 +1023,7 @@ void EventListener::BuildAndRun()
 
                             preload_queue << "      System::Resources::Manager::LoadFile(\"" + tl.dataKey + "\", ""\"" + tl.dataPath + "\");\n";
                             preload_queue << "      System::Resources::Manager::LoadTilemapFrames(\"" + tl.textureKey + "\", " + std::to_string(tl.columns) + ", " + std::to_string(tmn->map_width) + " , " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n";
-                            
+                  
                             command_queue << "      System::Game::CreateTileLayer(" + tl.textureKey + ", " + 
                             tl.dataKey + ", " + 
                             std::to_string(tl.columns) + ", " + 
@@ -1036,7 +1043,9 @@ void EventListener::BuildAndRun()
 
                         if (tmn->map.layers.size() && System::Utils::str_endsWith(tmn->map.path, ".json")) 
                         {
-                            preload_queue << "  System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->map.key + """\", ""\"" + tmn->map.path + """\");\n";
+                            const std::string tilemap_path = "assets/" + tmn->map.key; 
+
+                            preload_queue << "  System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->map.key + """\", ""\"" + tilemap_path + """\");\n";
                             command_queue << "   System::Game::CreateTilemapFromJSON(\"" + tmn->map.key + "\");\n";
                             
                             //update tilesprites per layer
@@ -1051,7 +1060,7 @@ void EventListener::BuildAndRun()
                         }
 
                     }
-                        
+
                     //static physics bodies for manual (csv) layers
 
                     else if (tmn->HasComponent(Component::PHYSICS) && tmn->map.bodies.size()) 

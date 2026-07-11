@@ -17,8 +17,7 @@
 
     #define LOG(msg) \
         do { \
-            if constexpr (!kLoggingEnabled) {} \
-            else { \
+            if constexpr (kLoggingEnabled) { \
                 std::cout << msg << std::endl; \
                 std::ofstream ("log.txt", std::ofstream::app | std::ofstream::out) << msg << std::endl; \
             } \

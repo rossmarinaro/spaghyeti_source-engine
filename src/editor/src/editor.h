@@ -66,7 +66,8 @@ namespace editor {
                  preserveSrc,
                  isMultiThreaded,
                  depthSort,
-                 vsync;
+                 vsync,
+                 LTO;
 			 
 			System::Game* game;
             EventListener* events;
@@ -91,7 +92,7 @@ namespace editor {
                                       buildType,
 									  projectPath,
 									  rootPath,
-                                      LTO;
+                                      CTO;
 
 			static void Log(const std::string& message);
 
