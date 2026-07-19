@@ -356,24 +356,27 @@ void editor::GUI::ShowSettings()
 
                     ImGui::SameLine();
                     
+                    ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                     if (ImGui::BeginMenu(".vert")) {
                         searchShaderFolders(i, ".vert");
                         ImGui::EndMenu();
                     }
+                    ImGui::PopItemFlag();
 
                     ImGui::Text(("fragment: " + session->shaders[i].second.second).c_str());
 
                     ImGui::SameLine();
 
+                    ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                     if (ImGui::BeginMenu(".frag")) {
                         searchShaderFolders(i, ".frag");
                         ImGui::EndMenu();
                     }
+                    ImGui::PopItemFlag();
 
                     ImGui::Separator();
 
                     ImGui::PopID();
-
                 }
             else
                 ImGui::MenuItem("no shaders loaded.");
@@ -678,11 +681,15 @@ void editor::GUI::ShowMenu()
                     ImGui::Text("static builds are release by default.");
 
                 else {
+                    ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                     if (ImGui::MenuItem("debug"))
                         Editor::releaseType = "debug";
+                    ImGui::PopItemFlag();
 
+                    ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                     if (ImGui::MenuItem("release"))
                         Editor::releaseType = "release";
+                    ImGui::PopItemFlag();
                 }
 
                 ImGui::EndMenu();
@@ -694,13 +701,17 @@ void editor::GUI::ShowMenu()
                     ImGui::Text("WebGL builds are static by default.");
                 else 
                 {
+                    ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                     if (ImGui::MenuItem("static")) {
                         Editor::buildType = "static";
                         Editor::releaseType = "release";
                     }
+                    ImGui::PopItemFlag();
 
+                    ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                     if (ImGui::MenuItem("dynamic"))
                         Editor::buildType = "dynamic";
+                    ImGui::PopItemFlag();
                 }
 
                 ImGui::EndMenu();
@@ -728,15 +739,19 @@ void editor::GUI::ShowMenu()
 
         if (ImGui::BeginMenu("Switch Platform"))
         {
+            ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
             if (ImGui::MenuItem("Windows"))
                 Editor::platform = "Windows";
+            ImGui::PopItemFlag();
 
+            ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
             if (ImGui::MenuItem("WebGL")) 
             {
                 Editor::platform = "WebGL";
                 Editor::releaseType = "release";
                 Editor::buildType = "static";
             }
+            ImGui::PopItemFlag();
 
             ImGui::EndMenu();
         }
@@ -745,14 +760,20 @@ void editor::GUI::ShowMenu()
 
         if (ImGui::BeginMenu("Change Theme"))
         {
+            ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
             if (ImGui::MenuItem("classic"))
                 ImGui::StyleColorsClassic();
+            ImGui::PopItemFlag();
 
+            ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
             if (ImGui::MenuItem("light"))
                 ImGui::StyleColorsLight();
+            ImGui::PopItemFlag();
  
+            ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
             if (ImGui::MenuItem("dark"))
                 ImGui::StyleColorsDark();
+            ImGui::PopItemFlag();
 
             ImGui::EndMenu();
         }

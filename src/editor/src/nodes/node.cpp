@@ -456,40 +456,19 @@ void Node::RenderShaderOptions(const std::string& nodeId, const std::vector<std:
 
             if (ImGui::BeginMenu("select shader"))
             {
-                if (std::filesystem::is_empty(Editor::projectPath + AssetManager::Get()->shader_dir))
-                    ImGui::Text("no shaders in directory.");
+                if (!Editor::Get()->shaders.size()) 
+                    ImGui::Text("no shaders loaded.");
 
                 else
-                    for (const auto &dir : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->shader_dir))
-                    {
-                        if (dir.is_directory())
-                        {
-                            std::string name = dir.path().filename().string();
-                            
-                            if (ImGui::MenuItem(name.c_str()))
-                            {
-                                std::string vertPath, fragPath;
+                    for (const auto& shader : Editor::Get()->shaders) {
+                        const std::string key = shader.first,
+                                          vertex = shader.second.first,
+                                          fragment = shader.second.second;
 
-                                for (const auto &shader : std::filesystem::recursive_directory_iterator(dir))
-                                {
-                                    std::string filename = shader.path().string();
-
-                                    if (System::Utils::str_endsWith(filename, ".vert")) 
-                                        vertPath = filename;
-                        
-                                    if (System::Utils::str_endsWith(filename, ".frag"))
-                                        fragPath = filename;       
-                                }
-
-                                std::replace(vertPath.begin(), vertPath.end(), '\\', '/');
-                                std::replace(fragPath.begin(), fragPath.end(), '\\', '/');
-
-                                Node::LoadShader(node, name, vertPath, fragPath);
-                                     
-                            }
-
+                        if (ImGui::MenuItem(shader.first.c_str())) {
+                            Node::LoadShader(node, shader.first, vertex, fragment);
+                            EventListener::UpdateSession();
                         }
-
                     }
 
                 ImGui::EndMenu();

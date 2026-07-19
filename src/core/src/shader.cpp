@@ -117,8 +117,12 @@ void Shader::InitBaseShaders()
                 #endif
 
                 "float maxNeighborAlpha = max(max(alphaTop, alphaBottom), max(alphaLeft, alphaRight));\n"
+                // "if (c.a < 0.1 && maxNeighborAlpha > 0.1)\n"
+                // "   color = vec4(outlineColor, rgba.a);\n"
+                // "else\n"
+                // "   color = c;\n"
                 "float outlineFactor = maxNeighborAlpha * (1.0 - baseColor.a);\n"
-                "vec4 mixedColor = mix(baseColor, vec4(outlineColor, c.a), outlineFactor);\n"
+                "vec4 mixedColor = mix(baseColor, vec4(outlineColor, rgba.a), outlineFactor);\n"
                 "if (mixedColor.a < 0.01) discard;\n"
                 "color = mixedColor;\n"
             "}\n"
