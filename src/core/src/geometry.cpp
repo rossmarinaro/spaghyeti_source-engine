@@ -50,9 +50,9 @@ void Geometry::Render()
 
     glm::mat4 transform = glm::mat4(1.0f); 
 
-    transform = glm::translate(transform, { 0.5f * width + position.x * scale.x, 0.5f * height + position.y * scale.y, 0.0f }); 
+    transform = glm::translate(transform, { 0.5f * (width + position.x * scale.x), 0.5f * (height + position.y * scale.y), 0.0f }); 
     transform = glm::rotate(transform, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    transform = glm::translate(transform, { -0.5f * width - position.x * scale.x, -0.5f * height - position.y * scale.y, 0.0f });
+    transform = glm::translate(transform, { -0.5f * (width - position.x * scale.x), -0.5f * (height - position.y * scale.y), 0.0f });
 
     const auto camera = System::Application::game->camera;
 
@@ -70,7 +70,7 @@ void Geometry::Render()
     glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
 
     if (m_isStatic) 
-        projMat = (glm::highp_mat4)glm::ortho(0.0f, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
+        projMat = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Window::s_scaleWidth, (float)System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
    
     glm::mat4 mvp = projMat * glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
                     { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 

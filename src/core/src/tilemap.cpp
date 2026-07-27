@@ -185,7 +185,7 @@ Scene::TilemapLayer Game::CreateTileLayer(
     layer.columns = columns;
     layer.alpha = 1.0f;
     layer.tint = { 1.0f, 1.0f, 1.0f };
-
+  
     auto data = Resources::Manager::ParseMapData(data_key, index);
 
     if (!data.size()) {                                       
@@ -224,6 +224,11 @@ Scene::TilemapLayer Game::CreateTileLayer(
 
             if (tileType != -1) 
             {
+                int atlasCol = tileType % columns,
+                    atlasRow = tileType / columns,
+                    pixelX = (atlasCol * tileWidth),
+                    pixelY = (atlasRow * tileHeight); 
+
                 bool flipX = false, 
                      flipY = false,
                      diag = false;
@@ -262,6 +267,13 @@ Scene::TilemapLayer Game::CreateTileLayer(
                 tile->SetData("layer id", layer.ID);
                 tile->SetData("layer key", layer.key);
 
+                //set min and max uvs
+
+                tile->texture.MinU = pixelX / tile->texture.Width;
+                tile->texture.MinV = pixelY / tile->texture.Height;
+                tile->texture.MaxU = (pixelX + tileWidth) / tile->texture.Width;
+                tile->texture.MaxV = (pixelY + tileHeight) / tile->texture.Height;
+
                 if (shaderKey.length())
                     tile->SetShader(shaderKey);
 
@@ -278,14 +290,14 @@ Scene::TilemapLayer Game::CreateTileLayer(
                     tile->SetRotation(270.0f); 
 
                 else if (diag) {
-                    tile->SetRotation(90.0f); 
-                    tile->SetFlipY(true);
+                   tile->SetRotation(90.0f);
+                   tile->SetFlipY(true);
                 }
                 else 
-                    tile->SetFlip(flipX, flipY);   
+                    tile->SetFlip(flipX, flipY); 
             }
         }
- 
+
     LOG("Tilemap: Initialized layer: " + layer.key + " with texture key: " + (std::string)texture_key + " and data key: " + (std::string)data_key);
 
     return layer;

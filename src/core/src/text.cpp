@@ -301,7 +301,7 @@ void Text::Render()
         glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
 
         if (m_isStatic) 
-            projMat = (glm::highp_mat4)glm::ortho(0.0f, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
+            projMat = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Window::s_scaleWidth, (float)System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
 
         SetText(content);
     
@@ -353,7 +353,7 @@ void Text::Render()
         glm::mat4 modelProj = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * transform;
 
         if (m_isStatic) 
-            modelProj = (glm::highp_mat4)glm::ortho(0.0f, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
+            modelProj = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Window::s_scaleWidth, (float)System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
 
         const Math::Matrix4 mp = {
             { modelProj[0][0], modelProj[0][1], modelProj[0][2], modelProj[0][3] },

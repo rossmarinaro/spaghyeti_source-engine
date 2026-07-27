@@ -86,12 +86,14 @@ void Component::Make()
 
         vert_src << "layout(location = 0) in vec3 a_Pos;\n";
         vert_src << "layout(location = 1) in vec2 a_UV;\n";
-        vert_src << "layout(location = 2) in float a_TextureId;\n";
-        vert_src << "layout(location = 3) in vec4 a_RGBA;\n";
-        vert_src << "layout(location = 4) in vec3 a_OutlineColor;\n";
-        vert_src << "layout(location = 5) in float a_OutlineWidth;\n";
-        vert_src << "layout(location = 6) in float a_Whiteout;\n";
-        vert_src << "layout(location = 7) in mat4 a_ModelViewProj;\n\n";
+        vert_src << "layout(location = 2) in vec2 a_minUV;\n";
+        vert_src << "layout(location = 3) in vec2 a_maxUV;\n";
+        vert_src << "layout(location = 4) in float a_TextureId;\n";
+        vert_src << "layout(location = 5) in vec4 a_RGBA;\n";
+        vert_src << "layout(location = 6) in vec3 a_OutlineColor;\n";
+        vert_src << "layout(location = 7) in float a_OutlineWidth;\n";
+        vert_src << "layout(location = 8) in float a_Whiteout;\n";
+        vert_src << "layout(location = 9) in mat4 a_ModelViewProj;\n\n";
 
         vert_src << "flat out float texID;\n";
         vert_src << "out float outlineWidth;\n";

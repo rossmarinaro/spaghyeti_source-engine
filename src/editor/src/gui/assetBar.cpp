@@ -81,8 +81,8 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 
             if (folder == AssetManager::Get()->currentFolder)
             {
-                if (vec.at(i).second != 0 && vec.at(i).second != -1)
-                    if (ImGui::ImageButton(("##asset icon" + std::to_string(i)).c_str(), (void*)(intptr_t) vec.at(i).second, thumbnailSize)) { 
+                if (vec.at(i).second != 0 && vec.at(i).second != -1) 
+                    if (ImGui::ImageButton(("##asset icon" + std::to_string(i)).c_str(), (void*)(intptr_t)vec.at(i).second, thumbnailSize)) { 
                         AssetManager::Get()->selectedAsset = vec.at(i).first;
                         Editor::Log("Current asset selected: " + AssetManager::Get()->selectedAsset);
                     }
@@ -99,6 +99,40 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
         }
         
         ImGui::Columns(1);
+
+        //toggle thumbnails
+
+        if (_thumbnail_begin < vec.size()) 
+        {
+            if (ImGui::Button("next")) 
+            {
+                if (_thumbnail_end < vec.size() - 5) {
+                    _thumbnail_begin += 5; 
+                    _thumbnail_end += 5;
+                }
+                else if (_thumbnail_end < vec.size()) {
+                    _thumbnail_begin++;
+                    _thumbnail_end++;
+                }
+            }
+        } 
+
+        if (_thumbnail_begin > 0) 
+        {
+            ImGui::SameLine();
+            
+            if (ImGui::Button("back")) 
+            {
+                if (_thumbnail_begin > 5) {
+                    _thumbnail_begin -= 5; 
+                    _thumbnail_end -= 5;
+                }
+                else {
+                    _thumbnail_begin--;
+                    _thumbnail_end--;
+                }
+            }
+        }
     }
 }
 

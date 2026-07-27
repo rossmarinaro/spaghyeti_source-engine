@@ -33,28 +33,24 @@ void Shader::InitBaseShaders()
 
     static constexpr const char* spriteQuadShader_vertex = \
 
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-            "precision lowp float;\n"
-        #endif
-
         "layout(location = 0) in vec3 a_Pos;\n"
         "layout(location = 1) in vec2 a_UV;\n"
-        "layout(location = 2) in float a_TextureId;\n" 
-        "layout(location = 3) in vec4 a_RGBA;\n"
-        "layout(location = 4) in vec3 a_OutlineColor;\n"
-        "layout(location = 5) in float a_OutlineWidth;\n"
-        "layout(location = 6) in float a_Whiteout;\n"
-        "layout(location = 7) in mat4 a_ModelViewProj;\n"
+        "layout(location = 2) in vec2 a_minUV;\n"
+        "layout(location = 3) in vec2 a_maxUV;\n"
+        "layout(location = 4) in float a_TextureId;\n" 
+        "layout(location = 5) in vec4 a_RGBA;\n"
+        "layout(location = 6) in vec3 a_OutlineColor;\n"
+        "layout(location = 7) in float a_OutlineWidth;\n"
+        "layout(location = 8) in float a_Whiteout;\n"
+        "layout(location = 9) in mat4 a_ModelViewProj;\n"
 
         "flat out float texID;\n"
         "out float whiteout;\n"
         "out float outlineWidth;\n"
         "out vec3 outlineColor;\n"
         "out vec2 uv;\n"
+        "flat out vec2 minUV;\n"
+        "flat out vec2 maxUV;\n"
         "out vec4 rgba;\n"
 
         "void main()\n"
@@ -62,6 +58,8 @@ void Shader::InitBaseShaders()
             "texID = a_TextureId;\n"
             "rgba = a_RGBA;\n"
             "uv = a_UV;\n"
+            "minUV = a_minUV;\n"
+            "maxUV = a_maxUV;\n"
             "outlineColor = a_OutlineColor;\n"
             "outlineWidth = a_OutlineWidth;\n"
             "whiteout = a_Whiteout;\n"
@@ -75,8 +73,12 @@ void Shader::InitBaseShaders()
 
     static constexpr const char* spriteQuadShader_fragment = \
 
+        "precision mediump float;\n"
+
         "flat in float texID;\n"
         "in vec2 uv;\n"
+        "flat in vec2 minUV;\n"
+        "flat in vec2 maxUV;\n"
         "in vec4 rgba;\n"
         "in vec3 outlineColor;\n"
         "in float outlineWidth;\n" 
@@ -85,55 +87,63 @@ void Shader::InitBaseShaders()
 
         "void main()\n"
         "{\n"
-
             "int targetId = int(texID);\n"
 
             #ifdef __EMSCRIPTEN__
                 "vec4 c = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv);\n"
                 "ivec2 texSize2d = SPAGHYETI_WEBGL_TEXTURE_SIZE(targetId);\n"
+                "vec2 atlasSize = vec2(SPAGHYETI_WEBGL_TEXTURE_SIZE(targetId));\n"
             #else
                 "vec4 c = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n"
                 "ivec2 texSize2d = textureSize(SPAGHYETI_ACTIVE_TEXTURES[targetId], 0);\n"
+                "vec2 atlasSize = vec2(textureSize(SPAGHYETI_ACTIVE_TEXTURES[targetId], 0));\n"
             #endif
 
             "float texSize = float(texSize2d.x);\n"
-            "float texelSize = 1.0 / texSize;\n"
-            "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
+            "float texelSize = 1.0 / texSize;\n"     
 
+            //min / max uv extrusion
+
+            "vec2 pixelCoords = uv * atlasSize;\n"
+            "vec2 snappedPixel = floor(pixelCoords) + vec2(0.5);\n"
+            "vec2 snappedUV = snappedPixel / atlasSize;\n"
+            "vec2 safeMin = minUV + (0.1 / atlasSize);\n"
+            "vec2 safeMax = maxUV - (0.1 / atlasSize);\n"
+            "vec2 finalUV = clamp(snappedUV, safeMin, safeMax);\n"
+      
             "if (c.a == 0.0 && outlineWidth > 0.0)\n" //outline
             "{\n"
+                "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
+
                 #ifdef __EMSCRIPTEN__
-                    "vec4 baseColor = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv);\n"
-                    "float alphaTop = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv + vec2(0.0, size.y)).a;\n"
-                    "float alphaBottom = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv - vec2(0.0, size.y)).a;\n"
-                    "float alphaLeft = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv - vec2(size.x, 0.0)).a;\n"
-                    "float alphaRight = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv + vec2(size.x, 0.0)).a;\n"
+                    "vec4 baseColor = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, finalUV);\n"
+                    "float alphaTop = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, finalUV + vec2(0.0, size.y)).a;\n"
+                    "float alphaBottom = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, finalUV - vec2(0.0, size.y)).a;\n"
+                    "float alphaLeft = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, finalUV - vec2(size.x, 0.0)).a;\n"
+                    "float alphaRight = SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, finalUV + vec2(size.x, 0.0)).a;\n"
                 #else
-                    "vec4 baseColor = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n"
-                    "float alphaTop = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv + vec2(0.0, size.y)).a;\n"
-                    "float alphaBottom = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv - vec2(0.0, size.y)).a;\n"
-                    "float alphaLeft = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv - vec2(size.x, 0.0)).a;\n"
-                    "float alphaRight = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv + vec2(size.x, 0.0)).a;\n"
+                    "vec4 baseColor = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], finalUV);\n"
+                    "float alphaTop = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], finalUV + vec2(0.0, size.y)).a;\n"
+                    "float alphaBottom = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], finalUV - vec2(0.0, size.y)).a;\n"
+                    "float alphaLeft = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], finalUV - vec2(size.x, 0.0)).a;\n"
+                    "float alphaRight = texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], finalUV + vec2(size.x, 0.0)).a;\n"
                 #endif
 
                 "float maxNeighborAlpha = max(max(alphaTop, alphaBottom), max(alphaLeft, alphaRight));\n"
-                // "if (c.a < 0.1 && maxNeighborAlpha > 0.1)\n"
-                // "   color = vec4(outlineColor, rgba.a);\n"
-                // "else\n"
-                // "   color = c;\n"
+
                 "float outlineFactor = maxNeighborAlpha * (1.0 - baseColor.a);\n"
                 "vec4 mixedColor = mix(baseColor, vec4(outlineColor, rgba.a), outlineFactor);\n"
                 "if (mixedColor.a < 0.01) discard;\n"
-                "color = mixedColor;\n"
+                "   color = mixedColor;\n"
             "}\n"
             "else if (whiteout > 0.0) {\n" //tint fill
                 "color = vec4(rgba.xyz, c.a);\n"
             "}\n"
             "else {\n" //fill
                 #ifdef __EMSCRIPTEN__
-                    "color = rgba * SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, uv);\n" 
+                    "color = rgba * SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, finalUV);\n" 
                 #else
-                    "color = rgba * texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], uv);\n" 
+                    "color = rgba * texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], finalUV);\n" 
                 #endif
                 //"if (color.r > 0.9 && color.g < 0.1 && color.b > 0.9) discard;\n" //remove magenta background 
             "}\n"
@@ -199,14 +209,6 @@ void Shader::InitBaseShaders()
 
     static constexpr const char* textVertex = \
 
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-           "precision lowp float;\n"
-        #endif
-
         "layout(location = 0) in vec4 vertex;\n"
         "out vec2 uv;\n"
 
@@ -222,14 +224,8 @@ void Shader::InitBaseShaders()
 
 
     static constexpr const char* textFragment = \
-
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-            "precision lowp float;\n"
-        #endif
+        
+        "precision mediump float;\n"
 
         "in vec2 uv;\n"
         "out vec4 color;\n"
@@ -248,13 +244,6 @@ void Shader::InitBaseShaders()
     //--------------------------------------------
 
     static constexpr const char* geom_vertex1 = \
-
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
 
         "uniform mat4 vp;\n"
 
@@ -277,13 +266,6 @@ void Shader::InitBaseShaders()
 
     static constexpr const char* geom_vertex2 = \
 
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
-
         "uniform mat4 vp;\n"
 
         "layout(location = 0) in vec2 v_position;\n"
@@ -303,12 +285,7 @@ void Shader::InitBaseShaders()
 
     static constexpr const char* geom_fragment = \
 
-        #ifdef __EMSCRIPTEN__
-            "#version 300 es\n"
-            "precision mediump float;\n"
-        #else
-            "#version 330 core\n"
-        #endif
+        "precision mediump float;\n"
 
         "in vec4 f_color;\n"
 
@@ -352,28 +329,31 @@ void Shader::InitBaseShaders()
 
     //shader char arrays
 
-    Load("sprite", 
-        spriteQuadShader_vertex, 
-        (PreProcessorUtility(
+    const std::string preProc = PreProcessorUtility(
             #ifdef __EMSCRIPTEN__
                 true
             #else
                 false
             #endif
-        ) + TextureUtility(
+        ),
+        texUtil = TextureUtility(
             #ifdef __EMSCRIPTEN__
                 true
             #else
                 false
             #endif
-        ) + spriteQuadShader_fragment).c_str());
+        );
 
-    Load("text", textVertex/* spriteQuadShader_vertex */, textFragment);  
+    Load("sprite", 
+        (preProc + spriteQuadShader_vertex).c_str(), 
+        (preProc + texUtil + spriteQuadShader_fragment).c_str());
+
+    Load("text", (preProc + textVertex).c_str(), (preProc + textFragment).c_str());  
 
     #if DEVELOPMENT == 1
-        Load("Points", geom_vertex1, geom_fragment);
-        Load("Lines", geom_vertex2, geom_fragment);
-        Load("Triangles", geom_vertex2, geom_fragment);
+        Load("Points", (preProc + geom_vertex1).c_str(), (preProc + geom_fragment).c_str());
+        Load("Lines", (preProc + geom_vertex2).c_str(), (preProc + geom_fragment).c_str());
+        Load("Triangles", (preProc + geom_vertex2).c_str(), (preProc + geom_fragment).c_str());
     #endif
 
     //shader files
@@ -393,13 +373,9 @@ const std::string Shader::PreProcessorUtility(bool webgl)
     std::string str; 
     
     if (webgl)
-        str = \
-            "#version 300 es\n"
-            "precision mediump float;\n";
+        str = "#version 300 es\n";
     else
-        str = \
-            "#version 330 core\n"
-            "precision lowp float;\n";
+        str = "#version 330 core\n";
 
     return str;
 }

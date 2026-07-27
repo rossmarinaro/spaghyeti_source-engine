@@ -481,26 +481,13 @@ void Sprite::Render()
         texture.FrameWidth = currentFrameWidth;
         texture.FrameHeight = currentFrameHeight;
 
-        //tilemap
+        //texture coordinates for tiles are varying min and max uvs for texture extrusion
 
-        if (m_type == TILE) {
-            texture.U1 = (currentFrameX * currentFrameWidth) / texture.Width;      
-            texture.U2 = ((currentFrameX + 1) * currentFrameWidth) / texture.Width;
+        texture.U1 = m_type == TILE ? texture.MinU : (currentFrameX * factorX) / texture.Width;      
+        texture.U2 = m_type == TILE ? texture.MaxU : ((currentFrameX + currentFrameWidth) * factorX) / texture.Width;
 
-            texture.V1 = (currentFrameY * currentFrameHeight) / texture.Height; 
-            texture.V2 = ((currentFrameY + 1) * currentFrameHeight) / texture.Height; 
-        }
-
-        //generic
-
-        else {
-            texture.U1 = (currentFrameX * factorX) / texture.Width;      
-            texture.U2 = ((currentFrameX + currentFrameWidth) * factorX) / texture.Width;
-
-            texture.V1 = (currentFrameY * factorY) / texture.Height; 
-            texture.V2 = ((currentFrameY + currentFrameHeight) * factorY) / texture.Height; 
-        }
- 
+        texture.V1 = m_type == TILE ? texture.MinV : (currentFrameY * factorY) / texture.Height; 
+        texture.V2 = m_type == TILE ? texture.MaxV : ((currentFrameY + currentFrameHeight) * factorY) / texture.Height; 
     }
 
     //sprite model rotation transformation

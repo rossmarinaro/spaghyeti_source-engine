@@ -212,7 +212,7 @@ void Manager::LoadTilemapFrames(
     for (int row = 0; row < map_height; ++row)
         for (int column = 0; column < map_width; ++column)
         {
-            if (w == columns) { //columns are amouunt of frames per sprite sheet
+            if (w == columns) { //columns are amount of frames per sprite sheet
                 w = 0;
                 h++; 
             }   

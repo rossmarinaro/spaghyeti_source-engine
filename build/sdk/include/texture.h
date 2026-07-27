@@ -5,11 +5,6 @@
 
 namespace Graphics {  
 
-    struct Format { float width, height; float u1, v1, u2, v2; };
-    struct Renderable { float x, y; Format format; int textureID; };
-
-//--------------------------------------
-
     //Texture2D stores and configures textures. It is a quad with additional utilities for image data
     class Texture2D {
 
@@ -19,7 +14,18 @@ namespace Graphics {
 
             bool Whiteout;
 
-            float FrameWidth, FrameHeight, U1, V1, U2, V2, Width, Height; 
+            float FrameWidth, 
+                  FrameHeight, 
+                  U1, 
+                  V1, 
+                  U2, 
+                  V2, 
+                  MinU, 
+                  MinV, 
+                  MaxU, 
+                  MaxV,
+                  Width, 
+                  Height; 
             
             unsigned int ID,
                          Channels,

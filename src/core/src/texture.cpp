@@ -21,6 +21,10 @@ Texture2D::Texture2D():
     V1 = 0.0f;
     U2 = 1.0f;
     V2 = 1.0f;
+    MinU = 0.0f;
+    MinV = 0.0f;
+    MaxU = 1.0f;
+    MaxV = 1.0f;
     Wrap_S = GL_REPEAT;
     Wrap_T = GL_REPEAT;
     Filter_Min = GL_NEAREST;   
@@ -144,7 +148,7 @@ void Texture2D::Load(const std::string& key)
     unsigned char* image_data = nullptr;
     const auto filepath = System::Resources::Manager::GetFilePath(key);
  
-    stbi_set_flip_vertically_on_load(false);
+    stbi_set_flip_vertically_on_load(false/* true */);
 
     //file asset found in cache
 
@@ -295,21 +299,21 @@ void Texture2D::Update(
 
     renderer->activeShaderID = shader.ID;
 
+    struct { float u1, v1, u2, v2; } verticesLayout;
+
     //format texture
- 
-    Format offset;
 
     if (flipX && !flipY) //flip x
-        offset = { FrameWidth, FrameHeight, U2, V1, U1, V2 };
+        verticesLayout = { U2, V1, U1, V2 };
 
     else if (!flipX && flipY) //flip y
-        offset = { FrameWidth, FrameHeight, U1, V2, U2, V1 }; 
+        verticesLayout = { U1, V2, U2, V1 };
 
     else if (flipX && flipY) //flip x, y
-        offset = { FrameWidth, FrameHeight, U2, V2, U1, V1 }; 
+        verticesLayout = { U2, V2, U1, V1 };  
 
     else //no flip
-        offset = { FrameWidth, FrameHeight, U1, V1, U2, V2 };
+        verticesLayout = { U1, V1, U2, V2 };
 
     //get / set texture unit from texture ID
 
@@ -332,36 +336,38 @@ void Texture2D::Update(
 
     //update texture vertices attributes with data to be mapped to vertex shader
 
-    const Renderable renderable = { position.x, position.y, offset }; //x, y, uvs
-
-    Math::Graphics::Vertex vertices[4];
+    Math::Graphics::Vertex vertices[4]; //top-left bottom-left bottom-right top-right
 
     //position and uv
     
-    vertices[0].x = renderable.x;
-    vertices[0].y = renderable.y;
-    vertices[0].u = renderable.format.u1;
-    vertices[0].v = renderable.format.v1;
+    vertices[0].x = position.x; 
+    vertices[0].y = position.y;
+    vertices[0].u = verticesLayout.u1;
+    vertices[0].v = verticesLayout.v1;
 
-    vertices[1].x = renderable.x + renderable.format.width;
-    vertices[1].y = renderable.y;
-    vertices[1].u = renderable.format.u2;
-    vertices[1].v = renderable.format.v1;
+    vertices[1].x = position.x + FrameWidth;
+    vertices[1].y = position.y;
+    vertices[1].u = verticesLayout.u2;
+    vertices[1].v = verticesLayout.v1;
 
-    vertices[2].x = renderable.x + renderable.format.width;
-    vertices[2].y = renderable.y + renderable.format.height;
-    vertices[2].u = renderable.format.u2;
-    vertices[2].v = renderable.format.v2;
+    vertices[2].x = position.x + FrameWidth;
+    vertices[2].y = position.y + FrameHeight;
+    vertices[2].u = verticesLayout.u2;
+    vertices[2].v = verticesLayout.v2;
 
-    vertices[3].x = renderable.x;
-    vertices[3].y = renderable.y + renderable.format.height;
-    vertices[3].u = renderable.format.u1;
-    vertices[3].v = renderable.format.v2;
+    vertices[3].x = position.x;
+    vertices[3].y = position.y + FrameHeight;
+    vertices[3].u = verticesLayout.u1;
+    vertices[3].v = verticesLayout.v2;
 
-    //other attributes
+    //other non varying attributes
 
     for (int i = 0; i < 4; i++) 
     {       
+        vertices[i].minU = MinU;
+        vertices[i].minV = MinV;
+        vertices[i].maxU = MaxU;
+        vertices[i].maxV = MaxV;
         vertices[i].texID = textureUnit;
         vertices[i].z = static_cast<float>(depth) / 1000.0f;
         vertices[i].r = rgba.r;

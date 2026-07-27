@@ -120,7 +120,7 @@ const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
     view = glm::rotate(view, glm::radians(m_rotation), { 0.0f, 0.0f, 1.0f }); 
     view = glm::translate(view, glm::vec3(-midOffset, 0.0f));
 
-    view = glm::translate(view, glm::vec3(x, y, 0.0f));
+    view = glm::translate(view, glm::vec3(roundf(x), roundf(y), 0.0f));
 
     return { 
         { view[0][0], view[0][1], view[0][2], view[0][3] }, 

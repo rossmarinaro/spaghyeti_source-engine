@@ -14,10 +14,11 @@ namespace Math {
     }
 
     namespace Graphics {
+
         struct Vertex 
         { 
             float x, y, z, 
-                  u, v, 
+                  u, v, minU, minV, maxU, maxV,
                   texID, 
                   r, g, b, a,
                   outlineR, outlineG, outlineB,
@@ -26,6 +27,7 @@ namespace Math {
 
             float mvp[16]; //4 x 4 model view matrix as an array
         }; 
+
     }
 }
  
