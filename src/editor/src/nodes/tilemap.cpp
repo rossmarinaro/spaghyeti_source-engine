@@ -46,7 +46,6 @@ void TilemapNode::AddLayer()
     layer.textureKey = "";
     layer.shader = "";
     layer.depth = map.layers.size() ? map.layers.back().depth + 1 : 0;
-    layer.columns = 1; 
     layer.scrollFactorX = 1.0f;
     layer.scrollFactorY = 1.0f;
     layer.alpha = 1.0f;
@@ -98,7 +97,7 @@ void TilemapNode::SetInitialPosition()
 
 void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& path) 
 {
-    if (!System::Utils::str_endsWith(path, ".json")) {
+    if (!System::Utils::str_endsWith(path, ".json")) { 
         Editor::Log("Cannot init map from JSON - file is not of type JSON.");
         return;
     }
@@ -111,6 +110,8 @@ void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& pat
 
     if (errorMessage.size())
         Editor::Log(errorMessage);
+
+    //create and assign map 
 
     map = System::Game::CreateTilemapFromJSON(key);
 
@@ -125,6 +126,8 @@ void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& pat
     tile_height = map.tileHeight;
 
     SetInitialPosition();    
+
+    //apply physics bodies
 
     if (map.bodies.size()) 
         AddComponent(Component::PHYSICS, false);
@@ -351,7 +354,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                                 AssetManager::Register(map.layers[i].textureKey);
 
                                                 System::Resources::Manager::LoadFile(key, path);
-                                                System::Resources::Manager::LoadTilemapFrames(map.layers[i].textureKey, map.layers[i].columns, map_width, map_height, tile_width, tile_height);
+                                                System::Resources::Manager::LoadTilemapFrames(map.layers[i].textureKey, map_width, map_height, tile_width, tile_height);
                                                 
                                                 map.layers[i] = System::Game::CreateTileLayer(i, map.layers[i].textureKey.c_str(), map.layers[i].dataKey.c_str(), map_width, map_height, tile_width, tile_height, map.layers[i].depth, i, 0.0f, 0.0f, map.layers[i].scrollFactorX, map.layers[i].scrollFactorY);  
                                             
@@ -391,9 +394,6 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                             ImGui::SliderFloat("alpha", &map.layers[i].alpha, 0.0f, 1.0f); 
                             if (ImGui::IsItemDeactivatedAfterEdit())
-                                EventListener::UpdateSession();
-
-                            if (ImGui::InputInt("columns", &map.layers[i].columns) && map.layers[i].columns > 0) 
                                 EventListener::UpdateSession();
 
                             ImGui::SliderInt("depth", &map.layers[i].depth, 0, 1000);

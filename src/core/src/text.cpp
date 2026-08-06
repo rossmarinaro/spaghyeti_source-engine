@@ -330,7 +330,7 @@ void Text::Render()
 
     if (textType == FONT)
     {
-        glm::mat4 transform(1.0f);
+        glm::mat4 identityMatrix(1.0f);
 
         //auto renderer = System::Renderer::Get();
         //const int elementCount = 6 * System::Renderer::MAX_QUADS;
@@ -348,9 +348,9 @@ void Text::Render()
         float localX = position.x,
               localY = position.y;
 
-        transform = glm::scale(transform, { scale.x, scale.y, 0.0f });
+        identityMatrix = glm::scale(identityMatrix, { scale.x, scale.y, 0.0f });
 
-        glm::mat4 modelProj = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * transform;
+        glm::mat4 modelProj = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * identityMatrix;
 
         if (m_isStatic) 
             modelProj = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Window::s_scaleWidth, (float)System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 

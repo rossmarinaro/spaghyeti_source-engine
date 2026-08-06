@@ -2,20 +2,15 @@
 #include "../assets/assets.h"
 #include "../editor.h"
 
-static int _thumbnail_begin = 0, 
-           _thumbnail_end = 30;
+static int _thumbnail_begin = 0;
 
 //-------------- apply currently opened folder
 
-
 void SetFolder(bool isOpen, const std::string& type = "") {
-
     editor::AssetManager::Get()->folderSelected = isOpen;
-
     if (type.length())
         editor::AssetManager::Get()->currentFolder = type;
 }
-
 
 //--------------- display thumbnail
 
@@ -24,50 +19,70 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 {
     if (vec.size()) 
     {
-        if (_thumbnail_begin < vec.size()) 
-        {
-            if (ImGui::Button("next")) 
-            {
-                if (_thumbnail_end < vec.size() - 5) {
-                    _thumbnail_begin += 5; 
-                    _thumbnail_end += 5;
-                }
-                else if (_thumbnail_end < vec.size()) {
-                    _thumbnail_begin++;
-                    _thumbnail_end++;
-                }
-            }
-        } 
-
-        if (_thumbnail_begin > 0) 
-        {
-            ImGui::SameLine();
-            
-            if (ImGui::Button("back")) 
-            {
-                if (_thumbnail_begin > 5) {
-                    _thumbnail_begin -= 5; 
-                    _thumbnail_end -= 5;
-                }
-                else {
-                    _thumbnail_begin--;
-                    _thumbnail_end--;
-                }
-            }
-        }
-
-        //render thumbail buttons
+        ImGui::BeginGroup();
 
         const ImVec2 thumbnailSize = ImVec2(70, 70);
-        float thumbnailPadding = 16.0f;
-        float panelWidth = ImGui::GetContentRegionAvail().x;
-        int columnCount = (int)(panelWidth / (thumbnailSize.x + thumbnailPadding));
+        float thumbnailPadding = 10.0f,
+              panelWidth = ImGui::GetContentRegionAvail().x;
 
-        if (columnCount < 1) columnCount = 1;
-            ImGui::Columns(columnCount, 0, false);
+        int columnCount = 30, //(int)(panelWidth / (thumbnailSize.x + thumbnailPadding)); 
+            stride = 5,
+            currentBegin = _thumbnail_begin,
+            maxValidBegin = vec.size() - columnCount;
 
-        for (int i = _thumbnail_begin; i < _thumbnail_end; i++) 
+        bool disableBack = (currentBegin <= 0),
+             disableNext = (currentBegin >= maxValidBegin);
+        
+        if (columnCount < 1) 
+            columnCount = 1;
+            
+        if (columnCount > vec.size()) 
+            columnCount = vec.size();
+
+        if (maxValidBegin < 0) 
+            maxValidBegin = 0;
+
+        if (disableBack) 
+            ImGui::BeginDisabled();
+
+        if (ImGui::Button("back")) 
+            currentBegin -= stride;
+     
+        if (disableBack) 
+            ImGui::EndDisabled();
+
+        ImGui::SameLine();
+
+        if (disableNext) 
+            ImGui::BeginDisabled();
+
+        if (ImGui::Button("next"))
+            currentBegin += stride;
+
+        if (disableNext) 
+            ImGui::EndDisabled();
+
+        ImGui::EndGroup();
+
+        if (currentBegin > maxValidBegin) 
+            currentBegin = maxValidBegin;
+
+        if (currentBegin < 0) currentBegin = 0;
+            _thumbnail_begin = currentBegin;
+
+        int itemsToRender = std::min(columnCount, (static_cast<int>(vec.size()) - _thumbnail_begin));
+
+        //render thumbail buttons
+        
+        ImGui::Columns(5, "image thumbnails", false);
+
+        for (int step = 0; step < itemsToRender; step++) 
         {
+            int i = _thumbnail_begin + step;
+
+            if (i < 0 || i >= static_cast<int>(vec.size())) 
+                break;
+
             ImGui::PushID(i);  
 
             const std::string folder = AssetManager::GetFolder(vec.at(i).first);
@@ -82,7 +97,7 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
             if (folder == AssetManager::Get()->currentFolder)
             {
                 if (vec.at(i).second != 0 && vec.at(i).second != -1) 
-                    if (ImGui::ImageButton(("##asset icon" + std::to_string(i)).c_str(), (void*)(intptr_t)vec.at(i).second, thumbnailSize)) { 
+                    if (ImGui::ImageButton("##asset icon", (void*)(intptr_t)vec.at(i).second, thumbnailSize)) { 
                         AssetManager::Get()->selectedAsset = vec.at(i).first;
                         Editor::Log("Current asset selected: " + AssetManager::Get()->selectedAsset);
                     }
@@ -90,49 +105,15 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
                 //asset tool tip
 
                 if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-                   ImGui::SetTooltip(vec.at(i).first.c_str());
+                    ImGui::SetTooltip(vec.at(i).first.c_str());
 
                 ImGui::NextColumn();
             }
 
             ImGui::PopID();
         }
-        
+    
         ImGui::Columns(1);
-
-        //toggle thumbnails
-
-        if (_thumbnail_begin < vec.size()) 
-        {
-            if (ImGui::Button("next")) 
-            {
-                if (_thumbnail_end < vec.size() - 5) {
-                    _thumbnail_begin += 5; 
-                    _thumbnail_end += 5;
-                }
-                else if (_thumbnail_end < vec.size()) {
-                    _thumbnail_begin++;
-                    _thumbnail_end++;
-                }
-            }
-        } 
-
-        if (_thumbnail_begin > 0) 
-        {
-            ImGui::SameLine();
-            
-            if (ImGui::Button("back")) 
-            {
-                if (_thumbnail_begin > 5) {
-                    _thumbnail_begin -= 5; 
-                    _thumbnail_end -= 5;
-                }
-                else {
-                    _thumbnail_begin--;
-                    _thumbnail_end--;
-                }
-            }
-        }
     }
 }
 

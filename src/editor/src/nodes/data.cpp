@@ -175,7 +175,6 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             for (const auto& layer : tmn->map.layers) 
                 layers.push_back({
                     { "id", layer.ID },
-                    { "frames x", layer.columns },
                     { "scroll factor x", layer.scrollFactorX },
                     { "scroll factor y", layer.scrollFactorY },
                     { "shader", layer.shader },
@@ -728,8 +727,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 for (const auto& layer : data["layers"]) 
                 {
                     int ID = layer.contains("id") ? static_cast<int>(layer["id"]) : 0,
-                        depth = layer.contains("depth") ? static_cast<int>(layer["depth"]) : 0,
-                        columns = layer.contains("frames x") ? static_cast<int>(layer["frames x"]) : 1;
+                        depth = layer.contains("depth") ? static_cast<int>(layer["depth"]) : 0;
 
                     float scrollFactorX = layer.contains("scroll factor x") ? static_cast<float>(layer["scroll factor x"]) : 1.0f,
                           scrollFactorY = layer.contains("scroll factor y") ? static_cast<float>(layer["scroll factor y"]) : 1.0f,
@@ -751,13 +749,12 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                     if (makeNode) 
                     {
-                        System::Resources::Manager::LoadTilemapFrames(texture, columns, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
+                        System::Resources::Manager::LoadTilemapFrames(texture, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
 
                         auto _layer = System::Game::CreateTileLayer(
                             ID, 
                             texture.c_str(), 
                             key.c_str(), 
-                            columns, 
                             tmn->map_width, tmn->map_height, 
                             tmn->tile_width, tmn->tile_height, 
                             depth, layerIndex
@@ -786,7 +783,6 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                         _layer.shader = shader;
                         _layer.scrollFactorX = scrollFactorX;
                         _layer.scrollFactorY = scrollFactorY;
-                        _layer.columns = columns;
                         _layer.alpha = alpha;
                         _layer.tint = tint;
 

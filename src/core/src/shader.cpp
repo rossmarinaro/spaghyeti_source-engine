@@ -35,20 +35,20 @@ void Shader::InitBaseShaders()
 
         "layout(location = 0) in vec3 a_Pos;\n"
         "layout(location = 1) in vec2 a_UV;\n"
-        "layout(location = 2) in vec2 a_minUV;\n"
-        "layout(location = 3) in vec2 a_maxUV;\n"
-        "layout(location = 4) in float a_TextureId;\n" 
-        "layout(location = 5) in vec4 a_RGBA;\n"
-        "layout(location = 6) in vec3 a_OutlineColor;\n"
-        "layout(location = 7) in float a_OutlineWidth;\n"
-        "layout(location = 8) in float a_Whiteout;\n"
-        "layout(location = 9) in mat4 a_ModelViewProj;\n"
+        "layout(location = 2) in vec4 a_minMaxUV;\n"
+        "layout(location = 3) in float a_TextureId;\n" 
+        "layout(location = 4) in vec4 a_RGBA;\n"
+        "layout(location = 5) in vec3 a_OutlineColor;\n"
+        "layout(location = 6) in float a_OutlineWidth;\n"
+        "layout(location = 7) in float a_Whiteout;\n"
+        "layout(location = 8) in mat4 a_ModelViewProj;\n"
 
         "flat out float texID;\n"
         "out float whiteout;\n"
         "out float outlineWidth;\n"
         "out vec3 outlineColor;\n"
-        "out vec2 uv;\n"
+        "noperspective out vec2 uv;\n"
+        "out vec4 pixelBounds;\n"
         "flat out vec2 minUV;\n"
         "flat out vec2 maxUV;\n"
         "out vec4 rgba;\n"
@@ -57,13 +57,12 @@ void Shader::InitBaseShaders()
         "{\n" 
             "texID = a_TextureId;\n"
             "rgba = a_RGBA;\n"
-            "uv = a_UV;\n"
-            "minUV = a_minUV;\n"
-            "maxUV = a_maxUV;\n"
+            " uv = a_UV;\n"
+            "minUV = a_minMaxUV.xy;\n"
+            "maxUV = a_minMaxUV.zw;\n"
             "outlineColor = a_OutlineColor;\n"
             "outlineWidth = a_OutlineWidth;\n"
             "whiteout = a_Whiteout;\n"
-
             "gl_Position = a_ModelViewProj * vec4(a_Pos, 1.0);\n" //must be proj * model * view per OpenGL
         "}";
 
@@ -76,9 +75,10 @@ void Shader::InitBaseShaders()
         "precision mediump float;\n"
 
         "flat in float texID;\n"
-        "in vec2 uv;\n"
+        "noperspective in vec2 uv;\n"
         "flat in vec2 minUV;\n"
         "flat in vec2 maxUV;\n"
+        "in vec4 pixelBounds;\n"
         "in vec4 rgba;\n"
         "in vec3 outlineColor;\n"
         "in float outlineWidth;\n" 
@@ -99,20 +99,23 @@ void Shader::InitBaseShaders()
                 "vec2 atlasSize = vec2(textureSize(SPAGHYETI_ACTIVE_TEXTURES[targetId], 0));\n"
             #endif
 
-            "float texSize = float(texSize2d.x);\n"
-            "float texelSize = 1.0 / texSize;\n"     
-
             //min / max uv extrusion
 
             "vec2 pixelCoords = uv * atlasSize;\n"
             "vec2 snappedPixel = floor(pixelCoords) + vec2(0.5);\n"
+            "snappedPixel = clamp(snappedPixel, vec2(0.0), vec2(atlasSize - 1.0)) ;\n"
             "vec2 snappedUV = snappedPixel / atlasSize;\n"
+
             "vec2 safeMin = minUV + (0.1 / atlasSize);\n"
             "vec2 safeMax = maxUV - (0.1 / atlasSize);\n"
             "vec2 finalUV = clamp(snappedUV, safeMin, safeMax);\n"
-      
-            "if (c.a == 0.0 && outlineWidth > 0.0)\n" //outline
+
+            //outline
+
+            "if (c.a == 0.0 && outlineWidth > 0.0)\n" 
             "{\n"
+                "float texSize = float(texSize2d.x);\n"
+                "float texelSize = 1.0 / texSize;\n"     
                 "vec2 size = vec2(texelSize * outlineWidth, texelSize * outlineWidth);\n"
 
                 #ifdef __EMSCRIPTEN__
@@ -136,19 +139,25 @@ void Shader::InitBaseShaders()
                 "if (mixedColor.a < 0.01) discard;\n"
                 "   color = mixedColor;\n"
             "}\n"
-            "else if (whiteout > 0.0) {\n" //tint fill
+
+            //tint fill / whiteout
+
+            "else if (whiteout > 0.0) {\n" 
                 "color = vec4(rgba.xyz, c.a);\n"
             "}\n"
-            "else {\n" //fill
+
+            //fill
+
+            "else {\n" 
                 #ifdef __EMSCRIPTEN__
                     "color = rgba * SPAGHYETI_WEBGL_TEXTURE_SLOT(targetId, finalUV);\n" 
                 #else
-                    "color = rgba * texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], finalUV);\n" 
+                   //"color = rgba * texelFetch(SPAGHYETI_ACTIVE_TEXTURES[targetId], pixUV, 0);\n"  
+                   "color = rgba * texture(SPAGHYETI_ACTIVE_TEXTURES[targetId], finalUV);\n" 
                 #endif
                 //"if (color.r > 0.9 && color.g < 0.1 && color.b > 0.9) discard;\n" //remove magenta background 
             "}\n"
         "}";
-
 
     //--------------------------------------------
 

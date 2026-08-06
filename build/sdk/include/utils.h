@@ -49,7 +49,6 @@ namespace System {
 
 			static const int GetFileType(const std::string& path);
 			static std::string GetFileExtension(std::string& filename);
-            static std::string GetPathExtension(std::string& path);
             static std::string SanitizePath(std::string& path);
             static std::string ReplaceFrom(std::string& str, const char* position, const char* replace_str);
             static std::string RemovePrefix(std::string& str, const char* character, int index); 

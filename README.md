@@ -10,6 +10,8 @@ Triple buffer batch rendering (partial support) with additional framebuffer.
 
 Rendering system / content creation tool with audio generation, texturing, and logging. 
 
+Updated rendering to fix sub-pixel floating point camera tearing by programmatically adding a pixel gutter on tightly packed texture atlases right in the shader.
+
 Supports loading image (png), shaders (glsl text), json, csv, and raw byte encoded binary and compressed files.
 
 Build assets can be either embedded or referenced.

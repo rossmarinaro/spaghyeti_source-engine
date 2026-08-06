@@ -18,7 +18,8 @@ namespace Math {
         struct Vertex 
         { 
             float x, y, z, 
-                  u, v, minU, minV, maxU, maxV,
+                  u, v, 
+                  minU, minV, maxU, maxV,
                   texID, 
                   r, g, b, a,
                   outlineR, outlineG, outlineB,

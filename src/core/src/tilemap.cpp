@@ -83,20 +83,27 @@ Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key)
         {
             //assign corresponding texture key
 
-            std::string textureKey = "";
+            std::string textureKey = "", 
+                        ext = "";
+
             uint32_t columns = 0;
 
             if (data.contains("tilesets") && data["tilesets"].size()) 
             {   
                 const auto applyTexture = [&] (int tileset) -> void {
 
-                    std::string p = static_cast<std::string>(data["tilesets"][tileset]["image"]),
-                                ext = Utils::GetFileExtension(p);
+                    std::string p = static_cast<std::string>(data["tilesets"][tileset]["image"]);
+
+                    ext = Utils::GetFileExtension(p);
                     textureKey = static_cast<std::string>(data["tilesets"][tileset]["name"]) + ext;  
                     columns = data["tilesets"][tileset]["columns"];
                 };
 
                 applyTexture(index < data["tilesets"].size() ? index : 0);  
+            }
+            else {
+                LOG("Tilemap: Cannot create map - no tilesets referenced.");
+                return {};
             }
 
             const uint32_t ID = layer.contains("id") ? static_cast<uint32_t>(layer["id"]) : index,
@@ -108,8 +115,18 @@ Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key)
                         scrollFactorY = layer.contains("parallaxy") ? static_cast<float>(layer["parallaxy"]) : 1.0f;
 
             //create the tile layer
+            
+            std::string texture_key = textureKey;
 
-            const auto tileLayer = CreateTileLayer(ID, textureKey.c_str(), key.c_str(), columns, map_width, map_height, tile_width, tile_height, depth, index, x, y, scrollFactorX, scrollFactorY);  
+            //if a map exists with the same texture, load a new texture with the tilemap key prepended
+
+            // if (std::find_if(GetScene()->tilemaps.begin(), GetScene()->tilemaps.end(), [&texture_key](const auto& map) 
+            // { return texture_key == map.second; }) != GetScene()->tilemaps.end())
+            //     texture_key = (key + "_" + textureKey); 
+            // else 
+            //     GetScene()->tilemaps.push_back({ key, texture_key });
+
+            const auto tileLayer = CreateTileLayer(ID, texture_key.c_str(), key.c_str(), map_width, map_height, tile_width, tile_height, depth, index, x, y, scrollFactorX, scrollFactorY);  
             
             layers.emplace_back(tileLayer);
 
@@ -157,7 +174,6 @@ Scene::TilemapLayer Game::CreateTileLayer(
     int ID,
     const char* texture_key,
     const char* data_key,
-    uint32_t columns,
     uint32_t mapWidth,
     uint32_t mapHeight,
     uint32_t tileWidth,
@@ -171,8 +187,11 @@ Scene::TilemapLayer Game::CreateTileLayer(
     const std::string& shaderKey
 )
 { 
+    const auto mapTexture = Graphics::Texture2D::Get(texture_key); 
+    const uint32_t columns = mapTexture.Width / tileWidth;
+
     Scene::TilemapLayer layer;
-    
+
     layer.ID = ID;
     layer.textureKey = texture_key;
     layer.dataKey = data_key;
@@ -182,10 +201,9 @@ Scene::TilemapLayer Game::CreateTileLayer(
     layer.shader = shaderKey;
     layer.scrollFactorX = scrollFactorX;
     layer.scrollFactorY = scrollFactorY;
-    layer.columns = columns;
     layer.alpha = 1.0f;
     layer.tint = { 1.0f, 1.0f, 1.0f };
-  
+    
     auto data = Resources::Manager::ParseMapData(data_key, index);
 
     if (!data.size()) {                                       
@@ -228,7 +246,7 @@ Scene::TilemapLayer Game::CreateTileLayer(
                     atlasRow = tileType / columns,
                     pixelX = (atlasCol * tileWidth),
                     pixelY = (atlasRow * tileHeight); 
-
+  
                 bool flipX = false, 
                      flipY = false,
                      diag = false;
@@ -252,7 +270,12 @@ Scene::TilemapLayer Game::CreateTileLayer(
                                 
                     flipX = flags[0] == '1'; 
                     flipY = flags[1] == '1';
-                    diag = flags[2] == '1';       
+                    diag = flags[2] == '1';     
+                    
+                    atlasCol = tileType % columns,
+                    atlasRow = tileType / columns,
+                    pixelX = (atlasCol * tileWidth),
+                    pixelY = (atlasRow * tileHeight); 
                 }
 
                 //create tilesprite entity
@@ -266,6 +289,20 @@ Scene::TilemapLayer Game::CreateTileLayer(
                 tile->SetData(data_key, true);
                 tile->SetData("layer id", layer.ID);
                 tile->SetData("layer key", layer.key);
+
+
+                // float texelWidth = 1.0f / tile->texture.Width,
+                // texelHeight = 1.0f / tile->texture.Height;
+
+                // float pixelLeft = static_cast<float>(pixelX),
+                // pixelRight = static_cast<float>(pixelX + tileWidth),
+                // pixelTop = static_cast<float>(pixelY),
+                // pixelBottom = static_cast<float>(pixelY + tileHeight);
+
+                // float left = (pixelLeft + 0.5f) * texelWidth,
+                // top = (pixelTop + 0.5f) * texelHeight,
+                // right = (pixelRight - 0.5f) * texelWidth,
+                // bottom = (pixelBottom - 0.5f) * texelHeight;
 
                 //set min and max uvs
 
@@ -293,8 +330,9 @@ Scene::TilemapLayer Game::CreateTileLayer(
                    tile->SetRotation(90.0f);
                    tile->SetFlipY(true);
                 }
-                else 
-                    tile->SetFlip(flipX, flipY); 
+                else {
+                  tile->SetFlip(flipX, flipY); 
+                }
             }
         }
 

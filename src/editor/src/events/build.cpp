@@ -1022,11 +1022,10 @@ void EventListener::BuildAndRun()
                                 continue;
 
                             preload_queue << "      System::Resources::Manager::LoadFile(\"" + tl.dataKey + "\", ""\"" + tl.dataPath + "\");\n";
-                            preload_queue << "      System::Resources::Manager::LoadTilemapFrames(\"" + tl.textureKey + "\", " + std::to_string(tl.columns) + ", " + std::to_string(tmn->map_width) + " , " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n";
+                            preload_queue << "      System::Resources::Manager::LoadTilemapFrames(\"" + tl.textureKey + "\", " + std::to_string(tmn->map_width) + " , " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n";
                   
                             command_queue << "      System::Game::CreateTileLayer(" + tl.textureKey + ", " + 
                             tl.dataKey + ", " + 
-                            std::to_string(tl.columns) + ", " + 
                             std::to_string(tmn->map_width) + ", " + 
                             std::to_string(tmn->map_height) + ", " + 
                             std::to_string(tmn->tile_width) + ", " + 

@@ -135,15 +135,6 @@ std::string System::Utils::SanitizePath(std::string& path) {
     return path;
 }
 
-//---------------------------------------
-
-
-std::string System::Utils::GetPathExtension(std::string& path) {
-    std::filesystem::path p(path); 
-    return std::filesystem::exists(p) ? 
-        p.extension().string() : "";
-}
-
 
 //---------------------------------------
 

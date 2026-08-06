@@ -208,6 +208,7 @@ void editor::GUI::ShowSettings()
 
         if (ImGui::BeginMenu("preload assets"))
         {
+            ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
             if (ImGui::BeginMenu("add"))
             {
                 for (auto& asset : am->loadedAssets) 
@@ -225,6 +226,7 @@ void editor::GUI::ShowSettings()
                 ImGui::EndMenu();
             }
 
+            ImGui::PopItemFlag();
             ImGui::Separator(); 
             
             int i = 0;
@@ -241,6 +243,7 @@ void editor::GUI::ShowSettings()
 
                     if (ImGui::BeginMenu((asset + ": " + path).c_str()))
                     {
+                        ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                         if (ImGui::MenuItem("delete")) 
                         {
                             auto it = std::find(am->assets.begin(), am->assets.end(), asset);
@@ -248,6 +251,7 @@ void editor::GUI::ShowSettings()
                             if (it != am->assets.end())
                                 am->assets.erase(it);
                         }
+                        ImGui::PopItemFlag();
 
                         ImGui::EndMenu();
                     }
@@ -726,8 +730,10 @@ void editor::GUI::ShowMenu()
 
                 ImGui::Separator();
 
+                ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                 if (ImGui::MenuItem("select icon")) 
                     session->events->OpenFile(); 
+                ImGui::PopItemFlag();
                 
                 ImGui::EndMenu();
             }
@@ -794,7 +800,7 @@ void editor::GUI::ShowViewport()
 
     //viewport display inverted camera coords
 
-    ImGui::Text("viewport");
+    ImGui::Text("viewport"); 
     ImGui::Separator();
 
     char bufX[32];

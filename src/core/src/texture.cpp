@@ -148,7 +148,7 @@ void Texture2D::Load(const std::string& key)
     unsigned char* image_data = nullptr;
     const auto filepath = System::Resources::Manager::GetFilePath(key);
  
-    stbi_set_flip_vertically_on_load(false/* true */);
+    stbi_set_flip_vertically_on_load(false);
 
     //file asset found in cache
 
@@ -345,17 +345,17 @@ void Texture2D::Update(
     vertices[0].u = verticesLayout.u1;
     vertices[0].v = verticesLayout.v1;
 
-    vertices[1].x = position.x + FrameWidth;
+    vertices[1].x = position.x + FrameWidth; 
     vertices[1].y = position.y;
     vertices[1].u = verticesLayout.u2;
     vertices[1].v = verticesLayout.v1;
 
-    vertices[2].x = position.x + FrameWidth;
+    vertices[2].x = position.x + FrameWidth; 
     vertices[2].y = position.y + FrameHeight;
     vertices[2].u = verticesLayout.u2;
     vertices[2].v = verticesLayout.v2;
 
-    vertices[3].x = position.x;
+    vertices[3].x = position.x; 
     vertices[3].y = position.y + FrameHeight;
     vertices[3].u = verticesLayout.u1;
     vertices[3].v = verticesLayout.v2;
@@ -363,7 +363,7 @@ void Texture2D::Update(
     //other non varying attributes
 
     for (int i = 0; i < 4; i++) 
-    {       
+    {   
         vertices[i].minU = MinU;
         vertices[i].minV = MinV;
         vertices[i].maxU = MaxU;

@@ -23,7 +23,7 @@ namespace Graphics {
                   MinU, 
                   MinV, 
                   MaxU, 
-                  MaxV,
+                  MaxV,  
                   Width, 
                   Height; 
             

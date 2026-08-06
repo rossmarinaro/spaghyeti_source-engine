@@ -46,6 +46,7 @@ void Game::Reset(bool removeBehaviors)
     currentScene->UI.clear();
     currentScene->entities.clear();
     currentScene->spawns.clear();
+    currentScene->tilemaps.clear();
     time->timed_events.clear();   
     
     physics->ClearBodies(); 

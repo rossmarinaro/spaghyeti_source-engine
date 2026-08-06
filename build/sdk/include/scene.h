@@ -14,8 +14,8 @@ namespace System {
 
             struct TilemapLayer {
                 std::string key, dataKey, dataPath, textureKey, shader;
-                int ID, depth, columns;
-                float scrollFactorX, scrollFactorY, alpha;
+                int ID, depth;
+                float scrollFactorX, scrollFactorY, alpha; 
                 Math::Vector3 tint;
             };
 
@@ -55,6 +55,7 @@ namespace System {
             std::vector<std::shared_ptr<Entity>> UI;
             std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
             std::vector<std::pair<bool, std::string>> virtual_buttons; 
+            std::vector<std::pair<const std::string, const std::string>> tilemaps; //data key, texture key
 
             Scene(const Process::Context& context);
             Scene(const Process::Context& context, const std::string& key);

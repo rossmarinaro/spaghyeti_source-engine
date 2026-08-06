@@ -163,23 +163,19 @@ std::string Manager::LoadTilemapFromJSON(const std::string& key, const std::stri
 
     for (const auto& tileset : data["tilesets"])
     {
-        if (!tileset.contains("columns")) {
-            errorMessage = "Tilemap: Cannot load frames - JSON does not contain columns value.";
-            LOG(errorMessage);
-            return errorMessage;
-        }
-
         std::string textureRelPath = static_cast<std::string>(tileset["image"]),
-                    ext = Utils::GetFileExtension(textureRelPath);
+                    ext = Utils::GetFileExtension(textureRelPath),
+                    textureWithExt = static_cast<std::string>(tileset["name"]) + ext;
 
-        const std::string textureWithExt = static_cast<std::string>(tileset["name"]) + ext;
+        //const auto it = System::Application::resources->m_atlas_paths.find(textureWithExt);
 
-        if (System::Application::resources->m_atlases.find(textureWithExt) != System::Application::resources->m_atlases.end()) {
-            errorMessage = "Tilemap: warning - multiple maps share the same texture " + textureWithExt + ". This may result in conflicting atlas dimensions.";
-            LOG(errorMessage);
-        }
+        // if (it != System::Application::resources->m_atlas_paths.end()){
+        //     textureWithExt = (key + "_" + static_cast<std::string>(tileset["name"]) + ext); 
+        //     LoadFile(textureWithExt, it->second);
+        //     Register();
+        // }
 
-        LoadTilemapFrames(textureWithExt, static_cast<int>(tileset["columns"]), map_width, map_height, tile_width, tile_height);
+        LoadTilemapFrames(textureWithExt, map_width, map_height, tile_width, tile_height);
     } 
 
     LOG("Tilemap: loaded map " + key);
@@ -197,13 +193,15 @@ std::string Manager::LoadTilemapFromJSON(const std::string& key, const std::stri
 
 void Manager::LoadTilemapFrames(
     const std::string& textureKey,
-    unsigned int columns,
     unsigned int map_width,
     unsigned int map_height,
     unsigned int tile_width,
     unsigned int tile_height
 ) 
 {
+    const auto mapTexture = Graphics::Texture2D::Get(textureKey); 
+    const uint32_t tilesPerRow = mapTexture.Width / tile_width;
+
     std::vector<std::array<unsigned int, 6>> offset;
 
     unsigned int w = 0,  
@@ -212,7 +210,7 @@ void Manager::LoadTilemapFrames(
     for (int row = 0; row < map_height; ++row)
         for (int column = 0; column < map_width; ++column)
         {
-            if (w == columns) { //columns are amount of frames per sprite sheet
+            if (w == tilesPerRow) { //amount of horizontal frames per sprite sheet
                 w = 0;
                 h++; 
             }   
@@ -225,6 +223,7 @@ void Manager::LoadTilemapFrames(
         }
 
     LoadFrames(textureKey, offset); //image texture with frame offsets
+    LoadAtlas(textureKey, *System::Resources::Manager::GetFilePath(textureKey)); //image texture and its filepath
 }
 
 

@@ -75,7 +75,6 @@ namespace System {
                 int ID,
                 const char* texture_key, 
                 const char* data_key,
-                uint32_t columns,
                 uint32_t mapWidth, 
                 uint32_t mapHeight, 
                 uint32_t tileWidth, 

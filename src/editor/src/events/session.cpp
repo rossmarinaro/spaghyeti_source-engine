@@ -99,6 +99,9 @@ void EventListener::ApplyState(bool increment)
 
     try {
         sessionData.seekg(0);
+        
+        if (json::accept(sessionData)) 
+            return;
 
         json data = json::parse(sessionData);
 

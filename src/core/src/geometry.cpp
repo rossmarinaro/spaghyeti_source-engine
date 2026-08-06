@@ -20,7 +20,6 @@ Geometry::Geometry(float x, float y, float width, float height, bool isSpawn):
     renderable = true;
 
     LOG("Geometry: quad created."); 
-
 }
 
 
@@ -48,12 +47,6 @@ void Geometry::Render()
 
     //render other shapes...
 
-    glm::mat4 transform = glm::mat4(1.0f); 
-
-    transform = glm::translate(transform, { 0.5f * (width + position.x * scale.x), 0.5f * (height + position.y * scale.y), 0.0f }); 
-    transform = glm::rotate(transform, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    transform = glm::translate(transform, { -0.5f * (width - position.x * scale.x), -0.5f * (height - position.y * scale.y), 0.0f });
-
     const auto camera = System::Application::game->camera;
 
     float scrollX = scrollFactor.x, 
@@ -65,7 +58,7 @@ void Geometry::Render()
     #endif
 
     const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX * scale.x), (camera->GetPosition()->y * scrollY * scale.y));
+    const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX), (camera->GetPosition()->y * scrollY));
 
     glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
 
@@ -75,7 +68,7 @@ void Geometry::Render()
     glm::mat4 mvp = projMat * glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
                     { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
                     { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
-                    { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * transform;
+                    { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
 
     if (m_isStatic)
         mvp = projMat * glm::mat4(1.0f);
@@ -89,7 +82,8 @@ void Geometry::Render()
 
     const Math::Vector4 color = { tint.x, tint.y, tint.z, alpha }; 
 
-    float whiteout = 0.0f; 
+    float whiteout = 0.0f;
+
     if (texture.Whiteout) 
         whiteout = 1.0f;
 

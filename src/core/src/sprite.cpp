@@ -483,21 +483,20 @@ void Sprite::Render()
 
         //texture coordinates for tiles are varying min and max uvs for texture extrusion
 
-        texture.U1 = m_type == TILE ? texture.MinU : (currentFrameX * factorX) / texture.Width;      
-        texture.U2 = m_type == TILE ? texture.MaxU : ((currentFrameX + currentFrameWidth) * factorX) / texture.Width;
-
-        texture.V1 = m_type == TILE ? texture.MinV : (currentFrameY * factorY) / texture.Height; 
-        texture.V2 = m_type == TILE ? texture.MaxV : ((currentFrameY + currentFrameHeight) * factorY) / texture.Height; 
+        texture.U1 = m_type == TILE ? (currentFrameX * currentFrameWidth) / texture.Width /* texture.MinU */ : (currentFrameX * factorX) / texture.Width;      
+        texture.U2 = m_type == TILE ? ((currentFrameX + 1) * currentFrameWidth) / texture.Width /* texture.MaxU */ : ((currentFrameX + currentFrameWidth) * factorX) / texture.Width;
+        texture.V1 = m_type == TILE ? (currentFrameY * currentFrameHeight) / texture.Height /* texture.MinV */ : (currentFrameY * factorY) / texture.Height; 
+        texture.V2 = m_type == TILE ? ((currentFrameY + 1) * currentFrameHeight) / texture.Height /* texture.MaxV */ : ((currentFrameY + currentFrameHeight) * factorY) / texture.Height; 
     }
 
     //sprite model rotation transformation
 
-    glm::mat4 transform = glm::mat4(1.0f); 
+    glm::mat4 identityMatrix = glm::mat4(1.0f); 
 
-    transform = glm::translate(transform, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
-    transform = glm::rotate(transform, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
-    transform = glm::translate(transform, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
-    transform = glm::scale(transform, { scale.x, scale.y, 1.0f });
+    identityMatrix = glm::translate(identityMatrix, { 0.5f * texture.FrameWidth + position.x, 0.5f * texture.FrameHeight + position.y, 0.0f }); 
+    identityMatrix = glm::rotate(identityMatrix, glm::radians(rotation), { 0.0f, 0.0f, 1.0f }); 
+    identityMatrix = glm::scale(identityMatrix, { scale.x, scale.y, 1.0f });
+    identityMatrix = glm::translate(identityMatrix, { -0.5f * texture.FrameWidth - position.x, -0.5f * texture.FrameHeight - position.y, 0.0f });
 
     //update texture
 
@@ -514,16 +513,16 @@ void Sprite::Render()
         #endif
 
         const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-        const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX * scale.x), (camera->GetPosition()->y * scrollY * scale.y));
+        const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX), (camera->GetPosition()->y * scrollY));
         const glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
     
         glm::mat4 mvp = projMat * glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
                                 { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
                                 { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
-                                { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * transform;
+                                { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * identityMatrix;
    
         if (!IsSprite()) //UI do not have view matrix
-            mvp = projMat * glm::mat4(1.0f) * transform;
+            mvp = projMat * glm::mat4(1.0f) * identityMatrix;
 
         const float r = tint.x, 
                     g = tint.y, 

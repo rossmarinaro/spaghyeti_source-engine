@@ -112,15 +112,14 @@ const Math::Vector4 Camera::GetProjectionMatrix(float width, float height)
 
 const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 {    
-    const glm::vec2 midOffset = { GetPosition()->x, GetPosition()->y };
+    const glm::vec2 midOffset = { abs(m_position.x + (System::Window::s_scaleWidth / 2)), abs(m_position.y + (System::Window::s_scaleHeight / 2)) };
 
     glm::mat4 view(1.0f);
 
+    view = glm::translate(view, glm::vec3(roundf(x), roundf(y), 0.0f));
     view = glm::translate(view, glm::vec3(midOffset, 0.0f)); 
     view = glm::rotate(view, glm::radians(m_rotation), { 0.0f, 0.0f, 1.0f }); 
     view = glm::translate(view, glm::vec3(-midOffset, 0.0f));
-
-    view = glm::translate(view, glm::vec3(roundf(x), roundf(y), 0.0f));
 
     return { 
         { view[0][0], view[0][1], view[0][2], view[0][3] }, 
