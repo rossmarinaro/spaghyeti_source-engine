@@ -8,7 +8,9 @@
 
 
 static std::set<std::pair<const std::string, b2Body*>> _bodiesToRemove;
+static std::set<std::pair<const std::string, b2RevoluteJoint*>> _jointsToRemove;
 static std::map<const std::string, std::pair<const std::shared_ptr<Physics::Body>, b2Body*>> _active_b2d_bodies;
+static std::map<const std::string, std::pair<const std::shared_ptr<Physics::Joint>, b2RevoluteJoint*>> _active_b2d_joints;
 static b2World* _world;
 static int _bodyCount = 0;
 
@@ -20,6 +22,19 @@ static b2Body* _GetBox2DBody(const std::string& id) {
     auto it = _active_b2d_bodies.find(id);
 
     if (it != _active_b2d_bodies.end())
+        return it->second.second;
+ 
+    return nullptr;
+}
+
+
+//---------------------------------- return underlying box2d joint pointer to be used internally
+
+
+static b2RevoluteJoint* _GetBox2DJoint(const std::string& id) {
+    auto it = _active_b2d_joints.find(id);
+
+    if (it != _active_b2d_joints.end())
         return it->second.second;
  
     return nullptr;
@@ -95,13 +110,38 @@ void Physics::ClearBodies()
     LOG("Physics: bodies cleared.");
 }
 
+//------------------------------
+
+
+void Physics::ClearJoints()
+{
+    if (_active_b2d_joints.size())
+        for (const auto& joint : _active_b2d_joints) { 
+            _jointsToRemove.insert({ joint.first, joint.second.second }); }
+
+    _active_b2d_joints.clear();
+
+    Cleanup();
+
+    LOG("Physics: joints cleared.");
+}
+
 
 //------------------------------
 
 
 std::shared_ptr<Physics::Body> Physics::GetBody(const std::string& id) {
-    const auto it = std::find_if(_active_b2d_bodies.begin(), _active_b2d_bodies.end(), [&id](const auto& b) { return b.first == id; });
+    const auto it = std::find_if(_active_b2d_bodies.begin(), _active_b2d_bodies.end(), [&id](const auto& body) { return body.first == id; });
     return it != _active_b2d_bodies.end() ? (*it).second.first : nullptr;
+}
+
+
+//------------------------------
+
+
+std::shared_ptr<Physics::Joint> Physics::GetJoint(const std::string& id) {
+    const auto it = std::find_if(_active_b2d_joints.begin(), _active_b2d_joints.end(), [&id](const auto& joint) { return joint.first == id; });
+    return it != _active_b2d_joints.end() ? (*it).second.first : nullptr;
 }
 
 
@@ -125,6 +165,22 @@ void Physics::Cleanup()
     }
 
     _bodiesToRemove.clear(); 
+
+    //remove joints
+
+    for (auto it = _jointsToRemove.begin(); it != _jointsToRemove.end(); ++it)
+    {
+        const auto joint = *it;
+        auto j_it = std::find_if(_active_b2d_joints.begin(), _active_b2d_joints.end(), [joint](const auto& j) { return j.first == joint.first; });
+
+        if (j_it != _active_b2d_joints.end()) 
+            j_it = _active_b2d_joints.erase(j_it);
+
+        if (joint.second != nullptr) 
+            _world->DestroyJoint(joint.second);
+    }
+
+    _jointsToRemove.clear();
 }
 
 
@@ -141,7 +197,7 @@ void Physics::Update()
     static double accumulator = 0.0;
 
     accumulator += System::Application::game->time->delta;
-
+ 
     while (accumulator >= System::Application::game->time->timeStep) 
     {
         //update sprites without rigid bodies
@@ -259,7 +315,7 @@ std::shared_ptr<Physics::Body> Physics::CreateBody(
     float restitution
 )
 {
-    const auto body = std::make_shared<Physics::Body>(physicsType, x, y, radius, pointer <= -1 ? pointer : _bodyCount, isSensor, density, friction, restitution);
+    const auto body = std::make_shared<Body>(physicsType, x, y, radius, pointer <= -1 ? pointer : _bodyCount, isSensor, density, friction, restitution);
 
     b2Body* b2d_body = InitBox2DBody(physicsType, x, y, pointer);
 
@@ -270,6 +326,46 @@ std::shared_ptr<Physics::Body> Physics::CreateBody(
     return body;
 }
 
+
+//-----------------------------
+
+
+std::shared_ptr<Physics::Joint> Physics::CreateJoint(
+    float xPos,
+    float yPos,
+    float motorSpeed, 
+    float maxMotorTorque,
+    bool enableMotor, 
+    bool enableLimit, 
+    std::shared_ptr<Body>& prevSegment,
+    std::shared_ptr<Body>& nextSegment
+)
+{
+    b2Vec2 anchor(xPos, yPos);
+    b2RevoluteJointDef jointDef;
+
+    const auto b2d_prev_body = _GetBox2DBody(prevSegment->id);
+    const auto b2d_next_body = _GetBox2DBody(nextSegment->id);
+
+    jointDef.Initialize(b2d_prev_body, b2d_next_body, anchor);
+    jointDef.enableMotor = enableMotor;
+    jointDef.enableLimit = enableLimit;
+    jointDef.maxMotorTorque = maxMotorTorque;
+    jointDef.motorSpeed = motorSpeed;
+     jointDef.lowerAngle = -b2_pi / 3.0f;
+     jointDef.upperAngle = b2_pi / 3.0f;
+    //jointDef.collideConnected = false;
+
+    b2RevoluteJoint* b2d_joint = (b2RevoluteJoint*)_world->CreateJoint(&jointDef);
+
+    const auto joint = std::make_shared<Joint>(enableMotor, enableLimit, motorSpeed, maxMotorTorque);
+
+    _active_b2d_joints.insert({ joint->id, { joint, b2d_joint } });
+
+    prevSegment = nextSegment;
+
+    return joint;
+}
 
 
 //-----------------------------
@@ -283,6 +379,18 @@ void Physics::DestroyBody(const std::shared_ptr<Body>& body)
         _bodiesToRemove.insert({ body->id, b2d_body });   
         _bodyCount--; 
     }
+}
+
+
+//-----------------------------
+
+
+void Physics::DestroyJoint(const std::shared_ptr<Joint>& joint) 
+{
+    const auto b2d_joint = _GetBox2DJoint(joint->id);
+    
+    if (b2d_joint) 
+        _jointsToRemove.insert({ joint->id, b2d_joint });   
 }
 
 
@@ -676,4 +784,26 @@ void Physics::Body::SetSensor(bool isSensor)
 }
 
 
+/* joint */
 
+//----------------------------------
+
+
+Physics::Joint::Joint(bool enableMotor, bool enableLimit, float motorSpeed, float maxMotorTorque) 
+{
+    this->enableMotor = enableMotor;
+    this->enableLimit = enableLimit;
+    this->motorSpeed = motorSpeed;
+    this->maxMotorTorque = maxMotorTorque;
+}
+
+//----------------------------------
+
+
+void Physics::Joint::SetMotorSpeed(float speed) 
+{
+    const auto joint = _GetBox2DJoint(id);
+
+    if (joint) 
+        joint->SetMotorSpeed(speed);
+}

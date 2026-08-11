@@ -22,10 +22,8 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
         ImGui::BeginGroup();
 
         const ImVec2 thumbnailSize = ImVec2(70, 70);
-        float thumbnailPadding = 10.0f,
-              panelWidth = ImGui::GetContentRegionAvail().x;
 
-        int columnCount = 30, //(int)(panelWidth / (thumbnailSize.x + thumbnailPadding)); 
+        int columnCount = 30,
             stride = 5,
             currentBegin = _thumbnail_begin,
             maxValidBegin = vec.size() - columnCount;
@@ -96,8 +94,8 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 
             if (folder == AssetManager::Get()->currentFolder)
             {
-                if (vec.at(i).second != 0 && vec.at(i).second != -1) 
-                    if (ImGui::ImageButton("##asset icon", (void*)(intptr_t)vec.at(i).second, thumbnailSize)) { 
+                if (tex.ID != 0 && tex.ID != -1) 
+                    if (ImGui::ImageButton("##thumbnail_slot_1", (void*)(intptr_t)tex.ID, thumbnailSize)) { 
                         AssetManager::Get()->selectedAsset = vec.at(i).first;
                         Editor::Log("Current asset selected: " + AssetManager::Get()->selectedAsset);
                     }

@@ -449,7 +449,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             std::shared_ptr<SpriteNode> sn;
 
             if (makeNode) 
-                sn = Make<SpriteNode>(false, arr); 
+                sn = Make<SpriteNode>(false, arr);  
             
             else 
                 sn = Scene::CreateObject<SpriteNode>(_scene);  

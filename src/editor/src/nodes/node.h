@@ -52,6 +52,7 @@ namespace editor {
 
             static inline std::vector<std::shared_ptr<Node>> nodes;
 
+            //make node and add to vector to be rendered
             template <typename T>
                 static inline std::shared_ptr<T> Make(bool init = true, std::vector<std::shared_ptr<Node>>& arr = nodes) 
                 {
@@ -60,8 +61,11 @@ namespace editor {
                     if (!CheckCanAddNode(init, arr))
                         return nullptr;                            
                     
-                    const auto node = std::make_shared<T>(init);
+                    const auto node = std::make_shared<T>(init); 
+
+                    arr.reserve(1000);
                     arr.emplace_back(node);
+
                     return node;
                 }
 
@@ -74,7 +78,6 @@ namespace editor {
             static const std::string GetType(int type);
 
             virtual ~Node() {}
-            
             virtual void Update(std::vector<std::shared_ptr<Node>>& arr = nodes);
             virtual void Render(float _positionX = 0.0f, float _positionY = 0.0f, float _rotation = 0.0f, float _scaleX = 1.0f, float _scaleY = 1.0f) {}
             virtual void Reset(const int component = Component::NONE) = 0;

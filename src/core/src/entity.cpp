@@ -11,6 +11,7 @@ Entity::Entity(int type, bool isSpawn):
 {
     name = "Untitled_" + std::to_string(s_count);          
     ID = GenerateID();  
+    parentID = "";
     render_layer = 0;
 
     SetShader("sprite");
@@ -45,6 +46,7 @@ Entity::Entity(int type, float x, float y, bool isSpawn):
     flipY = false;
     depth = s_depth + 1;
     ID = GenerateID(); 
+    parentID = "";
     render_layer = 0;
 
     SetShader("sprite");

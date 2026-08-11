@@ -51,6 +51,21 @@ class Physics {
             const bool IsSensor(); 
         };
 
+        //wrapper type for Box2D joints
+        struct Joint 
+        {
+            float lowerAngle, upperAngle, motorSpeed, maxMotorTorque;
+            bool enableMotor, enableLimit;
+
+            std::string id; 
+
+            Joint(bool enableMotor, bool enableLimit, float motorSpeed, float maxMotorTorque);
+            Joint() = default;
+
+            void SetMotorSpeed(float speed);
+
+        };
+
         float gravityX = 0.0f, 
               gravityY = 500.0f;
 
@@ -88,13 +103,28 @@ class Physics {
             float restitution = 0.0f
         );
 
+        //factory for joints
+        static std::shared_ptr<Joint> CreateJoint(    
+            float xPos,
+            float yPos,
+            float motorSpeed, 
+            float maxMotorTorque,
+            bool enableMotor, 
+            bool enableLimit, 
+            std::shared_ptr<Physics::Body>& prevSegment,
+            std::shared_ptr<Physics::Body>& nextSegment
+        );
+
         //does not destroy body immediately. body will be destroyed after next timestep
         static void DestroyBody(const std::shared_ptr<Body>& body);
+        static void DestroyJoint(const std::shared_ptr<Joint>& joint);
         
         static std::shared_ptr<Body> GetBody(const std::string& id);
+        static std::shared_ptr<Joint> GetJoint(const std::string& id);
 
         void Update();
         void ClearBodies();
+        void ClearJoints();
         void SetGravity(float x, float y);
         
         Physics();

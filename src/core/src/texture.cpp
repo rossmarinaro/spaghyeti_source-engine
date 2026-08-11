@@ -271,6 +271,9 @@ void Texture2D::Update(
     bool flipY
 ) 
 {   
+    if (depth > 1000.0f)
+        depth = 1000.0f;
+
     auto renderer = System::Renderer::Get();
     const int elementCount = 6 * System::Renderer::MAX_QUADS;
 

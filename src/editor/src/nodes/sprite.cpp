@@ -731,7 +731,6 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                                     if (System::Utils::str_endsWith(path, ".json")) 
                                     {
-                                        ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                                         if (ImGui::MenuItem(key.c_str())) 
                                         {
                                             //parse json to extract frame data
@@ -771,7 +770,6 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                                 EventListener::UpdateSession();
                                             }
                                         }
-                                        ImGui::PopItemFlag();
                                     }
                                 }
 

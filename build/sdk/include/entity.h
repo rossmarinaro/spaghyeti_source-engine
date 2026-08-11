@@ -35,7 +35,7 @@ class Entity {
 
 		Math::Vector3 tint, outlineColor, shadowColor; 
 		Math::Vector2 position, scale, scrollFactor;
-		std::string ID, name;
+		std::string ID, parentID, name;
 
         Graphics::Texture2D texture;
         Graphics::Shader shader;

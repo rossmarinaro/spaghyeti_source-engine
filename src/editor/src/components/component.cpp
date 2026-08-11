@@ -86,26 +86,29 @@ void Component::Make()
 
         vert_src << "layout(location = 0) in vec3 a_Pos;\n";
         vert_src << "layout(location = 1) in vec2 a_UV;\n";
-        vert_src << "layout(location = 2) in vec2 a_minUV;\n";
-        vert_src << "layout(location = 3) in vec2 a_maxUV;\n";
-        vert_src << "layout(location = 4) in float a_TextureId;\n";
-        vert_src << "layout(location = 5) in vec4 a_RGBA;\n";
-        vert_src << "layout(location = 6) in vec3 a_OutlineColor;\n";
-        vert_src << "layout(location = 7) in float a_OutlineWidth;\n";
-        vert_src << "layout(location = 8) in float a_Whiteout;\n";
-        vert_src << "layout(location = 9) in mat4 a_ModelViewProj;\n\n";
+        vert_src << "layout(location = 2) in vec4 a_minMaxUV;\n";
+        vert_src << "layout(location = 3) in float a_TextureId;\n";
+        vert_src << "layout(location = 4) in vec4 a_RGBA;\n";
+        vert_src << "layout(location = 5) in vec3 a_OutlineColor;\n";
+        vert_src << "layout(location = 6) in float a_OutlineWidth;\n";
+        vert_src << "layout(location = 7) in float a_Whiteout;\n";
+        vert_src << "layout(location = 8) in mat4 a_ModelViewProj;\n\n";
 
         vert_src << "flat out float texID;\n";
         vert_src << "out float outlineWidth;\n";
         vert_src << "out vec3 outlineColor;\n";
         vert_src << "out vec2 uv;\n";
-        vert_src << "out vec4 rgba;\n\n";
+        vert_src << "out vec4 rgba;\n";
+        vert_src << "flat out vec2 minUV;\n";
+        vert_src << "flat out vec2 maxUV;\n\n";
 
         vert_src << "void main()\n";
         vert_src << "{\n";
         vert_src << "   texID = a_TextureId;\n";
         vert_src << "   rgba = a_RGBA;\n";
         vert_src << "   uv = a_UV;\n";
+        vert_src << "   minUV = a_minMaxUV.xy;\n";
+        vert_src << "   maxUV = a_minMaxUV.zw;\n";
         vert_src << "   outlineColor = a_OutlineColor;\n";
         vert_src << "   outlineWidth = a_OutlineWidth;\n";
         vert_src << "   whiteout = a_Whiteout;\n";

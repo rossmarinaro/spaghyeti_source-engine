@@ -1,17 +1,42 @@
 /******* MAIN ******/
 
 #include "../../build/sdk/include/app.h"
-
 #include "./src/editor.h"
 
 #ifdef _WIN32
-	#include <windows.h>
-#endif
 
-#ifdef _WIN32
+	#include <windows.h>
+
+    void PrintNtStatusMessage(DWORD statusCode) 
+    {
+        HMODULE hNtDll = GetModuleHandleA("ntdll.dll");
+        if (!hNtDll) 
+            return;
+
+        LPSTR messageBuffer = nullptr;
+
+        DWORD size = FormatMessageA(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_IGNORE_INSERTS,
+            hNtDll,
+            statusCode,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPSTR)&messageBuffer,
+            0,
+            nullptr
+        );
+
+        if (size > 0 && messageBuffer) 
+        {
+            std::string errorMessage = messageBuffer;
+            editor::Editor::Log("Crash Report Exception: " + errorMessage);
+            LocalFree(messageBuffer);
+        }
+        else 
+            editor::Editor::Log("Crash Report Exception: Unknown Error.");
+    }
 
 	LONG UnhandledExceptionFilter(EXCEPTION_POINTERS *ExceptionInfo) {
-		editor::Editor::Log("Crash Report Exception Record: " + std::to_string(ExceptionInfo->ExceptionRecord->ExceptionCode));
+		PrintNtStatusMessage(ExceptionInfo->ExceptionRecord->ExceptionCode);
 	}
 
 #endif

@@ -221,66 +221,67 @@ void Node::ClearAll()
 
 void Node::ShowOptions(std::vector<std::shared_ptr<Node>>& arr)
 {
-    if (ImGui::BeginMenu("Add Component"))
-    {
-        std::vector<int> components;
-
-        switch (type)
+    if (type != GROUP)
+        if (ImGui::BeginMenu("Add Component"))
         {
-            case SPRITE:
-            {
-                const auto node = Get(ID, arr);
-                const auto spriteNode = std::static_pointer_cast<SpriteNode>(node);
+            std::vector<int> components;
 
-                if (spriteNode && spriteNode->spriteHandle) {
+            switch (type)
+            {
+                case SPRITE:
+                {
+                    const auto node = Get(ID, arr);
+                    const auto spriteNode = std::static_pointer_cast<SpriteNode>(node);
+
+                    if (spriteNode && spriteNode->spriteHandle) {
+                        components.push_back(Component::PHYSICS);
+                        components.push_back(Component::SCRIPT);
+                        components.push_back(Component::SHADER);
+                        components.push_back(Component::ANIMATOR);
+                    }
+                    else
+                        ImGui::Text("Please apply texture before creating a component.");
+                }
+                break;
+                case TILEMAP:
                     components.push_back(Component::PHYSICS);
+                break;
+                case TEXT:
+                case EMPTY:
                     components.push_back(Component::SCRIPT);
                     components.push_back(Component::SHADER);
-                    components.push_back(Component::ANIMATOR);
+                break;
+                default: break;
+            }
+
+            //apply component if exists
+
+            if (std::find(components.begin(), components.end(), Component::PHYSICS) != components.end())
+                if (ImGui::MenuItem("Physics")) {
+                    AddComponent(Component::PHYSICS);
+                    EventListener::UpdateSession();
                 }
-                else
-                    ImGui::Text("Please apply texture before creating a component.");
-            }
-            break;
-            case TILEMAP:
-                components.push_back(Component::PHYSICS);
-            break;
-            case TEXT:
-            case EMPTY:
-                components.push_back(Component::SCRIPT);
-                components.push_back(Component::SHADER);
-            break;
-            default: break;
+
+            if (std::find(components.begin(), components.end(), Component::ANIMATOR) != components.end())
+                if (ImGui::MenuItem("Animator")) {
+                    AddComponent(Component::ANIMATOR);
+                    EventListener::UpdateSession();
+                }
+
+            if (std::find(components.begin(), components.end(), Component::SCRIPT) != components.end())
+                if (ImGui::MenuItem("Script")) {
+                    AddComponent(Component::SCRIPT);
+                    EventListener::UpdateSession();
+                }
+
+            if (std::find(components.begin(), components.end(), Component::SHADER) != components.end())
+                if (ImGui::MenuItem("Shader")) {
+                    AddComponent(Component::SHADER);
+                    EventListener::UpdateSession();
+                }
+            
+            ImGui::EndMenu();
         }
-
-        //apply component if exists
-
-        if (std::find(components.begin(), components.end(), Component::PHYSICS) != components.end())
-            if (ImGui::MenuItem("Physics")) {
-                AddComponent(Component::PHYSICS);
-                EventListener::UpdateSession();
-            }
-
-        if (std::find(components.begin(), components.end(), Component::ANIMATOR) != components.end())
-            if (ImGui::MenuItem("Animator")) {
-                AddComponent(Component::ANIMATOR);
-                EventListener::UpdateSession();
-            }
-
-        if (std::find(components.begin(), components.end(), Component::SCRIPT) != components.end())
-            if (ImGui::MenuItem("Script")) {
-                AddComponent(Component::SCRIPT);
-                EventListener::UpdateSession();
-            }
-
-        if (std::find(components.begin(), components.end(), Component::SHADER) != components.end())
-            if (ImGui::MenuItem("Shader")) {
-                AddComponent(Component::SHADER);
-                EventListener::UpdateSession();
-            }
-        
-        ImGui::EndMenu();
-    }
 
     if (ImGui::BeginMenu("Delete"))
     {
@@ -290,24 +291,25 @@ void Node::ShowOptions(std::vector<std::shared_ptr<Node>>& arr)
         ImGui::EndMenu();
     }
 
-    if (ImGui::MenuItem("Duplicate")) 
-    {
-        const auto node = Get(ID, arr);
-
-        if (node)
+    if (type != GROUP)
+        if (ImGui::MenuItem("Duplicate")) 
         {
-            json data = WriteData(node);
-            
-            if (ReadData(data, true, nullptr, arr)) {
-                EventListener::UpdateSession();
-                Editor::Log("node " + name + " duplicated.");  
-            }
-            else
-                Editor::Log("node could not be duplicated.");
-        }
-    }
+            const auto node = Get(ID, arr);
 
-    if (type != AUDIO && type != TILEMAP && ImGui::MenuItem("Save prefab")) 
+            if (node)
+            {
+                json data = WriteData(node);
+                
+                if (ReadData(data, true, nullptr, arr)) {
+                    EventListener::UpdateSession();
+                    Editor::Log("node " + name + " duplicated.");  
+                }
+                else
+                    Editor::Log("node could not be duplicated.");
+            }
+        }
+
+    if (type != GROUP && type != AUDIO && type != TILEMAP && ImGui::MenuItem("Save prefab")) 
         AssetManager::SavePrefab(ID, arr);
 }
 
@@ -510,33 +512,39 @@ void Node::RenderScriptOptions(const std::string& nodeId, const std::vector<std:
 
         if (node->behaviors.size())
         {
+            auto item_to_erase = node->behaviors.end();
+
             ImGui::Text("Assigned Behaviors:");
 
-            for (const auto &behavior : node->behaviors)
+            for (auto it = node->behaviors.begin(); it != node->behaviors.end(); ++it) 
+            {
+                const auto behavior = *it;
+
+                ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
                 if (ImGui::BeginMenu(behavior.first.c_str()))
                 {
-                    if (ImGui::MenuItem("edit"))
+                    if (ImGui::MenuItem("edit")) {
                         #ifdef _WIN32
                             system((Editor::projectPath + am->script_dir + "/" + behavior.second).c_str());
                         #endif
+                    }
 
-                    if (ImGui::BeginMenu("remove behavior?")) 
-                    {
-                        if (ImGui::MenuItem("yes")) {
-
-                            std::map<std::string, std::string>::iterator it = node->behaviors.find(behavior.first);
-
-                            if (it != node->behaviors.end()) {
-                                node->behaviors.erase(it);
-                                EventListener::UpdateSession();
-                            }
-                        }
+                    if (ImGui::BeginMenu("remove behavior?")) {
+                        if (ImGui::MenuItem("yes")) 
+                            item_to_erase = it;
                         
                         ImGui::EndMenu();
                     }
-
+                                
                     ImGui::EndMenu();
-                }
+                } 
+                ImGui::PopItemFlag();
+            }
+
+            if (item_to_erase != node->behaviors.end()) {
+                node->behaviors.erase(item_to_erase);
+                EventListener::UpdateSession();
+            }
         }
 
         else
