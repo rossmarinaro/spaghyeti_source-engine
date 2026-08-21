@@ -1274,11 +1274,15 @@ void EventListener::BuildAndRun()
 
     game_src.close();
 
+    //run build 
+
     if (Editor::platform == "WebGL")
         system(("chdir sdk && buildWebGL.bat " + Editor::projectPath).c_str());
 
     else if (Editor::platform == "Windows")
         system(("chdir sdk && buildGame.bat " + Editor::projectPath + " " + s_currentProject).c_str());
+
+    //cleanup temp files
 
     if (!session->preserveSrc)
         remove(srcPath.c_str());

@@ -54,12 +54,19 @@ class Physics {
         //wrapper type for Box2D joints
         struct Joint 
         {
-            float lowerAngle, upperAngle, motorSpeed, maxMotorTorque;
+            float lowerAngle, 
+                  upperAngle, 
+                  motorSpeed, 
+                  maxMotorTorque,
+                  stiffness,
+                  damping;
+
             bool enableMotor, enableLimit;
 
             std::string id; 
 
             Joint(bool enableMotor, bool enableLimit, float motorSpeed, float maxMotorTorque);
+            Joint(float damping, float stiffness);
             Joint() = default;
 
             void SetMotorSpeed(float speed);
@@ -103,7 +110,7 @@ class Physics {
             float restitution = 0.0f
         );
 
-        //factory for joints
+        //factory for revolute joints
         static std::shared_ptr<Joint> CreateJoint(    
             float xPos,
             float yPos,
@@ -113,6 +120,16 @@ class Physics {
             bool enableLimit, 
             std::shared_ptr<Physics::Body>& prevSegment,
             std::shared_ptr<Physics::Body>& nextSegment
+        );
+
+        //factory for distance joints
+        static std::shared_ptr<Physics::Joint> CreateJoint(
+            float xPos,
+            float yPos,
+            float damping, 
+            float stiffness,
+            std::shared_ptr<Body>& prevSegment,
+            std::shared_ptr<Body>& nextSegment
         );
 
         //does not destroy body immediately. body will be destroyed after next timestep

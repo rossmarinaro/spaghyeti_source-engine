@@ -22,6 +22,7 @@
 using namespace System;
 
 static CollisionManager _collisions;
+static std::vector<std::shared_ptr<Entity>> _entitiesToRemove;
 
 //---------------------------
 
@@ -441,10 +442,6 @@ void Game::UpdateFrame()
         Renderer::Flush(false);    
     }     
 
-    //remove active behaviors
-    
-    currentScene->behaviors.erase(std::remove_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](const auto& b) { return !b->active; }), currentScene->behaviors.end());
-
     //update behaviors, pass game process context to subclasses
 
     for (const auto& behavior : currentScene->behaviors)
@@ -455,6 +452,10 @@ void Game::UpdateFrame()
             else if (behavior->layer == 1)
                 behavior->Update();
         }
+
+    //update scene
+
+    currentScene->Update(); 
 
     //physics
 
@@ -498,10 +499,7 @@ void Game::UpdateFrame()
 
             event->callback();
         } 
-        
-    //update scene
-
-    currentScene->Update(); 
+    
 
     //debug UI
 
@@ -516,7 +514,57 @@ void Game::UpdateFrame()
             #endif 
         } 
     #endif
-  
+
+    //clean up entities to remove
+
+    for (auto it = _entitiesToRemove.begin(); it != _entitiesToRemove.end(); ++it)
+    {
+        const auto entity = *it;
+        auto e_it = std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [entity](const auto& e) { return e->ID == entity->ID; });
+
+        if (e_it != currentScene->entities.end()) 
+            e_it = currentScene->entities.erase(e_it);
+
+        auto ui_it = std::find_if(currentScene->UI.begin(), currentScene->UI.end(), [entity](const auto& e) { return e->ID == entity->ID; });
+
+        if (ui_it != currentScene->UI.end()) 
+            ui_it = currentScene->UI.erase(ui_it);
+
+        //queue respective rigid bodies for removal
+
+        if (entity->IsSprite())
+        {
+            const auto sprite = std::static_pointer_cast<Sprite>(entity);
+
+            if (sprite->GetBodies().size())
+            {
+                for (const auto &body : sprite->GetBodies()) {
+                    body.first->SetEnabled(false);
+                    Physics::DestroyBody(body.first); 
+                }
+
+                sprite->GetBodies().clear();
+            }
+        }
+
+        //remove behaviors
+
+        auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&](auto b)
+                            { return b->ID == entity->ID; });
+
+        if (behavior_it != GetScene()->behaviors.end()) {
+            auto behavior = (*behavior_it);
+            behavior->active = false;
+            behavior.reset();
+        }
+
+        //remove active behaviors
+    
+        currentScene->behaviors.erase(std::remove_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](const auto& b) { return !b->active; }), currentScene->behaviors.end());
+
+    }
+
+    _entitiesToRemove.clear();
 }
 
 
@@ -617,7 +665,6 @@ void Game::RenderEntities()
         if (!currentScene->entities.empty())
             Renderer::Flush(false);   
     }
-
 }
 
 
@@ -664,41 +711,38 @@ void Game::RenderUI()
 
 void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 {
-    const std::string ID = entity->ID;
-
-    auto it = std::find(GetScene()->entities.begin(), GetScene()->entities.end(), entity);
-
-    if (it != GetScene()->entities.end()) {
-        it = GetScene()->entities.erase(std::move(it));
-        --it;
-    }
-
-    else {
-        auto UI_it = std::find(GetScene()->UI.begin(), GetScene()->UI.end(), entity);
-
-        if (UI_it != GetScene()->UI.end())
-        {
-            UI_it = GetScene()->UI.erase(std::move(UI_it));
-            --UI_it;
-        }
-    }
-
     entity->renderable = false;
     entity->active = false;
     entity->alive = false;
 
-    if (entity->IsSprite())
-    {
-        const auto sprite = std::static_pointer_cast<Sprite>(entity);
+    const std::string ID = entity->ID;
 
-        if (sprite->GetBodies().size())
-        {
-            for (const auto &body : sprite->GetBodies())
-                Physics::DestroyBody(body.first);
+    const auto it = std::find(GetScene()->entities.begin(), GetScene()->entities.end(), entity);
 
-            sprite->GetBodies().clear();
-        }
+    if (it != GetScene()->entities.end())  
+        _entitiesToRemove.emplace_back(*it);
+
+    else {
+        const auto UI_it = std::find(GetScene()->UI.begin(), GetScene()->UI.end(), entity);
+
+        if (UI_it != GetScene()->UI.end())
+            _entitiesToRemove.emplace_back(*UI_it);
     }
+
+    //remove rigid bodies
+
+    // if (entity->IsSprite())
+    // {
+    //     const auto sprite = std::static_pointer_cast<Sprite>(entity);
+
+    //     if (sprite->GetBodies().size())
+    //     {
+    //         for (const auto &body : sprite->GetBodies())
+    //             Physics::DestroyBody(body.first); 
+
+    //         sprite->GetBodies().clear();
+    //     }
+    // }
 
     //reset spawn if applied
 
@@ -714,14 +758,14 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
 
     //reset associated behavior if applicable
 
-    auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&](auto b)
-                                    { return b->ID == ID; });
+    // auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&](auto b)
+    //                                 { return b->ID == ID; });
 
-    if (behavior_it != GetScene()->behaviors.end()) {
-        auto behavior = (*behavior_it);
-        behavior->active = false;
-        behavior.reset();
-    }
+    // if (behavior_it != GetScene()->behaviors.end()) {
+    //     auto behavior = (*behavior_it);
+    //     behavior->active = false;
+    //     behavior.reset();
+    // }
     
     // //remove behavior
     
