@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 //game physics powered by Box2D
 class Physics {
@@ -37,6 +38,8 @@ class Physics {
             void SetSensor(bool sensor);
             void SetType(int type);
             void SetFixedRotation(bool isFixedRotation);
+            void SetMass(float mass, float inertia = 0.0f, float centerX = 0.0f, float centerY = 0.0f); 
+            void SetDensity(float density); 
             void SetGravityScale(float gs);
             void CreateFixture(float width, float height, bool isSensor, float density, float friction, float restitution);
             void CreateFixture(float radius, bool isSensor, float density, float friction, float restitution);
@@ -46,7 +49,7 @@ class Physics {
 
             const int GetType();
             const bool CollidesWith(const std::shared_ptr<Body>& bodyB);
-            const bool Exists();
+            const std::vector<std::shared_ptr<Physics::Body>> GetContacts();
             const bool IsEnabled(); 
             const bool IsSensor(); 
         };
@@ -118,12 +121,12 @@ class Physics {
             float maxMotorTorque,
             bool enableMotor, 
             bool enableLimit, 
-            std::shared_ptr<Physics::Body>& prevSegment,
-            std::shared_ptr<Physics::Body>& nextSegment
+            std::shared_ptr<Body>& prevSegment,
+            std::shared_ptr<Body>& nextSegment
         );
 
         //factory for distance joints
-        static std::shared_ptr<Physics::Joint> CreateJoint(
+        static std::shared_ptr<Joint> CreateJoint(
             float xPos,
             float yPos,
             float damping, 

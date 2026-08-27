@@ -94,8 +94,10 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
 
             if (folder == AssetManager::Get()->currentFolder)
             {
+                int textureID = vec == AssetManager::Get()->images ? tex.ID : vec.at(i).second;
+                
                 if (tex.ID != 0 && tex.ID != -1) 
-                    if (ImGui::ImageButton("##thumbnail_slot_1", (void*)(intptr_t)tex.ID, thumbnailSize)) { 
+                    if (ImGui::ImageButton("##thumbnail_slot_1", (void*)(intptr_t)textureID, thumbnailSize)) { 
                         AssetManager::Get()->selectedAsset = vec.at(i).first;
                         Editor::Log("Current asset selected: " + AssetManager::Get()->selectedAsset);
                     }

@@ -127,6 +127,7 @@ void Physics::ClearJoints()
 }
 
 
+
 //------------------------------
 
 
@@ -524,15 +525,6 @@ void Physics::Body::Init(
 //----------------------------------
 
 
-const bool Physics::Body::Exists() {
-    const auto body = _GetBox2DBody(id);
-    return body != nullptr;
-}
-
-
-//----------------------------------
-
-
 b2FixtureDef MakeFixtureDef(bool isSensor, float density, float friction, float restitution) 
 {
     b2FixtureDef def;
@@ -651,12 +643,37 @@ const bool Physics::Body::CollidesWith(const std::shared_ptr<Physics::Body>& bod
 }
 
 
+//----------------------------------
+
+
+const std::vector<std::shared_ptr<Physics::Body>> Physics::Body::GetContacts()
+{
+    std::vector<std::shared_ptr<Physics::Body>> contacts;
+
+    const auto body = _GetBox2DBody(id); 
+
+    if (body) 
+        for (b2ContactEdge* edge = body->GetContactList(); edge != nullptr; edge = edge->next) 
+        {
+            b2Contact* contact = edge->contact;
+            
+            if (contact->IsTouching()) {
+                b2Body* otherBody = edge->other; 
+                const auto it = std::find_if(_active_b2d_bodies.begin(), _active_b2d_bodies.end(), [otherBody](const auto& body) { return body.second.second == otherBody; });
+                if (it != _active_b2d_bodies.end()) 
+                    contacts.emplace_back(it->second.first);
+            }
+        }
+
+    return contacts;
+}
+
 
 //----------------------------------
 
 
 const bool Physics::Body::IsEnabled() {
-    const auto body = _GetBox2DBody(id);
+    const auto body = _GetBox2DBody(id); 
     if (body)
         return body->IsEnabled();
     return false;
@@ -698,7 +715,7 @@ const Math::Vector2 Physics::Body::GetLinearVelocity() {
 
     const auto body = _GetBox2DBody(id);
 
-    if (body) {
+    if (body) { 
         const b2Vec2& vel = body->GetLinearVelocity();
         return { vel.x, vel.y };
     }
@@ -831,6 +848,43 @@ void Physics::Body::SetSensor(bool isSensor)
 
         if (fixtureList)
             fixtureList->SetSensor(isSensor);
+    }
+}
+
+
+//----------------------------------
+
+
+void Physics::Body::SetMass(float mass, float inertia, float centerX, float centerY) 
+{
+    const auto body = _GetBox2DBody(id);
+    
+    if (body) 
+    {
+        b2MassData massData;
+
+        massData.mass = mass;
+        massData.I = inertia;
+        massData.center = b2Vec2(centerX, centerY);
+
+        body->SetMassData(&massData);
+    }
+}
+
+
+//----------------------------------
+
+
+void Physics::Body::SetDensity(float density) 
+{
+    const auto body = _GetBox2DBody(id);
+    
+    if (body) 
+    {
+        for (b2Fixture* fixture = body->GetFixtureList(); fixture; fixture = fixture->GetNext())
+            fixture->SetDensity(density);
+
+        body->ResetMassData();
     }
 }
 
