@@ -16,7 +16,7 @@ void Time::Update(double _time)
     System::Application::game->UpdateFrame(); 
 
     #if STANDALONE == 1
-        const auto camera = System::Game::GetScene()->GetContext().camera;
+        const auto camera = System::Game::GetScene()->GetContext()->camera;
         if (camera)
             System::Renderer::UpdateFrameBuffer(camera);
     #endif

@@ -16,7 +16,6 @@ Geometry::Geometry(float x, float y, float width, float height, bool isSpawn):
     SetShader("sprite");
 
     tint = { 0.0f, 0.0f, 1.0f };
-    texture = Graphics::Texture2D::Get("base");
     renderable = true;
 
     LOG("Geometry: quad created."); 
@@ -88,7 +87,7 @@ void Geometry::Render()
         whiteout = 1.0f;
 
     texture.Update(
-        shader, 
+        shaderKey, 
         position, 
         color, 
         outlineColor,

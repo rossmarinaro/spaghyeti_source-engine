@@ -18,6 +18,8 @@ class Entity {
 
 	public: 
 
+        Graphics::Texture2D texture;
+
         enum { GENERIC, UI, SPRITE, GEOMETRY, TEXT, TILE };
 
 		int depth, render_layer;
@@ -35,10 +37,7 @@ class Entity {
 
 		Math::Vector3 tint, outlineColor, shadowColor; 
 		Math::Vector2 position, scale, scrollFactor;
-		std::string ID, parentID, name;
-
-        Graphics::Texture2D texture;
-        Graphics::Shader shader;
+		std::string ID, parentID, name, key, shaderKey;
 
 		template<typename T>
 		inline const T GetData(const std::string& key) { 
@@ -87,6 +86,10 @@ class Entity {
 
         int m_type;
         bool m_isStatic;
+
+    private:
+
+        void Init();
 };
 
 
@@ -118,7 +121,6 @@ class Geometry : public Entity {
 
     	int m_type;
         float m_thickness, m_drawStyle;
-		
 };
 
 
@@ -190,7 +192,7 @@ class Sprite : public Entity {
     std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> m_bodies;  
 
 	public:  
-
+        
         struct Anim 
         { 
             std::string key; 
@@ -209,7 +211,6 @@ class Sprite : public Entity {
 
 		float velocityX, velocityY;
 
-		std::string key;
 		std::map<const std::string, std::pair<int, int>> anims;
 
 		inline const int GetBodyDataType() { 

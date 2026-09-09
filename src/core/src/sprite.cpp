@@ -342,7 +342,9 @@ void Sprite::SetTexture(const std::string& key)
         return;
 
     this->key = key; 
-    texture = Graphics::Texture2D::Get(key); 
+
+    texture = *Graphics::Texture2D::Get(key);
+
     m_isSpritesheet = false;
     m_resourceData.clear();
     m_currentAnim = { "", false, 0, 0, 0 };
@@ -364,7 +366,6 @@ void Sprite::SetStroke(bool isOutlined, const Math::Vector3& color, float width)
     }
 
     SetShader(outlineEnabled ? "outline sprite" : "sprite");
-    
 }
 
 
@@ -478,7 +479,7 @@ void Sprite::Render()
                     factorX = (float)m_resourceData[currentFrame][4],
                     factorY = (float)m_resourceData[currentFrame][5];
 
-        texture.FrameWidth = currentFrameWidth;
+        texture.FrameWidth = currentFrameWidth; 
         texture.FrameHeight = currentFrameHeight;
 
         //texture coordinates for tiles are varying min and max uvs for texture extrusion
@@ -545,7 +546,7 @@ void Sprite::Render()
         //update texture
 
         texture.Update(
-            shader, 
+            shaderKey, 
             position, 
             color, 
             outlineColor,

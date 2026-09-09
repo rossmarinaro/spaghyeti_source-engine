@@ -30,9 +30,9 @@ void Editor::Update()
     {
         auto shader = Graphics::Shader::Get("grid");
 
-        shader.SetFloat("pitch", gui->grid_quantity);
-        shader.SetFloat("alpha", gui->grid->alpha);
-        shader.SetVec3f("tint", gui->grid_color);
+        shader->SetFloat("pitch", gui->grid_quantity);
+        shader->SetFloat("alpha", gui->grid->alpha);
+        shader->SetVec3f("tint", gui->grid_color);
 
         gui->grid->Render(); 
         Renderer::Flush();
@@ -82,7 +82,8 @@ void Editor::Update()
     
         if (selectedEntity->GetType() == Entity::SPRITE) {
             const auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
-            s_self->s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight);
+            const auto texture = Graphics::Texture2D::Get(sprite->key);
+            s_self->s_selector->SetSize(texture->FrameWidth, texture->FrameHeight);
         }
         
         if (selectedEntity->GetType() == Entity::GEOMETRY) {
@@ -308,8 +309,9 @@ void Editor::FocusEntity(const std::shared_ptr<Entity>& entity)
 
     if (entity->GetType() == Entity::SPRITE) {
         const auto sprite = std::static_pointer_cast<Sprite>(entity);
-        width = sprite->texture.FrameWidth;
-        height = sprite->texture.FrameHeight;
+        const auto texture = Graphics::Texture2D::Get(sprite->key); 
+        width = texture->FrameWidth;
+        height = texture->FrameHeight;
     }
     else if (entity->GetType() == Entity::TEXT) 
     {
@@ -319,9 +321,10 @@ void Editor::FocusEntity(const std::shared_ptr<Entity>& entity)
             width = text->GetTextDimensions().x;
             height = text->GetTextDimensions().y;
         }
-        else {
-            width = text->texture.FrameWidth;
-            height = text->texture.FrameHeight;
+        else { 
+            const auto texture = Graphics::Texture2D::Get(text->key); 
+            width = texture->FrameWidth;
+            height = texture->FrameHeight;
         }
     }
     else if (entity->GetType() == Entity::GEOMETRY) {

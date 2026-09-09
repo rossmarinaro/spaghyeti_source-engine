@@ -90,7 +90,7 @@ void Texture2D::InitBaseTexture()
         glGenerateMipmap(GL_TEXTURE_2D);
     #endif
     
-    System::Application::resources->textures[key] = baseTexture; 
+    System::Application::resources->textures[key] = std::make_shared<Graphics::Texture2D>(baseTexture); 
     System::Renderer::Get()->textureSlots[0] = baseTexture.ID; 
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -101,12 +101,7 @@ void Texture2D::InitBaseTexture()
 //-------------------------------
 
 
-const Texture2D& Texture2D::Get(const std::string& key) 
-{
-    if (System::Application::resources->textures.find(key) == System::Application::resources->textures.end()) {
-        LOG("Texture2D: texture of key: " + key + " not loaded, defaulting to base texture.");
-    }
-
+std::shared_ptr<Texture2D> Texture2D::Get(const std::string& key) { 
     return System::Application::resources->textures[
         System::Application::resources->textures.find(key) != System::Application::resources->textures.end() ? key : "base"];
 }
@@ -231,7 +226,7 @@ void Texture2D::Load(const std::string& key)
     if (filetype != "compressed pixel data")
         stbi_image_free(image_data);
 
-    System::Application::resources->textures[key] = texture; 
+    System::Application::resources->textures[key] = std::make_shared<Texture2D>(texture); 
 
     LOG("Texture2D: \"" + key + "\" loaded. (" + filetype + ")");
 
@@ -247,7 +242,7 @@ void Texture2D::UnLoad(const std::string& key)
 
     if (it != System::Application::resources->textures.end()) {
 
-        (*it).second.Delete();
+        (*it).second->Delete();
 
         System::Application::resources->textures.erase(it);
     }
@@ -259,7 +254,7 @@ void Texture2D::UnLoad(const std::string& key)
 //---------------------------------------- updates textures position and texture coordinates, appends to array for rendering
 
 void Texture2D::Update(
-    Graphics::Shader& shader, 
+    const std::string& shaderKey, 
     const Math::Vector2& position, 
     const Math::Vector4& rgba, 
     const Math::Vector3& outline, 
@@ -275,32 +270,20 @@ void Texture2D::Update(
         depth = 1000.0f;
 
     auto renderer = System::Renderer::Get();
-    const int elementCount = 6 * System::Renderer::MAX_QUADS;
+    const int elementCount = 6 * System::Renderer::MAX_QUADS; 
+    auto shader = Graphics::Shader::Get(shaderKey);
 
     //flush if max index count exceeds element count, or textures reached max OR shader is different than renderer's active shader
 
     if (renderer->indexCount >= elementCount || 
         renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 ||
-        shader.ID != renderer->activeShaderID
-    ) {
-        if (renderer)  
-        {
-            //update image samplers
-
-            int samplers[System::Renderer::MAX_TEXTURES];
-
-            for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++) 
-                samplers[i] = i;
-
-            shader.SetIntV("SPAGHYETI_ACTIVE_TEXTURES", System::Renderer::MAX_TEXTURES, samplers);
-        }
-
-        System::Renderer::Flush(m_opaque); 
-    }
+        shader->ID != renderer->activeShaderID
+    ) 
+        System::Renderer::Flush(m_opaque);
 
     //set active shader
 
-    renderer->activeShaderID = shader.ID;
+    renderer->activeShaderID = shader->ID;
 
     struct { float u1, v1, u2, v2; } verticesLayout;
 
@@ -380,7 +363,7 @@ void Texture2D::Update(
         vertices[i].outlineR = outline.x;
         vertices[i].outlineG = outline.y;
         vertices[i].outlineB = outline.z;
-        vertices[i].outlineWidth = outlineWidth;
+        vertices[i].outlineWidth = outlineWidth; 
         vertices[i].whiteout = whiteout;
         
         //copy float array 
@@ -393,15 +376,32 @@ void Texture2D::Update(
         };
 
         std::memcpy(vertices[i].mvp, float_array, sizeof(vertices[i].mvp)); 
-
     }  
 
-    //add the vertices to the renderer's vector and increase index count by 6
+    //submit the vertices to the renderer's queue vector and increase index count by 6
 
-    for (const auto vertex : vertices) 
-        renderer->vertices.emplace_back(vertex);
+    renderer->vertices.insert(renderer->vertices.end(), std::begin(vertices), std::end(vertices));
 
     renderer->indexCount += 6;
+
+
+    // auto it = std::find_if(renderer->activeLayers.begin(), renderer->activeLayers.end(), 
+    // [depth, shader](const System::Renderer::Renderable& layer) { return /* layer.depth == depth && */ layer.shaderID == shader->ID; });
+
+    // if (it == renderer->activeLayers.end())
+    // {
+    //     System::Renderer::Renderable renderable;
+    //     renderable.depth = depth;
+    //     renderable.shaderID = shader->ID; 
+    //     renderable.vertices.reserve(sizeof(vertices) / sizeof(vertices[0])); 
+
+    //     renderer->activeLayers.emplace_back(renderable);
+    //     it = renderer->activeLayers.end() - 1;
+    // }
+
+    // it->vertices.insert(it->vertices.end(), std::begin(vertices), std::end(vertices));
+    // for (int i = 0; i < 6; i++)
+    //     it->indices.push_back(i + it->vertices.size());
 
 }
 

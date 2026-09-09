@@ -23,7 +23,7 @@ void Scene::Init(const std::string& key)
     m_depthSort = false;
     m_worldWidth = 0; 
     m_worldHeight = 0;
-    cameraTarget = GetContext().camera->GetPosition(); 
+    cameraTarget = GetContext()->camera->GetPosition(); 
 }
  
 //---------------------------------
@@ -52,7 +52,6 @@ void Scene::SetInteractive(const std::shared_ptr<Entity>& entity, bool interacti
 
     if (it != virtual_buttons.end())
         virtual_buttons.erase(it);
-    
 }
 
 //--------------------------------- check if cursor is hovering entity
@@ -71,8 +70,8 @@ const bool Scene::ListenForInteraction(const std::shared_ptr<Entity>& entity) {
 
 //---------------------------------
 
-const Process::Context& Scene::GetContext() { 
-    return m_context; 
+Process::Context* Scene::GetContext() { 
+    return &m_context; 
 }
 
 //---------------------------------

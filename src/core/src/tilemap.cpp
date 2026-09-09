@@ -12,7 +12,7 @@
 #include "../../../build/sdk/include/game.h"
 #include "../../../build/sdk/include/app.h"
 #include "../../vendors/UUID.hpp"
-
+#include "../../shared/renderer.h"
 using namespace System;
 
 
@@ -156,7 +156,7 @@ Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key)
                 bodies.emplace_back(pb);
             }
     } 
-
+ 
     return { key, path, map_width, map_height, tile_width, tile_height, layers, bodies };
 
     #else
@@ -186,10 +186,7 @@ Scene::TilemapLayer Game::CreateTileLayer(
     float scrollFactorY, 
     const std::string& shaderKey
 )
-{ 
-    const auto mapTexture = Graphics::Texture2D::Get(texture_key); 
-    const uint32_t columns = mapTexture.Width / tileWidth;
-
+{  
     Scene::TilemapLayer layer;
 
     layer.ID = ID;
@@ -224,7 +221,9 @@ Scene::TilemapLayer Game::CreateTileLayer(
     while(getline(ss, line, ','))
        data.emplace_back(line);
 
-    //create tilesprites and add to entity queue;
+    //create tilesprites and add to entity queue
+
+    const uint32_t columns = Graphics::Texture2D::Get(texture_key)->Width / tileWidth;
 
     for (int row = 0; row < mapHeight; ++row)
         for (int column = 0; column < mapWidth; ++column) 
@@ -290,9 +289,8 @@ Scene::TilemapLayer Game::CreateTileLayer(
                 tile->SetData("layer id", layer.ID);
                 tile->SetData("layer key", layer.key);
 
-
-                // float texelWidth = 1.0f / tile->texture.Width,
-                // texelHeight = 1.0f / tile->texture.Height;
+                // float texelWidth = 1.0f / mapTexture->Width,
+                // texelHeight = 1.0f / mapTexture->Height;
 
                 // float pixelLeft = static_cast<float>(pixelX),
                 // pixelRight = static_cast<float>(pixelX + tileWidth),
@@ -348,9 +346,9 @@ Scene::TilemapLayer Game::CreateTileLayer(
 std::vector<std::shared_ptr<Sprite>> Game::GetTileMapSprites(const std::string& key) 
 {
     std::vector<std::shared_ptr<Sprite>> tilesprites;
-    const auto entities = GetScene()->entities;
+    const auto tiles = GetScene()->entities;//tiles;
 
-    for (auto it = entities.begin(); it != entities.end(); ++it) 
+    for (auto it = tiles.begin(); it != tiles.end(); ++it) 
     {
         const auto entity = *it;
 
@@ -420,7 +418,7 @@ std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, 
 
     ts->ReadSpritesheetData();
     ts->SetFrame(frame);
-
+//GetScene()->entities.emplace_back(ts); //GetScene()->tiles.emplace_back(ts);
     return ts;
 }
 

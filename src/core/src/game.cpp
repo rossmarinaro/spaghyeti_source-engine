@@ -47,7 +47,7 @@ void Game::Reset(bool removeBehaviors)
     currentScene->UI.clear();
     currentScene->entities.clear();
     currentScene->spawns.clear();
-    currentScene->tilemaps.clear();
+    //currentScene->tilemaps.clear();
     time->timed_events.clear();   
     
     physics->ClearBodies(); 
@@ -196,6 +196,9 @@ void Game::StartScene(const std::string& key, bool loadMap)
             game->currentScene->Preload();
             cachedScenes.emplace_back(game->currentScene->key);
         }
+
+        game->currentScene->entities.reserve(90000);
+        game->currentScene->behaviors.reserve(1000);
 
         game->currentScene->vignette = std::make_unique<Geometry>(0.0f, -50.0f, 0.0f, 0.0f);
         game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
@@ -444,6 +447,9 @@ void Game::UpdateFrame()
 
     //update behaviors, pass game process context to subclasses
 
+    std::sort(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](std::shared_ptr<entity_behaviors::Behavior> a, std::shared_ptr<entity_behaviors::Behavior> b) 
+    { return a->key < b->key; });
+
     for (const auto& behavior : currentScene->behaviors)
         if (behavior.get() && behavior->active) {
             if ((!currentScene->IsPaused() && behavior->layer == 0))
@@ -573,12 +579,14 @@ void Game::UpdateFrame()
 
 bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity) 
 { 
+    auto texture = Graphics::Texture2D::Get(entity->key); 
+
     //cull sprite and tile type entities out of view space
 
     const float* zoom_ptr = camera->GetZoom();
 
-    const float width = entity->texture.FrameWidth,
-                height = entity->texture.FrameHeight,
+    const float width = texture->FrameWidth,
+                height = texture->FrameHeight,
                 camPosX = -camera->GetPosition()->x,  
                 camPosY = -camera->GetPosition()->y,
                 zoom_padding = 1.25f,
@@ -603,7 +611,8 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
 
 void Game::RenderEntities()
 {
-    const auto check_visibility = [this](std::vector<std::shared_ptr<Entity>> entities) -> void {
+    const auto check_visibility = [this](std::vector<std::shared_ptr<Entity>> entities) -> void 
+    {
         for (auto& entity : entities)
             if ((entity.get() && entity))
             {
@@ -625,46 +634,54 @@ void Game::RenderEntities()
                 entity->Update();
             }
     };
+    //std::sort(currentScene->tiles.begin(), currentScene->tiles.end(), [](auto a, auto b) { return a->depth < b->depth; }); 
 
     //sort opaque / transparent entities and render
 
-    if (currentScene->GetDepthSort())
-    {
-        std::vector<std::shared_ptr<Entity>> opaque_entities, transparent_entities;
+    // if (currentScene->GetDepthSort())
+    // {
+    //     std::vector<std::shared_ptr<Entity>> opaque_entities, transparent_entities; 
 
-        for (const auto& entity : currentScene->entities) {
-            if (entity->texture.IsOpaque())
-                opaque_entities.emplace_back(entity);
-            else 
-                transparent_entities.emplace_back(entity);
-        }
+    //     for (const auto& entity : currentScene->entities) {
+    //         if (Graphics::Texture2D::Get(entity->key)->IsOpaque())
+    //             opaque_entities.emplace_back(entity);
+    //         else 
+    //             transparent_entities.emplace_back(entity);
+    //     }
 
-        std::sort(opaque_entities.begin(), opaque_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //f-b <
-        std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth > b->depth; }); //b-f >
+    //     std::sort(opaque_entities.begin(), opaque_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //f-b <
+    //     std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth > b->depth; }); //b-f >
 
-        //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
+    //     //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
 
-        check_visibility(opaque_entities);
+    //     check_visibility(opaque_entities);
 
-        if (!opaque_entities.empty())
-            Renderer::Flush();
+    //     if (!opaque_entities.empty())
+    //         Renderer::Flush();
 
-        check_visibility(transparent_entities);
+    //     check_visibility(transparent_entities);
 
-        if (!transparent_entities.empty())
-            Renderer::Flush(false);
-    }
+    //     if (!transparent_entities.empty())
+    //         Renderer::Flush(false);
+    // }
 
-    //sort all entities by depth
+    // //sort all entities by depth
 
-    else {
+    // else {
         std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
+        //   std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { 
+        //    if (a->depth != b->depth)
+        //         return a->depth < b->depth; 
+
+        //     return a->shaderKey < b->shaderKey; 
+        // });
 
         check_visibility(currentScene->entities);
- 
+     //check_visibility(currentScene->tiles);
+
         if (!currentScene->entities.empty())
             Renderer::Flush(false);   
-    }
+    //}
 }
 
 
@@ -672,7 +689,7 @@ void Game::RenderEntities()
 
 
 void Game::RenderUI()
-{
+{//return;
     std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
 
     //gather verts from UI sprites, render sprites / text on layer 1
@@ -729,21 +746,6 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
             _entitiesToRemove.emplace_back(*UI_it);
     }
 
-    //remove rigid bodies
-
-    // if (entity->IsSprite())
-    // {
-    //     const auto sprite = std::static_pointer_cast<Sprite>(entity);
-
-    //     if (sprite->GetBodies().size())
-    //     {
-    //         for (const auto &body : sprite->GetBodies())
-    //             Physics::DestroyBody(body.first); 
-
-    //         sprite->GetBodies().clear();
-    //     }
-    // }
-
     //reset spawn if applied
 
     for (auto& spawn : GetScene()->spawns)
@@ -755,21 +757,6 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
  
     if (entity.unique())
         entity.reset();
-
-    //reset associated behavior if applicable
-
-    // auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&](auto b)
-    //                                 { return b->ID == ID; });
-
-    // if (behavior_it != GetScene()->behaviors.end()) {
-    //     auto behavior = (*behavior_it);
-    //     behavior->active = false;
-    //     behavior.reset();
-    // }
-    
-    // //remove behavior
-    
-    // GetScene()->behaviors.erase(std::remove_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [](const auto& b) { return !b->active; }), GetScene()->behaviors.end());
 }
 
 

@@ -64,7 +64,7 @@ void SpawnerNode::Reset(int component_type)
 
 
 void SpawnerNode::ApplyTexture(const std::string& asset) {
-    m_currentTexture = Graphics::Texture2D::Get(asset).ID;  
+    m_currentTexture = Graphics::Texture2D::Get(asset)->ID;  
     textureKey = asset;
     EventListener::UpdateSession();
 }

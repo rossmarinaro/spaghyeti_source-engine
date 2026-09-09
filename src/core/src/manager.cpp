@@ -27,12 +27,12 @@ void Manager::Clear(bool all)
         System::Application::resources->m_raw_assets.clear();
 
         for (auto& texture : System::Application::resources->textures) 
-            texture.second.Delete();
+            texture.second->Delete();
 
         System::Application::resources->textures.clear();
 
-        for (auto& shader : System::Application::resources->shaders)
-            shader.second.Delete();
+        for (auto& shader : System::Application::resources->shaders) 
+            shader.second->Delete();
 
         System::Application::resources->shaders.clear();
     }
@@ -52,7 +52,7 @@ void Manager::Register()
             Graphics::Texture2D::Load(asset.first);
             
         if (asset.second.type == AUDIO)
-                Audio::Load(asset.first);
+            Audio::Load(asset.first);
     }
 
     for (const auto& asset : System::Application::resources->m_file_assets) 
@@ -162,18 +162,10 @@ std::string Manager::LoadTilemapFromJSON(const std::string& key, const std::stri
     LoadFile(key, path); //json data relative to current project
 
     for (const auto& tileset : data["tilesets"])
-    {
+{
         std::string textureRelPath = static_cast<std::string>(tileset["image"]),
                     ext = Utils::GetFileExtension(textureRelPath),
                     textureWithExt = static_cast<std::string>(tileset["name"]) + ext;
-
-        //const auto it = System::Application::resources->m_atlas_paths.find(textureWithExt);
-
-        // if (it != System::Application::resources->m_atlas_paths.end()){
-        //     textureWithExt = (key + "_" + static_cast<std::string>(tileset["name"]) + ext); 
-        //     LoadFile(textureWithExt, it->second);
-        //     Register();
-        // }
 
         LoadTilemapFrames(textureWithExt, map_width, map_height, tile_width, tile_height);
     } 
@@ -200,7 +192,7 @@ void Manager::LoadTilemapFrames(
 ) 
 {
     const auto mapTexture = Graphics::Texture2D::Get(textureKey); 
-    const uint32_t tilesPerRow = mapTexture.Width / tile_width;
+    const uint32_t tilesPerRow = mapTexture->Width / tile_width;
 
     std::vector<std::array<unsigned int, 6>> offset;
 

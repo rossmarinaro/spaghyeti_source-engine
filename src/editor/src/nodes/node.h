@@ -271,7 +271,7 @@ namespace editor {
 
         private:
 
-            Graphics::Texture2D m_audioTexture;
+            std::shared_ptr<Graphics::Texture2D> m_audioTexture;
     };
 
 

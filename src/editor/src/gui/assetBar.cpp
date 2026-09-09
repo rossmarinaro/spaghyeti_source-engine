@@ -89,14 +89,14 @@ void editor::GUI::displayThumbnail(const std::vector<std::pair<std::string, unsi
             if (!folder.length())
                 continue;
 
-            if (tex.Width > 2400 || tex.Height > 2400) 
+            if (tex->Width > 2400 || tex->Height > 2400) 
                Editor::Log("Warning: image dimensions exceed 2400px. This may impact performance.");
 
             if (folder == AssetManager::Get()->currentFolder)
             {
-                int textureID = vec == AssetManager::Get()->images ? tex.ID : vec.at(i).second;
+                int textureID = vec == AssetManager::Get()->images ? tex->ID : vec.at(i).second;
                 
-                if (tex.ID != 0 && tex.ID != -1) 
+                if (tex->ID != 0 && tex->ID != -1) 
                     if (ImGui::ImageButton("##thumbnail_slot_1", (void*)(intptr_t)textureID, thumbnailSize)) { 
                         AssetManager::Get()->selectedAsset = vec.at(i).first;
                         Editor::Log("Current asset selected: " + AssetManager::Get()->selectedAsset);
@@ -167,7 +167,7 @@ void editor::GUI::RenderAssets()
 
     else 
     {
-        if (ImGui::ImageButton("image", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
+        if (ImGui::ImageButton("image", (void*)(intptr_t) Graphics::Texture2D::Get("folder src")->ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
             SetFolder(true, "/images/");
  
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
@@ -175,7 +175,7 @@ void editor::GUI::RenderAssets()
 
         ImGui::SameLine(); 
 
-        if (ImGui::ImageButton("audio", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
+        if (ImGui::ImageButton("audio", (void*)(intptr_t) Graphics::Texture2D::Get("folder src")->ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
             SetFolder(true, "/audio/");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
@@ -183,7 +183,7 @@ void editor::GUI::RenderAssets()
 
         ImGui::SameLine(); 
 
-        if (ImGui::ImageButton("data", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
+        if (ImGui::ImageButton("data", (void*)(intptr_t) Graphics::Texture2D::Get("folder src")->ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
             SetFolder(true, "/data/");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
@@ -191,7 +191,7 @@ void editor::GUI::RenderAssets()
 
         ImGui::SameLine(); 
 
-        if (ImGui::ImageButton("fonts", (void*)(intptr_t) Graphics::Texture2D::Get("folder src").ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
+        if (ImGui::ImageButton("fonts", (void*)(intptr_t) Graphics::Texture2D::Get("folder src")->ID, ImVec2(70, 70)/* , ImVec2(0, 1), ImVec2(1, 0) */))
             SetFolder(true, "/fonts/");
 
         if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))

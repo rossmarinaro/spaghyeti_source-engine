@@ -72,7 +72,7 @@ void AudioNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
             if (show_options)
             {
-                if (ImGui::ImageButton("audio source", (void*)(intptr_t)m_audioTexture.ID, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0))) {
+                if (ImGui::ImageButton("audio source", (void*)(intptr_t)m_audioTexture->ID, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0))) {
                     if (System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::AUDIO)
                         Load();
                 }

@@ -52,22 +52,22 @@ namespace System {
 
             std::vector<Spawn> spawns; 
             std::vector<std::shared_ptr<Entity>> entities;
-            std::vector<std::shared_ptr<Entity>> UI;
+            std::vector<std::shared_ptr<Entity>> UI;             
+            //std::vector<std::pair<const std::string, const std::string>> tilemaps; //data key, texture key
             std::vector<std::shared_ptr<entity_behaviors::Behavior>> behaviors;
             std::vector<std::pair<bool, std::string>> virtual_buttons; 
-            std::vector<std::pair<const std::string, const std::string>> tilemaps; //data key, texture key
 
             Scene(const Process::Context& context);
             Scene(const Process::Context& context, const std::string& key);
 
             virtual ~Scene() { s_ID--; };
             virtual void Preload() {}
-            virtual void Update() {}
+            virtual void Update() {} 
             virtual void Run(bool onSceneLoad) {}
 
             const bool IsPaused();
             const Math::Vector2 GetWorldDimensions();
-            const Process::Context& GetContext();
+            Process::Context* GetContext();
 
             void SetPause(bool isPaused);
             void SetDepthSort(bool depthSort);

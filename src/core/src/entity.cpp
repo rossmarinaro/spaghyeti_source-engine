@@ -9,15 +9,7 @@ Entity::Entity(int type, bool isSpawn):
     m_is_spawn(isSpawn),
     m_isStatic(false)
 {
-    name = "Untitled_" + std::to_string(s_count);          
-    ID = GenerateID();  
-    parentID = "";
-    render_layer = 0;
-
-    SetShader("sprite");
-    
-    s_count++;
-    s_depth++;
+    Init();
 }
 
 
@@ -30,6 +22,15 @@ Entity::Entity(int type, float x, float y, bool isSpawn):
     m_isStatic(false)
 { 
     position = { x, y };                         
+    Init();
+}
+
+
+//-------------------------------------
+
+
+void Entity::Init() 
+{
     scrollFactor = { 1.0f, 1.0f };
     scale = { 1.0f, 1.0f }; 
     tint = { 1.0f, 1.0f, 1.0f };
@@ -47,13 +48,16 @@ Entity::Entity(int type, float x, float y, bool isSpawn):
     depth = s_depth + 1;
     ID = GenerateID(); 
     parentID = "";
+    key = "base";
     render_layer = 0;
-
-    SetShader("sprite");
-
     name = "Untitled_" + std::to_string(s_count);
+
     s_count++;
     s_depth++;
+
+    texture = *Graphics::Texture2D::Get("base");
+
+    SetShader("sprite");
 }
 
 
@@ -76,8 +80,8 @@ void Entity::SetData(const std::string& key, const std::any& value) {
 
 
 void Entity::SetShader(const std::string& key) {  
-    if (System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end())
-        shader = Graphics::Shader::Get(key); 
+    if (System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end()) 
+        shaderKey = Graphics::Shader::Get(key)->key; 
 }
 
 

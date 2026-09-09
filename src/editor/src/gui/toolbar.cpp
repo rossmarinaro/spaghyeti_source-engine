@@ -569,7 +569,9 @@ void editor::GUI::ShowMenu()
     ImGui::MenuItem(("Platform: " + Editor::platform).c_str(), NULL, false, false);
     ImGui::MenuItem(("Build: " + Editor::buildType).c_str(), NULL, false, false);
     ImGui::MenuItem(("Distribution: " + Editor::releaseType).c_str(), NULL, false, false);
-    ImGui::Checkbox("Enable vsync", &session->vsync);
+    
+    if (ImGui::Checkbox("Enable vsync", &session->vsync))
+        System::Renderer::SetVsync(session->vsync);
 
     ImGui::Separator();
 
@@ -827,8 +829,6 @@ void editor::GUI::ShowViewport()
 
     else if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
         ImGui::SetTooltip("reset viewport x, y, rotation, and zoom.");
-
-    System::Renderer::SetVsync(session->vsync);
 
     //vignette visibility
 

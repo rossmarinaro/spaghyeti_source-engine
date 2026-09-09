@@ -21,15 +21,14 @@ namespace System {
         // handles. Assets are defined in their respective containers.
         class Manager
         {
-
             public:
 
                 enum { IMAGE, AUDIO, TEXT, DATA, ICON, NOT_SUPPORTED };
 
                 //resource storage
 
-                std::map<const std::string, Graphics::Shader> shaders;
-                std::map<const std::string, Graphics::Texture2D> textures;
+                std::map<const std::string, std::shared_ptr<Graphics::Shader>> shaders;
+                std::map<const std::string, std::shared_ptr<Graphics::Texture2D>> textures;
 
                 Manager() = default;
                 ~Manager() = default; 

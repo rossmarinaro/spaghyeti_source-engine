@@ -379,7 +379,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                             ImGui::Text(data_file_name.c_str()); 
 
-                            if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get(map.layers[i].textureKey).ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE) 
+                            if (ImGui::ImageButton("tex button", (void*)(intptr_t)Graphics::Texture2D::Get(map.layers[i].textureKey)->ID, ImVec2(50, 50)) && System::Utils::GetFileType(AssetManager::Get()->selectedAsset) == System::Resources::Manager::IMAGE) 
                             {
                                 map.layers[i].textureKey = AssetManager::Get()->selectedAsset;
                                 EventListener::UpdateSession();

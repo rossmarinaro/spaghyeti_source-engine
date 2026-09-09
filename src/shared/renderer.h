@@ -40,20 +40,27 @@ namespace /* SPAGHYETI_CORE */ System {
 
         public:
 
+            struct Renderable { 
+                int depth;
+                unsigned int shaderID; 
+                std::vector<Math::Graphics::Vertex> vertices;
+                std::vector<unsigned int> indices;
+            };
+
             static inline const size_t MAX_TEXTURES = 32,
-                                       MAX_QUADS = 100000;
+                                       MAX_QUADS = 10000;
 
             uint32_t indexCount, 
                      textureSlotIndex;
 
             unsigned int drawStyle, activeShaderID;
             std::array<uint32_t, MAX_TEXTURES> textureSlots;
-            std::vector<Math::Graphics::Vertex> vertices;
-
+            std::vector<Math::Graphics::Vertex> vertices; std::vector<unsigned int> indices;
+            //std::vector<std::vector<Math::Graphics::Vertex>> queue;
+std::vector<Renderable> activeLayers;
             Renderer();
             ~Renderer() = default;
 
-            static inline void SetVsync(int rate) { s_vsync = rate; }
             static inline int GetVsync() { return s_vsync; }
             static inline Renderer* Get() { return s_instance; }
                        
@@ -63,14 +70,12 @@ namespace /* SPAGHYETI_CORE */ System {
             static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
             static void window_size_callback(GLFWwindow* window, int width, int height);
 
-	        //static void InitInstances();
-            //static void RenderInstances();
             
             static void Init();
             static void Update(void* camera);
             static void ShutDown();  
+            static void SetVsync(int rate);
             static void Flush(bool renderOpaque = true); 
-            static void CreateFrameBuffer();
             static void UpdateFrameBuffer(void* camera);
 
             static inline GLFWwindow* GLFW_window_instance;
@@ -85,7 +90,7 @@ namespace /* SPAGHYETI_CORE */ System {
 
             GLsync m_fences[BUFFERS];
             GLuint m_VBOs[BUFFERS]; //ring buffer
-            GLuint m_textureColorBuffer, m_VAO, m_EBO, m_FBO/* , m_RBO */; 
+            GLuint m_textureColorBuffer, m_VAO, m_EBO, m_FBO  ,m_tileVBO,m_tileVAO      /* , m_RBO */; 
             std::vector<GLuint> m_indices;
 
             static inline Renderer* s_instance;

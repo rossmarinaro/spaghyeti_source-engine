@@ -70,7 +70,7 @@ void Points::Flush()
  
     auto shader = Graphics::Shader::Get("Points");
 
-    shader.SetMat4("vp", {  
+    shader->SetMat4("vp", {  
         { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
         { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
         { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  
@@ -159,7 +159,7 @@ void Lines::Flush()
 
     auto shader = Graphics::Shader::Get("Lines");
 
-    shader.SetMat4("vp", {  
+    shader->SetMat4("vp", {  
         { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
         { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
         { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  
@@ -238,7 +238,7 @@ void Triangles::Flush()
 
     auto shader = Graphics::Shader::Get("Triangles");
 
-    shader.SetMat4("vp", {  
+    shader->SetMat4("vp", {  
         { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
         { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
         { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  

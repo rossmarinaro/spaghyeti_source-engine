@@ -1,11 +1,10 @@
 #include <fstream>
 #include <sstream>
 
+#include "../../vendors/glm/gtc/type_ptr.hpp"
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/window.h"
-#include "../../vendors/glm/gtc/type_ptr.hpp"
 #include "../../shared/renderer.h"
-#include "debug.h"
 
 using namespace Graphics;
 
@@ -18,7 +17,7 @@ void Shader::Delete() {
 //------------------------------- get shader by key
 
 
-const Shader& Shader::Get(const std::string& key) {
+std::shared_ptr<Shader> Shader::Get(const std::string& key) {
     return System::Application::resources->shaders[
         System::Application::resources->shaders.find(key) != System::Application::resources->shaders.end() ? key : "sprite"];
 }
@@ -137,7 +136,7 @@ void Shader::InitBaseShaders()
                 "float outlineFactor = maxNeighborAlpha * (1.0 - baseColor.a);\n"
                 "vec4 mixedColor = mix(baseColor, vec4(outlineColor, rgba.a), outlineFactor);\n"
                 "if (mixedColor.a < 0.01) discard;\n"
-                "   color = mixedColor;\n"
+                "color = mixedColor;\n"
             "}\n"
 
             //tint fill / whiteout
@@ -309,31 +308,50 @@ void Shader::InitBaseShaders()
     //--------------------------------------------
 
 
-    // static constexpr const char* spriteInstanceShader_vertex =
+    static constexpr const char* spriteInstanceShader_vertex =
 
-    //     #ifdef __EMSCRIPTEN__
-    //         "#version 300 es\n"
-    //         "precision mediump float;\n"
-    //     #else
-    //         "#version 330 core\n"
-    //     #endif
+        #ifdef __EMSCRIPTEN__
+            "#version 300 es\n"
+            "precision mediump float;\n"
+        #else
+            "#version 330 core\n"
+        #endif
 
-    //     "layout (location = 0) in vec4 vert;\n"
-    //     "layout (location = 1) in vec2 UV;\n"
+        "layout(location = 0) in vec3 a_Pos;\n"
+        "layout(location = 1) in vec2 a_UV;\n"
+        "layout(location = 2) in vec4 a_minMaxUV;\n"
+        "layout(location = 3) in float a_TextureId;\n" 
+        "layout(location = 4) in vec4 a_RGBA;\n"
+        "layout(location = 5) in vec3 a_OutlineColor;\n"
+        "layout(location = 6) in float a_OutlineWidth;\n"
+        "layout(location = 7) in float a_Whiteout;\n"
+        "layout(location = 8) in mat4 a_ModelViewProj;\n"
 
-    //     "out vec4 rgba;\n"
+        "uniform vec2 offsets[100];\n"
 
-    //     "uniform mat4 mvp;\n"
-    //     "uniform vec2 offsets[100];\n"
+        "flat out float texID;\n"
+        "out float whiteout;\n"
+        "out float outlineWidth;\n"
+        "out vec3 outlineColor;\n"
+        "noperspective out vec2 uv;\n"
+        "out vec4 pixelBounds;\n"
+        "flat out vec2 minUV;\n"
+        "flat out vec2 maxUV;\n"
+        "out vec4 rgba;\n"
 
-    //     "out vec2 uv;\n"
-
-    //     "void main()\n"
-    //     "{\n"
-    //         "uv = UV;\n"
-    //         "vec2 offset = offsets[gl_InstanceID];\n"
-    //         "gl_Position = mvp * vec4(vert.xy + offset, 0.0, 1.0);\n"
-    //     "}\n";
+        "void main()\n"
+        "{\n"
+            "texID = a_TextureId;\n"
+            "rgba = a_RGBA;\n"
+            " uv = a_UV;\n"
+            "minUV = a_minMaxUV.xy;\n"
+            "maxUV = a_minMaxUV.zw;\n"
+            "outlineColor = a_OutlineColor;\n"
+            "outlineWidth = a_OutlineWidth;\n"
+            "whiteout = a_Whiteout;\n"
+            "vec2 offset = offsets[gl_InstanceID];\n"
+            "gl_Position = a_ModelViewProj * vec4(vert.xy + offset, 0.0, 1.0);\n"
+        "}\n";
  
 
     //shader char arrays
@@ -349,7 +367,7 @@ void Shader::InitBaseShaders()
             #ifdef __EMSCRIPTEN__
                 true
             #else
-                false
+               false
             #endif
         );
 
@@ -416,7 +434,7 @@ const std::string Shader::TextureUtility(bool webgl)
                 "\t\tcase 10: return texture(SPAGHYETI_ACTIVE_TEXTURES[10], uv);\n"
                 "\t\tcase 11: return texture(SPAGHYETI_ACTIVE_TEXTURES[11], uv);\n"
                 "\t\tcase 12: return texture(SPAGHYETI_ACTIVE_TEXTURES[12], uv);\n"
-                "\t\tvcase 13: return texture(SPAGHYETI_ACTIVE_TEXTURES[13], uv);\n"
+                "\t\tcase 13: return texture(SPAGHYETI_ACTIVE_TEXTURES[13], uv);\n"
                 "\t\tcase 14: return texture(SPAGHYETI_ACTIVE_TEXTURES[14], uv);\n"
                 "\t\tcase 15: return texture(SPAGHYETI_ACTIVE_TEXTURES[15], uv);\n"
             "\t}\n"
@@ -502,8 +520,8 @@ const bool checkCompileErrors(const std::string& key, unsigned int shader, const
 void Shader::Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomShader)
 {
 
-    if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [key](const std::pair<const std::string&, Shader>& s) { return s.first == key; }) != System::Application::resources->shaders.end())
-    {
+    if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [key] (const std::pair<const std::string&, std::shared_ptr<Shader>>& s) 
+    { return s.first == key; }) != System::Application::resources->shaders.end()) {
         LOG("Shader: \"" + key + "\" already exists.");
         return;
     } 
@@ -573,7 +591,16 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         LOG("Shader: \"" + key + "\" loaded. (embedded)");
     }
 
-    System::Application::resources->shaders[key] = shader;
+    //define image samplers
+
+    int samplers[System::Renderer::MAX_TEXTURES];
+
+    for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++)  
+        samplers[i] = i;
+
+    shader.SetIntV("SPAGHYETI_ACTIVE_TEXTURES", System::Renderer::MAX_TEXTURES, samplers);
+
+    System::Application::resources->shaders[key] = std::make_shared<Shader>(shader);             
 }
 
 //--------------------------- generate
@@ -581,7 +608,6 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
 
 const bool Shader::Generate(const std::string& key, const char* vertexPath, const char* fragmentPath, const char* geomPath)
 {
-
     unsigned int vertex, fragment, geometry;
 
     //vertex
@@ -659,7 +685,7 @@ void Shader::UnLoad(const std::string& key)
     const auto it = System::Application::resources->shaders.find(key);
 
     if (it != System::Application::resources->shaders.end()) {
-        (*it).second.Delete();
+        (*it).second->Delete();
         System::Application::resources->shaders.erase(it);
     }
 
@@ -667,123 +693,190 @@ void Shader::UnLoad(const std::string& key)
 }
 
 
+//-----------------------------------------------------------
+
+
+void Shader::Update()
+{
+    for (const auto& uniform : m_uniforms) 
+    {
+        if (glGetUniformLocation(ID, (uniform.key).c_str()) == -1)
+            continue;
+
+        if (uniform.type == Graphics::Shader::UniformType::FLOAT)
+            glUniform1f(glGetUniformLocation(ID, (uniform.key).c_str()), std::any_cast<float>(uniform.value)); 
+
+        if (uniform.type == Graphics::Shader::UniformType::INT)
+            glUniform1i(glGetUniformLocation(ID, (uniform.key).c_str()), std::any_cast<int>(uniform.value));
+
+        if (uniform.type == Graphics::Shader::UniformType::INTV)
+            glUniform1iv(glGetUniformLocation(ID, (uniform.key).c_str()), uniform.length, std::any_cast<int*>(uniform.value));
+
+        if (uniform.type == Graphics::Shader::UniformType::VEC2) {
+            Math::Vector2 vec2 = std::any_cast<Math::Vector2>(uniform.value);
+            glUniform2f(glGetUniformLocation(ID, (uniform.key).c_str()), vec2.x, vec2.y);   
+        }
+
+        if (uniform.type == Graphics::Shader::UniformType::VEC3) {
+            Math::Vector3 vec3 = std::any_cast<Math::Vector3>(uniform.value);
+            glUniform3f(glGetUniformLocation(ID, (uniform.key).c_str()), vec3.x, vec3.y, vec3.z);   
+        }
+
+        if (uniform.type == Graphics::Shader::UniformType::VEC4) {
+            Math::Vector4 vec4 = std::any_cast<Math::Vector4>(uniform.value);
+            glUniform4f(glGetUniformLocation(ID, (uniform.key).c_str()), vec4.r, vec4.g, vec4.b, vec4.a);   
+        }
+
+        if (uniform.type == Graphics::Shader::UniformType::MAT4) 
+        {
+            Math::Matrix4 matrix = std::any_cast<Math::Matrix4>(uniform.value);
+
+            const glm::highp_mat4 mat = {
+                { matrix.a.r, matrix.a.g, matrix.a.b, matrix.a.a },
+                { matrix.b.r, matrix.b.g, matrix.b.b, matrix.b.a },
+                { matrix.c.r, matrix.c.g, matrix.c.b, matrix.c.a },
+                { matrix.d.r, matrix.d.g, matrix.d.b, matrix.d.a }
+            };
+
+            glUniformMatrix4fv(glGetUniformLocation(ID, (uniform.key).c_str()), 1, false, glm::value_ptr(mat));  
+        }
+    }
+}
+
+
 // ---------------------------------------------------------- utility uniform functions
 
 
-void Shader::SetFloat(const char* name, float value, bool useShader)
+void Shader::SetFloat(const char* key, float value)
 {
-    if (useShader)
-        glUseProgram(ID);
-
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniform1f(glGetUniformLocation(ID, name), value);
+    Uniform uniform;
+    uniform.type = UniformType::FLOAT;
+    uniform.key = key;
+    uniform.value = value;
+    uniform.length = 0;
+    
+    m_uniforms.emplace_back(uniform);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetInt(const char* name, int value, bool useShader)
+void Shader::SetInt(const char* key, int value)
 {
-    if (useShader)
-        glUseProgram(ID);
-
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniform1i(glGetUniformLocation(ID, name), value);
+    Uniform uniform;
+    uniform.type = UniformType::INT;
+    uniform.key = key;
+    uniform.value = value;
+    uniform.length = 0;
+    
+    m_uniforms.emplace_back(uniform);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetIntV(const char* name, int length, int* value, bool useShader)
+void Shader::SetIntV(const char* key, int length, int* value)
 {
-    if (useShader)
-        glUseProgram(ID);
-
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniform1iv(glGetUniformLocation(ID, name), length, value);
+    Uniform uniform;
+    uniform.type = UniformType::INTV;
+    uniform.key = key;
+    uniform.value = value;
+    uniform.length = length;
+    
+    m_uniforms.emplace_back(uniform);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec2f(const char* name, float x, float y, bool useShader)
+void Shader::SetVec2f(const char* key, float x, float y)
 {
-    if (useShader)
-        glUseProgram(ID);
+    Math::Vector2 vec2 = { x, y };
 
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniform2f(glGetUniformLocation(ID, name), x, y);
+    Uniform uniform;
+    uniform.type = UniformType::VEC2;
+    uniform.key = key;
+    uniform.value = vec2;
+    uniform.length = 0;
+    
+    m_uniforms.emplace_back(uniform);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec2f(const char* name, const Math::Vector2& value, bool useShader)
+void Shader::SetVec2f(const char* key, const Math::Vector2& value)
 {
-    if (useShader)
-        glUseProgram(ID);
-
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniform2f(glGetUniformLocation(ID, name), value.x, value.y);
+    Uniform uniform;
+    uniform.type = UniformType::VEC2;
+    uniform.key = key;
+    uniform.value = value;
+    uniform.length = 0;
+    
+    m_uniforms.emplace_back(uniform); 
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec3f(const char* name, float x, float y, float z, bool useShader)
+void Shader::SetVec3f(const char* key, float x, float y, float z)
 {
-    if (useShader)
-        glUseProgram(ID);
+    Math::Vector3 vec3 = { x, y, z };
 
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniform3f(glGetUniformLocation(ID, name), x, y, z);
+    Uniform uniform;
+    uniform.type = UniformType::VEC3;
+    uniform.key = key;
+    uniform.value = vec3;
+    uniform.length = 0;
+    
+    m_uniforms.emplace_back(uniform); 
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec3f(const char* name, const Math::Vector3& value, bool useShader)
+void Shader::SetVec3f(const char* key, const Math::Vector3& value)
 {
-    if (useShader)
-        glUseProgram(ID);
-
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniform3f(glGetUniformLocation(ID, name), value.x, value.y, value.z);
+    Uniform uniform;
+    uniform.type = UniformType::VEC3;
+    uniform.key = key;
+    uniform.value = value;
+    uniform.length = 0;
+    
+    m_uniforms.emplace_back(uniform);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec4f(const char* name, float r, float g, float b, float a, bool useShader)
+void Shader::SetVec4f(const char* key, float r, float g, float b, float a)
 {
+    Math::Vector4 vec4 = { r, g, b, a };
 
-    if (useShader)
-        glUseProgram(ID);
-
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniform4f(glGetUniformLocation(ID, name), r, g, b, a);
+    Uniform uniform;
+    uniform.type = UniformType::VEC4;
+    uniform.key = key;
+    uniform.value = vec4;
+    uniform.length = 0;
+    
+    m_uniforms.emplace_back(uniform);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec4f(const char* name, const Math::Vector4& value, bool useShader)
+void Shader::SetVec4f(const char* key, const Math::Vector4& value)
 {
-    if (useShader)
-        glUseProgram(ID);
-
-    if (glGetUniformLocation(ID, name) != -1)
-        glUniform4f(glGetUniformLocation(ID, name), value.r, value.g, value.b, value.a);
+    Uniform uniform;
+    uniform.type = UniformType::VEC4;
+    uniform.key = key;
+    uniform.value = value;
+    uniform.length = 0;
+    
+    m_uniforms.emplace_back(uniform);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetMat4(const char* name, const Math::Matrix4& matrix, bool useShader)
+void Shader::SetMat4(const char* key, const Math::Matrix4& matrix)
 {
-    if (useShader)
-        glUseProgram(ID);
-
-    if (glGetUniformLocation(ID, name) != -1)
-    {
-        const glm::highp_mat4 mat = {
-            { matrix.a.r, matrix.a.g, matrix.a.b, matrix.a.a },
-            { matrix.b.r, matrix.b.g, matrix.b.b, matrix.b.a },
-            { matrix.c.r, matrix.c.g, matrix.c.b, matrix.c.a },
-            { matrix.d.r, matrix.d.g, matrix.d.b, matrix.d.a }
-        };
-
-        glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, false, glm::value_ptr(mat));
-    }
+    Uniform uniform;
+    uniform.type = UniformType::MAT4;
+    uniform.key = key;
+    uniform.value = matrix;
+    uniform.length = 0;
+    
+    m_uniforms.emplace_back(uniform);
 }

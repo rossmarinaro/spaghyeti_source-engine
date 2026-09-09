@@ -386,20 +386,20 @@ void Text::Render()
                     auto shader = Graphics::Shader::Get("text");
 
                     if (type == "outline") 
-                        shader.SetVec3f("textColor", outlineColor.x, outlineColor.y, outlineColor.z);
+                        shader->SetVec3f("textColor", outlineColor.x, outlineColor.y, outlineColor.z);
             
                     else {
                         if (type == "shadow") 
-                            shader.SetVec3f("textColor", shadowColor.x, shadowColor.y, shadowColor.z);
+                            shader->SetVec3f("textColor", shadowColor.x, shadowColor.y, shadowColor.z);
 
                         else
-                            shader.SetVec3f("textColor", tint.x, tint.y, tint.z);
+                            shader->SetVec3f("textColor", tint.x, tint.y, tint.z);
                     }
                     
-                    shader.SetInt("image", 0);
-                    shader.SetMat4("mvp", mp);
-                    shader.SetFloat("alphaVal", alpha);
-                    shader.SetVec2f("scale", scale);
+                    shader->SetInt("image", 0);
+                    shader->SetMat4("mvp", mp);
+                    shader->SetFloat("alphaVal", alpha);
+                    shader->SetVec2f("scale", scale);
                 };
 
                 //update texture

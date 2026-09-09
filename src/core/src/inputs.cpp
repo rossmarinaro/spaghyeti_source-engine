@@ -79,8 +79,8 @@ using namespace System;
 
 const bool CheckInteractiveObjectOverlap(const std::shared_ptr<Entity>& entity) 
 {
-    const float mouseX = System::Game::GetScene()->GetContext().inputs->mouseX, 
-                mouseY = System::Game::GetScene()->GetContext().inputs->mouseY;
+    const float mouseX = System::Game::GetScene()->GetContext()->inputs->mouseX, 
+                mouseY = System::Game::GetScene()->GetContext()->inputs->mouseY;
 
     float xPos = entity->position.x,
           yPos = entity->position.y,
@@ -90,20 +90,20 @@ const bool CheckInteractiveObjectOverlap(const std::shared_ptr<Entity>& entity)
     if (entity->GetType() == Entity::SPRITE || entity->GetType() == Entity::UI) 
     {
         const auto sprite = std::static_pointer_cast<Sprite>(entity);
+        const auto texture = Graphics::Texture2D::Get(sprite->key);
 
-        width = sprite->texture.FrameWidth * sprite->scale.x;
-        height = sprite->texture.FrameHeight * sprite->scale.y;
+        width = texture->FrameWidth * sprite->scale.x;
+        height = texture->FrameHeight * sprite->scale.y;
     }
     else if (entity->GetType() == Entity::TEXT) 
     {
         const auto text = std::static_pointer_cast<Text>(entity);
 
-        if (text) 
-        {
+        if (text) {
             width = text->GetTextDimensions().x * text->scale.x;
             height = text->GetTextDimensions().y * text->scale.y;
-             xPos += text->GetTextDimensions().x * text->scale.x;
-             yPos += text->GetTextDimensions().y * text->scale.y; 
+            xPos += text->GetTextDimensions().x * text->scale.x;
+            yPos += text->GetTextDimensions().y * text->scale.y; 
         }
     }
     else if (entity->GetType() == Entity::GEOMETRY) 
@@ -197,9 +197,11 @@ void Inputs::SetKeyInputs(bool boolean, int key, void* window_ptr)
     switch (key)
     {
         case GLFW_KEY_ESCAPE: {
-            GLFWwindow* window = static_cast<GLFWwindow*>(window_ptr);
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
-            break;
+            if (SHIFT) {
+                GLFWwindow* window = static_cast<GLFWwindow*>(window_ptr);
+                glfwSetWindowShouldClose(window, GLFW_TRUE);
+                break;
+            }
         }
         case GLFW_KEY_LEFT: LEFT = boolean; break;
         case GLFW_KEY_RIGHT: RIGHT = boolean; break;
@@ -347,7 +349,6 @@ void Inputs::ShutDown()
 
 void Inputs::ResetControls()
 {
-
     cursorReset = true;
 
     RIGHT_CLICK = false;
@@ -366,8 +367,6 @@ void Inputs::ResetControls()
     D = false;
     G = false;
 }
-
-
 
 
 

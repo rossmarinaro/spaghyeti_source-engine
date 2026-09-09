@@ -38,7 +38,7 @@ namespace Graphics {
             Texture2D();
             ~Texture2D() = default;
 
-            static const Texture2D& Get(const std::string& key);
+            static std::shared_ptr<Texture2D> Get(const std::string& key);
             static void Load(const std::string& key);
             static void UnLoad(const std::string& key);
             static void InitBaseTexture();
@@ -47,7 +47,7 @@ namespace Graphics {
             void Delete();
             void SetFiltering(bool filterMin = true, bool filterMax = true, bool wrapS = true, bool wrapT = true);
             void Update(
-                Graphics::Shader& shader,
+                const std::string& shaderKey,
                 const Math::Vector2& position, 
                 const Math::Vector4& rgba, 
                 const Math::Vector3& outline,

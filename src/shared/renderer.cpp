@@ -4,6 +4,7 @@
 #include "../core/src/debug.h"
 #include "./renderer.h"
 
+
 using namespace System;
 
 //--------------------------------- 
@@ -22,27 +23,35 @@ void EnableAttributes()
 {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)0); //position
     glEnableVertexAttribArray(0);
+    //glVertexAttribDivisor(0, 0);
 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, u)); //uv (tex coords)
     glEnableVertexAttribArray(1);
+    //glVertexAttribDivisor(1, 0);
 
     glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, minU)); //min uv (tex coords)
     glEnableVertexAttribArray(2);
+    //glVertexAttribDivisor(2, 0);
 
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, texID)); //texID
     glEnableVertexAttribArray(3);
+    //glVertexAttribDivisor(3, 0);
 
     glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, r)); //rgba
     glEnableVertexAttribArray(4);
+    //glVertexAttribDivisor(4, 0);
 
     glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineR)); //outline rgba
     glEnableVertexAttribArray(5);
+    //glVertexAttribDivisor(5, 0);
 
     glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, outlineWidth)); //outline size
     glEnableVertexAttribArray(6); 
+    //glVertexAttribDivisor(6, 0);
 
     glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(Math::Graphics::Vertex), (void*)offsetof(Math::Graphics::Vertex, whiteout)); //outline size
     glEnableVertexAttribArray(7); 
+    //glVertexAttribDivisor(7, 0);
 
     for (int i = 0; i < 4; i++) { //4 x 4 model view projection matrix 
         size_t offset = offsetof(Math::Graphics::Vertex, mvp) + sizeof(float) * 4 * i;
@@ -68,7 +77,6 @@ Renderer::Renderer()
     for (size_t i = 1; i < MAX_TEXTURES; i++)
         textureSlots[i] = 0;
 }
-
 
 
 //---------------------------------- batch rendering
@@ -119,15 +127,51 @@ void Renderer::Init()
     EnableBlending();
     EnableAttributes();
 
+    //frame buffer
+
     #if STANDALONE == 1
-        CreateFrameBuffer();
-    #endif
+
+        glGenFramebuffers(1, &s_instance->m_FBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, s_instance->m_FBO);
+        glGenTextures(1, &s_instance->m_textureColorBuffer);
+        glBindTexture(GL_TEXTURE_2D, s_instance->m_textureColorBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_frameBufferWidth, m_frameBufferHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        #ifndef __EMSCRIPTEN__
+            glGenerateMipmap(GL_TEXTURE_2D);
+        #endif
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s_instance->m_textureColorBuffer, 0);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            LOG("Renderer: Error Framebuffer: Incomplete Buffer.");
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        //render buffer
+
+        // glBindRenderbuffer(GL_RENDERBUFFER, s_instance->m_RBO);
+        // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
+        // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_instance->m_RBO);
+        // glBindRenderbuffer(GL_RENDERBUFFER, 0); 
+    #endif   
 
     glDisable(GL_CULL_FACE); 
     glBindBuffer(GL_ARRAY_BUFFER, 0);       
     glBindVertexArray(0); 
 }
 
+//------------------------------------
+
+void Renderer::SetVsync(int rate) { 
+    s_vsync = rate; 
+    #ifndef __EMSCRIPTEN__
+        glfwSwapInterval(s_vsync); //enable / disable vsync
+    #endif
+}
 
 //------------------------------------ update
 
@@ -135,10 +179,6 @@ void Renderer::Init()
 void Renderer::Update(void* camera) 
 { 
     const auto backgroundColor = static_cast<Camera*>(camera)->GetBackgroundColor();
-
-    #ifndef __EMSCRIPTEN__
-        glfwSwapInterval(s_vsync); //enable / disable vsync
-    #endif
 
     #if STANDALONE == 1
         if (s_instance) {
@@ -166,6 +206,7 @@ void Renderer::Update(void* camera)
 
 void Renderer::Flush(bool renderOpaque)
 {
+
     if (!s_instance)
         return;
 
@@ -236,6 +277,15 @@ void Renderer::Flush(bool renderOpaque)
         EnableAttributes();
         glUseProgram(s_instance->activeShaderID);
 
+        //update uniforms
+
+        const auto it = std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [s_instance](const auto& s) { return s.second->ID == s_instance->activeShaderID; });
+
+        if (it != System::Application::resources->shaders.end()) {
+            const auto activeShader = it->second;
+            activeShader->Update();
+        }
+
         //draw elements from vertices vector
 
         glDrawElements(s_instance->drawStyle == 0 ? GL_LINE_LOOP : GL_TRIANGLES, s_instance->indexCount, GL_UNSIGNED_INT, 0); 
@@ -263,44 +313,196 @@ void Renderer::Flush(bool renderOpaque)
     s_instance->vertices.clear();
     s_instance->textureSlotIndex = 1;
     s_instance->indexCount = 0;
-}
 
 
-//---------------------------------
 
 
-void Renderer::CreateFrameBuffer()
-{
-    if (s_instance)
+
+
+
+
+
+ return;
+
+    if (!s_instance)
+        return;
+
+    //render by shader
+        // std::sort(s_instance->activeLayers.begin(), s_instance->activeLayers.end(), [](auto a, auto b) {
+        //   if (a.depth != b.depth)
+        //        return a.depth < b.depth; 
+
+        //     return a.shaderID < b.shaderID; 
+        // });
+
+    //wait for gpu to finish rendering current buffer
+
+    if (s_instance->m_fences[s_currentBufferIndex] != nullptr) 
     {
-        glGenFramebuffers(1, &s_instance->m_FBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, s_instance->m_FBO);
-        glGenTextures(1, &s_instance->m_textureColorBuffer);
-        glBindTexture(GL_TEXTURE_2D, s_instance->m_textureColorBuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_frameBufferWidth, m_frameBufferHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        GLenum result;
 
-        #ifndef __EMSCRIPTEN__
-            glGenerateMipmap(GL_TEXTURE_2D);
+        #ifdef __EMSCRIPTEN__
+            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], 0, 0);
+        #else
+            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
         #endif
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s_instance->m_textureColorBuffer, 0);
-
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            LOG("Renderer: Error Framebuffer: Incomplete Buffer.");
+        if (result == GL_WAIT_FAILED) { 
+            LOG("Renderer: skipping render. buffer wait failed.");
+            return;
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        //remove fence
 
-        //render buffer
-
-        // glBindRenderbuffer(GL_RENDERBUFFER, s_instance->m_RBO);
-        // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 800);
-        // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, s_instance->m_RBO);
-        // glBindRenderbuffer(GL_RENDERBUFFER, 0); 
-
+        glDeleteSync(s_instance->m_fences[s_currentBufferIndex]);
+        s_instance->m_fences[s_currentBufferIndex] = nullptr;
     }
+
+// std::vector<Math::Graphics::Vertex> frameVerts;
+// std::vector<unsigned int> frameInc;
+// GLuint activeVBO = s_instance->m_VBOs[s_currentBufferIndex];
+
+// for (auto& layer : s_instance->activeLayers)
+// {
+//     frameVerts.insert(frameVerts.end(), layer.vertices.begin(), layer.vertices.end());
+//     for (unsigned int idx : layer.indices)
+//         frameInc.push_back(idx + frameVerts.size());
+
+//     layer.vertices.clear();
+//     layer.indices.clear();
+// }
+
+// if (!frameVerts.empty()) {
+//     glBindBuffer(GL_ARRAY_BUFFER, activeVBO);   
+//     glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_DYNAMIC_DRAW);
+// //glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), frameVerts.data(), GL_DYNAMIC_DRAW);
+//     glBufferSubData(GL_ARRAY_BUFFER, 0, frameVerts.size() * sizeof(Math::Graphics::Vertex), frameVerts.data());
+// }
+
+
+
+//tiles
+// glBindVertexArray(s_instance->m_tileVAO);
+
+// for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
+//     glActiveTexture(GL_TEXTURE0 + i);
+//     glBindTexture(GL_TEXTURE_2D, s_instance->textureSlots[i]);  
+// }   
+    
+//EnableAttributes();
+
+// glUseProgram(s_instance->activeShaderID); 
+// glDrawElements(GL_TRIANGLES, 7000, GL_UNSIGNED_INT, (void*)0);  
+
+// for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
+//     glActiveTexture(GL_TEXTURE0 + i);
+//     glBindTexture(GL_TEXTURE_2D, 0);
+// } 
+
+// for (int i = 0; i < 16; i++)
+//     glDisableVertexAttribArray(i);
+
+// glBindBuffer(GL_ARRAY_BUFFER, 0);
+// glUseProgram(0);
+// glBindVertexArray(0);
+       
+    
+    glBindVertexArray(s_instance->m_VAO);
+    for (auto& layer : s_instance->activeLayers)
+    { 
+        //render quads in verts vector
+        
+        if (/* !s_instance->vertices.empty() */  !layer.vertices.empty()) 
+        {
+            if (System::Game::GetScene()->GetDepthSort()) 
+            {
+                if (renderOpaque) {
+                    glEnable(GL_DEPTH_TEST);
+                    glDepthFunc(GL_LEQUAL);
+                    glDepthMask(GL_TRUE);
+                    glDisable(GL_BLEND);
+                }
+                else {
+                    EnableBlending();
+                    glDepthMask(GL_FALSE);
+                }
+            }
+            else {
+                EnableBlending();
+                glDisable(GL_DEPTH_TEST);
+                glDisable(GL_SCISSOR_TEST);
+            }
+
+        auto shader = Graphics::Shader::Get("parallax bg");
+            //if (layer.shaderID != shader->ID)continue;; //{LOG(layer.vertices.size()/* layer.vertices[0].u */);}
+                        //bind vertex array and current vbo
+            //LOG("depth: " + std::to_string(layer.depth) + " shaderID: " + std::to_string(layer.shaderID));
+
+
+            //glBindVertexArray(s_instance->m_VAO); 
+
+            GLuint activeVBO = s_instance->m_VBOs[s_currentBufferIndex];
+
+            glBindBuffer(GL_ARRAY_BUFFER, activeVBO);    glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_DYNAMIC_DRAW);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, layer.vertices.size()  /* s_instance->vertices.size() */ * sizeof(Math::Graphics::Vertex), layer.vertices.data()   /* s_instance->vertices.data() */);
+            // void* ptr = glMapBufferRange(GL_ARRAY_BUFFER, 0, layer.vertices.size(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+            // if (ptr) {
+            //     memcpy(ptr, layer.vertices.data(), layer.vertices.size());
+            //     glUnmapBuffer(GL_ARRAY_BUFFER);
+            // }
+
+
+            //update image samplers /bind textures to defined slot indices
+
+            for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
+                glActiveTexture(GL_TEXTURE0 + i);
+                glBindTexture(GL_TEXTURE_2D, s_instance->textureSlots[i]);  
+            }   
+    
+            EnableAttributes();
+
+            glUseProgram(/* s_instance->activeShaderID */ layer.shaderID); 
+
+
+            if (glGetUniformLocation(layer.shaderID /* s_instance->activeShaderID */, "time") != -1)
+            { if (layer.shaderID  /* s_instance->activeShaderID */ == shader->ID)
+                glUniform1f(glGetUniformLocation(layer.shaderID /* s_instance->activeShaderID */, "time"), -System::Game::GetScene()->GetContext()->camera->GetPosition()->x / 60000.0f);
+                else  glUniform1f(glGetUniformLocation(layer.shaderID /* s_instance->activeShaderID */, "time"), 0.0f); 
+            }
+
+            //draw elements from vertices vector
+
+            glDrawElements(s_instance->drawStyle == 0 ? GL_LINE_LOOP : GL_TRIANGLES, /* frameInc.size() */ layer.indices.size() /* s_instance->indexCount */, GL_UNSIGNED_INT, 0);  
+
+            for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
+                glActiveTexture(GL_TEXTURE0 + i);
+                glBindTexture(GL_TEXTURE_2D, 0);
+            } 
+
+            //disable attributes and unbind
+
+           for (int i = 0; i < 16; i++)
+                glDisableVertexAttribArray(i);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glUseProgram(0);
+
+            s_instance->textureSlotIndex = 1;
+            layer.vertices.clear();   
+            layer.indices.clear(); 
+        }
+    }
+ 
+    //start new gpu async await call fence 
+
+    glBindVertexArray(0);
+
+    s_instance->m_fences[s_currentBufferIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); 
+
+    //cycle to next buffer in ring
+
+    s_currentBufferIndex = (s_currentBufferIndex + 1) % BUFFERS; 
+    
 }
 
 
@@ -332,11 +534,11 @@ void Renderer::UpdateFrameBuffer(void* camera)
 
 void Renderer::ShutDown() 
 { 
-    glDeleteVertexArrays(1, &s_instance->m_VAO);
-    glDeleteBuffers(BUFFERS, s_instance->m_VBOs);
+    glDeleteVertexArrays(1, &s_instance->m_VAO); 
+    glDeleteBuffers(BUFFERS, s_instance->m_VBOs);    
     glDeleteBuffers(1, &s_instance->m_EBO);
     
-    s_instance->vertices.clear();
+    //s_instance->queue.clear();
 
     delete s_instance;
     s_instance = nullptr;
@@ -381,6 +583,9 @@ void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int actio
 
 void Renderer::input_callback(GLFWwindow* window, int input, int action, int mods)
 {
+    //if (input == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        //glfwIconifyWindow(window);
+        
     if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         Application::game->inputs->RIGHT_CLICK = true;
 
@@ -398,8 +603,10 @@ void Renderer::input_callback(GLFWwindow* window, int input, int action, int mod
 
     if (action == GLFW_RELEASE)
         Application::game->inputs->numInputs--;
-
 }
+
+
+//----------------------------------------
 
 
 void Resize(GLFWwindow* window, int width, int height) {
@@ -449,44 +656,6 @@ void Renderer::window_size_callback(GLFWwindow* window, int width, int height) {
 // }
 
 
-
-// void Renderer::RenderInstances() 
-// {
-//     auto texture = Graphics::Texture2D::Get("sv_icon.png");
-//     auto shader = Graphics::Shader::Get("sprite");
-//     Math::Vector2 scrollFactor = { 1.0f, 1.0f }, scale = { 1.0f, 1.0f },position = { 0.0f, 0.0f };
-
-//     const auto camera = System::Application::game->camera;
-
-//     const Math::Vector4& pm = camera->GetProjectionMatrix(800,600);
-//     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollFactor.x * scale.x), (camera->GetPosition()->y * scrollFactor.y * scale.y));
-    
-//     const glm::mat4 view = /* !IsSprite() ? glm::mat4(1.0f) : */ glm::mat4({ vm.a.x, vm.a.y, vm.a.z, vm.a.w }, { vm.b.x, vm.b.y, vm.b.z, vm.b.w }, { vm.c.x, vm.c.y, vm.c.z, vm.c.w }, { vm.d.x, vm.d.y, vm.d.z, vm.d.w }), 
-//                     proj = (glm::highp_mat4)glm::ortho(pm.x, pm.y, pm.z, pm.w, -1.0f, 1.0f);
-
-//     glm::mat4 model = glm::mat4(1.0f); 
-
-//     model = glm::translate(model, { 0.5f * texture.FrameWidth + position.x * scale.x, 0.5f * texture.FrameHeight + position.y * scale.y, 0.0f }); 
-//     model = glm::rotate(model, glm::radians(0.0f/* rotation */), { 0.0f, 0.0f, 1.0f }); 
-//     model = glm::translate(model, { -0.5f * texture.FrameWidth - position.x * scale.x, -0.5f * texture.FrameHeight - position.y * scale.y, 0.0f });
-
-//     const glm::mat4 _mvp = proj * view * model;
-
-//     const Math::Matrix4 mvp = { 
-//         { _mvp[0][0], _mvp[0][1], _mvp[0][2], _mvp[0][3] }, 
-//         { _mvp[1][0], _mvp[1][1], _mvp[1][2], _mvp[1][3] },   
-//         { _mvp[2][0], _mvp[2][1], _mvp[2][2], _mvp[2][3] },  
-//         { _mvp[3][0], _mvp[3][1], _mvp[3][2], _mvp[3][3] }
-//     };
-
-//     shader.SetInt("image", 0);shader.SetMat4("mvp", mvp); 
-//     texture.Update(position, false, false, 1); 
- 
-//     glUseProgram(shader.ID);
-//     glVertexAttribDivisor( texture.ID, 1); // Update this attribute per instance
-//     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 10); // 100 instances
-//     glBindVertexArray(0); 
-// }
 
 
 

@@ -235,7 +235,7 @@ void GUI::ShowOptionsInit()
  
     ImVec2 pos = ImGui::GetCursorScreenPos();
 
-    ImGui::GetWindowDrawList()->AddImage((void*)Graphics::Texture2D::Get("editor logo").ID, ImVec2(pos.x, pos.y), ImVec2(pos.x + window_width, pos.y + window_height));
+    ImGui::GetWindowDrawList()->AddImage((void*)Graphics::Texture2D::Get("editor logo")->ID, ImVec2(pos.x, pos.y), ImVec2(pos.x + window_width, pos.y + window_height));
 
     ImGui::SetCursorPos((ImVec2((ImGui::GetWindowSize().x * 0.5f) - 270, (ImGui::GetWindowSize().y * 0.5f) - 230)));
 
@@ -338,7 +338,7 @@ void GUI::RenderNodes()
     const ImVec4 alpha_hundred = ImVec4(1.0f, 1.0f, 1.0f, 1.0f),
                  alpha_twentyFive = ImVec4(1.0f, 1.0f, 1.0f, 0.25f);
 
-    if (ImGui::ImageButton("undo button", (void*)(intptr_t)Graphics::Texture2D::Get("arrow src").ID, 
+    if (ImGui::ImageButton("undo button", (void*)(intptr_t)Graphics::Texture2D::Get("arrow src")->ID, 
         ImVec2(20, 20), ImVec2(1, 0), ImVec2(0, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
         (EventListener::actionsInitUndo && EventListener::actionsCount > 0) ? alpha_hundred : alpha_twentyFive)) 
             Editor::Get()->events->ApplyState(false);
@@ -350,7 +350,7 @@ void GUI::RenderNodes()
 
     //redo
 
-    if (ImGui::ImageButton("redo button", (void*)(intptr_t)Graphics::Texture2D::Get("arrow src").ID, 
+    if (ImGui::ImageButton("redo button", (void*)(intptr_t)Graphics::Texture2D::Get("arrow src")->ID, 
         ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
         EventListener::actionsCount < EventListener::eventCount && 
         EventListener::actionsInitRedo && EventListener::actionsCount < EventListener::ACTIONS_LIMIT ? alpha_hundred : alpha_twentyFive))
@@ -363,7 +363,7 @@ void GUI::RenderNodes()
  
     //clear all
 
-    if (ImGui::ImageButton("clear all button", (void*)(intptr_t)Graphics::Texture2D::Get("clear src").ID, 
+    if (ImGui::ImageButton("clear all button", (void*)(intptr_t)Graphics::Texture2D::Get("clear src")->ID, 
         ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
         Node::nodes.size() ? alpha_hundred : alpha_twentyFive) && Node::nodes.size()) {
             Node::ClearAll();
@@ -379,7 +379,7 @@ void GUI::RenderNodes()
 
     auto nodes = Editor::Get()->events->selected_nodes;
 
-    if (ImGui::ImageButton("sort nodes", (void*)(intptr_t)Graphics::Texture2D::Get("sort src").ID, 
+    if (ImGui::ImageButton("sort nodes", (void*)(intptr_t)Graphics::Texture2D::Get("sort src")->ID, 
         ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
         nodes->size() ? alpha_hundred : alpha_twentyFive) && nodes->size())
             std::rotate(nodes->rbegin(), nodes->rbegin() + 1, nodes->rend());
@@ -391,7 +391,7 @@ void GUI::RenderNodes()
 
     //collapse all nodes
 
-    if (ImGui::ImageButton("collapse nodes", (void*)(intptr_t)Graphics::Texture2D::Get("close folders src").ID, 
+    if (ImGui::ImageButton("collapse nodes", (void*)(intptr_t)Graphics::Texture2D::Get("close folders src")->ID, 
         ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), 
         Node::nodes.size() ? alpha_hundred : alpha_twentyFive) && Node::nodes.size()) {
             collapseFolders = true;

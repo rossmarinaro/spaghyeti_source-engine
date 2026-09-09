@@ -420,7 +420,7 @@ const bool EventListener::OpenScene() //makes temporary json file to parse data 
                 if (!AssetManager::LoadAsset(asset))
                     continue;
 
-                const unsigned int id = Graphics::Texture2D::Get(texture).ID;
+                const unsigned int id = Graphics::Texture2D::Get(texture)->ID;
 
                 if (type == "images")
                     AssetManager::Get()->images.push_back({ asset, id });
@@ -536,7 +536,7 @@ void EventListener::OpenFile()
 
             //apply image to assets menu if not there already
 
-            const unsigned int id = Graphics::Texture2D::Get(texture).ID;
+            const unsigned int id = Graphics::Texture2D::Get(texture)->ID;
 
             auto insertAsset = [&](std::vector<std::pair<std::string, GLuint>>& vec) -> void {
                 if (std::find_if(vec.begin(), vec.end(), [&](std::pair<std::string, GLuint> pair) { return pair.first == asset; }) == vec.end())

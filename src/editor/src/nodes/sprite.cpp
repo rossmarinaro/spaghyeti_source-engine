@@ -175,7 +175,7 @@ void SpriteNode::ApplyTexture(const std::string& asset)
     else 
        spriteHandle->SetTexture(asset); 
 
-    m_currentTexture = Graphics::Texture2D::Get(asset).ID;  
+    m_currentTexture = Graphics::Texture2D::Get(asset)->ID;  
     key = asset;
 
     AssetManager::Register(key);
@@ -816,18 +816,20 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             EventListener::UpdateSession(); 
                         if (ImGui::Checkbox("flipY", &flippedY))
                             EventListener::UpdateSession();
+
+                        auto texture = Graphics::Texture2D::Get(spriteHandle->key); 
  
                         if (filter_nearest) {
-                            spriteHandle->texture.Filter_Min = GL_NEAREST;
-                            spriteHandle->texture.Filter_Max = GL_NEAREST;
+                            texture->Filter_Min = GL_NEAREST;
+                            texture->Filter_Max = GL_NEAREST;
                         }
                         
                         else {
-                            spriteHandle->texture.Filter_Min = GL_LINEAR;
-                            spriteHandle->texture.Filter_Max = GL_LINEAR;
+                            texture->Filter_Min = GL_LINEAR;
+                            texture->Filter_Max = GL_LINEAR;
                         }
 
-                        spriteHandle->texture.SetFiltering();
+                        texture->SetFiltering();
 
                         ImGui::ColorEdit3("tint", (float*)&tint); 
                         if (ImGui::IsItemDeactivatedAfterEdit())
@@ -908,10 +910,12 @@ void SpriteNode::Render(float _positionX, float _positionY, float _rotation, flo
         
     if (spriteHandle)
     {
-        spriteHandle->texture.U1 = U1;
-        spriteHandle->texture.V1 = V1;
-        spriteHandle->texture.U2 = U2;
-        spriteHandle->texture.V2 = V2;
+        auto texture = Graphics::Texture2D::Get(spriteHandle->key); 
+
+        texture->U1 = U1;
+        texture->V1 = V1;
+        texture->U2 = U2;
+        texture->V2 = V2;
 
         spriteHandle->SetScale(scaleX * _scaleX, scaleY * _scaleY);  
         spriteHandle->SetPosition(positionX + _positionX, positionY + _positionY);   

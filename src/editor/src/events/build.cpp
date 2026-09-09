@@ -322,7 +322,6 @@ void EventListener::BuildAndRun()
 
     else if (Editor::platform == "WebGL")
     {
-
         const std::string use_pthreads = session->use_pthreads ? "1" : "0",
                           shared_memory = session->shared_memory ? "1" : "0",
                           allow_memory_growth = session->allow_memory_growth ? "1" : "0",
@@ -801,18 +800,18 @@ void EventListener::BuildAndRun()
 
         command_queue << "   this->SetWorldDimensions(" + std::to_string(target.second->worldWidth) + ", " + std::to_string(target.second->worldHeight) + ");\n";
         
-        command_queue << "   this->GetContext().camera->SetVignette(" + std::to_string(target.second->vignetteVisibility) + ");\n"; 
-        command_queue << "   this->GetContext().camera->SetBounds(" + std::to_string(target.second->currentBoundsWidthBegin) + ", " + std::to_string(target.second->currentBoundsWidthEnd) + ", " + std::to_string(target.second->currentBoundsHeightBegin) + ", " + std::to_string(target.second->currentBoundsHeightEnd) + ");\n";
-        command_queue << "   this->GetContext().camera->SetBackgroundColor({ " + FloatToString(target.second->cameraBackgroundColor.r) + ", " + FloatToString(target.second->cameraBackgroundColor.g) + ", " + FloatToString(target.second->cameraBackgroundColor.b) + ", " + std::to_string(target.second->cameraBackgroundColor.a) + " });\n";
-        command_queue << "   this->GetContext().camera->SetZoom(" + FloatToString(target.second->cameraZoom) + ");\n";
-        command_queue << "   this->GetContext().camera->SetPosition({ " + FloatToString(target.second->cameraPosition.x) + ", " + FloatToString(target.second->cameraPosition.y) + " });\n";
+        command_queue << "   this->GetContext()->camera->SetVignette(" + std::to_string(target.second->vignetteVisibility) + ");\n"; 
+        command_queue << "   this->GetContext()->camera->SetBounds(" + std::to_string(target.second->currentBoundsWidthBegin) + ", " + std::to_string(target.second->currentBoundsWidthEnd) + ", " + std::to_string(target.second->currentBoundsHeightBegin) + ", " + std::to_string(target.second->currentBoundsHeightEnd) + ");\n";
+        command_queue << "   this->GetContext()->camera->SetBackgroundColor({ " + FloatToString(target.second->cameraBackgroundColor.r) + ", " + FloatToString(target.second->cameraBackgroundColor.g) + ", " + FloatToString(target.second->cameraBackgroundColor.b) + ", " + std::to_string(target.second->cameraBackgroundColor.a) + " });\n";
+        command_queue << "   this->GetContext()->camera->SetZoom(" + FloatToString(target.second->cameraZoom) + ");\n";
+        command_queue << "   this->GetContext()->camera->SetPosition({ " + FloatToString(target.second->cameraPosition.x) + ", " + FloatToString(target.second->cameraPosition.y) + " });\n";
     
         const std::string phys_isCont = target.second->gravity_continuous ? "true" : "false",
                           phys_isSleeping = target.second->gravity_sleeping ? "true" : "false";
 
-        command_queue << "   this->GetContext().physics->continuous = " + phys_isCont + ";\n";
-        command_queue << "   this->GetContext().physics->sleeping = " + phys_isSleeping + ";\n";
-        command_queue << "   this->GetContext().physics->SetGravity(" + std::to_string(target.second->gravityX) + ", " + std::to_string(target.second->gravityY) + ");\n";
+        command_queue << "   this->GetContext()->physics->continuous = " + phys_isCont + ";\n";
+        command_queue << "   this->GetContext()->physics->sleeping = " + phys_isSleeping + ";\n";
+        command_queue << "   this->GetContext()->physics->SetGravity(" + std::to_string(target.second->gravityX) + ", " + std::to_string(target.second->gravityY) + ");\n";
     
         //command data, iterate over nodes and create objects
 
@@ -883,7 +882,7 @@ void EventListener::BuildAndRun()
 
                     //maybe add texture wrapping too?
 
-                    command_queue << "   sprite_" + node->ID + "->texture.SetFiltering(" + filtering + ", " + filtering + ");\n";
+                    command_queue << "   Graphics::Texture2D::Get(sprite_" + node->ID + "->key)->SetFiltering(" + filtering + ", " + filtering + ");\n";
 
                     command_queue << "   sprite_" + node->ID + "->SetFrame(" + std::to_string(sn->currentFrame) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetScale(" + FloatToString(sn->scaleX) + ", " + FloatToString(sn->scaleY) + ");\n";
