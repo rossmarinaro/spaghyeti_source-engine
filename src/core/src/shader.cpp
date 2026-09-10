@@ -593,7 +593,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
 
     //define image samplers
 
-    int samplers[System::Renderer::MAX_TEXTURES];
+    static int samplers[System::Renderer::MAX_TEXTURES];
 
     for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++)  
         samplers[i] = i;
@@ -700,183 +700,137 @@ void Shader::Update()
 {
     for (const auto& uniform : m_uniforms) 
     {
-        if (glGetUniformLocation(ID, (uniform.key).c_str()) == -1)
+        const char* uniformName = (uniform.name).c_str();
+
+        if (glGetUniformLocation(ID, uniformName) == -1)
             continue;
 
-        if (uniform.type == Graphics::Shader::UniformType::FLOAT)
-            glUniform1f(glGetUniformLocation(ID, (uniform.key).c_str()), std::any_cast<float>(uniform.value)); 
-
-        if (uniform.type == Graphics::Shader::UniformType::INT)
-            glUniform1i(glGetUniformLocation(ID, (uniform.key).c_str()), std::any_cast<int>(uniform.value));
-
-        if (uniform.type == Graphics::Shader::UniformType::INTV)
-            glUniform1iv(glGetUniformLocation(ID, (uniform.key).c_str()), uniform.length, std::any_cast<int*>(uniform.value));
-
-        if (uniform.type == Graphics::Shader::UniformType::VEC2) {
-            Math::Vector2 vec2 = std::any_cast<Math::Vector2>(uniform.value);
-            glUniform2f(glGetUniformLocation(ID, (uniform.key).c_str()), vec2.x, vec2.y);   
-        }
-
-        if (uniform.type == Graphics::Shader::UniformType::VEC3) {
-            Math::Vector3 vec3 = std::any_cast<Math::Vector3>(uniform.value);
-            glUniform3f(glGetUniformLocation(ID, (uniform.key).c_str()), vec3.x, vec3.y, vec3.z);   
-        }
-
-        if (uniform.type == Graphics::Shader::UniformType::VEC4) {
-            Math::Vector4 vec4 = std::any_cast<Math::Vector4>(uniform.value);
-            glUniform4f(glGetUniformLocation(ID, (uniform.key).c_str()), vec4.r, vec4.g, vec4.b, vec4.a);   
-        }
-
-        if (uniform.type == Graphics::Shader::UniformType::MAT4) 
+        switch (uniform.type)
         {
-            Math::Matrix4 matrix = std::any_cast<Math::Matrix4>(uniform.value);
+            case Graphics::Shader::UniformType::FLOAT:
+                glUniform1f(glGetUniformLocation(ID, uniformName), std::any_cast<float>(uniform.value));
+            break;
+            case Graphics::Shader::UniformType::INT:
+                glUniform1i(glGetUniformLocation(ID, uniformName), std::any_cast<int>(uniform.value)); 
+            break;
+            case Graphics::Shader::UniformType::INTV:
+                glUniform1iv(glGetUniformLocation(ID, uniformName), uniform.length, std::any_cast<int*>(uniform.value)); 
+            break;
+            case Graphics::Shader::UniformType::VEC2: {
+                Math::Vector2 vec2 = std::any_cast<Math::Vector2>(uniform.value);
+                glUniform2f(glGetUniformLocation(ID, uniformName), vec2.x, vec2.y);   
+            }
+            break;
+            case Graphics::Shader::UniformType::VEC3: {
+                Math::Vector3 vec3 = std::any_cast<Math::Vector3>(uniform.value);
+                glUniform3f(glGetUniformLocation(ID, uniformName), vec3.x, vec3.y, vec3.z);   
+            }
+            break;
+            case Graphics::Shader::UniformType::VEC4: {
+                Math::Vector4 vec4 = std::any_cast<Math::Vector4>(uniform.value);
+                glUniform4f(glGetUniformLocation(ID, uniformName), vec4.r, vec4.g, vec4.b, vec4.a);   
+            }
+            break;
+            case Graphics::Shader::UniformType::MAT4: 
+            {
+                Math::Matrix4 matrix = std::any_cast<Math::Matrix4>(uniform.value);
 
-            const glm::highp_mat4 mat = {
-                { matrix.a.r, matrix.a.g, matrix.a.b, matrix.a.a },
-                { matrix.b.r, matrix.b.g, matrix.b.b, matrix.b.a },
-                { matrix.c.r, matrix.c.g, matrix.c.b, matrix.c.a },
-                { matrix.d.r, matrix.d.g, matrix.d.b, matrix.d.a }
-            };
+                const glm::highp_mat4 mat4 = {
+                    { matrix.a.r, matrix.a.g, matrix.a.b, matrix.a.a },
+                    { matrix.b.r, matrix.b.g, matrix.b.b, matrix.b.a },
+                    { matrix.c.r, matrix.c.g, matrix.c.b, matrix.c.a },
+                    { matrix.d.r, matrix.d.g, matrix.d.b, matrix.d.a }
+                };
 
-            glUniformMatrix4fv(glGetUniformLocation(ID, (uniform.key).c_str()), 1, false, glm::value_ptr(mat));  
+                glUniformMatrix4fv(glGetUniformLocation(ID, uniformName), 1, false, glm::value_ptr(mat4));  
+            }
+            break;
+            default: break;
         }
     }
+}
+
+// ----------------------------------------------------------
+
+void Shader::ApplyUniform(UniformType type, const char* name, const std::any& value, int length) 
+{
+    Uniform uniform;
+
+    uniform.type = type;
+    uniform.name = name;
+    uniform.value = value;
+    uniform.length = length;
+
+    auto it = std::find_if(m_uniforms.begin(), m_uniforms.end(), [&name](const Uniform& u) { return u.name == name; });
+    
+    if (it != m_uniforms.end()) {
+        it->value = uniform.value;
+        it->length = uniform.length;
+    }
+    else 
+        m_uniforms.emplace_back(uniform);
 }
 
 
 // ---------------------------------------------------------- utility uniform functions
 
-
-void Shader::SetFloat(const char* key, float value)
-{
-    Uniform uniform;
-    uniform.type = UniformType::FLOAT;
-    uniform.key = key;
-    uniform.value = value;
-    uniform.length = 0;
-    
-    m_uniforms.emplace_back(uniform);
+void Shader::SetFloat(const char* name, float value) {
+    ApplyUniform(UniformType::FLOAT, name, value);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetInt(const char* key, int value)
-{
-    Uniform uniform;
-    uniform.type = UniformType::INT;
-    uniform.key = key;
-    uniform.value = value;
-    uniform.length = 0;
-    
-    m_uniforms.emplace_back(uniform);
+void Shader::SetInt(const char* name, int value) {
+    ApplyUniform(UniformType::INT, name, value);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetIntV(const char* key, int length, int* value)
-{
-    Uniform uniform;
-    uniform.type = UniformType::INTV;
-    uniform.key = key;
-    uniform.value = value;
-    uniform.length = length;
-    
-    m_uniforms.emplace_back(uniform);
+void Shader::SetIntV(const char* name, int length, int* value) {
+    ApplyUniform(UniformType::INTV, name, +value, length);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec2f(const char* key, float x, float y)
-{
+void Shader::SetVec2f(const char* name, float x, float y) {
     Math::Vector2 vec2 = { x, y };
-
-    Uniform uniform;
-    uniform.type = UniformType::VEC2;
-    uniform.key = key;
-    uniform.value = vec2;
-    uniform.length = 0;
-    
-    m_uniforms.emplace_back(uniform);
+    ApplyUniform(UniformType::VEC2, name, vec2);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec2f(const char* key, const Math::Vector2& value)
-{
-    Uniform uniform;
-    uniform.type = UniformType::VEC2;
-    uniform.key = key;
-    uniform.value = value;
-    uniform.length = 0;
-    
-    m_uniforms.emplace_back(uniform); 
+void Shader::SetVec2f(const char* name, const Math::Vector2& value) {
+    ApplyUniform(UniformType::VEC2, name, value); 
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec3f(const char* key, float x, float y, float z)
-{
+void Shader::SetVec3f(const char* name, float x, float y, float z) {
     Math::Vector3 vec3 = { x, y, z };
-
-    Uniform uniform;
-    uniform.type = UniformType::VEC3;
-    uniform.key = key;
-    uniform.value = vec3;
-    uniform.length = 0;
-    
-    m_uniforms.emplace_back(uniform); 
+    ApplyUniform(UniformType::VEC3, name, vec3);  
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec3f(const char* key, const Math::Vector3& value)
-{
-    Uniform uniform;
-    uniform.type = UniformType::VEC3;
-    uniform.key = key;
-    uniform.value = value;
-    uniform.length = 0;
-    
-    m_uniforms.emplace_back(uniform);
+void Shader::SetVec3f(const char* name, const Math::Vector3& value) {
+    ApplyUniform(UniformType::VEC3, name, value); 
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec4f(const char* key, float r, float g, float b, float a)
-{
+void Shader::SetVec4f(const char* name, float r, float g, float b, float a) {
     Math::Vector4 vec4 = { r, g, b, a };
-
-    Uniform uniform;
-    uniform.type = UniformType::VEC4;
-    uniform.key = key;
-    uniform.value = vec4;
-    uniform.length = 0;
-    
-    m_uniforms.emplace_back(uniform);
+    ApplyUniform(UniformType::VEC4, name, vec4);
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetVec4f(const char* key, const Math::Vector4& value)
-{
-    Uniform uniform;
-    uniform.type = UniformType::VEC4;
-    uniform.key = key;
-    uniform.value = value;
-    uniform.length = 0;
-    
-    m_uniforms.emplace_back(uniform);
+void Shader::SetVec4f(const char* name, const Math::Vector4& value) {
+    ApplyUniform(UniformType::VEC4, name, value); 
 }
 
 // -----------------------------------------------------------------------
 
-void Shader::SetMat4(const char* key, const Math::Matrix4& matrix)
-{
-    Uniform uniform;
-    uniform.type = UniformType::MAT4;
-    uniform.key = key;
-    uniform.value = matrix;
-    uniform.length = 0;
-    
-    m_uniforms.emplace_back(uniform);
+void Shader::SetMat4(const char* name, const Math::Matrix4& value) {
+    ApplyUniform(UniformType::MAT4, name, value); 
 }

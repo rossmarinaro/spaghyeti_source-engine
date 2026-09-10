@@ -9,6 +9,8 @@ class DebugGraphic {
 
     public:
 
+        unsigned int shaderID = 0;
+
         virtual void Create() = 0; 
         virtual void Flush() = 0;
 

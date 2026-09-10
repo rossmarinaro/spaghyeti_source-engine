@@ -191,17 +191,15 @@ void Inputs::ProcessInput()
 
 //----------------------------------------
 
-
+ 
 void Inputs::SetKeyInputs(bool boolean, int key, void* window_ptr)
 {            
     switch (key)
     {
         case GLFW_KEY_ESCAPE: {
-            if (SHIFT) {
-                GLFWwindow* window = static_cast<GLFWwindow*>(window_ptr);
-                glfwSetWindowShouldClose(window, GLFW_TRUE);
-                break;
-            }
+            GLFWwindow* window = static_cast<GLFWwindow*>(window_ptr);
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+            break;
         }
         case GLFW_KEY_LEFT: LEFT = boolean; break;
         case GLFW_KEY_RIGHT: RIGHT = boolean; break;

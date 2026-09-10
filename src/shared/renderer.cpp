@@ -206,7 +206,6 @@ void Renderer::Update(void* camera)
 
 void Renderer::Flush(bool renderOpaque)
 {
-
     if (!s_instance)
         return;
 
@@ -583,8 +582,8 @@ void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int actio
 
 void Renderer::input_callback(GLFWwindow* window, int input, int action, int mods)
 {
-    //if (input == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        //glfwIconifyWindow(window);
+    if (input == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwIconifyWindow(window);
         
     if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         Application::game->inputs->RIGHT_CLICK = true;

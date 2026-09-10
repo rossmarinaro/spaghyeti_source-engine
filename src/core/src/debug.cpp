@@ -15,14 +15,39 @@ using namespace Graphics;
 #define BUFFER_OFFSET(x)  ((const void*) (x))
 
 
+const glm::highp_mat4 GetViewProjectionMatrix() 
+{
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition()->x, System::Application::game->camera->GetPosition()->y);
+    
+    const glm::mat4 vp = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
+    const Math::Matrix4 matrix = {  
+        { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
+        { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
+        { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  
+        { vp[3][0], vp[3][1], vp[3][2], vp[3][3] }
+    };
+
+    return {
+        { matrix.a.r, matrix.a.g, matrix.a.b, matrix.a.a },
+        { matrix.b.r, matrix.b.g, matrix.b.b, matrix.b.a },
+        { matrix.c.r, matrix.c.g, matrix.c.b, matrix.c.a },
+        { matrix.d.r, matrix.d.g, matrix.d.b, matrix.d.a }
+    };
+}
+
 //---------------------- POINTS
 
 
 void Points::Create()
 {
+    const auto shader = Graphics::Shader::Get("Points");
+
+    if (shader)
+        shaderID = shader->ID;
+    
 	m_maxVertices = points;
 
-    // Generate
     glGenVertexArrays(1, &m_vaoId);
     glGenBuffers(3, m_vboIds);
 
@@ -31,7 +56,6 @@ void Points::Create()
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
-    // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
@@ -44,7 +68,6 @@ void Points::Create()
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0)); 
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_sizes), m_sizes, GL_DYNAMIC_DRAW);
 
-    // Cleanup
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0); 
 
@@ -54,29 +77,21 @@ void Points::Create()
 
 //------------------------------------
 
-
+#include "../../vendors/glm/gtc/type_ptr.hpp"
 
 void Points::Flush()
 {
     #ifndef __EMSCRIPTEN__
 
-	if (m_count == 0)
+	if (m_count == 0 || shaderID == 0)
         return;
     
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition()->x, System::Application::game->camera->GetPosition()->y);
-    
-    const glm::mat4 vp = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
+    const auto vp = GetViewProjectionMatrix(); 
+
+    glUseProgram(shaderID);
+
+    glUniformMatrix4fv(glGetUniformLocation(shaderID, "vp"), 1, false, glm::value_ptr(vp)); 
  
-    auto shader = Graphics::Shader::Get("Points");
-
-    shader->SetMat4("vp", {  
-        { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
-        { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
-        { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  
-        { vp[3][0], vp[3][1], vp[3][2], vp[3][3] }
-    });
-
     glBindVertexArray(m_vaoId);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
@@ -114,9 +129,13 @@ void Points::Flush()
 
 void Lines::Create()
 {
+    const auto shader = Graphics::Shader::Get("Lines");
+
+    if (shader)
+        shaderID = shader->ID;
+
 	m_maxVertices = lines;
 
-    // Generate
     glGenVertexArrays(1, &m_vaoId);
     glGenBuffers(2, m_vboIds);
 
@@ -124,7 +143,6 @@ void Lines::Create()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
@@ -133,7 +151,6 @@ void Lines::Create()
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_colors), m_colors, GL_DYNAMIC_DRAW);
 
-    // Cleanup
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
@@ -146,25 +163,16 @@ void Lines::Create()
 
 void Lines::Flush()
 {
-
 	#ifndef __EMSCRIPTEN__
 
-    if (m_count == 0)
+    if (m_count == 0 || shaderID == 0)
         return;     
 
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition()->x, System::Application::game->camera->GetPosition()->y);
-    
-    const glm::mat4 vp = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
+    const auto vp = GetViewProjectionMatrix(); 
 
-    auto shader = Graphics::Shader::Get("Lines");
+    glUseProgram(shaderID);
 
-    shader->SetMat4("vp", {  
-        { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
-        { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
-        { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  
-        { vp[3][0], vp[3][1], vp[3][2], vp[3][3] }
-    });
+    glUniformMatrix4fv(glGetUniformLocation(shaderID, "vp"), 1, false, glm::value_ptr(vp)); 
 
     glBindVertexArray(m_vaoId);
 
@@ -197,6 +205,11 @@ void Lines::Flush()
 
 void Triangles::Create()
 {
+    const auto shader = Graphics::Shader::Get("Triangles");
+
+    if (shader)
+        shaderID = shader->ID;
+
 	m_maxVertices = triangles;
 
     glGenVertexArrays(1, &m_vaoId);
@@ -228,22 +241,14 @@ void Triangles::Flush()
 {
 	#ifndef __EMSCRIPTEN__
 
-    if (m_count == 0)
+    if (m_count == 0 || shaderID == 0)
         return;
 
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
-    const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition()->x, System::Application::game->camera->GetPosition()->y);
-    
-    const glm::mat4 vp = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });
+    const auto vp = GetViewProjectionMatrix(); 
 
-    auto shader = Graphics::Shader::Get("Triangles");
+    glUseProgram(shaderID);
 
-    shader->SetMat4("vp", {  
-        { vp[0][0], vp[0][1], vp[0][2], vp[0][3] }, 
-        { vp[1][0], vp[1][1], vp[1][2], vp[1][3] },   
-        { vp[2][0], vp[2][1], vp[2][2], vp[2][3] },  
-        { vp[3][0], vp[3][1], vp[3][2], vp[3][3] }
-    });
+    glUniformMatrix4fv(glGetUniformLocation(shaderID, "vp"), 1, false, glm::value_ptr(vp)); 
 
     glBindVertexArray(m_vaoId);
 
@@ -336,6 +341,7 @@ DebugDraw::DebugDraw()
 	
 	m_triangles = new Triangles;
 	m_triangles->Create();
+
 
 	LOG("Physics Debug: graphic debug primitives initialized.");
 }

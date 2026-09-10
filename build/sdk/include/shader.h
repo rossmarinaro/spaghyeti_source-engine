@@ -15,16 +15,16 @@ namespace Graphics {
             unsigned int ID;
             std::string key;
 
-            void SetFloat(const char* key, float value);
-            void SetInt(const char* key, int value);
-            void SetIntV(const char* key, int length, int* value);
-            void SetVec2f(const char* key, float x, float y);
-            void SetVec2f(const char* key, const Math::Vector2& value);
-            void SetVec3f(const char* key, float x, float y, float z);
-            void SetVec3f(const char* key, const Math::Vector3& value);
-            void SetVec4f(const char* key, float r, float g, float b, float a);
-            void SetVec4f(const char* key, const Math::Vector4& value);
-            void SetMat4(const char* key, const Math::Matrix4& matrix);
+            void SetFloat(const char* name, float value);
+            void SetInt(const char* name, int value);
+            void SetIntV(const char* name, int length, int* value);
+            void SetVec2f(const char* name, float x, float y);
+            void SetVec2f(const char* name, const Math::Vector2& value);
+            void SetVec3f(const char* name, float x, float y, float z);
+            void SetVec3f(const char* name, const Math::Vector3& value);
+            void SetVec4f(const char* name, float r, float g, float b, float a);
+            void SetVec4f(const char* name, const Math::Vector4& value);
+            void SetMat4(const char* name, const Math::Matrix4& value);
 
             void Delete();
             void Update();
@@ -47,14 +47,21 @@ namespace Graphics {
 
             struct Uniform { 
                 UniformType type;
-                std::string key; 
+                std::string name; 
                 std::any value;
                 int length;
             };
 
             std::vector<Uniform> m_uniforms;
 
-            const bool Generate(const std::string& key, const char* vertexPath, const char* fragmentPath, const char* geomShader = nullptr);
+            const bool Generate(
+                const std::string& key, 
+                const char* vertexPath, 
+                const char* fragmentPath, 
+                const char* geomShader = nullptr
+            );
+            
+            void ApplyUniform(UniformType type, const char* name, const std::any& value, int length = 0);
     };
 
 }

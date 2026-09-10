@@ -434,9 +434,9 @@ void Game::UpdateFrame()
 
     Entity::s_rendered = 0;
 
-    RenderEntities();
+    RenderEntities(); Renderer::Flush(false); 
     RenderUI();
-
+//Renderer::Flush(false); 
     //render vignette overlay if alpha > 0
 
     if (currentScene->vignette && currentScene->vignette->alpha > 0.0f) {
@@ -510,7 +510,8 @@ void Game::UpdateFrame()
     //debug UI
 
     #if DEVELOPMENT == 1
-        if (physics && physics->enableDebug) {
+        if (physics && physics->enableDebug) 
+        {
             static_cast<b2World*>(physics->GetWorld())->DebugDraw();
             _debug->SetFlags(_debug_flags);
             _debug->Flush();
@@ -567,7 +568,6 @@ void Game::UpdateFrame()
         //remove active behaviors
     
         currentScene->behaviors.erase(std::remove_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](const auto& b) { return !b->active; }), currentScene->behaviors.end());
-
     }
 
     _entitiesToRemove.clear();
@@ -634,40 +634,39 @@ void Game::RenderEntities()
                 entity->Update();
             }
     };
-    //std::sort(currentScene->tiles.begin(), currentScene->tiles.end(), [](auto a, auto b) { return a->depth < b->depth; }); 
 
     //sort opaque / transparent entities and render
 
-    // if (currentScene->GetDepthSort())
-    // {
-    //     std::vector<std::shared_ptr<Entity>> opaque_entities, transparent_entities; 
+    if (currentScene->GetDepthSort())
+    {
+        std::vector<std::shared_ptr<Entity>> opaque_entities, transparent_entities; 
 
-    //     for (const auto& entity : currentScene->entities) {
-    //         if (Graphics::Texture2D::Get(entity->key)->IsOpaque())
-    //             opaque_entities.emplace_back(entity);
-    //         else 
-    //             transparent_entities.emplace_back(entity);
-    //     }
+        for (const auto& entity : currentScene->entities) {
+            if (Graphics::Texture2D::Get(entity->key)->IsOpaque())
+                opaque_entities.emplace_back(entity);
+            else 
+                transparent_entities.emplace_back(entity);
+        }
 
-    //     std::sort(opaque_entities.begin(), opaque_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //f-b <
-    //     std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth > b->depth; }); //b-f >
+        std::sort(opaque_entities.begin(), opaque_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //f-b <
+        std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth > b->depth; }); //b-f >
 
-    //     //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
+        //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
 
-    //     check_visibility(opaque_entities);
+        check_visibility(opaque_entities);
 
-    //     if (!opaque_entities.empty())
-    //         Renderer::Flush();
+        if (!opaque_entities.empty())
+            Renderer::Flush();
 
-    //     check_visibility(transparent_entities);
+        check_visibility(transparent_entities);
 
-    //     if (!transparent_entities.empty())
-    //         Renderer::Flush(false);
-    // }
+        if (!transparent_entities.empty())
+            Renderer::Flush(false);
+    }
 
-    // //sort all entities by depth
+    //sort all entities by depth
 
-    // else {
+    else {
         std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
         //   std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { 
         //    if (a->depth != b->depth)
@@ -679,9 +678,9 @@ void Game::RenderEntities()
         check_visibility(currentScene->entities);
      //check_visibility(currentScene->tiles);
 
-        if (!currentScene->entities.empty())
-            Renderer::Flush(false);   
-    //}
+        //if (!currentScene->entities.empty())
+            //Renderer::Flush(false);   
+    }
 }
 
 
@@ -689,7 +688,7 @@ void Game::RenderEntities()
 
 
 void Game::RenderUI()
-{//return;
+{
     std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
 
     //gather verts from UI sprites, render sprites / text on layer 1
@@ -700,8 +699,8 @@ void Game::RenderUI()
 
     //flush UI of sprites
 
-    if (!currentScene->UI.empty())
-        Renderer::Flush(false); 
+    //if (!currentScene->UI.empty())
+        //Renderer::Flush(false); 
 
     //render geom layer 2
 
@@ -709,8 +708,8 @@ void Game::RenderUI()
         if (UI->renderable && UI->GetType() == Entity::GEOMETRY && UI->render_layer == 2) 
             UI->Render();
 
-    if (!currentScene->UI.empty())
-        Renderer::Flush(false); 
+    //if (!currentScene->UI.empty())
+        //Renderer::Flush(false); 
 
     //render text layer 2
 
@@ -718,7 +717,7 @@ void Game::RenderUI()
         if (UI->renderable && UI->GetType() == Entity::TEXT && UI->render_layer == 2) 
             UI->Render();
 
-    if (!currentScene->UI.empty())
+    //if (!currentScene->UI.empty())
         Renderer::Flush(false); 
 }
 
