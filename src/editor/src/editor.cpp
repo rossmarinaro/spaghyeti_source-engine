@@ -157,6 +157,7 @@ void Editor::Start()
     s_self->webgl_embed_files = true;
     s_self->preserveSrc = false;
     s_self->isMultiThreaded = false;
+    s_self->isFullscreen = false;
     s_self->vsync = false;
     s_self->depthSort = false;
     s_self->cullTarget = { "", { 0.0f, 0.0f } };

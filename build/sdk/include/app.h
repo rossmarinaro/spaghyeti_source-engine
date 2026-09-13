@@ -46,6 +46,7 @@ namespace /* SPAGHYETI_CORE */ System {
                 const std::string& key = "", 
                 bool isMultithreaded = false, 
                 bool isMobileSupported = false,
+                bool isFullScreen = false,
                 int vsync = 0
             );
 

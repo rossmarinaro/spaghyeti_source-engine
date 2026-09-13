@@ -40,11 +40,12 @@ const Math::Vector2 Window::GetNDCToPixel(float x, float y)
 //------------------------------------ Initialize Window
  
 
-void Window::Init()
+void Window::Init(bool isFullScreen)
 {
-#ifdef _WIN32
-    SetProcessDPIAware();
-#endif
+    #ifdef _WIN32
+        SetProcessDPIAware();
+    #endif
+
     if(!glfwInit()) 
     { 
         #ifndef __EMSCRIPTEN__ 
@@ -90,20 +91,25 @@ void Window::Init()
         s_width = 1080.0f;
         s_height = 720.0f;
     #else
+    
+        //fullscreen
+        
+        if (isFullScreen) {
+            s_width = 1480.0f;
+            s_height = 860.0f; 
+            monitor = glfwGetPrimaryMonitor();
+            glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE); 
+        }
+        else {
+            s_width = 800.0f; 
+            s_height = 500.0f;
+        }
+
         #if STANDALONE == 0
             s_width = 1200.0f;
             s_height = 680.0f;
-        #else 
-            // #if DEVELOPMENT == 1
-            //     s_width = 800.0f; 
-            //     s_height = 500.0f; 
-            // #else
-                s_width = 1480.0f;
-                s_height = 860.0f; 
-                monitor = glfwGetPrimaryMonitor();
-                glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);     
-            //#endif
-        #endif        
+        #endif     
+
     #endif
 
     if (monitor) {

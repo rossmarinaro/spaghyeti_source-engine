@@ -642,6 +642,7 @@ void editor::GUI::ShowMenu()
                 ImGui::EndCombo();
             }
 
+            ImGui::Checkbox("full screen", &session->isFullscreen);
             ImGui::Checkbox("enable link-time optimization (-flto)", &session->LTO);
             ImGui::Checkbox("preserve source file", &session->preserveSrc);
 

@@ -384,22 +384,6 @@ void Texture2D::Update(
 
     renderer->indexCount += 6;
 
-
-    // auto it = std::find_if(renderer->activeLayers.begin(), renderer->activeLayers.end(), 
-    // [depth, shader](const System::Renderer::Renderable& layer) { return /* layer.depth == depth && */ layer.shaderID == shader->ID; });
-
-    // if (it == renderer->activeLayers.end())
-    // {
-    //     System::Renderer::Renderable renderable;
-    //     renderable.depth = depth;
-    //     renderable.shaderID = shader->ID; 
-    //     renderable.vertices.reserve(sizeof(vertices) / sizeof(vertices[0])); 
-
-    //     renderer->activeLayers.emplace_back(renderable);
-    //     it = renderer->activeLayers.end() - 1;
-    // }
-
-    // it->vertices.insert(it->vertices.end(), std::begin(vertices), std::end(vertices));
     // for (int i = 0; i < 6; i++)
     //     it->indices.push_back(i + it->vertices.size());
 

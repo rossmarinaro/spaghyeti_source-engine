@@ -1203,7 +1203,6 @@ void EventListener::BuildAndRun()
         game_src << "void " + name_upper + "::Preload() {\n" + assetData + "\n" + preloadData + "\n}\n\n";
         game_src << "void " + name_upper + "::Run(bool loadMap) {\n" +  commandData + "}\n\n";
         game_src << "void " + name_upper + "::Update() {\n" +  updateData + "}\n\n";
-
     }
 
     //clear scene queue
@@ -1215,7 +1214,8 @@ void EventListener::BuildAndRun()
 
     //game template
 
-    const std::string isMultiThreaded = session->isMultiThreaded ? "true" : "false";
+    const std::string isMultiThreaded = session->isMultiThreaded ? "true" : "false",
+                      isFullscreen = session->isFullscreen ? "true" : "false";
 
     game_src << "\n\n//-----------------------------------------------------------------------------\n\n";
     game_src << "\n#ifdef __EMSCRIPTEN__\n";
@@ -1264,12 +1264,12 @@ void EventListener::BuildAndRun()
 
     int vsync = session->vsync ? 1 : 0;
 
-    game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\", " + isMultiThreaded + ", isMobile, " + std::to_string(vsync) + ");\n";
+    game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\", " + isMultiThreaded + ", isMobile, " + isFullscreen + ", " + std::to_string(vsync) + ");\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       emscripten_exit_with_live_runtime();\n";
     game_src <<	"   #endif\n";
     game_src << "   return 0;\n";
-    game_src <<	"}";
+    game_src <<	"}"; 
 
     game_src.close();
 

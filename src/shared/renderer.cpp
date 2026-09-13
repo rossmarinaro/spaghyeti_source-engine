@@ -278,7 +278,7 @@ void Renderer::Flush(bool renderOpaque)
 
         //update uniforms
 
-        const auto it = std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [s_instance](const auto& s) { return s.second->ID == s_instance->activeShaderID; });
+        const auto it = std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [](const auto& s) { return s.second->ID == s_instance->activeShaderID; });
 
         if (it != System::Application::resources->shaders.end()) {
             const auto activeShader = it->second;
@@ -312,196 +312,6 @@ void Renderer::Flush(bool renderOpaque)
     s_instance->vertices.clear();
     s_instance->textureSlotIndex = 1;
     s_instance->indexCount = 0;
-
-
-
-
-
-
-
-
-
- return;
-
-    if (!s_instance)
-        return;
-
-    //render by shader
-        // std::sort(s_instance->activeLayers.begin(), s_instance->activeLayers.end(), [](auto a, auto b) {
-        //   if (a.depth != b.depth)
-        //        return a.depth < b.depth; 
-
-        //     return a.shaderID < b.shaderID; 
-        // });
-
-    //wait for gpu to finish rendering current buffer
-
-    if (s_instance->m_fences[s_currentBufferIndex] != nullptr) 
-    {
-        GLenum result;
-
-        #ifdef __EMSCRIPTEN__
-            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], 0, 0);
-        #else
-            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
-        #endif
-
-        if (result == GL_WAIT_FAILED) { 
-            LOG("Renderer: skipping render. buffer wait failed.");
-            return;
-        }
-
-        //remove fence
-
-        glDeleteSync(s_instance->m_fences[s_currentBufferIndex]);
-        s_instance->m_fences[s_currentBufferIndex] = nullptr;
-    }
-
-// std::vector<Math::Graphics::Vertex> frameVerts;
-// std::vector<unsigned int> frameInc;
-// GLuint activeVBO = s_instance->m_VBOs[s_currentBufferIndex];
-
-// for (auto& layer : s_instance->activeLayers)
-// {
-//     frameVerts.insert(frameVerts.end(), layer.vertices.begin(), layer.vertices.end());
-//     for (unsigned int idx : layer.indices)
-//         frameInc.push_back(idx + frameVerts.size());
-
-//     layer.vertices.clear();
-//     layer.indices.clear();
-// }
-
-// if (!frameVerts.empty()) {
-//     glBindBuffer(GL_ARRAY_BUFFER, activeVBO);   
-//     glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_DYNAMIC_DRAW);
-// //glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), frameVerts.data(), GL_DYNAMIC_DRAW);
-//     glBufferSubData(GL_ARRAY_BUFFER, 0, frameVerts.size() * sizeof(Math::Graphics::Vertex), frameVerts.data());
-// }
-
-
-
-//tiles
-// glBindVertexArray(s_instance->m_tileVAO);
-
-// for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
-//     glActiveTexture(GL_TEXTURE0 + i);
-//     glBindTexture(GL_TEXTURE_2D, s_instance->textureSlots[i]);  
-// }   
-    
-//EnableAttributes();
-
-// glUseProgram(s_instance->activeShaderID); 
-// glDrawElements(GL_TRIANGLES, 7000, GL_UNSIGNED_INT, (void*)0);  
-
-// for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
-//     glActiveTexture(GL_TEXTURE0 + i);
-//     glBindTexture(GL_TEXTURE_2D, 0);
-// } 
-
-// for (int i = 0; i < 16; i++)
-//     glDisableVertexAttribArray(i);
-
-// glBindBuffer(GL_ARRAY_BUFFER, 0);
-// glUseProgram(0);
-// glBindVertexArray(0);
-       
-    
-    glBindVertexArray(s_instance->m_VAO);
-    for (auto& layer : s_instance->activeLayers)
-    { 
-        //render quads in verts vector
-        
-        if (/* !s_instance->vertices.empty() */  !layer.vertices.empty()) 
-        {
-            if (System::Game::GetScene()->GetDepthSort()) 
-            {
-                if (renderOpaque) {
-                    glEnable(GL_DEPTH_TEST);
-                    glDepthFunc(GL_LEQUAL);
-                    glDepthMask(GL_TRUE);
-                    glDisable(GL_BLEND);
-                }
-                else {
-                    EnableBlending();
-                    glDepthMask(GL_FALSE);
-                }
-            }
-            else {
-                EnableBlending();
-                glDisable(GL_DEPTH_TEST);
-                glDisable(GL_SCISSOR_TEST);
-            }
-
-        auto shader = Graphics::Shader::Get("parallax bg");
-            //if (layer.shaderID != shader->ID)continue;; //{LOG(layer.vertices.size()/* layer.vertices[0].u */);}
-                        //bind vertex array and current vbo
-            //LOG("depth: " + std::to_string(layer.depth) + " shaderID: " + std::to_string(layer.shaderID));
-
-
-            //glBindVertexArray(s_instance->m_VAO); 
-
-            GLuint activeVBO = s_instance->m_VBOs[s_currentBufferIndex];
-
-            glBindBuffer(GL_ARRAY_BUFFER, activeVBO);    glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_DYNAMIC_DRAW);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, layer.vertices.size()  /* s_instance->vertices.size() */ * sizeof(Math::Graphics::Vertex), layer.vertices.data()   /* s_instance->vertices.data() */);
-            // void* ptr = glMapBufferRange(GL_ARRAY_BUFFER, 0, layer.vertices.size(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-            // if (ptr) {
-            //     memcpy(ptr, layer.vertices.data(), layer.vertices.size());
-            //     glUnmapBuffer(GL_ARRAY_BUFFER);
-            // }
-
-
-            //update image samplers /bind textures to defined slot indices
-
-            for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
-                glActiveTexture(GL_TEXTURE0 + i);
-                glBindTexture(GL_TEXTURE_2D, s_instance->textureSlots[i]);  
-            }   
-    
-            EnableAttributes();
-
-            glUseProgram(/* s_instance->activeShaderID */ layer.shaderID); 
-
-
-            if (glGetUniformLocation(layer.shaderID /* s_instance->activeShaderID */, "time") != -1)
-            { if (layer.shaderID  /* s_instance->activeShaderID */ == shader->ID)
-                glUniform1f(glGetUniformLocation(layer.shaderID /* s_instance->activeShaderID */, "time"), -System::Game::GetScene()->GetContext()->camera->GetPosition()->x / 60000.0f);
-                else  glUniform1f(glGetUniformLocation(layer.shaderID /* s_instance->activeShaderID */, "time"), 0.0f); 
-            }
-
-            //draw elements from vertices vector
-
-            glDrawElements(s_instance->drawStyle == 0 ? GL_LINE_LOOP : GL_TRIANGLES, /* frameInc.size() */ layer.indices.size() /* s_instance->indexCount */, GL_UNSIGNED_INT, 0);  
-
-            for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
-                glActiveTexture(GL_TEXTURE0 + i);
-                glBindTexture(GL_TEXTURE_2D, 0);
-            } 
-
-            //disable attributes and unbind
-
-           for (int i = 0; i < 16; i++)
-                glDisableVertexAttribArray(i);
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glUseProgram(0);
-
-            s_instance->textureSlotIndex = 1;
-            layer.vertices.clear();   
-            layer.indices.clear(); 
-        }
-    }
- 
-    //start new gpu async await call fence 
-
-    glBindVertexArray(0);
-
-    s_instance->m_fences[s_currentBufferIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); 
-
-    //cycle to next buffer in ring
-
-    s_currentBufferIndex = (s_currentBufferIndex + 1) % BUFFERS; 
-    
 }
 
 
@@ -536,8 +346,6 @@ void Renderer::ShutDown()
     glDeleteVertexArrays(1, &s_instance->m_VAO); 
     glDeleteBuffers(BUFFERS, s_instance->m_VBOs);    
     glDeleteBuffers(1, &s_instance->m_EBO);
-    
-    //s_instance->queue.clear();
 
     delete s_instance;
     s_instance = nullptr;

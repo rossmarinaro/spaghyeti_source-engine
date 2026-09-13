@@ -32,10 +32,8 @@
 
 namespace editor {
     
-
     class Editor 
 	{
-
 		public:
 
 			int worldWidth, 
@@ -65,6 +63,7 @@ namespace editor {
                  webgl_embed_files,
                  preserveSrc,
                  isMultiThreaded,
+                 isFullscreen,
                  depthSort,
                  vsync,
                  LTO;
@@ -106,7 +105,6 @@ namespace editor {
 
             static inline Editor* s_self;
             static void Update();
-
 	};
 
 }

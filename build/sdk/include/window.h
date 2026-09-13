@@ -17,7 +17,7 @@ namespace /* SPAGHYETI_CORE */ System {
 
             static inline const char* s_glsl_version;
 
-            static void Init();
+            static void Init(bool isFullScreen = false);
             static const Math::Vector2 GetNDCToPixel(float x, float y);
             static const Math::Vector2 GetPixelToNDC(float x, float y);
      

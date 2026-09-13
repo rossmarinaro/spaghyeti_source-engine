@@ -78,6 +78,7 @@ void System::Application::Start(
     const std::string& key, 
     bool isMultithreaded, 
     bool isMobileSupported,
+    bool isFullScreen,
     int vsync
 )
 { 
@@ -102,7 +103,7 @@ void System::Application::Start(
 
         game = layer;
 
-        Window::Init();  
+        Window::Init(isFullScreen);  
 
         Renderer::SetVsync(vsync);
  

@@ -40,13 +40,6 @@ namespace /* SPAGHYETI_CORE */ System {
 
         public:
 
-            struct Renderable { 
-                int depth;
-                unsigned int shaderID; 
-                std::vector<Math::Graphics::Vertex> vertices;
-                std::vector<unsigned int> indices;
-            };
-
             static inline const size_t MAX_TEXTURES = 32,
                                        MAX_QUADS = 10000;
 
@@ -55,9 +48,8 @@ namespace /* SPAGHYETI_CORE */ System {
 
             unsigned int drawStyle, activeShaderID;
             std::array<uint32_t, MAX_TEXTURES> textureSlots;
-            std::vector<Math::Graphics::Vertex> vertices; std::vector<unsigned int> indices;
-            //std::vector<std::vector<Math::Graphics::Vertex>> queue;
-std::vector<Renderable> activeLayers;
+            std::vector<Math::Graphics::Vertex> vertices;
+
             Renderer();
             ~Renderer() = default;
 
@@ -90,7 +82,7 @@ std::vector<Renderable> activeLayers;
 
             GLsync m_fences[BUFFERS];
             GLuint m_VBOs[BUFFERS]; //ring buffer
-            GLuint m_textureColorBuffer, m_VAO, m_EBO, m_FBO  ,m_tileVBO,m_tileVAO      /* , m_RBO */; 
+            GLuint m_textureColorBuffer, m_VAO, m_EBO, m_FBO /* , m_RBO */; 
             std::vector<GLuint> m_indices;
 
             static inline Renderer* s_instance;

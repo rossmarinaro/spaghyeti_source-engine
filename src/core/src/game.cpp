@@ -434,9 +434,9 @@ void Game::UpdateFrame()
 
     Entity::s_rendered = 0;
 
-    RenderEntities(); Renderer::Flush(false); 
+    RenderEntities();  
     RenderUI();
-//Renderer::Flush(false); 
+
     //render vignette overlay if alpha > 0
 
     if (currentScene->vignette && currentScene->vignette->alpha > 0.0f) {
@@ -668,18 +668,11 @@ void Game::RenderEntities()
 
     else {
         std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
-        //   std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { 
-        //    if (a->depth != b->depth)
-        //         return a->depth < b->depth; 
-
-        //     return a->shaderKey < b->shaderKey; 
-        // });
 
         check_visibility(currentScene->entities);
-     //check_visibility(currentScene->tiles);
 
-        //if (!currentScene->entities.empty())
-            //Renderer::Flush(false);   
+        if (!currentScene->entities.empty())
+            Renderer::Flush(false);   
     }
 }
 
