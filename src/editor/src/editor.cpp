@@ -26,17 +26,17 @@ void Editor::Update()
 
     //set grid shader and render
 
-    if (gui->grid) 
-    {
-        auto shader = Graphics::Shader::Get("grid");
+    // if (gui->grid) 
+    // {
+    //     const auto shader = Graphics::Shader::Get("grid");
 
-        shader->SetFloat("pitch", gui->grid_quantity);
-        shader->SetFloat("alpha", gui->grid->alpha);
-        shader->SetVec3f("tint", gui->grid_color);
+    //     shader->SetFloat("pitch", gui->grid_quantity);
+    //     shader->SetFloat("alpha", gui->grid->alpha);
+    //     shader->SetVec3f("tint", gui->grid_color);
 
-        gui->grid->Render(); 
-        Renderer::Flush();
-    }
+    //     gui->grid->Render(); 
+    //     //Renderer::Flush();
+    // }
 
     //update time and game loop / rendering
 
@@ -83,7 +83,7 @@ void Editor::Update()
         if (selectedEntity->GetType() == Entity::SPRITE) {
             const auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
             const auto texture = Graphics::Texture2D::Get(sprite->key);
-            s_self->s_selector->SetSize(texture->FrameWidth, texture->FrameHeight);
+            s_self->s_selector->SetSize(texture->FrameWidth, texture->FrameHeight); 
         }
         
         if (selectedEntity->GetType() == Entity::GEOMETRY) {
@@ -109,14 +109,12 @@ void Editor::Update()
 
     //save and close editor
 
-    if (glfwWindowShouldClose(Renderer::GLFW_window_instance))
-        if (s_self->events->canSave) {
-            if (s_self->projectOpen)
-                s_self->events->saveFlag = true;
-            else 
-                s_self->events->exitFlag = true;
-        }
-
+    if (glfwWindowShouldClose(Renderer::GLFW_window_instance) && s_self->events->canSave) {
+        if (s_self->projectOpen)
+            s_self->events->saveFlag = true;
+        else 
+            s_self->events->exitFlag = true;
+    }
 }
 
 
@@ -212,7 +210,7 @@ void Editor::Start()
 
     //create entity selector graphic
 
-    s_self->s_selector = System::Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
+    s_self->s_selector = Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
     s_self->s_selector->SetTint({ 0.0f, 1.0f, 0.0f });  
     s_self->s_selector->SetDrawStyle(0);
     s_self->s_selector->SetThickness(2.0f);
@@ -336,8 +334,8 @@ void Editor::FocusEntity(const std::shared_ptr<Entity>& entity)
 
     Get()->game->camera->SetZoom(1.0f);
     Get()->game->camera->SetPosition({ 
-        -(entity->position.x - System::Window::s_scaleWidth / 2) - width, 
-        -(entity->position.y - System::Window::s_scaleHeight / 2) - height
+        -(entity->position.x - Window::s_scaleWidth / 2) - width, 
+        -(entity->position.y - Window::s_scaleHeight / 2) - height
     });
 
     selectedEntity = entity;

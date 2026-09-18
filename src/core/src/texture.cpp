@@ -270,16 +270,22 @@ void Texture2D::Update(
         depth = 1000.0f;
 
     auto renderer = System::Renderer::Get();
-    const int elementCount = 6 * System::Renderer::MAX_QUADS; 
-    auto shader = Graphics::Shader::Get(shaderKey);
+    const int elementCount = /* 4 * */ System::Renderer::MAX_QUADS; 
+    const auto shader = Graphics::Shader::Get(shaderKey);
+
+    //auto it = std::find_if(renderer->activeLayers.begin(), renderer->activeLayers.end(), 
+    //[depth, shader](const auto layer) { return /* layer.depth == depth && */ layer->shaderID == shader->ID; });
 
     //flush if max index count exceeds element count, or textures reached max OR shader is different than renderer's active shader
 
-    if (renderer->indexCount >= elementCount || 
-        renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 ||
-        shader->ID != renderer->activeShaderID
-    ) 
-        System::Renderer::Flush(m_opaque);
+    const auto renderable = System::Renderer::GetOrCreateRenderBucket(shader->ID, depth);
+
+    //if (renderer->activeShaderID != shader->ID)
+    if (((renderable->vertices.size() / 4) /* renderer->indexCount */ >= elementCount) || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) 
+    {
+        LOG("draw");
+        System::Renderer::Flush(/* m_opaque */false, renderable);
+    }//else {LOG(renderable->indices);}
 
     //set active shader
 
@@ -384,8 +390,37 @@ void Texture2D::Update(
 
     renderer->indexCount += 6;
 
-    // for (int i = 0; i < 6; i++)
-    //     it->indices.push_back(i + it->vertices.size());
+
+
+
+
+    // if (it == renderer->activeLayers.end())
+    // {
+    //     System::Renderer::Renderable r;
+    //     r.depth = depth;
+    //     r.shaderID = shader->ID; 
+    //     r.vertices.reserve(sizeof(vertices) / sizeof(vertices[0])); 
+    //     const auto renderable = std::make_shared<System::Renderer::Renderable>(r);
+    //     renderer->activeLayers.emplace_back(renderable);
+    //     it = renderer->activeLayers.end() - 1;
+    // }
+
+    renderable->vertices.insert(renderable->vertices.end(), std::begin(vertices), std::end(vertices));
+//renderer->indexCount = 6 * it->vertices.size();
+ //   for (int i = 0; i < 6; i++)
+        //renderable->indices += 6 /* * renderable->vertices.size() */;  //.push_back(i + it->vertices.size());
+        uint32_t baseVertex = static_cast<uint32_t>(renderable->vertices.size());
+renderable->indices.push_back(baseVertex + 0);
+renderable->indices.push_back(baseVertex + 1);
+renderable->indices.push_back(baseVertex + 2);
+renderable->indices.push_back(baseVertex + 2);
+renderable->indices.push_back(baseVertex + 3);
+renderable->indices.push_back(baseVertex + 0);
+
+    // if (/* it->indices.size() */renderer->indexCount >= elementCount || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) {//LOG(0);
+    //     System::Renderer::Flush(m_opaque, &*it);
+
+    // }
 
 }
 

@@ -671,8 +671,14 @@ void Game::RenderEntities()
 
         check_visibility(currentScene->entities);
 
-        if (!currentScene->entities.empty())
-            Renderer::Flush(false);   
+        //if (!currentScene->entities.empty())
+        //  Renderer::Flush(false);   
+         auto renderer = Renderer::Get();
+         if (renderer && renderer->activeLayers.size()) 
+  //for (auto& layer : renderer->activeLayers)
+         //  Renderer::Flush(false, layer); // Renderer:: RenderBatch(layer);
+//         }
+       Renderer::Flush(false, renderer->activeLayers[0]); //Renderer:: RenderBatch(renderer->activeLayers[0]);
     }
 }
 
@@ -681,7 +687,7 @@ void Game::RenderEntities()
 
 
 void Game::RenderUI()
-{
+{return;
     std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
 
     //gather verts from UI sprites, render sprites / text on layer 1
@@ -710,7 +716,7 @@ void Game::RenderUI()
         if (UI->renderable && UI->GetType() == Entity::TEXT && UI->render_layer == 2) 
             UI->Render();
 
-    //if (!currentScene->UI.empty())
+    if (!currentScene->UI.empty())
         Renderer::Flush(false); 
 }
 

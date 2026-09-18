@@ -279,8 +279,10 @@ Scene::TilemapLayer Game::CreateTileLayer(
 
                 //create tilesprite entity
 
-                const auto tile = CreateTileSprite(texture_key, (column * tileWidth) + posX, (row * tileHeight) + posY, tileType); 
-       
+                const auto tile = std::make_shared<Sprite>(texture_key, (column * tileWidth) + posX, (row * tileHeight) + posY, false, true);
+
+                tile->ReadSpritesheetData();
+                tile->SetFrame(tileType);
                 tile->SetName((std::string)data_key);
                 tile->SetDepth(depth); 
                 tile->SetScrollFactor({ scrollFactorX, scrollFactorY });
@@ -331,6 +333,8 @@ Scene::TilemapLayer Game::CreateTileLayer(
                 else {
                   tile->SetFlip(flipX, flipY); 
                 }
+
+                GetScene()->entities.emplace_back(tile);
             }
         }
 
@@ -346,7 +350,7 @@ Scene::TilemapLayer Game::CreateTileLayer(
 std::vector<std::shared_ptr<Sprite>> Game::GetTileMapSprites(const std::string& key) 
 {
     std::vector<std::shared_ptr<Sprite>> tilesprites;
-    const auto tiles = GetScene()->entities;//tiles;
+    const auto tiles = GetScene()->entities;
 
     for (auto it = tiles.begin(); it != tiles.end(); ++it) 
     {
@@ -405,21 +409,6 @@ void Game::RemoveTileLayer(const std::string& mapKey, int layerID)
             DestroyEntity(tilesprite); 
 
     LOG("Tilemap: layer " + std::to_string(layerID) + " removed from map: " +  mapKey + ".");
-}
-
-//----------------------------- tile
-
-
-std::shared_ptr<Sprite> Game::CreateTileSprite(const std::string& key, float x, float y, int frame)
-{
-    const auto ts = std::make_shared<Sprite>(key, x, y, false, true);
-
-    GetScene()->entities.emplace_back(ts);
-
-    ts->ReadSpritesheetData();
-    ts->SetFrame(frame);
-//GetScene()->entities.emplace_back(ts); //GetScene()->tiles.emplace_back(ts);
-    return ts;
 }
 
 

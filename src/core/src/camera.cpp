@@ -137,7 +137,7 @@ void Camera::Update()
 {    
     //camera follows target within world bounds
 
-    if (m_target.first && m_canFollow){
+    if (m_target.first && m_canFollow) {
         if (m_target.first->x > currentBoundsWidthBegin && m_target.first->x < currentBoundsWidthEnd)
             m_position.x = (-m_target.first->x + m_target.second.first);
             

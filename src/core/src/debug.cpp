@@ -183,7 +183,7 @@ void Lines::Flush()
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(b2Color), m_colors);
 
     #ifndef __EMSCRIPTEN__
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); 
     #endif
 
     glLineWidth(0.1f);

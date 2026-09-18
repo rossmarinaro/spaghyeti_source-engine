@@ -698,6 +698,15 @@ void Shader::UnLoad(const std::string& key)
 
 void Shader::Update()
 {
+    // for (auto& shader : System::Application::resources->shaders) {
+    //     static int samplers[System::Renderer::MAX_TEXTURES];
+
+    //     for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++)  
+    //         samplers[i] = i;
+
+    //     shader.second->SetIntV("SPAGHYETI_ACTIVE_TEXTURES", System::Renderer::MAX_TEXTURES, samplers);
+    // }
+
     for (const auto& uniform : m_uniforms) 
     {
         const char* uniformName = (uniform.name).c_str();
