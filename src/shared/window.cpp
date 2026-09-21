@@ -7,9 +7,9 @@
 #endif
 
 #include "../../build/sdk/include/app.h"
-#include "../../build/sdk/include/window.h"
+#include "./window.h"
 #include "../core/src/debug.h"
-#include "./renderer.h"
+
 
 using namespace System;
 
@@ -129,7 +129,7 @@ void Window::Init(bool isFullScreen)
 
     //create window
 
-    Renderer::GLFW_window_instance = glfwCreateWindow(
+    GLFW_window_instance = glfwCreateWindow(
         s_width, 
         s_height,
         (Application::name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2026 🍝👌").c_str(), 
@@ -137,16 +137,16 @@ void Window::Init(bool isFullScreen)
         NULL
     );
 
-    //glfwSetWindowMonitor(Renderer::GLFW_window_instance, monitor, 0, 0, s_width, s_height, 60);
+    //glfwSetWindowMonitor(GLFW_window_instance, monitor, 0, 0, s_width, s_height, 60);
 
-    if (!Renderer::GLFW_window_instance) {
+    if (!GLFW_window_instance) {
         LOG("GLFW: window could not be created.");
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
     
-    glfwShowWindow(Renderer::GLFW_window_instance);
-    glfwMakeContextCurrent(Renderer::GLFW_window_instance);
+    glfwShowWindow(GLFW_window_instance);
+    glfwMakeContextCurrent(GLFW_window_instance);
 
     LOG("Window: initialized.");
 
@@ -161,5 +161,88 @@ void Window::Init(bool isFullScreen)
 
 }
 
+//----------------------------------------
 
 
+void Window::cursor_callback(GLFWwindow* window, double xPos, double yPos)
+{
+    //set cursor object to movement, translate ndc coords to clip space
+
+    auto position = Window::GetNDCToPixel((float)xPos, (float)yPos);
+
+    Application::game->inputs->mouseX = position.x;
+    Application::game->inputs->mouseY = position.y;
+}
+
+
+//----------------------------------------
+
+
+void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (action == GLFW_PRESS) {
+        Application::game->inputs->SetKeyInputs(true, key, window);
+        Application::game->inputs->numInputs++;
+    }
+
+    if (action == GLFW_RELEASE) {
+        Application::game->inputs->SetKeyInputs(false, key, window);
+        Application::game->inputs->numInputs--;
+    }
+}
+
+
+//----------------------------------------
+
+
+void Window::input_callback(GLFWwindow* window, int input, int action, int mods)
+{
+    if (input == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwIconifyWindow(window);
+        
+    if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        Application::game->inputs->RIGHT_CLICK = true;
+
+    else
+        Application::game->inputs->RIGHT_CLICK = false;
+
+    if (input == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        Application::game->inputs->LEFT_CLICK = true;
+
+    else
+        Application::game->inputs->LEFT_CLICK = false;
+
+    if (action == GLFW_PRESS)
+        Application::game->inputs->numInputs++;
+
+    if (action == GLFW_RELEASE)
+        Application::game->inputs->numInputs--;
+}
+
+//----------------------------------------
+
+
+void Resize(GLFWwindow* window, int width, int height) 
+{
+    if (!window) 
+        return;
+
+    Window::s_width = width;
+    Window::s_height = height;
+    glViewport(0, 0, Window::s_width, Window::s_height);
+}
+
+
+//----------------------------------------
+
+
+void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    Resize(window, width, height);
+}
+
+//-----------------------------------
+
+
+void Window::window_size_callback(GLFWwindow* window, int width, int height) {
+    Resize(window, width, height);
+}

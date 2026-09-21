@@ -1,5 +1,5 @@
 #include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/window.h"
+#include "../../shared/window.h"
 #include "../../vendors/glm/glm.hpp"
 #include "../../vendors/glm/gtc/matrix_transform.hpp"
 

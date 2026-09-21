@@ -11,7 +11,7 @@
 #include "../../vendors/box2d/include/box2d/box2d.h"
 
 #include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/window.h"
+#include "../../shared/window.h"
 
 //-------------------------------------- standard sprite / tile
 
@@ -463,7 +463,7 @@ void Sprite::Update()
 //------------------------------------------ render sprite / update transformations
 
 
-void Sprite::Render()
+void Sprite::Render(int shaderID)
 {  
     if (!alive)
         return;
@@ -551,17 +551,13 @@ void Sprite::Render()
             color, 
             outlineColor,
             modelViewProj, 
+            drawStyle,
             outlineEnabled ? outlineWidth : 0.0f, 
             whiteout,
             depth, 
             flipX, 
             flipY
         );  
-
-        const auto renderer = System::Renderer::Get();
-
-        if (renderer)
-            renderer->drawStyle = 1;
     }
 
     //play current animation
@@ -649,6 +645,9 @@ void Sprite::Render()
         catch (std::runtime_error& err) { 
             LOG("Sprite: error playing animation: " + (std::string)err.what()); 
         }
+
+        if (shaderID != -1)
+            System::Renderer::Flush(false, shaderID); 
     }
 }
  
@@ -680,18 +679,18 @@ std::shared_ptr<Sprite> System::Game::CreateSprite(const std::string& key, float
 {
     const auto sprite = std::make_shared<Sprite>(key, x, y, isSpawn);
 
-    if (layer == 1)
-        GetScene()->entities.emplace_back(sprite);
-
-    if (layer == 2)
-        GetScene()->UI.emplace_back(sprite);
-
     #if STANDALONE == 1
         sprite->ReadSpritesheetData();
         sprite->SetFrame(frame);
     #endif
 
     sprite->SetScale(scale);
+
+    if (layer == 1)
+        GetScene()->entities.emplace_back(sprite);
+
+    if (layer == 2)
+        GetScene()->UI.emplace_back(sprite);
 
     return sprite;
 }
@@ -706,8 +705,6 @@ std::shared_ptr<Sprite> System::Game::CreateUISprite(const std::string& key, flo
 
     const auto element = std::make_shared<Sprite>(key, pos);
 
-    GetScene()->UI.emplace_back(element);
-
     #if STANDALONE == 1
         element->ReadSpritesheetData();
         element->SetFrame(frame);
@@ -715,6 +712,8 @@ std::shared_ptr<Sprite> System::Game::CreateUISprite(const std::string& key, flo
 
     element->SetScale(scale);
     element->render_layer = 1;
+
+    GetScene()->UI.emplace_back(element);
 
     return element;
 }

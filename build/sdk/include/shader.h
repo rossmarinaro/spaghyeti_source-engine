@@ -12,8 +12,11 @@ namespace Graphics {
 
         public:
 
+            int depth;
             unsigned int ID;
             std::string key;
+
+            inline void SetDepth(int depth) { this->depth = depth; }
 
             void SetFloat(const char* name, float value);
             void SetInt(const char* name, int value);

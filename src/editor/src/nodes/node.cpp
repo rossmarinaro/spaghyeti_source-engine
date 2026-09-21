@@ -383,8 +383,6 @@ void Node::LoadShader(std::shared_ptr<Node> node, const std::string& name, const
 {
     node->shader = { name, { vertPath, fragPath } };  
 
-    Graphics::Shader::Load(name, vertPath.c_str(), fragPath.c_str());
-
     //apply shader to node
 
     if (node->type == SPRITE) {
@@ -482,12 +480,7 @@ void Node::RenderShaderOptions(const std::string& nodeId, const std::vector<std:
         if (ImGui::BeginMenu("remove shader?"))
         {
             if (ImGui::MenuItem("yes"))
-            {
                 node->RemoveComponent(component); 
-                
-                if (node->shader.first.length())
-                    Graphics::Shader::UnLoad(node->shader.first);
-            }
             
             ImGui::EndMenu();
         }

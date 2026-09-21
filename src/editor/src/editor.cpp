@@ -26,17 +26,20 @@ void Editor::Update()
 
     //set grid shader and render
 
-    // if (gui->grid) 
-    // {
-    //     const auto shader = Graphics::Shader::Get("grid");
+    if (gui->grid) 
+    {
+        const auto shader = Graphics::Shader::Get("grid");
 
-    //     shader->SetFloat("pitch", gui->grid_quantity);
-    //     shader->SetFloat("alpha", gui->grid->alpha);
-    //     shader->SetVec3f("tint", gui->grid_color);
-
-    //     gui->grid->Render(); 
-    //     //Renderer::Flush();
-    // }
+        if (shader)
+        {
+            shader->SetFloat("pitch", gui->grid_quantity);
+            shader->SetFloat("alpha", gui->grid->alpha);
+            shader->SetVec3f("tint", gui->grid_color);
+            shader->SetDepth(0);
+            
+            gui->grid->Render(shader->ID); 
+        }
+    }
 
     //update time and game loop / rendering
 
@@ -60,7 +63,7 @@ void Editor::Update()
     //track mouse position by translating screen space to world space 
 
     double xPos, yPos;
-    glfwGetCursorPos(Renderer::GLFW_window_instance, &xPos, &yPos);
+    glfwGetCursorPos(Window::GLFW_window_instance, &xPos, &yPos);
     
     const Math::Vector4 pm = s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight);
     const Math::Matrix4 vm = s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition()->x, s_self->game->camera->GetPosition()->y);
@@ -83,7 +86,7 @@ void Editor::Update()
         if (selectedEntity->GetType() == Entity::SPRITE) {
             const auto sprite = std::static_pointer_cast<Sprite>(selectedEntity);
             const auto texture = Graphics::Texture2D::Get(sprite->key);
-            s_self->s_selector->SetSize(texture->FrameWidth, texture->FrameHeight); 
+            s_self->s_selector->SetSize(sprite->texture.FrameWidth, sprite->texture.FrameHeight); 
         }
         
         if (selectedEntity->GetType() == Entity::GEOMETRY) {
@@ -103,13 +106,13 @@ void Editor::Update()
 
     gui->Render(); 
     
-	glfwSetFramebufferSizeCallback(Renderer::GLFW_window_instance, Renderer::framebuffer_size_callback);
-    glfwSetWindowSizeCallback(Renderer::GLFW_window_instance, Renderer::window_size_callback); 
-	glfwSwapBuffers(Renderer::GLFW_window_instance);
+	glfwSetFramebufferSizeCallback(Window::GLFW_window_instance, Window::framebuffer_size_callback);
+    glfwSetWindowSizeCallback(Window::GLFW_window_instance, Window::window_size_callback); 
+	glfwSwapBuffers(Window::GLFW_window_instance);
 
     //save and close editor
 
-    if (glfwWindowShouldClose(Renderer::GLFW_window_instance) && s_self->events->canSave) {
+    if (glfwWindowShouldClose(Window::GLFW_window_instance) && s_self->events->canSave) {
         if (s_self->projectOpen)
             s_self->events->saveFlag = true;
         else 
@@ -205,17 +208,18 @@ void Editor::Start()
         image.height = 65;
         image.pixels = image_buffer;
 
-        glfwSetWindowIcon(Renderer::GLFW_window_instance, 1, &image);
+        glfwSetWindowIcon(Window::GLFW_window_instance, 1, &image);
     }
 
     //create entity selector graphic
 
     s_self->s_selector = Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
     s_self->s_selector->SetTint({ 0.0f, 1.0f, 0.0f });  
-    s_self->s_selector->SetDrawStyle(0);
     s_self->s_selector->SetThickness(2.0f);
     s_self->s_selector->SetAlpha(0.0f);
-    s_self->s_selector->SetDepth(1000);
+    s_self->s_selector->SetDepth(1000); 
+
+    s_self->s_selector->SetDrawStyle(0);
 
     //main update loop
 
@@ -309,8 +313,8 @@ void Editor::FocusEntity(const std::shared_ptr<Entity>& entity)
     if (entity->GetType() == Entity::SPRITE) {
         const auto sprite = std::static_pointer_cast<Sprite>(entity);
         const auto texture = Graphics::Texture2D::Get(sprite->key); 
-        width = texture->FrameWidth;
-        height = texture->FrameHeight;
+        width = sprite->texture.FrameWidth;
+        height = sprite->texture.FrameHeight;
     }
     else if (entity->GetType() == Entity::TEXT) 
     {
@@ -333,6 +337,7 @@ void Editor::FocusEntity(const std::shared_ptr<Entity>& entity)
     }
 
     Get()->game->camera->SetZoom(1.0f);
+ 
     Get()->game->camera->SetPosition({ 
         -(entity->position.x - Window::s_scaleWidth / 2) - width, 
         -(entity->position.y - Window::s_scaleHeight / 2) - height

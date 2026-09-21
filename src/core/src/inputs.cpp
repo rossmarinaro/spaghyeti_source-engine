@@ -1,10 +1,6 @@
 #include "../../../build/sdk/include/app.h"
-#include "../../shared/renderer.h"
+#include "../../shared/window.h"
 
-#ifdef __EMSCRIPTEN__
-    #include "../../../build/sdk/include/window.h"
-
-#endif
 
 using namespace System;
 

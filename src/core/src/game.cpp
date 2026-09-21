@@ -1,6 +1,6 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/audio.h"
-#include "../../../build/sdk/include/window.h"
+#include "../../shared/window.h"
 
 #include "../../shared/renderer.h"
 #include "./collisionManager.h"
@@ -119,7 +119,7 @@ void Game::Boot()
     
     //preload / run game layer
 
-    glfwSetWindowTitle(Renderer::GLFW_window_instance, Application::name.c_str());
+    glfwSetWindowTitle(Window::GLFW_window_instance, Application::name.c_str());
 
     inputs->ResetControls();
 
@@ -204,6 +204,7 @@ void Game::StartScene(const std::string& key, bool loadMap)
         game->currentScene->vignette->SetTint({ 0.0f, 0.0f, 0.0f });
         game->currentScene->vignette->SetAlpha(0.0f);
         game->currentScene->vignette->SetScrollFactor({ 0.0f, 0.0f });
+        game->currentScene->vignette->SetStatic(true);
 
         const std::string state = loadMap ? " started" : " restarted.";
 
@@ -288,7 +289,7 @@ void Game::UpdateFrame()
 
     if (inputs)
         inputs->ProcessInput();
-        
+     
     //spawn update
 
     #if STANDALONE == 1
@@ -447,7 +448,7 @@ void Game::UpdateFrame()
 
     //update behaviors, pass game process context to subclasses
 
-    std::sort(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](std::shared_ptr<entity_behaviors::Behavior> a, std::shared_ptr<entity_behaviors::Behavior> b) 
+    std::sort(currentScene->behaviors.begin(), currentScene->behaviors.end(), [] (const std::shared_ptr<entity_behaviors::Behavior>& a, const std::shared_ptr<entity_behaviors::Behavior>& b) 
     { return a->key < b->key; });
 
     for (const auto& behavior : currentScene->behaviors)
@@ -527,12 +528,12 @@ void Game::UpdateFrame()
     for (auto it = _entitiesToRemove.begin(); it != _entitiesToRemove.end(); ++it)
     {
         const auto entity = *it;
-        auto e_it = std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [entity](const auto& e) { return e->ID == entity->ID; });
+        auto e_it = std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [&entity](const std::shared_ptr<Entity>& e) { return e->ID == entity->ID; });
 
         if (e_it != currentScene->entities.end()) 
             e_it = currentScene->entities.erase(e_it);
 
-        auto ui_it = std::find_if(currentScene->UI.begin(), currentScene->UI.end(), [entity](const auto& e) { return e->ID == entity->ID; });
+        auto ui_it = std::find_if(currentScene->UI.begin(), currentScene->UI.end(), [&entity](const std::shared_ptr<Entity>& e) { return e->ID == entity->ID; });
 
         if (ui_it != currentScene->UI.end()) 
             ui_it = currentScene->UI.erase(ui_it);
@@ -556,7 +557,7 @@ void Game::UpdateFrame()
 
         //remove behaviors
 
-        auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&](auto b)
+        auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&entity](const std::shared_ptr<entity_behaviors::Behavior>& b)
                             { return b->ID == entity->ID; });
 
         if (behavior_it != GetScene()->behaviors.end()) {
@@ -606,12 +607,12 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
             posY < top);
 }
 
+//----------------------------- UI layers
 
-//-----------------------------
 
 void Game::RenderEntities()
 {
-    const auto check_visibility = [this](std::vector<std::shared_ptr<Entity>> entities) -> void 
+    const auto check_visibility = [this](std::vector<std::shared_ptr<Entity>>& entities) -> void 
     {
         for (auto& entity : entities)
             if ((entity.get() && entity))
@@ -648,8 +649,8 @@ void Game::RenderEntities()
                 transparent_entities.emplace_back(entity);
         }
 
-        std::sort(opaque_entities.begin(), opaque_entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //f-b <
-        std::sort(transparent_entities.begin(), transparent_entities.end(), [](auto a, auto b) { return a->depth > b->depth; }); //b-f >
+        std::sort(opaque_entities.begin(), opaque_entities.end(), [](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { return a->depth < b->depth; }); //f-b <
+        std::sort(transparent_entities.begin(), transparent_entities.end(), [](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { return a->depth > b->depth; }); //b-f >
 
         //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
 
@@ -667,18 +668,22 @@ void Game::RenderEntities()
     //sort all entities by depth
 
     else {
-        std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](auto a, auto b) { return a->depth < b->depth; }); //b-f >
+        
+        std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { 
+            // const auto shaderA = Graphics::Shader::Get(a->shaderKey),
+            //            shaderB = Graphics::Shader::Get(b->shaderKey);
+            // if (shaderA && shaderB) {
+            //     if (shaderA->depth != shaderB->depth)
+            //         return shaderA->depth < shaderB->depth;
+            // }          
+            return a->depth < b->depth; 
+        
+        }); //b-f >
 
         check_visibility(currentScene->entities);
 
-        //if (!currentScene->entities.empty())
-        //  Renderer::Flush(false);   
-         auto renderer = Renderer::Get();
-         if (renderer && renderer->activeLayers.size()) 
-  //for (auto& layer : renderer->activeLayers)
-         //  Renderer::Flush(false, layer); // Renderer:: RenderBatch(layer);
-//         }
-       Renderer::Flush(false, renderer->activeLayers[0]); //Renderer:: RenderBatch(renderer->activeLayers[0]);
+        if (!currentScene->entities.empty())
+            Renderer::Flush(false); 
     }
 }
 
@@ -687,8 +692,14 @@ void Game::RenderEntities()
 
 
 void Game::RenderUI()
-{return;
-    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](auto a, auto b) { return a->depth < b->depth; });
+{
+    //sort by drawstyle, then depth
+    
+    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { 
+        if (a->drawStyle != b->drawStyle)
+            return a->drawStyle < b->drawStyle;
+        return a->depth < b->depth; 
+    });
 
     //gather verts from UI sprites, render sprites / text on layer 1
 
@@ -698,8 +709,8 @@ void Game::RenderUI()
 
     //flush UI of sprites
 
-    //if (!currentScene->UI.empty())
-        //Renderer::Flush(false); 
+    if (!currentScene->UI.empty())
+        Renderer::Flush(false); 
 
     //render geom layer 2
 
@@ -707,8 +718,8 @@ void Game::RenderUI()
         if (UI->renderable && UI->GetType() == Entity::GEOMETRY && UI->render_layer == 2) 
             UI->Render();
 
-    //if (!currentScene->UI.empty())
-        //Renderer::Flush(false); 
+    if (!currentScene->UI.empty())
+        Renderer::Flush(false); 
 
     //render text layer 2
 

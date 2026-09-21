@@ -31,8 +31,9 @@ Entity::Entity(int type, float x, float y, bool isSpawn):
 
 void Entity::Init() 
 {
+    drawStyle = 1;
     scrollFactor = { 1.0f, 1.0f };
-    scale = { 1.0f, 1.0f }; 
+    scale = { 1.0f, 1.0f };  
     tint = { 1.0f, 1.0f, 1.0f };
     outlineColor = { 1.0f, 1.0f, 1.0f };
     rotation = 0.0f;  

@@ -3,8 +3,7 @@
 
 #include "../../vendors/glm/gtc/type_ptr.hpp"
 #include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/window.h"
-#include "../../shared/renderer.h"
+#include "../../shared/window.h"
 
 using namespace Graphics;
 
@@ -519,7 +518,6 @@ const bool checkCompileErrors(const std::string& key, unsigned int shader, const
 
 void Shader::Load(const std::string& key, const char* vertShader, const char* fragShader, const char* geomShader)
 {
-
     if (std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [key] (const std::pair<const std::string&, std::shared_ptr<Shader>>& s) 
     { return s.first == key; }) != System::Application::resources->shaders.end()) {
         LOG("Shader: \"" + key + "\" already exists.");
@@ -529,6 +527,7 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
     Shader shader;
 
     shader.key = key;
+    shader.depth = System::Application::resources->shaders.size() + 1;
 
     if (
         System::Utils::str_includes(vertShader, ".vert") && System::Utils::str_includes(fragShader, ".frag") ||
@@ -536,7 +535,6 @@ void Shader::Load(const std::string& key, const char* vertShader, const char* fr
         System::Utils::str_includes(vertShader, ".shader") && System::Utils::str_includes(fragShader, ".shader") 
     )
     {
-
         //open files
 
         std::ifstream vertexShaderFile(vertShader),
@@ -645,7 +643,6 @@ const bool Shader::Generate(const std::string& key, const char* vertexPath, cons
     if (!checkCompileErrors(key, fragment, "fragment"))
         return false;
 
-
     //shader Program
 
     ID = glCreateProgram();
@@ -697,16 +694,7 @@ void Shader::UnLoad(const std::string& key)
 
 
 void Shader::Update()
-{
-    // for (auto& shader : System::Application::resources->shaders) {
-    //     static int samplers[System::Renderer::MAX_TEXTURES];
-
-    //     for (int i = 0; i < System::Renderer::MAX_TEXTURES; i++)  
-    //         samplers[i] = i;
-
-    //     shader.second->SetIntV("SPAGHYETI_ACTIVE_TEXTURES", System::Renderer::MAX_TEXTURES, samplers);
-    // }
-
+{     
     for (const auto& uniform : m_uniforms) 
     {
         const char* uniformName = (uniform.name).c_str();

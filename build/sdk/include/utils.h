@@ -9,11 +9,11 @@
     #include <iostream>
     #include <fstream>
 
-   // #if DEVELOPMENT == 1 && STANDALONE == 1
+    #if DEVELOPMENT == 1 && STANDALONE == 1
         inline constexpr bool kLoggingEnabled = true;
-  //  #else
-    //    inline constexpr bool kLoggingEnabled = false;
-   // #endif
+    #else
+        inline constexpr bool kLoggingEnabled = false;
+    #endif
 
     #define LOG(msg) \
         do { \

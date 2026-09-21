@@ -60,8 +60,10 @@ GUI::GUI()
 
     //setup platform/renderer backends
 
-    ImGui_ImplGlfw_InitForOpenGL(System::Renderer::GLFW_window_instance, true);
+    ImGui_ImplGlfw_InitForOpenGL(System::Window::GLFW_window_instance, true);
     ImGui_ImplOpenGL3_Init(System::Window::s_glsl_version);
+
+    //load grid shader
 
     static constexpr const char* checker_vertex = 
 
@@ -99,12 +101,13 @@ GUI::GUI()
                 "color = vec4(0.0);\n"
         "}";
 
-
     Graphics::Shader::Load("grid", checker_vertex, checker_fragment); 
 
+    //background grid
+
     s_self->grid = std::make_unique<Geometry>(-10, -10, 1500, 1500);
-    s_self->grid->SetShader("grid");
-    s_self->grid_color = { 0.25f, 0.25f, 0.25f };
+    s_self->grid->SetShader("grid"); 
+    s_self->grid_color = { 0.25f, 0.25f, 0.25f }; 
     s_self->grid_quantity = 20.0f;
 
     //load embedded assets
@@ -122,7 +125,7 @@ GUI::GUI()
 
     System::Resources::Manager::Register();
 
-    glfwSetScrollCallback(System::Renderer::GLFW_window_instance, scroll_callback); 
+    glfwSetScrollCallback(System::Window::GLFW_window_instance, scroll_callback); 
 
     Editor::Log("GUI launched.");
 
@@ -254,7 +257,7 @@ void GUI::ShowOptionsQuit()
 
     if (ImGui::MenuItem("Yes")) {
         show_quit = false;
-        glfwSetWindowShouldClose(System::Renderer::GLFW_window_instance, true);
+        glfwSetWindowShouldClose(System::Window::GLFW_window_instance, true);
     }
 
     if (ImGui::MenuItem("No"))

@@ -1,14 +1,13 @@
 #include "../../build/sdk/include/app.h"
 #include "../../build/sdk/include/camera.h"
-#include "../../build/sdk/include/window.h"
 #include "../core/src/debug.h"
+#include "./window.h"
 #include "./renderer.h"
 
 
 using namespace System;
 
-
-//--------------------------------- 
+static inline Renderer* s_instance;
 
 
 void EnableBlending() {
@@ -68,9 +67,7 @@ void EnableAttributes()
 Renderer::Renderer() 
 {
    textureSlotIndex = 1;
-   indexCount = 0;
    drawStyle = 1;
-   activeShaderID = -1;
 
     for (size_t i = 0; i < BUFFERS; i++)  
         m_fences[i] = nullptr;
@@ -80,15 +77,20 @@ Renderer::Renderer()
 }
 
 
+//----------------------------------
+
+
+Renderer* Renderer::Get() { 
+    return s_instance; 
+}
+
+
 //---------------------------------- batch rendering
 
 
 void Renderer::Init() 
 {
     s_instance = new Renderer;
-
-    s_instance->vertices.reserve(MAX_QUADS * 4);
-
     s_vsync = 0;
     s_currentBufferIndex = 0;
 
@@ -175,35 +177,6 @@ void Renderer::SetVsync(int rate) {
 }
 
 
-//------------------------------------
-
-
-const bool Renderer::CheckBufferLimit() {
-    const int elementCount = 6 * MAX_QUADS; 
-    return s_instance && (s_instance->indexCount >= elementCount || s_instance->textureSlotIndex > MAX_TEXTURES - 1);
-}
-
-std::shared_ptr<System::Renderer::Renderable> Renderer::GetOrCreateRenderBucket(unsigned int shaderID, int depth)
-{
-    if (!s_instance)
-        return nullptr;
-        
-    for (size_t i = 0; i < s_instance->activeLayers.size(); i++) 
-        if (s_instance->activeLayers[i]->shaderID == shaderID)
-            return s_instance->activeLayers[i];
-
-    System::Renderer::Renderable r;
-    r.depth = depth;
-    r.shaderID = shaderID;  
-    r.vertices.reserve(4 * MAX_QUADS); 
-    r.indices.reserve(6 * MAX_QUADS);
-
-    const auto renderable = std::make_shared<System::Renderer::Renderable>(r);
-    s_instance->activeLayers.emplace_back(renderable);
-    
-    return renderable;//s_instance->activeLayers.back();
-}
-
 //------------------------------------ update
 
 
@@ -218,7 +191,7 @@ void Renderer::Update(void* camera)
         }
     #else
         int screenWidth, screenHeight;
-        glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
+        glfwGetFramebufferSize(Window::GLFW_window_instance, &screenWidth, &screenHeight);
         glViewport(0, 0, screenWidth, screenHeight); 
     #endif
     
@@ -232,21 +205,41 @@ void Renderer::Update(void* camera)
 }
 
 
+//------------------------------------
+
+
+Renderer::Renderable& Renderer::GetOrCreateRenderBucket(unsigned int shaderID)
+{
+    for (size_t i = 0; i < s_instance->activeLayers.size(); i++) 
+        if (s_instance->activeLayers[i].shaderID == shaderID)
+            return s_instance->activeLayers[i];
+
+    Renderer::Renderable renderable;
+
+    renderable.shaderDepth = 0;
+    renderable.shaderID = shaderID;  
+    renderable.vertices.reserve(4 * MAX_QUADS); 
+    renderable.indices.reserve(6 * MAX_QUADS);
+
+    s_instance->activeLayers.emplace_back(renderable);
+    
+    return s_instance->activeLayers.back();
+}
+
+
 //-----------------------------------------------
 
 
-void Renderer::RenderBatch(std::shared_ptr<Renderable>& renderable) 
+void Renderer::RenderBatch(Renderable& renderable) 
 {
     //render quads in verts vector
     
-    if (/* !s_instance-> */!renderable->vertices.empty()) 
-    {//LOG("x: " + std::to_string(s_instance->vertices[0].x) + " y: " + std::to_string(s_instance->vertices[0].y)); 
-        GLuint activeVBO = s_instance->m_VBOs[s_currentBufferIndex];//,
-               //activeEBO = s_instance->m_EBOs[s_currentBufferIndex];
+    if (!renderable.vertices.empty()) 
+    {
+        GLuint activeVBO = s_instance->m_VBOs[s_currentBufferIndex];
 
         glBindBuffer(GL_ARRAY_BUFFER, activeVBO);    
-        //glBufferData(GL_ARRAY_BUFFER, MAX_QUADS * sizeof(Math::Graphics::Vertex), nullptr, GL_DYNAMIC_DRAW);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, renderable->vertices.size() * sizeof(Math::Graphics::Vertex), renderable->vertices.data());
+        glBufferSubData(GL_ARRAY_BUFFER, 0, renderable.vertices.size() * sizeof(Math::Graphics::Vertex), renderable.vertices.data());
 
         //glBindBuffer(GL_ARRAY_BUFFER, activeEBO);    
         //glBufferSubData(GL_ARRAY_BUFFER, 0, s_instance->indices.size() * sizeof(Math::Graphics::Vertex), s_instance->indices.data());
@@ -256,13 +249,15 @@ void Renderer::RenderBatch(std::shared_ptr<Renderable>& renderable)
         for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
             glActiveTexture(GL_TEXTURE0 + i);
             glBindTexture(GL_TEXTURE_2D, s_instance->textureSlots[i]);  
-        }   
+        } 
 
         EnableAttributes();
-        glUseProgram(renderable->shaderID);
+
+        glUseProgram(renderable.shaderID);
+  
         //update uniforms
 
-        const auto it = std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&renderable](const auto& s) { return s.second->ID == renderable->shaderID; });
+        const auto it = std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&renderable](const auto& s) { return s.second->ID == renderable.shaderID; });
 
         if (it != System::Application::resources->shaders.end()) {
             const auto activeShader = it->second;
@@ -271,7 +266,7 @@ void Renderer::RenderBatch(std::shared_ptr<Renderable>& renderable)
 
         //draw elements from vertices vector
 
-        glDrawElements(s_instance->drawStyle == 0 ? GL_LINE_LOOP : GL_TRIANGLES, renderable->indices.size(), GL_UNSIGNED_INT, 0);  
+        glDrawElements(s_instance->drawStyle == 0 ? GL_LINE_LOOP : GL_TRIANGLES, renderable.indices.size(), GL_UNSIGNED_INT, 0);  
 
         for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
             glActiveTexture(GL_TEXTURE0 + i);
@@ -282,14 +277,14 @@ void Renderer::RenderBatch(std::shared_ptr<Renderable>& renderable)
 
         for (int i = 0; i < 16; i++)
             glDisableVertexAttribArray(i);
-//LOG(s_instance->vertices.size());
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glUseProgram(0);
-//OG(renderable->indices); LOG(s_instance->indexCount);
-        //renderable->vertices.clear();   
-        renderable->vertices.clear();
-        renderable->indices.clear();//renderable->indices=0/* .clear() */;
-        //s_instance->indexCount = 0; 
+
+        //reset buffer containers and texture tracking pointer
+  
+        renderable.vertices.clear();
+        renderable.indices.clear();
         s_instance->textureSlotIndex = 1;
     }
 }
@@ -298,115 +293,10 @@ void Renderer::RenderBatch(std::shared_ptr<Renderable>& renderable)
 //----------------------------------------------- flush batch   
 
 
-void Renderer::Flush(bool renderOpaque, std::shared_ptr<Renderable> renderable)
+void Renderer::Flush(bool renderOpaque, int shaderID)
 {
     if (!s_instance)
         return;
-
-    //render quads in verts vector
-    
-    // if (!s_instance->vertices.empty()) 
-    // {
-    //     if (System::Game::GetScene()->GetDepthSort()) 
-    //     {
-    //         if (renderOpaque) {
-    //             glEnable(GL_DEPTH_TEST);
-    //             glDepthFunc(GL_LEQUAL);
-    //             glDepthMask(GL_TRUE);
-    //             glDisable(GL_BLEND);
-    //         }
-    //         else {
-    //             EnableBlending();
-    //             glDepthMask(GL_FALSE);
-    //         }
-    //     }
-    //     else {
-    //         EnableBlending();
-    //         glDisable(GL_DEPTH_TEST);
-    //         glDisable(GL_SCISSOR_TEST);
-    //     }
-
-    //     //wait for gpu to finish rendering current buffer
-
-    //     if (s_instance->m_fences[s_currentBufferIndex] != nullptr) 
-    //     {
-    //         GLenum result;
-
-    //         #ifdef __EMSCRIPTEN__
-    //             result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], 0, 0);
-    //         #else
-    //             result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
-    //         #endif
-
-    //         if (result == GL_WAIT_FAILED) { 
-    //             LOG("Renderer: skipping render. buffer wait failed.");
-    //             return;
-    //         }
-
-    //         //remove fence
-
-    //         glDeleteSync(s_instance->m_fences[s_currentBufferIndex]);
-    //         s_instance->m_fences[s_currentBufferIndex] = nullptr;
-    //     }
-
-    //     //bind textures to defined slot indices
-
-    //     glBindTexture(GL_TEXTURE_2D, 0);
-        
-    //     for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
-    //         glActiveTexture(GL_TEXTURE0 + i);
-    //         glBindTexture(GL_TEXTURE_2D, s_instance->textureSlots[i]);  
-    //     }   
-
-    //     //bind vertex array and current vbo
-
-    //     glBindVertexArray(s_instance->m_VAO); 
-
-    //     GLuint activeVBO = s_instance->m_VBOs[s_currentBufferIndex];
-
-    //     glBindBuffer(GL_ARRAY_BUFFER, activeVBO);           
-    //     glBufferSubData(GL_ARRAY_BUFFER, 0, s_instance->vertices.size() * sizeof(Math::Graphics::Vertex), s_instance->vertices.data());
-
-    //     EnableAttributes();
-    //     glUseProgram(s_instance->activeShaderID);
-
-    //     //update uniforms
-
-    //     const auto it = std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [](const auto& s) { return s.second->ID == s_instance->activeShaderID; });
-
-    //     if (it != System::Application::resources->shaders.end()) {
-    //         const auto activeShader = it->second;
-    //         activeShader->Update();
-    //     }
-
-    //     //draw elements from vertices vector
-
-    //     glDrawElements(s_instance->drawStyle == 0 ? GL_LINE_LOOP : GL_TRIANGLES, s_instance->indexCount, GL_UNSIGNED_INT, 0); 
-    //     glBindVertexArray(0);
-
-    //     //disable attributes and unbind
-
-    //     for (int i = 0; i < 16; i++)
-    //         glDisableVertexAttribArray(i);
-
-    //     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //     glUseProgram(0);
-
-    //     //start new gpu async await call fence 
-
-    //     s_instance->m_fences[s_currentBufferIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); 
-
-    //     //cycle to next buffer in ring
-
-    //     s_currentBufferIndex = (s_currentBufferIndex + 1) % BUFFERS;
-    // }
-
-    // //reset batch
-
-    // s_instance->vertices.clear();
-    // s_instance->textureSlotIndex = 1;
-    // s_instance->indexCount = 0; 
-
 
     glBindVertexArray(s_instance->m_VAO);
 
@@ -438,7 +328,7 @@ void Renderer::Flush(bool renderOpaque, std::shared_ptr<Renderable> renderable)
         #ifdef __EMSCRIPTEN__
             result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], 0, 0);
         #else
-            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED /* 1000000000 */);
+            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
         #endif
 
         if (result == GL_WAIT_FAILED) { 
@@ -452,11 +342,29 @@ void Renderer::Flush(bool renderOpaque, std::shared_ptr<Renderable> renderable)
         s_instance->m_fences[s_currentBufferIndex] = nullptr;
     }
 
-    //if (renderable)
-        RenderBatch(renderable);
-   // else         
-       // for (auto& layer : s_instance->activeLayers)
-           // RenderBatch(layer);
+    //render batches, single or all shaders
+
+    if (shaderID != -1) {
+        const auto it = std::find_if(s_instance->activeLayers.begin(), s_instance->activeLayers.end(), [shaderID](const Renderable& r) { return r.shaderID == shaderID; });
+        if (it != s_instance->activeLayers.end()) {
+            Renderable& renderable = *it;
+            RenderBatch(renderable);
+        }
+    }
+
+    else 
+    {
+        //sort buckets first by depth, then by id
+
+        std::sort(s_instance->activeLayers.begin(), s_instance->activeLayers.end(), [](const Renderable& a, const Renderable& b) { 
+            if (a.shaderDepth != b.shaderDepth)
+                return a.shaderDepth < b.shaderDepth;
+            return a.shaderID < b.shaderID;
+        }); 
+
+        for (auto& layer : s_instance->activeLayers)
+            RenderBatch(layer);
+    }    
 
     glBindVertexArray(0);
 
@@ -484,7 +392,7 @@ void Renderer::UpdateFrameBuffer(void* camera)
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
 
         int screenWidth, screenHeight;
-        glfwGetFramebufferSize(GLFW_window_instance, &screenWidth, &screenHeight);
+        glfwGetFramebufferSize(Window::GLFW_window_instance, &screenWidth, &screenHeight);
 
         glBlitFramebuffer(0, 0, m_frameBufferWidth, m_frameBufferHeight, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST); 
     }
@@ -496,6 +404,12 @@ void Renderer::UpdateFrameBuffer(void* camera)
 
 void Renderer::ShutDown() 
 { 
+    for (auto it = s_instance->activeLayers.begin(); it != s_instance->activeLayers.end(); ++it)
+        if (it != s_instance->activeLayers.end()) {
+            it = s_instance->activeLayers.erase(std::move(it));
+            --it;
+        }
+
     glDeleteVertexArrays(1, &s_instance->m_VAO); 
     glDeleteBuffers(BUFFERS, s_instance->m_VBOs);    
     glDeleteBuffers(1, &s_instance->m_EBO);
@@ -505,91 +419,6 @@ void Renderer::ShutDown()
 
     LOG("Renderer: shutting down...");
 }
-
-
-//----------------------------------------
-
-
-void Renderer::cursor_callback(GLFWwindow* window, double xPos, double yPos)
-{
-    //set cursor object to movement, translate ndc coords to clip space
-
-    auto position = Window::GetNDCToPixel((float)xPos, (float)yPos);
-
-    Application::game->inputs->mouseX = position.x;
-    Application::game->inputs->mouseY = position.y;
-}
-
-
-//----------------------------------------
-
-
-void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (action == GLFW_PRESS) {
-        Application::game->inputs->SetKeyInputs(true, key, window);
-        Application::game->inputs->numInputs++;
-    }
-
-    if (action == GLFW_RELEASE) {
-        Application::game->inputs->SetKeyInputs(false, key, window);
-        Application::game->inputs->numInputs--;
-    }
-}
-
-
-//----------------------------------------
-
-
-void Renderer::input_callback(GLFWwindow* window, int input, int action, int mods)
-{
-    if (input == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwIconifyWindow(window);
-        
-    if (input == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-        Application::game->inputs->RIGHT_CLICK = true;
-
-    else
-        Application::game->inputs->RIGHT_CLICK = false;
-
-    if (input == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        Application::game->inputs->LEFT_CLICK = true;
-
-    else
-        Application::game->inputs->LEFT_CLICK = false;
-
-    if (action == GLFW_PRESS)
-        Application::game->inputs->numInputs++;
-
-    if (action == GLFW_RELEASE)
-        Application::game->inputs->numInputs--;
-}
-
-
-//----------------------------------------
-
-
-void Resize(GLFWwindow* window, int width, int height) {
-    Window::s_width = width;
-    Window::s_height = height;
-    glViewport(0, 0, Window::s_width, Window::s_height);
-}
-
-
-//----------------------------------------
-
-
-void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    Resize(window, width, height);
-}
-
-//-----------------------------------
-
-
-void Renderer::window_size_callback(GLFWwindow* window, int width, int height) {
-    Resize(window, width, height);
-}
-
 
 
 //--------------------------------- instance rendering 

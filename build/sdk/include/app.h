@@ -14,8 +14,6 @@
     #define THREAD_COUNT 69
 #endif
 
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>

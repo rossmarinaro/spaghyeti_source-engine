@@ -23,7 +23,7 @@ class Entity {
         enum { GENERIC, UI, SPRITE, GEOMETRY, TEXT, TILE };
 
 		int depth, render_layer;
-
+        uint32_t drawStyle;
 		float rotation, alpha, outlineWidth;  
 		
         bool flipX, 
@@ -46,6 +46,7 @@ class Entity {
             return T();
         }
 
+        inline void SetDrawStyle(uint32_t style) { drawStyle = style; }
         inline const int GetType() { return m_type; }
         inline const bool IsSpawn() { return m_is_spawn; }
 		inline void SetDepth(int depth) { this->depth = depth; }
@@ -62,7 +63,7 @@ class Entity {
         inline void SetStatic(bool is_static) { m_isStatic = is_static; }
 		 
         virtual void Update() {}
-		virtual void Render() {}
+		virtual void Render(int shaderID = -1) {}
         virtual ~Entity() { s_count--; }
 
 		Entity(int type, bool isSpawn = false);
@@ -111,18 +112,16 @@ class Geometry : public Entity {
 
 		~Geometry();
 
-		void Render() override;
+		void Render(int shaderID = -1) override;
         void SetSize(float width, float height);
-        void SetDrawStyle(int style);
 
 	private:
 
         enum { QUAD, CIRCLE };
 
     	int m_type;
-        float m_thickness, m_drawStyle;
+        float m_thickness;
 };
-
 
 
 //text (fonts, embedded fallback)
@@ -144,7 +143,7 @@ class Text : public Entity {
 
         std::string content, font; 
        
-        void Render() override;
+        void Render(int shaderID = -1) override;
 		void SetText(const std::string& content);
         void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);
         void SetShadow(bool isShadow, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float offsetX = 0.0f, float offsetY = 0.0f);
@@ -264,7 +263,7 @@ class Sprite : public Entity {
 	   
 	    ~Sprite();
 
-       	void Render() override;
+       	void Render(int shaderID = -1) override;
         void Update() override;
 
 	private:

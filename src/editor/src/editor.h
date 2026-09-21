@@ -18,12 +18,13 @@
 #include <algorithm>
 #include <memory>
 
-#include "../../../build/sdk/include/audio.h"
-#include "../../../build/sdk/include/window.h"      
+#include "../../../build/sdk/include/audio.h"    
 #include "../../../build/sdk/include/inputs.h"
 #include "../../../build/sdk/include/time.h"
 #include "../../../build/sdk/include/game.h"
 #include "../../../build/sdk/include/camera.h"
+
+#include "../../shared/window.h"  
 
 #include "./events/events.h"
 

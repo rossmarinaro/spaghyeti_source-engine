@@ -200,7 +200,8 @@ void EmptyNode::Render(float _positionX, float _positionY, float _rotation, floa
 
         debugGraphic->SetPosition(positionX + _positionX, positionY + _positionY);
         debugGraphic->SetScale(debugGraphic->scale.x + _scaleX, debugGraphic->scale.y + _scaleY);
-        debugGraphic->SetDrawStyle(debug_fill ? 1 : 0); 
         debugGraphic->SetThickness(line_weight);
+
+        debugGraphic->SetDrawStyle(debug_fill ? 1 : 0); 
     }
 }

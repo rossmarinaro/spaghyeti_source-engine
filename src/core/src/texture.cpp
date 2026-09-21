@@ -258,8 +258,9 @@ void Texture2D::Update(
     const Math::Vector2& position, 
     const Math::Vector4& rgba, 
     const Math::Vector3& outline, 
-    const Math::Matrix4& mvp, 
-    float outlineWidth,
+    const Math::Matrix4& mvp,   
+    uint32_t drawStyle,
+    float outlineWidth, 
     float whiteout,
     int depth,
     bool flipX, 
@@ -270,26 +271,23 @@ void Texture2D::Update(
         depth = 1000.0f;
 
     auto renderer = System::Renderer::Get();
-    const int elementCount = /* 4 * */ System::Renderer::MAX_QUADS; 
     const auto shader = Graphics::Shader::Get(shaderKey);
 
-    //auto it = std::find_if(renderer->activeLayers.begin(), renderer->activeLayers.end(), 
-    //[depth, shader](const auto layer) { return /* layer.depth == depth && */ layer->shaderID == shader->ID; });
+    if (!shader)
+        return;
 
     //flush if max index count exceeds element count, or textures reached max OR shader is different than renderer's active shader
 
-    const auto renderable = System::Renderer::GetOrCreateRenderBucket(shader->ID, depth);
+    System::Renderer::Renderable& renderable = System::Renderer::GetOrCreateRenderBucket(shader->ID);
 
-    //if (renderer->activeShaderID != shader->ID)
-    if (((renderable->vertices.size() / 4) /* renderer->indexCount */ >= elementCount) || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) 
-    {
-        LOG("draw");
-        System::Renderer::Flush(/* m_opaque */false, renderable);
-    }//else {LOG(renderable->indices);}
+    //update depth
+    
+    renderable.shaderDepth = shader->depth;
 
-    //set active shader
+    //flush if vertex buffer exausted or max textures reached
 
-    renderer->activeShaderID = shader->ID;
+    if (((renderable.vertices.size() / 4) >= System::Renderer::MAX_QUADS) || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) 
+        System::Renderer::Flush(m_opaque, renderable.shaderID);
 
     struct { float u1, v1, u2, v2; } verticesLayout;
 
@@ -386,41 +384,23 @@ void Texture2D::Update(
 
     //submit the vertices to the renderer's queue vector and increase index count by 6
 
-    renderer->vertices.insert(renderer->vertices.end(), std::begin(vertices), std::end(vertices));
+    renderable.vertices.insert(renderable.vertices.end(), std::begin(vertices), std::end(vertices));
 
-    renderer->indexCount += 6;
+    uint32_t baseVertex = static_cast<uint32_t>(renderable.vertices.size());
 
+    renderable.indices.push_back(baseVertex + 0);
+    renderable.indices.push_back(baseVertex + 1);
+    renderable.indices.push_back(baseVertex + 2);
+    renderable.indices.push_back(baseVertex + 2);
+    renderable.indices.push_back(baseVertex + 3);
+    renderable.indices.push_back(baseVertex + 0);
 
+    //flush on draw style changes
 
-
-
-    // if (it == renderer->activeLayers.end())
-    // {
-    //     System::Renderer::Renderable r;
-    //     r.depth = depth;
-    //     r.shaderID = shader->ID; 
-    //     r.vertices.reserve(sizeof(vertices) / sizeof(vertices[0])); 
-    //     const auto renderable = std::make_shared<System::Renderer::Renderable>(r);
-    //     renderer->activeLayers.emplace_back(renderable);
-    //     it = renderer->activeLayers.end() - 1;
-    // }
-
-    renderable->vertices.insert(renderable->vertices.end(), std::begin(vertices), std::end(vertices));
-//renderer->indexCount = 6 * it->vertices.size();
- //   for (int i = 0; i < 6; i++)
-        //renderable->indices += 6 /* * renderable->vertices.size() */;  //.push_back(i + it->vertices.size());
-        uint32_t baseVertex = static_cast<uint32_t>(renderable->vertices.size());
-renderable->indices.push_back(baseVertex + 0);
-renderable->indices.push_back(baseVertex + 1);
-renderable->indices.push_back(baseVertex + 2);
-renderable->indices.push_back(baseVertex + 2);
-renderable->indices.push_back(baseVertex + 3);
-renderable->indices.push_back(baseVertex + 0);
-
-    // if (/* it->indices.size() */renderer->indexCount >= elementCount || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) {//LOG(0);
-    //     System::Renderer::Flush(m_opaque, &*it);
-
-    // }
+    if (renderer->drawStyle != drawStyle) { 
+        renderer->drawStyle = drawStyle;
+        System::Renderer::Flush(m_opaque, renderable.shaderID);
+    }
 
 }
 

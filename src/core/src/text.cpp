@@ -2,9 +2,7 @@
 #include <sstream>
 
 #include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/window.h"
-
-#include "../../shared/renderer.h"
+#include "../../shared/window.h"
 #include "../../vendors/glm/glm.hpp"
 #include "../../vendors/glm/gtc/matrix_transform.hpp"
 #include "../../vendors/glm/gtc/type_ptr.hpp"
@@ -277,7 +275,7 @@ void* Text::GetGLTPointer()
 //--------------------------
 
 
-void Text::Render()
+void Text::Render(int shaderID)
 {
     const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
     const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y));

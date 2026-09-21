@@ -1,6 +1,6 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../../build/sdk/include/audio.h"
-#include "../../../build/sdk/include/window.h"
+#include "../../shared/window.h"
 #include "../../shared/renderer.h"
 
 void System::Application::Init(Game* layer)
@@ -33,11 +33,11 @@ void System::Application::Init(Game* layer)
 
     //init input callbacks 
 
-    glfwSetKeyCallback(Renderer::GLFW_window_instance, Renderer::key_callback); 
-    glfwSetCursorPosCallback(Renderer::GLFW_window_instance, Renderer::cursor_callback); 
+    glfwSetKeyCallback(Window::GLFW_window_instance, Window::key_callback); 
+    glfwSetCursorPosCallback(Window::GLFW_window_instance, Window::cursor_callback); 
  
     #ifndef __EMSCRIPTEN__
-        glfwSetMouseButtonCallback(Renderer::GLFW_window_instance, Renderer::input_callback);
+        glfwSetMouseButtonCallback(Window::GLFW_window_instance, Window::input_callback);
     //#else 
         //emscripten_set_canvas_element_size("#canvas", m_width, m_height); 
     #endif
@@ -61,9 +61,9 @@ void System::Application::Update(void* layer)
 
     glfwPollEvents(); 
 
-    glfwSetFramebufferSizeCallback(Renderer::GLFW_window_instance, Renderer::framebuffer_size_callback);
-    glfwSetWindowSizeCallback(Renderer::GLFW_window_instance, Renderer::window_size_callback); 
-    glfwSwapBuffers(Renderer::GLFW_window_instance); 
+    glfwSetFramebufferSizeCallback(Window::GLFW_window_instance, Window::framebuffer_size_callback);
+    glfwSetWindowSizeCallback(Window::GLFW_window_instance, Window::window_size_callback); 
+    glfwSwapBuffers(Window::GLFW_window_instance); 
 
 }
 
@@ -114,7 +114,7 @@ void System::Application::Start(
         #ifdef __EMSCRIPTEN__
             emscripten_set_main_loop_arg(Update, game, 0, 1);
         #else
-            while (!glfwWindowShouldClose(Renderer::GLFW_window_instance))
+            while (!glfwWindowShouldClose(Window::GLFW_window_instance))
                 Update(game);
         #endif
 
@@ -138,8 +138,8 @@ void System::Application::ShutDown()
     Resources::Manager::Clear();
 
     #ifndef __EMSCRIPTEN__
-        if (Renderer::GLFW_window_instance != nullptr)
-            delete Renderer::GLFW_window_instance;   
+        if (Window::GLFW_window_instance != nullptr)
+            delete Window::GLFW_window_instance;   
     #endif
 
     delete resources;

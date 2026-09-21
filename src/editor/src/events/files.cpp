@@ -26,15 +26,15 @@ using namespace editor;
 
 static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData) {
 
-    #ifdef _WIN32
+    //#ifdef _WIN32
 
         if(uMsg == BFFM_INITIALIZED) {
-            std::string tmp = (const char*)lpData;
+            std::string tmp = (const char*)lpData; Editor::Log(":::"+tmp);
             std::cout << "path: " << tmp << std::endl;
             SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
         }
 
-    #endif
+   // #endif
 
     return 0;
 }
@@ -60,21 +60,41 @@ EventListener::EventListener() {
 const bool EventListener::NewProject(const char* root_path)
 {
     #ifdef _WIN32
-
+Editor::Log(root_path);
         TCHAR p[MAX_PATH];
 
         BROWSEINFO bi = { 0 };
-
+ZeroMemory(&bi, sizeof(bi));
         bi.lpszTitle  = ("Select Project Root Path.");
         bi.ulFlags    = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
         bi.lpfn       = BrowseCallbackProc;
         bi.lParam     = (LPARAM) root_path;
-
+Editor::Log("2");
         LPITEMIDLIST pidl = SHBrowseForFolder (&bi);
+Editor::Log("3");
 
+
+        // OPENFILENAME ofn = {0};
+        // TCHAR szFile[260] = {0};
+
+        // ofn.lStructSize = sizeof (ofn);
+        // ofn.hwndOwner = NULL;
+        // ofn.hInstance = NULL;
+        // ofn.nMaxFile = sizeof(szFile);
+        // ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.scene)\0*.scene");
+        // ofn.lpstrFile = szFile;
+        // ofn.nFilterIndex = 1;
+        // ofn.lpstrFileTitle = NULL;
+        // ofn.nMaxFileTitle = 0;
+        // ofn.lpstrInitialDir = NULL;
+        // ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+
+
+        //if (GetOpenFileName(&ofn) == TRUE)
         if (pidl != 0)
-        {
-            SHGetPathFromIDList (pidl, p);
+        {Editor::Log("4");
+           SHGetPathFromIDList (pidl, p);
 
             IMalloc* imalloc = 0;
 
@@ -86,6 +106,10 @@ const bool EventListener::NewProject(const char* root_path)
             Editor::Get()->Reset();
 
             std::string path = (std::string)p;
+
+            //std::filesystem::path result((const char*)ofn.lpstrFile);
+
+            //std::string path = result.string();
 
             Editor::projectPath = System::Utils::SanitizePath(path) + "/";
        
@@ -492,7 +516,6 @@ void EventListener::OpenFile()
 
         if (GetOpenFileName(&ofn) == TRUE)
         {
-
             std::filesystem::path result((const char*)ofn.lpstrFile);
 
             std::string asset = result.filename().string();

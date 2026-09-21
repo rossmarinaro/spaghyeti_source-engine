@@ -1,7 +1,7 @@
 #include "../../shared/renderer.h"
 #include "../../vendors/glm/gtc/matrix_transform.hpp" 
 #include "../../../build/sdk/include/app.h"
-#include "../../../build/sdk/include/window.h"
+#include "../../shared/window.h"
 
 
 //quad
@@ -12,8 +12,8 @@ Geometry::Geometry(float x, float y, float width, float height, bool isSpawn):
     this->width = width;
     this->height = height;
 
-    SetDrawStyle(1);
     SetShader("sprite");
+    SetDrawStyle(1);
 
     tint = { 0.0f, 0.0f, 1.0f };
     renderable = true;
@@ -37,7 +37,7 @@ Geometry::~Geometry() {
 //------------------------------------- 
 
 
-void Geometry::Render()
+void Geometry::Render(int shaderID)
 {
     if (m_type == QUAD) {
         texture.FrameWidth = width;
@@ -91,16 +91,14 @@ void Geometry::Render()
         position, 
         color, 
         outlineColor,
-        modelViewProj, 
+        modelViewProj, drawStyle,
         outlineEnabled ? outlineWidth : 0.0f, 
         whiteout,
         depth
     ); 
 
-    const auto renderer = System::Renderer::Get();
-
-    if (renderer)
-        renderer->drawStyle = m_drawStyle;   
+    if (shaderID != -1)
+        System::Renderer::Flush(false, shaderID); 
 }
 
 
@@ -113,13 +111,6 @@ void Geometry::SetSize(float width, float height) {
 } 
 
 
-//-------------------------------------- 
-
-
-void Geometry::SetDrawStyle(int style) { 
-    m_drawStyle = style;
-} 
-
 //----------------------------- quad
 
 
@@ -130,13 +121,13 @@ std::shared_ptr<Geometry> System::Game::CreateGeom(float x, float y, float width
     if (isStatic)
         geom->SetStatic(true);
 
+    geom->render_layer = layer;
+
     if (layer == 0)
         GetScene()->entities.emplace_back(geom);
 
     if (layer == 1 || layer == 2)
         GetScene()->UI.emplace_back(geom);
-
-    geom->render_layer = layer;
 
     return geom;
 }
