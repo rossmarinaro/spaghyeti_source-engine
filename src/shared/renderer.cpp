@@ -232,8 +232,33 @@ Renderer::Renderable& Renderer::GetOrCreateRenderBucket(unsigned int shaderID)
 
 void Renderer::RenderBatch(Renderable& renderable) 
 {
+    glBindVertexArray(s_instance->m_VAO);
+
+    //wait for gpu to finish rendering current buffer
+
+    if (s_instance->m_fences[s_currentBufferIndex] != nullptr) 
+    {
+        GLenum result;
+
+        #ifdef __EMSCRIPTEN__
+            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], 0, 0);
+        #else
+            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
+        #endif
+
+        if (result == GL_WAIT_FAILED) { 
+            LOG("Renderer: skipping render. buffer wait failed.");
+            return;
+        }
+
+        //remove fence
+
+        glDeleteSync(s_instance->m_fences[s_currentBufferIndex]);
+        s_instance->m_fences[s_currentBufferIndex] = nullptr;
+    }
+
     //render quads in verts vector
-    
+
     if (!renderable.vertices.empty()) 
     {
         GLuint activeVBO = s_instance->m_VBOs[s_currentBufferIndex];
@@ -245,7 +270,9 @@ void Renderer::RenderBatch(Renderable& renderable)
         //glBufferSubData(GL_ARRAY_BUFFER, 0, s_instance->indices.size() * sizeof(Math::Graphics::Vertex), s_instance->indices.data());
 
         //update image samplers / bind textures to defined slot indices
-
+        
+        glActiveTexture(GL_TEXTURE0);
+        
         for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
             glActiveTexture(GL_TEXTURE0 + i);
             glBindTexture(GL_TEXTURE_2D, s_instance->textureSlots[i]);  
@@ -254,7 +281,7 @@ void Renderer::RenderBatch(Renderable& renderable)
         EnableAttributes();
 
         glUseProgram(renderable.shaderID);
-  
+
         //update uniforms
 
         const auto it = std::find_if(System::Application::resources->shaders.begin(), System::Application::resources->shaders.end(), [&renderable](const auto& s) { return s.second->ID == renderable.shaderID; });
@@ -267,11 +294,6 @@ void Renderer::RenderBatch(Renderable& renderable)
         //draw elements from vertices vector
 
         glDrawElements(s_instance->drawStyle == 0 ? GL_LINE_LOOP : GL_TRIANGLES, renderable.indices.size(), GL_UNSIGNED_INT, 0);  
-
-        for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
-            glActiveTexture(GL_TEXTURE0 + i);
-            glBindTexture(GL_TEXTURE_2D, 0);
-        } 
 
         //disable attributes and unbind
 
@@ -287,6 +309,14 @@ void Renderer::RenderBatch(Renderable& renderable)
         renderable.indices.clear();
         s_instance->textureSlotIndex = 1;
     }
+
+    glBindVertexArray(0);
+    
+    s_instance->m_fences[s_currentBufferIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); 
+
+    //cycle to next buffer in ring
+
+    s_currentBufferIndex = (s_currentBufferIndex + 1) % BUFFERS; 
 }
 
 
@@ -319,34 +349,11 @@ void Renderer::Flush(bool renderOpaque, int shaderID)
         glDisable(GL_SCISSOR_TEST);
     }
 
-    //wait for gpu to finish rendering current buffer
-
-    if (s_instance->m_fences[s_currentBufferIndex] != nullptr) 
-    {
-        GLenum result;
-
-        #ifdef __EMSCRIPTEN__
-            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], 0, 0);
-        #else
-            result = glClientWaitSync(s_instance->m_fences[s_currentBufferIndex], GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
-        #endif
-
-        if (result == GL_WAIT_FAILED) { 
-            LOG("Renderer: skipping render. buffer wait failed.");
-            return;
-        }
-
-        //remove fence
-
-        glDeleteSync(s_instance->m_fences[s_currentBufferIndex]);
-        s_instance->m_fences[s_currentBufferIndex] = nullptr;
-    }
-
     //render batches, single or all shaders
 
     if (shaderID != -1) {
         const auto it = std::find_if(s_instance->activeLayers.begin(), s_instance->activeLayers.end(), [shaderID](const Renderable& r) { return r.shaderID == shaderID; });
-        if (it != s_instance->activeLayers.end()) {
+        if (it != s_instance->activeLayers.end()) { 
             Renderable& renderable = *it;
             RenderBatch(renderable);
         }
@@ -366,13 +373,12 @@ void Renderer::Flush(bool renderOpaque, int shaderID)
             RenderBatch(layer);
     }    
 
-    glBindVertexArray(0);
+    //unbind textures
 
-    s_instance->m_fences[s_currentBufferIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0); 
-
-    //cycle to next buffer in ring
-
-    s_currentBufferIndex = (s_currentBufferIndex + 1) % BUFFERS; 
+    for (unsigned int i = 0; i < s_instance->textureSlotIndex; i++) { 
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    } 
 }
 
 
@@ -384,7 +390,7 @@ void Renderer::UpdateFrameBuffer(void* camera)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_BLEND);
 
-    glViewport(0, 0, Window::s_scaleWidth, Window::s_scaleHeight); 
+    glViewport(0, 0, Display::resolutionWidth, Display::resolutionHeight); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
 
     if (s_instance) {

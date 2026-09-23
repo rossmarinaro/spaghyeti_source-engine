@@ -42,7 +42,7 @@
 #endif
 
 
-//-------------- main
+//-------------- main 
 
 
 int main(int argc, char* args[])
@@ -57,7 +57,7 @@ int main(int argc, char* args[])
 		SetUnhandledExceptionFilter(UnhandledExceptionFilter);
 	#endif
 	
-	System::Application::Start();
+	System::Application::Start(0, 0, 1480, 860); 
 	editor::Editor::Start();
 
 	return 0; 

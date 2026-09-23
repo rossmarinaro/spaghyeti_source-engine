@@ -112,7 +112,7 @@ const Math::Vector4 Camera::GetProjectionMatrix(float width, float height)
 
 const Math::Matrix4 Camera::GetViewMatrix(float x, float y)
 {    
-    const glm::vec2 midOffset = { abs(m_position.x + (System::Window::s_scaleWidth / 2)), abs(m_position.y + (System::Window::s_scaleHeight / 2)) };
+    const glm::vec2 midOffset = { abs(m_position.x + (System::Display::resolutionWidth / 2)), abs(m_position.y + (System::Display::resolutionHeight / 2)) };
 
     glm::mat4 view(1.0f);
 

@@ -386,10 +386,10 @@ void Game::UpdateFrame()
                 //remove
 
                 if (
-                    currentScene->cameraTarget->x < spawn.posX - (Window::s_scaleWidth * 2) ||
-                    currentScene->cameraTarget->x > spawn.posX + (Window::s_scaleWidth * 2) || 
-                    currentScene->cameraTarget->y < spawn.posY - (Window::s_scaleHeight * 2) ||
-                    currentScene->cameraTarget->y > spawn.posY + (Window::s_scaleHeight * 2) 
+                    currentScene->cameraTarget->x < spawn.posX - (Display::resolutionWidth * 2) ||
+                    currentScene->cameraTarget->x > spawn.posX + (Display::resolutionWidth * 2) || 
+                    currentScene->cameraTarget->y < spawn.posY - (Display::resolutionHeight * 2) ||
+                    currentScene->cameraTarget->y > spawn.posY + (Display::resolutionHeight * 2) 
                 )
                 {   
                     std::shared_ptr<Entity> entity;  
@@ -441,7 +441,7 @@ void Game::UpdateFrame()
     //render vignette overlay if alpha > 0
 
     if (currentScene->vignette && currentScene->vignette->alpha > 0.0f) {
-        currentScene->vignette->SetSize(Window::s_scaleWidth * 4, Window::s_scaleHeight * 4);
+        currentScene->vignette->SetSize(Display::resolutionWidth * 4, Display::resolutionHeight * 4);
         currentScene->vignette->Render(); 
         Renderer::Flush(false);    
     }     
@@ -596,10 +596,10 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
                 fy = (1.0f - entity->scrollFactor.y) + 1.0f,
                 posX = entity->position.x * fx,
                 posY = entity->position.y * fy,
-                left = (camPosX - (Window::s_scaleWidth / 2 * zoom) + (Window::s_scaleWidth / 2 * zoom)) * entity->scrollFactor.x, 
-                right = (camPosX + (Window::s_scaleWidth * zoom)) * fx, 
-                bottom = (camPosY - (Window::s_scaleHeight / 2 * zoom) + (Window::s_scaleHeight / 2 * zoom)) * entity->scrollFactor.y, 
-                top = (camPosY + Window::s_scaleHeight * zoom) * fy; 
+                left = (camPosX - (Display::resolutionWidth / 2 * zoom) + (Display::resolutionWidth / 2 * zoom)) * entity->scrollFactor.x, 
+                right = (camPosX + (Display::resolutionWidth * zoom)) * fx, 
+                bottom = (camPosY - (Display::resolutionHeight / 2 * zoom) + (Display::resolutionHeight / 2 * zoom)) * entity->scrollFactor.y, 
+                top = (camPosY + Display::resolutionHeight * zoom) * fy; 
 
     return (posX + width > left && 
             posX < right && 
@@ -649,8 +649,8 @@ void Game::RenderEntities()
                 transparent_entities.emplace_back(entity);
         }
 
-        std::sort(opaque_entities.begin(), opaque_entities.end(), [](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { return a->depth < b->depth; }); //f-b <
-        std::sort(transparent_entities.begin(), transparent_entities.end(), [](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { return a->depth > b->depth; }); //b-f >
+        std::sort(opaque_entities.begin(), opaque_entities.end(), Entity::SortFB); //f-b <
+        std::sort(transparent_entities.begin(), transparent_entities.end(), Entity::SortBF); //b-f >
 
         //culling out of view sprites, pushing in-view sprites vertices to renderer, flush entities
 
@@ -669,16 +669,7 @@ void Game::RenderEntities()
 
     else {
         
-        std::sort(currentScene->entities.begin(), currentScene->entities.end(), [](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { 
-            // const auto shaderA = Graphics::Shader::Get(a->shaderKey),
-            //            shaderB = Graphics::Shader::Get(b->shaderKey);
-            // if (shaderA && shaderB) {
-            //     if (shaderA->depth != shaderB->depth)
-            //         return shaderA->depth < shaderB->depth;
-            // }          
-            return a->depth < b->depth; 
-        
-        }); //b-f >
+        std::sort(currentScene->entities.begin(), currentScene->entities.end(), Entity::SortFB); 
 
         check_visibility(currentScene->entities);
 
@@ -694,12 +685,8 @@ void Game::RenderEntities()
 void Game::RenderUI()
 {
     //sort by drawstyle, then depth
-    
-    std::sort(currentScene->UI.begin(), currentScene->UI.end(), [](const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { 
-        if (a->drawStyle != b->drawStyle)
-            return a->drawStyle < b->drawStyle;
-        return a->depth < b->depth; 
-    });
+
+    std::sort(currentScene->UI.begin(), currentScene->UI.end(), Entity::SortFB);
 
     //gather verts from UI sprites, render sprites / text on layer 1
 

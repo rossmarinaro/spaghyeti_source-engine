@@ -220,14 +220,14 @@ void GUI::ShowOptionsInit()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::Begin("Welcome", &pOpen, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize);
 
-    if (ImGui::Button("New", ImVec2(System::Window::s_width, 0.0f))) {
+    if (ImGui::Button("New", ImVec2(System::Display::screenWidth, 0.0f))) {
         if (Editor::Get()->events->NewProject()) {
             if (Editor::Get()->events->OpenScene())
                 show_init = false;
         }
     }
 
-    if (ImGui::Button("Open", ImVec2(System::Window::s_width, 0.0f))) 
+    if (ImGui::Button("Open", ImVec2(System::Display::screenWidth, 0.0f))) 
         if (Editor::Get()->events->OpenScene())
             show_init = false;
  

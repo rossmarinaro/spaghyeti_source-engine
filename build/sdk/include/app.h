@@ -30,9 +30,16 @@
 
 namespace /* SPAGHYETI_CORE */ System {
 
+    struct Display {
+        static inline bool isFullscreen; 
+        static inline int screenWidth, 
+                          screenHeight, 
+                          resolutionWidth = 1480,
+                          resolutionHeight = 860;
+    };
+
     class Application 
 	{
-
 		public:
 
             static inline std::string name;
@@ -40,6 +47,10 @@ namespace /* SPAGHYETI_CORE */ System {
             static void Init(Game* layer);
             
             static void Start(
+                int screenWidth, 
+                int screenHeight, 
+                int resolutionWidth,
+                int resolutionHeight,
                 Game* layer = nullptr, 
                 const std::string& key = "", 
                 bool isMultithreaded = false, 
@@ -57,7 +68,6 @@ namespace /* SPAGHYETI_CORE */ System {
 		private:
 
 			static void Update(void* layer);
-
 	};
 }
 

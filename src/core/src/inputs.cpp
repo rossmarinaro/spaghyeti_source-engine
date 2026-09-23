@@ -7,23 +7,24 @@ using namespace System;
  
 //--------------------------------- native input callback to browser
 
-//mouse
 
 #ifdef __EMSCRIPTEN__
+
+    //mouse
 
     EM_BOOL web_mouse_callback(int eventType, const EmscriptenMouseEvent* event, void* pUserData)
     {
         if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE && (event->movementX != 0 || event->movementY != 0)) 
-            Renderer::cursor_callback(Renderer::GLFW_window_instance, event->targetX, event->targetY);
+            Window::cursor_callback(Window::GLFW_window_instance, event->targetX, event->targetY);
         
         if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
             Application::game->inputs->numInputs++; 
-            Renderer::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
+            Window::input_callback(Window::GLFW_window_instance, 1, 1, 0);
         }
 
         if (eventType == EMSCRIPTEN_EVENT_MOUSEUP) {
             Application::game->inputs->numInputs--;
-            Renderer::input_callback(Renderer::GLFW_window_instance, 0, 0, 0);
+            Window::input_callback(Window::GLFW_window_instance, 0, 0, 0);
         }
 
         if (eventType == EMSCRIPTEN_EVENT_CLICK)
@@ -35,7 +36,7 @@ using namespace System;
         return EM_FALSE;
     }
 
-//touch
+    //touch
 
     EM_BOOL web_touch_callback(int eventType, const EmscriptenTouchEvent* event, void* pUserData)
     {
@@ -47,8 +48,8 @@ using namespace System;
             for (int i = 0; i < event->numTouches; ++i) {
                 const EmscriptenTouchPoint* touch = &event->touches[i];
 
-                Renderer::cursor_callback(Renderer::GLFW_window_instance, touch->targetX, touch->targetY); //canvasX, clientX
-                Renderer::input_callback(Renderer::GLFW_window_instance, 1, 1, 0);
+                Window::cursor_callback(Window::GLFW_window_instance, touch->targetX, touch->targetY); //canvasX, clientX
+                Window::input_callback(Window::GLFW_window_instance, 1, 1, 0);
 
                 Application::game->inputs->numInputs++;
             }
@@ -56,8 +57,8 @@ using namespace System;
 
         else {
             Application::game->inputs->cursorReset = true;
-            Renderer::input_callback(Renderer::GLFW_window_instance, 0, 0, 0);
-            Renderer::cursor_callback(Renderer::GLFW_window_instance, 0, 0); 
+            Window::input_callback(Window::GLFW_window_instance, 0, 0, 0);
+            Window::cursor_callback(Window::GLFW_window_instance, 0, 0); 
             Application::game->inputs->numInputs--;
         }
 

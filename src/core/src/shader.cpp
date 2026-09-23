@@ -694,7 +694,7 @@ void Shader::UnLoad(const std::string& key)
 
 
 void Shader::Update()
-{     
+{  
     for (const auto& uniform : m_uniforms) 
     {
         const char* uniformName = (uniform.name).c_str();

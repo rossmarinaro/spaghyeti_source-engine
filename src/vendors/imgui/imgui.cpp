@@ -465,7 +465,7 @@ CODE
  - 2023/05/22 (1.89.6) - listbox: commented out obsolete/redirecting functions that were marked obsolete more than two years ago:
                            - ListBoxHeader()  -> use BeginListBox() (note how two variants of ListBoxHeader() existed. Check commented versions in imgui.h for reference)
                            - ListBoxFooter()  -> use EndListBox()
- - 2023/05/15 (1.89.6) - clipper: commented out obsolete redirection constructor 'ImGuiListClipper(int items_count, float items_height = -1.0f)' that was marked obsolete in 1.79. Use default constructor + clipper.Begin().
+ - 2023/05/15 (1.89.6) - clipper: commented out obsolete redirection constructor 'ImGuiListClipper(int items_count, float itemscreenHeight = -1.0f)' that was marked obsolete in 1.79. Use default constructor + clipper.Begin().
  - 2023/05/15 (1.89.6) - clipper: renamed ImGuiListClipper::ForceDisplayRangeByIndices() to ImGuiListClipper::IncludeRangeByIndices().
  - 2023/03/14 (1.89.4) - commented out redirecting enums/functions names that were marked obsolete two years ago:
                            - ImGuiSliderFlags_ClampOnInput        -> use ImGuiSliderFlags_AlwaysClamp
@@ -2779,7 +2779,7 @@ static bool GetSkipItemForListClipping()
 // Legacy helper to calculate coarse clipping of large list of evenly sized items.
 // This legacy API is not ideal because it assumes we will return a single contiguous rectangle.
 // Prefer using ImGuiListClipper which can returns non-contiguous ranges.
-void ImGui::CalcListClipping(int items_count, float items_height, int* out_items_display_start, int* out_items_display_end)
+void ImGui::CalcListClipping(int items_count, float itemscreenHeight, int* out_items_display_start, int* out_items_display_end)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
@@ -2805,8 +2805,8 @@ void ImGui::CalcListClipping(int items_count, float items_height, int* out_items
         rect.Add(WindowRectRelToAbs(window, window->NavRectRel[0])); // Could store and use NavJustMovedToRectRel
 
     const ImVec2 pos = window->DC.CursorPos;
-    int start = (int)((rect.Min.y - pos.y) / items_height);
-    int end = (int)((rect.Max.y - pos.y) / items_height);
+    int start = (int)((rect.Min.y - pos.y) / itemscreenHeight);
+    int end = (int)((rect.Max.y - pos.y) / itemscreenHeight);
 
     // When performing a navigation request, ensure we have one item extra in the direction we are moving to
     // FIXME: Verify this works with tabbing
@@ -2891,21 +2891,21 @@ ImGuiListClipper::~ImGuiListClipper()
     End();
 }
 
-void ImGuiListClipper::Begin(int items_count, float items_height)
+void ImGuiListClipper::Begin(int items_count, float itemscreenHeight)
 {
     if (Ctx == NULL)
         Ctx = ImGui::GetCurrentContext();
 
     ImGuiContext& g = *Ctx;
     ImGuiWindow* window = g.CurrentWindow;
-    IMGUI_DEBUG_LOG_CLIPPER("Clipper: Begin(%d,%.2f) in '%s'\n", items_count, items_height, window->Name);
+    IMGUI_DEBUG_LOG_CLIPPER("Clipper: Begin(%d,%.2f) in '%s'\n", items_count, itemscreenHeight, window->Name);
 
     if (ImGuiTable* table = g.CurrentTable)
         if (table->IsInsideRow)
             ImGui::TableEndRow(table);
 
     StartPosY = window->DC.CursorPos.y;
-    ItemsHeight = items_height;
+    ItemsHeight = itemscreenHeight;
     ItemsCount = items_count;
     DisplayStart = -1;
     DisplayEnd = 0;
@@ -3079,13 +3079,13 @@ static bool ImGuiListClipper_StepInternal(ImGuiListClipper* clipper)
 bool ImGuiListClipper::Step()
 {
     ImGuiContext& g = *Ctx;
-    bool need_items_height = (ItemsHeight <= 0.0f);
+    bool need_itemscreenHeight = (ItemsHeight <= 0.0f);
     bool ret = ImGuiListClipper_StepInternal(this);
     if (ret && (DisplayStart == DisplayEnd))
         ret = false;
     if (g.CurrentTable && g.CurrentTable->IsUnfrozenRows == false)
         IMGUI_DEBUG_LOG_CLIPPER("Clipper: Step(): inside frozen table row.\n");
-    if (need_items_height && ItemsHeight > 0.0f)
+    if (need_itemscreenHeight && ItemsHeight > 0.0f)
         IMGUI_DEBUG_LOG_CLIPPER("Clipper: Step(): computed ItemsHeight: %.2f.\n", ItemsHeight);
     if (ret)
     {

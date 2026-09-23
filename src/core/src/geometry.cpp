@@ -56,13 +56,13 @@ void Geometry::Render(int shaderID)
         scrollY = 1.0f;
     #endif
 
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight);
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX), (camera->GetPosition()->y * scrollY));
 
     glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
 
     if (m_isStatic) 
-        projMat = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Window::s_scaleWidth, (float)System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
+        projMat = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Display::resolutionWidth, (float)System::Display::resolutionHeight, 0.0f, -1.0f, 1.0f); 
    
     glm::mat4 mvp = projMat * glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
                     { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
@@ -91,14 +91,15 @@ void Geometry::Render(int shaderID)
         position, 
         color, 
         outlineColor,
-        modelViewProj, drawStyle,
+        modelViewProj, 
+        drawStyle,
         outlineEnabled ? outlineWidth : 0.0f, 
         whiteout,
         depth
     ); 
 
     if (shaderID != -1)
-        System::Renderer::Flush(false, shaderID); 
+        System::Renderer::Flush(texture.IsOpaque(), shaderID); 
 }
 
 

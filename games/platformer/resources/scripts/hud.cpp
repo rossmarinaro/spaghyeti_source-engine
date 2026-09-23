@@ -15,13 +15,13 @@ HUD::HUD(std::shared_ptr<Entity> entity):
     layer = 1;
 
     const auto livesText = System::Game::CreateText("", 335, 35);
-    const auto overlay = System::Game::CreateGeom(0, 0, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 2, true);
+    const auto overlay = System::Game::CreateGeom(0, 0, System::Display::resolutionWidth, System::Display::resolutionHeight, 2, true);
     const auto quitText = System::Game::CreateText("QUIT", 704, 430);
     const auto returnText = System::Game::CreateText("RETURN", 673, 335);
-    const auto leftBorder = System::Game::CreateGeom(1, 0, 10, System::Window::s_scaleHeight, 2, true);
-    const auto rightBorder = System::Game::CreateGeom(System::Window::s_scaleWidth - 9, 0, 10, System::Window::s_scaleHeight, 2, true);
-    const auto topBorder = System::Game::CreateGeom(0, 1, System::Window::s_scaleWidth, 10, 2, true);
-    const auto bottomBorder = System::Game::CreateGeom(0, System::Window::s_scaleHeight - 10, System::Window::s_scaleWidth, 10, 2, true);
+    const auto leftBorder = System::Game::CreateGeom(1, 0, 10, System::Display::resolutionHeight, 2, true);
+    const auto rightBorder = System::Game::CreateGeom(System::Display::resolutionWidth - 9, 0, 10, System::Display::resolutionHeight, 2, true);
+    const auto topBorder = System::Game::CreateGeom(0, 1, System::Display::resolutionWidth, 10, 2, true);
+    const auto bottomBorder = System::Game::CreateGeom(0, System::Display::resolutionHeight - 10, System::Display::resolutionWidth, 10, 2, true);
     const auto heart1 = System::Game::CreateUISprite("heart.png", 56.821, 30);
     const auto heart2 = System::Game::CreateUISprite("heart.png", 120.538, 30);
     const auto heart3 = System::Game::CreateUISprite("heart.png", 184.253, 30);

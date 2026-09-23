@@ -277,7 +277,7 @@ void* Text::GetGLTPointer()
 
 void Text::Render(int shaderID)
 {
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight);
     const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y));
         
     //render default gltext
@@ -299,7 +299,7 @@ void Text::Render(int shaderID)
         glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
 
         if (m_isStatic) 
-            projMat = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Window::s_scaleWidth, (float)System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
+            projMat = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Display::resolutionWidth, (float)System::Display::resolutionHeight, 0.0f, -1.0f, 1.0f); 
 
         SetText(content);
     
@@ -351,7 +351,7 @@ void Text::Render(int shaderID)
         glm::mat4 modelProj = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * identityMatrix;
 
         if (m_isStatic) 
-            modelProj = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Window::s_scaleWidth, (float)System::Window::s_scaleHeight, 0.0f, -1.0f, 1.0f); 
+            modelProj = (glm::highp_mat4)glm::ortho(0.0f, (float)System::Display::resolutionWidth, (float)System::Display::resolutionHeight, 0.0f, -1.0f, 1.0f); 
 
         const Math::Matrix4 mp = {
             { modelProj[0][0], modelProj[0][1], modelProj[0][2], modelProj[0][3] },

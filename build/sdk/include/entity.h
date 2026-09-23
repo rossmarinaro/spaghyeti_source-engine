@@ -78,6 +78,8 @@ class Entity {
         void SetPosition(float x, float y);
 
         static const std::string GenerateID();
+        static bool SortFB(const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b);
+        static bool SortBF(const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b);
 
         static inline int s_depth = 0, 
                           s_count = 0, 

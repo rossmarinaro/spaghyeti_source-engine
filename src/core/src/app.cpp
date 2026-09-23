@@ -73,7 +73,11 @@ void System::Application::Update(void* layer)
 
 
 
-void System::Application::Start(
+void System::Application::Start (
+    int screenWidth, 
+    int screenHeight, 
+    int resolutionWidth,
+    int resolutionHeight,
     Game* layer, 
     const std::string& key, 
     bool isMultithreaded, 
@@ -94,6 +98,9 @@ void System::Application::Start(
     events->isMultiThreaded = isMultithreaded;
     events->isMobile = isMobileSupported;
 
+    Display::resolutionWidth = resolutionWidth;
+    Display::resolutionHeight = resolutionHeight;
+
     #if STANDALONE == 1
 
         if (!layer) {
@@ -103,7 +110,7 @@ void System::Application::Start(
 
         game = layer;
 
-        Window::Init(isFullScreen);  
+        Window::Init(screenWidth, screenHeight, isFullScreen);  
 
         Renderer::SetVsync(vsync);
  

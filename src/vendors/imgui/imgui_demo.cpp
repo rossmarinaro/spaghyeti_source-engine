@@ -1257,12 +1257,12 @@ static void ShowDemoWindowWidgets()
             flags &= ~ImGuiComboFlags_NoPreview;
 
         // Override default popup height
-        if (ImGui::CheckboxFlags("ImGuiComboFlags_HeightSmall", &flags, ImGuiComboFlags_HeightSmall))
-            flags &= ~(ImGuiComboFlags_HeightMask_ & ~ImGuiComboFlags_HeightSmall);
-        if (ImGui::CheckboxFlags("ImGuiComboFlags_HeightRegular", &flags, ImGuiComboFlags_HeightRegular))
-            flags &= ~(ImGuiComboFlags_HeightMask_ & ~ImGuiComboFlags_HeightRegular);
-        if (ImGui::CheckboxFlags("ImGuiComboFlags_HeightLargest", &flags, ImGuiComboFlags_HeightLargest))
-            flags &= ~(ImGuiComboFlags_HeightMask_ & ~ImGuiComboFlags_HeightLargest);
+        if (ImGui::CheckboxFlags("ImGuiComboFlagscreenHeightSmall", &flags, ImGuiComboFlagscreenHeightSmall))
+            flags &= ~(ImGuiComboFlagscreenHeightMask_ & ~ImGuiComboFlagscreenHeightSmall);
+        if (ImGui::CheckboxFlags("ImGuiComboFlagscreenHeightRegular", &flags, ImGuiComboFlagscreenHeightRegular))
+            flags &= ~(ImGuiComboFlagscreenHeightMask_ & ~ImGuiComboFlagscreenHeightRegular);
+        if (ImGui::CheckboxFlags("ImGuiComboFlagscreenHeightLargest", &flags, ImGuiComboFlagscreenHeightLargest))
+            flags &= ~(ImGuiComboFlagscreenHeightMask_ & ~ImGuiComboFlagscreenHeightLargest);
 
         // Using the generic BeginCombo() API, you have full control over how to display the combo contents.
         // (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
@@ -4939,19 +4939,19 @@ static void ShowDemoWindowTables()
             ImGui::TableNextColumn();
             ImGui::Text("A0 Row 0");
             {
-                float rows_height = TEXT_BASE_HEIGHT * 2;
+                float rowscreenHeight = TEXT_BASE_HEIGHT * 2;
                 if (ImGui::BeginTable("table_nested2", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable))
                 {
                     ImGui::TableSetupColumn("B0");
                     ImGui::TableSetupColumn("B1");
                     ImGui::TableHeadersRow();
 
-                    ImGui::TableNextRow(ImGuiTableRowFlags_None, rows_height);
+                    ImGui::TableNextRow(ImGuiTableRowFlags_None, rowscreenHeight);
                     ImGui::TableNextColumn();
                     ImGui::Text("B0 Row 0");
                     ImGui::TableNextColumn();
                     ImGui::Text("B1 Row 0");
-                    ImGui::TableNextRow(ImGuiTableRowFlags_None, rows_height);
+                    ImGui::TableNextRow(ImGuiTableRowFlags_None, rowscreenHeight);
                     ImGui::TableNextColumn();
                     ImGui::Text("B0 Row 1");
                     ImGui::TableNextColumn();

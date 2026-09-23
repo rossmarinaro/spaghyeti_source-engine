@@ -16,7 +16,7 @@ using namespace Graphics;
 
 const glm::highp_mat4 GetViewProjectionMatrix() 
 {
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight);
     const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix(System::Application::game->camera->GetPosition()->x, System::Application::game->camera->GetPosition()->y);
     
     const glm::mat4 vp = glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a });

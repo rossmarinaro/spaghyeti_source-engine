@@ -128,7 +128,6 @@ namespace System {
             Scene* currentScene; 
 
             bool CheckEntityRenderable(std::shared_ptr<Entity>& entity);
-            void RenderBackground();
             void RenderEntities();
             void RenderUI();
             void Reset(bool removeBehaviors = true);

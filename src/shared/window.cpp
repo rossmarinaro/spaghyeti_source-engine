@@ -16,8 +16,8 @@ using namespace System;
 
 const Math::Vector2 Window::GetPixelToNDC(float x, float y) 
 {
-    const float ndcX = ((2.0f * x) / s_width - 1.0f),
-                ndcY = (1.0f - (2.0f * y) / s_height);  
+    const float ndcX = ((2.0f * x) / Display::screenWidth - 1.0f),
+                ndcY = (1.0f - (2.0f * y) / Display::screenHeight);  
 
     return { ndcX, ndcY };
 }
@@ -30,8 +30,8 @@ const Math::Vector2 Window::GetNDCToPixel(float x, float y)
 {
     Math::Vector2 ndc = GetPixelToNDC(x, y);
 
-    const float pixelX = (ndc.x + 1.0f) * (s_scaleWidth / 2), 
-                pixelY = s_scaleHeight - (ndc.y + 1.0f) * (s_scaleHeight / 2); 
+    const float pixelX = (ndc.x + 1.0f) * (Display::resolutionWidth / 2), 
+                pixelY = Display::resolutionHeight - (ndc.y + 1.0f) * (Display::resolutionHeight / 2); 
 
     return { pixelX, pixelY };
 }  
@@ -40,8 +40,10 @@ const Math::Vector2 Window::GetNDCToPixel(float x, float y)
 //------------------------------------ Initialize Window
  
 
-void Window::Init(bool isFullScreen)
+void Window::Init(int screenWidth, int screenHeight, bool isFullScreen)
 {
+    Display::isFullscreen = isFullScreen;   
+
     #ifdef _WIN32
         SetProcessDPIAware();
     #endif
@@ -85,30 +87,27 @@ void Window::Init(bool isFullScreen)
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
     glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
-    //set window dimensions for desktop builds
+    //set window dimensions for builds
 
     #ifdef __EMSCRIPTEN__
-        s_width = 1080.0f;
-        s_height = 720.0f;
+        Display::screenWidth = 1080;
+        Display::screenHeight = 720;
     #else
     
         //fullscreen
         
-        if (isFullScreen) {
-            s_width = 1480.0f;
-            s_height = 860.0f; 
+        if (isFullScreen) 
+        {
+            Display::screenWidth = Display::resolutionWidth;
+            Display::screenHeight = Display::resolutionHeight; 
+
             monitor = glfwGetPrimaryMonitor();
             glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE); 
         }
         else {
-            s_width = 800.0f; 
-            s_height = 500.0f;
-        }
-
-        #if STANDALONE == 0
-            s_width = 1200.0f;
-            s_height = 680.0f;
-        #endif     
+            Display::screenWidth = screenWidth; 
+            Display::screenHeight = screenHeight;
+        }   
 
     #endif
 
@@ -130,14 +129,14 @@ void Window::Init(bool isFullScreen)
     //create window
 
     GLFW_window_instance = glfwCreateWindow(
-        s_width, 
-        s_height,
+        Display::screenWidth, 
+        Display::screenHeight,
         (Application::name + " POWERED BY ::SpaghYeti Source Engine:: PASTABOSS ENTERPRISE 2026 🍝👌").c_str(), 
         monitor, 
         NULL
     );
 
-    //glfwSetWindowMonitor(GLFW_window_instance, monitor, 0, 0, s_width, s_height, 60);
+    //glfwSetWindowMonitor(GLFW_window_instance, monitor, 0, 0, Display::screenWidth, Display::screenHeight, 60);
 
     if (!GLFW_window_instance) {
         LOG("GLFW: window could not be created.");
@@ -158,7 +157,6 @@ void Window::Init(bool isFullScreen)
     #endif
 
     LOG("Window: GL Version - " + (std::string)reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-
 }
 
 //----------------------------------------
@@ -227,9 +225,10 @@ void Resize(GLFWwindow* window, int width, int height)
     if (!window) 
         return;
 
-    Window::s_width = width;
-    Window::s_height = height;
-    glViewport(0, 0, Window::s_width, Window::s_height);
+    Display::screenWidth = width;
+    Display::screenHeight = height;
+
+    glViewport(0, 0, Display::screenWidth, Display::screenHeight);
 }
 
 

@@ -21,8 +21,8 @@ SpawnerNode::SpawnerNode(bool init):
     animationKey = ""; 
     width = 0.0f;
     height = 0.0f;
-    spawnWidth = System::Window::s_scaleWidth;
-    spawnHeight = System::Window::s_scaleHeight;
+    spawnWidth = System::Display::resolutionWidth;
+    spawnHeight = System::Display::resolutionHeight;
     loop = false;
     alpha = 1.0f;
     tint = { 1.0f, 1.0f, 1.0f }; 
@@ -259,27 +259,27 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             body.exist = !body.exist;
 
                         if (m_shapeType == "box") 
-                        {
-                            ImGui::SliderFloat("width", &body.self.width, 0.0f, System::Window::s_width); 
+                        { 
+                            ImGui::SliderFloat("width", &body.self.width, 0.0f, Editor::Get()->worldWidth); 
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
 
-                            ImGui::SliderFloat("height", &body.self.height, 0.0f, System::Window::s_height);
+                            ImGui::SliderFloat("height", &body.self.height, 0.0f, Editor::Get()->worldHeight);
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
                         }
 
                         if (m_shapeType == "circle") {
-                            ImGui::SliderFloat("radius", &body.self.radius, 0.0f, System::Window::s_width);
+                            ImGui::SliderFloat("radius", &body.self.radius, 0.0f, Editor::Get()->worldWidth);
                             if (ImGui::IsItemDeactivatedAfterEdit())
                                 EventListener::UpdateSession();
                         }
 
-                        ImGui::SliderFloat("offset x", &body.self.x, -System::Window::s_width, System::Window::s_width);  
+                        ImGui::SliderFloat("offset x", &body.self.x, -Editor::Get()->worldWidth, Editor::Get()->worldWidth);  
                         if (ImGui::IsItemDeactivatedAfterEdit())
                             EventListener::UpdateSession();
 
-                        ImGui::SliderFloat("offset y", &body.self.y, -System::Window::s_height, System::Window::s_height);
+                        ImGui::SliderFloat("offset y", &body.self.y, -Editor::Get()->worldHeight, Editor::Get()->worldHeight);
                         if (ImGui::IsItemDeactivatedAfterEdit())
                             EventListener::UpdateSession();
 

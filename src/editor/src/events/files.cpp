@@ -21,24 +21,6 @@
 using namespace editor;
 
 
-//--------------------------------- file open callbacks (windows only)
-
-
-static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData) {
-
-    //#ifdef _WIN32
-
-        if(uMsg == BFFM_INITIALIZED) {
-            std::string tmp = (const char*)lpData; Editor::Log(":::"+tmp);
-            std::cout << "path: " << tmp << std::endl;
-            SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
-        }
-
-   // #endif
-
-    return 0;
-}
-
 
 //--------------------------------
 
@@ -54,117 +36,109 @@ EventListener::EventListener() {
 }
 
 
-//-------------------------------- new project layer
+//-------------------------------- 
 
 
 const bool EventListener::NewProject(const char* root_path)
 {
     #ifdef _WIN32
-Editor::Log(root_path);
-        TCHAR p[MAX_PATH];
 
-        BROWSEINFO bi = { 0 };
-ZeroMemory(&bi, sizeof(bi));
-        bi.lpszTitle  = ("Select Project Root Path.");
-        bi.ulFlags    = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
-        bi.lpfn       = BrowseCallbackProc;
-        bi.lParam     = (LPARAM) root_path;
-Editor::Log("2");
-        LPITEMIDLIST pidl = SHBrowseForFolder (&bi);
-Editor::Log("3");
+        std::wstring resultPath = L"";
+        CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+        IFileOpenDialog* pDlg = nullptr;
 
+        if (SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_PPV_ARGS(&pDlg)))) 
+        {
+            pDlg->SetOptions(FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
 
-        // OPENFILENAME ofn = {0};
-        // TCHAR szFile[260] = {0};
+            IShellItem* pDefaultFolder = nullptr;
+            wchar_t wideBuffer[MAX_PATH] = { 0 };
 
-        // ofn.lStructSize = sizeof (ofn);
-        // ofn.hwndOwner = NULL;
-        // ofn.hInstance = NULL;
-        // ofn.nMaxFile = sizeof(szFile);
-        // ofn.lpstrFilter = _T("SpaghYeti Scene Files (*.scene)\0*.scene");
-        // ofn.lpstrFile = szFile;
-        // ofn.nFilterIndex = 1;
-        // ofn.lpstrFileTitle = NULL;
-        // ofn.nMaxFileTitle = 0;
-        // ofn.lpstrInitialDir = NULL;
-        // ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+            int result = MultiByteToWideChar(CP_ACP, 0, root_path, -1, wideBuffer, MAX_PATH);
 
+            if (result > 0)
+            {
+                if (SUCCEEDED(SHCreateItemFromParsingName(wideBuffer, nullptr, IID_PPV_ARGS(&pDefaultFolder)))) {
+                    pDlg->SetFolder(pDefaultFolder);
+                    pDefaultFolder->Release();
+                } 
 
+                if (SUCCEEDED(pDlg->Show(NULL))) 
+                {
+                    IShellItem* pItem = nullptr;
 
-        //if (GetOpenFileName(&ofn) == TRUE)
-        if (pidl != 0)
-        {Editor::Log("4");
-           SHGetPathFromIDList (pidl, p);
+                    if (SUCCEEDED(pDlg->GetResult(&pItem))) 
+                    {
+                        PWSTR pszFilePath = nullptr;
+                        if (SUCCEEDED(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath))) {
+                            resultPath = pszFilePath;
+                            CoTaskMemFree(pszFilePath);
+                        }
+                        pItem->Release();
 
-            IMalloc* imalloc = 0;
+                        //convert wstring to std string
 
-            if (SUCCEEDED(SHGetMalloc (&imalloc))) {
-                imalloc->Free (pidl);
-                imalloc->Release();
+                        size_t wstringSizeToAlloc = std::wcstombs(nullptr, resultPath.c_str(), 0);
+                        std::string path(wstringSizeToAlloc, 0);
+                        std::wcstombs(&path[0], resultPath.c_str(), wstringSizeToAlloc);
+
+                        Editor::projectPath = System::Utils::SanitizePath(path) + "/";
+        
+                        s_currentProject = std::filesystem::path{ path }.filename().string();
+
+                        const std::string resources = Editor::projectPath + "/resources";
+
+                        if (std::filesystem::exists(resources)) 
+                            Editor::Log("Project " + s_currentProject + " already exists.");
+
+                        else {
+
+                            std::filesystem::create_directory(Editor::projectPath + "/scenes");
+
+                            std::filesystem::create_directory(resources);
+                            std::filesystem::create_directory(resources + "/scripts");
+                            std::filesystem::create_directory(resources + "/shaders");
+                            std::filesystem::create_directory(resources + "/assets");
+                            std::filesystem::create_directory(resources + "/prefabs");
+                            std::filesystem::create_directory(resources + "/assets/images");
+                            std::filesystem::create_directory(resources + "/assets/audio");
+                            std::filesystem::create_directory(resources + "/assets/data");
+
+                            Editor::Log("New project " + s_currentProject + " generated.");
+                        }
+
+                        //save and open
+
+                        if (SaveScene(true)) 
+                        { 
+                            std::stringstream JSON = DecodeFile(Editor::projectPath + "scenes/" + s_currentScene + ".scene");
+
+                            if (JSON.good()) {
+                                json data = ParseJSONStream(JSON);
+                                Deserialize(data);
+                            }
+                            else {
+                                Editor::Log("Cannot decode scene, there is a problem with the stream.");
+                                return false;
+                            }
+
+                            Editor::Get()->projectOpen = true;
+
+                            return true;
+                        }
+                    }
+                } 
             }
-
-            Editor::Get()->Reset();
-
-            std::string path = (std::string)p;
-
-            //std::filesystem::path result((const char*)ofn.lpstrFile);
-
-            //std::string path = result.string();
-
-            Editor::projectPath = System::Utils::SanitizePath(path) + "/";
-       
-            s_currentProject = std::filesystem::path{ path }.filename().string();
-
-            const std::string resources = Editor::projectPath + "/resources";
-
-            if (std::filesystem::exists(resources)) 
-                Editor::Log("Project " + s_currentProject + " already exists.");
-
-            else {
-
-                std::filesystem::create_directory(Editor::projectPath + "/scenes");
-
-                std::filesystem::create_directory(resources);
-                std::filesystem::create_directory(resources + "/scripts");
-                std::filesystem::create_directory(resources + "/shaders");
-                std::filesystem::create_directory(resources + "/assets");
-                std::filesystem::create_directory(resources + "/prefabs");
-                std::filesystem::create_directory(resources + "/assets/images");
-                std::filesystem::create_directory(resources + "/assets/audio");
-                std::filesystem::create_directory(resources + "/assets/data");
-
-                Editor::Log("New project " + s_currentProject + " generated.");
-            }
-
-            //save and open
-
-            if (SaveScene(true)) 
-            { 
-                std::stringstream JSON = DecodeFile(Editor::projectPath + "scenes/" + s_currentScene + ".scene");
-
-                if (JSON.good()) {
-                    json data = ParseJSONStream(JSON);
-                    Deserialize(data);
-                }
-                else {
-                    Editor::Log("Cannot decode scene, there is a problem with the stream.");
-                    return false;
-                }
-
-                Editor::Get()->projectOpen = true;
-
-                return true;
-            }
-
-            return false;
-
+            
+            pDlg->Release();
         }
+        
+        CoUninitialize();
+
+        return false;
 
     #endif
-
-    return false;
 }
-
 
 
 //-------------------------------- new scene

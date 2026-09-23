@@ -1,6 +1,5 @@
 #include "./gameplay.h"
 #include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/game.h"
-#include "C:/project_data/projects/c++/spaghyeti_source_engine/build/sdk/include/window.h"
 
 using namespace entity_behaviors;
 
@@ -15,7 +14,7 @@ Gameplay::Gameplay(std::shared_ptr<Entity> entity):
         m_text(""),
         m_dialog_box(System::Game::CreateUISprite("dialogue window.png", 70.0f, 5.0f)),
         m_dialog_text(System::Game::CreateText("", 600.0f, 50.0f, "slkscr.ttf")),
-        m_gameOver_overlay(System::Game::CreateGeom(0, 0, System::Window::s_scaleWidth, System::Window::s_scaleHeight, 2, true)),
+        m_gameOver_overlay(System::Game::CreateGeom(0, 0, System::Display::resolutionWidth, System::Display::resolutionHeight, 2, true)),
         m_gameOver_text(System::Game::CreateText("GAME OVER", 600.0f, 400.0f))
     {
         score = 0;

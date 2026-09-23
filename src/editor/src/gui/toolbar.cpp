@@ -272,13 +272,13 @@ void editor::GUI::ShowSettings()
         if (ImGui::BeginMenu("preload shaders"))
         {
             if (ImGui::Button("add"))
-                session->shaders.push_back({ "", { "none selected", "none selected" }});
+                session->shaders.push_back({ "", "none selected", "none selected", 0 });
 
             ImGui::SameLine();
 
             if (ImGui::Button("delete")) {
                 if (session->shaders.size()) {
-                    std::string key = session->shaders.back().first;
+                    std::string key = session->shaders.back().key;
                     session->shaders.pop_back();
                     session->shaders_applied = false;
                     Editor::Log("shader: " + key + " removed.");
@@ -289,15 +289,15 @@ void editor::GUI::ShowSettings()
 
             if (ImGui::Button("apply"))
             {
-                for (const auto& shader : session->shaders) {
-
-                    if ((!shader.first.length() || shader.second.first == "none selected" || shader.second.second == "none selected") || 
-                        std::adjacent_find(session->shaders.begin(), session->shaders.end()) != session->shaders.end())
+                for (const auto& shader : session->shaders) 
+                {
+                    if ((!shader.key.length() || shader.vertex == "none selected" || shader.fragment == "none selected") || 
+                        std::adjacent_find(session->shaders.begin(), session->shaders.end(), [](const auto& a, const auto& b) { return a.key == b.key; }) != session->shaders.end())
                         break;
 
                     session->shaders_applied = true;
 
-                    Editor::Log("shader: " + shader.first + " added.");
+                    Editor::Log("shader: " + shader.key + " added.");
                 }
             }
 
@@ -308,9 +308,9 @@ void editor::GUI::ShowSettings()
                 if (System::Utils::str_endsWith(p, type)) 
                     if (ImGui::MenuItem(p.c_str())) {
                         if (type == ".vert")
-                            Editor::Get()->shaders[index].second.first = p;
+                            Editor::Get()->shaders[index].vertex = p;
                         if (type == ".frag")
-                            Editor::Get()->shaders[index].second.second = p;
+                            Editor::Get()->shaders[index].fragment = p;
                     }
             };
 
@@ -342,43 +342,48 @@ void editor::GUI::ShowSettings()
                 {
                     ImGui::PushID(i);
 
-                    ImGui::InputText("key", &session->shaders[i].first);
-
-                    ImGui::SameLine();
-
-                    if (ImGui::Button("remove"))
+                    if (session->shaders[i].key == "sprite") {
+                        ImGui::Text("standard sprite renderer");
+                        ImGui::InputInt("depth", &session->shaders[i].depth);
+                    }
+                    else 
                     {
-                        auto it = std::find_if(session->shaders.begin(), session->shaders.end(), [&session, &i](const auto& sh) { return sh.first == session->shaders[i].first; });
+                        ImGui::Separator();
 
-                        if (it != session->shaders.end()) {
-                            it = session->shaders.erase(it);
-                            --it;
+                        ImGui::InputText("key", &session->shaders[i].key);
+                        ImGui::InputInt("depth", &session->shaders[i].depth);
+
+                        ImGui::Text(("vertex: " + session->shaders[i].vertex).c_str());
+
+                        ImGui::SameLine();
+                        
+                        ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
+                        if (ImGui::BeginMenu(".vert")) {
+                            searchShaderFolders(i, ".vert");
+                            ImGui::EndMenu();
+                        }
+                        ImGui::PopItemFlag();
+
+                        ImGui::Text(("fragment: " + session->shaders[i].fragment).c_str());
+
+                        ImGui::SameLine();
+
+                        ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
+                        if (ImGui::BeginMenu(".frag")) {
+                            searchShaderFolders(i, ".frag");
+                            ImGui::EndMenu();
+                        }
+                        ImGui::PopItemFlag();
+
+                        if (ImGui::Button("remove")) {
+                            auto it = std::find_if(session->shaders.begin(), session->shaders.end(), [&session, &i](const auto& sh) { return sh.key == session->shaders[i].key; });
+
+                            if (it != session->shaders.end()) {
+                                it = session->shaders.erase(it);
+                                --it;
+                            }
                         }
                     }
-
-                    ImGui::Text(("vertex: " + session->shaders[i].second.first).c_str());
-
-                    ImGui::SameLine();
-                    
-                    ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
-                    if (ImGui::BeginMenu(".vert")) {
-                        searchShaderFolders(i, ".vert");
-                        ImGui::EndMenu();
-                    }
-                    ImGui::PopItemFlag();
-
-                    ImGui::Text(("fragment: " + session->shaders[i].second.second).c_str());
-
-                    ImGui::SameLine();
-
-                    ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
-                    if (ImGui::BeginMenu(".frag")) {
-                        searchShaderFolders(i, ".frag");
-                        ImGui::EndMenu();
-                    }
-                    ImGui::PopItemFlag();
-
-                    ImGui::Separator();
 
                     ImGui::PopID();
                 }
@@ -641,6 +646,11 @@ void editor::GUI::ShowMenu()
 
                 ImGui::EndCombo();
             }
+
+            ImGui::InputInt("screen width", &session->screenWidth);
+            ImGui::InputInt("screen height", &session->screenHeight);
+            ImGui::InputInt("pixel dimensions x", &session->resolutionWidth);
+            ImGui::InputInt("pixel dimensions y", &session->resolutionHeight);
 
             ImGui::Checkbox("full screen", &session->isFullscreen);
             ImGui::Checkbox("enable link-time optimization (-flto)", &session->LTO);

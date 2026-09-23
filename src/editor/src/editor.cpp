@@ -65,7 +65,7 @@ void Editor::Update()
     double xPos, yPos;
     glfwGetCursorPos(Window::GLFW_window_instance, &xPos, &yPos);
     
-    const Math::Vector4 pm = s_self->game->camera->GetProjectionMatrix(Window::s_scaleWidth, Window::s_scaleHeight);
+    const Math::Vector4 pm = s_self->game->camera->GetProjectionMatrix(Display::resolutionWidth, Display::resolutionHeight);
     const Math::Matrix4 vm = s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition()->x, s_self->game->camera->GetPosition()->y);
 
     const glm::mat4 localCoords = glm::inverse(glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }));
@@ -133,6 +133,10 @@ void Editor::Start()
     s_self->minVersion = 0;
     s_self->midVersion = 0;
     s_self->maxVersion = 1;
+    s_self->screenWidth = 800;
+    s_self->screenHeight = 500;
+    s_self->resolutionWidth = 1480;
+    s_self->resolutionHeight = 860;
     s_self->worldWidth = 2000;
     s_self->worldHeight = 2000;
     s_self->gravityX = 0.0f;
@@ -178,7 +182,7 @@ void Editor::Start()
 
     Application::name = "SPAGHYEDITOR";
 
-    Window::Init();
+    Window::Init(1200, 680);
 
     EventListener el;
     s_self->events = &el;
@@ -339,8 +343,8 @@ void Editor::FocusEntity(const std::shared_ptr<Entity>& entity)
     Get()->game->camera->SetZoom(1.0f);
  
     Get()->game->camera->SetPosition({ 
-        -(entity->position.x - Window::s_scaleWidth / 2) - width, 
-        -(entity->position.y - Window::s_scaleHeight / 2) - height
+        -(entity->position.x - Display::resolutionWidth / 2) - width, 
+        -(entity->position.y - Display::resolutionHeight / 2) - height
     });
 
     selectedEntity = entity;

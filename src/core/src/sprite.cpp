@@ -513,7 +513,7 @@ void Sprite::Render(int shaderID)
             scrollY = 1.0f;
         #endif
 
-        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Window::s_scaleWidth, System::Window::s_scaleHeight);
+        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight);
         const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX), (camera->GetPosition()->y * scrollY));
         const glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
     
@@ -647,7 +647,7 @@ void Sprite::Render(int shaderID)
         }
 
         if (shaderID != -1)
-            System::Renderer::Flush(false, shaderID); 
+            System::Renderer::Flush(texture.IsOpaque(), shaderID); 
     }
 }
  

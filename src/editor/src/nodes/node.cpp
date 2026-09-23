@@ -461,12 +461,12 @@ void Node::RenderShaderOptions(const std::string& nodeId, const std::vector<std:
 
                 else
                     for (const auto& shader : Editor::Get()->shaders) {
-                        const std::string key = shader.first,
-                                          vertex = shader.second.first,
-                                          fragment = shader.second.second;
+                        const std::string key = shader.key,
+                                          vertex = shader.vertex,
+                                          fragment = shader.fragment;
 
-                        if (ImGui::MenuItem(shader.first.c_str())) {
-                            Node::LoadShader(node, shader.first, vertex, fragment);
+                        if (ImGui::MenuItem(key.c_str())) {
+                            Node::LoadShader(node, key, vertex, fragment);
                             EventListener::UpdateSession();
                         }
                     }

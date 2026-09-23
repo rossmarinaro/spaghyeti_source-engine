@@ -447,13 +447,13 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                             ImGui::EndCombo();
                         }
 
-                        if (ImGui::SliderFloat("offset x", &body.second->x, 0.0f, System::Window::s_width))
+                        if (ImGui::SliderFloat("offset x", &body.second->x, 0.0f, Editor::Get()->worldWidth))
                             UpdateBody(body.second);
 
                         if (ImGui::IsItemDeactivatedAfterEdit())
                             EventListener::UpdateSession();
 
-                        if (ImGui::SliderFloat("offset y", &body.second->y, 0.0f, System::Window::s_height))
+                        if (ImGui::SliderFloat("offset y", &body.second->y, 0.0f, Editor::Get()->worldHeight))
                             UpdateBody(body.second);
 
                         if (ImGui::IsItemDeactivatedAfterEdit()) 
@@ -463,13 +463,13 @@ void SpriteNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         if (body.second->shape == Physics::Body::Shape::BOX)
                         {
-                            if (ImGui::SliderFloat("width", &body.second->width, 0.0f, System::Window::s_width))
+                            if (ImGui::SliderFloat("width", &body.second->width, 0.0f, Editor::Get()->worldWidth))
                                 UpdateBody(body.second);
 
                             if (ImGui::IsItemDeactivatedAfterEdit()) 
                                 EventListener::UpdateSession();
 
-                            if (ImGui::SliderFloat("height", &body.second->height, 0.0f, System::Window::s_height))
+                            if (ImGui::SliderFloat("height", &body.second->height, 0.0f, Editor::Get()->worldHeight))
                                 UpdateBody(body.second);
 
                             if (ImGui::IsItemDeactivatedAfterEdit()) 

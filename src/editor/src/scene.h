@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../../shared/renderer.h"
+#include "./assets/assets.h"
 #include "./nodes/node.h"
+#include "./types.h"
 
 namespace editor {
 
@@ -37,8 +39,8 @@ namespace editor {
             std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;
             std::vector<std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>>> animations;
-            std::vector<std::pair<std::string, std::pair<std::string, std::string>>> shaders;
-            std::vector<std::shared_ptr<editor::Node>> nodes;
+            std::vector<Shader> shaders;
+            std::vector<std::shared_ptr<Node>> nodes;
             std::vector<std::string> assets;
 
             Scene():

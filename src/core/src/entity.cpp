@@ -65,6 +65,24 @@ void Entity::Init()
 //------------------------------------
 
 
+bool Entity::SortFB(const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { 
+    if (a->drawStyle != b->drawStyle)
+        return a->drawStyle < b->drawStyle;
+    return a->depth < b->depth; 
+}
+
+//------------------------------------
+
+bool Entity::SortBF(const std::shared_ptr<Entity>& a, const std::shared_ptr<Entity>& b) { 
+    if (a->drawStyle != b->drawStyle)
+        return a->drawStyle < b->drawStyle;
+    return a->depth > b->depth; 
+}
+
+
+//------------------------------------
+
+
 void Entity::SetData(const std::string& key, const std::any& value) { 
 
     auto it = m_data.find(key);

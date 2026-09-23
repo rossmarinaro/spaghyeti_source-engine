@@ -638,8 +638,8 @@ void EventListener::BuildAndRun()
         for (const auto& shader : target.second->shaders) 
         { 
             std::string vertex, fragment;
-            std::filesystem::path vertPath { shader.second.first },
-                                  fragPath { shader.second.second };
+            std::filesystem::path vertPath { shader.vertex },
+                                  fragPath { shader.fragment };
 
             //embedded shaders
 
@@ -659,7 +659,8 @@ void EventListener::BuildAndRun()
                 vertFile.close();
                 fragFile.close();            
                 
-                asset_queue << "  Graphics::Shader::Load(\"" + shader.first + "\", " + vertex + ", " + fragment + ");\n";
+                asset_queue << "  Graphics::Shader::Load(\"" + shader.key + "\", " + vertex + ", " + fragment + ");\n";
+                command_queue << "  Graphics::Shader::Get(\"" + shader.key + "\")->SetDepth(" + std::to_string(shader.depth) + ");\n";
             }
 
             //copied shaders
@@ -668,7 +669,7 @@ void EventListener::BuildAndRun()
                 vertex = "assets/" + vertPath.filename().string(),
                 fragment = "assets/" + fragPath.filename().string();            
                 
-                asset_queue << "  Graphics::Shader::Load(\"" + shader.first + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
+                asset_queue << "  Graphics::Shader::Load(\"" + shader.key + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
             }
         }
             
@@ -1264,7 +1265,7 @@ void EventListener::BuildAndRun()
 
     int vsync = session->vsync ? 1 : 0;
 
-    game_src << "       System::Application::Start(&game, \"" + s_currentProject + "\", " + isMultiThreaded + ", isMobile, " + isFullscreen + ", " + std::to_string(vsync) + ");\n";
+    game_src << "       System::Application::Start(" + std::to_string(session->screenWidth) + ", " + std::to_string(session->screenHeight) + ", " + std::to_string(session->resolutionWidth) + ", " + std::to_string(session->resolutionHeight) + ", &game, \"" + s_currentProject + "\", " + isMultiThreaded + ", isMobile, " + isFullscreen + ", " + std::to_string(vsync) + ");\n";
     game_src <<	"   #ifdef __EMSCRIPTEN__\n";
     game_src <<	"       emscripten_exit_with_live_runtime();\n";
     game_src <<	"   #endif\n";

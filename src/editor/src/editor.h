@@ -1,4 +1,3 @@
-
 #pragma once
 
 #define SPAGHYETI_EDITOR
@@ -27,12 +26,12 @@
 #include "../../shared/window.h"  
 
 #include "./events/events.h"
-
+#include "./types.h"
 
 /****** Base Editor *****/
 
 namespace editor {
-    
+
     class Editor 
 	{
 		public:
@@ -41,7 +40,11 @@ namespace editor {
                 worldHeight, 
                 minVersion, 
                 midVersion, 
-                maxVersion;
+                maxVersion,
+                screenWidth,
+                screenHeight,
+                resolutionWidth,
+                resolutionHeight;
 
 			float gravityX, gravityY, vignetteVisibility;
 
@@ -76,7 +79,7 @@ namespace editor {
 			std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;
             std::vector<std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>>> animations;
-            std::vector<std::pair<std::string, std::pair<std::string, std::string>>> shaders;
+            std::vector<Shader> shaders; 
 
 			std::vector<std::string> scenes;
 

@@ -191,7 +191,7 @@ void EventListener::Serialize(json& data, bool newScene)
 
         if (session->shaders_applied)
             for (const auto& shader : session->shaders)
-                shaders.push_back({ { "key", shader.first }, { "vertex", shader.second.first }, { "fragment", shader.second.second } });
+                shaders.push_back({ { "key", shader.key }, { "vertex", shader.vertex }, { "fragment", shader.fragment }, { "depth", shader.depth } });
 
         if (session->spritesheets.size())
             for (const auto& spritesheet : session->spritesheets)
@@ -324,7 +324,7 @@ void EventListener::Deserialize(json& data, bool isSession)
         session->gravity_sleeping = data["settings"]["physics"]["sleeping"];
     }
 
-    //loaded data
+    //spritesheets
 
     session->spritesheets.clear();
 
@@ -336,13 +336,25 @@ void EventListener::Deserialize(json& data, bool isSession)
         for (const auto& asset : data["assets"]) 
             AssetManager::Get()->Register(asset);
 
+    //shaders
+
     session->shaders.clear();
+    session->shaders.push_back({ "sprite", "", "", 0 });
 
     if (data.contains("shaders"))
-        for (const auto& shader : data["shaders"]) {
-            session->shaders.push_back({ shader["key"], { shader["vertex"], shader["fragment"] } });
+        for (const auto& shader : data["shaders"]) 
+        {
+            const std::string key = shader.contains("key") ? shader["key"] : "", 
+                              vertex = shader.contains("vertex") ? shader["vertex"] : "none selected",
+                              fragment = shader.contains("fragment") ? shader["fragment"] : "none selected";
+
+            int depth = shader.contains("depth") ? static_cast<int>(shader["depth"]) : 0;
+
+            session->shaders.push_back({ key, vertex, fragment, depth });
             session->shaders_applied = true;
         }
+
+    //animations
 
     session->animations.clear();
 

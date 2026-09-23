@@ -1771,13 +1771,13 @@ bool ImGui::BeginComboPopup(ImGuiID popup_id, const ImRect& bb, ImGuiComboFlags 
     }
     else
     {
-        if ((flags & ImGuiComboFlags_HeightMask_) == 0)
-            flags |= ImGuiComboFlags_HeightRegular;
-        IM_ASSERT(ImIsPowerOfTwo(flags & ImGuiComboFlags_HeightMask_)); // Only one
+        if ((flags & ImGuiComboFlagscreenHeightMask_) == 0)
+            flags |= ImGuiComboFlagscreenHeightRegular;
+        IM_ASSERT(ImIsPowerOfTwo(flags & ImGuiComboFlagscreenHeightMask_)); // Only one
         int popup_max_height_in_items = -1;
-        if (flags & ImGuiComboFlags_HeightRegular)     popup_max_height_in_items = 8;
-        else if (flags & ImGuiComboFlags_HeightSmall)  popup_max_height_in_items = 4;
-        else if (flags & ImGuiComboFlags_HeightLarge)  popup_max_height_in_items = 20;
+        if (flags & ImGuiComboFlagscreenHeightRegular)     popup_max_height_in_items = 8;
+        else if (flags & ImGuiComboFlagscreenHeightSmall)  popup_max_height_in_items = 4;
+        else if (flags & ImGuiComboFlagscreenHeightLarge)  popup_max_height_in_items = 20;
         ImVec2 constraint_min(0.0f, 0.0f), constraint_max(FLT_MAX, FLT_MAX);
         if ((g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSize) == 0 || g.NextWindowData.SizeVal.x <= 0.0f) // Don't apply constraints if user specified a size
             constraint_min.x = w;
@@ -8513,7 +8513,7 @@ static ImGuiTabItem* ImGui::TabBarTabListPopupButton(ImGuiTabBar* tab_bar)
     arrow_col.w *= 0.5f;
     PushStyleColor(ImGuiCol_Text, arrow_col);
     PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-    bool open = BeginCombo("##v", NULL, ImGuiComboFlags_NoPreview | ImGuiComboFlags_HeightLargest);
+    bool open = BeginCombo("##v", NULL, ImGuiComboFlags_NoPreview | ImGuiComboFlagscreenHeightLargest);
     PopStyleColor(2);
 
     ImGuiTabItem* tab_to_select = NULL;
