@@ -308,7 +308,7 @@ void EventListener::BuildAndRun()
         else
             main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 -s " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
 
-        main_makeFile.close();
+        main_makeFile.close();  
 
         //include core funtions
 
