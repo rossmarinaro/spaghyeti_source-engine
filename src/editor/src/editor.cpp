@@ -146,7 +146,7 @@ void Editor::Start()
     s_self->projectOpen = false;
     s_self->shaders_applied = false;
     s_self->globals_applied = false;
-    s_self->animations_applied = false;
+    s_self->animators_applied = false;
     s_self->gravity_continuous = true;
     s_self->gravity_sleeping = true;
     s_self->use_pthreads = false;

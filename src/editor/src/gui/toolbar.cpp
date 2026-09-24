@@ -272,7 +272,7 @@ void editor::GUI::ShowSettings()
         if (ImGui::BeginMenu("preload shaders"))
         {
             if (ImGui::Button("add"))
-                session->shaders.push_back({ "", "none selected", "none selected", 0 });
+                session->shaders.push_back({ "", "none selected", "none selected", session->shaders.size() });
 
             ImGui::SameLine();
 
@@ -475,16 +475,16 @@ void editor::GUI::ShowSettings()
         if (ImGui::BeginMenu("preload animations"))
         {
             if (ImGui::Button("add")) 
-                session->animations.push_back({ "", {}});
+                session->animators.push_back({{}}); 
 
             ImGui::SameLine();
 
             if (ImGui::Button("delete")) {
-                if (session->animations.size())
+                if (session->animators.size())
                 {
-                    std::string key = session->animations.back().first;
-                    session->animations.pop_back();
-                    session->animations_applied = false;
+                    std::string key = session->animators.back().textureKey;
+                    session->animators.pop_back();
+                    session->animators_applied = false;
                     Editor::Log("animation: " + key + " removed.");
                 }
             }
@@ -498,37 +498,37 @@ void editor::GUI::ShowSettings()
 
             ImGui::Separator();
 
-            for (int i = 0; i < session->animations.size(); i++)
+            for (int i = 0; i < session->animators.size(); i++)
             {
                 ImGui::PushID(i);
 
-                ImGui::InputText("texture key", &session->animations[i].first);
+                ImGui::InputText("texture key", &session->animators[i].textureKey);
 
                 if (ImGui::BeginMenu("animations")) 
                 {
                     if (ImGui::Button("add key")) 
-                        session->animations[i].second.push_back({ "", { 0, 0 }});
+                        session->animators[i].animations.push_back({ "", 0, 0 });
 
                     ImGui::SameLine();
 
                     if (ImGui::Button("delete key"))
-                        if (session->animations[i].second.size())
-                            session->animations[i].second.pop_back();
+                        if (session->animators[i].animations.size())
+                            session->animators[i].animations.pop_back();
 
                     int j = 0;
 
-                    if (session->animations[i].second.size())
-                        for (auto& anim : session->animations[i].second) 
+                    if (session->animators[i].animations.size())
+                        for (auto& animation : session->animators[i].animations) 
                         {
                             ImGui::PushID(j);
 
-                            ImGui::InputText("key", &anim.first);
-                            ImGui::InputInt("start", &anim.second.first);
-                            ImGui::InputInt("end", &anim.second.second);
+                            ImGui::InputText("key", &animation.key);
+                            ImGui::InputInt("start", &animation.start);
+                            ImGui::InputInt("end", &animation.end);
 
                             ImGui::PopID();
 
-                            if (session->animations[i].second.size() > 1)
+                            if (session->animators[i].animations.size() > 1)
                                 ImGui::Separator();
 
                             j++;
@@ -540,9 +540,9 @@ void editor::GUI::ShowSettings()
                 }
 
                 if (ImGui::Button("remove")) {
-                    auto it = std::find_if(session->animations.begin(), session->animations.end(), [&session, &i](const auto& anim) { return anim.first == session->animations[i].first; });
-                    if (it != session->animations.end()) {
-                        it = session->animations.erase(it);
+                    auto it = std::find_if(session->animators.begin(), session->animators.end(), [&session, &i](const auto& anim) { return anim.textureKey == session->animators[i].textureKey; });
+                    if (it != session->animators.end()) {
+                        it = session->animators.erase(it);
                         --it;
                     }
                 }
@@ -556,9 +556,7 @@ void editor::GUI::ShowSettings()
             ImGui::EndMenu();
         }
 
-
         ImGui::EndMenu();
-
     }
 
 }

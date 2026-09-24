@@ -28,7 +28,7 @@ namespace System {
 
             struct Spawn 
             {
-                int type;
+                int type, depth;
                 float posX, posY, width, height, spawn_width, spawn_height, alpha;
                 bool loop, can_create;
                 std::string filename, index;
@@ -45,9 +45,7 @@ namespace System {
             };
 
             std::string key;
- 
             Math::Vector2* cameraTarget;
-
             std::unique_ptr<Geometry> vignette;
 
             std::vector<Spawn> spawns; 
@@ -122,16 +120,14 @@ namespace System {
                 
         private:
  
-            static inline int s_ID = 0;
-
             int m_worldWidth, 
                 m_worldHeight;
 
             bool m_paused, m_depthSort;
-   
             Process::Context m_context;
 
             void Init(const std::string& key);
 
+            static inline int s_ID = 0;
     };
 }

@@ -23,7 +23,6 @@ SpriteNode::SpriteNode(bool init):
     cull = false; 
     make_UI = false;
     currentFrame = 0;
-    depth = 1;
     alpha = 1.0f;
     U1 = 0.0f;
     V1 = 0.0f;

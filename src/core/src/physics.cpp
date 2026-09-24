@@ -301,6 +301,12 @@ std::shared_ptr<Physics::Body> Physics::CreateBody(
     float restitution
 )
 {
+    if (width <= 0.0f)
+        width = 1.0f;
+
+    if (height <= 0.0f)
+        height = 1.0f;
+
     const auto body = std::make_shared<Physics::Body>(physicsType, x, y, width, height, pointer <= -1 ? pointer : _bodyCount, isSensor, density, friction, restitution);
     
     b2Body* b2d_body = InitBox2DBody(physicsType, x, y, pointer);
@@ -328,6 +334,9 @@ std::shared_ptr<Physics::Body> Physics::CreateBody(
     float restitution
 )
 {
+    if (radius <= 0.0f)
+        radius = 1.0f;
+
     const auto body = std::make_shared<Body>(physicsType, x, y, radius, pointer <= -1 ? pointer : _bodyCount, isSensor, density, friction, restitution);
 
     b2Body* b2d_body = InitBox2DBody(physicsType, x, y, pointer);

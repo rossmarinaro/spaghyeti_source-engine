@@ -51,7 +51,7 @@ namespace editor {
 			bool projectOpen,
                  shaders_applied,
                  globals_applied,
-                 animations_applied,
+                 animators_applied,
                  gravity_continuous, 
                  gravity_sleeping,
                  use_pthreads,
@@ -78,7 +78,7 @@ namespace editor {
 			
 			std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;
-            std::vector<std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>>> animations;
+            std::vector<Animator> animators; 
             std::vector<Shader> shaders; 
 
 			std::vector<std::string> scenes;

@@ -304,9 +304,9 @@ void EventListener::BuildAndRun()
         main_makeFile << "compile : $(OBJS)\n"; 
 
         if (session->LTO)
-            main_makeFile << "\tg++ -g -std=c++17 $(OPT_FLAGS) $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w $(OPT_FLAGS) -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
+            main_makeFile << "\tg++ -g -std=c++17 $(OPT_FLAGS) $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w $(OPT_FLAGS) -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 -s " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
         else
-            main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
+            main_makeFile << "\tg++ -g -std=c++17 $(OBJS) -DDEVELOPMENT=" << devMode << " -DSTANDALONE=1 -w -lmingw32 -lopengl32 -lglfw3 -lfreetype -lpng -ljpeg -lz -lgdi32 -luser32 -lkernel32 -s " << icon_path << " -o ./build/$(PROJECT).exe\n\n";
 
         main_makeFile.close();
 
@@ -637,6 +637,9 @@ void EventListener::BuildAndRun()
 
         for (const auto& shader : target.second->shaders) 
         { 
+            if (shader.key == "sprite")
+                continue;
+                
             std::string vertex, fragment;
             std::filesystem::path vertPath { shader.vertex },
                                   fragPath { shader.fragment };
@@ -715,26 +718,26 @@ void EventListener::BuildAndRun()
                 
             }
 
-        //load animations (loaded data)
+        //load animators (loaded data)
 
-        if (target.second->animations.size())
-            for (const auto& animation : target.second->animations)
+        if (target.second->animators.size())
+            for (const auto& animator : target.second->animators)
             {
                 
                 std::ostringstream anim_oss;
                 std::vector<std::string> animsToLoad;
 
-                for (const auto& anim : animation.second)
-                    animsToLoad.emplace_back("{\"" + std::string(anim.first) + "\"" + ", {" + std::to_string(anim.second.first) + ", " + std::to_string(anim.second.second) + "} }");
+                for (const auto& anim : animator.animations)
+                    animsToLoad.emplace_back("{\"" + std::string(anim.key) + "\"" + ", {" + std::to_string(anim.start) + ", " + std::to_string(anim.end) + "} }");
 
                 if (!animsToLoad.empty()) 
                 {
                     std::copy(animsToLoad.begin(), animsToLoad.end() - 1, std::ostream_iterator<std::string>(anim_oss, ", "));
                     anim_oss << animsToLoad.back();
 
-                    if (std::find(loadedAnims.begin(), loadedAnims.end(), animation.first) == loadedAnims.end()) {
-                        loadedAnims.emplace_back(animation.first);
-                        preload_queue << "  System::Resources::Manager::LoadAnims(\"" + animation.first + "\", {" + anim_oss.str() + "});\n";
+                    if (std::find(loadedAnims.begin(), loadedAnims.end(), animator.textureKey) == loadedAnims.end()) {
+                        loadedAnims.emplace_back(animator.textureKey);
+                        preload_queue << "  System::Resources::Manager::LoadAnims(\"" + animator.textureKey + "\", {" + anim_oss.str() + "});\n";
                     }
                 }
             }
@@ -1109,7 +1112,7 @@ void EventListener::BuildAndRun()
                     command_queue << "spawnBodyDef_" + node->ID + ".friction = " + FloatToString(sn->body.self.friction) + ";\n";
                     command_queue << "spawnBodyDef_" + node->ID + ".restitution = " + FloatToString(sn->body.self.restitution) + ";\n";
 
-                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(sn->typeOf) +  ", \"" + sn->textureKey + "\", " + FloatToString(sn->actualPositionX) + ", " + FloatToString(sn->actualPositionY) + ", " + FloatToString(sn->width) + ", " + FloatToString(sn->height) + ", " + FloatToString(sn->spawnWidth) + ", " + FloatToString(sn->spawnHeight) + ", { " + FloatToString(sn->tint.x) + ", " + FloatToString(sn->tint.y) + ", " + FloatToString(sn->tint.z) + " }, " + FloatToString(sn->alpha) + ", " + is_loop + ", \"" + sn->behaviorKey + "\", { " + body_exists + ", spawnBodyDef_" + node->ID + " });\n";
+                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(sn->typeOf) +  ", \"" + sn->textureKey + "\", " + FloatToString(sn->actualPositionX) + ", " + FloatToString(sn->actualPositionY) + ", " + FloatToString(sn->width) + ", " + FloatToString(sn->height) + ", " + FloatToString(sn->spawnWidth) + ", " + FloatToString(sn->spawnHeight) + ", { " + FloatToString(sn->tint.x) + ", " + FloatToString(sn->tint.y) + ", " + FloatToString(sn->tint.z) + " }, " + std::to_string(sn->depth) + ", " + FloatToString(sn->alpha) + ", " + is_loop + ", \"" + sn->behaviorKey + "\", { " + body_exists + ", spawnBodyDef_" + node->ID + " });\n";
                 }
 
                 //define behaviors

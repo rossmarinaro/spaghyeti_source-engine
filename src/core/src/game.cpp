@@ -290,7 +290,7 @@ void Game::UpdateFrame()
     if (inputs)
         inputs->ProcessInput();
      
-    //spawn update
+    //update runtime instantiated entities
 
     #if STANDALONE == 1
 
@@ -300,7 +300,7 @@ void Game::UpdateFrame()
                 if (Math::distanceBetween(currentScene->cameraTarget->x - spawn.posX) >= spawn.spawn_width * 2.0f && spawn.loop)  
                     spawn.can_create = true;
 
-                //create / runtime instantiation of game objects
+                //spawn entity
 
                 if (spawn.can_create && 
                     currentScene->cameraTarget->x >= spawn.posX - spawn.spawn_width && currentScene->cameraTarget->x <= spawn.posX + spawn.spawn_width &&
@@ -375,8 +375,11 @@ void Game::UpdateFrame()
                         break;
                         default: LOG("Spawner: failed to spawn, invalid enum type."); break;
                     }
+
+                    //apply spawn properties to spawned entity
                     
                     if (entity) {
+                        entity->SetDepth(spawn.depth);
                         entity->SetAlpha(spawn.alpha);
                         entity->SetTint(spawn.tint);
                         entity->SetName(spawn.index);
@@ -768,6 +771,7 @@ void Game::CreateSpawn(
     float spawn_width, 
     float spawn_height, 
     const Math::Vector3& tint, 
+    int depth,
     float alpha, 
     bool loop, 
     const std::string& behaviorName,
@@ -786,11 +790,11 @@ void Game::CreateSpawn(
     spawn.spawn_width = spawn_width;
     spawn.spawn_height = spawn_height;
     spawn.tint = tint;
+    spawn.depth = depth;
     spawn.alpha = alpha;
     spawn.loop = loop;
     spawn.body = { body.exist, body.self };
-    spawn.index = System::Utils::ReplaceFrom(spawn.filename, ".", "") + std::to_string(s_spawn_count);
-    //spawn.ID = 
+    spawn.index = System::Utils::ReplaceFrom(spawn.filename, ".", "") + std::to_string(s_spawn_count); 
 
     //append behaviors if name matches valid loaded behavior name
 

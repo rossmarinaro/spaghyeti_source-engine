@@ -13,7 +13,6 @@ EmptyNode::EmptyNode(bool init):
     rectHeight = 0.0f;
     radius = 0.0f;
     line_weight = 1.0f;
-    depth = 1;
     show_debug = false;
     debug_fill = false;
     currentShape = "";

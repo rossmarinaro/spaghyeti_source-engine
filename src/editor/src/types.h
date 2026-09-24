@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace editor {
 
@@ -9,5 +10,8 @@ namespace editor {
         int depth;
     };
 
-    //todo: update animations, spritesheets to structs from std containers
+    struct Animator {
+        std::string textureKey;
+        std::vector<Sprite::Anim> animations;
+    };
 }

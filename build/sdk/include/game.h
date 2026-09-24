@@ -58,6 +58,7 @@ namespace System {
                 float spawn_width, 
                 float spawn_height, 
                 const Math::Vector3& tint, 
+                int depth,
                 float alpha, 
                 bool loop, 
                 const std::string& behaviorName,

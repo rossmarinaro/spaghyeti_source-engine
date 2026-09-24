@@ -25,7 +25,7 @@ namespace editor {
                   currentBoundsHeightEnd;
 
             bool shaders_applied,
-                 animations_applied,
+                 animators_applied,
                  globals_applied, 
                  gravity_continuous, 
                  gravity_sleeping,
@@ -38,7 +38,7 @@ namespace editor {
 
             std::vector<std::pair<std::string, std::string>> globals;
             std::vector<std::pair<std::string, std::string>> spritesheets;
-            std::vector<std::pair<std::string, std::vector<std::pair<std::string, std::pair<int, int>>>>> animations;
+            std::vector<Animator> animators;
             std::vector<Shader> shaders;
             std::vector<std::shared_ptr<Node>> nodes;
             std::vector<std::string> assets;
@@ -51,7 +51,7 @@ namespace editor {
                 vignetteVisibility(0.0f),
                 cameraZoom(1),
                 shaders_applied(false),
-                animations_applied(false),
+                animators_applied(false),
                 globals_applied(false), 
                 gravity_continuous(true),
                 gravity_sleeping(true),
@@ -70,6 +70,5 @@ namespace editor {
                 scene->nodes.emplace_back(node);
                 return node;
             }
-
     };
 }

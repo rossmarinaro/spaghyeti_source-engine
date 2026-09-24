@@ -42,8 +42,34 @@ json EventListener::ParseJSONStream(std::stringstream& stream, int index)
 
     return json::parse(stream);
 }
- 
 
+
+//--------------------------------------- parse animation data
+
+
+std::vector<Sprite::Anim> ParseAnimationData(json& JSON) 
+{
+    std::vector<Sprite::Anim> anims;
+
+    for (const auto& animation : JSON) 
+    {
+        const std::string key = animation.contains("key") ? animation["key"] : "";
+        
+        int start = animation.contains("start") ? static_cast<int>(animation["start"]) : 0, 
+            end = animation.contains("end") ? static_cast<int>(animation["end"]) : 0;
+                            
+        Sprite::Anim anim;
+
+        anim.key = key; 
+        anim.start = start; 
+        anim.end = end;
+
+        anims.emplace_back(anim);
+    }
+
+    return anims;
+}
+ 
 
 //----------------------------------- encode JSON to spaghyeti format
 
@@ -175,7 +201,7 @@ void EventListener::Serialize(json& data, bool newScene)
 
     json spritesheets = json::array(),
          assets = json::array(),
-         animations = json::array(),
+         animators = json::array(),
          shaders = json::array(),
          globals = json::array();
 
@@ -197,15 +223,15 @@ void EventListener::Serialize(json& data, bool newScene)
             for (const auto& spritesheet : session->spritesheets)
                 spritesheets.push_back({ { "key", spritesheet.first }, { "path", spritesheet.second } });
 
-        if (session->animations.size())
-            for (const auto& animation : session->animations) 
+        if (session->animators.size())
+            for (const auto& animator : session->animators) 
             {
                 json anims;
 
-                for (const auto& collection : animation.second) 
-                    anims.push_back({{ "key", collection.first }, { "start", collection.second.first }, { "end", collection.second.second }});
+                for (const auto& animation : animator.animations) 
+                    anims.push_back({{ "key", animation.key }, { "start", animation.start }, { "end", animation.end }});
                 
-                animations.push_back({ { "sprite name", animation.first }, { "anims", anims } });
+                animators.push_back({ { "sprite name", animator.textureKey }, { "anims", anims } });
             }
             
         if (session->scenes.size() > 1) {
@@ -237,12 +263,11 @@ void EventListener::Serialize(json& data, bool newScene)
 
             if (node->type == Node::SPAWNER)
                 spawns.push_back(Node::WriteData(node));
-        
         }
     }
 
     data["spritesheets"] = spritesheets;
-    data["animations"] = animations;
+    data["animations"] = animators;
     data["assets"] = assets;
     data["shaders"] = shaders;
     data["globals"] = globals;
@@ -253,7 +278,6 @@ void EventListener::Serialize(json& data, bool newScene)
     data["nodes"]["text"] = text;
     data["nodes"]["groups"] = groups;
     data["nodes"]["spawns"] = spawns;
-
 }
 
 
@@ -281,35 +305,57 @@ void EventListener::Deserialize(json& data, bool isSession)
 
     if (data.contains("scenes") && data["scenes"].size() > 1) //saved in queue
         for (const auto& scene : data["scenes"]) 
-            session->scenes.push_back(scene["key"]); 
+            if (scene.contains("key"))
+                session->scenes.push_back(scene["key"]); 
+        
     else //register opened scene
         session->scenes.push_back(session->events->s_currentScene);
 
-    AssetManager::Get()->projectIcon = data["icon"];
+    if (data.contains("icon"))
+        AssetManager::Get()->projectIcon = data["icon"];
 
     //camera 
 
     if (data.contains("camera"))
     {
-        session->vignetteVisibility = data["camera"]["vignetteVisibility"];
+        session->vignetteVisibility = data["camera"].contains("vignetteVisibility") ? static_cast<float>(data["camera"]["vignetteVisibility"]) : 0.0f;
 
-        session->game->camera->SetPosition({ data["camera"]["x"], data["camera"]["y"] });
-        session->game->camera->SetZoom(data["camera"]["zoom"]);
-        session->game->camera->SetBackgroundColor({ data["camera"]["color"]["x"], data["camera"]["color"]["y"], data["camera"]["color"]["z"], data["camera"]["color"]["w"] }); 
+        float cameraX = data["camera"].contains("x") ? static_cast<float>(data["camera"]["x"]) : 0.0f,
+              cameraY = data["camera"].contains("y") ? static_cast<float>(data["camera"]["y"]) : 0.0f,
+              zoom = data["camera"].contains("zoom") ? static_cast<float>(data["camera"]["zoom"]) : 0.0f,
+              red = data["camera"]["color"].contains("x") ? static_cast<float>(data["camera"]["color"]["x"]) : 0.0f,
+              green = data["camera"]["color"].contains("y") ? static_cast<float>(data["camera"]["color"]["y"]) : 0.0f,
+              blue = data["camera"]["color"].contains("z") ? static_cast<float>(data["camera"]["color"]["z"]) : 0.0f,
+              alpha = data["camera"]["color"].contains("w") ? static_cast<float>(data["camera"]["color"]["w"]) : 0.0f;
+              
+        session->game->camera->SetPosition({ cameraX, cameraY });
+        session->game->camera->SetZoom(zoom);
+        session->game->camera->SetBackgroundColor({ red, green, blue, alpha }); 
 
-        session->game->camera->SetBounds(
-            data["camera"]["bounds"]["width"]["begin"], data["camera"]["bounds"]["width"]["end"],
-            data["camera"]["bounds"]["height"]["begin"], data["camera"]["bounds"]["height"]["end"]
-        );
+        if (data["camera"].contains("bounds") && data["camera"]["bounds"].contains("width") && data["camera"]["bounds"].contains("height")) 
+        {
+            float wBegin = data["camera"]["bounds"]["width"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f, 
+                  wEnd = data["camera"]["bounds"]["width"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f,
+                  hBegin = data["camera"]["bounds"]["height"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f,
+                  hEnd = data["camera"]["bounds"]["height"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f;
+            
+            session->game->camera->SetBounds(wBegin, wEnd, hBegin, hEnd);
+        }
 
-        GUI::Get()->grid->alpha = data["camera"]["alpha"];
-        GUI::Get()->grid_quantity = data["camera"]["pitch"];
+        GUI::Get()->grid->alpha = data["camera"].contains("alpha") ? static_cast<float>(data["camera"]["alpha"]) : 0.0f;
+        GUI::Get()->grid_quantity = data["camera"].contains("pitch") ? static_cast<float>(data["camera"]["pitch"]) : 0.0f;
 
         if (data["camera"].contains("grid tint"))
-            GUI::Get()->grid_color = { data["camera"]["grid tint"]["r"], data["camera"]["grid tint"]["g"], data["camera"]["grid tint"]["b"] }; 
+        {
+            float r = data["camera"]["grid tint"].contains("r") ? static_cast<float>(data["camera"]["grid tint"]["r"]) : 0.0f, 
+                  g = data["camera"]["grid tint"].contains("g") ? static_cast<float>(data["camera"]["grid tint"]["g"]) : 0.0f,
+                  b = data["camera"]["grid tint"].contains("b") ? static_cast<float>(data["camera"]["grid tint"]["b"]) : 0.0f;
+
+            GUI::Get()->grid_color = { r, g, b }; 
+        }
         
-        session->worldWidth = data["camera"]["width"];
-        session->worldHeight = data["camera"]["height"];
+        session->worldWidth = data["camera"].contains("width") ? static_cast<float>(data["camera"]["width"]) : 0.0f;
+        session->worldHeight = data["camera"].contains("height") ? static_cast<float>(data["camera"]["height"]) : 0.0f;
 
         if (data["camera"].contains("depth sort"))
             session->depthSort = data["camera"]["depth sort"];
@@ -317,11 +363,15 @@ void EventListener::Deserialize(json& data, bool isSession)
 
     //physics
 
-    if (data.contains("settings") && data["settings"].contains("physics")) {
-        session->gravityX = data["settings"]["physics"]["gravity"]["x"];
-        session->gravityY = data["settings"]["physics"]["gravity"]["y"];
-        session->gravity_continuous = data["settings"]["physics"]["continuous"];
-        session->gravity_sleeping = data["settings"]["physics"]["sleeping"];
+    if (data.contains("settings") && data["settings"].contains("physics")) 
+    {
+        if (data["settings"]["physics"].contains("gravity")) {
+            session->gravityX = data["settings"]["physics"]["gravity"].contains("x") ? static_cast<float>(data["settings"]["physics"]["gravity"]["x"]) : 0.0f;
+            session->gravityY = data["settings"]["physics"]["gravity"].contains("y") ? static_cast<float>(data["settings"]["physics"]["gravity"]["y"]) : 0.0f;
+        }
+
+        session->gravity_continuous = data["settings"]["physics"].contains("continuous") ? static_cast<bool>(data["settings"]["physics"]["continuous"]) : false;
+        session->gravity_sleeping = data["settings"]["physics"].contains("sleeping") ? static_cast<bool>(data["settings"]["physics"]["sleeping"]) : false;
     }
 
     //spritesheets
@@ -329,8 +379,11 @@ void EventListener::Deserialize(json& data, bool isSession)
     session->spritesheets.clear();
 
     if (data.contains("spritesheets"))
-        for (const auto& spritesheet : data["spritesheets"])
-            session->spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
+        for (const auto& spritesheet : data["spritesheets"]) {
+            const std::string key = spritesheet.contains("key") ? spritesheet["key"] : "", 
+                        path = spritesheet.contains("path") ? spritesheet["path"] : "";
+            session->spritesheets.push_back({ key, path });
+        }
 
     if (data.contains("assets"))
         for (const auto& asset : data["assets"]) 
@@ -356,21 +409,25 @@ void EventListener::Deserialize(json& data, bool isSession)
 
     //animations
 
-    session->animations.clear();
+    session->animators.clear();
 
     if (data.contains("animations"))
-        for (const auto& animation : data["animations"]) 
+        for (auto& animator : data["animations"]) 
         { 
-            const auto key_it = std::find_if(session->animations.begin(), session->animations.end(), [&](const auto& anim){ return anim.first == animation["sprite name"]; });  
-            std::vector<std::pair<std::string, std::pair<int, int>>> anims;
+            if (!animator.contains("sprite name"))
+                continue;
+
+            const auto key_it = std::find_if(session->animators.begin(), session->animators.end(), [&](const auto& a){ return a.textureKey == animator["sprite name"]; });  
            
-            for (const auto& collection : animation["anims"]) 
-                anims.push_back({ collection["key"], { collection["start"], collection["end"] }});
-            
-            if (key_it == session->animations.end()) {
-                session->animations.push_back({ animation["sprite name"], anims });
-                Component::ApplyAnimations(true);
-            } 
+            if (animator.contains("anims")) 
+            {
+                const auto anims = ParseAnimationData(animator["anims"]);
+
+                if (key_it == session->animators.end()) {
+                    session->animators.push_back({ animator["sprite name"], anims });
+                    Component::ApplyAnimations(true);
+                } 
+            }
         }
 
     //global variables
@@ -378,8 +435,11 @@ void EventListener::Deserialize(json& data, bool isSession)
     session->globals.clear();
     
     if (data.contains("globals")) {
-        for (const auto& global : data["globals"])
-            session->globals.push_back({ global["key"], global["type"] });
+        for (const auto& global : data["globals"]) {
+            const std::string key = global.contains("key") ? global["key"] : "", 
+                              type = global.contains("type") ? global["type"] : "";
+            session->globals.push_back({ key, type });
+        }
 
         if (data["globals_applied"]) 
             session->globals_applied = true;
@@ -438,22 +498,33 @@ void EventListener::ParseScene(const std::string& sceneKey, std::stringstream& s
 
     if (data.contains("camera"))
     {
-        scene->vignetteVisibility = data["camera"]["vignetteVisibility"];
-        scene->cameraPosition.x = data["camera"]["x"];
-        scene->cameraPosition.y = data["camera"]["y"];
-        scene->cameraZoom = data["camera"]["zoom"];
-        scene->cameraBackgroundColor.r = data["camera"]["color"]["x"];
-        scene->cameraBackgroundColor.g = data["camera"]["color"]["y"];
-        scene->cameraBackgroundColor.b = data["camera"]["color"]["z"];
-        scene->cameraBackgroundColor.a = data["camera"]["color"]["w"]; 
+        scene->vignetteVisibility = data["camera"].contains("vignetteVisibility") ? static_cast<float>(data["camera"]["vignetteVisibility"]) : 0.0f;
+        scene->cameraPosition.x = data["camera"].contains("x") ? static_cast<float>(data["camera"]["x"]) : 0.0f;
+        scene->cameraPosition.y = data["camera"].contains("y") ? static_cast<float>(data["camera"]["y"]) : 0.0f;
+        scene->cameraZoom = data["camera"].contains("zoom") ? static_cast<float>(data["camera"]["zoom"]) : 0.0f;
 
-        scene->currentBoundsWidthBegin = data["camera"]["bounds"]["width"]["begin"];
-        scene->currentBoundsWidthEnd = data["camera"]["bounds"]["width"]["end"];
-        scene->currentBoundsHeightBegin = data["camera"]["bounds"]["height"]["begin"];
-        scene->currentBoundsHeightEnd = data["camera"]["bounds"]["height"]["end"];
+        if (data["camera"].contains("color")) {
+            scene->cameraBackgroundColor.r = data["camera"]["color"].contains("x") ? static_cast<float>(data["camera"]["color"]["x"]) : 0.0f;
+            scene->cameraBackgroundColor.g = data["camera"]["color"].contains("y") ? static_cast<float>(data["camera"]["color"]["y"]) : 0.0f;
+            scene->cameraBackgroundColor.b = data["camera"]["color"].contains("z") ? static_cast<float>(data["camera"]["color"]["z"]) : 0.0f;
+            scene->cameraBackgroundColor.a = data["camera"]["color"].contains("w") ? static_cast<float>(data["camera"]["color"]["w"]) : 0.0f;
+        }
+
+        if (data["camera"].contains("bounds")) 
+        {
+            if (data["camera"]["bounds"].contains("width")) {
+                scene->currentBoundsWidthBegin = data["camera"]["bounds"]["width"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f;
+                scene->currentBoundsWidthEnd = data["camera"]["bounds"]["width"].contains("end") ? static_cast<float>(data["camera"]["bounds"]["width"]["end"]) : 0.0f;
+            }
+
+            if (data["camera"]["bounds"].contains("height")) {
+                scene->currentBoundsHeightBegin = data["camera"]["bounds"]["height"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["height"]["begin"]) : 0.0f;
+                scene->currentBoundsHeightEnd = data["camera"]["bounds"]["height"].contains("end") ? static_cast<float>(data["camera"]["bounds"]["height"]["end"]) : 0.0f;
+            }
+        }
         
-        scene->worldWidth = data["camera"]["width"];
-        scene->worldHeight = data["camera"]["height"];
+        scene->worldWidth = data["camera"].contains("width") ? static_cast<int>(data["camera"]["width"]) : 0.0f;
+        scene->worldHeight = data["camera"].contains("height") ? static_cast<int>(data["camera"]["height"]) : 0.0f;
 
         if (data["camera"].contains("depth sort"))
             scene->depthSort = data["camera"]["depth sort"];
@@ -461,27 +532,34 @@ void EventListener::ParseScene(const std::string& sceneKey, std::stringstream& s
 
     //settings
 
-    if (data.contains("settings")) {
-        scene->gravityX = data["settings"]["physics"]["gravity"]["x"];
-        scene->gravityY = data["settings"]["physics"]["gravity"]["y"];
-        scene->gravity_continuous = data["settings"]["physics"]["continuous"];
-        scene->gravity_sleeping = data["settings"]["physics"]["sleeping"];
+    if (data.contains("settings") && data["settings"].contains("physics")); 
+    {
+        if (data["settings"]["physics"].contains("gravity")) {
+            scene->gravityX = data["settings"]["physics"]["gravity"].contains("x") ? static_cast<float>(data["settings"]["physics"]["gravity"]["x"]) : 0.0f;
+            scene->gravityY = data["settings"]["physics"]["gravity"].contains("y") ? static_cast<float>(data["settings"]["physics"]["gravity"]["y"]) : 0.0f;
+        }
+        
+        scene->gravity_continuous = data["settings"]["physics"].contains("continuous") ? static_cast<bool>(data["settings"]["physics"]["continuous"]) : false;
+        scene->gravity_sleeping = data["settings"]["physics"].contains("sleeping") ? static_cast<bool>(data["settings"]["physics"]["sleeping"]) : false;
     }
 
     //loaded data
 
     if (data.contains("spritesheets")) 
-        for (const auto& spritesheet : data["spritesheets"])
-            scene->spritesheets.push_back({ spritesheet["key"], spritesheet["path"] });
+        for (const auto& spritesheet : data["spritesheets"]) 
+        {
+            const std::string key = spritesheet.contains("key") ? spritesheet["key"] : "", 
+                              path = spritesheet.contains("path") ? spritesheet["path"] : "";
+
+            scene->spritesheets.push_back({ key, path });
+        }
 
     if (data.contains("animations")) 
-        for (const auto& animation : data["animations"]) {
-            std::vector<std::pair<std::string, std::pair<int, int>>> anims;
-
-            for (const auto& collection : animation["anims"])
-                anims.push_back({ collection["key"], { collection["start"], collection["end"] }});
-
-            scene->animations.push_back({ animation["sprite name"], anims });
+        for (auto& animator : data["animations"]) {
+            if (animator.contains("anims")) {
+                const auto anims = ParseAnimationData(animator["anims"]); 
+                scene->animators.push_back({ animator["sprite name"], anims });
+            }
         }
 
     //copy preloaded assets / shaders into scene
@@ -491,8 +569,13 @@ void EventListener::ParseScene(const std::string& sceneKey, std::stringstream& s
            scene->assets.push_back(asset);
 
     if (data.contains("shaders")) {
-        for (const auto& shader : data["shaders"])
-            scene->shaders.push_back({ shader["key"], { shader["vertex"], shader["fragment"] } });
+        for (const auto& shader : data["shaders"]) {
+            const std::string key = shader.contains("key") ? shader["key"] : "", 
+                              vertex = shader.contains("vertex") ? shader["vertex"] : "",
+                              fragment = shader.contains("fragment") ? shader["fragment"] : "";
+
+            scene->shaders.push_back({ key, vertex, fragment, scene->shaders.size() });
+        }
 
         scene->shaders_applied = true;
     }
@@ -500,9 +583,13 @@ void EventListener::ParseScene(const std::string& sceneKey, std::stringstream& s
     //global variables
     
     if (data.contains("globals")) {
-        for (const auto& global : data["globals"])
-            scene->globals.push_back({ global["key"], global["type"] });
+        for (const auto& global : data["globals"]) {
+            const std::string key = global.contains("key") ? global["key"] : "", 
+                              type = global.contains("type") ? global["type"] : "";
 
+            scene->globals.push_back({ key, type });
+        }
+            
         scene->globals_applied = true;
     }
 

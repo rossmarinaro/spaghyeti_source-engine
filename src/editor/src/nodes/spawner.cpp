@@ -30,7 +30,7 @@ SpawnerNode::SpawnerNode(bool init):
     body = { false, {}};
 
     rectHandle = nullptr;
-    m_textHandle = nullptr;
+    m_textHandle = nullptr; 
 
     if (m_init) {
         CreateMarker();
@@ -238,10 +238,10 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                         ImGui::Separator();
 
-                        if (Editor::Get()->animations.size())
-                            for (const auto& animation : Editor::Get()->animations) {   
-                                if (ImGui::MenuItem(animation.first.c_str())) {
-                                    animationKey = animation.first;
+                        if (Editor::Get()->animators.size())
+                            for (const auto& animator : Editor::Get()->animators) {   
+                                if (ImGui::MenuItem(animator.textureKey.c_str())) {
+                                    animationKey = animator.textureKey;
                                     EventListener::UpdateSession();
                                 }
                             }
@@ -382,6 +382,10 @@ void SpawnerNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                     EventListener::UpdateSession();
 
                 ImGui::ColorEdit3("tint", (float*)&tint); 
+                if (ImGui::IsItemDeactivatedAfterEdit())
+                    EventListener::UpdateSession();
+
+                ImGui::SliderInt("depth", &depth, 0, 1000);
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     EventListener::UpdateSession();
 

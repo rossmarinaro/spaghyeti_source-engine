@@ -15,6 +15,7 @@ Node::Node(bool init, int type, const std::string& name):
     show_options = false;
     isStroked = false;
     isShadow = false;
+    depth = 1;
     positionX = 0.0f;
     positionY = 0.0f; 
     actualPositionX = 0.0f;
@@ -31,7 +32,7 @@ Node::Node(bool init, int type, const std::string& name):
     this->type = type;
 
     if (init)
-        this->name = CheckName(name);
+        this->name = CheckName(name); 
 }
 
 
@@ -415,7 +416,7 @@ void Node::RenderShaderOptions(const std::string& nodeId, const std::vector<std:
 
         if (node->shader.first.length())
         {
-            if (ImGui::BeginMenu(("Assigned Shader: " + node->shader.first).c_str()))
+            if (ImGui::BeginMenu(("Assigned Shader: " + node->shader.first).c_str())) 
             {
                 if (ImGui::BeginMenu("edit"))
                 {
@@ -435,7 +436,7 @@ void Node::RenderShaderOptions(const std::string& nodeId, const std::vector<std:
         }
 
         else
-            ImGui::Text("Assigned Shader: (none)");
+            ImGui::Text("Assigned Shader: (standard sprite shader)");
 
         ImGui::Separator();
 
@@ -456,14 +457,18 @@ void Node::RenderShaderOptions(const std::string& nodeId, const std::vector<std:
 
             if (ImGui::BeginMenu("select shader"))
             {
-                if (!Editor::Get()->shaders.size()) 
+                if (Editor::Get()->shaders.size() < 2) //standard sprite shader omitted
                     ImGui::Text("no shaders loaded.");
 
                 else
-                    for (const auto& shader : Editor::Get()->shaders) {
+                    for (const auto& shader : Editor::Get()->shaders) 
+                    {
                         const std::string key = shader.key,
                                           vertex = shader.vertex,
                                           fragment = shader.fragment;
+
+                        if (key == "sprite")
+                            continue;
 
                         if (ImGui::MenuItem(key.c_str())) {
                             Node::LoadShader(node, key, vertex, fragment);

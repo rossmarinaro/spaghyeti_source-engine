@@ -21,7 +21,7 @@ namespace editor {
 
             enum { SPRITE, TILEMAP, TEXT, AUDIO, EMPTY, GROUP, SPAWNER };
 
-            int type;
+            int type, depth;
 
             bool created, 
                  active, 
@@ -128,7 +128,7 @@ namespace editor {
                     factorY = 1; 
             };
 
-            int depth, currentFrame;
+            int currentFrame;
 
             bool framesApplied,       
                  filter_nearest,
@@ -284,8 +284,6 @@ namespace editor {
         public:
 
             bool show_debug, debug_fill;
-
-            int depth;
     
             float rectWidth, 
                   rectHeight,

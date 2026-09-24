@@ -380,6 +380,7 @@ json Node::WriteData(const std::shared_ptr<Node>& node)
             { "height", sn->height },
             { "spawn width", sn->spawnWidth },      
             { "spawn height", sn->spawnHeight },
+            { "depth", sn->depth }, 
             { "alpha", sn->alpha },      
             { "loop", sn->loop },
             { "type of", sn->typeOf }, 
@@ -549,13 +550,13 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             {
                 for (const auto& frame : data["frames"]) 
                 {   
-                    const int xOff = frame["offset x"],
-                              yOff = frame["offset y"];
+                    const int xOff = frame.contains("offset x") ? static_cast<int>(frame["offset x"]) : 0,
+                              yOff = frame.contains("offset y") ? static_cast<int>(frame["offset y"]) : 0;
 
-                    const float frWidth = frame["width"],
-                                frHeight = frame["height"],
-                                fX = frame["factor x"],
-                                fY = frame["factor y"];
+                    const float frWidth = frame.contains("width") ? static_cast<float>(frame["width"]) : 0.0f,
+                                frHeight = frame.contains("height") ? static_cast<float>(frame["height"]) : 0.0f,
+                                fX = frame.contains("factor x") ? static_cast<float>(frame["factor x"]) : 0.0f,
+                                fY = frame.contains("factor y") ? static_cast<float>(frame["factor y"]) : 0.0f;
 
                     const SpriteNode::Frame fr = { xOff, yOff, frWidth, frHeight, fX, fY };
                     sn->frames.emplace_back(fr); 
@@ -582,10 +583,19 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 {
                     sn->AddComponent(Component::ANIMATOR, false);
 
-                    for (const auto& anim : data["components"]["animator"]["animations"]) {    
-                        const Sprite::Anim a = { anim["key"], anim["start"], anim["end"], anim["rate"], anim["repeat"], anim["yoyo"] };
-                        sn->animations.emplace_back(a);
-                        sn->ApplyAnimation(anim["key"]);
+                    for (const auto& animation : data["components"]["animator"]["animations"]) 
+                    {    
+                        Sprite::Anim anim;
+                        
+                        anim.key = animation.contains("key") ? animation["key"] : ""; 
+                        anim.start = animation.contains("start") ? static_cast<int>(animation["start"]) : 0;
+                        anim.end = animation.contains("end") ? static_cast<int>(animation["end"]) : 0;
+                        anim.rate = animation.contains("rate") ? static_cast<int>(animation["rate"]) : 2;
+                        anim.repeat = animation.contains("repeat") ? static_cast<int>(animation["repeat"]) : 0;
+                        anim.yoyo = animation.contains("yoyo") ? static_cast<int>(animation["yoyo"]) : 0;
+                        
+                        sn->animations.emplace_back(anim);
+                        sn->ApplyAnimation(animation["key"]);
                     }
           
                     sn->anim_to_play_on_start.key = data["components"]["animator"]["on start"]["key"];
@@ -644,7 +654,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                         }         
                 }
 
-                //script
+                //behavior script
 
                 if (data["components"]["script"]["exists"]) 
                 {
@@ -659,16 +669,18 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
                 //shader
 
-                if (data["components"]["shader"]["exists"]) 
+                if (data["components"]["shader"].contains("exists") && data["components"]["shader"]["exists"]) 
                 {
                     sn->AddComponent(Component::SHADER, false); 
 
-                    if (data["components"]["shader"]["shaders"].size())
-                        LoadShader(sn, 
-                            static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]).c_str(),
-                            static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]).c_str(),
-                            static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]).c_str()
-                        );
+                    if (data["components"]["shader"].contains("shaders") && data["components"]["shader"]["shaders"].size()) 
+                    {
+                        const std::string key = data["components"]["shader"]["shaders"].contains("key") ? static_cast<std::string>(data["components"]["shader"]["shaders"]["key"]) : "",
+                                          vertex = data["components"]["shader"]["shaders"].contains("vertex") ? static_cast<std::string>(data["components"]["shader"]["shaders"]["vertex"]) : "",
+                                          fragment = data["components"]["shader"]["shaders"].contains("fragment") ? static_cast<std::string>(data["components"]["shader"]["shaders"]["fragment"]) : "";
+
+                        LoadShader(sn, key, vertex, fragment);
+                    }
                 }
             }
 
@@ -1126,6 +1138,9 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
 
             if (data.contains("loop"))
                 sn->loop = data["loop"];
+
+            if (data.contains("depth"))
+                sn->alpha = data["depth"];
 
             if (data.contains("alpha"))
                 sn->alpha = data["alpha"];
