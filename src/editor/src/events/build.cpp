@@ -637,6 +637,8 @@ void EventListener::BuildAndRun()
 
         for (const auto& shader : target.second->shaders) 
         { 
+            command_queue << "  Graphics::Shader::Get(\"" + shader.key + "\")->SetDepth(" + std::to_string(shader.depth) + ");\n";
+
             if (shader.key == "sprite")
                 continue;
                 
@@ -663,7 +665,6 @@ void EventListener::BuildAndRun()
                 fragFile.close();            
                 
                 asset_queue << "  Graphics::Shader::Load(\"" + shader.key + "\", " + vertex + ", " + fragment + ");\n";
-                command_queue << "  Graphics::Shader::Get(\"" + shader.key + "\")->SetDepth(" + std::to_string(shader.depth) + ");\n";
             }
 
             //copied shaders
@@ -674,6 +675,7 @@ void EventListener::BuildAndRun()
                 
                 asset_queue << "  Graphics::Shader::Load(\"" + shader.key + "\", \"" + vertex + "\", \"" + fragment + "\");\n";
             }
+
         }
             
         //load spritesheets (loaded data)

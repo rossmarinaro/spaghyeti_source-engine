@@ -303,11 +303,12 @@ void EventListener::Deserialize(json& data, bool isSession)
 
     session->scenes.clear();
 
-    if (data.contains("scenes") && data["scenes"].size() > 1) //saved in queue
+    if (data.contains("scenes") && data["scenes"].size() > 1) { //saved in queue
         for (const auto& scene : data["scenes"]) 
             if (scene.contains("key"))
                 session->scenes.push_back(scene["key"]); 
-        
+    }
+            
     else //register opened scene
         session->scenes.push_back(session->events->s_currentScene);
 
@@ -381,7 +382,7 @@ void EventListener::Deserialize(json& data, bool isSession)
     if (data.contains("spritesheets"))
         for (const auto& spritesheet : data["spritesheets"]) {
             const std::string key = spritesheet.contains("key") ? spritesheet["key"] : "", 
-                        path = spritesheet.contains("path") ? spritesheet["path"] : "";
+                              path = spritesheet.contains("path") ? spritesheet["path"] : "";
             session->spritesheets.push_back({ key, path });
         }
 

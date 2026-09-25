@@ -645,14 +645,14 @@ void editor::GUI::ShowMenu()
                 ImGui::EndCombo();
             }
 
+            ImGui::Checkbox("full screen", &session->isFullscreen);
+            ImGui::Checkbox("enable link-time optimization (-flto)", &session->LTO);
+            ImGui::Checkbox("preserve source file", &session->preserveSrc);
+
             ImGui::InputInt("screen width", &session->screenWidth);
             ImGui::InputInt("screen height", &session->screenHeight);
             ImGui::InputInt("pixel dimensions x", &session->resolutionWidth);
             ImGui::InputInt("pixel dimensions y", &session->resolutionHeight);
-
-            ImGui::Checkbox("full screen", &session->isFullscreen);
-            ImGui::Checkbox("enable link-time optimization (-flto)", &session->LTO);
-            ImGui::Checkbox("preserve source file", &session->preserveSrc);
 
             if (ImGui::BeginMenu("configurations")) 
             {
