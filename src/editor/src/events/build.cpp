@@ -602,9 +602,14 @@ void EventListener::BuildAndRun()
         }
     }
 
-    Editor::Log("Compiling game...");
-
     //now compile each scene
+    
+    if (session->scenes.size())
+        Editor::Log("Compiling game...");
+    else  {
+        Editor::Log("Cannot compile game: No scenes to build!");
+        return;
+    }
 
     for (const auto& target : compileQueue)
     {

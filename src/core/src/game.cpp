@@ -583,7 +583,7 @@ void Game::UpdateFrame()
 
 bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity) 
 { 
-    auto texture = Graphics::Texture2D::Get(entity->key); 
+    const auto texture = Graphics::Texture2D::Get(entity->key); 
 
     //cull sprite and tile type entities out of view space
 

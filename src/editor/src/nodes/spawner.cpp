@@ -475,6 +475,13 @@ void SpawnerNode::Render(float _positionX, float _positionY, float _rotation, fl
         default: break;
     }
 
+    if (body.exist)
+        switch (body.self.type) {
+            case Physics::Body::Type::STATIC: m_bodyType = "static"; break;
+            case Physics::Body::Type::KINEMATIC: m_bodyType = "kinematic"; break;
+            case Physics::Body::Type::DYNAMIC: default: m_bodyType = "dynamic"; break;
+        }
+
     if (System::Game::GetScene()->ListenForInteraction(rectHandle) && ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::GetIO().WantCaptureMouse)
         Editor::FocusEntity(rectHandle);
 }

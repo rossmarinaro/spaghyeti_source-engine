@@ -28,7 +28,7 @@ void editor::GUI::ShowSettings()
                 {
                     std::string name = path.path().filename().string();
                     const std::string scene = System::Utils::ReplaceFrom(name, ".", ""); 
-                    auto session = Editor::Get();
+                    const auto session = Editor::Get();
 
                     if (session->events->s_currentScene != scene)
                         if (ImGui::MenuItem((scene).c_str())) 
@@ -133,8 +133,8 @@ void editor::GUI::ShowSettings()
         if (ImGui::Button("delete"))
             if (session->globals.size())
             {
-                std::string type = session->globals.back().second,
-                            var = session->globals.back().first;
+                const std::string type = session->globals.back().second,
+                                  var = session->globals.back().first;
 
                 session->globals.pop_back();
                 session->globals_applied = false;
@@ -263,7 +263,6 @@ void editor::GUI::ShowSettings()
             else
                 ImGui::MenuItem("no assets loaded.");
 
-
             ImGui::EndMenu();
         }
 
@@ -277,11 +276,13 @@ void editor::GUI::ShowSettings()
             ImGui::SameLine();
 
             if (ImGui::Button("delete")) {
-                if (session->shaders.size()) {
-                    std::string key = session->shaders.back().key;
+                if (session->shaders.size()) 
+                {
+                    const std::string key = session->shaders.back().key;
+                    Editor::Log("shader: " + key + " removed.");
+
                     session->shaders.pop_back();
                     session->shaders_applied = false;
-                    Editor::Log("shader: " + key + " removed.");
                 }
             }
 
@@ -303,7 +304,7 @@ void editor::GUI::ShowSettings()
 
             ImGui::Separator();
 
-            const auto iterate = [&] (const std::string& type, std::string& p, int index) -> void 
+            const auto iterate = [&] (const std::string& type, const std::string& p, int index) -> void 
             {
                 if (System::Utils::str_endsWith(p, type)) 
                     if (ImGui::MenuItem(p.c_str())) {
@@ -482,10 +483,11 @@ void editor::GUI::ShowSettings()
             if (ImGui::Button("delete")) {
                 if (session->animators.size())
                 {
-                    std::string key = session->animators.back().textureKey;
+                    const std::string key = session->animators.back().textureKey;
+                    Editor::Log("animation: " + key + " removed.");
+
                     session->animators.pop_back();
                     session->animators_applied = false;
-                    Editor::Log("animation: " + key + " removed.");
                 }
             }
 
@@ -623,14 +625,11 @@ void editor::GUI::ShowMenu()
             ImGui::Text(("platform: " + Editor::platform).c_str());
             ImGui::Text(("version: " + std::to_string(session->maxVersion) + "." + std::to_string(session->midVersion) + "." + std::to_string(session->minVersion)).c_str());
             
-            ImGui::InputInt("maxVersion", &session->maxVersion);
-            ImGui::InputInt("midVersion", &session->midVersion);
             ImGui::InputInt("minVersion", &session->minVersion);
+            ImGui::InputInt("midVersion", &session->midVersion);
+            ImGui::InputInt("maxVersion", &session->maxVersion); 
 
-            static const std::string items[] = { 
-                "-O0", "-O1", "-O2", 
-                "-O3", "-Oz", "-Og" 
-            };
+            static const std::string items[] = { "-O0", "-O1", "-O2", "-O3", "-Oz", "-Og" };
 
             if (ImGui::BeginCombo("compile-time optimization", session->CTO.c_str()))
             {
@@ -645,14 +644,17 @@ void editor::GUI::ShowMenu()
                 ImGui::EndCombo();
             }
 
-            ImGui::Checkbox("full screen", &session->isFullscreen);
             ImGui::Checkbox("enable link-time optimization (-flto)", &session->LTO);
-            ImGui::Checkbox("preserve source file", &session->preserveSrc);
 
+            ImGui::Separator();
+
+            ImGui::Checkbox("full screen", &session->isFullscreen);
             ImGui::InputInt("screen width", &session->screenWidth);
             ImGui::InputInt("screen height", &session->screenHeight);
             ImGui::InputInt("pixel dimensions x", &session->resolutionWidth);
             ImGui::InputInt("pixel dimensions y", &session->resolutionHeight);
+
+            ImGui::Separator();
 
             if (ImGui::BeginMenu("configurations")) 
             {
@@ -748,6 +750,8 @@ void editor::GUI::ShowMenu()
                 
                 ImGui::EndMenu();
             }
+
+            ImGui::Checkbox("preserve source file", &session->preserveSrc);
 
             ImGui::EndMenu();
         }

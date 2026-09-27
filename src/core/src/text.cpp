@@ -330,18 +330,7 @@ void Text::Render(int shaderID)
     {
         glm::mat4 identityMatrix(1.0f);
 
-        //auto renderer = System::Renderer::Get();
-        //const int elementCount = 6 * System::Renderer::MAX_QUADS;
-
-        //flush if max index count exceeds element count, or textures reached max OR shader is different than renderer's active shader
-
-        // if (renderer->indexCount >= elementCount || 
-        //     renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 /* ||
-        //     shaderID != renderer->activeShaderID */
-        // ) 
-        //   System::Renderer::Flush();
-        //const auto shader = Graphics::Shader::Get("text");
-        //renderer->activeShaderID = shader.ID;
+        const auto shader = Graphics::Shader::Get("text");
 
         float localX = position.x,
               localY = position.y;
@@ -379,10 +368,8 @@ void Text::Render(int shaderID)
 
                 //update shader
 
-                const auto setShader = [&ch, &mp, this](const std::string& type = "") -> void 
+                const auto setShader = [&mp, &shader, this](const std::string& type = "") -> void 
                 {
-                    auto shader = Graphics::Shader::Get("text");
-
                     if (type == "outline") 
                         shader->SetVec3f("textColor", outlineColor.x, outlineColor.y, outlineColor.z);
             
@@ -402,7 +389,7 @@ void Text::Render(int shaderID)
 
                 //update texture
 
-                const auto setTexture = [&, this](float offsetX = 0.0f, float offsetY = 0.0f) -> void 
+                const auto setTexture = [&ch, &shader, &localX, &localY, this](float offsetX = 0.0f, float offsetY = 0.0f) -> void 
                 {
                     const float xpos = localX + ch.Bearing.x * scale.x,
                                 ypos = localY + position.y - (ch.Size.y - ch.Bearing.y) * scale.y,
@@ -490,6 +477,9 @@ void Text::Render(int shaderID)
 
                     // renderer->indexCount += 6;
 
+                    glUseProgram(shader->ID); 
+                    shader->Update();
+
                     glEnable(GL_BLEND);
                     glActiveTexture(GL_TEXTURE0);
                     glBindVertexArray(m_VAO);
@@ -498,6 +488,7 @@ void Text::Render(int shaderID)
                     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
                     glBindBuffer(GL_ARRAY_BUFFER, 0);
                     glDrawArrays(GL_TRIANGLES, 0, 6); 
+                    glBindVertexArray(0);
                     
                 };
 
@@ -533,8 +524,6 @@ void Text::Render(int shaderID)
             line.clear();
         }
     };
-
-    glBindVertexArray(0);
 
 }
 

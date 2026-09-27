@@ -321,24 +321,24 @@ void EventListener::Deserialize(json& data, bool isSession)
     {
         session->vignetteVisibility = data["camera"].contains("vignetteVisibility") ? static_cast<float>(data["camera"]["vignetteVisibility"]) : 0.0f;
 
-        float cameraX = data["camera"].contains("x") ? static_cast<float>(data["camera"]["x"]) : 0.0f,
-              cameraY = data["camera"].contains("y") ? static_cast<float>(data["camera"]["y"]) : 0.0f,
-              zoom = data["camera"].contains("zoom") ? static_cast<float>(data["camera"]["zoom"]) : 0.0f,
-              red = data["camera"]["color"].contains("x") ? static_cast<float>(data["camera"]["color"]["x"]) : 0.0f,
-              green = data["camera"]["color"].contains("y") ? static_cast<float>(data["camera"]["color"]["y"]) : 0.0f,
-              blue = data["camera"]["color"].contains("z") ? static_cast<float>(data["camera"]["color"]["z"]) : 0.0f,
-              alpha = data["camera"]["color"].contains("w") ? static_cast<float>(data["camera"]["color"]["w"]) : 0.0f;
-              
+        const float cameraX = data["camera"].contains("x") ? static_cast<float>(data["camera"]["x"]) : 0.0f,
+                    cameraY = data["camera"].contains("y") ? static_cast<float>(data["camera"]["y"]) : 0.0f,
+                    zoom = data["camera"].contains("zoom") ? static_cast<float>(data["camera"]["zoom"]) : 0.0f,
+                    camRed = data["camera"]["color"].contains("x") ? static_cast<float>(data["camera"]["color"]["x"]) : 0.0f,
+                    camGreen = data["camera"]["color"].contains("y") ? static_cast<float>(data["camera"]["color"]["y"]) : 0.0f,
+                    camBlue = data["camera"]["color"].contains("z") ? static_cast<float>(data["camera"]["color"]["z"]) : 0.0f,
+                    camAlpha = data["camera"]["color"].contains("w") ? static_cast<float>(data["camera"]["color"]["w"]) : 0.0f;
+                    
         session->game->camera->SetPosition({ cameraX, cameraY });
         session->game->camera->SetZoom(zoom);
-        session->game->camera->SetBackgroundColor({ red, green, blue, alpha }); 
+        session->game->camera->SetBackgroundColor({ camRed, camGreen, camBlue, camAlpha }); 
 
         if (data["camera"].contains("bounds") && data["camera"]["bounds"].contains("width") && data["camera"]["bounds"].contains("height")) 
         {
-            float wBegin = data["camera"]["bounds"]["width"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f, 
-                  wEnd = data["camera"]["bounds"]["width"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f,
-                  hBegin = data["camera"]["bounds"]["height"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f,
-                  hEnd = data["camera"]["bounds"]["height"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f;
+            const float wBegin = data["camera"]["bounds"]["width"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["begin"]) : 0.0f, 
+                        wEnd = data["camera"]["bounds"]["width"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["width"]["end"]) : 0.0f,
+                        hBegin = data["camera"]["bounds"]["height"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["height"]["begin"]) : 0.0f,
+                        hEnd = data["camera"]["bounds"]["height"].contains("begin") ? static_cast<float>(data["camera"]["bounds"]["height"]["end"]) : 0.0f;
             
             session->game->camera->SetBounds(wBegin, wEnd, hBegin, hEnd);
         }
@@ -348,11 +348,11 @@ void EventListener::Deserialize(json& data, bool isSession)
 
         if (data["camera"].contains("grid tint"))
         {
-            float r = data["camera"]["grid tint"].contains("r") ? static_cast<float>(data["camera"]["grid tint"]["r"]) : 0.0f, 
-                  g = data["camera"]["grid tint"].contains("g") ? static_cast<float>(data["camera"]["grid tint"]["g"]) : 0.0f,
-                  b = data["camera"]["grid tint"].contains("b") ? static_cast<float>(data["camera"]["grid tint"]["b"]) : 0.0f;
+            const float gridRed = data["camera"]["grid tint"].contains("r") ? static_cast<float>(data["camera"]["grid tint"]["r"]) : 0.0f, 
+                        gridGreen = data["camera"]["grid tint"].contains("g") ? static_cast<float>(data["camera"]["grid tint"]["g"]) : 0.0f,
+                        gridBlue = data["camera"]["grid tint"].contains("b") ? static_cast<float>(data["camera"]["grid tint"]["b"]) : 0.0f;
 
-            GUI::Get()->grid_color = { r, g, b }; 
+            GUI::Get()->grid_color = { gridRed, gridGreen, gridBlue }; 
         }
         
         session->worldWidth = data["camera"].contains("width") ? static_cast<float>(data["camera"]["width"]) : 0.0f;
@@ -442,7 +442,7 @@ void EventListener::Deserialize(json& data, bool isSession)
             session->globals.push_back({ key, type });
         }
 
-        if (data["globals_applied"]) 
+        if (data.contains("globals_applied") && data["globals_applied"]) 
             session->globals_applied = true;
     }
 

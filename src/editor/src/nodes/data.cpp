@@ -1140,7 +1140,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                 sn->loop = data["loop"];
 
             if (data.contains("depth"))
-                sn->alpha = data["depth"];
+                sn->depth = data["depth"];
 
             if (data.contains("alpha"))
                 sn->alpha = data["alpha"];
@@ -1154,10 +1154,8 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
             if (data.contains("animation key"))
                 sn->animationKey = data["animation key"]; 
 
-            if (data.contains("texture key")) 
-            {
+            if (data.contains("texture key")) {
                 sn->textureKey = data["texture key"];
-
                 if (sn->textureKey.length() && makeNode) 
                     sn->ApplyTexture(sn->textureKey);
             }
