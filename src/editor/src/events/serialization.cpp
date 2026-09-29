@@ -216,8 +216,12 @@ void EventListener::Serialize(json& data, bool newScene)
                 assets.push_back(asset);
 
         if (session->shaders_applied)
-            for (const auto& shader : session->shaders)
-                shaders.push_back({ { "key", shader.key }, { "vertex", shader.vertex }, { "fragment", shader.fragment }, { "depth", shader.depth } });
+            for (const auto& shader : session->shaders) {
+                if (shader.key == "sprite")
+                    shaders.push_back({ { "key", "sprite" }, { "vertex", "" }, { "fragment", "" }, { "depth", shader.depth } });
+                else
+                    shaders.push_back({ { "key", shader.key }, { "vertex", shader.vertex }, { "fragment", shader.fragment }, { "depth", shader.depth } });
+            }
 
         if (session->spritesheets.size())
             for (const auto& spritesheet : session->spritesheets)
@@ -395,9 +399,24 @@ void EventListener::Deserialize(json& data, bool isSession)
     session->shaders.clear();
     session->shaders.push_back({ "sprite", "", "", 0 });
 
-    if (data.contains("shaders"))
+    if (data.contains("shaders")) 
+    {
+        //set depth for built-in standard sprite shader 
+
+        const auto it = std::find_if(data["shaders"].begin(), data["shaders"].end(), [&](const auto& s){ return s.contains("key") && s["key"] == "sprite"; });  
+
+        if (it != data["shaders"].end()) {
+            const auto s = *it;
+            session->shaders[0].depth = it->contains("depth") ? static_cast<int>(s["depth"]) : 0;
+        }
+
+        //iterate loaded shaders
+
         for (const auto& shader : data["shaders"]) 
         {
+            if (shader.contains("key") && shader["key"] == "sprite")
+                continue;
+
             const std::string key = shader.contains("key") ? shader["key"] : "", 
                               vertex = shader.contains("vertex") ? shader["vertex"] : "none selected",
                               fragment = shader.contains("fragment") ? shader["fragment"] : "none selected";
@@ -405,8 +424,9 @@ void EventListener::Deserialize(json& data, bool isSession)
             int depth = shader.contains("depth") ? static_cast<int>(shader["depth"]) : 0;
 
             session->shaders.push_back({ key, vertex, fragment, depth });
-            session->shaders_applied = true;
+            session->shaders_applied = true; 
         }
+    }
 
     //animations
 
@@ -570,12 +590,15 @@ void EventListener::ParseScene(const std::string& sceneKey, std::stringstream& s
            scene->assets.push_back(asset);
 
     if (data.contains("shaders")) {
-        for (const auto& shader : data["shaders"]) {
+        for (const auto& shader : data["shaders"]) 
+        {
             const std::string key = shader.contains("key") ? shader["key"] : "", 
                               vertex = shader.contains("vertex") ? shader["vertex"] : "",
                               fragment = shader.contains("fragment") ? shader["fragment"] : "";
 
-            scene->shaders.push_back({ key, vertex, fragment, scene->shaders.size() });
+            int depth = shader.contains("depth") ? static_cast<int>(shader["depth"]) : 0;
+
+            scene->shaders.push_back({ key, vertex, fragment, depth });
         }
 
         scene->shaders_applied = true;
