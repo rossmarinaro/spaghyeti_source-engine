@@ -25,7 +25,7 @@ namespace editor {
 
             std::map<std::string, std::string> loadedAssets;
 
-            AssetManager();
+            AssetManager();  
             ~AssetManager() = default;
 
             static void Reset();

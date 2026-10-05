@@ -26,7 +26,7 @@ namespace editor {
             static const std::string Get(int type);
             static void ApplyAnimations(bool init = false);
         
-        private:
+        private: 
 
             int m_nodeType;
             bool m_init;

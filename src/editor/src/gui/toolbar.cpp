@@ -648,7 +648,7 @@ void editor::GUI::ShowMenu()
 
             ImGui::Separator();
 
-            ImGui::Checkbox("full screen", &session->isFullscreen);
+            ImGui::Checkbox("full screen (high performance)", &session->isFullscreen);
             ImGui::InputInt("screen width", &session->screenWidth);
             ImGui::InputInt("screen height", &session->screenHeight);
             ImGui::InputInt("pixel dimensions x", &session->resolutionWidth);

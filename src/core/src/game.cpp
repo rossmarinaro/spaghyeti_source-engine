@@ -212,6 +212,9 @@ void Game::StartScene(const std::string& key, bool loadMap)
 
         game->currentScene->Run(loadMap);
 
+        for (const auto& behavior : game->currentScene->behaviors)
+            behavior->Init();
+
         game->m_context.active = true;       
         game->m_gameState = true;
 
@@ -414,20 +417,7 @@ void Game::UpdateFrame()
                         const std::string id = entity->ID;
 
                         DestroyEntity(entity);
-
-                        //remove associated behaviors
-
-                        const auto behavior_it = std::find_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [&id](auto b)
-                            { return b->ID == id; });
-
-                        if (behavior_it != currentScene->behaviors.end())
-                        {
-                            auto behavior = *behavior_it;
-                            
-                            behavior->active = false; 
-                            behavior->Cleanup();
-                            behavior.reset();
-                        }
+                        DestroyBehavior(id);
                     }
                 }
             }
@@ -560,18 +550,8 @@ void Game::UpdateFrame()
 
         //remove behaviors
 
-        auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&entity](const std::shared_ptr<entity_behaviors::Behavior>& b)
-                            { return b->ID == entity->ID; });
-
-        if (behavior_it != GetScene()->behaviors.end()) {
-            auto behavior = (*behavior_it);
-            behavior->active = false;
-            behavior.reset();
-        }
-
-        //remove active behaviors
-    
-        currentScene->behaviors.erase(std::remove_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), [](const auto& b) { return !b->active; }), currentScene->behaviors.end());
+        const std::string id = entity->ID;
+        DestroyBehavior(entity->ID);
     }
 
     _entitiesToRemove.clear();
@@ -756,6 +736,26 @@ void Game::DestroyEntity(std::shared_ptr<Entity> entity)
  
     if (entity.unique())
         entity.reset();
+}
+
+
+//-----------------------------
+
+
+void Game::DestroyBehavior(const std::string& id)
+{
+    auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&id](const std::shared_ptr<entity_behaviors::Behavior>& b)
+        { return b->ID == id; });
+
+    if (behavior_it != GetScene()->behaviors.end()) {
+        auto behavior = (*behavior_it);
+        behavior->active = false;
+        behavior.reset();
+    }
+
+    //remove active behaviors
+
+    GetScene()->behaviors.erase(std::remove_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [](const auto& b) { return !b->active; }), GetScene()->behaviors.end());
 }
 
 
