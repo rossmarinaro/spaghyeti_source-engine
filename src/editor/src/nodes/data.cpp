@@ -763,7 +763,7 @@ std::shared_ptr<Node> Node::ReadData(json& data, bool makeNode, void* scene, std
                     {
                         System::Resources::Manager::LoadTilemapFrames(texture, tmn->map_width, tmn->map_height, tmn->tile_width, tmn->tile_height);
 
-                        auto _layer = System::Game::CreateTileLayer(
+                        auto _layer = System::Game::GetScene()->CreateTileLayer(
                             ID, 
                             texture.c_str(), 
                             key.c_str(), 

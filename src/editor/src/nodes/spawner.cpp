@@ -53,11 +53,13 @@ SpawnerNode::~SpawnerNode() {
 
 void SpawnerNode::Reset(int component_type)
 {
+    const auto scene = System::Game::GetScene();
+    
     if (rectHandle)
-        System::Game::DestroyEntity(rectHandle);
+        scene->DestroyEntity(rectHandle);
 
     if (m_textHandle)
-        System::Game::DestroyEntity(m_textHandle);
+        scene->DestroyEntity(m_textHandle);
 } 
 
 //---------------------------
@@ -72,14 +74,16 @@ void SpawnerNode::ApplyTexture(const std::string& asset) {
 //---------------------------
 
 
-void SpawnerNode::CreateMarker() {
-    rectHandle = System::Game::CreateGeom(0.0f, 0.0f, 80.0f, 80.0f);
-    m_textHandle = System::Game::CreateText("spawner", 0.0f, 0.0f, "", 2);
+void SpawnerNode::CreateMarker() 
+{
+    const auto scene = System::Game::GetScene();
+    rectHandle = scene->CreateGeom(0.0f, 0.0f, 80.0f, 80.0f);
+    m_textHandle = scene->CreateText("spawner", 0.0f, 0.0f, "", 2);
 
     rectHandle->SetTint({ 1.0f, 0.0f, 0.0f });
     m_textHandle->SetTint({ 0.0f, 0.0f, 1.0f });
 
-    System::Game::GetScene()->SetInteractive(rectHandle); 
+    scene->SetInteractive(rectHandle); 
     EventListener::UpdateSession();
 }
 

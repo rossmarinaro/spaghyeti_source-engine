@@ -19,9 +19,12 @@ TextNode::TextNode(bool init):
     charOffsetY = 0.0f;
     textBuf = "";
     currentFont = "";
-    textHandle = System::Game::CreateText(textBuf, positionX, positionY);
+    
+    const auto scene = System::Game::GetScene();
 
-    System::Game::GetScene()->SetInteractive(textHandle);
+    textHandle = scene->CreateText(textBuf, positionX, positionY);
+
+    scene->SetInteractive(textHandle);
 
     if (m_init)
         Editor::Log("Text node " + name + " created.");   
@@ -34,7 +37,7 @@ TextNode::TextNode(bool init):
 TextNode::~TextNode() 
 {
     if (textHandle != nullptr)
-        System::Game::DestroyEntity(textHandle);
+        System::Game::GetScene()->DestroyEntity(textHandle);
 
     if (m_init)
         Editor::Log("Text node " + name + " deleted.");
@@ -62,9 +65,11 @@ void TextNode::Reset(int component_type)
 void TextNode::ChangeFont(const std::string& font) {
     
     AssetManager::Register(font);
-    System::Game::DestroyEntity(textHandle);
 
-    textHandle = System::Game::CreateText(textBuf, positionX, positionY, font);
+    const auto scene = System::Game::GetScene();
+    scene->DestroyEntity(textHandle);
+
+    textHandle = scene->CreateText(textBuf, positionX, positionY, font);
     currentFont = font;
 }
 

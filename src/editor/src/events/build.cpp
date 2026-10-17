@@ -880,10 +880,10 @@ void EventListener::BuildAndRun()
                     }
 
                     if (sn->make_UI) 
-                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateUISprite(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
+                        command_queue << "   const auto sprite_" + node->ID + " = CreateUISprite(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
                     
                     else  
-                        command_queue << "   const auto sprite_" + node->ID + " = System::Game::CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
+                        command_queue << "   const auto sprite_" + node->ID + " = CreateSprite(\"" + sn->key + "\", " + std::to_string(sn->actualPositionX) + ", " + std::to_string(sn->actualPositionY) + ");\n";
 
                     //sprite configurations
 
@@ -893,7 +893,7 @@ void EventListener::BuildAndRun()
 
                     //maybe add texture wrapping too?
 
-                    command_queue << "   Graphics::Texture2D::Get(sprite_" + node->ID + "->key)->SetFiltering(" + filtering + ", " + filtering + ");\n";
+                    command_queue << "   sprite_" + node->ID + "->texture.SetFiltering(" + filtering + ", " + filtering + ");\n";
 
                     command_queue << "   sprite_" + node->ID + "->SetFrame(" + std::to_string(sn->currentFrame) + ");\n";
                     command_queue << "   sprite_" + node->ID + "->SetScale(" + FloatToString(sn->scaleX) + ", " + FloatToString(sn->scaleY) + ");\n";
@@ -965,7 +965,7 @@ void EventListener::BuildAndRun()
                     const std::string isStroke = tn->isStroked ? "true" : "false",
                                       isShadow = tn->isShadow ? "true" : "false";
 
-                    command_queue << "   const auto text_" + node->ID + " = System::Game::CreateText(\"" + tn->textBuf + "\", " + FloatToString(tn->actualPositionX) + ", " + FloatToString(tn->actualPositionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(isUI) + ");\n"; 
+                    command_queue << "   const auto text_" + node->ID + " = CreateText(\"" + tn->textBuf + "\", " + FloatToString(tn->actualPositionX) + ", " + FloatToString(tn->actualPositionY) + ", " + "\"" +  tn->currentFont + "\", " + std::to_string(isUI) + ");\n"; 
 
                     command_queue << "   text_" + node->ID + "->SetStatic(" + (isUI == 2 ? "true" : "false") + ");\n";
                     command_queue << "   text_" + node->ID + "->SetScale(" + FloatToString(tn->scaleX) + ", " + FloatToString(tn->scaleY) + ");\n";
@@ -990,7 +990,7 @@ void EventListener::BuildAndRun()
                         //TODO: set shape
 
                         if (en->currentShape == "rectangle") {
-                            command_queue << "   const auto empty_" + node->ID + " = System::Game::CreateGeom(" + FloatToString(en->actualPositionX) + ", " + FloatToString(en->actualPositionY) + ", " + FloatToString(en->rectWidth) + ", " + FloatToString(en->rectHeight) + ");\n";
+                            command_queue << "   const auto empty_" + node->ID + " = CreateGeom(" + FloatToString(en->actualPositionX) + ", " + FloatToString(en->actualPositionY) + ", " + FloatToString(en->rectWidth) + ", " + FloatToString(en->rectHeight) + ");\n";
                             command_queue << "   empty_" + node->ID + "->SetDrawStyle(" + std::to_string(en->debug_fill) + ");\n";
                         }
 
@@ -1007,7 +1007,7 @@ void EventListener::BuildAndRun()
                     }
 
                     else 
-                        command_queue << "   const auto empty_" + node->ID + " = System::Game::CreateEntity();\n\t";
+                        command_queue << "   const auto empty_" + node->ID + " = CreateEntity();\n\t";
 
                     command_queue << "   empty_" + node->ID + "->SetName(\"" + node->name + "\");\n";
                 }
@@ -1034,7 +1034,7 @@ void EventListener::BuildAndRun()
                             preload_queue << "      System::Resources::Manager::LoadFile(\"" + tl.dataKey + "\", ""\"" + tl.dataPath + "\");\n";
                             preload_queue << "      System::Resources::Manager::LoadTilemapFrames(\"" + tl.textureKey + "\", " + std::to_string(tmn->map_width) + " , " + std::to_string(tmn->map_height) + ", " + std::to_string(tmn->tile_width) + ", " + std::to_string(tmn->tile_height) + ");\n";
                   
-                            command_queue << "      System::Game::CreateTileLayer(" + tl.textureKey + ", " + 
+                            command_queue << "     CreateTileLayer(" + tl.textureKey + ", " + 
                             tl.dataKey + ", " + 
                             std::to_string(tmn->map_width) + ", " + 
                             std::to_string(tmn->map_height) + ", " + 
@@ -1055,12 +1055,12 @@ void EventListener::BuildAndRun()
                             const std::string tilemap_path = "assets/" + tmn->map.key; 
 
                             preload_queue << "  System::Resources::Manager::LoadTilemapFromJSON(""\"" + tmn->map.key + """\", ""\"" + tilemap_path + """\");\n";
-                            command_queue << "   System::Game::CreateTilemapFromJSON(\"" + tmn->map.key + "\");\n";
+                            command_queue << "  CreateTilemapFromJSON(\"" + tmn->map.key + "\");\n";
                             
                             //update tilesprites per layer
 
                             for (const auto& layer : tmn->map.layers) {
-                                command_queue << "    for (const auto& ts : System::Game::GetTileLayerSprites(\"" + tmn->map.key + "\", " + std::to_string(layer.ID) + ")) {\n";
+                                command_queue << "    for (const auto& ts : GetTileLayerSprites(\"" + tmn->map.key + "\", " + std::to_string(layer.ID) + ")) {\n";
                                 command_queue << "       ts->SetDepth(" + std::to_string(layer.depth) + ");\n"; 
                                 command_queue << "       ts->SetAlpha(" + std::to_string(layer.alpha) + ");\n"; 
                                 command_queue << "       ts->SetScrollFactor({" + std::to_string(layer.scrollFactorX) + ", " + std::to_string(layer.scrollFactorY) + "});\n"; 
@@ -1088,7 +1088,7 @@ void EventListener::BuildAndRun()
 
                     command_queue << "   System::Audio::play(\"" + an->audio_source_name + "\", " + loop + ", " + FloatToString(an->volume) + ");\n";
 
-                    command_queue << "   const auto audio_" + node->ID + " = System::Game::CreateEntity(\"" + "audio" + "\");\n\t";
+                    command_queue << "   const auto audio_" + node->ID + " = CreateEntity(\"" + "audio" + "\");\n\t";
                     command_queue << "   audio_" + node->ID + "->SetName(\"" + an->name + "\");\n";
                 }
 
@@ -1100,26 +1100,26 @@ void EventListener::BuildAndRun()
                                       is_loop = sn->loop ? "true" : "false",
                                       is_sensor = sn->body.self.isSensor ? "true" : "false";
 
-                    command_queue << "Physics::Body spawnBodyDef_" + node->ID + ";";
-                    command_queue << "spawnBodyDef_" + node->ID + ".type = " + std::to_string(sn->body.self.type) + ";\n";
-                    command_queue << "spawnBodyDef_" + node->ID + ".shape = " + std::to_string(sn->body.self.shape) + ";\n";
-                    command_queue << "spawnBodyDef_" + node->ID + ".isSensor = " + is_sensor + ";\n";
-                    command_queue << "spawnBodyDef_" + node->ID + ".x = " + FloatToString(sn->body.self.x) + ";\n";
-                    command_queue << "spawnBodyDef_" + node->ID + ".y = " + FloatToString(sn->body.self.y) + ";\n";
+                    command_queue << "   Physics::Body spawnBodyDef_" + node->ID + ";";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".type = " + std::to_string(sn->body.self.type) + ";\n";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".shape = " + std::to_string(sn->body.self.shape) + ";\n";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".isSensor = " + is_sensor + ";\n";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".x = " + FloatToString(sn->body.self.x) + ";\n";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".y = " + FloatToString(sn->body.self.y) + ";\n";
 
                     if (sn->body.self.shape == Physics::Body::Shape::BOX) {
-                        command_queue << "spawnBodyDef_" + node->ID + ".width = " + FloatToString(sn->body.self.width) + ";\n";
-                        command_queue << "spawnBodyDef_" + node->ID + ".height = " + FloatToString(sn->body.self.height) + ";\n";
+                        command_queue << "   spawnBodyDef_" + node->ID + ".width = " + FloatToString(sn->body.self.width) + ";\n";
+                        command_queue << "   spawnBodyDef_" + node->ID + ".height = " + FloatToString(sn->body.self.height) + ";\n";
                     }
 
                     if (sn->body.self.shape == Physics::Body::Shape::CIRCLE)
-                        command_queue << "spawnBodyDef_" + node->ID + ".radius = " + FloatToString(sn->body.self.radius) + ";\n";
+                        command_queue << "   spawnBodyDef_" + node->ID + ".radius = " + FloatToString(sn->body.self.radius) + ";\n";
 
-                    command_queue << "spawnBodyDef_" + node->ID + ".density = " + FloatToString(sn->body.self.density) + ";\n";
-                    command_queue << "spawnBodyDef_" + node->ID + ".friction = " + FloatToString(sn->body.self.friction) + ";\n";
-                    command_queue << "spawnBodyDef_" + node->ID + ".restitution = " + FloatToString(sn->body.self.restitution) + ";\n";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".density = " + FloatToString(sn->body.self.density) + ";\n";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".friction = " + FloatToString(sn->body.self.friction) + ";\n";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".restitution = " + FloatToString(sn->body.self.restitution) + ";\n";
 
-                    command_queue << "   System::Game::CreateSpawn(" + std::to_string(sn->typeOf) +  ", \"" + sn->textureKey + "\", " + FloatToString(sn->actualPositionX) + ", " + FloatToString(sn->actualPositionY) + ", " + FloatToString(sn->width) + ", " + FloatToString(sn->height) + ", " + FloatToString(sn->spawnWidth) + ", " + FloatToString(sn->spawnHeight) + ", { " + FloatToString(sn->tint.x) + ", " + FloatToString(sn->tint.y) + ", " + FloatToString(sn->tint.z) + " }, " + std::to_string(sn->depth) + ", " + FloatToString(sn->alpha) + ", " + is_loop + ", \"" + sn->behaviorKey + "\", { " + body_exists + ", spawnBodyDef_" + node->ID + " });\n";
+                    command_queue << "   CreateSpawn(" + std::to_string(sn->typeOf) +  ", \"" + sn->textureKey + "\", " + FloatToString(sn->actualPositionX) + ", " + FloatToString(sn->actualPositionY) + ", " + FloatToString(sn->width) + ", " + FloatToString(sn->height) + ", " + FloatToString(sn->spawnWidth) + ", " + FloatToString(sn->spawnHeight) + ", { " + FloatToString(sn->tint.x) + ", " + FloatToString(sn->tint.y) + ", " + FloatToString(sn->tint.z) + " }, " + std::to_string(sn->depth) + ", " + FloatToString(sn->alpha) + ", " + is_loop + ", \"" + sn->behaviorKey + "\", { " + body_exists + ", spawnBodyDef_" + node->ID + " });\n";
                 }
 
                 //define behaviors
@@ -1128,7 +1128,7 @@ void EventListener::BuildAndRun()
 
                 for (const auto& behavior : node->behaviors) {
                     transform(entity.begin(), entity.end(), entity.begin(), ::tolower);
-                    command_queue << "   System::Game::CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ", this);\n";
+                    command_queue << "   CreateBehavior<entity_behaviors::" + behavior.first + ">(" + entity + ");\n";
                 }
 
             }
@@ -1143,17 +1143,14 @@ void EventListener::BuildAndRun()
 
         //scene update
 
-        update_queue << "   for (auto& spawn : spawns) \n";
-        update_queue << "   {\n\t\t std::shared_ptr<Entity> entity;\n\n";
-        update_queue << "        if (spawn.type == Entity::SPRITE)\n";
-        update_queue << "           entity = GetEntity<Sprite>(spawn.index);\n";  
-        update_queue << "        else if (spawn.type == Entity::GEOMETRY) \n";
-        update_queue << "           entity = GetEntity<Geometry>(spawn.index);\n\n"; 
-        update_queue << "        if (entity)\n";
-        update_queue << "           for (const auto& behavior : spawn.behaviors_attached)\n";
-        update_queue << "           {\n";
+        update_queue << "    for (auto& spawn : spawns) \n";
+        update_queue << "    {\n\t\tconst auto entity = GetEntity<Entity>(spawn->index);\n";
+        update_queue << "        if (!entity) continue;\n\n";
 
         if (!std::filesystem::is_empty(Editor::projectPath + AssetManager::Get()->script_dir))
+        {
+            std::vector<std::string> classNames;
+
             for (const auto& script : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->script_dir)) 
                 if (!script.is_directory()) 
                 {
@@ -1176,12 +1173,24 @@ void EventListener::BuildAndRun()
                                 
                         src.close();
 
-                        update_queue << "                if (behavior.first == \"" + classKey + "\" && spawn.hasBehavior(behavior.first))\n";  
-                        update_queue << "                    System::Game::CreateBehavior<entity_behaviors::" + className + ">(entity, this);\n\t\t\n";
+                        for (const auto& node : target.second->nodes) 
+                        {
+                            if (node->type != Node::SPAWNER) 
+                                continue;
+                                
+                            const auto sn = std::dynamic_pointer_cast<SpawnerNode>(node);
+                            const auto it = std::find_if(classNames.begin(), classNames.end(), [&className](const std::string& s) { return s == className; });
+
+                            if (className == sn->behaviorKey && it == classNames.end()) {
+                                update_queue << "       spawn->InitBehavior<entity_behaviors::" + className + ">(\"" + classKey + "\", entity, this);\t\t\n";
+                                classNames.emplace_back(className);
+                            }
+                        }
                     }
                 }
-
-        update_queue << "         }\n\t\t}\n\n";
+        }
+            
+        update_queue << "   }\n\n";
 
         //write nodes
 

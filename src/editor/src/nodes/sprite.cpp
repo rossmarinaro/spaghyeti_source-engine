@@ -47,7 +47,7 @@ SpriteNode::~SpriteNode() {
     m_currentTexture = NULL;
 
     if (spriteHandle != nullptr)
-        System::Game::DestroyEntity(spriteHandle);
+        System::Game::GetScene()->DestroyEntity(spriteHandle);
     
     if (m_init)
         Editor::Log("Sprite node " + name + " deleted.");
@@ -167,7 +167,7 @@ void SpriteNode::RegisterFrames()
 void SpriteNode::ApplyTexture(const std::string& asset)
 {  
     if (!spriteHandle) { 
-        spriteHandle = System::Game::CreateSprite(asset, 0.0f, 0.0f);
+        spriteHandle = System::Game::GetScene()->CreateSprite(asset, 0.0f, 0.0f);
         spriteHandle->name = name;
         System::Game::GetScene()->SetInteractive(spriteHandle);
     }

@@ -9,7 +9,6 @@
 	using json = nlohmann::json;
 #endif
 
-#include "../../../build/sdk/include/game.h"
 #include "../../../build/sdk/include/app.h"
 #include "../../vendors/UUID.hpp"
 #include "../../shared/renderer.h"
@@ -18,7 +17,7 @@ using namespace System;
 
 //---------------------------------------------- construct tilemap on the fly from a loaded map json file
 
-Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key) 
+Scene::Tilemap Scene::CreateTilemapFromJSON(const std::string& key) 
 {
     #if USE_JSON == 1
 
@@ -120,11 +119,11 @@ Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key)
 
             //if a map exists with the same texture, load a new texture with the tilemap key prepended
 
-            // if (std::find_if(GetScene()->tilemaps.begin(), GetScene()->tilemaps.end(), [&texture_key](const auto& map) 
-            // { return texture_key == map.second; }) != GetScene()->tilemaps.end())
+            // if (std::find_if(tilemaps.begin(), tilemaps.end(), [&texture_key](const auto& map) 
+            // { return texture_key == map.second; }) != tilemaps.end())
             //     texture_key = (key + "_" + textureKey); 
             // else 
-            //     GetScene()->tilemaps.push_back({ key, texture_key });
+            //     tilemaps.push_back({ key, texture_key });
 
             const auto tileLayer = CreateTileLayer(ID, texture_key.c_str(), key.c_str(), map_width, map_height, tile_width, tile_height, depth, index, x, y, scrollFactorX, scrollFactorY);  
             
@@ -170,7 +169,7 @@ Scene::Tilemap Game::CreateTilemapFromJSON(const std::string& key)
 //----------------------------------------------
 
 
-Scene::TilemapLayer Game::CreateTileLayer(
+Scene::TilemapLayer Scene::CreateTileLayer(
     int ID,
     const char* texture_key,
     const char* data_key,
@@ -334,7 +333,7 @@ Scene::TilemapLayer Game::CreateTileLayer(
                   tile->SetFlip(flipX, flipY); 
                 }
 
-                GetScene()->entities.emplace_back(tile);
+                entities.emplace_back(tile);
             }
         }
 
@@ -347,10 +346,10 @@ Scene::TilemapLayer Game::CreateTileLayer(
 //------------------------------------- get map
 
 
-std::vector<std::shared_ptr<Sprite>> Game::GetTileMapSprites(const std::string& key) 
+std::vector<std::shared_ptr<Sprite>> Scene::GetTileMapSprites(const std::string& key) 
 {
     std::vector<std::shared_ptr<Sprite>> tilesprites;
-    const auto tiles = GetScene()->entities;
+    const auto tiles = entities;
 
     for (auto it = tiles.begin(); it != tiles.end(); ++it) 
     {
@@ -374,7 +373,7 @@ std::vector<std::shared_ptr<Sprite>> Game::GetTileMapSprites(const std::string& 
 //------------------------------------- get layer
 
 
-std::vector<std::shared_ptr<Sprite>> Game::GetTileLayerSprites(const std::string& mapKey, int layerID) 
+std::vector<std::shared_ptr<Sprite>> Scene::GetTileLayerSprites(const std::string& mapKey, int layerID) 
 {
     std::vector<std::shared_ptr<Sprite>> tilesprites;
     
@@ -390,7 +389,7 @@ std::vector<std::shared_ptr<Sprite>> Game::GetTileLayerSprites(const std::string
 //------------------------------------- remove map
 
 
-void Game::RemoveTilemap(const std::string& key) 
+void Scene::RemoveTilemap(const std::string& key) 
 {
     for (const auto& tilesprite : GetTileMapSprites(key)) 
         DestroyEntity(tilesprite);
@@ -402,7 +401,7 @@ void Game::RemoveTilemap(const std::string& key)
 //------------------------------------- remove layer
 
 
-void Game::RemoveTileLayer(const std::string& mapKey, int layerID) 
+void Scene::RemoveTileLayer(const std::string& mapKey, int layerID) 
 {
     for (const auto& tilesprite : GetTileMapSprites(mapKey)) 
         if (tilesprite->GetData<int>("layer id") == layerID) 

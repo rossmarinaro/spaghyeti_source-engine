@@ -187,7 +187,7 @@ void Component::Make()
         src <<  "   class " << className << " : public Behavior {\n\n";
         src <<  "       public:\n\n";
         src <<  "           " << className << "(std::shared_ptr<Entity>& entity):\n";
-        src <<  "           Behavior(entity->ID, typeid(" << className << ").name(), \"" + className + "\")\n";
+        src <<  "           Behavior(entity->ID)\n";
         src <<  "           {\n\n";
         src <<  "           }\n\n";
         src <<  "           ~" << className << "() = default;\n";
@@ -197,8 +197,6 @@ void Component::Make()
         src <<  "           //update every frame\n\n";
         src <<  "           void Update() override {\n\n";
         src <<  "           }\n";
-        src <<  "           void Cleanup() override {\n\n";
-        src <<  "           }\n\n";
         src <<  "   };\n";
         src <<  "};";
 

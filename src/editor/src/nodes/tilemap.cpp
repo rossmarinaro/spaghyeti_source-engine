@@ -63,7 +63,7 @@ void TilemapNode::Reset(int component_type)
     bool passAll = component_type == Component::NONE;
 
     if (passAll) {
-        System::Game::RemoveTilemap(map.key);
+        System::Game::GetScene()->RemoveTilemap(map.key);
         map.layers.clear();
     }
 
@@ -113,7 +113,7 @@ void TilemapNode::InitMapFromJSON(const std::string& key, const std::string& pat
 
     //create and assign map 
 
-    map = System::Game::CreateTilemapFromJSON(key);
+    map = System::Game::GetScene()->CreateTilemapFromJSON(key);
 
     if (!map.layers.size()) {
         Editor::Log("Cannot initialize map - JSON must have following values [layers, width, height, tilewidth, tileheight].");
@@ -356,7 +356,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                                 System::Resources::Manager::LoadFile(key, path);
                                                 System::Resources::Manager::LoadTilemapFrames(map.layers[i].textureKey, map_width, map_height, tile_width, tile_height);
                                                 
-                                                map.layers[i] = System::Game::CreateTileLayer(i, map.layers[i].textureKey.c_str(), map.layers[i].dataKey.c_str(), map_width, map_height, tile_width, tile_height, map.layers[i].depth, i, 0.0f, 0.0f, map.layers[i].scrollFactorX, map.layers[i].scrollFactorY);  
+                                                map.layers[i] = System::Game::GetScene()->CreateTileLayer(i, map.layers[i].textureKey.c_str(), map.layers[i].dataKey.c_str(), map_width, map_height, tile_width, tile_height, map.layers[i].depth, i, 0.0f, 0.0f, map.layers[i].scrollFactorX, map.layers[i].scrollFactorY);  
                                             
                                                 SetInitialPosition();
                                             }
@@ -435,7 +435,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                         ImGui::SameLine();
 
                         if (ImGui::Button("remove layer") && map.layers.size()) {
-                            System::Game::RemoveTileLayer(map.key, map.layers.back().ID);
+                            System::Game::GetScene()->RemoveTileLayer(map.key, map.layers.back().ID);
                             map.layers.pop_back();
                             EventListener::UpdateSession();
                         }  

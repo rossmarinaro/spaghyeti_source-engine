@@ -217,7 +217,7 @@ void Editor::Start()
 
     //create entity selector graphic
 
-    s_self->s_selector = Game::CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
+    s_self->s_selector = Game::GetScene()->CreateGeom(0.0f, 0.0f, 0.0f, 0.0f, 2);
     s_self->s_selector->SetTint({ 0.0f, 1.0f, 0.0f });  
     s_self->s_selector->SetThickness(2.0f);
     s_self->s_selector->SetAlpha(0.0f);

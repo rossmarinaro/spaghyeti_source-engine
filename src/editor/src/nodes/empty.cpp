@@ -27,7 +27,7 @@ EmptyNode::EmptyNode(bool init):
 
 EmptyNode::~EmptyNode() {
     if (debugGraphic)
-        System::Game::DestroyEntity(debugGraphic);
+        System::Game::GetScene()->DestroyEntity(debugGraphic);
 
     if (m_init)
         Editor::Log("Empty node " + name + " deleted.");
@@ -57,8 +57,10 @@ void EmptyNode::CreateShape(const std::string &shape)
 {
     if (!debugGraphic) 
     {
+        const auto scene = System::Game::GetScene();
+        
         if (shape == "rectangle")
-            debugGraphic = System::Game::CreateGeom(20.0f, 20.0f, 10.0f, 10.0f); 
+            debugGraphic = scene->CreateGeom(20.0f, 20.0f, 10.0f, 10.0f); 
 
         else if (shape == "ellipse") {}
 

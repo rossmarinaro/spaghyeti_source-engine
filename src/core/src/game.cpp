@@ -22,7 +22,6 @@
 using namespace System;
 
 static CollisionManager _collisions;
-static std::vector<std::shared_ptr<Entity>> _entitiesToRemove;
 
 //---------------------------
 
@@ -39,7 +38,7 @@ void Game::Reset(bool removeBehaviors)
         Application::events->pool = nullptr;
     }
 
-    s_spawn_count = 0;
+    Scene::s_spawn_count = 0;
 
     if (removeBehaviors)
         currentScene->behaviors.clear();
@@ -86,7 +85,7 @@ Scene* Game::GetScene(const std::string& key)
 
 Game::Game()
 {
-    s_spawn_count = 0;
+    Scene::s_spawn_count = 0;
 
     LOG("Game: initializing context..."); 
 
@@ -228,7 +227,6 @@ void Game::StartScene(const std::string& key, bool loadMap)
 //-----------------------------
 
 
-
 void Game::Exit()
 {
     m_gameState = false;
@@ -300,81 +298,81 @@ void Game::UpdateFrame()
         if (currentScene->cameraTarget)
             for (auto& spawn : currentScene->spawns)
             {
-                if (Math::distanceBetween(currentScene->cameraTarget->x - spawn.posX) >= spawn.spawn_width * 2.0f && spawn.loop)  
-                    spawn.can_create = true;
+                if (Math::distanceBetween(currentScene->cameraTarget->x - spawn->posX) >= spawn->spawn_width * 2.0f && spawn->loop && !spawn->initialized)  
+                    spawn->can_create = true;
 
                 //spawn entity
 
-                if (spawn.can_create && 
-                    currentScene->cameraTarget->x >= spawn.posX - spawn.spawn_width && currentScene->cameraTarget->x <= spawn.posX + spawn.spawn_width &&
-                    currentScene->cameraTarget->y >= spawn.posY - spawn.spawn_height && currentScene->cameraTarget->y <= spawn.posY + spawn.spawn_height
+                if (spawn->can_create && 
+                    currentScene->cameraTarget->x >= spawn->posX - spawn->spawn_width && currentScene->cameraTarget->x <= spawn->posX + spawn->spawn_width &&
+                    currentScene->cameraTarget->y >= spawn->posY - spawn->spawn_height && currentScene->cameraTarget->y <= spawn->posY + spawn->spawn_height
                 ) 
                 {
                     if (std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [&spawn](std::shared_ptr<Entity> e) 
-                    { return e->name == spawn.index; }) != currentScene->entities.end()) 
+                    { return e->name == spawn->index; }) != currentScene->entities.end()) 
                         continue;
 
-                    spawn.can_create = false; 
+                    spawn->can_create = false; 
 
                     std::shared_ptr<Entity> entity;
 
-                    switch (spawn.type) 
+                    switch (spawn->type) 
                     {
                         case Entity::SPRITE: 
 
-                            entity = CreateSprite(spawn.filename, spawn.posX, spawn.posY, 0, 1.0f, 1, true); 
+                            entity = currentScene->CreateSprite(spawn->filename, spawn->posX, spawn->posY, 0, 1.0f, 1, true); 
 
                             //apply physics body to spawned entity
 
-                            if (spawn.body.exist) 
+                            if (spawn->body.exist) 
                             {
                                 const auto sprite = std::static_pointer_cast<Sprite>(entity);
 
-                                if (spawn.body.self.shape == Physics::Body::Shape::BOX)
+                                if (spawn->body.self.shape == Physics::Body::Shape::BOX)
                                 {
                                     sprite->AddBody(Physics::CreateBody(
-                                        spawn.body.self.type, 
-                                        spawn.posX, 
-                                        spawn.posY, 
-                                        spawn.body.self.width, 
-                                        spawn.body.self.height, 
-                                        spawn.body.self.isSensor, 
+                                        spawn->body.self.type, 
+                                        spawn->posX, 
+                                        spawn->posY, 
+                                        spawn->body.self.width, 
+                                        spawn->body.self.height, 
+                                        spawn->body.self.isSensor, 
                                         1,                  
-                                        spawn.body.self.density, 
-                                        spawn.body.self.friction, 
-                                        spawn.body.self.restitution
+                                        spawn->body.self.density, 
+                                        spawn->body.self.friction, 
+                                        spawn->body.self.restitution
                                     ), { 
-                                        spawn.body.self.x, 
-                                        spawn.body.self.y, 
-                                        spawn.body.self.width, 
-                                        spawn.body.self.height, 
+                                        spawn->body.self.x, 
+                                        spawn->body.self.y, 
+                                        spawn->body.self.width, 
+                                        spawn->body.self.height, 
                                     }); 
                                 }
 
-                                if (spawn.body.self.shape == Physics::Body::Shape::CIRCLE)
+                                if (spawn->body.self.shape == Physics::Body::Shape::CIRCLE)
                                 {
                                     sprite->AddBody(Physics::CreateBody(
-                                        spawn.body.self.type, 
-                                        spawn.posX, 
-                                        spawn.posY, 
-                                        spawn.body.self.radius, 
-                                        spawn.body.self.isSensor, 
+                                        spawn->body.self.type, 
+                                        spawn->posX, 
+                                        spawn->posY, 
+                                        spawn->body.self.radius, 
+                                        spawn->body.self.isSensor, 
                                         1,                  
-                                        spawn.body.self.density, 
-                                        spawn.body.self.friction, 
-                                        spawn.body.self.restitution
+                                        spawn->body.self.density, 
+                                        spawn->body.self.friction, 
+                                        spawn->body.self.restitution
                                     ), { 
-                                        spawn.body.self.x, 
-                                        spawn.body.self.y, 
-                                        spawn.body.self.width, 
-                                        spawn.body.self.height, 
+                                        spawn->body.self.x, 
+                                        spawn->body.self.y, 
+                                        spawn->body.self.width, 
+                                        spawn->body.self.height, 
                                     });
                                 }
                             }
                             
                         break;
                         case Entity::GEOMETRY: 
-                            entity = CreateGeom(spawn.posX, spawn.posY, spawn.width, spawn.height, 1, false, true); 
+                            entity = currentScene->CreateGeom(spawn->posX, spawn->posY, spawn->width, spawn->height, 1, false, true); 
                         break;
                         default: LOG("Spawner: failed to spawn, invalid enum type."); break;
                     }
@@ -382,43 +380,38 @@ void Game::UpdateFrame()
                     //apply spawn properties to spawned entity
                     
                     if (entity) {
-                        entity->SetDepth(spawn.depth);
-                        entity->SetAlpha(spawn.alpha);
-                        entity->SetTint(spawn.tint);
-                        entity->SetName(spawn.index);
+                        entity->SetDepth(spawn->depth);
+                        entity->SetAlpha(spawn->alpha);
+                        entity->SetTint(spawn->tint);
+                        entity->SetName(spawn->index);
                     }
+
+                    spawn->initialized = true;   spawn->behavior_initialized = false;
                 }
             
                 //remove
 
                 if (
-                    currentScene->cameraTarget->x < spawn.posX - (Display::resolutionWidth * 2) ||
-                    currentScene->cameraTarget->x > spawn.posX + (Display::resolutionWidth * 2) || 
-                    currentScene->cameraTarget->y < spawn.posY - (Display::resolutionHeight * 2) ||
-                    currentScene->cameraTarget->y > spawn.posY + (Display::resolutionHeight * 2) 
+                    currentScene->cameraTarget->x < spawn->posX - (Display::resolutionWidth * 2) ||
+                    currentScene->cameraTarget->x > spawn->posX + (Display::resolutionWidth * 2) || 
+                    currentScene->cameraTarget->y < spawn->posY - (Display::resolutionHeight * 2) ||
+                    currentScene->cameraTarget->y > spawn->posY + (Display::resolutionHeight * 2) 
                 )
                 {   
-                    std::shared_ptr<Entity> entity;  
-
-                    if (spawn.type == Entity::SPRITE)
-                        entity = currentScene->GetEntity<Sprite>(spawn.index);
-
-                    else if (spawn.type == Entity::GEOMETRY)
-                        entity = currentScene->GetEntity<Geometry>(spawn.index);
-
-                    if (entity) 
+                    const auto it = std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [&spawn](const auto& e) { return e->name == spawn->index; }); 
+                    if (it != currentScene->entities.end()) 
                     {
-                        if (spawn.loop)
-                            spawn.can_create = true;
+                        const auto entity = *it;
 
-                        for (auto& b : spawn.behaviors_attached)
-                            b.second = false;
-                        
-                        const std::string id = entity->ID;
+                        if (entity) 
+                        {                  
+                            currentScene->DestroyEntity(entity);
 
-                        DestroyEntity(entity);
-                        DestroyBehavior(id);
+                            if (spawn->loop)
+                                spawn->initialized = false;
+                        }
                     }
+                 
                 }
             }
 
@@ -442,7 +435,7 @@ void Game::UpdateFrame()
     //update behaviors, pass game process context to subclasses
 
     std::sort(currentScene->behaviors.begin(), currentScene->behaviors.end(), [] (const std::shared_ptr<entity_behaviors::Behavior>& a, const std::shared_ptr<entity_behaviors::Behavior>& b) 
-    { return a->key < b->key; });
+    { return a->layer < b->layer; });
 
     for (const auto& behavior : currentScene->behaviors)
         if (behavior.get() && behavior->active) {
@@ -518,9 +511,10 @@ void Game::UpdateFrame()
 
     //clean up entities to remove
 
-    for (auto it = _entitiesToRemove.begin(); it != _entitiesToRemove.end(); ++it)
+    for (auto it = currentScene->entitiesToRemove.begin(); it != currentScene->entitiesToRemove.end(); ++it)
     {
         const auto entity = *it;
+
         auto e_it = std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [&entity](const std::shared_ptr<Entity>& e) { return e->ID == entity->ID; });
 
         if (e_it != currentScene->entities.end()) 
@@ -539,9 +533,9 @@ void Game::UpdateFrame()
 
             if (sprite->GetBodies().size())
             {
-                for (const auto &body : sprite->GetBodies()) {
-                    body.first->SetEnabled(false);
+                for (auto &body : sprite->GetBodies()) {
                     Physics::DestroyBody(body.first); 
+                    body.first = nullptr;
                 }
 
                 sprite->GetBodies().clear();
@@ -550,11 +544,10 @@ void Game::UpdateFrame()
 
         //remove behaviors
 
-        const std::string id = entity->ID;
-        DestroyBehavior(entity->ID);
+        currentScene->DestroyBehavior(entity->ID);
     }
 
-    _entitiesToRemove.clear();
+    currentScene->entitiesToRemove.clear();
 }
 
 
@@ -569,9 +562,7 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
 
     const float* zoom_ptr = camera->GetZoom();
 
-    const float width = texture->FrameWidth,
-                height = texture->FrameHeight,
-                camPosX = -camera->GetPosition()->x,  
+    const float camPosX = -camera->GetPosition()->x,  
                 camPosY = -camera->GetPosition()->y,
                 zoom_padding = 1.25f,
                 zoom = std::pow(((1.0f - (*zoom_ptr)) + 1.0f) * zoom_padding, ((1.0f - (*zoom_ptr)) + 1.0f) * zoom_padding),
@@ -579,6 +570,8 @@ bool Game::CheckEntityRenderable(std::shared_ptr<Entity>& entity)
                 fy = (1.0f - entity->scrollFactor.y) + 1.0f,
                 posX = entity->position.x * fx,
                 posY = entity->position.y * fy,
+                width = texture->FrameWidth * fx,
+                height = texture->FrameHeight * fy,
                 left = (camPosX - (Display::resolutionWidth / 2 * zoom) + (Display::resolutionWidth / 2 * zoom)) * entity->scrollFactor.x, 
                 right = (camPosX + (Display::resolutionWidth * zoom)) * fx, 
                 bottom = (camPosY - (Display::resolutionHeight / 2 * zoom) + (Display::resolutionHeight / 2 * zoom)) * entity->scrollFactor.y, 
@@ -700,109 +693,3 @@ void Game::RenderUI()
     if (!currentScene->UI.empty())
         Renderer::Flush(false); 
 }
-
-
-//-----------------------------
-
-
-void Game::DestroyEntity(std::shared_ptr<Entity> entity)
-{
-    entity->renderable = false;
-    entity->active = false;
-    entity->alive = false;
-
-    const std::string ID = entity->ID;
-
-    const auto it = std::find(GetScene()->entities.begin(), GetScene()->entities.end(), entity);
-
-    if (it != GetScene()->entities.end())  
-        _entitiesToRemove.emplace_back(*it);
-
-    else {
-        const auto UI_it = std::find(GetScene()->UI.begin(), GetScene()->UI.end(), entity);
-
-        if (UI_it != GetScene()->UI.end())
-            _entitiesToRemove.emplace_back(*UI_it);
-    }
-
-    //reset spawn if applied
-
-    for (auto& spawn : GetScene()->spawns)
-        if (entity->name == spawn.index) 
-            for (auto& b : spawn.behaviors_attached)
-                b.second = false;
-
-    //remove from vector and disappear into the void
- 
-    if (entity.unique())
-        entity.reset();
-}
-
-
-//-----------------------------
-
-
-void Game::DestroyBehavior(const std::string& id)
-{
-    auto behavior_it = std::find_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [&id](const std::shared_ptr<entity_behaviors::Behavior>& b)
-        { return b->ID == id; });
-
-    if (behavior_it != GetScene()->behaviors.end()) {
-        auto behavior = (*behavior_it);
-        behavior->active = false;
-        behavior.reset();
-    }
-
-    //remove active behaviors
-
-    GetScene()->behaviors.erase(std::remove_if(GetScene()->behaviors.begin(), GetScene()->behaviors.end(), [](const auto& b) { return !b->active; }), GetScene()->behaviors.end());
-}
-
-
-//----------------------------- 
-
-void Game::CreateSpawn(
-    int type, 
-    const std::string& filename, 
-    float x, 
-    float y, 
-    float width, 
-    float height, 
-    float spawn_width, 
-    float spawn_height, 
-    const Math::Vector3& tint, 
-    int depth,
-    float alpha, 
-    bool loop, 
-    const std::string& behaviorName,
-    const Scene::Spawn::Body& body
-) 
-{
-    Scene::Spawn spawn;
-
-    spawn.can_create = true; 
-    spawn.type = type;
-    spawn.filename = filename;
-    spawn.posX = x;
-    spawn.posY = y; 
-    spawn.width = width;
-    spawn.height = height;
-    spawn.spawn_width = spawn_width;
-    spawn.spawn_height = spawn_height;
-    spawn.tint = tint;
-    spawn.depth = depth;
-    spawn.alpha = alpha;
-    spawn.loop = loop;
-    spawn.body = { body.exist, body.self };
-    spawn.index = System::Utils::ReplaceFrom(spawn.filename, ".", "") + std::to_string(s_spawn_count); 
-
-    //append behaviors if name matches valid loaded behavior name
-
-    if (behaviorName.length())
-        spawn.behaviors_attached.emplace_back(behaviorName, false);
-
-    GetScene()->spawns.emplace_back(spawn);
-
-    s_spawn_count++;
-}
-

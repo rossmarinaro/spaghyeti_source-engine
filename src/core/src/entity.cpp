@@ -164,22 +164,3 @@ const std::string Entity::GenerateID()
 }
 
 
-//----------------------------- base entity wrapper
-
-
-std::shared_ptr<Entity> System::Game::CreateEntity(int type, int layer)
-{
-    const auto entity = std::make_shared<Entity>(type);
-
-    if (layer == 0)
-        GetScene()->entities.emplace_back(entity);
-
-    if (layer == 1 || layer == 2)
-        GetScene()->UI.emplace_back(entity);
-
-    entity->render_layer = layer;
-
-    return entity;
-}
-
-

@@ -112,23 +112,3 @@ void Geometry::SetSize(float width, float height) {
 } 
 
 
-//----------------------------- quad
-
-
-std::shared_ptr<Geometry> System::Game::CreateGeom(float x, float y, float width, float height, int layer, bool isStatic, bool isSpawn)
-{
-    const auto geom = std::make_shared<Geometry>(x, y, width, height, isSpawn);
-
-    if (isStatic)
-        geom->SetStatic(true);
-
-    geom->render_layer = layer;
-
-    if (layer == 0)
-        GetScene()->entities.emplace_back(geom);
-
-    if (layer == 1 || layer == 2)
-        GetScene()->UI.emplace_back(geom);
-
-    return geom;
-}
