@@ -126,8 +126,6 @@ void Scene::DestroyEntity(std::shared_ptr<Entity> entity)
         const auto spawn = *spawn_it;
        if (!spawn->loop)
            spawn_it = spawns.erase(spawn_it);
-       //else    
-        //   spawn->behavior_initialized = false;
     }
 
     const auto it = std::find(entities.begin(), entities.end(), entity);
@@ -137,7 +135,6 @@ void Scene::DestroyEntity(std::shared_ptr<Entity> entity)
 
     else {
         const auto UI_it = std::find(UI.begin(), UI.end(), entity);
-
         if (UI_it != UI.end())
             entitiesToRemove.emplace_back(*UI_it);
     }
@@ -162,10 +159,6 @@ void Scene::DestroyBehavior(const std::string& id)
         behavior->active = false;
         behavior.reset();
     }
-
-    //remove active behaviors
-
-    behaviors.erase(std::remove_if(behaviors.begin(), behaviors.end(), [](const auto& b) { return !b->active; }), behaviors.end());
 }
 
 

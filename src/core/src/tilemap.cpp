@@ -194,7 +194,7 @@ Scene::TilemapLayer Scene::CreateTileLayer(
     layer.dataPath = *Resources::Manager::GetFilePath(data_key);
     layer.key = UUID::generate_uuid();
     layer.depth = depth;
-    layer.shader = shaderKey;
+    layer.shader = shaderKey.size() ? shaderKey : "sprite";
     layer.scrollFactorX = scrollFactorX;
     layer.scrollFactorY = scrollFactorY;
     layer.alpha = 1.0f;
@@ -286,6 +286,7 @@ Scene::TilemapLayer Scene::CreateTileLayer(
                 tile->SetDepth(depth); 
                 tile->SetScrollFactor({ scrollFactorX, scrollFactorY });
                 tile->SetCull(true);
+                tile->SetShader(shaderKey);
                 tile->SetData(data_key, true);
                 tile->SetData("layer id", layer.ID);
                 tile->SetData("layer key", layer.key);
@@ -309,9 +310,6 @@ Scene::TilemapLayer Scene::CreateTileLayer(
                 tile->texture.MinV = pixelY / tile->texture.Height;
                 tile->texture.MaxU = (pixelX + tileWidth) / tile->texture.Width;
                 tile->texture.MaxV = (pixelY + tileHeight) / tile->texture.Height;
-
-                if (shaderKey.length())
-                    tile->SetShader(shaderKey);
 
                 //transform tile
 

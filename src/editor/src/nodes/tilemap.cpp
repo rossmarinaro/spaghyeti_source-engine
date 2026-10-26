@@ -44,7 +44,7 @@ void TilemapNode::AddLayer()
     layer.dataKey = "";
     layer.dataPath = "";
     layer.textureKey = "";
-    layer.shader = "";
+    layer.shader = "sprite";
     layer.depth = map.layers.size() ? map.layers.back().depth + 1 : 0;
     layer.scrollFactorX = 1.0f;
     layer.scrollFactorY = 1.0f;
@@ -408,10 +408,20 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
 
                             if (ImGui::BeginMenu("select shader"))
                             {
-                                if (std::filesystem::is_empty(Editor::projectPath + AssetManager::Get()->shader_dir))
+                                ImGui::Text(("assigned shader: " + map.layers[i].shader).c_str());
+
+                                ImGui::Separator();
+
+                                if (std::filesystem::is_empty(Editor::projectPath + AssetManager::Get()->shader_dir)) 
                                     ImGui::Text("no shaders in directory.");
 
-                                else
+                                else 
+                                {
+                                    if (ImGui::MenuItem("standard sprite renderer")) {
+                                        map.layers[i].shader = "sprite";
+                                        EventListener::UpdateSession();
+                                    }
+
                                     for (const auto &dir : std::filesystem::recursive_directory_iterator(Editor::projectPath + AssetManager::Get()->shader_dir))
                                         if (dir.is_directory()) {
                                             std::string name = dir.path().filename().string();
@@ -420,6 +430,7 @@ void TilemapNode::Update(std::vector<std::shared_ptr<Node>>& arr)
                                                 EventListener::UpdateSession();
                                             }
                                         }
+                                }
 
                                 ImGui::EndMenu();
                             }

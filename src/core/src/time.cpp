@@ -1,3 +1,4 @@
+#include "../../vendors/UUID.hpp"
 #include "../../../build/sdk/include/app.h"
 #include "../../shared/renderer.h"
 
@@ -5,7 +6,6 @@ Time::Time(float time): m_now(time) {}
 
 void Time::Update(double _time)
 {
-
     Time* time = System::Application::game->time;
     time->m_now = (float)_time; //glQueryCounter
     Time delta = time->m_now - s_last;
@@ -22,19 +22,33 @@ void Time::Update(double _time)
     #endif
 }
 
+//--------------- cancel timer
+ 
+
+void Time::Cancel(const std::string& id) 
+{ 
+    auto it = std::find_if(System::Application::game->time->timed_events.begin(), System::Application::game->time->timed_events.end(), 
+    [&id](const std::shared_ptr<TimedEvent>& event) { return event->ID == id; });
+    
+    if (it != System::Application::game->time->timed_events.end())
+        it = System::Application::game->time->timed_events.erase(it);
+}
+
 
 //--------------- delayed call (setTimeout)
  
 
-void Time::DelayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat) 
+const std::string Time::DelayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat) 
 { 
     float now = System::Application::game->time->GetSeconds();
 
-    TimedEvent data { milliseconds, repeat, now, fn_ptr };
+    TimedEvent data { UUID::generate_uuid(), milliseconds, repeat, now, fn_ptr };
     
     auto event = std::make_shared<TimedEvent>(data);
 
     System::Application::game->time->timed_events.emplace_back(event);
+
+    return event->ID;
 }
 
 

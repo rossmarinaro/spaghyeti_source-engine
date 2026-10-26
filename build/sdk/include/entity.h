@@ -193,6 +193,10 @@ class Sprite : public Entity {
     std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> m_bodies;  
 
 	public:  
+
+        enum class ContactDirection { NONE, LEFT, RIGHT, BOTTOM, TOP };
+
+        struct Contact { bool active, top, bottom, left, right; };
         
         struct Anim 
         { 
@@ -206,29 +210,19 @@ class Sprite : public Entity {
                  can_complete = false; 
         };
 
-		int frames, 
-			currentFrame, 
-			num_contacts = 0;
+		int frames, currentFrame;
 
 		float velocityX, velocityY;
 
 		std::map<const std::string, std::pair<int, int>> anims;
 
-		inline const int GetBodyDataType() { 
-			for (const auto& body : m_bodies)
-				return body.first->pointer; 
-			return 0;
-		}
-
         inline const Anim& GetCurrentAnimation() { return m_currentAnim; }
-
-		inline void SetContact(bool isContact) { m_contacting = isContact; }
-        
-		inline const bool IsContacting() { return m_contacting; }
+		inline const Contact& IsContacting() { return m_contact; }
 		inline const bool IsSpritesheet() { return m_isSpritesheet; } 
 		inline const bool IsAnimComplete() { return m_animComplete; }
         inline void SetFrame(int frame) { currentFrame = frame; }
 
+		const int GetBodyDataType();
         const bool CheckOverlap(const std::shared_ptr<Sprite>& spriteA, const std::shared_ptr<Sprite>& spriteB);
 		void SetAsUI(bool isUI);
 		void ReadSpritesheetData();
@@ -238,6 +232,7 @@ class Sprite : public Entity {
         std::shared_ptr<Physics::Body> GetBody(int index = 0);
         std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>>& GetBodies();  
         
+        void SetContact(bool active, ContactDirection direction = ContactDirection::NONE);
 		void SetTexture(const std::string& key);
         void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);
         
@@ -270,11 +265,12 @@ class Sprite : public Entity {
 
 	private:
 
-		bool m_contacting, 
-			 m_isSpritesheet = false, 
+		bool m_isSpritesheet = false, 
 			 m_animComplete = true,
              m_isAnimPlaying = false,
 			 m_anim_yoyo = false;
+
+        Contact m_contact;
 
 		Math::Vector2 m_velocity;
 		

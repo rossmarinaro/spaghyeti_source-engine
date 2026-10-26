@@ -3,6 +3,7 @@
 #include <functional>
 #include <ctime>
 #include <memory>
+
 //time class
 class Time {
 
@@ -15,7 +16,13 @@ class Time {
         float delta;
 
         //timed event structure
-        struct TimedEvent { int delay, repeat; float time_initiated; std::function<void()> callback; bool active = true; };
+        struct TimedEvent { 
+            std::string ID;
+            int delay, repeat; 
+            float time_initiated; 
+            std::function<void()> callback; 
+            bool active = true; 
+        };
 
         //container of timed events
         std::vector<std::shared_ptr<TimedEvent>> timed_events;
@@ -26,12 +33,13 @@ class Time {
         inline float GetMilliseconds() const { return m_now * 1000; }
 
         //use this method for single threaded callbacks
-        static void DelayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat = 0);  
+        static const std::string DelayedCall(int milliseconds, std::function<void()>&& fn_ptr, int repeat = 0);  
  
         //use this method for multi threaded callbacks. no-op if multi threading disabled 
         static void DelayedCallThread(int milliseconds, std::function<void()>&& fn_ptr, int repeat = 0);
 
         static void Update(double time);
+        static void Cancel(const std::string& id);
         //static void RunClock(int milliseconds);
 
     private:
@@ -40,5 +48,4 @@ class Time {
 
         static inline float s_last = 0.0f;
         //std::chrono::duration<double> time_left;
-        
 };

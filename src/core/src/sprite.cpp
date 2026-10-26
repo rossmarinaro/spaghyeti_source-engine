@@ -6,10 +6,6 @@
 
 #include "../../shared/renderer.h"
 #include "../../vendors/glm/gtc/matrix_transform.hpp" 
-
-#include "../../vendors/UUID.hpp"
-#include "../../vendors/box2d/include/box2d/box2d.h"
-
 #include "../../../build/sdk/include/app.h"
 #include "../../shared/window.h"
 
@@ -326,11 +322,38 @@ std::shared_ptr<Physics::Body> Sprite::GetBody(int index) {
 //----------------------------- 
 
 
-
 std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>>& Sprite::GetBodies() {
     return m_bodies;
 } 
 
+
+//-----------------------------
+
+
+const int Sprite::GetBodyDataType() { 
+    for (const auto& body : m_bodies)
+        return body.first->pointer; 
+    return 0;
+}
+
+
+//-----------------------------
+
+
+void Sprite::SetContact(bool active, ContactDirection direction) 
+{ 
+    switch (direction)
+    {
+        case ContactDirection::NONE:
+        default: break;
+        case ContactDirection::LEFT: m_contact.left = active; break;
+        case ContactDirection::RIGHT: m_contact.right = active; break;
+        case ContactDirection::BOTTOM: m_contact.bottom = active; break;
+        case ContactDirection::TOP: m_contact.top = active; break;
+    }
+
+    m_contact.active = (m_contact.left || m_contact.right || m_contact.top || m_contact.bottom);
+}
 
 
 //----------------------------- set texture

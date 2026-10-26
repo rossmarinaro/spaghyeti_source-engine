@@ -399,19 +399,14 @@ void Game::UpdateFrame()
                 )
                 {   
                     const auto it = std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [&spawn](const auto& e) { return e->name == spawn->index; }); 
-                    if (it != currentScene->entities.end()) 
-                    {
+                    if (it != currentScene->entities.end()) {
                         const auto entity = *it;
-
-                        if (entity) 
-                        {                  
+                        if (entity) {                  
                             currentScene->DestroyEntity(entity);
-
                             if (spawn->loop)
                                 spawn->initialized = false;
                         }
                     }
-                 
                 }
             }
 
@@ -491,8 +486,7 @@ void Game::UpdateFrame()
             //fire event callback
 
             event->callback();
-        } 
-    
+        }
 
     //debug UI
 
@@ -548,6 +542,11 @@ void Game::UpdateFrame()
     }
 
     currentScene->entitiesToRemove.clear();
+
+    //remove inactive behaviors
+
+    currentScene->behaviors.erase(std::remove_if(currentScene->behaviors.begin(), currentScene->behaviors.end(), 
+    [](const auto& b) { return !b->active; }), currentScene->behaviors.end());
 }
 
 
