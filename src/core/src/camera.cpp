@@ -97,12 +97,12 @@ void Camera::SetBounds(float widthBegin, float widthEnd, float heightBegin, floa
 //------------------------------
 
 
-const Math::Vector4 Camera::GetProjectionMatrix(float width, float height)
+const Math::Vector4 Camera::GetProjectionMatrix(float width, float height, float zoom)
 {
-    const float left = 1.0f / m_zoom, 
-                right = width / m_zoom, 
-                bottom = height / m_zoom,  
-                top = 0.0f / m_zoom;
+    const float left = 1.0f / zoom, 
+                right = width / zoom, 
+                bottom = height / zoom,  
+                top = 0.0f / zoom;
                     
     return { left, right, bottom, top };
 }

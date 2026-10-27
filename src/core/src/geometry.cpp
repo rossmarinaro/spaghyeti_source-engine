@@ -56,7 +56,8 @@ void Geometry::Render(int shaderID)
         scrollY = 1.0f;
     #endif
 
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight);
+    float zoom = m_isStatic ? 1.0f : *System::Application::game->camera->GetZoom();
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight, zoom);
     const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX), (camera->GetPosition()->y * scrollY));
 
     glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 

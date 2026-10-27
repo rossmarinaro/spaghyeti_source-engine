@@ -536,14 +536,15 @@ void Sprite::Render(int shaderID)
             scrollY = 1.0f;
         #endif
 
-        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight);
+        float zoom = !IsSprite() ? 1.0f : *System::Application::game->camera->GetZoom();
+        const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight, zoom);
         const Math::Matrix4& vm = camera->GetViewMatrix((camera->GetPosition()->x * scrollX), (camera->GetPosition()->y * scrollY));
         const glm::highp_mat4 projMat = (glm::highp_mat4)glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f); 
     
         glm::mat4 mvp = projMat * glm::mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, 
-                                { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
-                                { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
-                                { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * identityMatrix;
+                                            { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, 
+                                            { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, 
+                                            { vm.d.r, vm.d.g, vm.d.b, vm.d.a }) * identityMatrix;
    
         if (!IsSprite()) //UI do not have view matrix
             mvp = projMat * glm::mat4(1.0f) * identityMatrix;

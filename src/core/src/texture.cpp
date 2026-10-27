@@ -276,8 +276,6 @@ void Texture2D::Update(
     if (!shader)
         return;
 
-    //flush if max index count exceeds element count, or textures reached max OR shader is different than renderer's active shader
-
     System::Renderer::Renderable& renderable = System::Renderer::GetOrCreateRenderBucket(shader->ID);
 
     //update depth
@@ -286,8 +284,12 @@ void Texture2D::Update(
 
     //flush if vertex buffer exausted or max textures reached
 
-    if (((renderable.vertices.size() / 4) >= System::Renderer::MAX_QUADS) || renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1) 
-        System::Renderer::Flush(m_opaque, renderable.shaderID);
+    if (((renderable.vertices.size() / 4) >= System::Renderer::MAX_QUADS) || 
+        renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 ||
+        renderer->drawStyle != drawStyle) {
+            renderer->drawStyle = drawStyle;
+            System::Renderer::Flush(m_opaque);
+        }
 
     struct { float u1, v1, u2, v2; } verticesLayout;
 
@@ -397,10 +399,10 @@ void Texture2D::Update(
 
     //flush on draw style changes
 
-    if (renderer->drawStyle != drawStyle) { 
-        renderer->drawStyle = drawStyle;
-        System::Renderer::Flush(m_opaque, renderable.shaderID);
-    }
+    // if (renderer->drawStyle != drawStyle) { 
+    //     renderer->drawStyle = drawStyle;
+    //     System::Renderer::Flush(m_opaque/* , renderable.shaderID */);
+    // }
 
 }
 

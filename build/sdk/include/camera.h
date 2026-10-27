@@ -37,7 +37,7 @@ class Camera {
         void SetBounds(float widthBegin, float widthEnd, float heightBegin, float heightEnd);  
         void SetPan(float panX = 0.0f, float panY = 0.0f);
 
-        const Math::Vector4 GetProjectionMatrix(float width, float height);
+        const Math::Vector4 GetProjectionMatrix(float width, float height, float zoom);
         const Math::Matrix4 GetViewMatrix(float x, float y);
 
         Camera();

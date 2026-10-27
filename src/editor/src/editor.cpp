@@ -65,7 +65,7 @@ void Editor::Update()
     double xPos, yPos;
     glfwGetCursorPos(Window::GLFW_window_instance, &xPos, &yPos);
     
-    const Math::Vector4 pm = s_self->game->camera->GetProjectionMatrix(Display::resolutionWidth, Display::resolutionHeight);
+    const Math::Vector4 pm = s_self->game->camera->GetProjectionMatrix(Display::resolutionWidth, Display::resolutionHeight, *s_self->game->camera->GetZoom());
     const Math::Matrix4 vm = s_self->game->camera->GetViewMatrix(s_self->game->camera->GetPosition()->x, s_self->game->camera->GetPosition()->y);
 
     const glm::mat4 localCoords = glm::inverse(glm::ortho(pm.r, pm.g, pm.b, pm.a, -1.0f, 1.0f) * glm::highp_mat4({ vm.a.r, vm.a.g, vm.a.b, vm.a.a }, { vm.b.r, vm.b.g, vm.b.b, vm.b.a }, { vm.c.r, vm.c.g, vm.c.b, vm.c.a }, { vm.d.r, vm.d.g, vm.d.b, vm.d.a }));

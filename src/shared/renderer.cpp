@@ -351,7 +351,7 @@ void Renderer::Flush(bool renderOpaque, int shaderID)
 
     //render batches, single or all shaders
 
-    if (shaderID != -1) {
+    if (shaderID != -1) { 
         const auto it = std::find_if(s_instance->activeLayers.begin(), s_instance->activeLayers.end(), [shaderID](const Renderable& r) { return r.shaderID == shaderID; });
         if (it != s_instance->activeLayers.end()) { 
             Renderable& renderable = *it;

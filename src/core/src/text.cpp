@@ -277,7 +277,8 @@ void* Text::GetGLTPointer()
 
 void Text::Render(int shaderID)
 {
-    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight);
+    float zoom = m_isStatic ? 1.0f : *System::Application::game->camera->GetZoom();
+    const Math::Vector4& pm = System::Application::game->camera->GetProjectionMatrix(System::Display::resolutionWidth, System::Display::resolutionHeight, zoom);
     const Math::Matrix4& vm = System::Application::game->camera->GetViewMatrix((System::Application::game->camera->GetPosition()->x * scrollFactor.x), (System::Application::game->camera->GetPosition()->y * scrollFactor.y));
         
     //render default gltext
