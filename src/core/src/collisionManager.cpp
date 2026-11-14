@@ -132,7 +132,7 @@ void CollisionManager::EndContact(b2Contact* contact)
                 {
                     const auto key = GetSortedKey(bodyFixtureA, bodyFixtureB);
                     auto it = m_activeNormals.find(key);
-
+ 
                     if (it == m_activeNormals.end()) 
                         continue; 
 

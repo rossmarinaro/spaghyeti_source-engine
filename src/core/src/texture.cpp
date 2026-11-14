@@ -282,7 +282,7 @@ void Texture2D::Update(
     
     renderable.shaderDepth = shader->depth;
 
-    //flush if vertex buffer exausted or max textures reached
+    //flush if vertex buffer exausted max, textures reached or draw style changes
 
     if (((renderable.vertices.size() / 4) >= System::Renderer::MAX_QUADS) || 
         renderer->textureSlotIndex > System::Renderer::MAX_TEXTURES - 1 ||
@@ -396,13 +396,5 @@ void Texture2D::Update(
     renderable.indices.push_back(baseVertex + 2);
     renderable.indices.push_back(baseVertex + 3);
     renderable.indices.push_back(baseVertex + 0);
-
-    //flush on draw style changes
-
-    // if (renderer->drawStyle != drawStyle) { 
-    //     renderer->drawStyle = drawStyle;
-    //     System::Renderer::Flush(m_opaque/* , renderable.shaderID */);
-    // }
-
 }
 

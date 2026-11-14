@@ -27,7 +27,7 @@ static CollisionManager _collisions;
 
 void Game::Reset(bool removeBehaviors)
 {
-    LOG("Scene: " + currentScene->key + " stopped.");
+    LOG("Game: " + currentScene->key + " stopped.");
 
     Audio::StopAll();
 
@@ -46,7 +46,6 @@ void Game::Reset(bool removeBehaviors)
     currentScene->UI.clear();
     currentScene->entities.clear();
     currentScene->spawns.clear();
-    //currentScene->tilemaps.clear();
     time->timed_events.clear();   
     
     physics->ClearBodies(); 
@@ -60,6 +59,8 @@ void Game::Reset(bool removeBehaviors)
         
         scene->behaviors.clear();
     }          
+
+    LOG("Game: scene cleared successfully.");
 }
  
 
@@ -386,7 +387,8 @@ void Game::UpdateFrame()
                         entity->SetName(spawn->index);
                     }
 
-                    spawn->initialized = true;   spawn->behavior_initialized = false;
+                    spawn->initialized = true;   
+                    spawn->behavior_initialized = false;
                 }
             
                 //remove
@@ -399,8 +401,11 @@ void Game::UpdateFrame()
                 )
                 {   
                     const auto it = std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [&spawn](const auto& e) { return e->name == spawn->index; }); 
-                    if (it != currentScene->entities.end()) {
+
+                    if (it != currentScene->entities.end()) 
+                    {
                         const auto entity = *it;
+                        
                         if (entity) {                  
                             currentScene->DestroyEntity(entity);
                             if (spawn->loop)

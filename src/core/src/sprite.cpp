@@ -55,7 +55,6 @@ Sprite::Sprite(const Sprite& sprite):
     SetTexture(sprite.key);    
 
     LOG("Sprite: \"" + key + "\" cloned."); 
-
 }
 
  
@@ -164,7 +163,6 @@ void Sprite::SetVelocity(float velX, float velY)
             body->SetTransform((posX + velocityX), (posY + velocityY));
         }
     }
-
     else {
         velocityX = velX / 1000.0f;
         velocityY = velY / 1000.0f;
@@ -194,7 +192,6 @@ void Sprite::SetVelocityX(float velX)
             body->SetTransform((posX + velocityX), body->GetPosition().y);
         }
     }
-
     else
         velocityX = velX / 1000.0f;    
 }
@@ -222,7 +219,6 @@ void Sprite::SetVelocityY(float velY)
             body->SetTransform(body->GetLinearVelocity().x, (posY + velocityY));
         }
     }
-
     else
         velocityY = velY / 1000.0f;  
 }
@@ -466,6 +462,14 @@ void Sprite::StopAnimation() {
 }
 
 
+//-----------------------------------------
+
+
+void Sprite::PauseAnimation(bool pause) {
+    m_animPaused = pause;
+}
+
+
 //------------------------------------------
 
 
@@ -596,7 +600,7 @@ void Sprite::Render(int shaderID)
 
         try {
 
-            if (m_isSpritesheet && active)
+            if (!m_animPaused && m_isSpritesheet && active)
             {
                 const auto anim = anims.find(animKey.c_str());
 
@@ -632,11 +636,7 @@ void Sprite::Render(int shaderID)
                     if (m_anim_yoyo && currentFrame == anim->second.first && frames_reversed[elapsed_reversed] != anim->second.first)    
                         m_anim_yoyo = false;
 
-                    if (m_anim_yoyo) 
-                        SetFrame(frames_reversed[elapsed_reversed]);
-
-                    else  
-                        SetFrame(frames[elapsed]);
+                    SetFrame(m_anim_yoyo ? frames_reversed[elapsed_reversed] : frames[elapsed]);
                 }
 
                 else {

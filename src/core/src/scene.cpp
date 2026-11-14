@@ -118,16 +118,6 @@ void Scene::DestroyEntity(std::shared_ptr<Entity> entity)
     entity->active = false;
     entity->alive = false;
 
-    //reset spawn if applied
-    
-    auto spawn_it = std::find_if(spawns.begin(), spawns.end(), [&entity](const std::shared_ptr<Spawn>& s) { return s->index == entity->name; });
-
-    if (spawn_it != spawns.end()) {
-        const auto spawn = *spawn_it;
-       if (!spawn->loop)
-           spawn_it = spawns.erase(spawn_it);
-    }
-
     const auto it = std::find(entities.begin(), entities.end(), entity);
 
     if (it != entities.end())  

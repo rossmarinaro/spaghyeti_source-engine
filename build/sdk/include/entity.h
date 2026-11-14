@@ -237,6 +237,7 @@ class Sprite : public Entity {
         void SetStroke(bool isOutlined, const Math::Vector3& color = { 1.0f, 1.0f, 1.0f }, float width = 1.0f);
         
         void StopAnimation();
+        void PauseAnimation(bool pause);
 		void SetAnimation(const std::string& key, bool yoyo = false, int rate = 2, int repeat = -1);
 
 		void SetVelocity(float velX = 0.0f, float velY = 0.0f);
@@ -268,6 +269,7 @@ class Sprite : public Entity {
 		bool m_isSpritesheet = false, 
 			 m_animComplete = true,
              m_isAnimPlaying = false,
+             m_animPaused = false,
 			 m_anim_yoyo = false;
 
         Contact m_contact;
