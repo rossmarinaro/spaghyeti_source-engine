@@ -95,12 +95,9 @@ std::shared_ptr<Sprite> Sprite::Clone()
     System::Game::GetScene()->entities.push_back(clone); 
 
     if (m_bodies.size())
-        for (int i = 0; i < m_bodies.size(); i++) 
-        {
-            const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
-            const Math::Vector4 offset = m_bodies[0].second;
-
-            clone->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, offset.r, offset.g, offset.b, offset.a, body->isSensor, body->pointer, body->density, body->friction, body->restitution), { offset.r, offset.g, offset.b, offset.a } );
+        for (int i = 0; i < m_bodies.size(); i++) {
+            const std::shared_ptr<Physics::Body>& body = m_bodies[0];
+            clone->AddBody(Physics::CreateBody(Physics::Body::Type::DYNAMIC, body->x, body->y, body->width, body->height, body->isSensor, body->pointer, body->density, body->friction, body->restitution, body->xOff, body->yOff));
         }
             
     return clone;
@@ -153,7 +150,7 @@ void Sprite::SetVelocity(float velX, float velY)
         velocityX = velX;
         velocityY = velY;
 
-        const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
+        const std::shared_ptr<Physics::Body>& body = m_bodies[0];
 
         if (body->GetType() == Physics::Body::Type::DYNAMIC)
             body->SetLinearVelocity(velocityX, velocityY);
@@ -182,7 +179,7 @@ void Sprite::SetVelocityX(float velX)
     {
         velocityX = velX; 
 
-        const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
+        const std::shared_ptr<Physics::Body>& body = m_bodies[0];
 
         if (body->GetType() == Physics::Body::Type::DYNAMIC)
             body->SetLinearVelocity(velocityX, body->GetLinearVelocity().y);
@@ -209,7 +206,7 @@ void Sprite::SetVelocityY(float velY)
     {
         velocityY = velY;
 
-        const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
+        const std::shared_ptr<Physics::Body>& body = m_bodies[0];
 
         if (body->GetType() == Physics::Body::Type::DYNAMIC)
             body->SetLinearVelocity(body->GetLinearVelocity().x, velocityY);
@@ -232,7 +229,7 @@ void Sprite::SetImpulse(float x, float y)
     if (active) 
     {
         if (m_bodies.size()) {
-            const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
+            const std::shared_ptr<Physics::Body>& body = m_bodies[0];
             body->GetType() == Physics::Body::Type::DYNAMIC;
             body->ApplyLinearImpulse(x * 10000, y * 10000);
         }
@@ -250,7 +247,7 @@ void Sprite::SetImpulseX(float x)
     if (active) 
     {
         if (m_bodies.size()) {
-            const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
+            const std::shared_ptr<Physics::Body>& body = m_bodies[0];
             body->GetType() == Physics::Body::Type::DYNAMIC;
             body->ApplyLinearImpulse(x * 10000, body->GetLinearVelocity().y);
         }
@@ -268,7 +265,7 @@ void Sprite::SetImpulseY(float y)
     if (active) 
     {
         if (m_bodies.size()) {
-            const std::shared_ptr<Physics::Body> body = m_bodies[0].first;
+            const std::shared_ptr<Physics::Body>& body = m_bodies[0];
             body->GetType() == Physics::Body::Type::DYNAMIC;
             body->ApplyLinearImpulse(body->GetLinearVelocity().x, y * 10000);
         }
@@ -285,11 +282,11 @@ void Sprite::RemoveBodies()
 {
     //reset texture position to normal coords
 
-    const float x = (m_bodies[0].first->GetPosition().x / scale.x) - m_bodies[0].second.r,
-                y = (m_bodies[0].first->GetPosition().y / scale.y) - m_bodies[0].second.g;
+    const float x = (m_bodies[0]->GetPosition().x / scale.x) - m_bodies[0]->xOff,
+                y = (m_bodies[0]->GetPosition().y / scale.y) - m_bodies[0]->yOff;
 
     for (auto it = m_bodies.begin(); it != m_bodies.end(); ++it) 
-        Physics::DestroyBody((*it).first);
+        Physics::DestroyBody(*it);
 
     m_bodies.clear();
 
@@ -299,9 +296,8 @@ void Sprite::RemoveBodies()
 
 //----------------------------- 
 
-void Sprite::AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vector4& offsets) { 
-    std::pair<std::shared_ptr<Physics::Body>, Math::Vector4> b = { body, offsets };
-    m_bodies.emplace_back(b);
+void Sprite::AddBody(const std::shared_ptr<Physics::Body>& body) { 
+    m_bodies.emplace_back(body);
 }
 
 
@@ -310,7 +306,7 @@ void Sprite::AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vec
 
 
 std::shared_ptr<Physics::Body> Sprite::GetBody(int index) { 
-    const auto body = m_bodies.at(index).first;
+    const auto body = m_bodies.at(index);
     return body ? body : nullptr; 
 }
 
@@ -318,7 +314,7 @@ std::shared_ptr<Physics::Body> Sprite::GetBody(int index) {
 //----------------------------- 
 
 
-std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>>& Sprite::GetBodies() {
+std::vector<std::shared_ptr<Physics::Body>>& Sprite::GetBodies() {
     return m_bodies;
 } 
 
@@ -328,7 +324,7 @@ std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>>& Sprite::G
 
 const int Sprite::GetBodyDataType() { 
     for (const auto& body : m_bodies)
-        return body.first->pointer; 
+        return body->pointer; 
     return 0;
 }
 
@@ -346,7 +342,7 @@ void Sprite::SetContact(bool active, ContactDirection direction)
         case ContactDirection::RIGHT: m_contact.right = active; break;
         case ContactDirection::BOTTOM: m_contact.bottom = active; break;
         case ContactDirection::TOP: m_contact.top = active; break;
-    }
+    } 
 
     m_contact.active = (m_contact.left || m_contact.right || m_contact.top || m_contact.bottom);
 }
@@ -478,12 +474,12 @@ void Sprite::Update()
     //update physics bodies if any
 
     for (const auto& body : m_bodies)
-        if (body.first->IsEnabled() &&  
-            body.first->GetType() == Physics::Body::Type::DYNAMIC || 
-            body.first->GetType() == Physics::Body::Type::KINEMATIC
+        if (body->IsEnabled() &&  
+            body->GetType() == Physics::Body::Type::DYNAMIC || 
+            body->GetType() == Physics::Body::Type::KINEMATIC
         ) {
-            Math::Vector2 pos = body.first->GetPosition(); 
-            SetPosition((pos.x / scale.x) - body.second.r, (pos.y / scale.y) - body.second.g);
+            const Math::Vector2 pos = body->GetPosition(); 
+            SetPosition((pos.x / scale.x) - body->xOff, (pos.y / scale.y) - body->yOff);
         }
 }
 

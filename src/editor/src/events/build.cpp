@@ -933,15 +933,15 @@ void EventListener::BuildAndRun()
                             const std::string is_sensor = body.second->isSensor ? "true" : "false";
 
                             if (body.second->shape == Physics::Body::Shape::BOX)
-                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + FloatToString(sn->actualPositionX + body.second->x) + ", " + FloatToString(sn->actualPositionY + body.second->y) + ", " + FloatToString(body.second->width) + ", " + FloatToString(body.second->height) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + FloatToString(body.second->density) + ", " + FloatToString(body.second->friction) + ", " + FloatToString(body.second->restitution) + "), { " + FloatToString(body.second->x) + ", " + FloatToString(body.second->y) + ", " + FloatToString(body.second->width) + ", " + FloatToString(body.second->height) + " });\n"; 
+                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + FloatToString(sn->actualPositionX + body.second->x) + ", " + FloatToString(sn->actualPositionY + body.second->y) + ", " + FloatToString(body.second->width) + ", " + FloatToString(body.second->height) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + FloatToString(body.second->density) + ", " + FloatToString(body.second->friction) + ", " + FloatToString(body.second->restitution) + ", " + FloatToString(body.second->x) + ", " + FloatToString(body.second->y) + "));\n"; 
                             
                             if (body.second->shape == Physics::Body::Shape::CIRCLE)
-                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + FloatToString(sn->actualPositionX + body.second->x) + ", " + FloatToString(sn->actualPositionY + body.second->y) + ", " + FloatToString(body.second->radius) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + FloatToString(body.second->density) + ", " + FloatToString(body.second->friction) + ", " + FloatToString(body.second->restitution) + "), { " + FloatToString(body.second->x) + ", " + FloatToString(body.second->y) + ", " + FloatToString(body.second->width) + ", " + FloatToString(body.second->height) + " });\n"; 
+                                command_queue << "   sprite_" + node->ID + "->AddBody(Physics::CreateBody(" + std::to_string(body.second->type) + ", " + FloatToString(sn->actualPositionX + body.second->x) + ", " + FloatToString(sn->actualPositionY + body.second->y) + ", " + FloatToString(body.second->radius) + ", " + is_sensor + ", " + std::to_string(body.second->pointer) + ", " + FloatToString(body.second->density) + ", " + FloatToString(body.second->friction) + ", " + FloatToString(body.second->restitution) + ", " + FloatToString(body.second->x) + ", " + FloatToString(body.second->y) + "));\n"; 
                             
                             i++;
                         }
 
-                        command_queue << "   for (const auto& body : sprite_" + node->ID + "->GetBodies())\n       body.first->SetFixedRotation(true);\n";
+                        command_queue << "   for (const auto& body : sprite_" + node->ID + "->GetBodies())\n       body->SetFixedRotation(true);\n";
                     }
         
                     //shader

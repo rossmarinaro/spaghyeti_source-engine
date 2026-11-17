@@ -19,24 +19,24 @@ class Physics {
             
             float x, y, 
                  width = 0.0f, height = 0.0f, radius = 0.0f, 
-                 density, friction, restitution;
+                 density, friction, restitution, xOff, yOff;
 
             std::string id; 
 
-            Body(int physicsType, float x, float y, float width, float height, int pointer, bool isSensor, float density, float friction, float restitution);
-            Body(int physicsType, float x, float y, float radius, int pointer, bool isSensor, float density, float friction, float restitution);
+            Body(int physicsType, float x, float y, float width, float height, int pointer, bool isSensor, float density, float friction, float restitution, float xOff, float yOff);
+            Body(int physicsType, float x, float y, float radius, int pointer, bool isSensor, float density, float friction, float restitution, float xOff, float yOff);
             Body() = default;
 
             const Math::Vector2 GetPosition();
             const Math::Vector2 GetLinearVelocity();
             
-            void Init(int physicsType, float x, float y, int pointer, bool isSensor, float density, float friction, float restitution);
+            void Init(int physicsType, float x, float y, int pointer, bool isSensor, float density, float friction, float restitution, float xOff, float yOff);
             void SetTransform(float x, float y, float angle = 0.0f);
             void SetLinearVelocity(float velocityX, float velocityY); 
             void ApplyLinearImpulse(float velocityX, float velocityY);
             void SetEnabled(bool enabled);
             void SetSensor(bool sensor);
-            void SetType(int type);
+            void SetType(int type); 
             void SetFixedRotation(bool isFixedRotation);
             void SetMass(float mass, float inertia = 0.0f, float centerX = 0.0f, float centerY = 0.0f); 
             void SetDensity(float density); 
@@ -97,7 +97,9 @@ class Physics {
             int pointer = -1, 
             float density = 0.0f, 
             float friction = 0.0f, 
-            float restitution = 0.0f
+            float restitution = 0.0f, 
+            float xOff = 0.0f, 
+            float yOff = 0.0f
         );
 
         //factory for dynamic, static, and kinematic circle bodies
@@ -110,7 +112,9 @@ class Physics {
             int pointer = -1, 
             float density = 0.0f, 
             float friction = 0.0f, 
-            float restitution = 0.0f
+            float restitution = 0.0f,
+            float xOff = 0.0f, 
+            float yOff = 0.0f
         );
 
         //factory for revolute joints

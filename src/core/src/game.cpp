@@ -341,13 +341,10 @@ void Game::UpdateFrame()
                                         1,                  
                                         spawn->body.self.density, 
                                         spawn->body.self.friction, 
-                                        spawn->body.self.restitution
-                                    ), { 
-                                        spawn->body.self.x, 
-                                        spawn->body.self.y, 
-                                        spawn->body.self.width, 
-                                        spawn->body.self.height, 
-                                    }); 
+                                        spawn->body.self.restitution, 
+                                        spawn->body.self.xOff, 
+                                        spawn->body.self.yOff
+                                    )); 
                                 }
 
                                 if (spawn->body.self.shape == Physics::Body::Shape::CIRCLE)
@@ -361,13 +358,10 @@ void Game::UpdateFrame()
                                         1,                  
                                         spawn->body.self.density, 
                                         spawn->body.self.friction, 
-                                        spawn->body.self.restitution
-                                    ), { 
-                                        spawn->body.self.x, 
-                                        spawn->body.self.y, 
-                                        spawn->body.self.width, 
-                                        spawn->body.self.height, 
-                                    });
+                                        spawn->body.self.restitution,
+                                        spawn->body.self.xOff, 
+                                        spawn->body.self.yOff
+                                    ));
                                 }
                             }
                             
@@ -432,6 +426,16 @@ void Game::UpdateFrame()
         Renderer::Flush(false);    
     }     
 
+    //physics
+
+    if (physics && !currentScene->IsPaused())
+        physics->Update();
+
+    //camera
+
+    if (camera)
+        camera->Update();
+
     //update behaviors, pass game process context to subclasses
 
     std::sort(currentScene->behaviors.begin(), currentScene->behaviors.end(), [] (const std::shared_ptr<entity_behaviors::Behavior>& a, const std::shared_ptr<entity_behaviors::Behavior>& b) 
@@ -449,16 +453,6 @@ void Game::UpdateFrame()
     //update scene
 
     currentScene->Update(); 
-
-    //physics
-
-    if (physics && !currentScene->IsPaused())
-        physics->Update();
-
-    //camera
-
-    if (camera)
-        camera->Update();
 
     //cleanup events
 
@@ -533,8 +527,8 @@ void Game::UpdateFrame()
             if (sprite->GetBodies().size())
             {
                 for (auto &body : sprite->GetBodies()) {
-                    Physics::DestroyBody(body.first); 
-                    body.first = nullptr;
+                    Physics::DestroyBody(body); 
+                    body = nullptr;
                 }
 
                 sprite->GetBodies().clear();

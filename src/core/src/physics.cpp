@@ -298,7 +298,9 @@ std::shared_ptr<Physics::Body> Physics::CreateBody(
     int pointer, 
     float density, 
     float friction, 
-    float restitution
+    float restitution,
+    float xOff, 
+    float yOff
 )
 {
     if (width <= 0.0f)
@@ -307,7 +309,20 @@ std::shared_ptr<Physics::Body> Physics::CreateBody(
     if (height <= 0.0f)
         height = 1.0f;
 
-    const auto body = std::make_shared<Physics::Body>(physicsType, x, y, width, height, pointer <= -1 ? pointer : _bodyCount, isSensor, density, friction, restitution);
+    const auto body = std::make_shared<Body>(
+        physicsType, 
+        x, 
+        y, 
+        width, 
+        height,
+        pointer <= -1 ? pointer : _bodyCount, 
+        isSensor, 
+        density, 
+        friction, 
+        restitution, 
+        xOff, 
+        yOff
+    );
     
     b2Body* b2d_body = InitBox2DBody(physicsType, x, y, pointer);
 
@@ -331,13 +346,27 @@ std::shared_ptr<Physics::Body> Physics::CreateBody(
     int pointer, 
     float density, 
     float friction, 
-    float restitution
+    float restitution,
+    float xOff, 
+    float yOff
 )
 {
     if (radius <= 0.0f)
         radius = 1.0f;
 
-    const auto body = std::make_shared<Body>(physicsType, x, y, radius, pointer <= -1 ? pointer : _bodyCount, isSensor, density, friction, restitution);
+    const auto body = std::make_shared<Body>(
+        physicsType, 
+        x, 
+        y, 
+        radius, 
+        pointer <= -1 ? pointer : _bodyCount, 
+        isSensor, 
+        density, 
+        friction, 
+        restitution, 
+        xOff, 
+        yOff
+    );
 
     b2Body* b2d_body = InitBox2DBody(physicsType, x, y, pointer);
 
@@ -471,14 +500,16 @@ Physics::Body::Body(
     bool isSensor, 
     float density, 
     float friction, 
-    float restitution
+    float restitution, 
+    float xOff, 
+    float yOff
 ) 
 {
     this->width = width;
     this->height = height;
     this->shape = Shape::BOX;
 
-    Init(physicsType, x, y, pointer, isSensor, density, friction, restitution);
+    Init(physicsType, x, y, pointer, isSensor, density, friction, restitution, xOff, yOff);
 }
 
 
@@ -494,13 +525,15 @@ Physics::Body::Body(
     bool isSensor, 
     float density, 
     float friction, 
-    float restitution
+    float restitution,
+    float xOff, 
+    float yOff
 ) 
 {
     this->radius = radius;
     this->shape = Shape::CIRCLE;
     
-    Init(physicsType, x, y, pointer, isSensor, density, friction, restitution);
+    Init(physicsType, x, y, pointer, isSensor, density, friction, restitution, xOff, yOff);
 }
 
 
@@ -515,7 +548,9 @@ void Physics::Body::Init(
     bool isSensor, 
     float density, 
     float friction, 
-    float restitution
+    float restitution,
+    float xOff, 
+    float yOff
 )
 {
     id = UUID::generate_uuid().c_str();
@@ -528,6 +563,8 @@ void Physics::Body::Init(
     this->density = density; 
     this->friction = friction;
     this->restitution = restitution;
+    this->xOff = xOff;
+    this->yOff = yOff;
 }
 
 

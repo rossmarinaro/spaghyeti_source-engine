@@ -188,9 +188,7 @@ class Text : public Entity {
 
 
 //sprite container
-class Sprite : public Entity {
-
-    std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>> m_bodies;  
+class Sprite : public Entity { 
 
 	public:  
 
@@ -218,7 +216,7 @@ class Sprite : public Entity {
 
         inline const Anim& GetCurrentAnimation() { return m_currentAnim; }
 		inline const Contact& IsContacting() { return m_contact; }
-		inline const bool IsSpritesheet() { return m_isSpritesheet; } 
+		inline const bool IsSpritesheet() const { return m_isSpritesheet; } 
 		inline const bool IsAnimComplete() { return m_animComplete; }
         inline void SetFrame(int frame) { currentFrame = frame; }
 
@@ -227,10 +225,10 @@ class Sprite : public Entity {
 		void SetAsUI(bool isUI);
 		void ReadSpritesheetData();
         void RemoveBodies(); 
-        void AddBody(const std::shared_ptr<Physics::Body>& body, const Math::Vector4& offsets);
+        void AddBody(const std::shared_ptr<Physics::Body>& body);
 
         std::shared_ptr<Physics::Body> GetBody(int index = 0);
-        std::vector<std::pair<std::shared_ptr<Physics::Body>, Math::Vector4>>& GetBodies();  
+        std::vector<std::shared_ptr<Physics::Body>>& GetBodies();  
         
         void SetContact(bool active, ContactDirection direction = ContactDirection::NONE);
 		void SetTexture(const std::string& key);
@@ -275,10 +273,12 @@ class Sprite : public Entity {
         Contact m_contact;
 
 		Math::Vector2 m_velocity;
-		
-		//internal spritesheet data 
+        
+        //physics bodies
+        std::vector<std::shared_ptr<Physics::Body>> m_bodies; 
 
-		std::vector<std::array<unsigned int, 6>> m_resourceData; 
+		//internal spritesheet data 
+		std::vector<std::array<unsigned int, 6>> m_resourceData; 		
 
         Anim m_currentAnim;
 };
