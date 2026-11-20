@@ -1106,6 +1106,8 @@ void EventListener::BuildAndRun()
                     command_queue << "   spawnBodyDef_" + node->ID + ".isSensor = " + is_sensor + ";\n";
                     command_queue << "   spawnBodyDef_" + node->ID + ".x = " + FloatToString(sn->body.self.x) + ";\n";
                     command_queue << "   spawnBodyDef_" + node->ID + ".y = " + FloatToString(sn->body.self.y) + ";\n";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".xOff = " + FloatToString(sn->body.self.x) + ";\n";
+                    command_queue << "   spawnBodyDef_" + node->ID + ".yOff = " + FloatToString(sn->body.self.y) + ";\n";
 
                     if (sn->body.self.shape == Physics::Body::Shape::BOX) {
                         command_queue << "   spawnBodyDef_" + node->ID + ".width = " + FloatToString(sn->body.self.width) + ";\n";

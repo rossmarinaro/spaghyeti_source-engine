@@ -508,21 +508,11 @@ void Game::UpdateFrame()
     {
         const auto entity = *it;
 
-        auto e_it = std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [&entity](const std::shared_ptr<Entity>& e) { return e->ID == entity->ID; });
-
-        if (e_it != currentScene->entities.end()) 
-            e_it = currentScene->entities.erase(e_it);
-
-        auto ui_it = std::find_if(currentScene->UI.begin(), currentScene->UI.end(), [&entity](const std::shared_ptr<Entity>& e) { return e->ID == entity->ID; });
-
-        if (ui_it != currentScene->UI.end()) 
-            ui_it = currentScene->UI.erase(ui_it);
-
-        //queue respective rigid bodies for removal
-
         if (entity->IsSprite())
         {
             const auto sprite = std::static_pointer_cast<Sprite>(entity);
+
+            //queue respective rigid bodies for removal
 
             if (sprite->GetBodies().size())
             {
@@ -534,6 +524,16 @@ void Game::UpdateFrame()
                 sprite->GetBodies().clear();
             }
         }
+
+        auto e_it = std::find_if(currentScene->entities.begin(), currentScene->entities.end(), [&entity](const std::shared_ptr<Entity>& e) { return e->ID == entity->ID; });
+
+        if (e_it != currentScene->entities.end()) 
+            e_it = currentScene->entities.erase(e_it);
+
+        auto ui_it = std::find_if(currentScene->UI.begin(), currentScene->UI.end(), [&entity](const std::shared_ptr<Entity>& e) { return e->ID == entity->ID; });
+
+        if (ui_it != currentScene->UI.end()) 
+            ui_it = currentScene->UI.erase(ui_it);
 
         //remove behaviors
 

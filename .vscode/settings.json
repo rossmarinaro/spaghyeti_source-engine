@@ -109,5 +109,6 @@
         "test": "cpp"
     },
     "C_Cpp.default.compilerPath": "C:\\Program Files\\MinGW\\bin\\gcc.exe",
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "cmake.sourceDirectory": "C:/project_data/projects/c++/spaghyeti_source_engine/src/vendors/glm"
 }
