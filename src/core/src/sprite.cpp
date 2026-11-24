@@ -592,78 +592,61 @@ void Sprite::Render(int shaderID)
         const bool yoyo = m_currentAnim.yoyo;
         const int rate = m_currentAnim.rate;
 
-        const uint32_t seconds = System::Application::game->time->GetSeconds() * rate;
+        m_animTimer += (System::Application::game->time->delta * std::max(0.0f, rate));
 
-        try {
+        if (!m_animPaused && m_isSpritesheet && active)
+        {
+            const auto anim = anims.find(animKey.c_str());
 
-            if (!m_animPaused && m_isSpritesheet && active)
+            if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1))) 
+                return;
+            
+            int startFrame = anim->second.first,
+                endFrame = anim->second.second;
+
+            while (m_animTimer >= m_animFrameDuration)
             {
-                const auto anim = anims.find(animKey.c_str());
-
-                if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1))) 
-                    return;
-
-                std::vector<int> frames; //frames to populate  
-                
-                int startFrame = anims.find(m_currentAnim.key.c_str())->second.first,
-                    endFrame = anims.find(m_currentAnim.key.c_str())->second.second,
-                    frame = yoyo ? startFrame : endFrame;
-
-                m_animComplete = currentFrame == frame && m_currentAnim.can_complete;
-                m_currentAnim.can_complete = false;
+                m_animTimer -= m_animFrameDuration;
+                int nextFrame = currentFrame + m_animDirection;
 
                 if (yoyo)
                 {
-                    for (int i = anim->second.first; i < anim->second.second + 1; i++) 
-                        frames.emplace_back(i);
-                    
-                    const uint32_t elapsed = seconds % frames.size();
-
-                    std::vector<int> frames_reversed;
-
-                    for (int i = anim->second.second; i > anim->second.first - 1; i--) 
-                        frames_reversed.emplace_back(i);
-
-                    const uint32_t elapsed_reversed = seconds % frames_reversed.size();
-
-                    if (!m_anim_yoyo && currentFrame == anim->second.second && frames[elapsed] != anim->second.second) 
-                        m_anim_yoyo = true;
-
-                    if (m_anim_yoyo && currentFrame == anim->second.first && frames_reversed[elapsed_reversed] != anim->second.first)    
-                        m_anim_yoyo = false;
-
-                    SetFrame(m_anim_yoyo ? frames_reversed[elapsed_reversed] : frames[elapsed]);
-                }
-
-                else {
-                    for (int i = anim->second.first; i < anim->second.second + 1; i++) 
-                        frames.emplace_back(i);
-                    
-                    const uint32_t elapsed = seconds % frames.size();
-                
-                    SetFrame(frames[elapsed]);
-                }
-
-                //animation complete
-
-                m_currentAnim.can_complete = true;
-
-                if (currentFrame == anim->second.second) 
-                {
-                    if (m_currentAnim.can_decrement) {
-                        m_currentAnim.can_decrement = false;
-
-                        if (m_currentAnim.repeat > -1) 
-                            m_currentAnim.repeat--; 
+                    if (nextFrame > endFrame) {
+                        m_animDirection = -1;
+                        nextFrame = std::max(startFrame, endFrame - 1);
                     }
+                    else if (nextFrame < startFrame) {
+                        m_animDirection = 1;
+                        nextFrame = std::min(startFrame, startFrame + 1);
+                    }
+
+                    //f-b cycle complete
+
+                    m_animComplete = true;
+
+                    if (m_currentAnim.repeat > 0)
+                        m_currentAnim.repeat--;
                 }
                 else 
-                    m_currentAnim.can_decrement = true;
-            }
-        }
+                {
+                    if (nextFrame > endFrame)
+                    {
+                        m_animComplete = true;
 
-        catch (std::runtime_error& err) { 
-            LOG("Sprite: error playing animation: " + (std::string)err.what()); 
+                        if (m_currentAnim.repeat > 0)
+                            m_currentAnim.repeat--;
+
+                        if (m_currentAnim.repeat == 0) {
+                            nextFrame = endFrame;
+                            break;
+                        }
+
+                        nextFrame = startFrame;
+                    }
+                }
+
+                SetFrame(nextFrame);
+            }
         }
 
         if (shaderID != -1)

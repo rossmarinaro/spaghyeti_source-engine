@@ -203,9 +203,7 @@ class Sprite : public Entity {
             int start = 0, end = 0, 
                 rate = 2, repeat = -1; 
 
-            bool yoyo = false, 
-                 can_decrement = true, 
-                 can_complete = false; 
+            bool yoyo = false; 
         };
 
 		int frames, currentFrame;
@@ -264,12 +262,16 @@ class Sprite : public Entity {
 
 	private:
 
+        int m_animDirection = 1;
+        float m_animFrameDuration = 0.1f,
+              m_animTimer = 0.0f;
+
 		bool m_isSpritesheet = false, 
 			 m_animComplete = true,
              m_isAnimPlaying = false,
              m_animPaused = false,
 			 m_anim_yoyo = false;
-
+    
         Contact m_contact;
 
 		Math::Vector2 m_velocity;
