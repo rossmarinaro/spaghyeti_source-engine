@@ -13,7 +13,7 @@ class Time {
 
         Time(float time = 0.0f);
 
-        float delta, animTimer;
+        float delta;
 
         //timed event structure
         struct TimedEvent { 

@@ -597,11 +597,10 @@ void Sprite::Render(int shaderID)
         if (!m_animPaused && m_isSpritesheet && active)
         {
             const auto anim = anims.find(animKey.c_str());
-            const float animTimer = System::Application::game->time->animTimer;
+            const float animTimer = scene->animTimer;
 
             if (anim == anims.end() || scene->IsPaused()) 
                 return;
-
             
             int startFrame = anim->second.first,
                 endFrame = anim->second.second;
@@ -609,7 +608,7 @@ void Sprite::Render(int shaderID)
             if (animKey != m_lastAnimKey) {
                 m_lastAnimKey = animKey;
                 m_animTimer = 0.0f;
-                m_lastSceneTime = animTimer;
+                m_lastSceneTime = 0.0f;//animTimer;
                 m_animDirection = 1;
                 m_animComplete = false;
                 SetFrame(startFrame);

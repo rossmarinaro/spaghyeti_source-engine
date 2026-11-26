@@ -2,10 +2,7 @@
 #include "../../../build/sdk/include/app.h"
 #include "../../shared/renderer.h"
 
-Time::Time(float time): 
-    m_now(time) {
-        animTimer = 0.0f;
-    }
+Time::Time(float time): m_now(time) {}
 
 
 //---------------
@@ -20,8 +17,10 @@ void Time::Update(double _time)
     s_last = time->m_now;
     time->delta = delta; 
 
-    if (!System::Game::GetScene()->IsPaused())
-        time->animTimer += std::min(time->delta, 0.1f);
+    auto* scene = System::Game::GetScene();
+
+    if (!scene->IsPaused())
+        scene->animTimer += std::min(time->delta, 0.1f);
 
     System::Application::game->UpdateFrame(); 
 

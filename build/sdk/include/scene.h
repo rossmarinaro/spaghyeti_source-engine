@@ -55,6 +55,8 @@ namespace System {
                 }
             };
 
+            float animTimer;
+
             std::string key;
             Math::Vector2* cameraTarget;
             std::unique_ptr<Geometry> vignette;
