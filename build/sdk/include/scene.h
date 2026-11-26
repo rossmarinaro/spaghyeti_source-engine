@@ -70,9 +70,9 @@ namespace System {
             Scene(const Process::Context& context, const std::string& key);
 
             virtual ~Scene() { s_ID--; };
-            virtual void Preload() {}
-            virtual void Update() {} 
-            virtual void Run(bool onSceneLoad) {}
+            virtual void Preload() = 0;
+            virtual void Update() = 0;
+            virtual void Run(bool onSceneLoad) = 0;
 
             //create objects 
 
@@ -111,7 +111,7 @@ namespace System {
                 const char* data_key,
                 uint32_t mapWidth, 
                 uint32_t mapHeight, 
-                uint32_t tileWidth, 
+                uint32_t tileWidth,  
                 uint32_t tileHeight,
                 uint32_t depth,
                 int index,

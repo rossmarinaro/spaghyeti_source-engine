@@ -263,15 +263,19 @@ class Sprite : public Entity {
 	private:
 
         int m_animDirection = 1;
+
         float m_animFrameDuration = 0.1f,
-              m_animTimer = 0.0f;
+              m_animTimer = 0.0f,
+              m_lastSceneTime = 0.0f;
 
 		bool m_isSpritesheet = false, 
 			 m_animComplete = true,
              m_isAnimPlaying = false,
              m_animPaused = false,
 			 m_anim_yoyo = false;
-    
+
+        std::string m_lastAnimKey = "";
+
         Contact m_contact;
 
 		Math::Vector2 m_velocity;

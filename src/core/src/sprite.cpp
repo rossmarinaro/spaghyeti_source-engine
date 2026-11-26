@@ -588,21 +588,47 @@ void Sprite::Render(int shaderID)
 
     if (m_isSpritesheet && m_currentAnim.key.length())
     {
-        const std::string& animKey = m_currentAnim.key;
-        const bool yoyo = m_currentAnim.yoyo;
-        const int rate = m_currentAnim.rate;
+        auto* scene = System::Game::GetScene();
 
-        m_animTimer += (System::Application::game->time->delta * std::max(0.0f, rate));
+        std::string& animKey = m_currentAnim.key;
+        const bool yoyo = m_currentAnim.yoyo;
+        const int rate = m_currentAnim.rate > 0 ? m_currentAnim.rate : 1;
 
         if (!m_animPaused && m_isSpritesheet && active)
         {
             const auto anim = anims.find(animKey.c_str());
+            const float animTimer = System::Application::game->time->animTimer;
 
-            if (anim == anims.end() || System::Game::GetScene()->IsPaused() || ((m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1))) 
+            if (anim == anims.end() || scene->IsPaused()) 
                 return;
+
             
             int startFrame = anim->second.first,
                 endFrame = anim->second.second;
+
+            if (animKey != m_lastAnimKey) {
+                m_lastAnimKey = animKey;
+                m_animTimer = 0.0f;
+                m_lastSceneTime = animTimer;
+                m_animDirection = 1;
+                m_animComplete = false;
+                SetFrame(startFrame);
+            }
+
+            const float r = (1.0f / rate) + 1.0f; 
+            const float dt = animTimer - m_lastSceneTime;
+
+            m_lastSceneTime = animTimer;
+
+            if (m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1)
+                return;
+
+            if (startFrame == endFrame) {
+                SetFrame(startFrame);
+                return;
+            }
+
+            m_animTimer += dt * r; //System::Application::game->time->delta * r;
 
             while (m_animTimer >= m_animFrameDuration)
             {
@@ -613,22 +639,23 @@ void Sprite::Render(int shaderID)
                 {
                     if (nextFrame > endFrame) {
                         m_animDirection = -1;
-                        nextFrame = std::max(startFrame, endFrame - 1);
+                        nextFrame = endFrame - 1;
                     }
-                    else if (nextFrame < startFrame) {
+                    else if (m_animDirection == -1 && nextFrame <= startFrame) {
                         m_animDirection = 1;
-                        nextFrame = std::min(startFrame, startFrame + 1);
+                        nextFrame = startFrame;
+                        m_animComplete = true;
+
+                        if (m_currentAnim.repeat > 0)
+                            m_currentAnim.repeat--;
+
+                        if (m_currentAnim.repeat == 0) {
+                            SetFrame(startFrame);
+                            break;
+                        }
                     }
-
-                    //f-b cycle complete
-
-                    m_animComplete = true;
-
-                    if (m_currentAnim.repeat > 0)
-                        m_currentAnim.repeat--;
                 }
-                else 
-                {
+                else {
                     if (nextFrame > endFrame)
                     {
                         m_animComplete = true;
@@ -638,6 +665,7 @@ void Sprite::Render(int shaderID)
 
                         if (m_currentAnim.repeat == 0) {
                             nextFrame = endFrame;
+                            SetFrame(nextFrame);
                             break;
                         }
 
