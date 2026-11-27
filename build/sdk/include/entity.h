@@ -264,12 +264,12 @@ class Sprite : public Entity {
 
         int m_animDirection = 1;
 
-        float m_animFrameDuration = 0.1f,
-              m_animTimer = 0.0f,
+        float m_animTimer = 0.0f,
               m_lastSceneTime = 0.0f;
 
 		bool m_isSpritesheet = false, 
-			 m_animComplete = true,
+			 m_animComplete = false,
+             m_animFinished = false,
              m_isAnimPlaying = false,
              m_animPaused = false,
 			 m_anim_yoyo = false;

@@ -71,10 +71,10 @@ namespace System {
             Scene(const Process::Context& context);
             Scene(const Process::Context& context, const std::string& key);
 
-            virtual ~Scene() { s_ID--; };
-            virtual void Preload() = 0;
-            virtual void Update() = 0;
-            virtual void Run(bool onSceneLoad) = 0;
+            virtual ~Scene() { s_ID--; }
+            virtual void Preload() {}
+            virtual void Update() {}
+            virtual void Run(bool onSceneLoad) {}
 
             //create objects 
 

@@ -590,57 +590,76 @@ void Sprite::Render(int shaderID)
     {
         auto* scene = System::Game::GetScene();
 
-        std::string& animKey = m_currentAnim.key;
-        const bool yoyo = m_currentAnim.yoyo;
-        const int rate = m_currentAnim.rate > 0 ? m_currentAnim.rate : 1;
-
         if (!m_animPaused && m_isSpritesheet && active)
         {
-            const auto anim = anims.find(animKey.c_str());
-            const float animTimer = scene->animTimer;
+            const auto anim = anims.find(m_currentAnim.key.c_str());
+            const float sceneAnimTimer = scene->animTimer;
 
             if (anim == anims.end() || scene->IsPaused()) 
                 return;
             
             int startFrame = anim->second.first,
-                endFrame = anim->second.second;
+                endFrame = anim->second.second,
+                frameCount = (endFrame - startFrame) + 1;
 
-            if (animKey != m_lastAnimKey) {
-                m_lastAnimKey = animKey;
+            float rate = std::max(0.0f, (float)m_currentAnim.rate),
+                  frameDuration = 1.0f / rate;
+
+            if (rate <= 0.0f)
+                return;
+
+            if (m_currentAnim.key != m_lastAnimKey) 
+            {
+                m_lastAnimKey = m_currentAnim.key;
                 m_animTimer = 0.0f;
-                m_lastSceneTime = 0.0f;//animTimer;
+                m_lastSceneTime = 0.0f;
                 m_animDirection = 1;
                 m_animComplete = false;
+                m_animFinished = false;
+                
                 SetFrame(startFrame);
+
+                if (frameCount > 1) {
+                    int cycleSteps = m_currentAnim.yoyo ? (frameCount - 1) * 2 : frameCount;
+                    float cycleDuration = cycleSteps * frameDuration;
+                    m_lastSceneTime = sceneAnimTimer - std::fmod(sceneAnimTimer, cycleDuration);
+                }
+                else 
+                    m_lastSceneTime = sceneAnimTimer;
             }
 
-            const float r = (1.0f / rate) + 1.0f; 
-            const float dt = animTimer - m_lastSceneTime;
-
-            m_lastSceneTime = animTimer;
-
-            if (m_currentAnim.repeat <= 0 && m_currentAnim.repeat != -1)
+            if (m_animFinished && m_currentAnim.repeat != -1)
                 return;
+                
+            if (frameCount <= 1) {
+                SetFrame(startFrame);
+                return;
+            }
+
+            const float dt = sceneAnimTimer - m_lastSceneTime;
+
+            m_lastSceneTime = sceneAnimTimer;
 
             if (startFrame == endFrame) {
                 SetFrame(startFrame);
                 return;
             }
 
-            m_animTimer += dt * r; //System::Application::game->time->delta * r;
+            m_animTimer += dt;
 
-            while (m_animTimer >= m_animFrameDuration)
+            while (m_animTimer >= frameDuration)
             {
-                m_animTimer -= m_animFrameDuration;
+                m_animTimer -= frameDuration;
                 int nextFrame = currentFrame + m_animDirection;
 
-                if (yoyo)
+                if (m_currentAnim.yoyo)
                 {
                     if (nextFrame > endFrame) {
                         m_animDirection = -1;
                         nextFrame = endFrame - 1;
                     }
-                    else if (m_animDirection == -1 && nextFrame <= startFrame) {
+                    else if (m_animDirection == -1 && nextFrame <= startFrame) 
+                    {
                         m_animDirection = 1;
                         nextFrame = startFrame;
                         m_animComplete = true;
@@ -649,12 +668,14 @@ void Sprite::Render(int shaderID)
                             m_currentAnim.repeat--;
 
                         if (m_currentAnim.repeat == 0) {
+                            m_animFinished = true;
                             SetFrame(startFrame);
                             break;
                         }
                     }
                 }
-                else {
+                else 
+                {
                     if (nextFrame > endFrame)
                     {
                         m_animComplete = true;
@@ -663,8 +684,8 @@ void Sprite::Render(int shaderID)
                             m_currentAnim.repeat--;
 
                         if (m_currentAnim.repeat == 0) {
-                            nextFrame = endFrame;
-                            SetFrame(nextFrame);
+                            m_animFinished = true;
+                            SetFrame(endFrame);
                             break;
                         }
 

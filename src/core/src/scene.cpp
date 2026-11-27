@@ -22,10 +22,12 @@ void Scene::Init(const std::string& key)
 
     m_paused = false;
     m_depthSort = false;
+
     m_worldWidth = 0; 
     m_worldHeight = 0;
 
     animTimer = 0.0f;
+    
     cameraTarget = GetContext()->camera->GetPosition(); 
 
     s_ID++;
